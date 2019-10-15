@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- 扫描动画 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/topImage"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="7"
+            android:scaleType="fitXY"
+            android:src="@drawable/shadow" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="fitXY"
+                android:src="@drawable/shadow" />
+
+            <FrameLayout
+                android:id="@+id/fl_scan"
+                android:layout_width="@dimen/scan_frame_width"
+                android:layout_height="@dimen/scan_frame_width"
+                android:layout_gravity="center_horizontal">
+
+                <cn.bertsir.zbar.view.CornerView
+                    android:id="@+id/cnv_left_top"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    app:corner_gravity="leftTop"
+                    app:corner_width="5dp" />
+
+
+                <cn.bertsir.zbar.view.CornerView
+                    android:id="@+id/cnv_left_bottom"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="bottom|left"
+                    app:corner_gravity="leftBottom"
+                    app:corner_width="5dp" />
+
+                <cn.bertsir.zbar.view.CornerView
+                    android:id="@+id/cnv_right_top"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="right|top"
+                    app:corner_gravity="rightTop"
+                    app:corner_width="5dp" />
+
+
+                <cn.bertsir.zbar.view.CornerView
+                    android:id="@+id/cnv_right_bottom"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="right|bottom"
+                    app:corner_gravity="rightBottom"
+                    app:corner_width="5dp" />
+
+
+                <cn.bertsir.zbar.view.LineView
+                    android:id="@+id/iv_scan_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp" />
+
+            </FrameLayout>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="fitXY"
+                android:src="@drawable/shadow" />
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/bottomImage"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="14"
+            android:scaleType="fitXY"
+            android:src="@drawable/shadow" />
+
+
+    </LinearLayout>
+
+</LinearLayout>
