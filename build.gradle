@@ -1,11 +1,13 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 // 正式发包，需要在根目录下创建 sign.properties 文件，指定签名文件的位置和密码，参数参考 testSign.properties
-buildscript {
+buildscript { 
+    ext.kotlin_version = '1.3.50'
+
     ext.versions = [
             'compileSdk': 29,
             'minSdk'    : 21,
             'targetSdk' : 29,
-            'buildTools':'29.0.2',
+            'buildTools' :'29.0.2',
             'gradle'    : '3.5.0',
             'kotlin'    : '1.3.50'
     ]
@@ -26,7 +28,7 @@ buildscript {
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
-    }
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" }
 }
 
 allprojects {

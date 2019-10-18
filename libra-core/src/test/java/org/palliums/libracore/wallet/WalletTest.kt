@@ -2,6 +2,7 @@ package org.palliums.libracore.wallet
 
 import org.junit.Assert
 import org.junit.Test
+import org.spongycastle.crypto.digests.SHA3Digest
 import org.spongycastle.util.encoders.Hex
 
 /**
