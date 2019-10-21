@@ -26,6 +26,7 @@ buildscript {
             'retrofit2'                : '2.6.2',
             'rxjava2'                  : '2.2.13',
             'okhttp3'                  : '4.2.1',
+            'androidx_recyclerview'    : '1.0.0',
     ]
 
     ext.names = [

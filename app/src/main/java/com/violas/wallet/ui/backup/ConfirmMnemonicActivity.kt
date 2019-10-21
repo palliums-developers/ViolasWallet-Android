@@ -3,7 +3,6 @@ package com.violas.wallet.ui.backup
 import android.os.Bundle
 import android.view.View
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_confirm_mnemonic.*
 
 /**
@@ -12,7 +11,7 @@ import kotlinx.android.synthetic.main.activity_confirm_mnemonic.*
  * <p>
  * desc: 确认助记词页面
  */
-class ConfirmMnemonicActivity : BaseActivity() {
+class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_confirm_mnemonic
@@ -23,10 +22,6 @@ class ConfirmMnemonicActivity : BaseActivity() {
         setTitle(R.string.confirm_mnemonic_title)
 
         tv_confirm_mnemonic_complete.setOnClickListener(this)
-    }
-
-    override fun onTitleRightViewClick() {
-
     }
 
     override fun onViewClick(view: View) {
