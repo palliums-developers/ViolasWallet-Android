@@ -11,8 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <activity android:name=".ui.identity.createIdentity.CreateIdentityActivity"></activity>
-        <activity android:name=".ui.identity.importIdentity.ImportIdentityActivity" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +20,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.identity.createIdentity.CreateIdentityActivity" />
+        <activity android:name=".ui.identity.importIdentity.ImportIdentityActivity" />
         <activity android:name=".ui.identity.IdentityActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,6 +30,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.backup.BackupPromptActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.backup.ShowMnemonicActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.backup.ConfirmMnemonicActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".contentProvider.InitContentProvider"
