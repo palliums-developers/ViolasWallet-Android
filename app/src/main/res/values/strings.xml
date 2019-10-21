@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ViolasWallet</string>
+    <string name="refresh_footer_loading">正在加载…</string>
 </resources>
