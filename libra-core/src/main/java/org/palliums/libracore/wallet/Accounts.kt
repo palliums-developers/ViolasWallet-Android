@@ -1,5 +1,6 @@
 package org.palliums.libracore.wallet
 
+import org.palliums.libracore.serialization.toHex
 import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.util.encoders.Hex
 
@@ -17,6 +18,10 @@ class Account {
 
     constructor(keyPair: KeyPair) {
         this.keyPair = keyPair
+    }
+
+    fun getPublicKey(): String {
+        return this.keyPair.getPublicKey().toHex()
     }
 
     fun getAddress(): AccountAddress {
@@ -43,6 +48,6 @@ class AccountAddress {
     }
 
     fun toHex(): String {
-        return  Hex.toHexString(this.addressBytes)
+        return Hex.toHexString(this.addressBytes)
     }
 }

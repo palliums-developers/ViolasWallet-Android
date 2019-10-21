@@ -37,7 +37,7 @@ class Seed {
             require(salt.isNotEmpty()) { "Salt must not be empty" }
 
             val mnemonicBytes: ByteArray =
-                Strings.toUTF8ByteArray(Mnemonic(English.INSTANCE).toByteArray(mnemonic))
+                Strings.toUTF8ByteArray(Mnemonic(English.INSTANCE).toCharArray(mnemonic))
 
             val saltBytes: ByteArray =
                 Normalizer.normalize("$MNEMONIC_SALT_PREFIX$salt", Normalizer.Form.NFKD)

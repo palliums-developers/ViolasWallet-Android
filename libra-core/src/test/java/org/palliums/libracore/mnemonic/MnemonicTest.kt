@@ -1,11 +1,11 @@
 package org.palliums.libracore.mnemonic
 
 import org.junit.Assert
-import org.junit.Test
 import org.junit.Assert.assertEquals
-import org.palliums.libracore.wallet.MNEMONIC_SALT_PREFIX
+import org.junit.Test
 import org.palliums.libracore.utils.ByteUtility
 import org.palliums.libracore.utils.HexUtils
+import org.palliums.libracore.wallet.MNEMONIC_SALT_PREFIX
 import org.spongycastle.crypto.PBEParametersGenerator
 import org.spongycastle.crypto.digests.SHA3Digest
 import org.spongycastle.crypto.generators.PKCS5S2ParametersGenerator
@@ -86,7 +86,7 @@ class MnemonicTest {
         val mnemonicSalt = MNEMONIC_SALT_PREFIX.toByteArray()
 
         val mnemonic = Mnemonic(English.INSTANCE)
-            .toByteArray(mnemonics)
+            .toCharArray(mnemonics) ?: return
 
         val salt = ByteUtility.combine(mnemonicSalt, passphrase)
 

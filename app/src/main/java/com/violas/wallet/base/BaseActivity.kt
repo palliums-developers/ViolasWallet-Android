@@ -1,12 +1,12 @@
 package com.violas.wallet.base
 
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.violas.wallet.R
 import com.violas.wallet.base.widget.LoadingDialog
@@ -245,5 +245,11 @@ abstract class BaseActivity : AppCompatActivity(), View.OnClickListener,
             e.printStackTrace()
         }
 
+    }
+
+    fun showToast(msg: String) {
+        launch {
+            Toast.makeText(this@BaseActivity, msg, Toast.LENGTH_SHORT).show()
+        }
     }
 }

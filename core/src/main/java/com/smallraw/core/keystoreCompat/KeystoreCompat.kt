@@ -8,9 +8,6 @@ import android.security.keystore.KeyProperties
 import androidx.annotation.RequiresApi
 import java.math.BigInteger
 import java.security.*
-import java.security.cert.Certificate
-import java.security.interfaces.RSAPrivateKey
-import java.security.interfaces.RSAPublicKey
 import java.util.*
 import javax.crypto.Cipher
 import javax.security.auth.x500.X500Principal
@@ -68,7 +65,7 @@ class KeystoreCompat(private val context: Context, private val mAlias: String = 
 
     }
 
-    fun encrypt(content: ByteArray): ByteArray? {
+    fun encrypt(content: ByteArray): ByteArray {
         val cipher = getCipher()
         cipher.init(Cipher.ENCRYPT_MODE, keyStore.getCertificate(mAlias).publicKey)
         return cipher.doFinal(content)

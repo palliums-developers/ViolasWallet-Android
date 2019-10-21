@@ -1,8 +1,8 @@
 package org.palliums.libracore.mnemonic;
 
 import org.palliums.libracore.utils.ByteUtility
-import org.spongycastle.crypto.digests.SHA256Digest
 import org.spongycastle.jcajce.provider.digest.SHA256
+import org.spongycastle.util.Strings
 import java.security.SecureRandom
 import java.util.*
 import kotlin.Comparator
@@ -13,6 +13,12 @@ import kotlin.experimental.xor
 
 
 class Mnemonic(private val wordList: WordList) {
+    companion object {
+        fun English(): Mnemonic {
+            return Mnemonic(English.INSTANCE)
+        }
+    }
+
     private val words: Array<WordAndIndex?>
 
     private val normalizer: NFKDNormalizer
@@ -32,7 +38,11 @@ class Mnemonic(private val wordList: WordList) {
         }
     }
 
-    fun toByteArray(mnemonics: List<String>): CharArray {
+    fun toByteArray(mnemonic: List<String>): ByteArray? {
+        return toCharArray(mnemonic)?.let { Strings.toUTF8ByteArray(it) }
+    }
+
+    fun toCharArray(mnemonics: List<String>): CharArray? {
         val words = mnemonics.size
         val chars = arrayOfNulls<CharArray>(words)
         val toClear = LinkedList<CharArray>()
@@ -47,8 +57,8 @@ class Mnemonic(private val wordList: WordList) {
             count += wordChars.size
         }
         count += words - 1
-        val mnemonicChars = CharArray(count)
         try {
+            val mnemonicChars = CharArray(count)
             var index = 0
             for (i in chars.indices) {
                 chars[i]?.let {
@@ -65,6 +75,7 @@ class Mnemonic(private val wordList: WordList) {
             for (charsToClear in toClear)
                 Arrays.fill(charsToClear, '\u0000')
         }
+        return null
     }
 
     fun generate(words: WordCount = WordCount.TWELVE): ArrayList<String> {

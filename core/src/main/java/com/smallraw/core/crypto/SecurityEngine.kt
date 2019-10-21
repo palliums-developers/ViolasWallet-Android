@@ -1,6 +1,8 @@
 package com.smallraw.core.crypto
 
-class SecurityEngine(
+import kotlin.math.abs
+
+open class SecurityEngine(
     private val mStorageUniqueKey: StorageUniqueKey? = null
 ) {
     companion object {
@@ -13,7 +15,7 @@ class SecurityEngine(
             return uniqueKey
         }
         val obtain = MD5Digest.digest(uniqueKey)[0]
-        return uniqueKey.copyOfRange(0, obtain % uniqueKey.size)
+        return uniqueKey.copyOfRange(0, abs(obtain % uniqueKey.size))
     }
 
     fun encrypt(password: ByteArray, content: ByteArray): ByteArray {
