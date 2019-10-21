@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
 
+android {
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion = versions.buildTools
 
     defaultConfig {
-        minSdkVersion 18
-        targetSdkVersion 29
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
         versionCode 1
         versionName "1.0"
 
@@ -22,15 +22,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core-ktx:1.1.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin_stdlib"
+    implementation "androidx.core:core-ktx:$versions.androidx_core"
+    implementation "androidx.appcompat:appcompat:$versions.androidx_appcompat"
+
+    testImplementation "junit:junit:$versions.test_junit"
+    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
 }

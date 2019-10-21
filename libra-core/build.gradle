@@ -5,12 +5,12 @@ apply plugin: 'com.google.protobuf'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 28
-
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion = versions.buildTools
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
         versionCode 1
         versionName "1.0"
 
@@ -24,18 +24,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core-ktx:1.1.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin_stdlib"
+    implementation "androidx.core:core-ktx:$versions.androidx_core"
+    implementation "androidx.appcompat:appcompat:$versions.androidx_appcompat"
+
+    testImplementation "junit:junit:$versions.kotlin_stdlib"
+    androidTestImplementation "androidx.test:runner:$versions.androidTest_runner"
+    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
 
     api 'com.madgag.spongycastle:core:1.58.0.0'
     api 'com.madgag.spongycastle:prov:1.58.0.0'
@@ -54,6 +54,7 @@ protobuf {
     protoc {
         artifact = 'com.google.protobuf:protoc:3.9.1'
     }
+
     plugins {
         javalite {
             artifact = 'com.google.protobuf:protoc-gen-java:3.0.0'
@@ -62,6 +63,7 @@ protobuf {
             artifact = 'io.grpc:protoc-gen-grpc-java:1.23.0' // CURRENT_GRPC_VERSION
         }
     }
+
     generateProtoTasks {
         all().each { task ->
             task.plugins {
