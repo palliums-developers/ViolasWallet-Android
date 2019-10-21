@@ -85,6 +85,7 @@ dependencies {
     implementation "androidx.core:core-ktx:$versions.androidx_core"
     implementation "androidx.appcompat:appcompat:$versions.androidx_appcompat"
     implementation "androidx.constraintlayout:constraintlayout:$versions.androidx_constraintlayout"
+    implementation "androidx.recyclerview:recyclerview:$versions.androidx_recyclerview"
 
     testImplementation "junit:junit:$versions.test_junit"
     androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
