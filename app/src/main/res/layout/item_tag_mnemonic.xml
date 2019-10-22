@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginTop="10dp">
+
+    <TextView
+        android:id="@+id/tv_word"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_bg_tag_mnemonic"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingTop="@dimen/dp_5"
+        android:paddingEnd="@dimen/dp_20"
+        android:paddingBottom="@dimen/dp_5"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_13"
+        tools:text="mnemonic"/>
+
+</FrameLayout>

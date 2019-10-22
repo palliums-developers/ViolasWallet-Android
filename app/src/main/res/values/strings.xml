@@ -19,6 +19,7 @@
     <string name="show_mnemonic_content_02">不要截屏或复制到剪切板，这将可能被第三方恶意软件收集，造成资产损失</string><string name="backup_mnemonic_show_title">备份助记词展示</string>
     <string name="confirm_mnemonic_title">确认助记词</string>
     <string name="confirm_mnemonic_content_01">请按顺序点击助记词，以确认您正确备份</string>
+    <string name="confirm_mnemonic_tips_01">助记词顺序不正确，请校对</string>
 
     <string name="btn_next_step">下一步</string>
     <string name="btn_complete">完成</string>

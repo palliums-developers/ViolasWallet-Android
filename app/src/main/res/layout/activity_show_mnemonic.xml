@@ -7,23 +7,49 @@
     tools:context=".ui.backup.ShowMnemonicActivity">
 
     <TextView
+        android:id="@+id/tv_show_mnemonic_desc_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_50"
         android:text="@string/show_mnemonic_content_01"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.zhy.view.flowlayout.TagFlowLayout
+        android:id="@+id/fl_show_mnemonic_words"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_205"
+        android:layout_marginLeft="@dimen/page_spacing_left"
+        android:layout_marginTop="@dimen/dp_50"
+        android:layout_marginRight="@dimen/page_spacing_right"
+        android:padding="@dimen/dp_20"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_show_mnemonic_desc_1" />
+
     <TextView
+        android:id="@+id/tv_show_mnemonic_desc_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/page_spacing_left"
+        android:layout_marginTop="@dimen/dp_50"
+        android:layout_marginRight="@dimen/page_spacing_right"
+        android:gravity="center"
+        android:text="@string/show_mnemonic_content_02"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fl_show_mnemonic_words" />
+
+    <Button
         android:id="@+id/tv_show_mnemonic_next_step"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/page_btn_margin_bottom"
+        android:layout_marginTop="@dimen/dp_50"
         android:padding="@dimen/dp_20"
         android:text="@string/btn_next_step"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_show_mnemonic_desc_2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
