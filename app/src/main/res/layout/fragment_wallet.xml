@@ -25,6 +25,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
+                    android:id="@+id/tvWalletType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="BTC 钱包" />
@@ -91,18 +92,20 @@
                     android:id="@+id/tvHintAddress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="address"
+                    android:text="address："
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvUnit" />
 
                 <TextView
                     android:id="@+id/tvAddress"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toStartOf="@+id/ivCopy"
                     app:layout_constraintStart_toEndOf="@+id/tvHintAddress"
                     app:layout_constraintTop_toBottomOf="@+id/tvUnit" />
 
                 <ImageView
+                    android:id="@+id/ivCopy"
                     android:layout_width="10dp"
                     android:layout_height="10dp"
                     android:background="#000000"

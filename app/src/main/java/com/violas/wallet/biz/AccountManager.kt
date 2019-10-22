@@ -1,28 +1,102 @@
 package com.violas.wallet.biz
 
 import android.content.Context
+import androidx.annotation.WorkerThread
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip32.ExtendedKey
 import com.quincysx.crypto.bip44.BIP44
 import com.quincysx.crypto.bip44.CoinPairDerive
 import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
 import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.getContext
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.wallet.KeyFactory
 import org.palliums.libracore.wallet.Seed
+import java.util.concurrent.CountDownLatch
 
 class MnemonicException : RuntimeException()
+class AccountNotExistsException : RuntimeException()
 
 class AccountManager {
+    companion object {
+        private const val CURRENT_ACCOUNT = "ab1"
+    }
+
+    private val mConfigSharedPreferences by lazy {
+        getContext().getSharedPreferences("config", Context.MODE_PRIVATE)
+    }
+
+    private val mAccountStorage by lazy {
+        DataRepository.getAccountStorage()
+    }
+
+    @WorkerThread
+    fun refreshAccountAmount(currentAccount: AccountDO): AccountDO {
+        val accountDO = when (CoinTypes.parseCoinType(currentAccount.coinNumber)) {
+            CoinTypes.Libra -> {
+                val countDownLatch = CountDownLatch(1)
+                DataRepository.getLibraService().getBalanceInMicroLibras(currentAccount.address) {
+                    currentAccount.amount = it
+                    countDownLatch.countDown()
+                }
+                countDownLatch.await()
+                currentAccount
+            }
+            CoinTypes.Bitcoin -> {
+                val countDownLatch = CountDownLatch(1)
+                DataRepository.getBitcoinService().getBalance(currentAccount.address)
+                    .subscribe({
+                        currentAccount.amount = it.toLong()
+                        countDownLatch.countDown()
+                    }, {
+                        countDownLatch.countDown()
+                    }, {})
+                countDownLatch.await()
+                currentAccount
+            }
+            CoinTypes.VToken -> {
+                currentAccount
+            }
+            else -> currentAccount
+        }
+        mAccountStorage.update(accountDO)
+        return accountDO
+    }
+
+    /**
+     * 获取当前账户账户
+     */
+    @Throws(AccountNotExistsException::class)
+    fun currentAccount(): AccountDO {
+        val currentWallet = mConfigSharedPreferences.getLong(CURRENT_ACCOUNT, 0)
+        return mAccountStorage.findById(currentWallet) ?: throw AccountNotExistsException()
+    }
+
+    /**
+     * 是否存在账户
+     */
+    fun existsWalletAccount(): Boolean {
+        if (mAccountStorage.loadByWalletType(0) == null) {
+            return false
+        }
+        return true
+    }
+
+    /**
+     * 切换当前钱包账户
+     */
+    fun switchCurrentAccount(currentAccountID: Long) {
+        mConfigSharedPreferences.edit().putLong(CURRENT_ACCOUNT, currentAccountID).apply()
+    }
 
     /**
      * 获取身份钱包的助记词
      */
     fun getIdentityWalletMnemonic(context: Context, password: ByteArray): List<String> {
-        val account = DataRepository.getAccountStorage().loadByWalletType(0)
+        val account = mAccountStorage.loadByWalletType(0)!!
         val security = SimpleSecurity.instance(context)
         val mnemonic = String(security.decrypt(password, account.mnemonic)!!)
         return mnemonic.split(" ")
@@ -40,7 +114,7 @@ class AccountManager {
         val deriveLibra = deriveLibra(wordList)
         val security = SimpleSecurity.instance(context)
 
-        saveAsDB(
+        val insertIds = mAccountStorage.insert(
             AccountDO(
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
@@ -65,7 +139,7 @@ class AccountManager {
         val deriveLibra = deriveLibra(wordList)
         val security = SimpleSecurity.instance(context)
 
-        saveAsDB(
+        val insertIds = mAccountStorage.insert(
             AccountDO(
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
@@ -94,7 +168,7 @@ class AccountManager {
         val deriveBitcoin = deriveBitcoin(seed)
         val security = SimpleSecurity.instance(context)
 
-        saveAsDB(
+        val insertIds = mAccountStorage.insert(
             AccountDO(
                 privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
                 publicKey = deriveBitcoin.publicKey,
@@ -107,12 +181,18 @@ class AccountManager {
         )
     }
 
+    /**
+     * 创建身份
+     */
     fun createIdentity(context: Context, walletName: String, password: ByteArray): List<String> {
         val generate = Mnemonic.English().generate()
         importIdentity(context, generate, walletName, password)
         return generate
     }
 
+    /**
+     * 导入身份
+     */
     @Throws(MnemonicException::class)
     fun importIdentity(
         context: Context,
@@ -128,7 +208,7 @@ class AccountManager {
 
         val security = SimpleSecurity.instance(context)
 
-        saveAsDB(
+        val insertIds = mAccountStorage.insert(
             AccountDO(
                 privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
                 publicKey = deriveBitcoin.publicKey,
@@ -137,10 +217,7 @@ class AccountManager {
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "${CoinTypes.VToken.coinName()}-$walletName",
                 walletType = 0
-            )
-        )
-
-        saveAsDB(
+            ),
             AccountDO(
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
@@ -149,10 +226,7 @@ class AccountManager {
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
                 walletType = 0
-            )
-        )
-
-        saveAsDB(
+            ),
             AccountDO(
                 privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
                 publicKey = deriveBitcoin.publicKey,
@@ -163,14 +237,9 @@ class AccountManager {
                 walletType = 0
             )
         )
-    }
-
-    private fun saveAsDB(
-        account: AccountDO
-    ) {
-        DataRepository.getAccountStorage().insert(
-            account
-        )
+        if (insertIds.isNotEmpty()) {
+            switchCurrentAccount(insertIds[0])
+        }
     }
 
     private fun deriveLibra(wordList: List<String>): Account {

@@ -1,6 +1,9 @@
 package com.violas.wallet.ui.main
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.violas.wallet.R
 import com.violas.wallet.base.adapter.ViewPagerAdapter
@@ -15,6 +18,10 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val QUIT_CHECK_INTERNAL = 2000
+
+        fun start(context: Context) {
+            context.startActivity(Intent(context, MainActivity::class.java))
+        }
     }
 
     private lateinit var viewPagerAdapter: ViewPagerAdapter
@@ -45,5 +52,22 @@ class MainActivity : AppCompatActivity() {
         view_pager.adapter = viewPagerAdapter
         view_pager.offscreenPageLimit = 3
         bottom_navigation.setupWithViewPager(view_pager)
+    }
+
+    override fun onBackPressed() {
+        if (System.currentTimeMillis() - mQuitTimePoint > QUIT_CHECK_INTERNAL) {
+            Toast.makeText(applicationContext, R.string.quit_confirmation,
+                Toast.LENGTH_SHORT).show()
+            mQuitTimePoint = System.currentTimeMillis()
+        } else {
+            // work around for https://code.google.com/p/android/issues/detail?id=176265
+            try {
+                super.onBackPressed()
+            } catch (ex: IllegalStateException) {
+                super.supportFinishAfterTransition()
+                ex.printStackTrace()
+            }
+
+        }
     }
 }

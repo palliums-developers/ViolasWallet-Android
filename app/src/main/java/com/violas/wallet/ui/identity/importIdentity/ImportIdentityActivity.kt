@@ -3,10 +3,12 @@ package com.violas.wallet.ui.identity.importIdentity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import com.violas.wallet.App
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.MnemonicException
+import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_import_identity.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,7 +45,8 @@ class ImportIdentityActivity : BaseActivity() {
                     )
                     withContext(Dispatchers.Main) {
                         dismissProgress()
-                        showToast("成功")
+                        App.finishAllActivity()
+                        MainActivity.start(this@ImportIdentityActivity)
                     }
                 } catch (e: MnemonicException) {
                     showToast("助记词错误")
