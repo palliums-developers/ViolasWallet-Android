@@ -16,7 +16,97 @@ import org.palliums.libracore.wallet.Seed
 
 class MnemonicException : RuntimeException()
 
-class AccountManager() {
+class AccountManager {
+
+    /**
+     * 获取身份钱包的助记词
+     */
+    fun getIdentityWalletMnemonic(context: Context, password: ByteArray): List<String> {
+        val account = DataRepository.getAccountStorage().loadByWalletType(0)
+        val security = SimpleSecurity.instance(context)
+        val mnemonic = String(security.decrypt(password, account.mnemonic)!!)
+        return mnemonic.split(" ")
+    }
+
+    /**
+     * 导入Violas钱包（非身份钱包）
+     */
+    fun importViolasWallet(
+        context: Context,
+        wordList: List<String>,
+        walletName: String,
+        password: ByteArray
+    ) {
+        val deriveLibra = deriveLibra(wordList)
+        val security = SimpleSecurity.instance(context)
+
+        saveAsDB(
+            AccountDO(
+                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
+                publicKey = deriveLibra.getPublicKey(),
+                address = deriveLibra.getAddress().toHex(),
+                coinNumber = CoinTypes.VToken.coinType(),
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
+                walletNickname = "${CoinTypes.VToken.coinName()}-$walletName",
+                walletType = 1
+            )
+        )
+    }
+
+    /**
+     * 导入Libra钱包（非身份钱包）
+     */
+    fun importLibraWallet(
+        context: Context,
+        wordList: List<String>,
+        walletName: String,
+        password: ByteArray
+    ) {
+        val deriveLibra = deriveLibra(wordList)
+        val security = SimpleSecurity.instance(context)
+
+        saveAsDB(
+            AccountDO(
+                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
+                publicKey = deriveLibra.getPublicKey(),
+                address = deriveLibra.getAddress().toHex(),
+                coinNumber = CoinTypes.Libra.coinType(),
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
+                walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
+                walletType = 1
+            )
+        )
+    }
+
+    /**
+     * 导入BTC钱包（非身份钱包）
+     */
+    @Throws(MnemonicException::class)
+    fun importBtcWallet(
+        context: Context,
+        wordList: List<String>,
+        walletName: String,
+        password: ByteArray
+    ) {
+        val seed = Mnemonic.English()
+            .toByteArray(wordList) ?: throw MnemonicException()
+
+        val deriveBitcoin = deriveBitcoin(seed)
+        val security = SimpleSecurity.instance(context)
+
+        saveAsDB(
+            AccountDO(
+                privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
+                publicKey = deriveBitcoin.publicKey,
+                address = deriveBitcoin.address,
+                coinNumber = CoinTypes.Bitcoin.coinType(),
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
+                walletNickname = "${CoinTypes.Bitcoin.coinName()}-$walletName",
+                walletType = 1
+            )
+        )
+    }
+
     fun createIdentity(context: Context, walletName: String, password: ByteArray): List<String> {
         val generate = Mnemonic.English().generate()
         importIdentity(context, generate, walletName, password)
