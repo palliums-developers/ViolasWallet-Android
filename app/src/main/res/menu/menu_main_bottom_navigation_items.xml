@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tab_wealth"
+        android:icon="@android:drawable/ic_media_play"
+        android:title="主页" />
+    <item
+        android:id="@+id/tab_trend"
+        android:icon="@android:drawable/ic_media_play"
+        android:title="行情" />
+    <item
+        android:id="@+id/tab_me"
+        android:icon="@android:drawable/ic_media_play"
+        android:title="我的 " />
+</menu>
