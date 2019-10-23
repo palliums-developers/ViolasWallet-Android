@@ -141,4 +141,7 @@ dependencies {
 
     // see https://github.com/YoKeyword/Fragmentation
     implementation 'me.yokeyword:fragmentationx:1.0.1'
+
+    debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
+    releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
 }
