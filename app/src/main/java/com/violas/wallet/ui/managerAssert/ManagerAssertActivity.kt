@@ -46,7 +46,7 @@ class ManagerAssertActivity : BaseActivity() {
     private val mTokenManager by lazy {
         TokenManager()
     }
-    private val mSupportTokens = MutableList(0) { AssertToken() }
+    private val mSupportTokens = mutableListOf<AssertToken>()
     private val mAdapter by lazy {
         MyAdapter(mSupportTokens) { checked, assertToken ->
             launch(Dispatchers.IO) {
@@ -71,16 +71,16 @@ class ManagerAssertActivity : BaseActivity() {
         recyclerView.adapter = mAdapter
         launch(Dispatchers.IO) {
             mSupportTokens.clear()
-            mSupportTokens.addAll(mTokenManager.loadSupportToken())
+            mSupportTokens.addAll(mTokenManager.loadSupportToken(mAccountManager.currentAccount()))
             mAdapter.notifyDataSetChanged()
         }
     }
 
-    override fun onDestroy() {
+    override fun onBackPressed() {
         setResult(Activity.RESULT_OK)
-        super.onDestroy()
+        super.onBackPressed()
     }
-}
+ }
 
 class MyAdapter(
     val data: List<AssertToken>,
