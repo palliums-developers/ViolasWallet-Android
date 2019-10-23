@@ -11,12 +11,15 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 class WalletFragment : Fragment(), CoroutineScope by MainScope() {
+    private val REQUEST_ADD_ASSERT = 0
+
     private val mAccountManager by lazy {
         AccountManager()
     }
@@ -32,12 +35,26 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         refreshAccountData()
+        ivAddAssert.setOnClickListener {
+            launch(Dispatchers.IO) {
+                val currentAccount = mAccountManager.currentAccount()
+                withContext(Dispatchers.Main) {
+                    activity?.let { activity ->
+                        ManagerAssertActivity.start(
+                            this@WalletFragment,
+                            currentAccount.id,
+                            REQUEST_ADD_ASSERT
+                        )
+                    }
+                }
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun refreshAccountData(event: SwitchAccountEvent? = null) {
         launch(Dispatchers.IO) {
-            var currentAccount = mAccountManager.currentAccount()
+            val currentAccount = mAccountManager.currentAccount()
             withContext(Dispatchers.Main) {
                 setViewData(currentAccount)
             }
@@ -61,6 +78,13 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
     private fun setAmount(currentAccount: AccountDO) {
         tvAmount.text = "${currentAccount.amount}"
     }
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (requestCode == REQUEST_ADD_ASSERT && resultCode == Activity.RESULT_OK) {
+////            refreshAssert()
+//        }
+//    }
 
     override fun onDestroy() {
         cancel()

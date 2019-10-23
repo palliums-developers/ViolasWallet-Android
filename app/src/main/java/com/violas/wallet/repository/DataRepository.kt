@@ -19,6 +19,8 @@ object DataRepository {
 
     fun getAccountStorage() = appDatabase.accountDao()
 
+    fun getTokenStorage() = appDatabase.tokenDao()
+
     fun getAddressBookStorage() = appDatabase.addressBookDao()
 
     fun getBitcoinService() = BlockChainRequest.get()

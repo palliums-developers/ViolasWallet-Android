@@ -46,6 +46,9 @@
         <activity
             android:name=".ui.account.AccountInfoActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.managerAssert.ManagerAssertActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".contentProvider.InitContentProvider"

@@ -14,7 +14,7 @@ class LaunchActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launch)
         launch(Dispatchers.IO) {
-            delay(2000)
+            delay(1000)
             if (AccountManager().existsWalletAccount()) {
                 withContext(Dispatchers.Main) {
                     finish()

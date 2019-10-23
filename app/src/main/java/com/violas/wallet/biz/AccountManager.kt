@@ -8,6 +8,7 @@ import com.quincysx.crypto.bip44.BIP44
 import com.quincysx.crypto.bip44.CoinPairDerive
 import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
 import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.common.Vm
 import com.violas.wallet.getContext
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -15,6 +16,7 @@ import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.wallet.KeyFactory
 import org.palliums.libracore.wallet.Seed
+import java.util.concurrent.Executors
 
 class MnemonicException : RuntimeException()
 class AccountNotExistsException : RuntimeException()
@@ -23,6 +25,8 @@ class AccountManager {
     companion object {
         private const val CURRENT_ACCOUNT = "ab1"
     }
+
+    private val mExecutor = Executors.newFixedThreadPool(2)
 
     private val mConfigSharedPreferences by lazy {
         getContext().getSharedPreferences("config", Context.MODE_PRIVATE)
@@ -38,7 +42,9 @@ class AccountManager {
             CoinTypes.Libra -> {
                 DataRepository.getLibraService().getBalanceInMicroLibras(currentAccount.address) {
                     currentAccount.amount = it
-                    mAccountStorage.update(currentAccount)
+                    mExecutor.submit {
+                        mAccountStorage.update(currentAccount)
+                    }
                     callback.invoke(currentAccount)
                 }
             }
@@ -211,19 +217,19 @@ class AccountManager {
 
         val insertIds = mAccountStorage.insert(
             AccountDO(
-                privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
-                publicKey = deriveBitcoin.publicKey,
-                address = deriveBitcoin.address,
-                coinNumber = CoinTypes.Bitcoin.coinType(),
+                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
+                publicKey = deriveLibra.getPublicKey(),
+                address = deriveLibra.getAddress().toHex(),
+                coinNumber = CoinTypes.Libra.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.VToken.coinName()}-$walletName",
+                walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
                 walletType = 0
             ),
             AccountDO(
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.Bitcoin.coinType(),
+                coinNumber = CoinTypes.VToken.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
                 walletType = 0
@@ -232,7 +238,11 @@ class AccountManager {
                 privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
                 publicKey = deriveBitcoin.publicKey,
                 address = deriveBitcoin.address,
-                coinNumber = CoinTypes.Bitcoin.coinType(),
+                coinNumber = if (Vm.TestNet) {
+                    CoinTypes.BitcoinTest.coinType()
+                } else {
+                    CoinTypes.Bitcoin.coinType()
+                },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "${CoinTypes.Bitcoin.coinName()}-$walletName",
                 walletType = 0
@@ -250,8 +260,11 @@ class AccountManager {
 
     private fun deriveBitcoin(seed: ByteArray): BitCoinECKeyPair {
         val extendedKey = ExtendedKey.create(seed)
-        val bip44Path =
+        val bip44Path = if (Vm.TestNet) {
+            BIP44.m().purpose44().coinType(CoinTypes.BitcoinTest).account(0).external().address(0)
+        } else {
             BIP44.m().purpose44().coinType(CoinTypes.Bitcoin).account(0).external().address(0)
+        }
         val derive = CoinPairDerive(extendedKey).derive(bip44Path)
         return derive as BitCoinECKeyPair
     }
