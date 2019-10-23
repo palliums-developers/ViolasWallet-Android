@@ -41,7 +41,11 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
             withContext(Dispatchers.Main) {
                 setViewData(currentAccount)
             }
-            currentAccount = mAccountManager.refreshAccountAmount(currentAccount)
+            mAccountManager.refreshAccountAmount(currentAccount) {
+                launch(Dispatchers.Main) {
+                    setAmount(currentAccount)
+                }
+            }
         }
     }
 
@@ -50,8 +54,12 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
         tvAddress.text = currentAccount.address
         val coinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
         tvWalletType.text = "${coinType.coinName()} Wallet"
-        tvAmount.text = "${currentAccount.amount}"
         tvUnit.text = coinType.coinUnit()
+        setAmount(currentAccount)
+    }
+
+    private fun setAmount(currentAccount: AccountDO) {
+        tvAmount.text = "${currentAccount.amount}"
     }
 
     override fun onDestroy() {

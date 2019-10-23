@@ -34,36 +34,30 @@ class AccountManager {
     }
 
     @WorkerThread
-    fun refreshAccountAmount(currentAccount: AccountDO): AccountDO {
-        val accountDO = when (CoinTypes.parseCoinType(currentAccount.coinNumber)) {
+    fun refreshAccountAmount(currentAccount: AccountDO, callback: (AccountDO) -> Unit) {
+        when (CoinTypes.parseCoinType(currentAccount.coinNumber)) {
             CoinTypes.Libra -> {
-                val countDownLatch = CountDownLatch(1)
                 DataRepository.getLibraService().getBalanceInMicroLibras(currentAccount.address) {
                     currentAccount.amount = it
-                    countDownLatch.countDown()
+                    mAccountStorage.update(currentAccount)
+                    callback.invoke(currentAccount)
                 }
-                countDownLatch.await()
-                currentAccount
             }
             CoinTypes.Bitcoin -> {
-                val countDownLatch = CountDownLatch(1)
                 DataRepository.getBitcoinService().getBalance(currentAccount.address)
                     .subscribe({
                         currentAccount.amount = it.toLong()
-                        countDownLatch.countDown()
+                        mAccountStorage.update(currentAccount)
+                        callback.invoke(currentAccount)
                     }, {
-                        countDownLatch.countDown()
+                        callback.invoke(currentAccount)
                     }, {})
-                countDownLatch.await()
-                currentAccount
             }
             CoinTypes.VToken -> {
-                currentAccount
+                callback.invoke(currentAccount)
             }
-            else -> currentAccount
+            else -> callback.invoke(currentAccount)
         }
-        mAccountStorage.update(accountDO)
-        return accountDO
     }
 
     /**
