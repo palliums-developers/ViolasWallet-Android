@@ -6,7 +6,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.violas.wallet.R
 import com.violas.wallet.base.widget.LoadingDialog
@@ -19,9 +18,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import me.yokeyword.fragmentation.SupportActivity
 import qiu.niorgai.StatusBarCompat
 
-abstract class BaseActivity : AppCompatActivity(), View.OnClickListener,
+abstract class BaseActivity : SupportActivity(), View.OnClickListener,
     CoroutineScope by MainScope() {
     private var mLoadingDialog: LoadingDialog? = null
     abstract fun getLayoutResId(): Int
