@@ -7,6 +7,7 @@
     tools:context=".ui.backup.ConfirmMnemonicActivity">
 
     <TextView
+        android:id="@+id/tv_confirm_mnemonic_desc_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_20"
@@ -15,15 +16,39 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.zhy.view.flowlayout.TagFlowLayout
+        android:id="@+id/fl_confirm_mnemonic_words_sel"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_205"
+        android:layout_marginLeft="@dimen/page_spacing_left"
+        android:layout_marginTop="@dimen/dp_50"
+        android:layout_marginRight="@dimen/page_spacing_right"
+        android:padding="@dimen/dp_20"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_confirm_mnemonic_desc_1" />
+
+    <com.zhy.view.flowlayout.TagFlowLayout
+        android:id="@+id/fl_confirm_mnemonic_words"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_205"
+        android:layout_marginLeft="@dimen/page_spacing_left"
+        android:layout_marginTop="@dimen/dp_50"
+        android:layout_marginRight="@dimen/page_spacing_right"
+        android:padding="@dimen/dp_20"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fl_confirm_mnemonic_words_sel" />
+
+    <Button
         android:id="@+id/tv_confirm_mnemonic_complete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/page_btn_margin_bottom"
+        android:layout_marginTop="@dimen/page_btn_margin_bottom"
         android:padding="@dimen/dp_20"
         android:text="@string/btn_complete"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fl_confirm_mnemonic_words" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
