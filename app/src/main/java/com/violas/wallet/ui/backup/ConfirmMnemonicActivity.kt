@@ -1,13 +1,12 @@
 package com.violas.wallet.ui.backup
 
+import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import com.violas.wallet.R
+import com.violas.wallet.biz.AccountManager
 import com.zhy.view.flowlayout.FlowLayout
 import com.zhy.view.flowlayout.TagAdapter
 import kotlinx.android.synthetic.main.activity_confirm_mnemonic.*
@@ -20,10 +19,10 @@ import kotlinx.android.synthetic.main.activity_confirm_mnemonic.*
  */
 class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
 
-    lateinit var words: ArrayList<MnemonicModel>
-    lateinit var adapter: TagAdapter<MnemonicModel>
-    lateinit var wordsSel: ArrayList<MnemonicModel>
-    lateinit var adapterSel: TagAdapter<MnemonicModel>
+    lateinit var words: ArrayList<MnemonicWordModel>
+    lateinit var adapter: TagAdapter<MnemonicWordModel>
+    lateinit var wordsSel: ArrayList<MnemonicWordModel>
+    lateinit var adapterSel: TagAdapter<MnemonicWordModel>
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_confirm_mnemonic
@@ -39,29 +38,27 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
     }
 
     private fun init() {
-        Log.e("ConfirmMnemonicActivity", "mnemonic words: ${mnemonicWords!!.joinToString(" ")}")
-
         tv_confirm_mnemonic_complete.isEnabled = false
 
-        words = ArrayList()
-        wordsSel = ArrayList()
+        words = arrayListOf()
+        wordsSel = arrayListOf()
         mnemonicWords!!.forEachIndexed { index, word ->
-            words.add(MnemonicModel(word, index))
+            words.add(MnemonicWordModel(word, index))
         }
+        words.shuffle()
 
-        adapter = object : TagAdapter<MnemonicModel>(words) {
+        adapter = object : TagAdapter<MnemonicWordModel>(words) {
             override fun getView(
                 parent: FlowLayout,
                 position: Int,
-                model: MnemonicModel
+                wordModel: MnemonicWordModel
             ): View {
                 val view = LayoutInflater.from(this@ConfirmMnemonicActivity)
                     .inflate(R.layout.item_tag_mnemonic, fl_confirm_mnemonic_words, false)
 
                 val word = view.findViewById<TextView>(R.id.tv_word)
-                word.isEnabled = !wordsSel.contains(model)
-                word.text = model.word
-                model.index = position
+                word.isEnabled = !wordsSel.contains(wordModel)
+                word.text = wordModel.word
 
                 return view
             }
@@ -73,29 +70,26 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
                 wordsSel.add(words[position])
                 adapterSel.notifyDataChanged()
 
-                /*(((view as ViewGroup).getChildAt(0) as ViewGroup).getChildAt(0) as TextView)
-                    .isEnabled = false*/
                 adapter.notifyDataChanged()
-            }
 
-            if (words.size == wordsSel.size) {
-                tv_confirm_mnemonic_complete.isEnabled = true
+                if (words.size == wordsSel.size) {
+                    tv_confirm_mnemonic_complete.isEnabled = true
+                }
             }
 
             false
         }
 
-
-        adapterSel = object : TagAdapter<MnemonicModel>(wordsSel) {
+        adapterSel = object : TagAdapter<MnemonicWordModel>(wordsSel) {
             override fun getView(
                 parent: FlowLayout,
                 position: Int,
-                model: MnemonicModel
+                wordModel: MnemonicWordModel
             ): View {
                 val view = LayoutInflater.from(this@ConfirmMnemonicActivity)
                     .inflate(R.layout.item_tag_mnemonic_sel, fl_confirm_mnemonic_words_sel, false)
                 val word = view.findViewById<TextView>(R.id.tv_word)
-                word.text = model.word
+                word.text = wordModel.word
                 return view
             }
         }
@@ -111,7 +105,6 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
 
             false
         }
-
     }
 
     override fun onViewClick(view: View) {
@@ -120,6 +113,13 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
                 // 验证助记词顺序
                 if (checkMnemonic()) {
                     // TODO 验证结果通知或回调
+                    val accountManager = AccountManager()
+                    if (!accountManager.isIdentityMnemonicBackup()) {
+                        accountManager.setIdentityMnemonicBackup()
+                    }
+
+                    setResult(Activity.RESULT_OK)
+                    finish()
                 }
             }
         }
@@ -127,13 +127,13 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
 
     private fun checkMnemonic(): Boolean {
         if (words.size != wordsSel.size) {
-            Toast.makeText(this, R.string.confirm_mnemonic_tips_01, Toast.LENGTH_LONG).show()
+            showToast(R.string.confirm_mnemonic_tips_01)
             return false
         }
 
-        words.forEachIndexed { index, mnemonicModel ->
-            if (mnemonicModel != wordsSel[index]) {
-                Toast.makeText(this, R.string.confirm_mnemonic_tips_01, Toast.LENGTH_LONG).show()
+        wordsSel.forEachIndexed { index, model ->
+            if (index != model.index) {
+                showToast(R.string.confirm_mnemonic_tips_01)
                 return false
             }
         }

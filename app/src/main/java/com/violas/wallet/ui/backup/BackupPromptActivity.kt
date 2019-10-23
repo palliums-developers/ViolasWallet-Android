@@ -4,12 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.fragment.app.Fragment
 import com.violas.wallet.R
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_backup_prompt.*
-import org.palliums.libracore.mnemonic.Mnemonic
 
 /**
  * Created by elephant on 2019-10-21 13:58.
@@ -25,29 +24,22 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
         fun start(
             context: Context,
             mnemonicWords: ArrayList<String>,
-            delayable: Boolean = false
+            @BackupMnemonicFrom
+            mnemonicFrom: Int,
+            requestCode: Int = -100
         ) {
-            Intent(context, BackupPromptActivity::class.java)
-                .apply {
-                    putStringArrayListExtra(INTENT_KET_MNEMONIC, mnemonicWords)
-                    putExtra(INTENT_KET_DELAYABLE, delayable)
-                }
-                .start(context)
-        }
+            val intent = Intent(context, BackupPromptActivity::class.java).apply {
+                putStringArrayListExtra(INTENT_KET_MNEMONIC_WORDS, mnemonicWords)
+                putExtra(INTENT_KET_MNEMONIC_FROM, mnemonicFrom)
+            }
 
-        @JvmStatic
-        fun start(
-            activity: Activity,
-            requestCode: Int,
-            mnemonicWords: ArrayList<String>,
-            delayable: Boolean = false
-        ) {
-            Intent(activity, BackupPromptActivity::class.java)
-                .apply {
-                    putStringArrayListExtra(INTENT_KET_MNEMONIC, mnemonicWords)
-                    putExtra(INTENT_KET_DELAYABLE, delayable)
-                }
-                .start(activity, requestCode)
+            if (requestCode != -100 && context is Activity) {
+                context.startActivityForResult(intent, requestCode)
+            } else if (requestCode != -100 && context is Fragment) {
+                context.startActivityForResult(intent, requestCode)
+            } else {
+                context.startActivity(intent)
+            }
         }
     }
 
@@ -57,15 +49,12 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setTitle(R.string.backup_mnemonic_prompt_title)
-        if (delayable) {
+        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY) {
             setTitleRightText(R.string.backup_mnemonic_prompt_menu)
         }
-
         tv_backup_prompt_next_step.setOnClickListener(this)
-
-        mnemonicWords = Mnemonic.English().generate()
-        Log.e("BackupPromptActivity","mnemonic words: ${mnemonicWords!!.joinToString(" ")}")
     }
 
     override fun onTitleRightViewClick() {
@@ -76,7 +65,8 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
     override fun onViewClick(view: View) {
         when (view) {
             tv_backup_prompt_next_step -> {
-                getBackupIntent(ShowMnemonicActivity::class.java).start(this)
+                getBackupIntent(ShowMnemonicActivity::class.java)
+                    .start(this, BACKUP_REQUEST_CODE)
             }
         }
     }

@@ -6,7 +6,7 @@ package com.violas.wallet.ui.backup
  * <p>
  * desc:
  */
-data class MnemonicModel(
+data class MnemonicWordModel(
     val word: String,
-    var index: Int
+    val index: Int
 )

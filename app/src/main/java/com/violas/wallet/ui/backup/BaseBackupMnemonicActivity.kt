@@ -3,6 +3,7 @@ package com.violas.wallet.ui.backup
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import com.violas.wallet.base.BaseActivity
 
 /**
@@ -14,32 +15,44 @@ import com.violas.wallet.base.BaseActivity
 abstract class BaseBackupMnemonicActivity : BaseActivity() {
 
     companion object {
-        const val INTENT_KET_MNEMONIC = "INTENT_KET_MNEMONIC"
-        const val INTENT_KET_DELAYABLE = "INTENT_KET_DELAYABLE"
+        const val INTENT_KET_MNEMONIC_WORDS = "INTENT_KET_MNEMONIC_WORDS"
+        const val INTENT_KET_MNEMONIC_FROM = "INTENT_KET_MNEMONIC_FROM"
+
+        const val BACKUP_REQUEST_CODE = 100
     }
 
     var mnemonicWords: ArrayList<String>? = null
-    var delayable: Boolean = false // 备份可延迟
+    var mnemonicFrom: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (intent != null) {
-            mnemonicWords = intent.getStringArrayListExtra(INTENT_KET_MNEMONIC)
-            delayable = intent.getBooleanExtra(INTENT_KET_DELAYABLE, false)
+            mnemonicWords = intent.getStringArrayListExtra(INTENT_KET_MNEMONIC_WORDS)
+            mnemonicFrom = intent.getIntExtra(INTENT_KET_MNEMONIC_FROM, -1)
         }
 
-        if (mnemonicWords == null) {
-            /*setResult(Activity.RESULT_CANCELED)
+        if (mnemonicWords == null || mnemonicFrom == -1) {
+            setResult(Activity.RESULT_CANCELED)
             finish()
-            return*/
+            return
+        }
+
+        Log.e(this.javaClass.simpleName, "mnemonic words => ${mnemonicWords!!.joinToString(" ")}")
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == BACKUP_REQUEST_CODE) {
+            setResult(Activity.RESULT_OK)
+            finish()
         }
     }
 
     protected fun getBackupIntent(cls: Class<out Activity>): Intent {
         return Intent(this, cls).apply {
-            putStringArrayListExtra(INTENT_KET_MNEMONIC, mnemonicWords)
-            putExtra(INTENT_KET_DELAYABLE, delayable)
+            putStringArrayListExtra(INTENT_KET_MNEMONIC_WORDS, mnemonicWords)
+            putExtra(INTENT_KET_MNEMONIC_FROM, mnemonicFrom)
         }
     }
 }

@@ -56,6 +56,10 @@ abstract class BaseActivity : AppCompatActivity(), View.OnClickListener,
             containerView.addView(layoutView)
         }
         statusBar.layoutParams.height = getStatusBarHeight()
+
+        titleLeftMenuView?.let {
+            it.setOnClickListener(this)
+        }
     }
 
     override fun onDestroy() {
@@ -245,6 +249,10 @@ abstract class BaseActivity : AppCompatActivity(), View.OnClickListener,
             e.printStackTrace()
         }
 
+    }
+
+    fun showToast(@StringRes msgId: Int) {
+        showToast(getString(msgId))
     }
 
     fun showToast(msg: String) {

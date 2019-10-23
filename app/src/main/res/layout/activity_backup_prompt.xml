@@ -7,23 +7,89 @@
     tools:context=".ui.backup.BackupPromptActivity">
 
     <TextView
+        android:id="@+id/tv_backup_prompt_desc_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_30"
         android:text="@string/backup_mnemonic_prompt_content_01"
+        android:textColor="@color/black_55"
+        android:textSize="@dimen/sp_15"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_backup_prompt_image"
+        android:layout_width="@dimen/dp_205"
+        android:layout_height="@dimen/dp_205"
+        android:layout_marginTop="@dimen/dp_30"
+        android:background="@color/black_06"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_1" />
+
+    <TextView
+        android:id="@+id/tv_backup_prompt_desc_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_50"
+        android:text="@string/backup_mnemonic_prompt_content_02"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_17"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_backup_prompt_image" />
+
+    <TextView
+        android:id="@+id/tv_backup_prompt_desc_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_15"
+        android:layout_marginEnd="@dimen/page_spacing_right"
+        android:text="@string/backup_mnemonic_prompt_content_03"
+        android:textColor="@color/black_55"
+        android:textSize="@dimen/sp_15"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_2" />
+
+    <TextView
+        android:id="@+id/tv_backup_prompt_desc_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_30"
+        android:text="@string/backup_mnemonic_prompt_content_04"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_17"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_3" />
+
+    <TextView
+        android:id="@+id/tv_backup_prompt_desc_5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_15"
+        android:layout_marginEnd="@dimen/page_spacing_right"
+        android:text="@string/backup_mnemonic_prompt_content_05"
+        android:textColor="@color/black_55"
+        android:textSize="@dimen/sp_15"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_4" />
 
     <Button
         android:id="@+id/tv_backup_prompt_next_step"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_50"
         android:layout_marginBottom="@dimen/page_btn_margin_bottom"
         android:padding="@dimen/dp_20"
         android:text="@string/btn_next_step"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

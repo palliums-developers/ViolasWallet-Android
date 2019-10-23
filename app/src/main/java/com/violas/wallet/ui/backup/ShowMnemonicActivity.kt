@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.backup
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
@@ -19,8 +18,8 @@ import kotlinx.android.synthetic.main.activity_show_mnemonic.*
  */
 class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
 
-    lateinit var words: ArrayList<MnemonicModel>
-    lateinit var adapter: TagAdapter<MnemonicModel>
+    lateinit var words: ArrayList<MnemonicWordModel>
+    lateinit var adapter: TagAdapter<MnemonicWordModel>
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_show_mnemonic
@@ -36,20 +35,23 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
     }
 
     private fun init() {
-        Log.e("ShowMnemonicActivity", "mnemonic words: ${mnemonicWords!!.joinToString(" ")}")
-
-        words = ArrayList()
+        words = arrayListOf()
         mnemonicWords!!.forEachIndexed { index, word ->
-            words.add(MnemonicModel(word, index))
+            words.add(MnemonicWordModel(word, index))
         }
 
-        adapter = object : TagAdapter<MnemonicModel>(words) {
-            override fun getView(parent: FlowLayout, position: Int, model: MnemonicModel): View {
+        adapter = object : TagAdapter<MnemonicWordModel>(words) {
+            override fun getView(
+                parent: FlowLayout,
+                position: Int,
+                wordModel: MnemonicWordModel
+            ): View {
                 val view = LayoutInflater.from(this@ShowMnemonicActivity)
                     .inflate(R.layout.item_tag_mnemonic, fl_show_mnemonic_words, false)
+
                 val word = view.findViewById<TextView>(R.id.tv_word)
-                model.index = position
-                word.text = model.word
+                word.text = wordModel.word
+
                 return view
             }
         }
@@ -59,7 +61,8 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
     override fun onViewClick(view: View) {
         when (view) {
             tv_show_mnemonic_next_step -> {
-                getBackupIntent(ConfirmMnemonicActivity::class.java).start(this)
+                getBackupIntent(ConfirmMnemonicActivity::class.java)
+                    .start(this, BACKUP_REQUEST_CODE)
             }
         }
     }

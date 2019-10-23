@@ -23,6 +23,7 @@ class AccountNotExistsException : RuntimeException()
 class AccountManager {
     companion object {
         private const val CURRENT_ACCOUNT = "ab1"
+        private const val IDENTITY_MNEMONIC_BACKUP = "IDENTITY_MNEMONIC_BACKUP"
     }
 
     private val mConfigSharedPreferences by lazy {
@@ -84,6 +85,20 @@ class AccountManager {
      */
     fun switchCurrentAccount(currentAccountID: Long) {
         mConfigSharedPreferences.edit().putLong(CURRENT_ACCOUNT, currentAccountID).apply()
+    }
+
+    /**
+     * 身份钱包助记词是否备份
+     */
+    fun isIdentityMnemonicBackup(): Boolean {
+        return mConfigSharedPreferences.getBoolean(IDENTITY_MNEMONIC_BACKUP, false)
+    }
+
+    /**
+     * 设置身份钱包助记词已备份
+     */
+    fun setIdentityMnemonicBackup() {
+        mConfigSharedPreferences.edit().putBoolean(IDENTITY_MNEMONIC_BACKUP, true)
     }
 
     /**
