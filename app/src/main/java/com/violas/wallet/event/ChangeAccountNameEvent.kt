@@ -1,3 +1,3 @@
 package com.violas.wallet.event
 
-class ChangeAccountEvent
+class ChangeAccountNameEvent

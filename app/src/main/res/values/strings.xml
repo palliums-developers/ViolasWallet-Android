@@ -25,5 +25,6 @@
     <string name="btn_next_step">下一步</string>
     <string name="btn_complete">完成</string>
     <string name="quit_confirmation">再次点击退出</string>
+    <string name="action_confirm">确定</string>
 
 </resources>
