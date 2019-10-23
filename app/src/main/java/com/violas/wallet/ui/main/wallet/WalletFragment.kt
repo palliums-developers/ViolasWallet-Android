@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.event.ChangeAccountEvent
+import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.coroutines.*
@@ -35,7 +35,7 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun refreshAccountData(event: ChangeAccountEvent? = null) {
+    fun refreshAccountData(event: SwitchAccountEvent? = null) {
         launch(Dispatchers.IO) {
             var currentAccount = mAccountManager.currentAccount()
             withContext(Dispatchers.Main) {

@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <activity android:name=".ui.launch.LaunchActivity">
+        <activity
+            android:name=".ui.launch.LaunchActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -40,6 +42,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.backup.ConfirmMnemonicActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.account.AccountInfoActivity"
             android:screenOrientation="portrait" />
 
         <provider

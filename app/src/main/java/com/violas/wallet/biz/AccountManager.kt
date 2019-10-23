@@ -15,7 +15,6 @@ import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.wallet.KeyFactory
 import org.palliums.libracore.wallet.Seed
-import java.util.concurrent.CountDownLatch
 
 class MnemonicException : RuntimeException()
 class AccountNotExistsException : RuntimeException()
@@ -65,8 +64,16 @@ class AccountManager {
      */
     @Throws(AccountNotExistsException::class)
     fun currentAccount(): AccountDO {
-        val currentWallet = mConfigSharedPreferences.getLong(CURRENT_ACCOUNT, 0)
+        val currentWallet = mConfigSharedPreferences.getLong(CURRENT_ACCOUNT, 1)
         return mAccountStorage.findById(currentWallet) ?: throw AccountNotExistsException()
+    }
+
+    /**
+     * 获取当前账户账户
+     */
+    @Throws(AccountNotExistsException::class)
+    fun getAccountById(accountId: Long): AccountDO {
+        return mAccountStorage.findById(accountId) ?: throw AccountNotExistsException()
     }
 
     /**
