@@ -157,13 +157,13 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener,
                 return false
             }
 
-            val pervTime = view.getTag(R.color.white)?.let { it as Long }
+            val pervTime = view.getTag(R.id.view_click_time)?.let { it as Long }
 
             if (pervTime != null && System.currentTimeMillis() - pervTime < duration) {
                 return true
             }
 
-            view.setTag(R.color.white, System.currentTimeMillis())
+            view.setTag(R.id.view_click_time, System.currentTimeMillis())
 
             return false
         }

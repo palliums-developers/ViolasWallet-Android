@@ -30,4 +30,8 @@
     <string name="collection">收款</string>
     <string name="copy_success">复制成功</string>
 
+    <string name="account_operation_identity_wallet">身份钱包</string>
+    <string name="account_operation_other_wallet">创建/导入</string>
+    <string name="account_management_title"></string>
+
 </resources>
