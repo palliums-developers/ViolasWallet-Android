@@ -76,7 +76,7 @@ class ManagerAssertActivity : BaseActivity() {
         }
     }
 
-    override fun onBackPressed() {
+    override fun onBackPressedSupport() {
         setResult(Activity.RESULT_OK)
         super.onBackPressed()
     }

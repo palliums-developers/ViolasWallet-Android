@@ -26,5 +26,9 @@
     <string name="btn_complete">完成</string>
     <string name="quit_confirmation">再次点击退出</string>
     <string name="action_confirm">确定</string>
+    <string name="transfer">转账</string>
+    <string name="collection">收款</string>
+    <string name="copy_success">复制成功</string>
+    <string name="hint_insufficient_or_trading_fees_are_confirmed">余额不足或资产还未确认</string>
 
 </resources>

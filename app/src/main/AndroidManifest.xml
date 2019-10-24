@@ -49,6 +49,19 @@
         <activity
             android:name=".ui.managerAssert.ManagerAssertActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.transfer.TransferActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.collection.CollectionActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".contentProvider.InitContentProvider"

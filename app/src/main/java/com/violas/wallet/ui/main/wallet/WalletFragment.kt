@@ -16,6 +16,7 @@ import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
@@ -68,6 +69,13 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                         )
                     }
                 }
+            }
+        }
+
+        btnCollection.setOnClickListener {
+            launch(Dispatchers.IO) {
+                val currentAccount = mAccountManager.currentAccount()
+                activity?.let { it1 -> CollectionActivity.start(it1, currentAccount.id) }
             }
         }
     }

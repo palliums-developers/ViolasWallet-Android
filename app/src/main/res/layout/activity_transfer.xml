@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.transfer.TransferActivity">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp">
+
+            <TextView
+                android:id="@+id/tvHintCoinName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BTC"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvCoinAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="余额：1.2400 BTC"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/editAmountInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="输入余额"
+                android:inputType="numberDecimal"
+                app:layout_constraintTop_toBottomOf="@+id/tvHintCoinName" />
+
+            <TextView
+                android:id="@+id/tvCollectionAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="收款地址"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editAmountInput" />
+
+            <TextView
+                android:id="@+id/tvAddressBook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="地址簿"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editAmountInput" />
+
+            <ImageView
+                android:id="@+id/ivScan"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="#000000"
+                app:layout_constraintBottom_toBottomOf="@+id/editAddressInput"
+                app:layout_constraintEnd_toEndOf="@+id/editAddressInput"
+                app:layout_constraintTop_toTopOf="@+id/editAddressInput" />
+
+            <EditText
+                android:id="@+id/editAddressInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="输入收款地址"
+                android:inputType="numberDecimal"
+                app:layout_constraintTop_toBottomOf="@+id/tvCollectionAddress" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:text="慢"
+                app:layout_constraintBottom_toTopOf="@+id/sbQuota"
+                app:layout_constraintStart_toStartOf="@+id/sbQuota" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="18dp"
+                android:text="快"
+                app:layout_constraintBottom_toTopOf="@+id/sbQuota"
+                app:layout_constraintEnd_toEndOf="@+id/sbQuota" />
+
+            <SeekBar
+                android:id="@+id/sbQuota"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:background="@android:color/transparent"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:max="100"
+                android:maxHeight="5dp"
+                android:progress="30"
+                android:progressDrawable="@drawable/progress_bar_transfer"
+                android:splitTrack="false"
+                android:thumb="@drawable/icon_transfer_thumb"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editAddressInput" />
+
+            <TextView
+                android:id="@+id/tvFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:text="0.1234 BTC"
+                app:layout_constraintStart_toStartOf="@+id/sbQuota"
+                app:layout_constraintTop_toBottomOf="@+id/sbQuota" />
+
+            <Button
+                android:id="@+id/btnConfirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="74dp"
+                android:layout_marginBottom="50dp"
+                android:text="转账"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sbQuota" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

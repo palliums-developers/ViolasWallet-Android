@@ -124,14 +124,16 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/btnTransfer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="转账" />
+                android:text="@string/transfer" />
 
             <Button
+                android:id="@+id/btnCollection"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="首款" />
+                android:text="@string/collection" />
         </LinearLayout>
 
         <LinearLayout
