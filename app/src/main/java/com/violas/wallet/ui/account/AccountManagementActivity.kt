@@ -8,7 +8,10 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.widget.GroupListLayout
-import kotlinx.android.synthetic.main.activity_account_operation.*
+import kotlinx.android.synthetic.main.activity_account_management.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Created by elephant on 2019-10-23 17:35.
@@ -24,10 +27,10 @@ class AccountManagementActivity : BaseActivity() {
     }
 
     var operationMode: Int = AccountOperationMode.SELECTION
-    var displayMode: Int = AccountDisplayMode.ALL
+    var displayMode: Int = AccountDisplayType.ALL
 
     override fun getLayoutResId(): Int {
-        return R.layout.activity_account_operation
+        return R.layout.activity_account_management
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,11 +42,10 @@ class AccountManagementActivity : BaseActivity() {
         initData()
     }
 
-
     private fun initView() {
         accOptGroupListLayout.itemFactory = object : GroupListLayout.ItemFactory() {
 
-            override fun createGroupItemLayout(
+            override fun createContentItemLayout(
                 context: Context,
                 viewType: Int
             ): GroupListLayout.ItemLayout<out GroupListLayout.ItemData> {
@@ -53,7 +55,13 @@ class AccountManagementActivity : BaseActivity() {
     }
 
     private fun initData() {
-
+        launch(Dispatchers.IO) {
+            //val data = fakeAccounts()
+            val data = loadAccounts(AccountDisplayType.ALL)
+            withContext(Dispatchers.Main) {
+                accOptGroupListLayout.setData(data)
+            }
+        }
     }
 
     class ContentItem(context: Context) : GroupListLayout.ItemLayout<AccountVo>,
@@ -68,6 +76,7 @@ class AccountManagementActivity : BaseActivity() {
         init {
             tvName = rootView.findViewById(R.id.tvAccountName)
             tvAddress = rootView.findViewById(R.id.tvAccountAddress)
+            rootView.setOnClickListener(this)
         }
 
         override fun refreshView(itemData: GroupListLayout.ItemData?) {
@@ -79,11 +88,11 @@ class AccountManagementActivity : BaseActivity() {
                 rootView.setBackgroundResource(
                     when (it.accountDO.coinNumber) {
                         CoinTypes.Libra.coinType() ->
-                            R.mipmap.ic_account_management_libra
+                            R.drawable.selector_account_management_libra
                         CoinTypes.Bitcoin.coinType() ->
-                            R.mipmap.ic_account_management_btc
+                            R.drawable.selector_account_management_btc
                         else ->
-                            R.mipmap.ic_account_management_violas
+                            R.drawable.selector_account_management_violas
                     }
                 )
             }

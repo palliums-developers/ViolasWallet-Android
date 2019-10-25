@@ -1,6 +1,7 @@
 package com.violas.wallet.widget
 
 import android.content.Context
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
@@ -15,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.utils.DensityUtility
 import com.violas.wallet.utils.isMainThread
 import java.util.*
@@ -31,14 +31,8 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
 
     private val groupData: GroupData = GroupData()
     private val dataAdapter: DataAdapter = DataAdapter()
+    private val recyclerView: RecyclerView = RecyclerView(context)
     private val layoutManager: LinearLayoutManager = LinearLayoutManager(context)
-    private val recyclerView: RecyclerView = RecyclerView(context).apply {
-        layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
-        layoutManager = this.layoutManager
-        adapter = dataAdapter
-        itemAnimator = null
-        setItemViewCacheSize(0)
-    }
 
     private var firstAddData: Boolean = true
     private var lastItemGroup: ItemData? = null
@@ -59,6 +53,13 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
     init {
+
+        recyclerView.layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = dataAdapter
+        recyclerView.itemAnimator = null
+        recyclerView.setItemViewCacheSize(0)
+
         addView(recyclerView)
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -144,7 +145,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
      * 当前组发生改变
      */
     private fun groupChanged(itemData: ItemData?) {
-        if (lastItemGroup != null) {
+        if (lastItemGroup != itemData) {
             lastItemGroup = itemData
             groupSelectedListener?.let { it.onSelected(itemData) }
         }
@@ -176,7 +177,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         }
     }
 
-    fun setData(data: MutableMap<String, List<ItemData>>) {
+    fun <Vo : ItemData> setData(data: MutableMap<String, List<Vo>>) {
         if (isMainThread()) {
             val keys = groupData.setData(data)
             groupData.refreshData()
@@ -188,7 +189,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                 groupChanged(groupData.getItemData(0))
             }
         } else {
-            setData(data)
+            post { setData(data) }
         }
     }
 
@@ -212,14 +213,14 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         }
     }
 
-    inner class DataAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class DataAdapter : RecyclerView.Adapter<DataHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataHolder {
             return DataHolder(GroupItemLayout(parent.context, viewType))
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            (holder as? DataHolder)?.refresh(groupData.getItemData(position), position)
+        override fun onBindViewHolder(holder: DataHolder, position: Int) {
+            holder.refresh(groupData.getItemData(position), position)
         }
 
         override fun getItemCount(): Int {
@@ -231,7 +232,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         }
     }
 
-    private class DataHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class DataHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun refresh(itemData: ItemData?, position: Int) {
             itemView.setTag(R.id.group_list_layout_data, itemData)
@@ -240,34 +241,34 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     }
 
     inner class GroupItemLayout(context: Context, viewType: Int) : LinearLayout(context) {
-        var titleItemLayout: ItemLayout<ItemData>
-        var groupItemLayout: ItemLayout<out ItemData>
+        private var itemTitle: ItemLayout<ItemData>
+        private var itemContent: ItemLayout<out ItemData>
 
-        var itemData: ItemData? = null
+        private var itemData: ItemData? = null
 
         init {
             layoutParams = RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
             orientation = VERTICAL
 
-            titleItemLayout = itemFactory!!.createTitle(context, false)
-            addView(titleItemLayout.getItemView())
+            itemTitle = itemFactory!!.createTitle(context, false)
+            addView(itemTitle.getItemView())
 
-            groupItemLayout = itemFactory!!.createGroupItemLayout(context, viewType)
-            addView(groupItemLayout.getItemView())
+            itemContent = itemFactory!!.createContentItemLayout(context, viewType)
+            addView(itemContent.getItemView())
         }
 
         fun refresh(itemData: ItemData?, position: Int) {
             this.itemData = itemData
 
-            if (position == 0 && groupData.getItemData(position)?.getGroupName()
+            if (position == 0 || groupData.getItemData(position)?.getGroupName()
                 != groupData.getItemData(position - 1)?.getGroupName()
             ) {
-                titleItemLayout.refreshView(this.itemData)
+                itemTitle.refreshView(this.itemData)
             } else {
-                titleItemLayout.refreshView(null)
+                itemTitle.refreshView(null)
             }
 
-            groupItemLayout.refreshView(this.itemData)
+            itemContent.refreshView(this.itemData)
         }
     }
 
@@ -279,19 +280,16 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         var tempDataList: ArrayList<ItemData>? = null
         var tempGroupIdMap: HashMap<String, Int>? = null
 
-        fun setData(groupDataMap: MutableMap<String, List<ItemData>>?): List<String> {
-            if (groupDataMap == null) {
-                this.groupDataMap.clear()
-            } else {
-                this.groupDataMap = groupDataMap
-            }
+        fun <Vo : ItemData> setData(groupDataMap: MutableMap<String, List<Vo>>): List<String> {
+            this.groupDataMap.clear()
+            this.groupDataMap.putAll(groupDataMap)
             return updateData()
         }
 
         /**
          * 更新新数据,但不刷新数据,将改变后的数据用临时变量保存,然后调用[refreshData]刷新改变后的数据
          */
-        fun updateData(): List<String> {
+        private fun updateData(): List<String> {
             val tempDataList = arrayListOf<ItemData>()
             val tempGroupIdMap = hashMapOf<String, Int>()
 
@@ -325,7 +323,8 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         }
 
         fun clear() {
-            val keys = setData(null)
+            this.groupDataMap.clear()
+            updateData()
             refreshData()
         }
 
@@ -362,7 +361,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                             titleView!!.setTextColor(
                                 ResourcesCompat.getColor(
                                     context.resources,
-                                    R.color.blue_50,
+                                    R.color.black,
                                     null
                                 )
                             )
@@ -379,7 +378,6 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                         titleView!!.text = itemData.getGroupName()
                     }
                 }
-
             }
         }
 
@@ -388,13 +386,15 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
          */
         private fun createDefaultTitle(context: Context): TextView {
             return TextView(context).apply {
-                val paddingVertical = DensityUtility.dp2px(context, 2)
-                val paddingHorizontal = DensityUtility.dp2px(context, 15)
-                setPadding(paddingHorizontal, paddingVertical, 0, paddingVertical)
+                val paddingLeft = DensityUtility.dp2px(context, 3)
+                val paddingTop = DensityUtility.dp2px(context, 30)
+                val paddingBottom = DensityUtility.dp2px(context, 8)
+                setPadding(paddingLeft, paddingTop, 0, paddingBottom)
                 layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 10F)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
                 setTextColor(ResourcesCompat.getColor(context.resources, R.color.black, null))
-                setBackgroundColor(ResourcesCompat.getColor(context.resources, R.color.white, null))
+                //setTypeface(Typeface.DEFAULT, Typeface.BOLD)
+                //setBackgroundColor(ResourcesCompat.getColor(context.resources, R.color.white, null))
             }
         }
 
@@ -403,15 +403,19 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
          * @param context
          * @param isFloat 是否是悬浮标题(可以根据是否是悬浮标题定制不同的样式,但是需要注意高度要保持一致)
          */
-        open fun createTitleItemLayout(context: Context, isFloat: Boolean): ItemLayout<ItemData>? =
-            null
+        open fun createTitleItemLayout(context: Context, isFloat: Boolean): ItemLayout<ItemData>? {
+            return null
+        }
 
         /**
-         * 创建 GroupItem,不能为null,父布局为FrameLayout
+         * 创建 GroupContent,不能为null,父布局为FrameLayout
          * @param context
          * @param viewType [getContentViewType]
          */
-        abstract fun createGroupItemLayout(context: Context, viewType: Int): ItemLayout<out ItemData>
+        abstract fun createContentItemLayout(
+            context: Context,
+            viewType: Int
+        ): ItemLayout<out ItemData>
 
         /**
          * 返回内容View的类型,如果有不同的内容View,则复写此方法,否则请不要复写,注意返回值必须是1递增的数字

@@ -55,6 +55,9 @@
         <activity
             android:name=".ui.collection.CollectionActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.account.AccountManagementActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".contentProvider.InitContentProvider"
