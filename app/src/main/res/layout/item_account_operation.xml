@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@mipmap/ic_account_management_violas">
+    android:background="@drawable/selector_account_management_violas">
 
     <TextView
         android:id="@+id/tvAccountName"
@@ -25,7 +25,7 @@
         android:layout_marginStart="@dimen/dp_14"
         android:layout_marginTop="@dimen/dp_12"
         android:layout_marginEnd="@dimen/dp_14"
-        android:layout_marginBottom="@dimen/dp_12"
+        android:layout_marginBottom="@dimen/dp_18"
         android:textColor="@color/white_80"
         android:textSize="@dimen/sp_16"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -40,7 +40,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_20"
         android:layout_marginEnd="@dimen/dp_14"
-        android:background="@color/select_image_click_color"
         android:src="@mipmap/ic_account_more"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
