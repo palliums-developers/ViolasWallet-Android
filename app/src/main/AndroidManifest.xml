@@ -12,7 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <activity android:name=".ui.collection.CollectionActivity"></activity>
         <activity
             android:name=".ui.launch.LaunchActivity"
             android:screenOrientation="portrait">
@@ -49,6 +48,12 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.managerAssert.ManagerAssertActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.transfer.TransferActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.collection.CollectionActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.account.AccountManagementActivity"

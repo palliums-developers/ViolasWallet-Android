@@ -29,6 +29,7 @@
     <string name="transfer">转账</string>
     <string name="collection">收款</string>
     <string name="copy_success">复制成功</string>
+    <string name="hint_insufficient_or_trading_fees_are_confirmed">余额不足或资产还未确认</string>
 
     <string name="account_label_identity_wallet">身份钱包</string>
     <string name="account_label_other_wallet">创建/导入</string>
