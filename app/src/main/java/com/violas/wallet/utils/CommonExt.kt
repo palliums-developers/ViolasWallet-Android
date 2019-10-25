@@ -3,6 +3,7 @@ package com.violas.wallet.utils
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
@@ -31,4 +32,8 @@ open class TextWatcherSimple : TextWatcher {
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
     }
+}
+
+fun isMainThread(): Boolean {
+    return Looper.getMainLooper() == Looper.myLooper()
 }

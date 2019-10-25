@@ -111,7 +111,7 @@ class AccountManager {
      * 设置身份钱包助记词已备份
      */
     fun setIdentityMnemonicBackup() {
-        mConfigSharedPreferences.edit().putBoolean(IDENTITY_MNEMONIC_BACKUP, true)
+        mConfigSharedPreferences.edit().putBoolean(IDENTITY_MNEMONIC_BACKUP, true).apply()
     }
 
     /**
