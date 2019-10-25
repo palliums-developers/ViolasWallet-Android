@@ -29,7 +29,8 @@ class CollectionActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle("收款")
+        title = getString(R.string.title_colletction)
+        setTitleStyle(TITLE_STYLE_GREY_BACKGROUND)
         launch(Dispatchers.IO) {
             val currentAccount = AccountManager().currentAccount()
             withContext(Dispatchers.Main) {

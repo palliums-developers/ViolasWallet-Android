@@ -4,18 +4,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_init_identity"
     tools:context=".ui.identity.IdentityActivity">
+
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="87dp"
+        android:layout_height="87dp"
+        android:src="@mipmap/ic_launcher"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/icon_violas"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivLogo" />
 
     <Button
         android:id="@+id/btnCreate"
-        android:layout_width="match_parent"
+        style="@style/BaseButtonPrimary"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="创建钱包" />
+        android:text="@string/create_identity"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.6" />
 
     <Button
         android:id="@+id/btnImport"
-        android:layout_width="match_parent"
+        style="@style/BaseButtonDeputy"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="导入钱包"
+        android:layout_marginTop="16dp"
+        android:text="@string/import_identity"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnCreate" />
 </androidx.constraintlayout.widget.ConstraintLayout>

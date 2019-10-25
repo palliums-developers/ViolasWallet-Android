@@ -24,7 +24,7 @@ class CreateIdentityActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle("导入钱包")
+        title = getString(R.string.title_import_the_wallet)
 
         btnConfirm.setOnClickListener {
             val walletName = editName.text.toString().trim()
