@@ -12,7 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <activity android:name=".ui.collection.CollectionActivity"></activity>
         <activity
             android:name=".ui.launch.LaunchActivity"
             android:screenOrientation="portrait">
