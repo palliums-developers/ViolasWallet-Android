@@ -33,11 +33,19 @@
     <string name="account_operation_identity_wallet">身份钱包</string>
     <string name="account_operation_other_wallet">创建/导入</string>
     <string name="title_colletction">收款</string>
-    <string name="title_import_the_wallet">导入钱包</string>
+    <string name="title_import_the_wallet">导入身份</string>
+    <string name="title_create_the_wallet">创建身份</string>
     <string name="create_identity">创建身份</string>
     <string name="import_identity">导入身份</string>
     <string name="account_label_identity_wallet">身份钱包</string>
     <string name="account_label_other_wallet">创建/导入</string>
     <string name="account_management_title">钱包管理</string>
+    <string name="action_create">创建</string>
+    <string name="hint_input_nickname">输入昵称</string>
+    <string name="hint_wallet_password">输入钱包密码</string>
+    <string name="hint_input_confirm_password">再次确认密码</string>
+    <string name="hint_confirm_password_fault">确认密码不正确</string>
+    <string name="hint_nickname_empty">钱包昵称不能为空</string>
+    <string name="hint_input_password_short">输入的密码太短</string>
 
 </resources>
