@@ -25,12 +25,25 @@ class ImportIdentityActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle("导入钱包")
-
+        title = getString(R.string.title_import_the_wallet)
         btnConfirm.setOnClickListener {
             val mnemonic = editMnemonicWord.text.toString().trim()
             val walletName = editName.text.toString().trim()
             val password = editPassword.text.toString().trim().toByteArray()
+            val passwordConfirm = editConfirmPassword.text.toString().trim().toByteArray()
+
+            if (walletName.isEmpty()) {
+                showToast(getString(R.string.hint_nickname_empty))
+                return@setOnClickListener
+            }
+            if (editPassword.text.toString().length < 6) {
+                showToast(getString(R.string.hint_input_password_short))
+                return@setOnClickListener
+            }
+            if (!password.contentEquals(passwordConfirm)) {
+                showToast(getString(R.string.hint_confirm_password_fault))
+                return@setOnClickListener
+            }
             showProgress()
             launch(Dispatchers.IO) {
                 try {
@@ -45,11 +58,11 @@ class ImportIdentityActivity : BaseActivity() {
                     )
                     withContext(Dispatchers.Main) {
                         dismissProgress()
-                        App.finishAllActivity()
                         MainActivity.start(this@ImportIdentityActivity)
+                        App.finishAllActivity()
                     }
                 } catch (e: MnemonicException) {
-                    showToast("助记词错误")
+                    showToast(getString(R.string.hint_mnemonic_error))
                 }
             }
         }

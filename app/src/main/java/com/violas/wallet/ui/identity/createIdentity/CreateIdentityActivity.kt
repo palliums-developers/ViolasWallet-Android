@@ -53,8 +53,8 @@ class CreateIdentityActivity : BaseActivity() {
                 )
                 withContext(Dispatchers.Main) {
                     dismissProgress()
-                    App.finishAllActivity()
                     MainActivity.start(this@CreateIdentityActivity)
+                    App.finishAllActivity()
                 }
             }
         }
