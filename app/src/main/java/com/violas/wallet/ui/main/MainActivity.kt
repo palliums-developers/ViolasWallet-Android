@@ -31,18 +31,35 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         StatusBarCompat.translucentStatusBar(this, true)
         setContentView(R.layout.activity_main)
+        resetToDefaultIcon()
 
-        bottom_navigation.setIconsMarginTop(DensityUtility.dp2px(this, 12f))
+        bottom_navigation.setIconsMarginTop(DensityUtility.dp2px(this, 5f))
         bottom_navigation.enableAnimation(false)
         bottom_navigation.enableShiftingMode(false)
         bottom_navigation.enableItemShiftingMode(false)
         bottom_navigation.setTextSize(
             DensityUtility.px2sp(
                 this,
-                (DensityUtility.dp2px(this, 12f).toFloat())
+                (DensityUtility.dp2px(this, 10f).toFloat())
             ).toFloat()
         )
-        bottom_navigation.setIconSize(16F, 18F)
+        bottom_navigation.setIconSize(26F, 26F)
+        bottom_navigation.itemIconTintList = null
+        bottom_navigation.setOnNavigationItemSelectedListener {
+            resetToDefaultIcon()
+            when (it.itemId) {
+                R.id.tab_wallet -> {
+                    it.setIcon(R.drawable.table_wallet_selected);
+                }
+                R.id.tab_market -> {
+                    it.setIcon(R.drawable.table_market_selected);
+                }
+                R.id.tab_me -> {
+                    it.setIcon(R.drawable.table_me_selected);
+                }
+            }
+            true
+        }
 
         viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         viewPagerAdapter.addFragment(WalletFragment())
@@ -54,10 +71,18 @@ class MainActivity : AppCompatActivity() {
         bottom_navigation.setupWithViewPager(view_pager)
     }
 
+    private fun resetToDefaultIcon() {
+        bottom_navigation.menu.findItem(R.id.tab_wallet).setIcon(R.drawable.table_wallet_normal)
+        bottom_navigation.menu.findItem(R.id.tab_market).setIcon(R.drawable.table_market_normal)
+        bottom_navigation.menu.findItem(R.id.tab_me).setIcon(R.drawable.table_me_normal)
+    }
+
     override fun onBackPressed() {
         if (System.currentTimeMillis() - mQuitTimePoint > QUIT_CHECK_INTERNAL) {
-            Toast.makeText(applicationContext, R.string.quit_confirmation,
-                Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                applicationContext, R.string.quit_confirmation,
+                Toast.LENGTH_SHORT
+            ).show()
             mQuitTimePoint = System.currentTimeMillis()
         } else {
             // work around for https://code.google.com/p/android/issues/detail?id=176265
