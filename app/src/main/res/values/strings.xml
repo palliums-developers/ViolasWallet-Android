@@ -53,5 +53,8 @@
     <string name="action_immediately_into">马上进入</string>
     <string name="hint_security_setting">安全设置</string>
     <string name="hint_backup_now">立即备份</string>
+    <string name="label_current_assets">当前资产</string>
+    <string name="label_transaction_records">交易记录</string>
+    <string name="label_assets">资产</string>
 
 </resources>
