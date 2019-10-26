@@ -7,6 +7,8 @@ import com.violas.wallet.App
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.ui.backup.BackupMnemonicFrom
+import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_import_identity.*
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +48,7 @@ class CreateIdentityActivity : BaseActivity() {
 
             showProgress()
             launch(Dispatchers.IO) {
-                AccountManager().createIdentity(
+                val mnemonicWords = AccountManager().createIdentity(
                     this@CreateIdentityActivity,
                     walletName,
                     password
@@ -54,6 +56,11 @@ class CreateIdentityActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
                     dismissProgress()
                     MainActivity.start(this@CreateIdentityActivity)
+                    BackupPromptActivity.start(
+                        this@CreateIdentityActivity,
+                        mnemonicWords as ArrayList<String>,
+                        BackupMnemonicFrom.IDENTITY_WALLET
+                    )
                     App.finishAllActivity()
                 }
             }
