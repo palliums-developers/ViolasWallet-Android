@@ -131,25 +131,29 @@ class LibraAdmissionControl(private val mChannel: Channel) {
         call: (UpdateToLatestLedgerResultBean) -> Unit
     ) {
         mExecutor.execute {
-            val client = AdmissionControlGrpc.newBlockingStub(mChannel)
+            try {
+                val client = AdmissionControlGrpc.newBlockingStub(mChannel)
 
-            val sequenceNumberRequest =
-                GetWithProof.GetAccountStateRequest.newBuilder()
-                    .setAddress(ByteString.copyFrom(HexUtils.fromHex(address)))
+                val sequenceNumberRequest =
+                    GetWithProof.GetAccountStateRequest.newBuilder()
+                        .setAddress(ByteString.copyFrom(HexUtils.fromHex(address)))
+                        .build()
+
+                val requestItem = GetWithProof.RequestItem.newBuilder()
+                    .setGetAccountStateRequest(sequenceNumberRequest)
                     .build()
 
-            val requestItem = GetWithProof.RequestItem.newBuilder()
-                .setGetAccountStateRequest(sequenceNumberRequest)
-                .build()
+                val latestLedgerRequest = GetWithProof.UpdateToLatestLedgerRequest.newBuilder()
+                    .addRequestedItems(requestItem)
+                    .build()
 
-            val latestLedgerRequest = GetWithProof.UpdateToLatestLedgerRequest.newBuilder()
-                .addRequestedItems(requestItem)
-                .build()
-
-            val updateToLatestLedgerResponse = client.updateToLatestLedger(latestLedgerRequest)
-            val decode = DecodeResponse.decode(updateToLatestLedgerResponse)
-            Log.e("=getAccountStatus=", decode.toString())
-            call.invoke(decode)
+                val updateToLatestLedgerResponse = client.updateToLatestLedger(latestLedgerRequest)
+                val decode = DecodeResponse.decode(updateToLatestLedgerResponse)
+                Log.e("=getAccountStatus=", decode.toString())
+                call.invoke(decode)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

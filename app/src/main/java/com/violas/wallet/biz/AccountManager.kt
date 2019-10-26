@@ -25,6 +25,7 @@ class AccountManager {
     companion object {
         private const val CURRENT_ACCOUNT = "ab1"
         private const val IDENTITY_MNEMONIC_BACKUP = "IDENTITY_MNEMONIC_BACKUP"
+        private const val FAST_INTO_WALLET = "ab2"
     }
 
     private val mExecutor = Executors.newFixedThreadPool(2)
@@ -112,6 +113,14 @@ class AccountManager {
      */
     fun setIdentityMnemonicBackup() {
         mConfigSharedPreferences.edit().putBoolean(IDENTITY_MNEMONIC_BACKUP, true).apply()
+    }
+
+    fun isFastIntoWallet(): Boolean {
+        val fastInto = mConfigSharedPreferences.getBoolean(FAST_INTO_WALLET, true)
+        if (fastInto) {
+            mConfigSharedPreferences.edit().putBoolean(FAST_INTO_WALLET, false).apply()
+        }
+        return fastInto
     }
 
     /**
