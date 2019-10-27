@@ -59,6 +59,12 @@
         <activity
             android:name=".ui.account.AccountManagementActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.addressBook.add.AddAddressBookActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.addressBook.AddressBookActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".contentProvider.InitContentProvider"

@@ -8,6 +8,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
@@ -94,6 +95,9 @@ class TransferActivity : BaseActivity() {
 
         btnConfirm.setOnClickListener {
             send()
+        }
+        tvAddressBook.setOnClickListener {
+            AddressBookActivity.start(this@TransferActivity)
         }
     }
 

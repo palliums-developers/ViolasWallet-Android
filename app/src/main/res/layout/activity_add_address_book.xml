@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context=".ui.addressBook.add.AddAddressBookActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="24dp"
+            android:paddingEnd="11dp"
+            android:text="@string/hint_note"
+            android:textColor="#3C3848"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/editNote"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginEnd="23dp"
+            android:background="@drawable/selector_edit_bg_line"
+            android:hint="@string/label_address_book_note"
+            android:maxLength="20" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvHintAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="24dp"
+            android:paddingEnd="11dp"
+            android:text="@string/label_address"
+            android:textColor="#3C3848"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editAddress"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="23dp"
+            android:background="@drawable/selector_edit_bg_line"
+            android:hint="@string/hint_input_address"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvHintAddress"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/icon_scan_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="24dp"
+            android:paddingEnd="11dp"
+            android:text="@string/hint_select"
+            android:textColor="#3C3848"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/editCoinType"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginEnd="23dp"
+            android:gravity="center_vertical"
+            android:maxLength="20"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="BitCoin" />
+
+        <ImageView
+            android:id="@+id/ivCoinType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_down_arrow_white" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnAdd"
+        style="@style/BaseButtonPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginTop="60dp"
+        android:text="@string/action_add" />
+</LinearLayout>

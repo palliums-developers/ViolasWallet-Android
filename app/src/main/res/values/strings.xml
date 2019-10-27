@@ -56,5 +56,16 @@
     <string name="label_current_assets">当前资产</string>
     <string name="label_transaction_records">交易记录</string>
     <string name="label_assets">资产</string>
+    <string name="title_address_book">地址簿</string>
+    <string name="title_add_address_book">添加地址</string>
+    <string name="label_address_book_note">备注信息少于20个字</string>
+    <string name="hint_note">备注</string>
+    <string name="label_address">地址</string>
+    <string name="hint_input_address">输入地址</string>
+    <string name="action_add">添加</string>
+    <string name="hint_select">选择</string>
+    <string name="hint_input_note">请填写备注</string>
+    <string name="hint_input_address_error">输入的地址不正确</string>
+    <string name="hint_address_success">添加成功</string>
 
 </resources>
