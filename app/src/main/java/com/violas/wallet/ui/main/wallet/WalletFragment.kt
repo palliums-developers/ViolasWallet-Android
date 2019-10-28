@@ -20,6 +20,7 @@ import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.transfer.TransferActivity
+import com.violas.wallet.utils.ClipboardUtils
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
@@ -76,6 +77,13 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                         )
                     }
                 }
+            }
+        }
+
+        ivCopy.setOnClickListener {
+            launch(Dispatchers.IO) {
+                val currentAccount = mAccountManager.currentAccount()
+                activity?.let { it1 -> ClipboardUtils.copy(it1, currentAccount.address) }
             }
         }
 
