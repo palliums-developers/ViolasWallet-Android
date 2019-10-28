@@ -138,7 +138,7 @@ class AccountManager {
      * 生成助记词
      */
     fun generateWalletMnemonic(words: WordCount = WordCount.TWELVE): ArrayList<String> {
-        return Mnemonic.English().generate()
+        return Mnemonic.English().generate(words)
     }
 
     /**
@@ -154,7 +154,7 @@ class AccountManager {
     ): Long {
         return when (coinTypes) {
             CoinTypes.Libra -> {
-                AccountManager().importBtcWallet(
+                AccountManager().importLibraWallet(
                     context,
                     wordList,
                     walletName,
@@ -162,7 +162,7 @@ class AccountManager {
                 )
             }
             CoinTypes.VToken -> {
-                AccountManager().importBtcWallet(
+                AccountManager().importViolasWallet(
                     context,
                     wordList,
                     walletName,
@@ -184,7 +184,7 @@ class AccountManager {
     /**
      * 导入Violas钱包（非身份钱包）
      */
-    fun importViolasWallet(
+    private fun importViolasWallet(
         context: Context,
         wordList: List<String>,
         walletName: String,
@@ -209,7 +209,7 @@ class AccountManager {
     /**
      * 导入Libra钱包（非身份钱包）
      */
-    fun importLibraWallet(
+    private fun importLibraWallet(
         context: Context,
         wordList: List<String>,
         walletName: String,
@@ -235,7 +235,7 @@ class AccountManager {
      * 导入BTC钱包（非身份钱包）
      */
     @Throws(MnemonicException::class)
-    fun importBtcWallet(
+    private fun importBtcWallet(
         context: Context,
         wordList: List<String>,
         walletName: String,
