@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.activity_collection.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
 class CollectionActivity : BaseActivity() {
     companion object {
@@ -29,7 +30,8 @@ class CollectionActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle("收款")
+        title = getString(R.string.title_colletction)
+        setTitleStyle(TITLE_STYLE_GREY_BACKGROUND)
         launch(Dispatchers.IO) {
             val currentAccount = AccountManager().currentAccount()
             withContext(Dispatchers.Main) {
@@ -40,7 +42,7 @@ class CollectionActivity : BaseActivity() {
             }
 
             val collectionAddress =
-                "${CoinTypes.parseCoinType(currentAccount.coinNumber).coinName().toLowerCase()}:${currentAccount.address}"
+                "${CoinTypes.parseCoinType(currentAccount.coinNumber).coinName().toLowerCase(Locale.CHINA)}:${currentAccount.address}"
             val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
                 collectionAddress,
                 DensityUtility.dp2px(this@CollectionActivity, 240),

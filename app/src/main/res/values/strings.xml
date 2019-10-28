@@ -22,6 +22,11 @@
     <string name="confirm_mnemonic_content_01">请按顺序点击助记词，以确认您正确备份</string>
     <string name="confirm_mnemonic_tips_01">助记词顺序不正确，请校对</string>
 
+    <string name="account_label_identity">身份</string>
+    <string name="account_label_other">创建/导入</string>
+    <string name="account_management_title">钱包管理</string>
+    <string name="account_selection_title">选择钱包</string>
+
     <string name="btn_next_step">下一步</string>
     <string name="btn_complete">完成</string>
     <string name="quit_confirmation">再次点击退出</string>
@@ -30,10 +35,43 @@
     <string name="collection">收款</string>
     <string name="copy_success">复制成功</string>
     <string name="hint_insufficient_or_trading_fees_are_confirmed">余额不足或资产还未确认</string>
-
-    <string name="account_label_identity">身份</string>
-    <string name="account_label_other">创建/导入</string>
+    <string name="account_operation_identity_wallet">身份钱包</string>
+    <string name="account_operation_other_wallet">创建/导入</string>
+    <string name="title_colletction">收款</string>
+    <string name="title_import_the_wallet">导入身份</string>
+    <string name="title_create_the_wallet">创建身份</string>
+    <string name="create_identity">创建身份</string>
+    <string name="import_identity">导入身份</string>
+    <string name="account_label_identity_wallet">身份钱包</string>
+    <string name="account_label_other_wallet">创建/导入</string>
     <string name="account_management_title">钱包管理</string>
-    <string name="account_selection_title">选择钱包</string>
-
+    <string name="action_create">创建</string>
+    <string name="hint_input_nickname">输入昵称</string>
+    <string name="hint_wallet_password">输入钱包密码</string>
+    <string name="hint_input_confirm_password">再次确认密码</string>
+    <string name="hint_confirm_password_fault">确认密码不正确</string>
+    <string name="hint_nickname_empty">钱包昵称不能为空</string>
+    <string name="hint_input_password_short">输入的密码太短</string>
+    <string name="hint_input_mnemonic_word">输入助记词单词，并用空格分隔</string>
+    <string name="hint_mnemonic_error">助记词错误</string>
+    <string name="action_start_import">开始导入</string>
+    <string name="action_immediately_into">马上进入</string>
+    <string name="hint_security_setting">安全设置</string>
+    <string name="hint_backup_now">立即备份</string>
+    <string name="label_current_assets">当前资产</string>
+    <string name="label_transaction_records">交易记录</string>
+    <string name="label_assets">资产</string>
+    <string name="title_address_book">地址簿</string>
+    <string name="title_add_address_book">添加地址</string>
+    <string name="label_address_book_note">备注信息少于20个字</string>
+    <string name="hint_note">备注</string>
+    <string name="label_address">地址</string>
+    <string name="hint_input_address">输入地址</string>
+    <string name="action_add">添加</string>
+    <string name="hint_select">选择</string>
+    <string name="hint_input_note">请填写备注</string>
+    <string name="hint_input_address_error">输入的地址不正确</string>
+    <string name="hint_address_success">添加成功</string>
+    <string name="hint_create_any_wallet">创建%1$s钱包</string>
+    <string name="hint_import_any_wallet">导入%1$s钱包</string>
 </resources>

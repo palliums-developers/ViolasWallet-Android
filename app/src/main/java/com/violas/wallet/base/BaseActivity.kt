@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.DrawableRes
+import androidx.annotation.IntDef
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import com.violas.wallet.R
@@ -37,28 +38,148 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener,
         val layoutView = getLayoutView()
         if (layoutView == null) {
             val content = layoutInflater.inflate(getLayoutResId(), containerView, false)
-            content.setBackgroundColor(
-                ResourcesCompat.getColor(
-                    resources,
-                    R.color.def_activity_bg,
-                    null
-                )
-            )
             containerView.addView(content)
         } else {
-            layoutView.setBackgroundColor(
-                ResourcesCompat.getColor(
-                    resources,
-                    R.color.def_activity_bg,
-                    null
-                )
-            )
             containerView.addView(layoutView)
         }
         statusBar.layoutParams.height = getStatusBarHeight()
 
-        titleLeftMenuView?.let {
-            it.setOnClickListener(this)
+        titleLeftMenuView?.setOnClickListener(this)
+    }
+
+    @IntDef(
+        TITLE_STYLE_DEFAULT,
+        TITLE_STYLE_GREY_BACKGROUND,
+        TITLE_STYLE_MAIN_COLOR,
+        TITLE_STYLE_NOT_TITLE
+    )
+    annotation class TitleStyle
+
+    fun setTitleStyle(@TitleStyle style: Int) {
+        when (style) {
+            TITLE_STYLE_GREY_BACKGROUND -> {
+                rootView.setBackgroundColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.def_activity_vice_bg,
+                        null
+                    )
+                )
+                statusBar.setBackgroundColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.white,
+                        null
+                    )
+                )
+                titleBar.setBackgroundColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.white,
+                        null
+                    )
+                )
+                titleLeftMenuView.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.icon_back_black,
+                        null
+                    )
+                )
+                titleView.setTextColor(ResourcesCompat.getColor(resources, R.color.black, null))
+                titleRightMenuView.setTextColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.black,
+                        null
+                    )
+                )
+            }
+            TITLE_STYLE_MAIN_COLOR -> {
+                rootView.background = ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.shape_deputy_background,
+                    null
+                )
+                statusBar.setBackgroundColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.transparent,
+                        null
+                    )
+                )
+                titleBar.setBackgroundColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.transparent,
+                        null
+                    )
+                )
+                titleLeftMenuView.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.icon_back_white,
+                        null
+                    )
+                )
+                titleView.setTextColor(ResourcesCompat.getColor(resources, R.color.white, null))
+                titleRightMenuView.setTextColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.white,
+                        null
+                    )
+                )
+            }
+            TITLE_STYLE_NOT_TITLE -> {
+                rootView.setBackgroundColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.def_activity_bg,
+                        null
+                    )
+                )
+                statusBar.visibility = View.GONE
+                titleBar.visibility = View.GONE
+            }
+            else -> {
+                rootView.setBackgroundColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.def_activity_bg,
+                        null
+                    )
+                )
+                statusBar.setBackgroundColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.white,
+                        null
+                    )
+                )
+                titleBar.setBackgroundColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.white,
+                        null
+                    )
+                )
+                titleLeftMenuView.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.icon_back_black,
+                        null
+                    )
+                )
+                titleView.setTextColor(ResourcesCompat.getColor(resources, R.color.black, null))
+                titleRightMenuView.setTextColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.black,
+                        null
+                    )
+                )
+            }
         }
     }
 
@@ -127,6 +248,11 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener,
     }
 
     companion object {
+        const val TITLE_STYLE_DEFAULT = 0
+        const val TITLE_STYLE_GREY_BACKGROUND = 1
+        const val TITLE_STYLE_MAIN_COLOR = 2
+        const val TITLE_STYLE_NOT_TITLE = 3
+
         ///////////////////////////////////////////////////////////////////////////
         // 防止多次点击
         ///////////////////////////////////////////////////////////////////////////

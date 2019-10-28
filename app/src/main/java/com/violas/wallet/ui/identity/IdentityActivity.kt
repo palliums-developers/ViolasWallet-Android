@@ -22,7 +22,7 @@ class IdentityActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle("身份管理")
+        setTitleStyle(TITLE_STYLE_NOT_TITLE)
 
         btnCreate.setOnClickListener {
             CreateIdentityActivity.start(this)

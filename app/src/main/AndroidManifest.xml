@@ -24,6 +24,7 @@
         </activity>
         <activity
             android:name=".ui.main.MainActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.identity.createIdentity.CreateIdentityActivity"
@@ -60,6 +61,18 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.account.selection.AccountSelectionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.addressBook.add.AddAddressBookActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.addressBook.AddressBookActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.account.wallet.CreateWalletActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.account.wallet.ImportWalletActivity"
             android:screenOrientation="portrait" />
 
         <provider

@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.transfer
 
 import android.accounts.AccountsException
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +9,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +25,8 @@ class TransferActivity : BaseActivity() {
         private const val EXT_AMOUNT = "2"
         private const val EXT_IS_TOKEN = "3"
         private const val EXT_TOKEN_ID = "4"
+
+        private const val REQUEST_SELECTOR_ADDRESS = 1
 
         fun start(
             context: Context,
@@ -95,6 +99,16 @@ class TransferActivity : BaseActivity() {
         btnConfirm.setOnClickListener {
             send()
         }
+        tvAddressBook.setOnClickListener {
+            account?.coinNumber?.let { it1 ->
+                AddressBookActivity.start(
+                    this@TransferActivity,
+                    it1,
+                    true,
+                    REQUEST_SELECTOR_ADDRESS
+                )
+            }
+        }
     }
 
     private fun getCoinDecimal(coinNumber: Int): Long {
@@ -145,5 +159,15 @@ class TransferActivity : BaseActivity() {
 
     private fun initViewData() {
         editAddressInput.setText(intent.getStringExtra(EXT_ADDRESS))
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_SELECTOR_ADDRESS && resultCode == Activity.RESULT_OK) {
+            data?.apply {
+                val address = getStringExtra(AddressBookActivity.RESULT_SELECT_ADDRESS) ?: ""
+                editAddressInput.setText(address)
+            }
+        }
     }
 }
