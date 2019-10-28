@@ -65,6 +65,12 @@
         <activity
             android:name=".ui.addressBook.AddressBookActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.account.wallet.CreateWalletActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.account.wallet.ImportWalletActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".contentProvider.InitContentProvider"

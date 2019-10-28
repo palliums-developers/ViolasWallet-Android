@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         StatusBarCompat.translucentStatusBar(this, true)
         setContentView(R.layout.activity_main)
-        resetToDefaultIcon()
 
         bottom_navigation.setIconsMarginTop(DensityUtility.dp2px(this, 5f))
         bottom_navigation.enableAnimation(false)
@@ -60,6 +59,7 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+        bottom_navigation.selectedItemId = bottom_navigation.menu.findItem(R.id.tab_wallet).itemId
 
         viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         viewPagerAdapter.addFragment(WalletFragment())

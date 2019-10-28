@@ -13,6 +13,7 @@ import com.violas.wallet.getContext
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import org.palliums.libracore.mnemonic.Mnemonic
+import org.palliums.libracore.mnemonic.WordCount
 import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.wallet.KeyFactory
 import org.palliums.libracore.wallet.Seed
@@ -134,6 +135,53 @@ class AccountManager {
     }
 
     /**
+     * 生成助记词
+     */
+    fun generateWalletMnemonic(words: WordCount = WordCount.TWELVE): ArrayList<String> {
+        return Mnemonic.English().generate()
+    }
+
+    /**
+     * 导入钱包
+     */
+    @Throws(MnemonicException::class)
+    fun importWallet(
+        coinTypes: CoinTypes,
+        context: Context,
+        wordList: List<String>,
+        walletName: String,
+        password: ByteArray
+    ): Long {
+        return when (coinTypes) {
+            CoinTypes.Libra -> {
+                AccountManager().importBtcWallet(
+                    context,
+                    wordList,
+                    walletName,
+                    password
+                )
+            }
+            CoinTypes.VToken -> {
+                AccountManager().importBtcWallet(
+                    context,
+                    wordList,
+                    walletName,
+                    password
+                )
+            }
+            CoinTypes.Bitcoin,
+            CoinTypes.BitcoinTest -> {
+                AccountManager().importBtcWallet(
+                    context,
+                    wordList,
+                    walletName,
+                    password
+                )
+            }
+        }
+    }
+
+    /**
      * 导入Violas钱包（非身份钱包）
      */
     fun importViolasWallet(
@@ -141,11 +189,11 @@ class AccountManager {
         wordList: List<String>,
         walletName: String,
         password: ByteArray
-    ) {
+    ): Long {
         val deriveLibra = deriveLibra(wordList)
         val security = SimpleSecurity.instance(context)
 
-        val insertIds = mAccountStorage.insert(
+        return mAccountStorage.insert(
             AccountDO(
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
@@ -166,11 +214,11 @@ class AccountManager {
         wordList: List<String>,
         walletName: String,
         password: ByteArray
-    ) {
+    ): Long {
         val deriveLibra = deriveLibra(wordList)
         val security = SimpleSecurity.instance(context)
 
-        val insertIds = mAccountStorage.insert(
+        return mAccountStorage.insert(
             AccountDO(
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
@@ -192,14 +240,14 @@ class AccountManager {
         wordList: List<String>,
         walletName: String,
         password: ByteArray
-    ) {
+    ): Long {
         val seed = Mnemonic.English()
             .toByteArray(wordList) ?: throw MnemonicException()
 
         val deriveBitcoin = deriveBitcoin(seed)
         val security = SimpleSecurity.instance(context)
 
-        val insertIds = mAccountStorage.insert(
+        return mAccountStorage.insert(
             AccountDO(
                 privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
                 publicKey = deriveBitcoin.publicKey,
