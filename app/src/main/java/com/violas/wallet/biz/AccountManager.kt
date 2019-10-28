@@ -12,17 +12,22 @@ import com.violas.wallet.common.Vm
 import com.violas.wallet.getContext
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.utils.IOScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount
 import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.wallet.KeyFactory
 import org.palliums.libracore.wallet.Seed
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.concurrent.Executors
 
 class MnemonicException : RuntimeException()
 class AccountNotExistsException : RuntimeException()
 
-class AccountManager {
+class AccountManager : CoroutineScope by IOScope() {
     companion object {
         private const val CURRENT_ACCOUNT = "ab1"
         private const val IDENTITY_MNEMONIC_BACKUP = "IDENTITY_MNEMONIC_BACKUP"
@@ -252,7 +257,11 @@ class AccountManager {
                 privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
                 publicKey = deriveBitcoin.publicKey,
                 address = deriveBitcoin.address,
-                coinNumber = CoinTypes.Bitcoin.coinType(),
+                coinNumber = if (Vm.TestNet) {
+                    CoinTypes.BitcoinTest.coinType()
+                } else {
+                    CoinTypes.Bitcoin.coinType()
+                },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "${CoinTypes.Bitcoin.coinName()}-$walletName",
                 walletType = 1
@@ -292,16 +301,16 @@ class AccountManager {
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.Libra.coinType(),
+                coinNumber = CoinTypes.VToken.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
+                walletNickname = "${CoinTypes.VToken.coinName()}-$walletName",
                 walletType = 0
             ),
             AccountDO(
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.VToken.coinType(),
+                coinNumber = CoinTypes.Libra.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
                 walletType = 0
@@ -339,5 +348,57 @@ class AccountManager {
         }
         val derive = CoinPairDerive(extendedKey).derive(bip44Path)
         return derive as BitCoinECKeyPair
+    }
+
+    fun getCurrentBalance(callback: (Double, String) -> Unit) {
+        launch {
+            val currentAccount = currentAccount()
+            when (currentAccount.coinNumber) {
+                CoinTypes.VToken.coinType() -> {
+                    DataRepository.getViolasService()
+                        .getBalanceInMicroLibras(currentAccount.address) {
+                            callback.invoke(it.div(1000000.0), CoinTypes.VToken.coinUnit())
+                        }
+                }
+                CoinTypes.Libra.coinType() -> {
+                    DataRepository.getLibraService()
+                        .getBalanceInMicroLibras(currentAccount.address) {
+                            callback.invoke(it.div(1000000.0), CoinTypes.Libra.coinUnit())
+                        }
+                }
+                CoinTypes.Bitcoin.coinType(),
+                CoinTypes.BitcoinTest.coinType() -> {
+                    DataRepository.getBitcoinService().getBalance(currentAccount.address)
+                        .subscribe({
+                            try {
+                                if (it <= BigDecimal("0")) {
+                                    callback.invoke(
+                                        0.0,
+                                        CoinTypes.Bitcoin.coinUnit()
+                                    )
+                                    return@subscribe
+                                }
+                                callback.invoke(
+                                    it.divide(
+                                        BigDecimal("100000000"),
+                                        8,
+                                        RoundingMode.HALF_DOWN
+                                    ).toDouble(),
+                                    CoinTypes.Bitcoin.coinUnit()
+                                )
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }, {
+                            callback.invoke(
+                                0.0,
+                                CoinTypes.Bitcoin.coinUnit()
+                            )
+                        }, {
+
+                        })
+                }
+            }
+        }
     }
 }

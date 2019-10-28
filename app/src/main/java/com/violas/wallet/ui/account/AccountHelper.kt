@@ -3,6 +3,7 @@ package com.violas.wallet.ui.account
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.Vm
 import com.violas.wallet.getString
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -53,7 +54,11 @@ fun loadAccounts(@AccountDisplayType displayMode: Int): MutableMap<String, List<
         when (displayMode) {
             AccountDisplayType.BTC -> {
                 accountLabel = "BTC"
-                coinType = CoinTypes.Bitcoin.coinType()
+                coinType = if (Vm.TestNet) {
+                    CoinTypes.BitcoinTest.coinType()
+                } else {
+                    CoinTypes.Bitcoin.coinType()
+                }
             }
             AccountDisplayType.LIBRA -> {
                 accountLabel = "Libra"

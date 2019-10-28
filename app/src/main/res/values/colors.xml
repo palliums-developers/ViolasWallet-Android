@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#8539f7</color>
 
     <color name="transparent">#00000000</color>
     <color name="translucent">#80000000</color>
@@ -25,8 +25,10 @@
 
     <color name="def_activity_bg">#FFFFFF</color>
     <color name="def_activity_vice_bg">#F7F7F9</color>
-
+    <color name="def_text_color">#3C3848</color>
+    <color name="def_text_color_30">#233C3848</color>
     <color name="def_text_font_black">#3B3847</color>
+
     <color name="color_3C3848">#3C3848</color>
     <color name="color_3C3848_50">#803C3848</color>
 </resources>

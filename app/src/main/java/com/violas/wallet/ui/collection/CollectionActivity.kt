@@ -9,12 +9,13 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.utils.ClipboardUtils
-import com.violas.wallet.utils.DensityUtility
 import kotlinx.android.synthetic.main.activity_collection.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.jessyan.autosize.utils.AutoSizeUtils
 import java.util.*
+
 
 class CollectionActivity : BaseActivity() {
     companion object {
@@ -36,6 +37,7 @@ class CollectionActivity : BaseActivity() {
             val currentAccount = AccountManager().currentAccount()
             withContext(Dispatchers.Main) {
                 tvAddress.text = currentAccount.address
+                tvWalletName.text = currentAccount.walletNickname
                 btnCopy.setOnClickListener {
                     ClipboardUtils.copy(this@CollectionActivity, currentAccount.address)
                 }
@@ -45,7 +47,7 @@ class CollectionActivity : BaseActivity() {
                 "${CoinTypes.parseCoinType(currentAccount.coinNumber).coinName().toLowerCase(Locale.CHINA)}:${currentAccount.address}"
             val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
                 collectionAddress,
-                DensityUtility.dp2px(this@CollectionActivity, 240),
+                AutoSizeUtils.dp2px(this@CollectionActivity, 164.toFloat()),
                 null
             )
             withContext(Dispatchers.Main) {

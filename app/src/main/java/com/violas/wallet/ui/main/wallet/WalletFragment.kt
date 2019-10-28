@@ -17,14 +17,17 @@ import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.ui.account.selection.AccountSelectionActivity
 import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
+import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -60,6 +63,7 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        EventBus.getDefault().register(this)
         refreshAccountData()
 
         recyclerAssert.adapter = mAssertAdapter
@@ -86,6 +90,15 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                 withContext(Dispatchers.Main) {
                     activity?.let { it1 -> ClipboardUtils.copy(it1, currentAccount.address) }
                 }
+            }
+        }
+
+        layoutWalletType.setOnClickListener {
+            activity?.let { it1 ->
+                Intent(
+                    activity,
+                    AccountSelectionActivity::class.java
+                ).start(it1)
             }
         }
 
@@ -123,7 +136,12 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun refreshAccountData(event: SwitchAccountEvent? = null) {
+    fun onSwitchAccountEvent(event: SwitchAccountEvent) {
+        refreshAccountData()
+        refreshAssert()
+    }
+
+    private fun refreshAccountData() {
         launch(Dispatchers.IO) {
             val currentAccount = mAccountManager.currentAccount()
             withContext(Dispatchers.Main) {
@@ -174,6 +192,7 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
         cancel()
         super.onDestroy()
     }
