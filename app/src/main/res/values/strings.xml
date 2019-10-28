@@ -69,4 +69,6 @@
     <string name="hint_address_success">添加成功</string>
     <string name="hint_create_any_wallet">创建%1$s钱包</string>
     <string name="hint_import_any_wallet">导入%1$s钱包</string>
+    <string name="hint_collection_address">收款地址</string>
+    <string name="action_copy">复制</string>
 </resources>

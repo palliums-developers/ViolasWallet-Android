@@ -337,7 +337,7 @@ public class QRUtils {
      */
     @Nullable
     public static Bitmap createQRCodeBitmap(String content, int size, Bitmap targetBitmap){
-        return createQRCodeBitmap(content, size, "UTF-8", "H", "4",
+        return createQRCodeBitmap(content, size, "UTF-8", "H", "0",
                 Color.BLACK, Color.WHITE, targetBitmap, null, 0F,0,0);
     }
 
