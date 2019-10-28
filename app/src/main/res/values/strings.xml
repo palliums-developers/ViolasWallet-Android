@@ -17,7 +17,7 @@
     <string name="backup_mnemonic_warn_content_02">助记词可用于恢复身份下钱包资产，防止忘记密码、应用删除、手机丢失等情况导致资产损失</string>
     <string name="show_mnemonic_title">备份助记词</string>
     <string name="show_mnemonic_content_01">请将这些词按顺序写在纸上</string>
-    <string name="show_mnemonic_content_02">不要截屏或复制到剪切板，这将可能被第三方恶意软件收集，造成资产损失</string>
+    <string name="show_mnemonic_content_02">不要截屏或复制到剪切板\n这将可能被第三方恶意软件收集\n造成资产损失</string>
     <string name="backup_mnemonic_show_title">备份助记词展示</string>
     <string name="confirm_mnemonic_title">确认助记词</string>
     <string name="confirm_mnemonic_content_01">请按顺序点击助记词，以确认您正确备份</string>
