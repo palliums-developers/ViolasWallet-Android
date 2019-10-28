@@ -83,7 +83,9 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
         ivCopy.setOnClickListener {
             launch(Dispatchers.IO) {
                 val currentAccount = mAccountManager.currentAccount()
-                activity?.let { it1 -> ClipboardUtils.copy(it1, currentAccount.address) }
+                withContext(Dispatchers.Main) {
+                    activity?.let { it1 -> ClipboardUtils.copy(it1, currentAccount.address) }
+                }
             }
         }
 
