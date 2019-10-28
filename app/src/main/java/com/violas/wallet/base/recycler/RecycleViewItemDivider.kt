@@ -10,7 +10,9 @@ class RecycleViewItemDivider(
     val top: Int,
     val bottom: Int,
     val left: Int,
-    val right: Int
+    val right: Int,
+    val showFirstTop: Boolean = false,
+    val onlyShowLastBottom: Boolean = false
 ) : RecyclerView.ItemDecoration() {
 
     override fun getItemOffsets(
@@ -20,12 +22,13 @@ class RecycleViewItemDivider(
         state: RecyclerView.State
     ) {
         super.getItemOffsets(outRect, view, parent, state)
-        outRect.left = left;
-        outRect.right = right;
-        outRect.bottom = bottom;
-        if (parent.getChildAdapterPosition(view) == 0) {
-            outRect.top = top;
+        outRect.left = left
+        outRect.right = right
+        if (!onlyShowLastBottom || parent.getChildAdapterPosition(view) == (parent.adapter!!.itemCount - 1)) {
+            outRect.bottom = bottom
         }
-
+        if (parent.getChildAdapterPosition(view) != 0 || showFirstTop) {
+            outRect.top = top
+        }
     }
 }

@@ -22,4 +22,5 @@
     <color name="def_activity_vice_bg">#F7F7F9</color>
     <color name="def_text_color">#3C3848</color>
     <color name="def_text_color_30">#233C3848</color>
+    <color name="def_text_font_black">#3B3847</color>
 </resources>

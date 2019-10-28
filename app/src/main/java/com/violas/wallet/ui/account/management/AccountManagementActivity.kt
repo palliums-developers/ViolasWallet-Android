@@ -1,14 +1,22 @@
-package com.violas.wallet.ui.account
+package com.violas.wallet.ui.account.management
 
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.recycler.RecycleViewItemDivider
+import com.violas.wallet.ui.account.AccountDisplayType
+import com.violas.wallet.ui.account.AccountVo
+import com.violas.wallet.ui.account.fakeAccounts
+import com.violas.wallet.ui.account.loadAccounts
+import com.violas.wallet.utils.DensityUtility
 import com.violas.wallet.widget.GroupListLayout
-import kotlinx.android.synthetic.main.activity_account_management.*
+import kotlinx.android.synthetic.main.activity_account_management.accOptGroupListLayout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,14 +28,6 @@ import kotlinx.coroutines.withContext
  * desc: 钱包账户管理页面
  */
 class AccountManagementActivity : BaseActivity() {
-
-    companion object {
-        private const val INTENT_KEY_OPERATION_MODE = "INTENT_KEY_OPERATION_MODE"
-        private const val INTENT_KEY_DISPLAY_MODE = "INTENT_KEY_DISPLAY_MODE"
-    }
-
-    var operationMode: Int = AccountOperationMode.SELECTION
-    var displayMode: Int = AccountDisplayType.ALL
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_account_management
@@ -52,11 +52,22 @@ class AccountManagementActivity : BaseActivity() {
                 return ContentItem(context)
             }
         }
+        accOptGroupListLayout.addItemDecoration(
+            RecycleViewItemDivider(
+                this,
+                DensityUtility.dp2px(this, 4),
+                DensityUtility.dp2px(this, 60),
+                0,
+                0,
+                showFirstTop = true,
+                onlyShowLastBottom = true
+            )
+        )
     }
 
     private fun initData() {
         launch(Dispatchers.IO) {
-            //val data = fakeAccounts()
+            //val data = fakeAccounts(AccountDisplayType.ALL)
             val data = loadAccounts(AccountDisplayType.ALL)
             withContext(Dispatchers.Main) {
                 accOptGroupListLayout.setData(data)
@@ -67,13 +78,25 @@ class AccountManagementActivity : BaseActivity() {
     class ContentItem(context: Context) : GroupListLayout.ItemLayout<AccountVo>,
         View.OnClickListener {
 
-        private val rootView: View = View.inflate(context, R.layout.item_account_operation, null)
+        private val rootView: View = View.inflate(context, R.layout.item_account_management, null)
         private val tvName: TextView
         private val tvAddress: TextView
 
-        var accountVo: AccountVo? = null
+        private var accountVo: AccountVo? = null
 
         init {
+            rootView.layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(
+                    DensityUtility.dp2px(context, 15),
+                    0,
+                    DensityUtility.dp2px(context, 15),
+                    0
+                )
+            }
+
             tvName = rootView.findViewById(R.id.tvAccountName)
             tvAddress = rootView.findViewById(R.id.tvAccountAddress)
             rootView.setOnClickListener(this)
@@ -88,11 +111,11 @@ class AccountManagementActivity : BaseActivity() {
                 rootView.setBackgroundResource(
                     when (it.accountDO.coinNumber) {
                         CoinTypes.Libra.coinType() ->
-                            R.drawable.selector_account_management_libra
+                            R.drawable.selector_account_management_item_libra
                         CoinTypes.Bitcoin.coinType() ->
-                            R.drawable.selector_account_management_btc
+                            R.drawable.selector_account_management_item_btc
                         else ->
-                            R.drawable.selector_account_management_violas
+                            R.drawable.selector_account_management_item_violas
                     }
                 )
             }

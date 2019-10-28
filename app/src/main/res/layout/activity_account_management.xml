@@ -4,14 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.account.AccountManagementActivity">
+    tools:context=".ui.account.management.AccountManagementActivity">
 
     <com.violas.wallet.widget.GroupListLayout
         android:id="@+id/accOptGroupListLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-        android:paddingStart="@dimen/page_spacing_left"
-        android:paddingEnd="@dimen/page_spacing_right" />
+        android:background="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

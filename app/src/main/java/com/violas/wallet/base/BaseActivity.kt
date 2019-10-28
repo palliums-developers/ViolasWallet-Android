@@ -45,6 +45,13 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener,
         statusBar.layoutParams.height = getStatusBarHeight()
 
         titleLeftMenuView?.setOnClickListener(this)
+
+        setTitleStyle(getTitleStyle())
+    }
+
+    @TitleStyle
+    open fun getTitleStyle(): Int {
+        return TITLE_STYLE_DEFAULT
     }
 
     @IntDef(
@@ -86,11 +93,17 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener,
                         null
                     )
                 )
-                titleView.setTextColor(ResourcesCompat.getColor(resources, R.color.black, null))
+                titleView.setTextColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.def_text_font_black,
+                        null
+                    )
+                )
                 titleRightMenuView.setTextColor(
                     ResourcesCompat.getColor(
                         resources,
-                        R.color.black,
+                        R.color.def_text_font_black,
                         null
                     )
                 )
@@ -122,7 +135,13 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener,
                         null
                     )
                 )
-                titleView.setTextColor(ResourcesCompat.getColor(resources, R.color.white, null))
+                titleView.setTextColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.white,
+                        null
+                    )
+                )
                 titleRightMenuView.setTextColor(
                     ResourcesCompat.getColor(
                         resources,
@@ -171,11 +190,17 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener,
                         null
                     )
                 )
-                titleView.setTextColor(ResourcesCompat.getColor(resources, R.color.black, null))
+                titleView.setTextColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.def_text_font_black,
+                        null
+                    )
+                )
                 titleRightMenuView.setTextColor(
                     ResourcesCompat.getColor(
                         resources,
-                        R.color.black,
+                        R.color.def_text_font_black,
                         null
                     )
                 )
