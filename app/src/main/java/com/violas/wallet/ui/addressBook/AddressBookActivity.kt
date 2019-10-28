@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.addressBook
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,11 +23,26 @@ import kotlinx.coroutines.withContext
 class AddressBookActivity : BaseActivity() {
     companion object {
         private const val EXT_COIN_TYPE = "a1"
+        private const val EXT_IS_SELECTOR = "a2"
+        public const val RESULT_SELECT_ADDRESS = "a3"
         private const val REQUEST_ADD_COIN = 1
-        fun start(context: Context, coinType: Int = -1) {
-            Intent(context, AddressBookActivity::class.java).apply {
-                putExtra(EXT_COIN_TYPE, coinType)
-            }.start(context)
+        fun start(
+            context: Activity,
+            coinType: Int = -1,
+            isSelector: Boolean = false,
+            requestCode: Int = -1
+        ) {
+            if (isSelector) {
+                Intent(context, AddressBookActivity::class.java).apply {
+                    putExtra(EXT_COIN_TYPE, coinType)
+                    putExtra(EXT_IS_SELECTOR, true)
+                }.start(context, requestCode)
+            } else {
+                Intent(context, AddressBookActivity::class.java).apply {
+                    putExtra(EXT_COIN_TYPE, coinType)
+                }.start(context)
+            }
+
         }
     }
 
@@ -36,11 +50,25 @@ class AddressBookActivity : BaseActivity() {
         AddressBookManager()
     }
 
+    private var mCoinType = -1
+    private var mSelector = false
     private val mAddressBookList = mutableListOf<AddressBookDo>()
     private val mAdapter by lazy {
-        MyAdapter(mAddressBookList)
+        MyAdapter(mAddressBookList) {
+            if (mSelector) {
+                setResult(
+                    Activity.RESULT_OK,
+                    Intent().apply {
+                        putExtra(RESULT_SELECT_ADDRESS, it.address)
+                    }
+                )
+                finish()
+            } else {
+                // todo 编辑
+            }
+        }
     }
-    private var mCoinType = -1
+
     override fun getLayoutResId() = R.layout.activity_address_book
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +76,7 @@ class AddressBookActivity : BaseActivity() {
         title = getString(R.string.title_address_book)
         setTitleRightImage(R.drawable.icon_add_address)
         mCoinType = intent.getIntExtra(EXT_COIN_TYPE, -1)
-
+        mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)
         recyclerView.adapter = mAdapter
         loadAddressList(mCoinType)
     }
@@ -80,7 +108,10 @@ class AddressBookActivity : BaseActivity() {
     }
 }
 
-class MyAdapter(private val data: List<AddressBookDo>) :
+class MyAdapter(
+    private val mData: List<AddressBookDo>,
+    private val mCallback: (AddressBookDo) -> Unit
+) :
     RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -89,13 +120,17 @@ class MyAdapter(private val data: List<AddressBookDo>) :
                 parent,
                 false
             )
-        )
+        ).apply {
+            itemView.setOnClickListener {
+                mCallback.invoke(mData[this.adapterPosition])
+            }
+        }
     }
 
-    override fun getItemCount() = data.size
+    override fun getItemCount() = mData.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = data[position]
+        val item = mData[position]
         holder.itemView.tvTitle.text = item.note
         holder.itemView.tvAddress.text = item.address
         holder.itemView.tvCoinType.text = CoinTypes.parseCoinType(item.coin_number).coinName()
