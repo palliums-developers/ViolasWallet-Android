@@ -12,6 +12,7 @@
         android:layout_marginStart="15dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="15dp"
+        android:elevation="3dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -26,6 +27,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="BTC"
+                android:textColor="@color/def_text_color"
+                android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,23 +36,32 @@
                 android:id="@+id/tvCoinAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="余额：1.2400 BTC"
+                android:textColor="@color/def_text_color"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/hint_transfer_amount" />
 
             <EditText
                 android:id="@+id/editAmountInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="输入余额"
+                android:layout_height="48dp"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/selector_edit_bg_box"
+                android:hint="@string/hint_input_amount"
                 android:inputType="numberDecimal"
+                android:padding="7dp"
+                android:textColorHint="@color/def_text_color_30"
                 app:layout_constraintTop_toBottomOf="@+id/tvHintCoinName" />
 
             <TextView
                 android:id="@+id/tvCollectionAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="收款地址"
+                android:layout_marginTop="25dp"
+                android:text="@string/hint_collection_address"
+                android:textColor="@color/def_text_color"
+                android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editAmountInput" />
 
@@ -57,15 +69,19 @@
                 android:id="@+id/tvAddressBook"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="地址簿"
+                android:padding="4dp"
+                android:text="@string/hint_address_book"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCollectionAddress"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editAmountInput" />
+                app:layout_constraintTop_toTopOf="@+id/tvCollectionAddress" />
 
             <ImageView
                 android:id="@+id/ivScan"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="#000000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
+                android:padding="4dp"
+                android:src="@drawable/icon_scan_purple"
                 app:layout_constraintBottom_toBottomOf="@+id/editAddressInput"
                 app:layout_constraintEnd_toEndOf="@+id/editAddressInput"
                 app:layout_constraintTop_toTopOf="@+id/editAddressInput" />
@@ -74,15 +90,38 @@
                 android:id="@+id/editAddressInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="输入收款地址"
-                android:inputType="numberDecimal"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/selector_edit_bg_box"
+                android:hint="@string/hint_input_collection_address"
+                android:maxLength="64"
+                android:minHeight="48dp"
+                android:padding="7dp"
+                android:paddingStart="7dp"
+                android:paddingTop="7dp"
+                android:paddingEnd="38dp"
+                android:paddingBottom="7dp"
+                android:textColorHint="@color/def_text_color_30"
                 app:layout_constraintTop_toBottomOf="@+id/tvCollectionAddress" />
+
+            <TextView
+                android:id="@+id/tvHintFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:text="@string/hint_fee"
+                android:textColor="@color/def_text_color"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editAddressInput" />
+
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="18dp"
-                android:text="慢"
+                android:text="@string/hint_slow"
+                android:textColor="@color/def_text_color"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toTopOf="@+id/sbQuota"
                 app:layout_constraintStart_toStartOf="@+id/sbQuota" />
 
@@ -90,7 +129,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="18dp"
-                android:text="快"
+                android:text="@string/hint_fast"
+                android:textColor="@color/def_text_color"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toTopOf="@+id/sbQuota"
                 app:layout_constraintEnd_toEndOf="@+id/sbQuota" />
 
@@ -104,30 +145,32 @@
                 android:focusableInTouchMode="false"
                 android:max="100"
                 android:maxHeight="5dp"
-                android:progress="30"
+                android:progress="35"
                 android:progressDrawable="@drawable/progress_bar_transfer"
                 android:splitTrack="false"
                 android:thumb="@drawable/icon_transfer_thumb"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editAddressInput" />
+                app:layout_constraintTop_toBottomOf="@+id/tvHintFee" />
 
             <TextView
                 android:id="@+id/tvFee"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="18dp"
-                android:text="0.1234 BTC"
+                android:textColor="@color/def_text_color"
+                android:textSize="10sp"
                 app:layout_constraintStart_toStartOf="@+id/sbQuota"
                 app:layout_constraintTop_toBottomOf="@+id/sbQuota" />
 
             <Button
                 android:id="@+id/btnConfirm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/BaseButtonPrimary"
+                android:layout_width="238dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="74dp"
                 android:layout_marginBottom="50dp"
-                android:text="转账"
+                android:text="@string/action_tvHintFee"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

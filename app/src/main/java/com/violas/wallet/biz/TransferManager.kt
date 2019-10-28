@@ -26,6 +26,7 @@ class TransferManager {
         amount: Double,
         password: String,
         account: AccountDO,
+        progress: Int,
         token: Boolean = false,
         tokenId: Long = 0,
         success: (String) -> Unit,
@@ -43,12 +44,21 @@ class TransferManager {
             return
         }
 
-
         when (account.coinNumber) {
-            CoinTypes.Libra.coinType(),
+            CoinTypes.Libra.coinType() -> {
+                transferLibra(
+                    context,
+                    address,
+                    amount,
+                    decryptPrivateKey,
+                    account,
+                    success,
+                    error
+                )
+            }
             CoinTypes.VToken.coinType() -> {
                 if (token) {
-                    transferLibra(
+                    transferViolas(
                         context,
                         address,
                         amount,
@@ -58,7 +68,7 @@ class TransferManager {
                         error
                     )
                 } else {
-                    transferLibraToken(
+                    transferViolasToken(
                         address,
                         amount,
                         decryptPrivateKey,
@@ -71,7 +81,7 @@ class TransferManager {
             }
             CoinTypes.Bitcoin.coinType(),
             CoinTypes.BitcoinTest.coinType() -> {
-                transferBtc(address, amount, decryptPrivateKey, account, success, error)
+                transferBtc(address, amount, decryptPrivateKey, account, progress, success, error)
             }
         }
     }
@@ -82,11 +92,12 @@ class TransferManager {
         amount: Double,
         decryptPrivateKey: ByteArray,
         account: AccountDO,
+        progress: Int,
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
         val transactionManager = TransactionManager(arrayListOf(account.address))
-        transactionManager.checkBalance(amount, 1, 30)
+        transactionManager.checkBalance(amount, 1, progress)
             .flatMap {
                 transactionManager.obtainTransaction(
                     decryptPrivateKey,
@@ -108,7 +119,7 @@ class TransferManager {
             })
     }
 
-    private fun transferLibraToken(
+    private fun transferViolasToken(
         address: String,
         amount: Double,
         decryptPrivateKey: ByteArray,
@@ -130,6 +141,31 @@ class TransferManager {
         error: (Throwable) -> Unit
     ) {
         DataRepository.getLibraService().sendCoin(
+            context,
+            org.palliums.libracore.wallet.Account(
+                KeyPair(decryptPrivateKey)
+            ),
+            address,
+            (amount * 1000000L).toLong()
+        ) {
+            if (it) {
+                success.invoke("")
+            } else {
+                error.invoke(Exception())
+            }
+        }
+    }
+
+    private fun transferViolas(
+        context: Context,
+        address: String,
+        amount: Double,
+        decryptPrivateKey: ByteArray,
+        account: AccountDO,
+        success: (String) -> Unit,
+        error: (Throwable) -> Unit
+    ) {
+        DataRepository.getViolasService().sendCoin(
             context,
             org.palliums.libracore.wallet.Account(
                 KeyPair(decryptPrivateKey)

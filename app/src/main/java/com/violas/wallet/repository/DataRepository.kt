@@ -17,6 +17,12 @@ object DataRepository {
             .build()
     }
 
+    private val mViolasChannel by lazy {
+        ManagedChannelBuilder.forAddress("ac.testnet.libra.org", 8000)
+            .usePlaintext()
+            .build()
+    }
+
     fun getAccountStorage() = appDatabase.accountDao()
 
     fun getTokenStorage() = appDatabase.tokenDao()
@@ -26,4 +32,6 @@ object DataRepository {
     fun getBitcoinService() = BlockChainRequest.get()
 
     fun getLibraService() = LibraAdmissionControl(mChannel)
+
+    fun getViolasService() = LibraAdmissionControl(mViolasChannel)
 }

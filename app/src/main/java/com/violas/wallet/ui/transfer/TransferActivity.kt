@@ -5,9 +5,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.widget.addTextChangedListener
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.utils.start
@@ -47,6 +49,9 @@ class TransferActivity : BaseActivity() {
         }
     }
 
+    //BTC
+    private lateinit var mTransactionManager: TransactionManager
+
     private var isToken = false
     private var tokenId = 0L
     private var accountId = 0L
@@ -64,31 +69,45 @@ class TransferActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = "转账"
+        title = getString(R.string.title_transfer)
         accountId = intent.getLongExtra(EXT_ACCOUNT_ID, 0)
         tokenId = intent.getLongExtra(EXT_TOKEN_ID, 0)
         isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
+        refreshCurrentAmount()
         launch(Dispatchers.IO) {
             try {
                 account = mAccountManager.currentAccount()
+                account?.apply {
+                    if (coinNumber == CoinTypes.Bitcoin.coinType() || coinNumber == CoinTypes.BitcoinTest.coinType()) {
+                        mTransactionManager = TransactionManager(arrayListOf(address))
+                        mTransactionManager.setFeeCallback {
+                            launch {
+                                tvFee.text = "$it BTC"
+                            }
+                        }
+                    }
+                }
+
                 val amount = BigDecimal(
-                    intent.getLongExtra(
-                        EXT_AMOUNT,
-                        0
-                    ).toString()
+                    intent
+                        .getLongExtra(
+                            EXT_AMOUNT,
+                            0
+                        )
+                        .toString()
                 )
                     .divide(
                         BigDecimal("${getCoinDecimal(account!!.coinNumber)}"),
                         8,
                         RoundingMode.HALF_DOWN
                     )
-                    .stripTrailingZeros()
-                    .toPlainString()
 
                 val parseCoinType = CoinTypes.parseCoinType(account!!.coinNumber)
                 withContext(Dispatchers.Main) {
-                    editAmountInput.setText(amount)
-                    title = "${parseCoinType.coinName()}转账"
+                    if (amount > BigDecimal("0")) {
+                        editAmountInput.setText(amount.stripTrailingZeros().toPlainString())
+                    }
+                    title = "${parseCoinType.coinName()}${getString(R.string.transfer)}"
                 }
             } catch (e: AccountsException) {
                 finish()
@@ -106,6 +125,32 @@ class TransferActivity : BaseActivity() {
                     it1,
                     true,
                     REQUEST_SELECTOR_ADDRESS
+                )
+            }
+        }
+        editAmountInput.addTextChangedListener {
+            account?.apply {
+                if (coinNumber == CoinTypes.Bitcoin.coinType() || coinNumber == CoinTypes.BitcoinTest.coinType()) {
+                    try {
+                        mTransactionManager.checkBalance(
+                            it.toString().toDouble(),
+                            2,
+                            sbQuota.progress
+                        )
+                    } catch (e: Exception) {
+                    }
+                }
+            }
+        }
+    }
+
+    private fun refreshCurrentAmount() {
+        mAccountManager.getCurrentBalance() { balance, unit ->
+            launch {
+                tvCoinAmount.text = String.format(
+                    getString(R.string.hint_transfer_amount),
+                    balance,
+                    unit
                 )
             }
         }
@@ -131,13 +176,14 @@ class TransferActivity : BaseActivity() {
         val amount = editAmountInput.text.toString().trim().toDouble()
         val address = editAddressInput.text.toString().trim()
         if (amount <= 0) {
-            showToast("请填写转账金额")
+            showToast(getString(R.string.hint_please_input_amount))
             return
         }
         if (address.isEmpty()) {
-            showToast("请填写转账地址")
+            showToast(getString(R.string.hint_please_input_address))
             return
         }
+        // TODO 密码
         val password = "123123"
         account?.let {
             mTransferManager.transfer(
@@ -146,6 +192,7 @@ class TransferActivity : BaseActivity() {
                 amount,
                 password,
                 account!!,
+                sbQuota.progress,
                 isToken,
                 tokenId,
                 {
