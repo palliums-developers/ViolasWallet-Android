@@ -19,13 +19,17 @@ import kotlinx.android.synthetic.main.activity_confirm_mnemonic.*
  */
 class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
 
-    lateinit var words: ArrayList<MnemonicWordModel>
-    lateinit var adapter: TagAdapter<MnemonicWordModel>
-    lateinit var wordsSel: ArrayList<MnemonicWordModel>
-    lateinit var adapterSel: TagAdapter<MnemonicWordModel>
+    private lateinit var words: ArrayList<MnemonicWordModel>
+    private lateinit var adapter: TagAdapter<MnemonicWordModel>
+    private lateinit var wordsSel: ArrayList<MnemonicWordModel>
+    private lateinit var adapterSel: TagAdapter<MnemonicWordModel>
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_confirm_mnemonic
+    }
+
+    override fun getTitleStyle(): Int {
+        return TITLE_STYLE_GREY_BACKGROUND
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +43,7 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
 
     private fun init() {
         tv_confirm_mnemonic_complete.isEnabled = false
+        tv_confirm_mnemonic_complete.setBackgroundResource(R.drawable.shape_rectangle_gray)
 
         words = arrayListOf()
         wordsSel = arrayListOf()
@@ -74,6 +79,7 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
 
                 if (words.size == wordsSel.size) {
                     tv_confirm_mnemonic_complete.isEnabled = true
+                    tv_confirm_mnemonic_complete.setBackgroundResource(R.drawable.selector_btn_bg_primary)
                 }
             }
 
@@ -96,12 +102,15 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
         fl_confirm_mnemonic_words_sel.adapter = adapterSel
         fl_confirm_mnemonic_words_sel.setOnTagClickListener { view, position, parent ->
 
+            if (words.size == wordsSel.size) {
+                tv_confirm_mnemonic_complete.isEnabled = false
+                tv_confirm_mnemonic_complete.setBackgroundResource(R.drawable.shape_rectangle_gray)
+            }
+
             wordsSel.remove(wordsSel[position])
             adapterSel.notifyDataChanged()
 
             adapter.notifyDataChanged()
-
-            tv_confirm_mnemonic_complete.isEnabled = false
 
             false
         }
@@ -113,9 +122,11 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
                 // 验证助记词顺序
                 if (checkMnemonic()) {
                     // TODO 验证结果通知或回调
-                    val accountManager = AccountManager()
-                    if (!accountManager.isIdentityMnemonicBackup()) {
-                        accountManager.setIdentityMnemonicBackup()
+                    if (mnemonicFrom != BackupMnemonicFrom.OTHER_WALLET) {
+                        val accountManager = AccountManager()
+                        if (!accountManager.isIdentityMnemonicBackup()) {
+                            accountManager.setIdentityMnemonicBackup()
+                        }
                     }
 
                     setResult(Activity.RESULT_OK)

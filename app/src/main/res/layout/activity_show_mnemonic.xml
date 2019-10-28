@@ -30,13 +30,13 @@
         <com.zhy.view.flowlayout.TagFlowLayout
             android:id="@+id/fl_show_mnemonic_words"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_258"
             android:layout_marginTop="@dimen/dp_33"
             android:background="@drawable/shape_rectangle_white"
-            android:paddingStart="@dimen/dp_6"
-            android:paddingTop="@dimen/dp_16"
-            android:paddingEnd="@dimen/dp_22"
-            android:paddingBottom="@dimen/dp_30"
+            android:paddingStart="@dimen/dp_14"
+            android:paddingTop="@dimen/dp_24"
+            android:paddingEnd="@dimen/dp_14"
+            android:paddingBottom="@dimen/dp_22"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_show_mnemonic_desc_1" />
