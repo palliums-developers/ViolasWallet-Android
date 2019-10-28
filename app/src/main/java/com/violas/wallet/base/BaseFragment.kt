@@ -64,4 +64,8 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener,
     fun showToast(msg: String) {
         (activity as BaseActivity).showToast(msg)
     }
+
+    fun finishActivity(){
+        _mActivity.finish()
+    }
 }

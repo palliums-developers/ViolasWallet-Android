@@ -56,7 +56,10 @@
             android:name=".ui.collection.CollectionActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.account.AccountManagementActivity"
+            android:name=".ui.account.management.AccountManagementActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.account.selection.AccountSelectionActivity"
             android:screenOrientation="portrait" />
 
         <provider

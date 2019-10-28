@@ -1,7 +1,6 @@
 package com.violas.wallet.widget
 
 import android.content.Context
-import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
@@ -31,17 +30,17 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
 
     private val groupData: GroupData = GroupData()
     private val dataAdapter: DataAdapter = DataAdapter()
-    private val recyclerView: RecyclerView = RecyclerView(context)
     private val layoutManager: LinearLayoutManager = LinearLayoutManager(context)
+    private val recyclerView: RecyclerView = RecyclerView(context)
 
     private var firstAddData: Boolean = true
     private var lastItemGroup: ItemData? = null
-    private var floatTitleItem: ItemLayout<ItemData>? = null
+    private var floatTitleItem: ItemLayout<out ItemData>? = null
 
     /**
-     * 设置是否显示分组,默认显示,该方法需要在设置数据之前调用
+     * 设置是否显示分组,默认不显示,该方法需要在设置数据之前调用
      */
-    var showGroup: Boolean = true
+    var showFloatGroup: Boolean = false
     /**
      * 配置工厂,添加数据之前必须调用该方法,来确定需要什么样的TitleView与ContentItemView
      */
@@ -53,7 +52,6 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
     init {
-
         recyclerView.layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = dataAdapter
@@ -65,7 +63,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (!showGroup) {
+                if (!showFloatGroup) {
                     return
                 }
 
@@ -97,7 +95,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
      * 添加悬浮标题
      */
     private fun initFloatingItem() {
-        if (itemFactory == null) {
+        if (itemFactory == null || !showFloatGroup) {
             return
         }
 
@@ -107,7 +105,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
             addView(floatTitleItem!!.getItemView())
         }
 
-        if (!showGroup || groupData.isEmpty()) {
+        if (groupData.isEmpty()) {
             floatTitleItem!!.getItemView().visibility = View.GONE
             return
         }
@@ -125,7 +123,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
      * 滑动的时候,标题跟着滑动
      */
     private fun updateTitleLocationY(itemData: ItemData?, top: Int) {
-        if (floatTitleItem != null && showGroup && measuredWidth > 0) {
+        if (showFloatGroup && floatTitleItem != null && measuredWidth > 0) {
             floatTitleItem?.let {
                 it.refreshView(itemData)
                 it.getItemView().translationY = top.toFloat()
@@ -149,6 +147,10 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
             lastItemGroup = itemData
             groupSelectedListener?.let { it.onSelected(itemData) }
         }
+    }
+
+    fun addItemDecoration(decor: RecyclerView.ItemDecoration) {
+        recyclerView.addItemDecoration(decor)
     }
 
     /**
@@ -184,7 +186,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
             refreshAdapter()
             initFloatingItem()
 
-            if (firstAddData && showGroup && groupData.getCount() > 0) {
+            if (firstAddData && showFloatGroup && groupData.getCount() > 0) {
                 firstAddData = false
                 groupChanged(groupData.getItemData(0))
             }
@@ -241,7 +243,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     }
 
     inner class GroupItemLayout(context: Context, viewType: Int) : LinearLayout(context) {
-        private var itemTitle: ItemLayout<ItemData>
+        private var itemTitle: ItemLayout<out ItemData>
         private var itemContent: ItemLayout<out ItemData>
 
         private var itemData: ItemData? = null
@@ -349,33 +351,21 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         /**
          * 创建标题，调用[createTitleItemLayout]创建标题item,如果为null,会返回一个默认的标题
          */
-        fun createTitle(context: Context, isFloat: Boolean): ItemLayout<ItemData> {
+        fun createTitle(context: Context, isFloat: Boolean): ItemLayout<out ItemData> {
             return createTitleItemLayout(context, isFloat) ?: object : ItemLayout<ItemData> {
 
-                var titleView: TextView? = null
+                var tvTitle = createDefaultTitle(context, isFloat)
 
                 override fun getItemView(): View {
-                    if (titleView == null) {
-                        titleView = createDefaultTitle(context)
-                        if (isFloat) {
-                            titleView!!.setTextColor(
-                                ResourcesCompat.getColor(
-                                    context.resources,
-                                    R.color.black,
-                                    null
-                                )
-                            )
-                        }
-                    }
-                    return titleView!!
+                    return tvTitle
                 }
 
                 override fun refreshView(itemData: ItemData?) {
                     if (itemData == null || itemData.getGroupName().isNullOrEmpty()) {
-                        titleView!!.visibility = View.GONE
+                        tvTitle.visibility = View.GONE
                     } else {
-                        titleView!!.visibility = View.VISIBLE
-                        titleView!!.text = itemData.getGroupName()
+                        tvTitle.visibility = View.VISIBLE
+                        tvTitle.text = itemData.getGroupName()
                     }
                 }
             }
@@ -384,17 +374,19 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         /**
          * 创建一个默认的标题
          */
-        private fun createDefaultTitle(context: Context): TextView {
+        private fun createDefaultTitle(context: Context, isFloat: Boolean): TextView {
             return TextView(context).apply {
-                val paddingLeft = DensityUtility.dp2px(context, 3)
-                val paddingTop = DensityUtility.dp2px(context, 30)
-                val paddingBottom = DensityUtility.dp2px(context, 8)
-                setPadding(paddingLeft, paddingTop, 0, paddingBottom)
                 layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+                setPadding(
+                    DensityUtility.dp2px(context, 24),
+                    DensityUtility.dp2px(context, if (isFloat) 35 else 31),
+                    DensityUtility.dp2px(context, 15),
+                    DensityUtility.dp2px(context, 10)
+                )
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
                 setTextColor(ResourcesCompat.getColor(context.resources, R.color.black, null))
                 //setTypeface(Typeface.DEFAULT, Typeface.BOLD)
-                //setBackgroundColor(ResourcesCompat.getColor(context.resources, R.color.white, null))
+                setBackgroundColor(ResourcesCompat.getColor(context.resources, R.color.white, null))
             }
         }
 
@@ -403,7 +395,10 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
          * @param context
          * @param isFloat 是否是悬浮标题(可以根据是否是悬浮标题定制不同的样式,但是需要注意高度要保持一致)
          */
-        open fun createTitleItemLayout(context: Context, isFloat: Boolean): ItemLayout<ItemData>? {
+        open fun createTitleItemLayout(
+            context: Context,
+            isFloat: Boolean
+        ): ItemLayout<out ItemData>? {
             return null
         }
 

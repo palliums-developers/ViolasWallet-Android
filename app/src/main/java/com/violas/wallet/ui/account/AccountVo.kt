@@ -9,7 +9,8 @@ import com.violas.wallet.widget.GroupListLayout
  * <p>
  * desc: 钱包账户的View Object
  */
-class AccountVo(val accountDO: AccountDO) : GroupListLayout.ItemData {
+class AccountVo(val accountDO: AccountDO, var selected: Boolean = false) :
+    GroupListLayout.ItemData {
 
     private var groupName: String? = null
 

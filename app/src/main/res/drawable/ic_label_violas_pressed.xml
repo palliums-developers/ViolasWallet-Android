@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    android:src="@mipmap/ic_account_management_violas"
+    android:src="@mipmap/ic_label_violas"
     android:tint="@android:color/darker_gray"
     android:tintMode="multiply">
 
