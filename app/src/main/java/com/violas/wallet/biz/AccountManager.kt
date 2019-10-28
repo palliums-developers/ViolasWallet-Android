@@ -257,7 +257,11 @@ class AccountManager : CoroutineScope by IOScope() {
                 privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
                 publicKey = deriveBitcoin.publicKey,
                 address = deriveBitcoin.address,
-                coinNumber = CoinTypes.Bitcoin.coinType(),
+                coinNumber = if (Vm.TestNet) {
+                    CoinTypes.BitcoinTest.coinType()
+                } else {
+                    CoinTypes.Bitcoin.coinType()
+                },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "${CoinTypes.Bitcoin.coinName()}-$walletName",
                 walletType = 1
@@ -297,16 +301,16 @@ class AccountManager : CoroutineScope by IOScope() {
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.Libra.coinType(),
+                coinNumber = CoinTypes.VToken.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
+                walletNickname = "${CoinTypes.VToken.coinName()}-$walletName",
                 walletType = 0
             ),
             AccountDO(
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.VToken.coinType(),
+                coinNumber = CoinTypes.Libra.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
                 walletType = 0

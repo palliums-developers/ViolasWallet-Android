@@ -16,7 +16,10 @@ import com.violas.wallet.base.BaseFragment
 import com.violas.wallet.base.recycler.RecycleViewItemDivider
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.SwitchAccountEvent
-import com.violas.wallet.ui.account.*
+import com.violas.wallet.ui.account.AccountDisplayType
+import com.violas.wallet.ui.account.AccountOperationMode
+import com.violas.wallet.ui.account.AccountVo
+import com.violas.wallet.ui.account.loadAccounts
 import com.violas.wallet.utils.DensityUtility
 import com.violas.wallet.widget.GroupListLayout
 import kotlinx.android.synthetic.main.fragment_account_selection.*
@@ -206,7 +209,8 @@ class AccountSelectionFragment : BaseFragment() {
                     when (it.accountDO.coinNumber) {
                         CoinTypes.Libra.coinType() ->
                             R.drawable.selector_account_selection_item_libra
-                        CoinTypes.Bitcoin.coinType() ->
+                        CoinTypes.Bitcoin.coinType(),
+                        CoinTypes.BitcoinTest.coinType() ->
                             R.drawable.selector_account_selection_item_btc
                         else ->
                             R.drawable.selector_account_selection_item_violas
