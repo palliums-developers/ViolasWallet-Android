@@ -20,4 +20,6 @@
     <color name="black_06">#10000000</color>
     <color name="def_activity_bg">#FFFFFF</color>
     <color name="def_activity_vice_bg">#F7F7F9</color>
+
+    <color name="def_text_font_black">#3B3847</color>
 </resources>

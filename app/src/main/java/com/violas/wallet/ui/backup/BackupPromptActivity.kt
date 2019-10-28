@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.violas.wallet.R
+import com.violas.wallet.ui.main.MainActivity
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_backup_prompt.*
 
@@ -58,7 +59,7 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
     }
 
     override fun onTitleRightViewClick() {
-        // TODO 跳转到主页面
+        MainActivity.start(this)
         finish()
     }
 

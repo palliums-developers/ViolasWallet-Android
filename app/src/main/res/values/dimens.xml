@@ -38,6 +38,7 @@
     <dimen name="dp_20">20dp</dimen>
     <dimen name="dp_21">21dp</dimen>
     <dimen name="dp_22">22dp</dimen>
+    <dimen name="dp_23">23dp</dimen>
     <dimen name="dp_24">24dp</dimen>
     <dimen name="dp_25">25dp</dimen>
     <dimen name="dp_26">26dp</dimen>
@@ -45,6 +46,7 @@
     <dimen name="dp_28">28dp</dimen>
     <dimen name="dp_29">29dp</dimen>
     <dimen name="dp_30">30dp</dimen>
+    <dimen name="dp_32">32dp</dimen>
     <dimen name="dp_34">34dp</dimen>
     <dimen name="dp_35">35dp</dimen>
     <dimen name="dp_36">36dp</dimen>
@@ -53,10 +55,12 @@
     <dimen name="dp_40">40dp</dimen>
     <dimen name="dp_42">42dp</dimen>
     <dimen name="dp_44">44dp</dimen>
+    <dimen name="dp_46">46dp</dimen>
     <dimen name="dp_47">47dp</dimen>
     <dimen name="dp_48">48dp</dimen>
     <dimen name="dp_49">49dp</dimen>
     <dimen name="dp_50">50dp</dimen>
+    <dimen name="dp_51">51dp</dimen>
     <dimen name="dp_52">52dp</dimen>
     <dimen name="dp_54">54dp</dimen>
     <dimen name="dp_55">55dp</dimen>
@@ -74,6 +78,7 @@
     <dimen name="dp_90">90dp</dimen>
     <dimen name="dp_100">100dp</dimen>
     <dimen name="dp_110">110dp</dimen>
+    <dimen name="dp_111">111dp</dimen>
     <dimen name="dp_123">123dp</dimen>
     <dimen name="dp_142">142dp</dimen>
     <dimen name="dp_143">143dp</dimen>
@@ -82,6 +87,7 @@
     <dimen name="dp_178">178dp</dimen>
     <dimen name="dp_180">180dp</dimen>
     <dimen name="dp_205">205dp</dimen>
+    <dimen name="dp_238">238dp</dimen>
     <dimen name="dp_298">298dp</dimen>
     <dimen name="dp_468">468dp</dimen>
     <!-- ==================尺寸表规范 end ================== -->

@@ -5,11 +5,12 @@
     <string name="backup_mnemonic_prompt_title">备份提示</string>
     <string name="backup_mnemonic_prompt_menu">稍后备份</string>
     <string name="backup_mnemonic_prompt_btn">开始备份</string>
-    <string name="backup_mnemonic_prompt_content_01">获取助记词等于拥有钱包资产所有权</string>
+    <string name="backup_mnemonic_prompt_content_01">获取助记词</string>
     <string name="backup_mnemonic_prompt_content_02">备份助记词</string>
     <string name="backup_mnemonic_prompt_content_03">使用纸和笔正确抄写助记词\n如果你的手机丢失、被盗、损坏，Keystore将可以回复你的资产</string>
     <string name="backup_mnemonic_prompt_content_04">离线保管</string>
     <string name="backup_mnemonic_prompt_content_05">请妥善保管至隔离网络的安全地方\n请勿将助记词在联网环境下分享和存储，比如邮件、相册、社交应用等</string>
+    <string name="backup_mnemonic_prompt_content_06">等于拥有钱包资产所有权</string>
     <string name="backup_mnemonic_warn_title">安全提醒</string>
     <string name="backup_mnemonic_warn_btn">立即备份</string>
     <string name="backup_mnemonic_warn_content_01">您的身份助记词未备份，请务必备份助记词</string>

@@ -9,13 +9,18 @@ import com.violas.wallet.ui.main.MainActivity
 import kotlinx.coroutines.*
 
 class LaunchActivity : BaseActivity(), CoroutineScope by MainScope() {
+
     override fun getLayoutResId(): Int {
         return R.layout.activity_launch
     }
 
+    override fun getTitleStyle(): Int {
+        return TITLE_STYLE_NOT_TITLE
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitleStyle(TITLE_STYLE_NOT_TITLE)
+
         launch(Dispatchers.IO) {
             delay(1000)
             if (AccountManager().existsWalletAccount()) {
