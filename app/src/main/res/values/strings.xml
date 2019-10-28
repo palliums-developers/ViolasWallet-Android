@@ -44,7 +44,6 @@
     <string name="import_identity">导入身份</string>
     <string name="account_label_identity_wallet">身份钱包</string>
     <string name="account_label_other_wallet">创建/导入</string>
-    <string name="account_management_title">钱包管理</string>
     <string name="action_create">创建</string>
     <string name="hint_input_nickname">输入昵称</string>
     <string name="hint_wallet_password">输入钱包密码</string>
