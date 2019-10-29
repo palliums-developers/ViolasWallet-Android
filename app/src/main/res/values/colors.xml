@@ -31,4 +31,7 @@
 
     <color name="color_3C3848">#3C3848</color>
     <color name="color_3C3848_50">#803C3848</color>
+
+    <color name="account_group_title">#292929</color>
+
 </resources>
