@@ -87,4 +87,5 @@
     <string name="title_transfer">转账</string>
     <string name="hint_please_input_amount">请填写转账金额</string>
     <string name="hint_please_input_address">请填写转账地址</string>
+    <string name="title_address_assert">添加币种</string>
 </resources>
