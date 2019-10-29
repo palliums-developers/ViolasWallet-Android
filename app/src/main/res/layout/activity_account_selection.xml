@@ -23,7 +23,6 @@
         android:id="@+id/vp_wallet_account_container"
         android:layout_width="@dimen/dp_0"
         android:layout_height="match_parent"
-        android:background="@color/def_activity_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/rv_wallet_account_navigation"
         app:layout_constraintRight_toRightOf="parent"

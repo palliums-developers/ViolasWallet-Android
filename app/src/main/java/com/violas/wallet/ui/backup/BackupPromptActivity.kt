@@ -10,6 +10,7 @@ import com.violas.wallet.R
 import com.violas.wallet.ui.main.MainActivity
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_backup_prompt.*
+import kotlinx.android.synthetic.main.activity_base_title.*
 
 /**
  * Created by elephant on 2019-10-21 13:58.
@@ -53,7 +54,9 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
 
         setTitle(R.string.backup_mnemonic_prompt_title)
         if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY) {
+            // 如果是创建身份后进入该页面，则不支持后退
             setTitleRightText(R.string.backup_mnemonic_prompt_menu)
+            titleLeftMenuView.visibility = View.GONE
         }
         tv_backup_prompt_next_step.setOnClickListener(this)
     }
@@ -61,6 +64,15 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
     override fun onTitleRightViewClick() {
         MainActivity.start(this)
         finish()
+    }
+
+    override fun onBackPressedSupport() {
+        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY) {
+            // 如果是创建身份后进入该页面，则不支持后退
+            return
+        }
+
+        super.onBackPressedSupport()
     }
 
     override fun onViewClick(view: View) {

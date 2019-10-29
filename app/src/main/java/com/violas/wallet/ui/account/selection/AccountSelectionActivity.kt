@@ -33,6 +33,10 @@ class AccountSelectionActivity : BaseActivity() {
         return R.layout.activity_account_selection
     }
 
+    override fun getTitleStyle(): Int {
+        return TITLE_STYLE_GREY_BACKGROUND
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

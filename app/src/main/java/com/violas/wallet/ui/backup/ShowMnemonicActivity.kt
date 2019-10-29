@@ -25,6 +25,10 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
         return R.layout.activity_show_mnemonic
     }
 
+    override fun getTitleStyle(): Int {
+        return TITLE_STYLE_GREY_BACKGROUND
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

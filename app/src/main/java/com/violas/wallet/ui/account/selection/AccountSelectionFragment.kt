@@ -145,14 +145,7 @@ class AccountSelectionFragment : BaseFragment() {
                 DensityUtility.dp2px(context, 8)
             )
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
-            setTextColor(ResourcesCompat.getColor(context.resources, R.color.black, null))
-            setBackgroundColor(
-                ResourcesCompat.getColor(
-                    context.resources,
-                    R.color.def_activity_bg,
-                    null
-                )
-            )
+            setTextColor(ResourcesCompat.getColor(context.resources, R.color.account_group_title, null))
         }
 
         override fun refreshView(itemData: GroupListLayout.ItemData?) {

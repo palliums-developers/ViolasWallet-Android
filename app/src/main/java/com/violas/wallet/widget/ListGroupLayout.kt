@@ -384,9 +384,9 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                     DensityUtility.dp2px(context, 10)
                 )
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
-                setTextColor(ResourcesCompat.getColor(context.resources, R.color.black, null))
+                setTextColor(ResourcesCompat.getColor(context.resources, R.color.account_group_title, null))
                 //setTypeface(Typeface.DEFAULT, Typeface.BOLD)
-                setBackgroundColor(ResourcesCompat.getColor(context.resources, R.color.white, null))
+                //setBackgroundColor(ResourcesCompat.getColor(context.resources, R.color.white, null))
             }
         }
 
