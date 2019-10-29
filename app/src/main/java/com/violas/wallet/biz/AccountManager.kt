@@ -100,10 +100,14 @@ class AccountManager : CoroutineScope by IOScope() {
         return true
     }
 
+    private fun getDefWallet(): Long {
+        return mAccountStorage.loadByWalletType(0)?.id ?: 1L
+    }
+
     /**
      * 切换当前钱包账户
      */
-    fun switchCurrentAccount(currentAccountID: Long) {
+    fun switchCurrentAccount(currentAccountID: Long = getDefWallet()) {
         mConfigSharedPreferences.edit().putLong(CURRENT_ACCOUNT, currentAccountID).apply()
     }
 
@@ -400,5 +404,9 @@ class AccountManager : CoroutineScope by IOScope() {
                 }
             }
         }
+    }
+
+    fun removeWallet(accountId: AccountDO) {
+        mAccountStorage.delete(accountId)
     }
 }

@@ -88,4 +88,8 @@
     <string name="hint_please_input_amount">请填写转账金额</string>
     <string name="hint_please_input_address">请填写转账地址</string>
     <string name="title_address_assert">添加币种</string>
+    <string name="title_manager">管理</string>
+    <string name="hint_output_back">导出助记词</string>
+    <string name="action_delete_wallet">删除钱包</string>
+    <string name="hint_change_wallet_name">更换钱包名</string>
 </resources>

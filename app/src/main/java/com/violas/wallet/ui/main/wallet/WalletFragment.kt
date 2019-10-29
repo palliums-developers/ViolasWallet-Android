@@ -18,6 +18,7 @@ import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.selection.AccountSelectionActivity
+import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.transfer.TransferActivity
@@ -90,6 +91,13 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                 withContext(Dispatchers.Main) {
                     activity?.let { it1 -> ClipboardUtils.copy(it1, currentAccount.address) }
                 }
+            }
+        }
+
+        ivWalletInfo.setOnClickListener {
+            launch(Dispatchers.IO) {
+                val currentAccount = mAccountManager.currentAccount()
+                WalletManagerActivity.start(this@WalletFragment, currentAccount.id)
             }
         }
 
