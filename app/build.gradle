@@ -105,6 +105,7 @@ dependencies {
 
     implementation project(":core")
     implementation project(":lib-scan")
+    implementation project(":lib-switch")
     implementation project(":libra-core")
     implementation project(":lib-btc-crypto")
 
@@ -146,4 +147,7 @@ dependencies {
 
     debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
     releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
+
+    // round ImageView see https://github.com/SheHuan/NiceImageView
+    implementation 'com.github.SheHuan:NiceImageView:1.0.5'
 }

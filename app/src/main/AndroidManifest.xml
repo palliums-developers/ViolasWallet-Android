@@ -74,6 +74,9 @@
         <activity
             android:name=".ui.account.wallet.ImportWalletActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.account.walletmanager.WalletManagerActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".contentProvider.InitContentProvider"

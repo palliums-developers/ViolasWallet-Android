@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="SwitchButton">
+        <item name="BackDrawable">@drawable/shape_view_bg_custom_back</item>
+        <item name="ThumbDrawable">@drawable/view_bg_custom_button</item>
+        <item name="ThumbMarginBottom">-7dp</item>
+        <item name="ThumbMarginLeft">-6dp</item>
+        <item name="ThumbMarginRight">-6dp</item>
+        <item name="ThumbMarginTop">-3dp</item>
+    </style>
+</resources>

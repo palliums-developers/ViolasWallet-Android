@@ -57,15 +57,15 @@ class ManagerAssertActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle("添加币种")
+        title = getString(R.string.title_address_assert)
 
         recyclerView.addItemDecoration(
             RecycleViewItemDivider(
                 this,
-                DensityUtility.dp2px(this, 12),
-                DensityUtility.dp2px(this, 12),
-                DensityUtility.dp2px(this, 24),
-                DensityUtility.dp2px(this, 24)
+                DensityUtility.dp2px(this, 5),
+                DensityUtility.dp2px(this, 5),
+                DensityUtility.dp2px(this, 16),
+                DensityUtility.dp2px(this, 16)
             )
         )
         recyclerView.adapter = mAdapter
@@ -76,11 +76,15 @@ class ManagerAssertActivity : BaseActivity() {
         }
     }
 
+    override fun onTitleLeftViewClick() {
+        onBackPressed()
+    }
+
     override fun onBackPressedSupport() {
         setResult(Activity.RESULT_OK)
-        super.onBackPressed()
+        super.onBackPressedSupport()
     }
- }
+}
 
 class MyAdapter(
     val data: List<AssertToken>,
@@ -99,13 +103,11 @@ class MyAdapter(
                 val itemData = data[it.layoutPosition]
                 if (itemData.isToken) {
                     it.itemView.checkBox.isChecked = !it.itemView.checkBox.isChecked
-                    callbacks.invoke(it.itemView.checkBox.isChecked, itemData)
                 }
             }
-            it.itemView.checkBox.setOnClickListener { view ->
-                it.itemView.checkBox.isChecked = !it.itemView.checkBox.isChecked
+            it.itemView.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
                 val itemData = data[it.layoutPosition]
-                callbacks.invoke(it.itemView.checkBox.isChecked, itemData)
+                callbacks.invoke(isChecked, itemData)
             }
         }
     }
@@ -122,6 +124,7 @@ class MyAdapter(
         } else {
             holder.itemView.checkBox.visibility = View.GONE
         }
+        holder.itemView.ivCoinLogo.setImageResource(itemData.logo)
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)
