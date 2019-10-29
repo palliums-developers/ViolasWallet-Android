@@ -23,15 +23,38 @@
     <color name="blue_50">#800000FF</color>
     <color name="green">#00FF00</color>
 
+    <color name="color_3C3848">#3C3848</color>
+    <color name="color_3C3848_80">#CD3C3848</color>
+    <color name="color_3C3848_50">#803C3848</color>
+    <color name="color_3C3848_30">#4D3C3848</color>
+    <color name="color_3C3848_10">#1A3C3848</color>
+    <color name="color_6161D2">#6161D2</color>
+    <color name="color_7A7AEE">#7A7AEE</color>
+    <color name="color_F74E4E">#F74E4E</color>
+
     <color name="def_activity_bg">#FFFFFF</color>
     <color name="def_activity_vice_bg">#F7F7F9</color>
     <color name="def_text_color">#3C3848</color>
     <color name="def_text_color_30">#233C3848</color>
-    <color name="def_text_font_black">#3B3847</color>
+    <color name="def_text_font_black">#3C3848</color>
 
-    <color name="color_3C3848">#3C3848</color>
-    <color name="color_3C3848_50">#803C3848</color>
+    <!--文本-标题颜色-->
+    <color name="def_text_title">@color/color_3C3848</color>
+    <!--文本-正文颜色-->
+    <color name="def_text_body">@color/color_3C3848</color>
+    <!--文本-标签性文字颜色-->
+    <color name="def_text_label">@color/color_3C3848_80</color>
+    <!--文本-描述性文字颜色-->
+    <color name="def_text_desc">@color/color_3C3848_50</color>
+    <!--文本-提示性文字颜色-->
+    <color name="def_text_hint">@color/color_3C3848_30</color>
+    <!--文本-关键性文字颜色-->
+    <color name="def_text_key">@color/color_6161D2</color>
+    <!--文本-按钮性文字颜色-->
+    <color name="def_text_btn">@color/color_7A7AEE</color>
+    <!--文本-提醒性文字颜色-->
+    <color name="def_text_warn">@color/color_F74E4E</color>
 
     <color name="account_group_title">#292929</color>
-
+    <color name="dividing_line">@color/color_3C3848_10</color>
 </resources>

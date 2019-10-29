@@ -42,4 +42,23 @@
     <style name="BaseButtonPrimary" parent="BaseButton">
         <item name="android:background">@drawable/selector_btn_bg_primary</item>
     </style>
+
+    <style name="MenuItemView">
+        <item name="android:layout_width">@dimen/dp_0</item>
+        <item name="android:layout_height">@dimen/dp_60</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="mivStartTitleTextSize">@dimen/sp_16</item>
+        <item name="mivStartTitleTextColor">@color/def_text_title</item>
+        <item name="mivStartDescTextSize">@dimen/sp_12</item>
+        <item name="mivStartDescTextColor">@color/def_text_desc</item>
+        <item name="mivEndDescTextSize">@dimen/sp_16</item>
+        <item name="mivEndDescTextColor">@color/def_text_key</item>
+        <item name="android:background">@drawable/bg_menu_item</item>
+    </style>
+
+    <style name="MenuItemView.About">
+        <item name="mivShowEndArrow">false</item>
+    </style>
+
 </resources>

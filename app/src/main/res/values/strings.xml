@@ -87,4 +87,9 @@
     <string name="title_transfer">转账</string>
     <string name="hint_please_input_amount">请填写转账金额</string>
     <string name="hint_please_input_address">请填写转账地址</string>
+
+    <string name="me_wallet_management">钱包管理</string>
+    <string name="me_transfer_record">转账记录</string>
+    <string name="me_address_book">钱包管理</string>
+    <string name="me_settings">钱包管理</string>
 </resources>

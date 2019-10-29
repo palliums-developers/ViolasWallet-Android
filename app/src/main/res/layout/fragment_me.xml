@@ -1,6 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/def_activity_vice_bg">
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/ivHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/ic_me_header_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.violas.wallet.widget.MenuItemView
+        android:id="@+id/mivWalletManagement"
+        style="@style/MenuItemView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivHeader"
+        app:mivStartIcon="@mipmap/ic_me_wallet_management"
+        app:mivStartTitleText="@string/me_wallet_management" />
+
+    <com.violas.wallet.widget.MenuItemView
+        android:id="@+id/mivTransferRecord"
+        style="@style/MenuItemView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mivWalletManagement"
+        app:mivShowBottomLine="false"
+        app:mivStartIcon="@mipmap/ic_me_transfer_record"
+        app:mivStartTitleText="@string/me_transfer_record" />
+
+    <com.violas.wallet.widget.MenuItemView
+        android:id="@+id/mivAddressBook"
+        style="@style/MenuItemView"
+        android:layout_marginTop="@dimen/dp_10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mivTransferRecord"
+        app:mivShowBottomLine="false"
+        app:mivStartIcon="@mipmap/ic_me_address_book"
+        app:mivStartTitleText="@string/me_transfer_record" />
+
+    <com.violas.wallet.widget.MenuItemView
+        android:id="@+id/mivSettings"
+        style="@style/MenuItemView"
+        android:layout_marginTop="@dimen/dp_10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mivAddressBook"
+        app:mivShowBottomLine="false"
+        app:mivStartIcon="@mipmap/ic_me_settings"
+        app:mivStartTitleText="@string/me_settings" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
