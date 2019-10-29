@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.TextView
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.ui.main.MainActivity
 import com.zhy.view.flowlayout.FlowLayout
 import com.zhy.view.flowlayout.TagAdapter
 import kotlinx.android.synthetic.main.activity_confirm_mnemonic.*
@@ -121,14 +122,22 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
             tv_confirm_mnemonic_complete -> {
                 // 验证助记词顺序
                 if (checkMnemonic()) {
-                    // TODO 验证结果通知或回调
                     if (mnemonicFrom != BackupMnemonicFrom.OTHER_WALLET) {
+                        // 如果是备份身份钱包的助记词，需要存储备份结果到本地
                         val accountManager = AccountManager()
                         if (!accountManager.isIdentityMnemonicBackup()) {
                             accountManager.setIdentityMnemonicBackup()
                         }
+
+                        // 如果是来自创建身份，完成后需要跳转到App首页
+                        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY) {
+                            MainActivity.start(this)
+                            finish()
+                            return
+                        }
                     }
 
+                    // 如果是来自备份身份钱包和创建钱包，完成后需要返回成功结果
                     setResult(Activity.RESULT_OK)
                     finish()
                 }
