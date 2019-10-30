@@ -30,6 +30,7 @@
 
     <string name="btn_next_step">下一步</string>
     <string name="btn_complete">完成</string>
+    <string name="action_back">返回</string>
     <string name="quit_confirmation">再次点击退出</string>
     <string name="action_confirm">确定</string>
     <string name="transfer">转账</string>
@@ -104,4 +105,9 @@
     <string name="me_transfer_record">转账记录</string>
     <string name="me_address_book">地址薄</string>
     <string name="me_settings">设置</string>
+    <string name="hint_get_the_camera_permissions">获取相机权限</string>
+    <string name="hint_set_permissions_to_open">需要获取相机权限才能扫描二维码，前往开启。</string>
+    <string name="hint_scan_need_camera_permissions">扫码需要获取相机权限</string>
+    <string name="action_scan_address">扫描钱包地址</string>
+    <string name="title_scan">扫一扫</string>
 </resources>

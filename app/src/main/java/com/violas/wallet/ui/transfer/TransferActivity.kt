@@ -9,6 +9,7 @@ import androidx.core.widget.addTextChangedListener
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.dialog.PasswordInputDialog
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.addressBook.AddressBookActivity
@@ -183,25 +184,31 @@ class TransferActivity : BaseActivity() {
             showToast(getString(R.string.hint_please_input_address))
             return
         }
-        // TODO 密码
-        val password = "123123"
-        account?.let {
-            mTransferManager.transfer(
-                this,
-                address,
-                amount,
-                password,
-                account!!,
-                sbQuota.progress,
-                isToken,
-                tokenId,
-                {
-                    print(it)
-                },
-                {
-                    it.printStackTrace()
-                })
-        }
+        PasswordInputDialog()
+            .setConfirmListener { bytes, dialogFragment ->
+                dialogFragment.dismiss()
+                account?.let {
+                    showProgress()
+                    mTransferManager.transfer(
+                        this,
+                        address,
+                        amount,
+                        bytes,
+                        account!!,
+                        sbQuota.progress,
+                        isToken,
+                        tokenId,
+                        {
+                            dismissProgress()
+                            print(it)
+                            finish()
+                        },
+                        {
+                            dismissProgress()
+                            it.printStackTrace()
+                        })
+                }
+            }.show(supportFragmentManager)
     }
 
     private fun initViewData() {

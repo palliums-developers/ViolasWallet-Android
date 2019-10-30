@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.main.wallet
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,6 +20,7 @@ import com.violas.wallet.ui.account.selection.AccountSelectionActivity
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
+import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.start
@@ -36,6 +36,7 @@ import org.greenrobot.eventbus.ThreadMode
 class WalletFragment : Fragment(), CoroutineScope by MainScope() {
     companion object {
         private const val REQUEST_ADD_ASSERT = 0
+        private const val REQUEST_SCAN_QR_CODE = 1
     }
 
     private val mAccountManager by lazy {
@@ -93,7 +94,11 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                 }
             }
         }
-
+        ivScan.setOnClickListener {
+            this@WalletFragment.activity?.let { it1 ->
+                ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
+            }
+        }
         ivWalletInfo.setOnClickListener {
             launch(Dispatchers.IO) {
                 val currentAccount = mAccountManager.currentAccount()
@@ -194,8 +199,18 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_ADD_ASSERT && resultCode == Activity.RESULT_OK) {
-            refreshAssert()
+        when (requestCode) {
+            REQUEST_ADD_ASSERT -> {
+                refreshAssert()
+            }
+            REQUEST_SCAN_QR_CODE -> {
+                launch(Dispatchers.IO) {
+                    data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { address ->
+                        val currentAccount = mAccountManager.currentAccount()
+                        activity?.let { TransferActivity.start(it, currentAccount.id, address) }
+                    }
+                }
+            }
         }
     }
 

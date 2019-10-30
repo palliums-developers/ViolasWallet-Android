@@ -53,6 +53,7 @@
                 </LinearLayout>
 
                 <ImageView
+                    android:id="@+id/ivScan"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/crop__bar_height"
                     android:layout_marginEnd="18dp"
