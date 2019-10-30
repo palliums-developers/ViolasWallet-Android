@@ -78,8 +78,6 @@ public class MenuItemView extends FrameLayout {
         mTopLine = findViewById(R.id.widget_menu_item_top_line);
         mBottomLine = findViewById(R.id.widget_menu_item_bottom_line);
 
-        // 自定义高度
-        int customHeight = -1;
         // 开始处图标
         Drawable startIcon = null;
         // 结束处图标
@@ -88,23 +86,23 @@ public class MenuItemView extends FrameLayout {
         // 起始处标题
         String startTitleText = null;
         // 起始处标题的字体大小
-        int startTitleTextSize = DensityUtility.sp2px(getContext(), 16);
+        int startTitleTextSize = DensityUtility.sp2px(context, 16);
         // 起始处标题的文本颜色
-        int startTitleTextColor = ContextProviderKt.getColor(R.color.def_text_title);
+        int startTitleTextColor = ContextProviderKt.getColor(R.color.def_text_title, context);
 
         // 起始处描述
         String startDescText = null;
         // 起始处描述的字体大小
         int startDescTextSize = DensityUtility.sp2px(getContext(), 12);
         // 起始处描述的文本颜色
-        int startDescTextColor = ContextProviderKt.getColor(R.color.def_text_desc);
+        int startDescTextColor = ContextProviderKt.getColor(R.color.def_text_desc, context);
 
         // 结束处描述
         String endDescText = null;
         // 结束处描述的字体大小
         int endDescTextSize = DensityUtility.sp2px(getContext(), 16);
         // 结束处描述的文本颜色
-        int endDescTextColor = ContextProviderKt.getColor(R.color.def_text_key);
+        int endDescTextColor = ContextProviderKt.getColor(R.color.def_text_key, context);
         // 结束处描述的文本对齐方式
         int endDescGravity = 2; // 1:left; 2:right
         // 结束处描述的图标间距
@@ -124,7 +122,6 @@ public class MenuItemView extends FrameLayout {
         if (attrs != null) {
             TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.MenuItemView, defStyleAttr, defStyleRes);
 
-            //customHeight = array.getDimensionPixelSize(R.styleable.MenuItemView_mivCustomHeight, customHeight);
             startIcon = array.getDrawable(R.styleable.MenuItemView_mivStartIcon);
             endIcon = array.getDrawable(R.styleable.MenuItemView_mivEndIcon);
 
@@ -149,18 +146,6 @@ public class MenuItemView extends FrameLayout {
             showBottomLine = array.getBoolean(R.styleable.MenuItemView_mivShowBottomLine, true);
 
             array.recycle();
-        }
-
-        if (customHeight != -1) {
-
-            ViewGroup.LayoutParams layoutParams = root.getLayoutParams();
-            if (layoutParams == null) {
-                layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, customHeight);
-            } else {
-                layoutParams.height = customHeight;
-            }
-
-            root.setLayoutParams(layoutParams);
         }
 
         setStartIcon(startIcon);

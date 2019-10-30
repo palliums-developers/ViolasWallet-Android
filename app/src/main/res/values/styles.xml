@@ -55,6 +55,8 @@
     <style name="MenuItemView">
         <item name="android:layout_width">@dimen/dp_0</item>
         <item name="android:layout_height">@dimen/dp_60</item>
+        <item name="android:paddingStart">@dimen/dp_14</item>
+        <item name="android:paddingEnd">@dimen/dp_16</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
         <item name="layout_constraintEnd_toEndOf">parent</item>
         <item name="mivStartTitleTextSize">@dimen/sp_16</item>

@@ -8,7 +8,6 @@
 
     <!--公共的菜单栏-->
     <declare-styleable name="MenuItemView">
-        <attr name="mivCustomHeight" format="dimension" />
         <attr name="mivShowEndArrow" format="boolean" />
         <attr name="mivShowEndSwitch" format="boolean" />
         <attr name="mivShowTopLine" format="boolean" />

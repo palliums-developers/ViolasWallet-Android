@@ -5,10 +5,9 @@
     android:id="@+id/widget_menu_item_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="@dimen/dp_14"
-    android:paddingEnd="@dimen/dp_16"
-    tools:layout_height="@dimen/dp_60">
-    <!--android:background="@drawable/bg_menu_item"-->
+    tools:layout_height="@dimen/dp_60"
+    tools:paddingEnd="@dimen/dp_16"
+    tools:paddingStart="@dimen/dp_14">
 
     <!--开始处图标-->
     <ImageView
