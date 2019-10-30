@@ -95,6 +95,6 @@
 
     <string name="me_wallet_management">钱包管理</string>
     <string name="me_transfer_record">转账记录</string>
-    <string name="me_address_book">钱包管理</string>
-    <string name="me_settings">钱包管理</string>
+    <string name="me_address_book">地址薄</string>
+    <string name="me_settings">设置</string>
 </resources>

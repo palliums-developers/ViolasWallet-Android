@@ -6,6 +6,7 @@ import android.view.View
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseFragment
 import com.violas.wallet.ui.account.management.AccountManagementActivity
+import com.violas.wallet.ui.addressBook.AddressBookActivity
 import kotlinx.android.synthetic.main.fragment_me.*
 
 /**
@@ -29,7 +30,7 @@ class MeFragment : BaseFragment() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.mivWalletManagement -> {
-                startActivity(Intent(activity, AccountManagementActivity::class.java))
+                startActivity(Intent(_mActivity, AccountManagementActivity::class.java))
             }
 
             R.id.mivTransferRecord -> {
@@ -37,7 +38,7 @@ class MeFragment : BaseFragment() {
             }
 
             R.id.mivAddressBook -> {
-
+                AddressBookActivity.start(_mActivity)
             }
 
             R.id.mivSettings -> {
