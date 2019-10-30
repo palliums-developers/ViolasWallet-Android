@@ -35,7 +35,7 @@ class AccountInfoActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle("钱包详情")
+        setTitle(getString(R.string.hint_wallet_info))
 
         launch(Dispatchers.IO) {
             try {
@@ -53,7 +53,7 @@ class AccountInfoActivity : BaseActivity() {
         btnConfirm.setOnClickListener {
             val name = editName.text.toString().trim()
             if (name.isEmpty()) {
-                showToast("请输入新的钱包名称")
+                showToast(getString(R.string.hint_input_new_wallet_name))
                 return@setOnClickListener
             }
             launch(Dispatchers.IO) {
@@ -63,7 +63,7 @@ class AccountInfoActivity : BaseActivity() {
                     account.walletNickname = name
                     DataRepository.getAccountStorage().update(account)
                     EventBus.getDefault().post(ChangeAccountNameEvent())
-                    showToast("修改成功")
+                    showToast(getString(R.string.hint_modify_success))
                     finish()
                 } catch (e: AccountNotExistsException) {
                     e.printStackTrace()

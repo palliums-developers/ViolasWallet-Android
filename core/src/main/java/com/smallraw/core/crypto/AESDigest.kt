@@ -1,12 +1,10 @@
 package com.smallraw.core.crypto
 
 import android.annotation.SuppressLint
-import java.security.SecureRandom
 import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
-import javax.crypto.KeyGenerator
 
 
 class AESDigest {
@@ -24,11 +22,12 @@ class AESDigest {
         }
 
         fun generaKey(seed: ByteArray): ByteArray {
-            val keyGenerator = KeyGenerator.getInstance("AES")
-            val secureRandom = SecureRandom.getInstance("SHA1PRNG")
-            secureRandom.setSeed(seed)
-            keyGenerator.init(256, secureRandom) //256 bits or 128 bits,192bits
-            return keyGenerator.generateKey().encoded
+//            val keyGenerator = KeyGenerator.getInstance("AES")
+//            val secureRandom = SecureRandom.getInstance("SHA1PRNG")
+//            secureRandom.setSeed(seed)
+//            keyGenerator.init(256, secureRandom) //256 bits or 128 bits,192bits
+//            return keyGenerator.generateKey().encoded
+            return SecretKeySpec(seed,"AES").encoded
         }
 
         @SuppressLint("GetInstance")

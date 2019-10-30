@@ -13,7 +13,7 @@ class SimpleSecurity private constructor(context: Context) :
             val uniqueCode = sharedPreferences.getString("SecurityUniqueCode", "")
             if (null == uniqueCode || uniqueCode.isEmpty()) {
                 val uniqueBytes = ByteArray(64)
-                SecureRandom.getInstance("SHA1PRNG").nextBytes(uniqueBytes)
+                SecureRandom().nextBytes(uniqueBytes)
                 sharedPreferences.edit().putString("SecurityUniqueCode", uniqueBytes.toHex())
                     .apply()
                 return uniqueBytes
