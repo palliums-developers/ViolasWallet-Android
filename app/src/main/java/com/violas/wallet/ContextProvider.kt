@@ -26,16 +26,20 @@ fun getContext(): Context {
     return ContextProvider.getContext().applicationContext!!
 }
 
-fun getString(@StringRes res: Int): String {
-    return getContext().getString(res)
+@JvmOverloads
+fun getString(@StringRes res: Int, context: Context = getContext()): String {
+    return context.getString(res)
 }
 
 @ColorInt
-fun getColor(@ColorRes res: Int): Int {
-    return ResourcesCompat.getColor(getContext().resources, res, null)
+@JvmOverloads
+fun getColor(@ColorRes res: Int, context: Context = getContext()): Int {
+    return ResourcesCompat.getColor(context.resources, res, null)
 }
 
-fun getDrawable(@DrawableRes res: Int): Drawable? {
-    return ResourcesCompat.getDrawable(getContext().resources, res, null)
+@Override
+@JvmOverloads
+fun getDrawable(@DrawableRes res: Int, context: Context = getContext()): Drawable? {
+    return ResourcesCompat.getDrawable(context.resources, res, null)
 }
 

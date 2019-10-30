@@ -100,4 +100,8 @@
     <string name="hint_wallet_info">钱包详情</string>
     <string name="hint_input_new_wallet_name">请输入新的钱包名称</string>
     <string name="hint_modify_success">修改成功</string>
+    <string name="me_wallet_management">钱包管理</string>
+    <string name="me_transfer_record">转账记录</string>
+    <string name="me_address_book">地址薄</string>
+    <string name="me_settings">设置</string>
 </resources>

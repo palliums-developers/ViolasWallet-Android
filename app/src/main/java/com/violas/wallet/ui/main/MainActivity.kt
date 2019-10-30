@@ -4,17 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.violas.wallet.R
+import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.base.adapter.ViewPagerAdapter
 import com.violas.wallet.ui.main.me.MeFragment
 import com.violas.wallet.ui.main.quotes.QuotesFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
 import com.violas.wallet.utils.DensityUtility
 import kotlinx.android.synthetic.main.activity_main.*
-import qiu.niorgai.StatusBarCompat
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     companion object {
         private const val QUIT_CHECK_INTERNAL = 2000
@@ -24,13 +23,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun getTitleStyle(): Int {
+        return TITLE_STYLE_NOT_TITLE
+    }
+
+    override fun getLayoutResId(): Int {
+        return R.layout.activity_main
+    }
+
     private lateinit var viewPagerAdapter: ViewPagerAdapter
     private var mQuitTimePoint: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        StatusBarCompat.translucentStatusBar(this, true)
-        setContentView(R.layout.activity_main)
 
         bottom_navigation.setIconsMarginTop(DensityUtility.dp2px(this, 5f))
         bottom_navigation.enableAnimation(false)
@@ -77,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         bottom_navigation.menu.findItem(R.id.tab_me).setIcon(R.drawable.table_me_normal)
     }
 
-    override fun onBackPressed() {
+    override fun onBackPressedSupport() {
         if (System.currentTimeMillis() - mQuitTimePoint > QUIT_CHECK_INTERNAL) {
             Toast.makeText(
                 applicationContext, R.string.quit_confirmation,
@@ -87,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             // work around for https://code.google.com/p/android/issues/detail?id=176265
             try {
-                super.onBackPressed()
+                super.onBackPressedSupport()
             } catch (ex: IllegalStateException) {
                 super.supportFinishAfterTransition()
                 ex.printStackTrace()

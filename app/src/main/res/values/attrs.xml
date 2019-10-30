@@ -5,4 +5,30 @@
         <attr name="color_border" format="color" />
         <attr name="color_background" format="color" />
     </declare-styleable>
+
+    <!--公共的菜单栏-->
+    <declare-styleable name="MenuItemView">
+        <attr name="mivShowEndArrow" format="boolean" />
+        <attr name="mivShowEndSwitch" format="boolean" />
+        <attr name="mivShowTopLine" format="boolean" />
+        <attr name="mivShowBottomLine" format="boolean" />
+        <attr name="mivStartIcon" format="reference" />
+        <attr name="mivStartTitleText" format="string" />
+        <attr name="mivStartTitleTextSize" format="dimension" />
+        <attr name="mivStartTitleTextColor" format="color" />
+        <attr name="mivStartDescText" format="string" />
+        <attr name="mivStartDescTextSize" format="dimension" />
+        <attr name="mivStartDescTextColor" format="color" />
+        <attr name="mivEndIcon" format="reference" />
+        <attr name="mivEndDescText" format="string" />
+        <attr name="mivEndDescTextSize" format="dimension" />
+        <attr name="mivEndDescTextColor" format="color" />
+        <attr name="mivEndDescDrawableLeft" format="reference" />
+        <attr name="mivEndDescDrawablePadding" format="dimension" />
+        <attr name="mivEndDescGravity" format="enum">
+            <enum name="left" value="1" />
+            <enum name="right" value="2" />
+        </attr>
+    </declare-styleable>
+
 </resources>
