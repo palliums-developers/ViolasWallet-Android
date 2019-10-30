@@ -24,7 +24,7 @@ class TransferManager {
         context: Context,
         address: String,
         amount: Double,
-        password: String,
+        password: ByteArray,
         account: AccountDO,
         progress: Int,
         token: Boolean = false,
@@ -38,7 +38,7 @@ class TransferManager {
         }
 
         val decryptPrivateKey = SimpleSecurity.instance(getContext())
-            .decrypt(password.toByteArray(), account.privateKey)
+            .decrypt(password, account.privateKey)
         if (decryptPrivateKey == null) {
             error.invoke(WrongPasswordException())
             return

@@ -1,5 +1,7 @@
 package com.violas.wallet.ui.backup
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +20,23 @@ import kotlinx.android.synthetic.main.activity_show_mnemonic.*
  */
 class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
 
+    companion object {
+        const val INTENT_KET_JUST_SHOW = "JUST_SHOW"
+
+        fun start(
+            context: Activity,
+            mnemonic: ArrayList<String>,
+            justShow: Boolean = false,
+            requestCode: Int = -1
+        ) {
+            Intent(context, ShowMnemonicActivity::class.java).apply {
+                putStringArrayListExtra(INTENT_KET_MNEMONIC_WORDS, mnemonic)
+                putExtra(INTENT_KET_MNEMONIC_FROM, BackupMnemonicFrom.CREATE_IDENTITY)
+                putExtra(INTENT_KET_JUST_SHOW, justShow)
+            }.start(context, requestCode)
+        }
+    }
+
     lateinit var words: ArrayList<MnemonicWordModel>
     lateinit var adapter: TagAdapter<MnemonicWordModel>
 
@@ -33,7 +52,11 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.show_mnemonic_title)
-        tv_show_mnemonic_next_step.setOnClickListener(this)
+        if (intent.getBooleanExtra(INTENT_KET_JUST_SHOW, false)) {
+            tv_show_mnemonic_next_step.visibility = View.GONE
+        } else {
+            tv_show_mnemonic_next_step.setOnClickListener(this)
+        }
 
         init()
     }

@@ -15,9 +15,10 @@ import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.AccountVo
 import com.violas.wallet.ui.account.loadAccounts
 import com.violas.wallet.ui.account.wallet.AddWalletActivity
+import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.utils.DensityUtility
 import com.violas.wallet.widget.GroupListLayout
-import kotlinx.android.synthetic.main.activity_account_management.accOptGroupListLayout
+import kotlinx.android.synthetic.main.activity_account_management.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -55,7 +56,9 @@ class AccountManagementActivity : BaseActivity() {
                 context: Context,
                 viewType: Int
             ): GroupListLayout.ItemLayout<out GroupListLayout.ItemData> {
-                return ContentItem(context)
+                return ContentItem(context) {
+                    WalletManagerActivity.start(this@AccountManagementActivity, it.accountDO.id)
+                }
             }
         }
         accOptGroupListLayout.addItemDecoration(
@@ -81,7 +84,8 @@ class AccountManagementActivity : BaseActivity() {
         }
     }
 
-    class ContentItem(context: Context) : GroupListLayout.ItemLayout<AccountVo>,
+    class ContentItem(context: Context, private val callback: (AccountVo) -> Unit) :
+        GroupListLayout.ItemLayout<AccountVo>,
         View.OnClickListener {
 
         private val rootView: View = View.inflate(context, R.layout.item_account_management, null)
@@ -134,7 +138,7 @@ class AccountManagementActivity : BaseActivity() {
         override fun onClick(view: View) {
             if (!isFastMultiClick(view)) {
                 accountVo?.let {
-                    // TODO 跳转到钱包管理页面
+                    callback.invoke(it)
                 }
             }
         }

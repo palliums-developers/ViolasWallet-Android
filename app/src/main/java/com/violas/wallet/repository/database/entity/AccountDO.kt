@@ -12,11 +12,11 @@ data class AccountDO(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Long = 0,
-    @ColumnInfo(name = "private_key")
+    @ColumnInfo(name = "private_key", typeAffinity = ColumnInfo.BLOB)
     var privateKey: ByteArray = ByteArray(0),
     @ColumnInfo(name = "public_key")
     var publicKey: String = "",
-    @ColumnInfo(name = "mnemonic")
+    @ColumnInfo(name = "mnemonic", typeAffinity = ColumnInfo.BLOB)
     var mnemonic: ByteArray = ByteArray(0),
     @ColumnInfo(name = "wallet_nickname")
     var walletNickname: String = "wallet",

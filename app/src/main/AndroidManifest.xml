@@ -78,6 +78,9 @@
             android:name=".ui.account.walletmanager.WalletManagerActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.scan.ScanActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.account.wallet.AddWalletActivity"
             android:screenOrientation="portrait" />
 

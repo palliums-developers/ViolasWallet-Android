@@ -8,11 +8,14 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.dialog.PasswordInputDialog
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.ChangeAccountNameEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.AccountInfoActivity
+import com.violas.wallet.ui.backup.ShowMnemonicActivity
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_wallet_manager.*
 import kotlinx.coroutines.Dispatchers
@@ -75,12 +78,43 @@ class WalletManagerActivity : BaseActivity() {
                 }
 
                 layoutBack.setOnClickListener {
-                    // TODO 导出助记词
+                    PasswordInputDialog()
+                        .setConfirmListener { password, dialog ->
+                            backWallet(account, password)
+                            dialog.dismiss()
+                        }
+                        .show(supportFragmentManager)
                 }
 
                 btnRemoveWallet.setOnClickListener {
-                    removeWallet(account)
+                    PasswordInputDialog()
+                        .setConfirmListener { password, dialog ->
+                            removeWallet(account)
+                            dialog.dismiss()
+                        }
+                        .show(supportFragmentManager)
                 }
+            }
+        }
+    }
+
+    private fun backWallet(account: AccountDO, password: ByteArray) {
+        launch(Dispatchers.IO) {
+            try {
+                val decrypt = SimpleSecurity.instance(this@WalletManagerActivity.applicationContext)
+                    .decrypt(password, account.mnemonic)
+                if (decrypt == null) {
+                    showToast(getString(R.string.hint_password_error))
+                    return@launch
+                }
+                val decryptStr = String(decrypt)
+                val mnemonic = decryptStr.substring(1, decryptStr.length - 1)
+                    .split(",")
+                    .map { it.trim() }
+                    .toMutableList() as ArrayList
+                ShowMnemonicActivity.start(this@WalletManagerActivity, mnemonic, true)
+            }catch (e:Exception){
+                e.printStackTrace()
             }
         }
     }
