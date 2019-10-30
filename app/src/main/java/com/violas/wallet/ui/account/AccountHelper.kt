@@ -16,14 +16,14 @@ import com.violas.wallet.repository.database.entity.AccountDO
  */
 
 /**
- * 加载所有指定账户展示类型的账户
+ * 加载所有指定账户类型的账户
  */
-fun loadAccounts(@AccountDisplayType displayMode: Int): MutableMap<String, List<AccountVo>> {
+fun loadAccounts(@AccountType accountType: Int): MutableMap<String, List<AccountVo>> {
     val data = mutableMapOf<String, List<AccountVo>>()
 
     val currentAccount = AccountManager().currentAccount()
     val accountStorage = DataRepository.getAccountStorage()
-    if (displayMode == AccountDisplayType.ALL) {
+    if (accountType == AccountType.ALL) {
 
         val identityAccounts = arrayListOf<AccountVo>()
         val identityAccountLabel = getString(R.string.account_label_identity)
@@ -51,8 +51,8 @@ fun loadAccounts(@AccountDisplayType displayMode: Int): MutableMap<String, List<
         var accountLabel = "Violas"
         var coinType = CoinTypes.VToken.coinType()
 
-        when (displayMode) {
-            AccountDisplayType.BTC -> {
+        when (accountType) {
+            AccountType.BTC -> {
                 accountLabel = "BTC"
                 coinType = if (Vm.TestNet) {
                     CoinTypes.BitcoinTest.coinType()
@@ -60,7 +60,7 @@ fun loadAccounts(@AccountDisplayType displayMode: Int): MutableMap<String, List<
                     CoinTypes.Bitcoin.coinType()
                 }
             }
-            AccountDisplayType.LIBRA -> {
+            AccountType.LIBRA -> {
                 accountLabel = "Libra"
                 coinType = CoinTypes.Libra.coinType()
             }
@@ -83,10 +83,10 @@ fun loadAccounts(@AccountDisplayType displayMode: Int): MutableMap<String, List<
 /**
  * 生产假账户(code for test)
  */
-fun fakeAccounts(@AccountDisplayType displayMode: Int): MutableMap<String, List<AccountVo>> {
+fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<AccountVo>> {
     val data = mutableMapOf<String, List<AccountVo>>()
 
-    if (displayMode == AccountDisplayType.ALL) {
+    if (accountType == AccountType.ALL) {
         val identityAccountLabel = getString(R.string.account_label_identity)
         val otherAccountLabel = getString(R.string.account_label_other)
 
@@ -157,12 +157,12 @@ fun fakeAccounts(@AccountDisplayType displayMode: Int): MutableMap<String, List<
         var accountLabel = "Violas"
         var coinType = CoinTypes.VToken.coinType()
 
-        when (displayMode) {
-            AccountDisplayType.BTC -> {
+        when (accountType) {
+            AccountType.BTC -> {
                 accountLabel = "BTC"
                 coinType = CoinTypes.Bitcoin.coinType()
             }
-            AccountDisplayType.LIBRA -> {
+            AccountType.LIBRA -> {
                 accountLabel = "Libra"
                 coinType = CoinTypes.Libra.coinType()
             }

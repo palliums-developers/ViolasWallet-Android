@@ -10,7 +10,7 @@ import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.base.BaseViewHolder
-import com.violas.wallet.ui.account.AccountDisplayType
+import com.violas.wallet.ui.account.AccountType
 import kotlinx.android.synthetic.main.activity_account_selection.*
 import me.yokeyword.fragmentation.Fragmentation
 import me.yokeyword.fragmentation.SupportFragment
@@ -24,7 +24,7 @@ import me.yokeyword.fragmentation.SupportFragment
 class AccountSelectionActivity : BaseActivity() {
 
     companion object {
-        private const val EXTRA_KEY_LAST_SHOW_TYPE = "EXTRA_KEY_LAST_SHOW_TYPE"
+        private const val EXTRA_KEY_LAST_ACCOUNT_TYPE = "EXTRA_KEY_LAST_ACCOUNT_TYPE"
     }
 
     lateinit var adapter: AccountLabelAdapter
@@ -48,13 +48,13 @@ class AccountSelectionActivity : BaseActivity() {
 
         setTitle(R.string.account_selection_title)
 
-        var lastShowType = AccountDisplayType.ALL
+        var lastAccountType = AccountType.ALL
         savedInstanceState?.let {
-            lastShowType = it.getInt(EXTRA_KEY_LAST_SHOW_TYPE, AccountDisplayType.ALL)
+            lastAccountType = it.getInt(EXTRA_KEY_LAST_ACCOUNT_TYPE, AccountType.ALL)
         }
 
         adapter = AccountLabelAdapter(
-            getLabels(lastShowType),
+            getLabels(lastAccountType),
             onSwitchLabel = { displayType ->
                 // TODO 在显示悬浮分组 GroupListLayout.showFloatGroup = true 时，loadRootFragment
                 //      和第一次start启动的AccountSelectionFragment的GroupListLayout会回调
@@ -74,28 +74,28 @@ class AccountSelectionActivity : BaseActivity() {
 
         loadRootFragment(
             R.id.vp_wallet_account_container,
-            AccountSelectionFragment.newInstance(lastShowType)
+            AccountSelectionFragment.newInstance(lastAccountType)
         )
     }
 
-    private fun getLabels(@AccountDisplayType lastShowType: Int): ArrayList<AccountLabelVo> {
+    private fun getLabels(@AccountType lastAccountType: Int): ArrayList<AccountLabelVo> {
         return arrayListOf(
-            AccountLabelVo(AccountDisplayType.ALL, lastShowType == AccountDisplayType.ALL),
-            AccountLabelVo(AccountDisplayType.VIOLAS, lastShowType == AccountDisplayType.VIOLAS),
-            AccountLabelVo(AccountDisplayType.LIBRA, lastShowType == AccountDisplayType.LIBRA),
-            AccountLabelVo(AccountDisplayType.BTC, lastShowType == AccountDisplayType.BTC)
+            AccountLabelVo(AccountType.ALL, lastAccountType == AccountType.ALL),
+            AccountLabelVo(AccountType.VIOLAS, lastAccountType == AccountType.VIOLAS),
+            AccountLabelVo(AccountType.LIBRA, lastAccountType == AccountType.LIBRA),
+            AccountLabelVo(AccountType.BTC, lastAccountType == AccountType.BTC)
         )
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putInt(EXTRA_KEY_LAST_SHOW_TYPE, adapter.currentDisplayType())
+        outState.putInt(EXTRA_KEY_LAST_ACCOUNT_TYPE, adapter.currentAccountType())
     }
 
     data class AccountLabelVo(
-        @AccountDisplayType
-        val displayType: Int,
+        @AccountType
+        val accountType: Int,
         var selected: Boolean = false
     )
 
@@ -111,22 +111,22 @@ class AccountSelectionActivity : BaseActivity() {
         override fun onViewBind(itemIndex: Int, itemDate: AccountLabelVo?) {
             itemDate?.let {
                 ivAccountLabel.setImageResource(
-                    when (it.displayType) {
-                        AccountDisplayType.BTC -> {
+                    when (it.accountType) {
+                        AccountType.BTC -> {
                             if (it.selected)
                                 R.drawable.selector_label_btc
                             else
                                 R.drawable.selector_label_btc_unsel
                         }
 
-                        AccountDisplayType.VIOLAS -> {
+                        AccountType.VIOLAS -> {
                             if (it.selected)
                                 R.drawable.selector_label_violas
                             else
                                 R.drawable.selector_label_violas_unsel
                         }
 
-                        AccountDisplayType.LIBRA -> {
+                        AccountType.LIBRA -> {
                             if (it.selected)
                                 R.drawable.selector_label_libra
                             else
@@ -168,7 +168,7 @@ class AccountSelectionActivity : BaseActivity() {
                 ),
                 onItemClick = { position ->
                     if (position != currentPosition) {
-                        onSwitchLabel.invoke(items[position].displayType)
+                        onSwitchLabel.invoke(items[position].accountType)
 
                         items[currentPosition].selected = false
                         items[position].selected = true
@@ -187,9 +187,9 @@ class AccountSelectionActivity : BaseActivity() {
             return items.size
         }
 
-        @AccountDisplayType
-        fun currentDisplayType(): Int {
-            return items[currentPosition].displayType
+        @AccountType
+        fun currentAccountType(): Int {
+            return items[currentPosition].accountType
         }
     }
 }

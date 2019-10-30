@@ -46,6 +46,8 @@
     <string name="account_label_identity_wallet">身份钱包</string>
     <string name="account_label_other_wallet">创建/导入</string>
     <string name="action_create">创建</string>
+    <string name="action_import">导入</string>
+    <string name="action_cancel">取消</string>
     <string name="hint_input_nickname">输入昵称</string>
     <string name="hint_wallet_password">输入钱包密码</string>
     <string name="hint_input_confirm_password">再次确认密码</string>
@@ -97,4 +99,13 @@
     <string name="me_transfer_record">转账记录</string>
     <string name="me_address_book">地址薄</string>
     <string name="me_settings">设置</string>
+
+    <string name="add_wallet_title">添加钱包</string>
+
+    <string name="coin_name_violas">Vtoken</string>
+    <string name="coin_name_libra">Lib</string>
+    <string name="coin_name_bitcoin">BTC</string>
+    <string name="account_type_name_violas">Violas</string>
+    <string name="account_type_name_libra">Libra</string>
+    <string name="account_type_name_bitcoin">Bitcoin</string>
 </resources>

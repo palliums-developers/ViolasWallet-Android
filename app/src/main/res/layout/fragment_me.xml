@@ -26,8 +26,7 @@
         app:is_circle="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@color/gray" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvNickname"
@@ -39,8 +38,7 @@
         android:textSize="@dimen/sp_15"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivAvatar"
-        tools:text="nickname" />
+        app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
 
     <com.violas.wallet.widget.MenuItemView
         android:id="@+id/mivWalletManagement"

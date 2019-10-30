@@ -15,8 +15,10 @@ import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.base.BaseFragment
 import com.violas.wallet.base.recycler.RecycleViewItemDivider
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_TYPE
+import com.violas.wallet.common.EXTRA_KEY_OPERATION_MODE
 import com.violas.wallet.event.SwitchAccountEvent
-import com.violas.wallet.ui.account.AccountDisplayType
+import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.AccountOperationMode
 import com.violas.wallet.ui.account.AccountVo
 import com.violas.wallet.ui.account.loadAccounts
@@ -37,30 +39,27 @@ import org.greenrobot.eventbus.EventBus
 class AccountSelectionFragment : BaseFragment() {
 
     companion object {
-        private const val EXTRA_KEY_DISPLAY_TYPE = "EXTRA_KEY_DISPLAY_TYPE"
-        private const val EXTRA_KEY_OPERATION_MODE = "EXTRA_KEY_OPERATION_MODE"
-
         fun newInstance(
-            @AccountDisplayType displayType: Int,
+            @AccountType accountType: Int,
             @AccountOperationMode operationMode: Int = AccountOperationMode.SELECTION
         ): AccountSelectionFragment {
             return AccountSelectionFragment().apply {
-                arguments = newBundle(displayType, operationMode)
+                arguments = newBundle(accountType, operationMode)
             }
         }
 
         fun newBundle(
-            @AccountDisplayType displayType: Int,
+            @AccountType accountType: Int,
             @AccountOperationMode operationMode: Int = AccountOperationMode.SELECTION
         ): Bundle {
             return Bundle().apply {
-                putInt(EXTRA_KEY_DISPLAY_TYPE, displayType)
+                putInt(EXTRA_KEY_ACCOUNT_TYPE, accountType)
                 putInt(EXTRA_KEY_OPERATION_MODE, operationMode)
             }
         }
     }
 
-    private var displayType: Int = AccountDisplayType.ALL
+    private var accountType: Int = AccountType.ALL
     private var operationMode: Int = AccountOperationMode.SELECTION
 
     override fun getLayoutResId(): Int {
@@ -71,7 +70,7 @@ class AccountSelectionFragment : BaseFragment() {
         super.onLazyInitView(savedInstanceState)
 
         arguments?.let {
-            displayType = it.getInt(EXTRA_KEY_DISPLAY_TYPE, AccountDisplayType.ALL)
+            accountType = it.getInt(EXTRA_KEY_ACCOUNT_TYPE, AccountType.ALL)
             operationMode = it.getInt(EXTRA_KEY_OPERATION_MODE, AccountOperationMode.SELECTION)
         }
 
@@ -83,7 +82,7 @@ class AccountSelectionFragment : BaseFragment() {
         super.onNewBundle(args)
 
         args?.let {
-            displayType = it.getInt(EXTRA_KEY_DISPLAY_TYPE, AccountDisplayType.ALL)
+            accountType = it.getInt(EXTRA_KEY_ACCOUNT_TYPE, AccountType.ALL)
             operationMode = it.getInt(EXTRA_KEY_OPERATION_MODE, AccountOperationMode.SELECTION)
         }
 
@@ -122,8 +121,8 @@ class AccountSelectionFragment : BaseFragment() {
 
     private fun initData() {
         launch(Dispatchers.IO) {
-            //val data = fakeAccounts(displayType)
-            val data = loadAccounts(displayType)
+            //val data = fakeAccounts(accountType)
+            val data = loadAccounts(accountType)
             withContext(Dispatchers.Main) {
                 accOptGroupListLayout.setData(data)
             }
