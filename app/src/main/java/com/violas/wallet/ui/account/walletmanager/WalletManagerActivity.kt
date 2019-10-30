@@ -87,7 +87,12 @@ class WalletManagerActivity : BaseActivity() {
                 }
 
                 btnRemoveWallet.setOnClickListener {
-                    removeWallet(account)
+                    PasswordInputDialog()
+                        .setConfirmListener { password, dialog ->
+                            removeWallet(account)
+                            dialog.dismiss()
+                        }
+                        .show(supportFragmentManager)
                 }
             }
         }
