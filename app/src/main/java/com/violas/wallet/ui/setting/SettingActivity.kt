@@ -6,6 +6,7 @@ import android.view.View
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.ui.web.WebCommonActivity
 import kotlinx.android.synthetic.main.activity_setting.*
 
 /**
@@ -46,7 +47,12 @@ class SettingActivity : BaseActivity() {
             }
 
             R.id.mivServiceAgreement -> {
-
+                // TODO 替换服务协议url
+                WebCommonActivity.start(
+                    this,
+                    "https://www.baidu.com/",
+                    getString(R.string.service_agreement_title)
+                )
             }
 
             R.id.mivAboutUs -> {

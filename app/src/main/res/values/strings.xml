@@ -144,4 +144,10 @@
     <string name="about_us_twitter_value">xxxxx</string>
     <string name="about_us_facebook_key">Facebook</string>
     <string name="about_us_facebook_value">xxxxx</string>
+
+    <string name="web_load_failed_tips">无法打开页面</string>
+    <string name="web_load_failed_retry">轻触屏幕重新加载</string>
+    <string name="web_user_agent">%1$s/Violas Wallet Android Client %2$s.%3$d</string>
+
+    <string name="service_agreement_title">服务协议</string>
 </resources>
