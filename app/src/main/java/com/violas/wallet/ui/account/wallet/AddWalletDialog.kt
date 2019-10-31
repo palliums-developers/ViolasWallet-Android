@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
 import androidx.fragment.app.DialogFragment
-import com.quincysx.crypto.bip44.CoinType
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_TYPE
+import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.account.AccountType
 import kotlinx.android.synthetic.main.dialog_add_wallet.*
 
@@ -83,23 +84,38 @@ class AddWalletDialog : DialogFragment(), View.OnClickListener {
         if (!BaseActivity.isFastMultiClick(view)) {
             when (view.id) {
                 R.id.llCreate -> {
-                    // TODO 跳转到创建钱包页面
+                    CreateWalletActivity.start(requireActivity(), transform())
+                    close()
                 }
 
                 R.id.llImport -> {
-                    // TODO 跳转到导入钱包页面
+                    ImportWalletActivity.start(requireActivity(), transform())
+                    close()
                 }
 
                 R.id.tvCancel -> {
-                    if (!isDetached && !isRemoving && fragmentManager != null) {
-                        dismissAllowingStateLoss()
-                    }
+                    close()
                 }
             }
         }
     }
 
-    fun transform(): CoinType? {
-        return null
+    private fun close() {
+        if (!isDetached && !isRemoving && fragmentManager != null) {
+            dismissAllowingStateLoss()
+        }
+    }
+
+    private fun transform(): CoinTypes {
+        return when (accountType) {
+            AccountType.BTC ->
+                if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
+
+            AccountType.LIBRA ->
+                CoinTypes.Libra
+
+            else ->
+                CoinTypes.VToken
+        }
     }
 }
