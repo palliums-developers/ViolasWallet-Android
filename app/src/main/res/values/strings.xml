@@ -119,4 +119,11 @@
     <string name="account_type_name_violas">Violas</string>
     <string name="account_type_name_libra">Libra</string>
     <string name="account_type_name_bitcoin">Bitcoin</string>
+
+    <string name="setting_title">设置</string>
+    <string name="setting_multi_language">多语言</string>
+    <string name="setting_service_agreement">服务协议</string>
+    <string name="setting_about_us">关于我们</string>
+    <string name="setting_help_feedback">帮助与反馈</string>
+    <string name="setting_app_name_version">Violas %1$s</string>
 </resources>

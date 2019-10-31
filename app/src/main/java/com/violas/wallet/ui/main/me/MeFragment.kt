@@ -7,6 +7,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseFragment
 import com.violas.wallet.ui.account.management.AccountManagementActivity
 import com.violas.wallet.ui.addressBook.AddressBookActivity
+import com.violas.wallet.ui.setting.SettingActivity
 import kotlinx.android.synthetic.main.fragment_me.*
 
 /**
@@ -42,7 +43,7 @@ class MeFragment : BaseFragment() {
             }
 
             R.id.mivSettings -> {
-
+                startActivity(Intent(_mActivity, SettingActivity::class.java))
             }
         }
     }

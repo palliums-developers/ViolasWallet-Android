@@ -4,81 +4,75 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/def_activity_vice_bg">
+    tools:background="@color/def_activity_vice_bg">
 
-    <ImageView
+    <View
         android:id="@+id/ivHeader"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_196"
-        android:background="@drawable/bg_wallet_main"
+        android:layout_height="@dimen/dp_171"
+        android:background="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.shehuan.niv.NiceImageView
-        android:id="@+id/ivAvatar"
-        android:layout_width="@dimen/dp_75"
-        android:layout_height="@dimen/dp_75"
-        android:layout_marginTop="@dimen/dp_64"
-        android:src="@mipmap/ic_launcher_round"
-        app:border_color="@color/white"
-        app:border_width="@dimen/dp_2"
-        app:is_circle="true"
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_39"
+        android:src="@mipmap/ic_logo_shadow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvNickname"
+        android:id="@+id/tvAppNameVersion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_9"
-        android:text="@string/app_name"
-        android:textColor="@color/white"
-        android:textSize="@dimen/sp_15"
+        android:textColor="@color/def_text_title"
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
+        app:layout_constraintTop_toBottomOf="@id/ivLogo"
+        tools:text="Violas 1.0.0" />
 
     <com.violas.wallet.widget.MenuItemView
-        android:id="@+id/mivWalletManagement"
+        android:id="@+id/mivMultiLanguage"
         style="@style/MenuItemView"
+        android:layout_marginTop="@dimen/item_spacing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivHeader"
-        app:mivStartIcon="@mipmap/ic_me_wallet_management"
-        app:mivStartTitleText="@string/me_wallet_management" />
+        app:mivStartTitleText="@string/setting_multi_language" />
 
     <com.violas.wallet.widget.MenuItemView
-        android:id="@+id/mivTransferRecord"
+        android:id="@+id/mivServiceAgreement"
         style="@style/MenuItemView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mivWalletManagement"
+        app:layout_constraintTop_toBottomOf="@+id/mivMultiLanguage"
         app:mivShowBottomLine="false"
-        app:mivStartIcon="@mipmap/ic_me_transfer_record"
-        app:mivStartTitleText="@string/me_transfer_record" />
+        app:mivStartTitleText="@string/setting_service_agreement" />
 
     <com.violas.wallet.widget.MenuItemView
-        android:id="@+id/mivAddressBook"
+        android:id="@+id/mivAboutUs"
         style="@style/MenuItemView"
         android:layout_marginTop="@dimen/item_spacing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mivTransferRecord"
+        app:layout_constraintTop_toBottomOf="@+id/mivServiceAgreement"
         app:mivShowBottomLine="false"
-        app:mivStartIcon="@mipmap/ic_me_address_book"
-        app:mivStartTitleText="@string/me_address_book" />
+        app:mivStartTitleText="@string/setting_about_us" />
 
     <com.violas.wallet.widget.MenuItemView
-        android:id="@+id/mivSettings"
+        android:id="@+id/mivHelpFeedback"
         style="@style/MenuItemView"
         android:layout_marginTop="@dimen/item_spacing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mivAddressBook"
+        app:layout_constraintTop_toBottomOf="@+id/mivAboutUs"
         app:mivShowBottomLine="false"
-        app:mivStartIcon="@mipmap/ic_me_settings"
-        app:mivStartTitleText="@string/me_settings" />
+        app:mivStartTitleText="@string/setting_help_feedback" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
