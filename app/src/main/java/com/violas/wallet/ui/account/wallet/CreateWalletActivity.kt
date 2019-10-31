@@ -9,8 +9,7 @@ import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
-import com.violas.wallet.ui.backup.BaseBackupMnemonicActivity
-import com.violas.wallet.ui.backup.ShowMnemonicActivity
+import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_create_wallet.*
 import kotlinx.coroutines.Dispatchers
@@ -87,17 +86,15 @@ class CreateWalletActivity : BaseActivity() {
             showProgress()
             launch(Dispatchers.IO) {
                 mGenerateWalletMnemonic = mAccountManager.generateWalletMnemonic()
+
                 dismissProgress()
-                Intent(this@CreateWalletActivity, ShowMnemonicActivity::class.java).apply {
-                    putStringArrayListExtra(
-                        BaseBackupMnemonicActivity.INTENT_KET_MNEMONIC_WORDS,
-                        mGenerateWalletMnemonic
-                    )
-                    putExtra(
-                        BaseBackupMnemonicActivity.INTENT_KET_MNEMONIC_FROM,
-                        BackupMnemonicFrom.CREATE_IDENTITY
-                    )
-                }.start(this@CreateWalletActivity, REQUEST_BACK_MNEMONIC)
+
+                BackupPromptActivity.start(
+                    this@CreateWalletActivity,
+                    mGenerateWalletMnemonic,
+                    BackupMnemonicFrom.OTHER_WALLET,
+                    REQUEST_BACK_MNEMONIC
+                )
             }
         }
     }
