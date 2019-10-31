@@ -9,7 +9,9 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.base.dialog.AttachListPopupViewSupport
 import com.violas.wallet.biz.AddressBookManager
+import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.repository.database.entity.AddressBookDo
+import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.start
 import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
@@ -20,6 +22,8 @@ import kotlinx.coroutines.withContext
 
 class AddAddressBookActivity : BaseActivity() {
     companion object {
+        private const val REQUEST_SCAN_QR_CODE = 1
+
         private const val EXT_COIN_TYPE = "a1"
         fun start(
             context: Activity,
@@ -52,6 +56,9 @@ class AddAddressBookActivity : BaseActivity() {
         mCoinTypes =
             CoinTypes.parseCoinType(intent.getIntExtra(EXT_COIN_TYPE, CoinTypes.Bitcoin.coinType()))
         refreshCoinType()
+        btnScan.setOnClickListener {
+            ScanActivity.start(this@AddAddressBookActivity, REQUEST_SCAN_QR_CODE)
+        }
         btnAdd.setOnClickListener {
             val note = editNote.text.toString().trim()
             if (note.isEmpty()) {
@@ -128,5 +135,29 @@ class AddAddressBookActivity : BaseActivity() {
 
     private fun refreshCoinType() {
         editCoinType.text = mCoinTypes.coinName()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_SCAN_QR_CODE -> {
+                data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
+                    decodeScanQRCode(msg) { coinType, address, amount ->
+                        launch {
+                            if (coinType == -1) {
+                                editAddress.setText(address)
+                            } else {
+                                editAddress.setText(address)
+                                try {
+                                    mCoinTypes = CoinTypes.parseCoinType(coinType)
+                                    refreshCoinType()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
