@@ -14,6 +14,7 @@ import com.violas.wallet.base.dialog.FastIntoWalletDialog
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
+import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.selection.AccountSelectionActivity
@@ -204,10 +205,16 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                 refreshAssert()
             }
             REQUEST_SCAN_QR_CODE -> {
-                launch(Dispatchers.IO) {
-                    data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { address ->
+                data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
+                    decodeScanQRCode(msg) { coinType, address, amount ->
                         val currentAccount = mAccountManager.currentAccount()
-                        activity?.let { TransferActivity.start(it, currentAccount.id, address) }
+                        if (coinType == currentAccount.coinNumber) {
+                            activity?.let { TransferActivity.start(it, currentAccount.id, address) }
+                        } else {
+                            val account = mAccountManager.getIdentityByCoinType(coinType)
+                                ?: return@decodeScanQRCode
+                            activity?.let { TransferActivity.start(it, account.id, address) }
+                        }
                     }
                 }
             }
