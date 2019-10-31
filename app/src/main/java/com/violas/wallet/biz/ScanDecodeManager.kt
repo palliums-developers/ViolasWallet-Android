@@ -19,7 +19,7 @@ fun decodeScanQRCode(
     GlobalScope.launch(Dispatchers.IO) {
 
         val splitMsg = splitMsg(msg)
-        val coinType = when (splitMsg.coinType) {
+        val coinType = when (splitMsg.coinType?.toLowerCase(Locale.CHINA)) {
             CoinTypes.Bitcoin.fullName() -> {
                 if (Vm.TestNet) {
                     CoinTypes.BitcoinTest.coinType()

@@ -1,18 +1,20 @@
 package com.violas.wallet.ui.transfer
 
 import android.accounts.AccountsException
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.core.widget.addTextChangedListener
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.base.dialog.PasswordInputDialog
 import com.violas.wallet.biz.btc.TransactionManager
+import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.addressBook.AddressBookActivity
+import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +32,7 @@ class TransferActivity : BaseActivity() {
         private const val EXT_TOKEN_ID = "4"
 
         private const val REQUEST_SELECTOR_ADDRESS = 1
+        private const val REQUEST_SCAN_QR_CODE = 2
 
         fun start(
             context: Context,
@@ -115,6 +118,10 @@ class TransferActivity : BaseActivity() {
             }
         }
         initViewData()
+
+        ivScan.setOnClickListener {
+            ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
+        }
 
         btnConfirm.setOnClickListener {
             send()
@@ -217,10 +224,28 @@ class TransferActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_SELECTOR_ADDRESS && resultCode == Activity.RESULT_OK) {
-            data?.apply {
-                val address = getStringExtra(AddressBookActivity.RESULT_SELECT_ADDRESS) ?: ""
-                editAddressInput.setText(address)
+        when (requestCode) {
+            REQUEST_SELECTOR_ADDRESS -> {
+                data?.apply {
+                    val address = getStringExtra(AddressBookActivity.RESULT_SELECT_ADDRESS) ?: ""
+                    editAddressInput.setText(address)
+                }
+            }
+            REQUEST_SCAN_QR_CODE -> {
+                data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
+                    decodeScanQRCode(msg) { coinType, address, amount ->
+                        Log.e("=====","${coinType}  ${address}  ${amount}")
+                        launch {
+                            account?.let {
+                                if (coinType == it.coinNumber || coinType == -1) {
+                                    editAddressInput.setText(address)
+                                } else {
+                                    showToast(getString(R.string.hint_address_error))
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

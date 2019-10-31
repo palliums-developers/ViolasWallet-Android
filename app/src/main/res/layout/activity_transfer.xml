@@ -75,17 +75,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tvCollectionAddress" />
 
-            <ImageView
-                android:id="@+id/ivScan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="7dp"
-                android:padding="4dp"
-                android:src="@drawable/icon_scan_purple"
-                app:layout_constraintBottom_toBottomOf="@+id/editAddressInput"
-                app:layout_constraintEnd_toEndOf="@+id/editAddressInput"
-                app:layout_constraintTop_toTopOf="@+id/editAddressInput" />
-
             <EditText
                 android:id="@+id/editAddressInput"
                 android:layout_width="match_parent"
@@ -102,6 +91,17 @@
                 android:paddingBottom="7dp"
                 android:textColorHint="@color/def_text_color_30"
                 app:layout_constraintTop_toBottomOf="@+id/tvCollectionAddress" />
+
+            <ImageView
+                android:id="@+id/ivScan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
+                android:padding="4dp"
+                android:src="@drawable/icon_scan_purple"
+                app:layout_constraintBottom_toBottomOf="@+id/editAddressInput"
+                app:layout_constraintEnd_toEndOf="@+id/editAddressInput"
+                app:layout_constraintTop_toTopOf="@+id/editAddressInput" />
 
             <TextView
                 android:id="@+id/tvHintFee"
