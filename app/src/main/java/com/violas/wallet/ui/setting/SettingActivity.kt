@@ -50,7 +50,7 @@ class SettingActivity : BaseActivity() {
                 // TODO 替换服务协议url
                 WebCommonActivity.start(
                     this,
-                    "https://www.baidu.com/",
+                    getString(R.string.service_agreement_url),
                     getString(R.string.service_agreement_title)
                 )
             }
@@ -60,7 +60,7 @@ class SettingActivity : BaseActivity() {
             }
 
             R.id.mivHelpFeedback -> {
-
+                startActivity(Intent(this, HelpFeedbackActivity::class.java))
             }
         }
     }

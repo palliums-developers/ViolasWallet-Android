@@ -150,4 +150,8 @@
     <string name="web_user_agent">%1$s/Violas Wallet Android Client %2$s.%3$d</string>
 
     <string name="service_agreement_title">服务协议</string>
+    <string name="service_agreement_url">https://www.baidu.com/</string>
+    <string name="help_feedback_title">帮助与反馈</string>
+    <string name="help_feedback_menu">问题反馈</string>
+    <string name="help_feedback_url">https://www.baidu.com/</string>
 </resources>

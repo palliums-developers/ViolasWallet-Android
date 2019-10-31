@@ -90,6 +90,9 @@
             android:name=".ui.setting.AboutUsActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.setting.HelpFeedbackActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.web.WebCommonActivity"
             android:screenOrientation="portrait" />
 

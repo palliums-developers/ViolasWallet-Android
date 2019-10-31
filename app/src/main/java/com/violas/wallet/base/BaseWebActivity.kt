@@ -31,6 +31,8 @@ abstract class BaseWebActivity : BaseActivity() {
         val title = getFixedTitle()
         title?.let { setTitle(it) }
 
+        vFailed.setOnClickListener(this)
+
         initWebView()
         startLoad()
     }
@@ -54,6 +56,11 @@ abstract class BaseWebActivity : BaseActivity() {
     override fun onDestroy() {
         stopLoad()
         try {
+            vWeb.loadDataWithBaseURL(
+                null, "", "text/html", "utf-8", null
+            )
+            vWeb.clearHistory()
+
             (vWeb.parent as ViewGroup).removeView(vWeb)
             vWeb.destroy()
         } catch (e: Exception) {
@@ -72,6 +79,15 @@ abstract class BaseWebActivity : BaseActivity() {
             vWeb.goBack()
         } else {
             super.onBackPressedSupport()
+        }
+    }
+
+    override fun onViewClick(view: View) {
+        when (view.id) {
+            R.id.vFailed -> {
+                stopLoad()
+                startLoad()
+            }
         }
     }
 
@@ -97,10 +113,6 @@ abstract class BaseWebActivity : BaseActivity() {
 
         try {
             vWeb.stopLoading()
-            vWeb.loadDataWithBaseURL(
-                null, "", "text/html", "utf-8", null
-            )
-            vWeb.clearHistory()
         } catch (e: Exception) {
             // ignore
         }
