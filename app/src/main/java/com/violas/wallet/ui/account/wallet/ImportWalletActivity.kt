@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.quincysx.crypto.CoinTypes
-import com.quincysx.crypto.bip44.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.biz.AccountManager
@@ -26,10 +25,10 @@ class ImportWalletActivity : BaseActivity() {
     companion object {
         private const val EXT_COIN_TYPE = "a1"
 
-        fun start(context: Activity, coinType: CoinType, requestCode: Int = -1) {
+        fun start(context: Activity, coinType: CoinTypes, requestCode: Int = -1) {
             Intent(context, ImportWalletActivity::class.java)
                 .apply {
-                    putExtra(EXT_COIN_TYPE, coinType.value.coinType())
+                    putExtra(EXT_COIN_TYPE, coinType.coinType())
                 }
                 .start(context, requestCode)
         }
@@ -54,7 +53,7 @@ class ImportWalletActivity : BaseActivity() {
             )
 
         tvCreateHint.text =
-            String.format(getString(R.string.hint_create_any_wallet), mCurrentCoinType.coinName())
+            String.format(getString(R.string.hint_import_any_wallet), mCurrentCoinType.coinName())
 
         ivLogo.setImageResource(
             when (mCurrentCoinType) {

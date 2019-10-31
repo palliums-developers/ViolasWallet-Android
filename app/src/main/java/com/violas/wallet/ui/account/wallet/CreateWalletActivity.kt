@@ -4,14 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.quincysx.crypto.CoinTypes
-import com.quincysx.crypto.bip44.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
-import com.violas.wallet.ui.backup.BaseBackupMnemonicActivity
-import com.violas.wallet.ui.backup.ShowMnemonicActivity
+import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_create_wallet.*
 import kotlinx.coroutines.Dispatchers
@@ -24,10 +22,10 @@ class CreateWalletActivity : BaseActivity() {
         private const val REQUEST_BACK_MNEMONIC = 1
         private const val EXT_COIN_TYPE = "a1"
 
-        fun start(context: Activity, coinType: CoinType, requestCode: Int = -1) {
+        fun start(context: Activity, coinType: CoinTypes, requestCode: Int = -1) {
             Intent(context, CreateWalletActivity::class.java)
                 .apply {
-                    putExtra(EXT_COIN_TYPE, coinType.value.coinType())
+                    putExtra(EXT_COIN_TYPE, coinType.coinType())
                 }
                 .start(context, requestCode)
         }
@@ -88,17 +86,15 @@ class CreateWalletActivity : BaseActivity() {
             showProgress()
             launch(Dispatchers.IO) {
                 mGenerateWalletMnemonic = mAccountManager.generateWalletMnemonic()
+
                 dismissProgress()
-                Intent(this@CreateWalletActivity, ShowMnemonicActivity::class.java).apply {
-                    putStringArrayListExtra(
-                        BaseBackupMnemonicActivity.INTENT_KET_MNEMONIC_WORDS,
-                        mGenerateWalletMnemonic
-                    )
-                    putExtra(
-                        BaseBackupMnemonicActivity.INTENT_KET_MNEMONIC_FROM,
-                        BackupMnemonicFrom.CREATE_IDENTITY
-                    )
-                }.start(this@CreateWalletActivity, REQUEST_BACK_MNEMONIC)
+
+                BackupPromptActivity.start(
+                    this@CreateWalletActivity,
+                    mGenerateWalletMnemonic,
+                    BackupMnemonicFrom.OTHER_WALLET,
+                    REQUEST_BACK_MNEMONIC
+                )
             }
         }
     }

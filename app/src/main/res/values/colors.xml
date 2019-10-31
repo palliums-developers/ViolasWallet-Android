@@ -31,9 +31,10 @@
     <color name="color_6161D2">#6161D2</color>
     <color name="color_7A7AEE">#7A7AEE</color>
     <color name="color_F74E4E">#F74E4E</color>
+    <color name="color_F7F7F9">#F7F7F9</color>
 
-    <color name="def_activity_bg">#FFFFFF</color>
-    <color name="def_activity_vice_bg">#F7F7F9</color>
+    <color name="def_activity_bg">@color/white</color>
+    <color name="def_activity_vice_bg">@color/color_F7F7F9</color>
     <color name="def_text_color">#3C3848</color>
     <color name="def_text_color_30">#233C3848</color>
     <color name="def_text_color_50">#7F3C3848</color>
@@ -55,6 +56,13 @@
     <color name="def_text_btn">@color/color_7A7AEE</color>
     <!--文本-提醒性文字颜色-->
     <color name="def_text_warn">@color/color_F74E4E</color>
+
+    <!--浅色模式下-条目主背景色-->
+    <color name="itemBgPrimaryLight">@color/color_F7F7F9</color>
+    <!--浅色模式下-条目次背景色-->
+    <color name="itemBgSecondaryLight">@color/white</color>
+    <!--浅色模式下-条目按下时背景色-->
+    <color name="itemBgPressedLight">@color/gray_50</color>
 
     <color name="account_group_title">#292929</color>
     <color name="dividing_line">@color/color_3C3848_10</color>

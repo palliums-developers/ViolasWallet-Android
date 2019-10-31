@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.account.management
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +11,10 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.base.recycler.RecycleViewItemDivider
-import com.violas.wallet.ui.account.AccountDisplayType
+import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.AccountVo
 import com.violas.wallet.ui.account.loadAccounts
+import com.violas.wallet.ui.account.wallet.AddWalletActivity
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.utils.DensityUtility
 import com.violas.wallet.widget.GroupListLayout
@@ -37,9 +39,14 @@ class AccountManagementActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.account_management_title)
+        setTitleRightImage(R.drawable.icon_add_address)
 
         initView()
         initData()
+    }
+
+    override fun onTitleRightViewClick() {
+        startActivity(Intent(this, AddWalletActivity::class.java))
     }
 
     private fun initView() {
@@ -69,8 +76,8 @@ class AccountManagementActivity : BaseActivity() {
 
     private fun initData() {
         launch(Dispatchers.IO) {
-            //val data = fakeAccounts(AccountDisplayType.ALL)
-            val data = loadAccounts(AccountDisplayType.ALL)
+            //val data = fakeAccounts(AccountType.ALL)
+            val data = loadAccounts(AccountType.ALL)
             withContext(Dispatchers.Main) {
                 accOptGroupListLayout.setData(data)
             }

@@ -47,6 +47,7 @@
     <string name="account_label_identity_wallet">身份钱包</string>
     <string name="account_label_other_wallet">创建/导入</string>
     <string name="action_create">创建</string>
+    <string name="action_import">导入</string>
     <string name="hint_input_nickname">输入昵称</string>
     <string name="hint_wallet_password">输入钱包密码</string>
     <string name="hint_input_confirm_password">再次确认密码</string>
@@ -110,4 +111,37 @@
     <string name="hint_scan_need_camera_permissions">扫码需要获取相机权限</string>
     <string name="action_scan_address">扫描钱包地址</string>
     <string name="title_scan">扫一扫</string>
+
+    <string name="add_wallet_title">添加钱包</string>
+    <string name="coin_name_violas">Vtoken</string>
+    <string name="coin_name_libra">Lib</string>
+    <string name="coin_name_bitcoin">BTC</string>
+    <string name="account_type_name_violas">Violas</string>
+    <string name="account_type_name_libra">Libra</string>
+    <string name="account_type_name_bitcoin">Bitcoin</string>
+
+    <string name="setting_title">设置</string>
+    <string name="setting_multi_language">多语言</string>
+    <string name="setting_service_agreement">服务协议</string>
+    <string name="setting_about_us">关于我们</string>
+    <string name="setting_help_feedback">帮助与反馈</string>
+    <string name="setting_app_name_version">Violas %1$s</string>
+
+    <string name="about_us_title">关于我们</string>
+    <string name="about_us_website_key">官方网站</string>
+    <string name="about_us_website_value">www.violas.io</string>
+    <string name="about_us_email_key">邮箱</string>
+    <string name="about_us_email_value">kf@violas.io</string>
+    <string name="about_us_wechat_key">微信</string>
+    <string name="about_us_wechat_value">xxxxx</string>
+    <string name="about_us_qq_key">QQ</string>
+    <string name="about_us_qq_value">xxxxx</string>
+    <string name="about_us_weibo_key">微博</string>
+    <string name="about_us_weibo_value">xxxxx</string>
+    <string name="about_us_telegram_key">Telegram</string>
+    <string name="about_us_telegram_value">xxxxx</string>
+    <string name="about_us_twitter_key">Twitter</string>
+    <string name="about_us_twitter_value">xxxxx</string>
+    <string name="about_us_facebook_key">Facebook</string>
+    <string name="about_us_facebook_value">xxxxx</string>
 </resources>

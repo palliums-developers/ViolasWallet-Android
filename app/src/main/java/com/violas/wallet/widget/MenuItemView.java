@@ -66,7 +66,6 @@ public class MenuItemView extends FrameLayout {
         setLayoutParams(lp);
 
         View.inflate(context, R.layout.widget_menu_item_view, this);
-        View root = findViewById(R.id.widget_menu_item_root);
 
         mStartIcon = findViewById(R.id.widget_menu_item_start_icon);
         mStartTitle = findViewById(R.id.widget_menu_item_start_title);
@@ -78,41 +77,41 @@ public class MenuItemView extends FrameLayout {
         mTopLine = findViewById(R.id.widget_menu_item_top_line);
         mBottomLine = findViewById(R.id.widget_menu_item_bottom_line);
 
-        // 开始处图标
+        // 头部图标
         Drawable startIcon = null;
-        // 结束处图标
+        // 尾部图标
         Drawable endIcon = null;
 
-        // 起始处标题
+        // 头部标题
         String startTitleText = null;
-        // 起始处标题的字体大小
+        // 头部标题的字体大小
         int startTitleTextSize = DensityUtility.sp2px(context, 16);
-        // 起始处标题的文本颜色
+        // 头部标题的文本颜色
         int startTitleTextColor = ContextProviderKt.getColor(R.color.def_text_title, context);
 
-        // 起始处描述
+        // 头部描述
         String startDescText = null;
-        // 起始处描述的字体大小
+        // 头部描述的字体大小
         int startDescTextSize = DensityUtility.sp2px(getContext(), 12);
-        // 起始处描述的文本颜色
+        // 头部描述的文本颜色
         int startDescTextColor = ContextProviderKt.getColor(R.color.def_text_desc, context);
 
-        // 结束处描述
+        // 尾部描述
         String endDescText = null;
-        // 结束处描述的字体大小
+        // 尾部描述的字体大小
         int endDescTextSize = DensityUtility.sp2px(getContext(), 16);
-        // 结束处描述的文本颜色
+        // 尾部描述的文本颜色
         int endDescTextColor = ContextProviderKt.getColor(R.color.def_text_key, context);
-        // 结束处描述的文本对齐方式
+        // 尾部描述的文本对齐方式
         int endDescGravity = 2; // 1:left; 2:right
-        // 结束处描述的图标间距
+        // 尾部描述的图标间距
         int endDescDrawablePadding = 0;
-        // 结束处描述的左侧图标
+        // 尾部描述的左侧图标
         Drawable endDescDrawableLeft = null;
 
-        // 是否显示结束处箭头
+        // 是否显示尾部箭头
         boolean showEndArrow = true;
-        // 是否显示结束处开关
+        // 是否显示尾部开关
         boolean showEndSwitch = false;
         // 是否显示顶部分界线
         boolean showTopLine = false;
@@ -173,7 +172,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置开始处图标，如果为0则隐藏
+     * 设置头部图标，如果为0则隐藏
      *
      * @param resId
      */
@@ -187,7 +186,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置开始处图标，如果为null则隐藏
+     * 设置头部图标，如果为null则隐藏
      *
      * @param drawable
      */
@@ -201,13 +200,14 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置结束处图标，如果为0则隐藏，不能与结束处描述同时使用
+     * 设置尾部图标，如果为0则隐藏，不能与尾部描述、尾部开关同时使用
      *
      * @param resId
      */
     public void setEndIcon(@DrawableRes int resId) {
         if (resId != 0) {
             mEndDesc.setVisibility(GONE);
+            mEndSwitch.setVisibility(GONE);
             mEndIcon.setVisibility(VISIBLE);
             mEndIcon.setImageResource(resId);
         } else {
@@ -216,13 +216,14 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置结束处图标，如果为null则隐藏，不能与结束处描述同时使用
+     * 设置尾部图标，如果为null则隐藏，不能与尾部描述、尾部开关同时使用
      *
      * @param drawable
      */
     public void setEndIcon(Drawable drawable) {
         if (drawable != null) {
             mEndDesc.setVisibility(GONE);
+            mEndSwitch.setVisibility(GONE);
             mEndIcon.setVisibility(VISIBLE);
             mEndIcon.setImageDrawable(drawable);
         } else {
@@ -231,7 +232,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置开始处标题的文本，如果为0则隐藏
+     * 设置头部标题的文本，如果为0则隐藏
      *
      * @param resId
      */
@@ -245,7 +246,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置开始处标题的文本，如果为null则隐藏
+     * 设置头部标题的文本，如果为null则隐藏
      *
      * @param text
      */
@@ -259,7 +260,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置开始处标题的字体大小
+     * 设置头部标题的字体大小
      *
      * @param size
      */
@@ -268,7 +269,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置开始处标题的文字颜色
+     * 设置头部标题的文字颜色
      *
      * @param color
      */
@@ -277,7 +278,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置开始处描述的文本，如果为0则隐藏，不能与结束处描述同时使用
+     * 设置头部描述的文本，如果为0则隐藏，不能与尾部描述同时使用
      *
      * @param resId
      */
@@ -292,7 +293,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置开始处描述的文本，如果为null则隐藏，不能与结束处描述同时使用
+     * 设置头部描述的文本，如果为null则隐藏，不能与尾部描述同时使用
      *
      * @param text
      */
@@ -307,7 +308,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置开始处描述的字体大小
+     * 设置头部描述的字体大小
      *
      * @param size
      */
@@ -316,7 +317,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置开始处描述的文本颜色
+     * 设置头部描述的文本颜色
      *
      * @param color
      */
@@ -325,7 +326,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置结束处描述的文本，如果为0则隐藏，不能与开始处描述、结束处图标同时使用
+     * 设置尾部描述的文本，如果为0则隐藏，不能与头部描述、尾部图标、尾部开关同时使用
      *
      * @param resId
      */
@@ -333,6 +334,7 @@ public class MenuItemView extends FrameLayout {
         if (resId != 0) {
             mStartDesc.setVisibility(GONE);
             mEndIcon.setVisibility(GONE);
+            mEndSwitch.setVisibility(GONE);
             mEndDesc.setVisibility(VISIBLE);
             mEndDesc.setText(resId);
         } else {
@@ -341,7 +343,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置结束处描述的文本，如果为null则隐藏，不能与开始处描述、结束处图标同时使用
+     * 设置尾部描述的文本，如果为null则隐藏，不能与头部描述、尾部图标、尾部开关同时使用
      *
      * @param text
      */
@@ -349,6 +351,7 @@ public class MenuItemView extends FrameLayout {
         if (!TextUtils.isEmpty(text)) {
             mStartDesc.setVisibility(GONE);
             mEndIcon.setVisibility(GONE);
+            mEndSwitch.setVisibility(GONE);
             mEndDesc.setVisibility(VISIBLE);
             mEndDesc.setText(text);
         } else {
@@ -357,7 +360,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置束位处描述的字体大小
+     * 设置尾部描述的字体大小
      *
      * @param size
      */
@@ -366,7 +369,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置结束处描述的文本颜色
+     * 设置尾部描述的文本颜色
      *
      * @param color
      */
@@ -375,20 +378,20 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置结束处描述的文本对齐方式
+     * 设置尾部描述的文本对齐方式
      *
      * @param gravity
      */
     public void setEndDescGravity(int gravity) {
         if (gravity == 1) {
-            mEndDesc.setGravity(Gravity.LEFT);
+            mEndDesc.setGravity(Gravity.START);
         } else {
-            mEndDesc.setGravity(Gravity.RIGHT);
+            mEndDesc.setGravity(Gravity.END);
         }
     }
 
     /**
-     * 设置结束处描述的左侧图标
+     * 设置尾部描述的左侧图标
      *
      * @param drawableLeft
      */
@@ -402,7 +405,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置结束处描述的图标间距
+     * 设置尾部描述的图标间距
      *
      * @param drawablePadding
      */
@@ -413,7 +416,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置是否显示结束处箭头，不能与结束处开关同时使用
+     * 设置是否显示尾部箭头，不能与尾部开关同时使用
      *
      * @param show
      */
@@ -427,13 +430,15 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置是否显示结束处开关，不能与结束处箭头同时使用
+     * 设置是否显示尾部开关，不能与尾部箭头、尾部描述、尾部图标同时使用
      *
      * @param show
      */
     public void setShowEndSwitch(boolean show) {
         if (show) {
             mEndArrow.setVisibility(GONE);
+            mEndDesc.setVisibility(GONE);
+            mEndIcon.setVisibility(GONE);
             mEndSwitch.setVisibility(VISIBLE);
         } else {
             mEndSwitch.setVisibility(GONE);
@@ -441,7 +446,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 获取结束处开关
+     * 获取尾部开关
      *
      * @return
      */
@@ -450,7 +455,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置结束处开关的状态
+     * 设置尾部开关的状态
      *
      * @param checked
      */
@@ -459,7 +464,7 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
-     * 设置结束处开关的切换监听
+     * 设置尾部开关的切换监听
      *
      * @param listener
      */
