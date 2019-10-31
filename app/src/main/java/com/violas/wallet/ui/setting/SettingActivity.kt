@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.setting
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.violas.wallet.BuildConfig
@@ -31,6 +32,7 @@ class SettingActivity : BaseActivity() {
             R.string.setting_app_name_version,
             BuildConfig.VERSION_NAME
         )
+
         mivMultiLanguage.setOnClickListener(this)
         mivServiceAgreement.setOnClickListener(this)
         mivAboutUs.setOnClickListener(this)
@@ -42,12 +44,15 @@ class SettingActivity : BaseActivity() {
             R.id.mivMultiLanguage -> {
 
             }
+
             R.id.mivServiceAgreement -> {
 
             }
-            R.id.mivAboutUs -> {
 
+            R.id.mivAboutUs -> {
+                startActivity(Intent(this, AboutUsActivity::class.java))
             }
+
             R.id.mivHelpFeedback -> {
 
             }

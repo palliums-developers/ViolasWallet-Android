@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/def_activity_bg">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_39"
+            android:src="@mipmap/ic_logo_shadow"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvAppNameVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/def_text_title"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivLogo"
+            tools:text="Violas 1.0.0" />
+
+        <com.violas.wallet.widget.MenuItemView
+            android:id="@+id/mivWebsite"
+            style="@style/MenuItemView"
+            android:layout_marginTop="@dimen/dp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvAppNameVersion"
+            app:mivEndDescText="@string/about_us_website_value"
+            app:mivShowEndArrow="false"
+            app:mivStartTitleText="@string/about_us_website_key" />
+
+        <com.violas.wallet.widget.MenuItemView
+            android:id="@+id/mivEmail"
+            style="@style/MenuItemView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mivWebsite"
+            app:mivEndDescText="@string/about_us_email_value"
+            app:mivShowEndArrow="false"
+            app:mivStartTitleText="@string/about_us_email_key" />
+
+        <com.violas.wallet.widget.MenuItemView
+            android:id="@+id/mivWeChat"
+            style="@style/MenuItemView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mivEmail"
+            app:mivEndDescText="@string/about_us_wechat_value"
+            app:mivShowEndArrow="false"
+            app:mivStartTitleText="@string/about_us_wechat_key" />
+
+        <com.violas.wallet.widget.MenuItemView
+            android:id="@+id/mivQQ"
+            style="@style/MenuItemView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mivWeChat"
+            app:mivEndDescText="@string/about_us_qq_value"
+            app:mivShowEndArrow="false"
+            app:mivStartTitleText="@string/about_us_qq_key" />
+
+        <com.violas.wallet.widget.MenuItemView
+            android:id="@+id/mivWeibo"
+            style="@style/MenuItemView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mivQQ"
+            app:mivEndDescText="@string/about_us_weibo_value"
+            app:mivShowEndArrow="false"
+            app:mivStartTitleText="@string/about_us_weibo_key" />
+
+        <com.violas.wallet.widget.MenuItemView
+            android:id="@+id/mivTelegram"
+            style="@style/MenuItemView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mivWeibo"
+            app:mivEndDescText="@string/about_us_telegram_value"
+            app:mivShowEndArrow="false"
+            app:mivStartTitleText="@string/about_us_telegram_key" />
+
+        <com.violas.wallet.widget.MenuItemView
+            android:id="@+id/mivTwitter"
+            style="@style/MenuItemView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mivTelegram"
+            app:mivEndDescText="@string/about_us_twitter_value"
+            app:mivShowEndArrow="false"
+            app:mivStartTitleText="@string/about_us_twitter_key" />
+
+        <com.violas.wallet.widget.MenuItemView
+            android:id="@+id/mivFacebook"
+            style="@style/MenuItemView"
+            android:layout_marginBottom="@dimen/dp_60"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mivTwitter"
+            app:mivEndDescText="@string/about_us_facebook_value"
+            app:mivShowEndArrow="false"
+            app:mivStartTitleText="@string/about_us_facebook_key" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

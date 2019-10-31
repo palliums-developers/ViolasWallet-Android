@@ -86,6 +86,9 @@
         <activity
             android:name=".ui.setting.SettingActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.setting.AboutUsActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".contentProvider.InitContentProvider"
