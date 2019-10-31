@@ -144,6 +144,7 @@
     <string name="about_us_twitter_value">xxxxx</string>
     <string name="about_us_facebook_key">Facebook</string>
     <string name="about_us_facebook_value">xxxxx</string>
+    <string name="hint_address_error">地址有误</string>
 
     <string name="web_load_failed_tips">无法打开页面</string>
     <string name="web_load_failed_retry">轻触屏幕重新加载</string>

@@ -7,19 +7,21 @@ import com.quincysx.crypto.exception.CoinNotFindException;
  */
 
 public enum CoinTypes {
-    Bitcoin(0, "BTC", "BTC"),
-    BitcoinTest(1, "BTC", "BTC"),
-    VToken(-2, "VToken", "Vtoken"),
-    Libra(-1, "Libra", "Lib");
+    Bitcoin(0, "BTC", "bitcoin", "BTC"),
+    BitcoinTest(1, "BTC", "bitcoin", "BTC"),
+    VToken(-2, "VToken", "vtoken", "Vtoken"),
+    Libra(-1, "Libra", "libra", "Lib");
 
     private int coinType;
     private String coinName;
+    private String fullName;
     private String coinUnit;
 
-    CoinTypes(int i, String name, String unit) {
+    CoinTypes(int i, String name, String fullName, String unit) {
         coinType = i;
         coinName = name;
         coinUnit = unit;
+        this.fullName = fullName;
     }
 
     public int coinType() {
@@ -28,6 +30,10 @@ public enum CoinTypes {
 
     public String coinName() {
         return coinName;
+    }
+
+    public String fullName() {
+        return fullName;
     }
 
     public String coinUnit() {

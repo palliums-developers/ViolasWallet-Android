@@ -409,4 +409,8 @@ class AccountManager : CoroutineScope by IOScope() {
     fun removeWallet(accountId: AccountDO) {
         mAccountStorage.delete(accountId)
     }
+
+    fun getIdentityByCoinType(coinType: Int): AccountDO? {
+        return mAccountStorage.findByCoinTypeByIdentity(coinType)
+    }
 }
