@@ -17,8 +17,8 @@ public class BlockChainRequest {
             default:
             case "testnet":
             case "devnet":
-                return new BlockCypherRequest();
-//                return new BTCTestRequest();
+//                return new BlockCypherRequest();
+                return new BTCTestRequest();
             case "main":
                 return new BTCRequest();
         }
