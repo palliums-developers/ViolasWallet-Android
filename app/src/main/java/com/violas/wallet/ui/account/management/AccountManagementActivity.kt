@@ -122,7 +122,8 @@ class AccountManagementActivity : BaseActivity() {
                     when (it.accountDO.coinNumber) {
                         CoinTypes.Libra.coinType() ->
                             R.drawable.selector_account_management_item_libra
-                        CoinTypes.Bitcoin.coinType() ->
+                        CoinTypes.Bitcoin.coinType(),
+                        CoinTypes.BitcoinTest.coinType() ->
                             R.drawable.selector_account_management_item_btc
                         else ->
                             R.drawable.selector_account_management_item_violas
