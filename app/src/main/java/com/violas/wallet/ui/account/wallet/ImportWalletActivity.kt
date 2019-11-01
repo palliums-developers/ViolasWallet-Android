@@ -9,6 +9,7 @@ import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.MnemonicException
 import com.violas.wallet.event.SwitchAccountEvent
+import com.violas.wallet.event.WalletChangeEvent
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_create_wallet.*
 import kotlinx.android.synthetic.main.activity_import_identity.*
@@ -107,6 +108,7 @@ class ImportWalletActivity : BaseActivity() {
                     withContext(Dispatchers.Main) {
                         dismissProgress()
                         EventBus.getDefault().post(SwitchAccountEvent())
+                        EventBus.getDefault().post(WalletChangeEvent())
                         setResult(Activity.RESULT_OK)
                         finish()
                     }

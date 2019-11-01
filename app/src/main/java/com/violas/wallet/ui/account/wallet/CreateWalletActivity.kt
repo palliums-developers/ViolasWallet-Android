@@ -8,6 +8,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.SwitchAccountEvent
+import com.violas.wallet.event.WalletChangeEvent
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.utils.start
@@ -115,6 +116,7 @@ class CreateWalletActivity : BaseActivity() {
             withContext(Dispatchers.Main) {
                 dismissProgress()
                 EventBus.getDefault().post(SwitchAccountEvent())
+                EventBus.getDefault().post(WalletChangeEvent())
                 setResult(Activity.RESULT_OK)
                 finish()
             }
@@ -125,6 +127,7 @@ class CreateWalletActivity : BaseActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_BACK_MNEMONIC) {
             if (resultCode == Activity.RESULT_OK) {
+                setResult(Activity.RESULT_OK)
                 saveWallet()
             }
         }
