@@ -31,7 +31,7 @@ class FastIntoWalletDialog : DialogFragment() {
             val display = windowManager.defaultDisplay
             val point = Point()
             display.getSize(point)
-            params?.y = (point.y * 0.12).toInt()
+            params?.y = (point.y * 0.18).toInt()
             dialog?.window?.attributes = params
         }
 

@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.dialog.FastIntoWalletDialog
+import com.violas.wallet.base.dialog.PasswordInputDialog
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
@@ -19,6 +21,8 @@ import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.selection.AccountSelectionActivity
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
+import com.violas.wallet.ui.backup.BackupMnemonicFrom
+import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.scan.ScanActivity
@@ -139,11 +143,47 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                     .show(it, "fast")
             }
         } else {
-            if (mAccountManager.isIdentityMnemonicBackup()) {
+            if (!mAccountManager.isIdentityMnemonicBackup()) {
                 layoutBackupNow.visibility = View.VISIBLE
                 btnConfirm.setOnClickListener {
                     layoutBackupNow?.visibility = View.GONE
-                    // TODO 跳转到备份
+
+                    fragmentManager?.let {
+                        PasswordInputDialog()
+                            .setConfirmListener { bytes, dialogFragment ->
+                                launch(Dispatchers.IO) {
+                                    activity?.applicationContext?.let { it1 ->
+                                        try {
+                                            val currentAccount =
+                                                mAccountManager.getIdentityWalletMnemonic(
+                                                    it1,
+                                                    bytes
+                                                )
+                                                    ?.toMutableList()
+                                            if (currentAccount != null) {
+                                                dialogFragment.dismiss()
+                                                BackupPromptActivity.start(
+                                                    activity!!,
+                                                    currentAccount as ArrayList<String>,
+                                                    BackupMnemonicFrom.IDENTITY_WALLET
+                                                )
+                                            } else {
+                                                withContext(Dispatchers.Main) {
+                                                    Toast.makeText(
+                                                        it1,
+                                                        R.string.hint_password_error,
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                            }
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                        }
+                                    }
+                                }
+                            }
+                            .show(it)
+                    }
                 }
             }
         }

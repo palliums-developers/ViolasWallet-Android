@@ -13,6 +13,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.ChangeAccountNameEvent
 import com.violas.wallet.event.SwitchAccountEvent
+import com.violas.wallet.event.WalletChangeEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.AccountInfoActivity
 import com.violas.wallet.ui.backup.ShowMnemonicActivity
@@ -128,6 +129,7 @@ class WalletManagerActivity : BaseActivity() {
             if (removeAccountID == currentAccountID) {
                 mAccountManager.switchCurrentAccount()
                 EventBus.getDefault().post(SwitchAccountEvent())
+                EventBus.getDefault().post(WalletChangeEvent())
             }
             withContext(Dispatchers.Main) {
                 finish()

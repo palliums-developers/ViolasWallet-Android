@@ -61,12 +61,12 @@ class AddWalletDialog : BaseDialogFragment() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.llCreate -> {
-                CreateWalletActivity.start(requireActivity(), transform())
+                CreateWalletActivity.start(requireActivity(), transform(), AddWalletActivity.REQUEST_CREATE_IMPORT)
                 close()
             }
 
             R.id.llImport -> {
-                ImportWalletActivity.start(requireActivity(), transform())
+                ImportWalletActivity.start(requireActivity(), transform(), AddWalletActivity.REQUEST_CREATE_IMPORT)
                 close()
             }
 

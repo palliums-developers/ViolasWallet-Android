@@ -1,5 +1,7 @@
 package com.violas.wallet.ui.account.wallet
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +14,8 @@ import com.violas.wallet.base.BaseViewHolder
 import com.violas.wallet.base.recycler.RecycleViewItemDivider
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.utils.DensityUtility
+import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_add_wallet.*
-import kotlinx.android.synthetic.main.item_add_wallet.*
 import kotlinx.android.synthetic.main.item_add_wallet.view.*
 
 /**
@@ -23,6 +25,13 @@ import kotlinx.android.synthetic.main.item_add_wallet.view.*
  * desc: 添加钱包页面
  */
 class AddWalletActivity : BaseActivity() {
+    companion object {
+        const val REQUEST_CREATE_IMPORT = 1
+
+        fun start(context: Activity) {
+            Intent(context, AddWalletActivity::class.java).start(context)
+        }
+    }
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_add_wallet
@@ -68,6 +77,17 @@ class AddWalletActivity : BaseActivity() {
         vRecyclerView.adapter = AddWalletAdapter(datas, onItemClick = { accountType ->
             AddWalletDialog.newInstance(accountType).show()
         })
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_CREATE_IMPORT -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    finish()
+                }
+            }
+        }
     }
 
     data class AddWalletVo(

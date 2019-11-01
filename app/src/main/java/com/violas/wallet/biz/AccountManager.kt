@@ -136,11 +136,15 @@ class AccountManager : CoroutineScope by IOScope() {
     /**
      * 获取身份钱包的助记词
      */
-    fun getIdentityWalletMnemonic(context: Context, password: ByteArray): List<String> {
+    fun getIdentityWalletMnemonic(context: Context, password: ByteArray): ArrayList<String>? {
         val account = mAccountStorage.loadByWalletType(0)!!
         val security = SimpleSecurity.instance(context)
-        val mnemonic = String(security.decrypt(password, account.mnemonic)!!)
-        return mnemonic.split(" ")
+        val bytes = security.decrypt(password, account.mnemonic) ?: return null
+        val mnemonic = String(bytes)
+        return mnemonic.substring(1, mnemonic.length - 1)
+            .split(",")
+            .map { it.trim() }
+            .toMutableList() as ArrayList
     }
 
     /**
@@ -209,7 +213,7 @@ class AccountManager : CoroutineScope by IOScope() {
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.VToken.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.VToken.coinName()}-$walletName",
+                walletNickname = "$walletName",
                 walletType = 1
             )
         )
@@ -234,7 +238,7 @@ class AccountManager : CoroutineScope by IOScope() {
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
+                walletNickname = "$walletName",
                 walletType = 1
             )
         )
@@ -267,7 +271,7 @@ class AccountManager : CoroutineScope by IOScope() {
                     CoinTypes.Bitcoin.coinType()
                 },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Bitcoin.coinName()}-$walletName",
+                walletNickname = "$walletName",
                 walletType = 1
             )
         )
