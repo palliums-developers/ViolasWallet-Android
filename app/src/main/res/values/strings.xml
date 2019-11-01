@@ -32,7 +32,7 @@
     <string name="btn_complete">完成</string>
     <string name="action_back">返回</string>
     <string name="quit_confirmation">再次点击退出</string>
-    <string name="action_confirm">确定</string>
+    <string name="action_confirm">确认</string>
     <string name="transfer">转账</string>
     <string name="collection">收款</string>
     <string name="copy_success">复制成功</string>
@@ -155,4 +155,8 @@
     <string name="help_feedback_title">帮助与反馈</string>
     <string name="help_feedback_menu">问题反馈</string>
     <string name="help_feedback_url">https://www.baidu.com/</string>
+    <string name="feedback_title">问题反馈</string>
+    <string name="feedback_hint_input_content">请输入内容</string>
+    <string name="feedback_hint_input_contact">请输入您的联系方式</string>
+    <string name="feedback_content_count">%1$d/%2$d</string>
 </resources>
