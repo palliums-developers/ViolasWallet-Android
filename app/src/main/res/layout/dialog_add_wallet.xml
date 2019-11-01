@@ -82,7 +82,7 @@
             android:background="@drawable/bg_menu_item"
             android:gravity="center"
             android:text="@string/action_cancel"
-            android:textColor="@color/def_text_key"
+            android:textColor="@color/def_text_btn"
             android:textSize="@dimen/sp_20"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

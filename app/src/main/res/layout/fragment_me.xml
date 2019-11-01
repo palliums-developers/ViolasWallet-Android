@@ -47,6 +47,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivHeader"
         app:mivStartIcon="@mipmap/ic_me_wallet_management"
+        app:mivShowBottomLine="false"
         app:mivStartTitleText="@string/me_wallet_management" />
 
     <com.violas.wallet.widget.MenuItemView
@@ -56,6 +57,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivWalletManagement"
         app:mivShowBottomLine="false"
+        android:visibility="gone"
         app:mivStartIcon="@mipmap/ic_me_transfer_record"
         app:mivStartTitleText="@string/me_transfer_record" />
 
