@@ -28,6 +28,7 @@ import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
+import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
@@ -224,7 +225,10 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     private fun setAmount(currentAccount: AccountDO) {
-        tvAmount.text = "${currentAccount.amount}"
+        val parseCoinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
+        val convertAmountToDisplayUnit =
+            convertAmountToDisplayUnit(currentAccount.amount, parseCoinType)
+        tvAmount.text = "${convertAmountToDisplayUnit.first}"
     }
 
     private fun refreshAssert() {

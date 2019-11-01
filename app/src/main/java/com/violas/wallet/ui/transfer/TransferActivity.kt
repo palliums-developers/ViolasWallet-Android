@@ -15,13 +15,12 @@ import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
+import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 class TransferActivity : BaseActivity() {
     companion object {
@@ -92,26 +91,20 @@ class TransferActivity : BaseActivity() {
                     }
                 }
 
-                val amount = BigDecimal(
-                    intent
-                        .getLongExtra(
-                            EXT_AMOUNT,
-                            0
-                        )
-                        .toString()
+                val amount = intent.getLongExtra(
+                    EXT_AMOUNT,
+                    0
                 )
-                    .divide(
-                        BigDecimal("${getCoinDecimal(account!!.coinNumber)}"),
-                        8,
-                        RoundingMode.HALF_DOWN
-                    )
 
                 val parseCoinType = CoinTypes.parseCoinType(account!!.coinNumber)
                 withContext(Dispatchers.Main) {
-                    if (amount > BigDecimal("0")) {
-                        editAmountInput.setText(amount.stripTrailingZeros().toPlainString())
+                    if (amount > 0) {
+                        val convertAmountToDisplayUnit =
+                            convertAmountToDisplayUnit(amount, parseCoinType)
+                        editAmountInput.setText(convertAmountToDisplayUnit.first)
                     }
                     title = "${parseCoinType.coinName()}${getString(R.string.transfer)}"
+                    tvHintCoinName.text = parseCoinType.coinName()
                 }
             } catch (e: AccountsException) {
                 finish()
@@ -160,22 +153,6 @@ class TransferActivity : BaseActivity() {
                     balance,
                     unit
                 )
-            }
-        }
-    }
-
-    private fun getCoinDecimal(coinNumber: Int): Long {
-        return when (coinNumber) {
-            CoinTypes.Libra.coinType(),
-            CoinTypes.VToken.coinType() -> {
-                1000000
-            }
-            CoinTypes.Bitcoin.coinType(),
-            CoinTypes.BitcoinTest.coinType() -> {
-                100000000
-            }
-            else -> {
-                1000000
             }
         }
     }
@@ -234,7 +211,7 @@ class TransferActivity : BaseActivity() {
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
                     decodeScanQRCode(msg) { coinType, address, amount ->
-                        Log.e("=====","${coinType}  ${address}  ${amount}")
+                        Log.e("=====", "${coinType}  ${address}  ${amount}")
                         launch {
                             account?.let {
                                 if (coinType == it.coinNumber || coinType == -1) {
