@@ -37,6 +37,6 @@ class HelpFeedbackActivity : BaseWebActivity() {
     }
 
     override fun onTitleRightViewClick() {
-        // TODO 问题反馈弹窗
+        FeedbackDialog().show()
     }
 }

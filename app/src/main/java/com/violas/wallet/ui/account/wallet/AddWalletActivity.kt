@@ -75,8 +75,7 @@ class AddWalletActivity : BaseActivity() {
             )
         )
         vRecyclerView.adapter = AddWalletAdapter(datas, onItemClick = { accountType ->
-            AddWalletDialog.newInstance(accountType)
-                .show(supportFragmentManager, AddWalletDialog::class.java.name)
+            AddWalletDialog.newInstance(accountType).show()
         })
     }
 

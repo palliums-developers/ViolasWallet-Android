@@ -73,7 +73,7 @@
     </style>
 
     <!-- ActionSheet缺省主题-->
-    <style name="ThemeDefaultBottomDialog" parent="Theme.AppCompat.Dialog">
+    <style name="ThemeDefaultDialog" parent="Theme.AppCompat.Dialog">
         <item name="android:windowFrame">@null</item>
         <!-- 边框-->
         <item name="android:windowIsFloating">true</item>
@@ -88,8 +88,23 @@
 
     <!-- BottomDialog 动画-->
     <style name="AnimationDefaultBottomDialog" parent="android:Animation">
-        <item name="android:windowEnterAnimation">@anim/bottom_in</item>
-        <item name="android:windowExitAnimation">@anim/bottom_out</item>
+        <item name="android:windowEnterAnimation">@anim/dialog_bottom_in</item>
+        <item name="android:windowExitAnimation">@anim/dialog_bottom_out</item>
+    </style>
+    <style name="AnimationDefaultCenterDialog" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/dialog_zoom_in</item>
+        <item name="android:windowExitAnimation">@anim/dialog_zoom_out</item>
+    </style>
+
+    <style name="EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/def_text_title</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textColorHint">@color/def_text_hint</item>
+        <item name="android:background">@drawable/selector_edit_bg_line</item>
+        <item name="android:layout_height">@dimen/dp_51</item>
+        <item name="android:layout_width">@dimen/dp_0</item>
+        <item name="android:layout_marginStart">@dimen/dp_20</item>
+        <item name="android:layout_marginEnd">@dimen/dp_23</item>
     </style>
 
 </resources>

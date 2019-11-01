@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:background="@color/translucent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_28"
+        android:layout_marginEnd="@dimen/dp_28"
+        android:background="@drawable/shape_feedback_bg">
+
+        <View
+            android:id="@+id/vHeader"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_40"
+            android:background="@drawable/shape_feedback_header_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/vTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/feedback_title"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintBottom_toBottomOf="@id/vHeader"
+            app:layout_constraintEnd_toEndOf="@id/vHeader"
+            app:layout_constraintStart_toStartOf="@id/vHeader"
+            app:layout_constraintTop_toTopOf="@id/vHeader" />
+
+        <ImageView
+            android:id="@+id/vClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dp_12"
+            android:src="@drawable/selector_close_white"
+            app:layout_constraintBottom_toBottomOf="@id/vHeader"
+            app:layout_constraintEnd_toEndOf="@id/vHeader"
+            app:layout_constraintTop_toTopOf="@id/vHeader" />
+
+        <EditText
+            android:id="@+id/vContent"
+            style="@style/EditText"
+            android:layout_height="@dimen/dp_135"
+            android:gravity="top|start"
+            android:hint="@string/feedback_hint_input_content"
+            android:paddingTop="@dimen/dp_17"
+            android:paddingBottom="@dimen/dp_25"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vHeader" />
+
+        <TextView
+            android:id="@+id/vCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_5"
+            android:textColor="@color/def_text_hint"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintBottom_toBottomOf="@id/vContent"
+            app:layout_constraintEnd_toEndOf="@id/vContent"
+            tools:text="0/200" />
+
+        <EditText
+            android:id="@+id/vContact"
+            style="@style/EditText"
+            android:hint="@string/feedback_hint_input_contact"
+            android:singleLine="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vContent" />
+
+        <Button
+            android:id="@+id/vConfirm"
+            style="@style/BaseButtonPrimary"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_40"
+            android:layout_marginStart="@dimen/dp_85"
+            android:layout_marginTop="@dimen/dp_34"
+            android:layout_marginEnd="@dimen/dp_85"
+            android:layout_marginBottom="@dimen/dp_23"
+            android:text="@string/action_confirm"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vContact" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

@@ -1,12 +1,11 @@
 package com.violas.wallet.ui.account.wallet
 
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.view.*
-import androidx.fragment.app.DialogFragment
+import android.view.Gravity
+import android.view.View
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseDialogFragment
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_TYPE
 import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.account.AccountType
@@ -18,7 +17,7 @@ import kotlinx.android.synthetic.main.dialog_add_wallet.*
  * <p>
  * desc: 添加钱包弹窗
  */
-class AddWalletDialog : DialogFragment(), View.OnClickListener {
+class AddWalletDialog : BaseDialogFragment() {
 
     companion object {
 
@@ -35,16 +34,16 @@ class AddWalletDialog : DialogFragment(), View.OnClickListener {
 
     private var accountType: Int = AccountType.VIOLAS
 
-    init {
-        setStyle(STYLE_NORMAL, R.style.ThemeDefaultBottomDialog)
+    override fun getLayoutResId(): Int {
+        return R.layout.dialog_add_wallet
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.dialog_add_wallet, container)
+    override fun getWindowAnimationsStyle(): Int {
+        return R.style.AnimationDefaultBottomDialog
+    }
+
+    override fun getWindowLayoutParamsGravity(): Int {
+        return Gravity.BOTTOM
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,50 +58,21 @@ class AddWalletDialog : DialogFragment(), View.OnClickListener {
         }
     }
 
-
-    override fun onStart() {
-        dialog?.window?.let {
-            val displayMetrics = DisplayMetrics()
-            activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
-
-            val attributes = it.attributes
-            attributes.width = WindowManager.LayoutParams.MATCH_PARENT
-            attributes.height = WindowManager.LayoutParams.WRAP_CONTENT
-            attributes.gravity = Gravity.BOTTOM
-            it.attributes = attributes
-
-            it.setWindowAnimations(R.style.AnimationDefaultBottomDialog)
-        }
-
-        dialog?.setCancelable(true)
-        dialog?.setCanceledOnTouchOutside(true)
-
-        super.onStart()
-    }
-
-    override fun onClick(view: View) {
-        if (!BaseActivity.isFastMultiClick(view)) {
-            when (view.id) {
-                R.id.llCreate -> {
-                    CreateWalletActivity.start(requireActivity(), transform(), AddWalletActivity.REQUEST_CREATE_IMPORT)
-                    close()
-                }
-
-                R.id.llImport -> {
-                    ImportWalletActivity.start(requireActivity(), transform(), AddWalletActivity.REQUEST_CREATE_IMPORT)
-                    close()
-                }
-
-                R.id.tvCancel -> {
-                    close()
-                }
+    override fun onViewClick(view: View) {
+        when (view.id) {
+            R.id.llCreate -> {
+                CreateWalletActivity.start(requireActivity(), transform(), AddWalletActivity.REQUEST_CREATE_IMPORT)
+                close()
             }
-        }
-    }
 
-    private fun close() {
-        if (!isDetached && !isRemoving && fragmentManager != null) {
-            dismissAllowingStateLoss()
+            R.id.llImport -> {
+                ImportWalletActivity.start(requireActivity(), transform(), AddWalletActivity.REQUEST_CREATE_IMPORT)
+                close()
+            }
+
+            R.id.tvCancel -> {
+                close()
+            }
         }
     }
 
