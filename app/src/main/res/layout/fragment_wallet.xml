@@ -165,7 +165,7 @@
                     android:id="@+id/layoutOperation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:orientation="horizontal"
                     app:layout_constraintTop_toBottomOf="@+id/tvAddress">
@@ -176,7 +176,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:padding="10dp">
+                        android:padding="12dp">
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -186,7 +186,8 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp"
+                            android:layout_marginStart="5dp"
+                            android:paddingTop="6dp"
                             android:text="@string/transfer"
                             android:textColor="#22126C"
                             android:textSize="16sp" />
@@ -214,7 +215,8 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp"
+                            android:layout_marginStart="8dp"
+                            android:paddingTop="6dp"
                             android:text="@string/collection"
                             android:textColor="#22126C"
                             android:textSize="16sp" />
