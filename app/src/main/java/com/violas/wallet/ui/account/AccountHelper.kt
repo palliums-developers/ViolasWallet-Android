@@ -48,33 +48,16 @@ fun loadAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
         data[otherAccountLabel] = otherWallets
 
     } else {
-        var accountLabel = "Violas"
-        var coinType = CoinTypes.VToken.coinType()
-
-        when (accountType) {
-            AccountType.BTC -> {
-                accountLabel = "BTC"
-                coinType = if (Vm.TestNet) {
-                    CoinTypes.BitcoinTest.coinType()
-                } else {
-                    CoinTypes.Bitcoin.coinType()
-                }
-            }
-            AccountType.LIBRA -> {
-                accountLabel = "Libra"
-                coinType = CoinTypes.Libra.coinType()
-            }
-        }
-
+        val coinTypes = transformAccountType(accountType)
         val accounts = arrayListOf<AccountVo>()
-        val accountsTemp = accountStorage.loadAllByCoinType(coinType)
+        val accountsTemp = accountStorage.loadAllByCoinType(coinTypes.coinType())
         accountsTemp.forEach {
             accounts.add(AccountVo(it).apply {
                 selected = it.id == currentAccount.id
-                setGroupName(accountLabel)
+                setGroupName(coinTypes.coinName())
             })
         }
-        data[accountLabel] = accounts
+        data[coinTypes.coinName()] = accounts
     }
 
     return data
@@ -94,7 +77,7 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
             AccountVo(
                 AccountDO(
                     id = 0,
-                    walletNickname = "Violas-Wallet",
+                    walletNickname = "${CoinTypes.VToken.coinName()}-Wallet",
                     walletType = 0,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.VToken.coinType()
@@ -104,7 +87,7 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
             AccountVo(
                 AccountDO(
                     id = 1,
-                    walletNickname = "Libra-Wallet",
+                    walletNickname = "${CoinTypes.Libra.coinName()}-Wallet",
                     walletType = 0,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.Libra.coinType()
@@ -113,7 +96,7 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
             AccountVo(
                 AccountDO(
                     id = 2,
-                    walletNickname = "BTC-Wallet",
+                    walletNickname = "${CoinTypes.Bitcoin.coinName()}-Wallet",
                     walletType = 0,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.Bitcoin.coinType()
@@ -125,7 +108,7 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
             AccountVo(
                 AccountDO(
                     id = 3,
-                    walletNickname = "Violas-Wallet",
+                    walletNickname = "${CoinTypes.VToken.coinName()}-Wallet 2",
                     walletType = 1,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.VToken.coinType()
@@ -134,7 +117,7 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
             AccountVo(
                 AccountDO(
                     id = 4,
-                    walletNickname = "Libra-Wallet",
+                    walletNickname = "${CoinTypes.Libra.coinName()}-Wallet 2",
                     walletType = 1,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.Libra.coinType()
@@ -143,7 +126,7 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
             AccountVo(
                 AccountDO(
                     id = 5,
-                    walletNickname = "BTC-Wallet",
+                    walletNickname = "${CoinTypes.Bitcoin.coinName()}-Wallet 2",
                     walletType = 1,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.Bitcoin.coinType()
@@ -154,42 +137,64 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
         data[identityAccountLabel] = identityAccounts
         data[otherAccountLabel] = otherAccounts
     } else {
-        var accountLabel = "Violas"
-        var coinType = CoinTypes.VToken.coinType()
-
-        when (accountType) {
-            AccountType.BTC -> {
-                accountLabel = "BTC"
-                coinType = CoinTypes.Bitcoin.coinType()
-            }
-            AccountType.LIBRA -> {
-                accountLabel = "Libra"
-                coinType = CoinTypes.Libra.coinType()
-            }
-        }
-
-        val accounts = arrayListOf(AccountVo(
-            AccountDO(
-                id = 0,
-                walletNickname = "$accountLabel-Wallet",
-                walletType = 0,
-                address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                coinNumber = coinType
-            ),
-            selected = coinType == CoinTypes.VToken.coinType()
-        ).apply { setGroupName(accountLabel) },
+        val coinTypes = transformAccountType(accountType)
+        val accounts = arrayListOf(
+            AccountVo(
+                AccountDO(
+                    id = 0,
+                    walletNickname = "$${coinTypes.coinName()}-Wallet",
+                    walletType = 0,
+                    address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
+                    coinNumber = coinTypes.coinType()
+                ),
+                selected = coinTypes.coinType() == CoinTypes.VToken.coinType()
+            ).apply { setGroupName(coinTypes.coinName()) },
             AccountVo(
                 AccountDO(
                     id = 1,
-                    walletNickname = "$accountLabel-Wallet",
+                    walletNickname = "${coinTypes.coinName()}-Wallet 2",
                     walletType = 1,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                    coinNumber = coinType
+                    coinNumber = coinTypes.coinType()
                 )
-            ).apply { setGroupName(accountLabel) }
+            ).apply { setGroupName(coinTypes.coinName()) }
         )
-        data[accountLabel] = accounts
+        data[coinTypes.coinName()] = accounts
     }
 
     return data
+}
+
+
+@AccountType
+fun transformCoinTypes(coinTypes: CoinTypes): Int {
+    return when (coinTypes) {
+        CoinTypes.VToken -> {
+            AccountType.VIOLAS
+        }
+
+        CoinTypes.Libra -> {
+            AccountType.LIBRA
+        }
+
+        else -> {
+            AccountType.BTC
+        }
+    }
+}
+
+fun transformAccountType(@AccountType accountType: Int): CoinTypes {
+    return when (accountType) {
+        AccountType.VIOLAS -> {
+            CoinTypes.VToken
+        }
+
+        AccountType.LIBRA -> {
+            CoinTypes.Libra
+        }
+
+        else -> {
+            if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
+        }
+    }
 }

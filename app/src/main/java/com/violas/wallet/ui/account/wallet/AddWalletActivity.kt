@@ -8,10 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.RecyclerView
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.base.BaseViewHolder
 import com.violas.wallet.base.recycler.RecycleViewItemDivider
+import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.utils.DensityUtility
 import com.violas.wallet.utils.start
@@ -46,20 +48,20 @@ class AddWalletActivity : BaseActivity() {
             AddWalletVo(
                 AccountType.VIOLAS,
                 R.mipmap.ic_label_violas,
-                getString(R.string.coin_name_violas),
-                getString(R.string.account_type_name_violas)
+                CoinTypes.VToken.coinName(),
+                CoinTypes.VToken.fullName()
             ),
             AddWalletVo(
                 AccountType.BTC,
                 R.mipmap.ic_label_btc,
-                getString(R.string.coin_name_bitcoin),
-                getString(R.string.account_type_name_bitcoin)
+                if (Vm.TestNet) CoinTypes.BitcoinTest.coinName() else CoinTypes.Bitcoin.coinName(),
+                if (Vm.TestNet) CoinTypes.BitcoinTest.fullName() else CoinTypes.Bitcoin.fullName()
             ),
             AddWalletVo(
                 AccountType.LIBRA,
                 R.mipmap.ic_label_libra,
-                getString(R.string.coin_name_libra),
-                getString(R.string.account_type_name_libra)
+                CoinTypes.Libra.coinName(),
+                CoinTypes.Libra.fullName()
             )
         )
 
@@ -94,7 +96,7 @@ class AddWalletActivity : BaseActivity() {
         @AccountType val accountType: Int,
         @DrawableRes val logoId: Int,
         val coinName: String,
-        val accountTypeName: String
+        val chainName: String //链名
     )
 
     class AddWalletViewHolder(view: View, val onItemClick: (Int) -> Unit) :
@@ -108,7 +110,7 @@ class AddWalletActivity : BaseActivity() {
             itemDate?.let {
                 itemView.ivLogo.setImageResource(it.logoId)
                 itemView.tvCoinName.text = it.coinName
-                itemView.tvAccountType.text = it.accountTypeName
+                itemView.tvAccountType.text = it.chainName
             }
         }
 

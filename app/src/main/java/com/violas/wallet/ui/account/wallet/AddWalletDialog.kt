@@ -3,12 +3,11 @@ package com.violas.wallet.ui.account.wallet
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseDialogFragment
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_TYPE
-import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.account.AccountType
+import com.violas.wallet.ui.account.transformAccountType
 import kotlinx.android.synthetic.main.dialog_add_wallet.*
 
 /**
@@ -61,31 +60,26 @@ class AddWalletDialog : BaseDialogFragment() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.llCreate -> {
-                CreateWalletActivity.start(requireActivity(), transform(), AddWalletActivity.REQUEST_CREATE_IMPORT)
+                CreateWalletActivity.start(
+                    requireActivity(),
+                    transformAccountType(accountType),
+                    AddWalletActivity.REQUEST_CREATE_IMPORT
+                )
                 close()
             }
 
             R.id.llImport -> {
-                ImportWalletActivity.start(requireActivity(), transform(), AddWalletActivity.REQUEST_CREATE_IMPORT)
+                ImportWalletActivity.start(
+                    requireActivity(),
+                    transformAccountType(accountType),
+                    AddWalletActivity.REQUEST_CREATE_IMPORT
+                )
                 close()
             }
 
             R.id.tvCancel -> {
                 close()
             }
-        }
-    }
-
-    private fun transform(): CoinTypes {
-        return when (accountType) {
-            AccountType.BTC ->
-                if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
-
-            AccountType.LIBRA ->
-                CoinTypes.Libra
-
-            else ->
-                CoinTypes.VToken
         }
     }
 }
