@@ -3,10 +3,14 @@ package com.violas.wallet.utils
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
+import com.violas.wallet.App
+import com.violas.wallet.ContextProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -42,3 +46,11 @@ public fun IOScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatch
 fun isMainThread(): Boolean {
     return Looper.getMainLooper() == Looper.myLooper()
 }
+
+fun getActiveNetworkInfo(): NetworkInfo {
+    var cm: ConnectivityManager =
+        ContextProvider.getContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    return cm.activeNetworkInfo
+}
+
+fun isNetworkConnected() = getActiveNetworkInfo().isConnected

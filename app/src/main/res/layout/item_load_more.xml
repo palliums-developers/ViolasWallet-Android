@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+    <com.violas.wallet.widget.PullRefreshLayoutProgress
+            android:id="@+id/load_more_progress"
+            android:layout_width="@dimen/dp_22"
+            android:layout_height="@dimen/dp_22"
+            android:layout_marginRight="@dimen/dp_10"
+            android:layout_gravity="center_vertical"/>
+
+    <TextView
+            android:id="@+id/load_more_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/black_50"
+            android:textSize="@dimen/sp_12"
+            android:text="@string/refresh_footer_loading"/>
+
+</LinearLayout>

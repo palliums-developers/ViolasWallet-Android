@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">ViolasWallet</string>
-    <string name="refresh_footer_loading">正在加载…</string>
+    <string name="dialog_loading">正在加载…</string>
 
     <string name="backup_mnemonic_prompt_title">备份提示</string>
     <string name="backup_mnemonic_prompt_menu">稍后备份</string>
@@ -153,4 +153,38 @@
     <string name="feedback_hint_input_content">请输入内容</string>
     <string name="feedback_hint_input_contact">请输入您的联系方式</string>
     <string name="feedback_content_count">%1$d/%2$d</string>
+
+    <string name="http_error_code">错误码</string>
+    <string name="http_request_fail">请求失败</string>
+    <string name="http_connect_timeout">请求超时, 请检查网络设置</string>
+    <string name="http_socket_timeout">网络超时, 请检查网络设置</string>
+    <string name="http_certificate_invalid">服务器证书无效</string>
+    <string name="http_unknown_host">无法访问主机, 请检查网络设置</string>
+    <string name="http_not_network">无网络连接, 请检查网络设置</string>
+    <string name="http_connect_exception">连接到服务器失败</string>
+    <string name="http_data_exception">响应数据无法处理</string>
+    <string name="http_network_unavailable">网络不可用, 请检查网络设置</string>
+    <string name="http_unknown_error">未知错误</string>
+
+    <string name="data_load_status_empty">没有查询到对应的数据</string>
+    <string name="data_load_status_failed">加载失败, 下拉重新加载</string>
+    <string name="data_load_status_no_network">没有网络, 请联网后下拉重试</string>
+    <string name="refresh_footer_no_network">没有网络, 请联网后点击重试</string>
+    <string name="refresh_footer_failed">加载失败, 点击重新加载</string>
+    <string name="refresh_footer_finish">加载完成</string>
+    <string name="refresh_footer_loading">正在加载…</string>
+    <string name="refresh_footer_no_more">没有更多数据了</string>
+    <string name="refresh_footer_pulling">上拉加载更多</string>
+    <string name="refresh_footer_refreshing">等待头部刷新完成…</string>
+    <string name="refresh_footer_release">释放立即加载</string>
+    <string name="refresh_header_failed">刷新失败</string>
+    <string name="refresh_header_finish">刷新完成</string>
+    <string name="refresh_header_loading">等待底部加载完成…</string>
+    <string name="refresh_header_pulling">下拉可以刷新</string>
+    <string name="refresh_header_refreshing">正在刷新…</string>
+    <string name="refresh_header_release">释放立即刷新</string>
+    <string name="refresh_header_update">上次更新 M-d HH:mm</string>
+
+    <string name="click_to_reload">点击重新加载</string>
+    <string name="tips_transfer_record_empty">暂无交易记录</string>
 </resources>

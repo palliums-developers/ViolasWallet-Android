@@ -31,4 +31,16 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="DataLoadStatusLayout">
+        <attr name="lsEmptyIcon" format="reference"/>
+        <attr name="lsFailIcon" format="reference"/>
+        <attr name="lsEmptyTip" format="string"/>
+        <attr name="lsFailTip" format="string"/>
+        <attr name="lsStatus" format="enum">
+            <enum name="none" value="1"/>
+            <enum name="empty" value="2"/>
+            <enum name="fail" value="3"/>
+        </attr>
+    </declare-styleable>
+
 </resources>

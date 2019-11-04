@@ -90,6 +90,14 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$versions.androidx_recyclerview"
     implementation "com.google.android.material:material:1.0.0"
 
+    // jetPack paging see https://developer.android.com/jetpack/docs/getting-started?hl=zh-CN
+    implementation "androidx.paging:paging-runtime:$versions.androidx_paging"
+    testImplementation "androidx.paging:paging-common:$versions.androidx_paging"
+    implementation "androidx.paging:paging-runtime-ktx:$versions.androidx_paging"
+
+    implementation "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.androidx_lifecycle"
+
     testImplementation "junit:junit:$versions.test_junit"
     androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
@@ -148,4 +156,8 @@ dependencies {
 
     // round ImageView see https://github.com/SheHuan/NiceImageView
     implementation 'com.github.SheHuan:NiceImageView:1.0.5'
+
+    // see https://github.com/scwang90/SmartRefreshLayout
+    implementation "com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-16"
+    implementation "com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-andx-16"
 }
