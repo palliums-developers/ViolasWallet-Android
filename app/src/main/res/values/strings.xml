@@ -113,12 +113,6 @@
     <string name="title_scan">扫一扫</string>
 
     <string name="add_wallet_title">添加钱包</string>
-    <string name="coin_name_violas">Vtoken</string>
-    <string name="coin_name_libra">Lib</string>
-    <string name="coin_name_bitcoin">BTC</string>
-    <string name="account_type_name_violas">Violas</string>
-    <string name="account_type_name_libra">Libra</string>
-    <string name="account_type_name_bitcoin">Bitcoin</string>
 
     <string name="setting_title">设置</string>
     <string name="setting_multi_language">多语言</string>

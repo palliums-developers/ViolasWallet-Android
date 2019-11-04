@@ -109,7 +109,7 @@ class AccountSelectionFragment : BaseFragment() {
         accOptGroupListLayout.addItemDecoration(
             RecycleViewItemDivider(
                 requireContext(),
-                DensityUtility.dp2px(context, 4),
+                DensityUtility.dp2px(context, 10),
                 DensityUtility.dp2px(context, 60),
                 0,
                 0,
@@ -137,14 +137,14 @@ class AccountSelectionFragment : BaseFragment() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            setPadding(
-                DensityUtility.dp2px(context, 18),
-                DensityUtility.dp2px(context, if (isFloat) 19 else 15),
-                DensityUtility.dp2px(context, 15),
-                DensityUtility.dp2px(context, 8)
-            )
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
-            setTextColor(ResourcesCompat.getColor(context.resources, R.color.account_group_title, null))
+            setTextColor(
+                ResourcesCompat.getColor(
+                    context.resources,
+                    R.color.account_group_title,
+                    null
+                )
+            )
         }
 
         override fun refreshView(itemData: GroupListLayout.ItemData?) {
@@ -157,7 +157,14 @@ class AccountSelectionFragment : BaseFragment() {
         }
 
         override fun getItemView(): View {
-            return tvTitle
+            return tvTitle.apply {
+                setPadding(
+                    DensityUtility.dp2px(context, 18),
+                    DensityUtility.dp2px(context, if (isFloat) 10 else 0),
+                    DensityUtility.dp2px(context, 15),
+                    DensityUtility.dp2px(context, 8)
+                )
+            }
         }
     }
 
@@ -179,8 +186,8 @@ class AccountSelectionFragment : BaseFragment() {
                 setMargins(
                     DensityUtility.dp2px(context, 8),
                     0,
-                    DensityUtility.dp2px(context, 15),
-                    DensityUtility.dp2px(context, 4)
+                    DensityUtility.dp2px(context, 14),
+                    0
                 )
             }
 
@@ -200,12 +207,12 @@ class AccountSelectionFragment : BaseFragment() {
                 rootView.setBackgroundResource(
                     when (it.accountDO.coinNumber) {
                         CoinTypes.Libra.coinType() ->
-                            R.drawable.selector_account_selection_item_libra
+                            R.drawable.selector_account_selection_bg_libra
                         CoinTypes.Bitcoin.coinType(),
                         CoinTypes.BitcoinTest.coinType() ->
-                            R.drawable.selector_account_selection_item_btc
+                            R.drawable.selector_account_selection_bg_bitcoin
                         else ->
-                            R.drawable.selector_account_selection_item_violas
+                            R.drawable.selector_account_selection_bg_violas
                     }
                 )
             }

@@ -15,13 +15,13 @@ interface AccountDao : BaseDao<AccountDO> {
     fun loadByWalletType(walletType: Int): AccountDO?
 
     /**
-     * 加载所有指定钱包类型的钱包，并按创建时间生序排序
+     * 加载所有指定钱包类型的钱包，并按创建时间升序排序
      */
     @Query("SELECT * FROM account WHERE wallet_type = :walletType ORDER BY modify_date ASC")
     fun loadAllByWalletType(walletType: Int): List<AccountDO>
 
     /**
-     * 加载所有指定币种编号的钱包，并按创建时间生序排序
+     * 加载所有指定币种编号的钱包，并按创建时间升序排序
      */
     @Query("SELECT * FROM account WHERE coin_number = :coinNumber ORDER BY modify_date ASC")
     fun loadAllByCoinType(coinNumber: Int): List<AccountDO>
