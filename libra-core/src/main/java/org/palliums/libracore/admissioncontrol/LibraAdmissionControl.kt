@@ -14,7 +14,7 @@ import org.palliums.libracore.transaction.*
 import org.palliums.libracore.utils.HexUtils
 import org.palliums.libracore.wallet.Account
 import types.GetWithProof
-import types.Transaction
+import types.TransactionOuterClass
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
@@ -43,7 +43,7 @@ class LibraAdmissionControl(private val mChannel: Channel) {
     }
 
     fun getBalanceInMicroLibras(address: String, call: (amount: Long) -> Unit) {
-        getAccountStatus(address) { accountStatus ->
+        getAccountStatus(address, { accountStatus ->
             if (accountStatus.accountStates.isEmpty()) {
                 mHandler.post {
                     call.invoke(0)
@@ -54,7 +54,9 @@ class LibraAdmissionControl(private val mChannel: Channel) {
                     call.invoke(accountStatus.accountStates[0].balanceInMicroLibras)
                 }
             }
-        }
+        }, {
+            call.invoke(0)
+        })
     }
 
     fun sendCoin(
@@ -65,7 +67,7 @@ class LibraAdmissionControl(private val mChannel: Channel) {
         call: (success: Boolean) -> Unit
     ) {
         val senderAddress = account.getAddress().toHex()
-        getSequenceNumber(senderAddress) {
+        getSequenceNumber(senderAddress, {
             val rawTransaction =
                 generateRawTransaction(
                     address,
@@ -81,54 +83,70 @@ class LibraAdmissionControl(private val mChannel: Channel) {
                 account.keyPair.sign(rawTransaction.toByteArray())
             )
 
-            val signedTransactionGrpc = Transaction.SignedTransaction.newBuilder()
-                .setSignedTxn(ByteString.copyFrom(signedTransaction.toByteArray()))
+            val signedTransactionGrpc = TransactionOuterClass.SignedTransaction.newBuilder()
+                .setTxnBytes(ByteString.copyFrom(signedTransaction.toByteArray()))
                 .build()
 
             val submitTxReq =
                 AdmissionControlOuterClass.SubmitTransactionRequest.newBuilder()
-                    .setSignedTxn(signedTransactionGrpc)
+                    .setTransaction(
+                        signedTransactionGrpc
+                    )
                     .build()
 
-            val client = AdmissionControlGrpc.newBlockingStub(mChannel)
-            val response = client.submitTransaction(submitTxReq)
+            try {
+                val client = AdmissionControlGrpc.newBlockingStub(mChannel)
+                val response = client.submitTransaction(submitTxReq)
 
-            println(
-                """
+                println(
+                    """
                发送状态
                AcStatus:${response.acStatus} 
                MempoolStatus:${response.mempoolStatus} 
                VmStatus:${response.vmStatus} 
                StatusCase:${response.statusCase} 
             """
-            )
+                )
 
-            mHandler.post {
-                if (response.statusCase.toString() == "AC_STATUS") {
-                    call.invoke(true)
-                } else {
-                    call.invoke(false)
+                mHandler.post {
+                    if (response.statusCase.toString() == "AC_STATUS") {
+                        call.invoke(true)
+                    } else {
+                        call.invoke(false)
+                    }
                 }
+            }catch (e:Exception){
+                e.printStackTrace()
+                call.invoke(false)
             }
-        }
+        }, {
+            call.invoke(false)
+        })
     }
 
-    fun getSequenceNumber(address: String, call: (sequenceNumber: Long) -> Unit) {
+    fun getSequenceNumber(
+        address: String,
+        call: (sequenceNumber: Long) -> Unit,
+        error: (Exception) -> Unit
+    ) {
         mExecutor.execute {
             val client = AdmissionControlGrpc.newBlockingStub(mChannel)
-            getAccountStatus(address) { accountStatus ->
+            getAccountStatus(address, { accountStatus ->
                 if (accountStatus.accountStates.isEmpty()) {
                     call.invoke(0)
                 } else {
                     call.invoke(accountStatus.accountStates[0].sequenceNumber)
                 }
-            }
+            }, {
+                error.invoke(it)
+            })
         }
     }
 
     fun getAccountStatus(
         address: String,
-        call: (UpdateToLatestLedgerResultBean) -> Unit
+        call: (UpdateToLatestLedgerResultBean) -> Unit,
+        error: (Exception) -> Unit
     ) {
         mExecutor.execute {
             try {
@@ -153,6 +171,7 @@ class LibraAdmissionControl(private val mChannel: Channel) {
                 call.invoke(decode)
             } catch (e: Exception) {
                 e.printStackTrace()
+                error.invoke(e)
             }
         }
     }

@@ -75,7 +75,6 @@ class Mnemonic(private val wordList: WordList) {
             for (charsToClear in toClear)
                 Arrays.fill(charsToClear, '\u0000')
         }
-        return null
     }
 
     fun generate(words: WordCount = WordCount.TWELVE): ArrayList<String> {

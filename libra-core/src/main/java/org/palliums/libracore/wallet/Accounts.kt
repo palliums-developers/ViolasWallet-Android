@@ -20,10 +20,6 @@ class Account {
         this.keyPair = keyPair
     }
 
-    fun getPublicKey(): String {
-        return this.keyPair.getPublicKey().toHex()
-    }
-
     fun getAddress(): AccountAddress {
         if (this.address == null) {
             val sha3256 = SHA3.Digest256()
@@ -32,6 +28,10 @@ class Account {
         }
 
         return this.address!!
+    }
+
+    fun getPublicKey(): String {
+        return keyPair.getPublicKey().toHex()
     }
 }
 
