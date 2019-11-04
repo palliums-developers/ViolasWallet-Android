@@ -6,8 +6,8 @@ import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.utils.HexUtils
-import types.Transaction
 import types.AccessPathOuterClass.AccessPath
+import types.TransactionOuterClass.TransactionArgument.ArgType
 
 
 data class RawTransaction(
@@ -275,7 +275,7 @@ data class TransactionPayload(val payload: Payload) {
 }
 
 data class TransactionArgument(
-    val argType: Transaction.TransactionArgument.ArgType,
+    val argType: ArgType,
     val data: ByteArray
 ) {
     fun toByteArray(): ByteArray {
@@ -289,7 +289,7 @@ data class TransactionArgument(
         @JvmStatic
         fun newU64(value: Long): TransactionArgument {
             return TransactionArgument(
-                Transaction.TransactionArgument.ArgType.U64,
+                ArgType.U64,
                 LCS.encodeLong(value)
             )
         }
@@ -302,15 +302,15 @@ data class TransactionArgument(
         @JvmStatic
         fun newAddress(value: ByteArray): TransactionArgument {
             return TransactionArgument(
-                Transaction.TransactionArgument.ArgType.ADDRESS,
-                LCS.encodeBytes(value)
+                ArgType.ADDRESS,
+                value
             )
         }
 
         @JvmStatic
         fun newString(value: String): TransactionArgument {
             return TransactionArgument(
-                Transaction.TransactionArgument.ArgType.STRING,
+                ArgType.STRING,
                 LCS.encodeString(value)
             )
         }
@@ -318,7 +318,7 @@ data class TransactionArgument(
         @JvmStatic
         fun newByteArray(value: ByteArray): TransactionArgument {
             return TransactionArgument(
-                Transaction.TransactionArgument.ArgType.BYTEARRAY,
+                ArgType.BYTEARRAY,
                 LCS.encodeBytes(value)
             )
         }
@@ -326,16 +326,18 @@ data class TransactionArgument(
         fun decode(input: LCSInputStream): TransactionArgument {
             val readInt = input.readInt()
             return when (readInt) {
-                Transaction.TransactionArgument.ArgType.U64.number -> {
+                ArgType.U64.number -> {
                     newU64(input.readLong())
                 }
-                Transaction.TransactionArgument.ArgType.ADDRESS.number -> {
-                    newAddress(input.readBytes())
+                ArgType.ADDRESS.number -> {
+                    val value = ByteArray(32)
+                    input.read(value)
+                    newAddress(value)
                 }
-                Transaction.TransactionArgument.ArgType.STRING.number -> {
+                ArgType.STRING.number -> {
                     newString(input.readString())
                 }
-                Transaction.TransactionArgument.ArgType.BYTEARRAY.number -> {
+                ArgType.BYTEARRAY.number -> {
                     newByteArray(input.readBytes())
                 }
                 else -> newByteArray(byteArrayOf(0))
@@ -347,13 +349,15 @@ data class TransactionArgument(
 
 data class AccountAddress(val byte: ByteArray) {
     fun toByteArray(): ByteArray {
-        return LCS.encodeBytes(byte)
+        return byte
     }
 
     companion object {
         fun decode(input: LCSInputStream): AccountAddress {
+            val value = ByteArray(32)
+            input.read(value)
             return AccountAddress(
-                input.readBytes()
+                value
             )
         }
     }

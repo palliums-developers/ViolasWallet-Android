@@ -86,7 +86,7 @@ data class SignedTransactionProofBean(
 data class SignedTransactionWithProofBean(
     val version: Long,
     val signedTransaction: SignedTransaction?,
-    val proof: SignedTransactionProofBean,
+    val proof: SignedTransactionProofBean?,
     val events: List<PaymentEventBean>
 )
 

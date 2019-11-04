@@ -55,28 +55,35 @@ object DecodeHelper {
         getAccountTransactionBySequenceNumberResponse: GetAccountTransactionBySequenceNumberResponse
     ): SignedTransactionWithProofBean {
 
-        val signedTransactionWithProof =
-            getAccountTransactionBySequenceNumberResponse.signedTransactionWithProof
+//        val signedTransactionWithProof =
+//            getAccountTransactionBySequenceNumberResponse.signedTransactionWithProof
+//
+//        val signedTransactionProofBean = SignedTransactionProofBean(
+//            signedTransactionWithProof.proof.ledgerInfoToTransactionInfoProof,
+//            signedTransactionWithProof.proof.transactionInfo
+//        )
+//
+//        val signedTransaction =
+//            SignedTransaction.decode(signedTransactionWithProof.signedTransaction.signedTxn.toByteArray())
+//
+//        val events = signedTransactionWithProof.events.eventsList
+//            .map {
+//                PaymentEventBean.deserialize(it)
+//            }
+//            .toList()
 
-        val signedTransactionProofBean = SignedTransactionProofBean(
-            signedTransactionWithProof.proof.ledgerInfoToTransactionInfoProof,
-            signedTransactionWithProof.proof.transactionInfo
-        )
-
-        val signedTransaction =
-            SignedTransaction.decode(signedTransactionWithProof.signedTransaction.signedTxn.toByteArray())
-
-        val events = signedTransactionWithProof.events.eventsList
-            .map {
-                PaymentEventBean.deserialize(it)
-            }
-            .toList()
-
+//        return SignedTransactionWithProofBean(
+//            signedTransactionWithProof.version,
+//            signedTransaction,
+//            signedTransactionProofBean,
+//            events
+//        )
+        //Todo
         return SignedTransactionWithProofBean(
-            signedTransactionWithProof.version,
-            signedTransaction,
-            signedTransactionProofBean,
-            events
+            1L,
+            null,
+            null,
+            arrayListOf()
         )
     }
 }
