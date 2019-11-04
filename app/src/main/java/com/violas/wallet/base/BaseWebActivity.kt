@@ -31,6 +31,7 @@ abstract class BaseWebActivity : BaseActivity() {
         val title = getFixedTitle()
         title?.let { setTitle(it) }
 
+        vFailed.visibility = View.GONE
         vFailed.setOnClickListener(this)
 
         initWebView()
@@ -85,8 +86,7 @@ abstract class BaseWebActivity : BaseActivity() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.vFailed -> {
-                stopLoad()
-                startLoad()
+                vWeb.reload()
             }
         }
     }
@@ -102,8 +102,6 @@ abstract class BaseWebActivity : BaseActivity() {
     protected abstract fun getFixedTitle(): String?
 
     private fun startLoad() {
-        vFailed.visibility = View.GONE
-        vProgress.visibility = View.VISIBLE
         vProgress.progress = 0
         vWeb.visibility = View.VISIBLE
         vWeb.loadUrl(getUrl())
@@ -171,6 +169,7 @@ abstract class BaseWebActivity : BaseActivity() {
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
+                vFailed?.visibility = View.GONE
                 vProgress?.visibility = View.VISIBLE
             }
 
@@ -219,7 +218,6 @@ abstract class BaseWebActivity : BaseActivity() {
 
             private fun handleError() {
                 vFailed?.visibility = View.VISIBLE
-                vProgress?.visibility = View.GONE
                 vWeb?.visibility = View.GONE
             }
         }

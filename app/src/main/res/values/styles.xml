@@ -72,7 +72,7 @@
         <item name="mivShowEndArrow">false</item>
     </style>
 
-    <!-- ActionSheet缺省主题-->
+    <!-- Dialog缺省主题 -->
     <style name="ThemeDefaultDialog" parent="Theme.AppCompat.Dialog">
         <item name="android:windowFrame">@null</item>
         <!-- 边框-->
@@ -86,7 +86,7 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <!-- BottomDialog 动画-->
+    <!-- Dialog缺省动画 -->
     <style name="AnimationDefaultBottomDialog" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/dialog_bottom_in</item>
         <item name="android:windowExitAnimation">@anim/dialog_bottom_out</item>

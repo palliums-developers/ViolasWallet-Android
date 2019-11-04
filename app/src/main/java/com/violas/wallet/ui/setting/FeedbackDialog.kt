@@ -24,7 +24,7 @@ class FeedbackDialog : BaseDialogFragment() {
         return R.layout.dialog_feedback
     }
 
-    override fun getWindowAnimationsStyle(): Int {
+    override fun getWindowAnimationsStyleId(): Int {
         return R.style.AnimationDefaultCenterDialog
     }
 

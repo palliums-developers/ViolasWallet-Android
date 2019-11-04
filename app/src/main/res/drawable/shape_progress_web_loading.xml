@@ -9,8 +9,10 @@
 
     <item android:id="@android:id/secondaryProgress">
         <clip>
-            <shape>
-                <solid android:color="@color/color_9339F3" />
+            <shape
+                android:tint="@color/gray"
+                android:tintMode="multiply">
+                <solid android:color="@color/color_7038FD" />
             </shape>
         </clip>
     </item>

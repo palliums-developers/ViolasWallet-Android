@@ -2,10 +2,8 @@ package com.violas.wallet.base
 
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
+import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import androidx.fragment.app.DialogFragment
@@ -44,7 +42,7 @@ abstract class BaseDialogFragment : DialogFragment(), View.OnClickListener {
             attributes.gravity = getWindowLayoutParamsGravity()
             it.attributes = attributes
 
-            it.setWindowAnimations(getWindowAnimationsStyle())
+            it.setWindowAnimations(getWindowAnimationsStyleId())
         }
 
         dialog?.setCancelable(cancelable())
@@ -62,11 +60,21 @@ abstract class BaseDialogFragment : DialogFragment(), View.OnClickListener {
         }
     }
 
+    /**
+     * 获取弹窗布局资源id
+     */
+    @LayoutRes
     abstract fun getLayoutResId(): Int
 
+    /**
+     * 获取窗口动画样式资源id，返回的动画样式要与[getWindowLayoutParamsGravity]返回的对齐方式相协调
+     */
     @StyleRes
-    abstract fun getWindowAnimationsStyle(): Int
+    abstract fun getWindowAnimationsStyleId(): Int
 
+    /**
+     * 获取窗口布局对齐方式，返回的对齐方式要与[getWindowAnimationsStyleId]返回的动画样式相协调
+     */
     abstract fun getWindowLayoutParamsGravity(): Int
 
     open fun cancelable(): Boolean = true

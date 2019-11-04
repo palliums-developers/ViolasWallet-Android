@@ -37,7 +37,7 @@ class AddWalletDialog : BaseDialogFragment() {
         return R.layout.dialog_add_wallet
     }
 
-    override fun getWindowAnimationsStyle(): Int {
+    override fun getWindowAnimationsStyleId(): Int {
         return R.style.AnimationDefaultBottomDialog
     }
 
