@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/dp_8"
-    android:layout_marginTop="@dimen/dp_4"
-    android:layout_marginEnd="@dimen/page_spacing_right"
-    android:background="@drawable/selector_account_selection_item_violas">
+    android:background="@drawable/selector_account_selection_bg_violas"
+    tools:layout_marginEnd="@dimen/dp_14"
+    tools:layout_marginStart="@dimen/dp_8">
 
     <TextView
         android:id="@+id/tvAccountName"
@@ -15,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_12"
-        android:layout_marginEnd="@dimen/dp_8"
+        android:layout_marginEnd="@dimen/dp_12"
         android:ellipsize="middle"
         android:singleLine="true"
         android:textColor="@color/white"
@@ -32,7 +31,7 @@
         android:layout_marginStart="@dimen/dp_11"
         android:layout_marginTop="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_7"
-        android:layout_marginBottom="@dimen/dp_16"
+        android:layout_marginBottom="@dimen/dp_10"
         android:ellipsize="middle"
         android:singleLine="true"
         android:textColor="@color/white_80"
@@ -45,8 +44,8 @@
 
     <ImageView
         android:id="@+id/ivAccountSelected"
-        android:layout_width="@dimen/dp_10"
-        android:layout_height="@dimen/dp_10"
+        android:layout_width="@dimen/dp_8"
+        android:layout_height="@dimen/dp_8"
         android:layout_marginTop="@dimen/dp_15"
         android:layout_marginEnd="@dimen/dp_8"
         android:src="@drawable/shape_account_selected"

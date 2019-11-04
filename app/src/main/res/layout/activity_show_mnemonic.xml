@@ -11,8 +11,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/page_spacing_left"
-        android:paddingEnd="@dimen/page_spacing_right">
+        android:paddingStart="@dimen/page_spacing_start"
+        android:paddingEnd="@dimen/page_spacing_end">
 
         <TextView
             android:id="@+id/tv_show_mnemonic_desc_1"

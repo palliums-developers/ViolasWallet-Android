@@ -357,7 +357,14 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                 var tvTitle = createDefaultTitle(context, isFloat)
 
                 override fun getItemView(): View {
-                    return tvTitle
+                    return tvTitle.apply {
+                        setPadding(
+                            DensityUtility.dp2px(context, 24),
+                            DensityUtility.dp2px(context, if (isFloat) 12 else 0),
+                            DensityUtility.dp2px(context, 15),
+                            DensityUtility.dp2px(context, 10)
+                        )
+                    }
                 }
 
                 override fun refreshView(itemData: ItemData?) {
@@ -377,14 +384,14 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         private fun createDefaultTitle(context: Context, isFloat: Boolean): TextView {
             return TextView(context).apply {
                 layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-                setPadding(
-                    DensityUtility.dp2px(context, 24),
-                    DensityUtility.dp2px(context, if (isFloat) 35 else 31),
-                    DensityUtility.dp2px(context, 15),
-                    DensityUtility.dp2px(context, 10)
-                )
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
-                setTextColor(ResourcesCompat.getColor(context.resources, R.color.account_group_title, null))
+                setTextColor(
+                    ResourcesCompat.getColor(
+                        context.resources,
+                        R.color.account_group_title,
+                        null
+                    )
+                )
                 //setTypeface(Typeface.DEFAULT, Typeface.BOLD)
                 //setBackgroundColor(ResourcesCompat.getColor(context.resources, R.color.white, null))
             }

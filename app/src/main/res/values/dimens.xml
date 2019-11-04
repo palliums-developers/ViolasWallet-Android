@@ -110,9 +110,8 @@
     <dimen name="dp_468">468dp</dimen>
     <!-- ==================尺寸表规范 end ================== -->
 
-    <dimen name="page_spacing_right">@dimen/dp_16</dimen>
-    <dimen name="page_spacing_left">@dimen/dp_16</dimen>
-    <dimen name="page_btn_margin_bottom">@dimen/dp_50</dimen>
+    <dimen name="page_spacing_start">@dimen/dp_15</dimen>
+    <dimen name="page_spacing_end">@dimen/dp_15</dimen>
 
     <!--默认条目间距-->
     <dimen name="item_spacing">10dp</dimen>

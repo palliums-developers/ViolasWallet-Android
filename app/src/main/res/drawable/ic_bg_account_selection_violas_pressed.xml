@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    android:src="@mipmap/ic_bg_account_selection_violas"
-    android:tint="@color/gray"
-    android:tintMode="multiply">
-
-</bitmap>

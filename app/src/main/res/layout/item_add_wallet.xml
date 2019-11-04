@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/page_spacing_left"
-    android:layout_marginEnd="@dimen/page_spacing_right"
+    android:layout_marginStart="@dimen/page_spacing_start"
+    android:layout_marginEnd="@dimen/page_spacing_end"
     android:background="@drawable/selector_item_bg_primary_light">
 
     <ImageView

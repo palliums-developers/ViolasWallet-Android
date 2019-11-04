@@ -68,8 +68,8 @@ class AccountManagementActivity : BaseActivity() {
         accOptGroupListLayout.addItemDecoration(
             RecycleViewItemDivider(
                 this,
-                DensityUtility.dp2px(this, 4),
-                DensityUtility.dp2px(this, 60),
+                DensityUtility.dp2px(this, 12),
+                DensityUtility.dp2px(this, 80),
                 0,
                 0,
                 showFirstTop = true,
@@ -135,12 +135,12 @@ class AccountManagementActivity : BaseActivity() {
                 rootView.setBackgroundResource(
                     when (it.accountDO.coinNumber) {
                         CoinTypes.Libra.coinType() ->
-                            R.drawable.selector_account_management_item_libra
+                            R.drawable.selector_account_management_bg_libra
                         CoinTypes.Bitcoin.coinType(),
                         CoinTypes.BitcoinTest.coinType() ->
-                            R.drawable.selector_account_management_item_btc
+                            R.drawable.selector_account_management_bg_bitcoin
                         else ->
-                            R.drawable.selector_account_management_item_violas
+                            R.drawable.selector_account_management_bg_violas
                     }
                 )
             }

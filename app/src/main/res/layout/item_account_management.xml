@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/page_spacing_left"
-    android:layout_marginTop="@dimen/dp_4"
-    android:layout_marginEnd="@dimen/page_spacing_right"
-    android:background="@drawable/selector_account_management_item_violas">
+    android:background="@drawable/selector_account_management_bg_violas"
+    tools:layout_marginEnd="@dimen/page_spacing_end"
+    tools:layout_marginStart="@dimen/page_spacing_start">
 
     <TextView
         android:id="@+id/tvAccountName"
@@ -19,7 +18,7 @@
         android:ellipsize="middle"
         android:singleLine="true"
         android:textColor="@color/white"
-        android:textSize="@dimen/sp_21"
+        android:textSize="@dimen/sp_20"
         app:layout_constraintEnd_toStartOf="@id/ivAccountOpt"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -32,11 +31,11 @@
         android:layout_marginStart="@dimen/dp_14"
         android:layout_marginTop="@dimen/dp_12"
         android:layout_marginEnd="@dimen/dp_9"
-        android:layout_marginBottom="@dimen/dp_18"
+        android:layout_marginBottom="@dimen/dp_12"
         android:ellipsize="middle"
         android:singleLine="true"
         android:textColor="@color/white_80"
-        android:textSize="@dimen/sp_16"
+        android:textSize="@dimen/sp_15"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
