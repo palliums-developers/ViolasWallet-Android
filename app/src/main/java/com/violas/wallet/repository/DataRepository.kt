@@ -18,7 +18,7 @@ object DataRepository {
     }
 
     private val mViolasChannel by lazy {
-        ManagedChannelBuilder.forAddress("ac.testnet.libra.org", 8000)
+        ManagedChannelBuilder.forAddress("47.106.208.207", 4000)
             .usePlaintext()
             .build()
     }
