@@ -187,4 +187,8 @@
 
     <string name="click_to_reload">点击重新加载</string>
     <string name="tips_transfer_record_empty">暂无交易记录</string>
+    <string name="title_market">市场</string>
+    <string name="hint_transfer_number">转出数量</string>
+    <string name="hint_receipt_number">收到数量</string>
+    <string name="hint_parities">汇率</string>
 </resources>
