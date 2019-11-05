@@ -47,10 +47,10 @@ fun isMainThread(): Boolean {
     return Looper.getMainLooper() == Looper.myLooper()
 }
 
-fun getActiveNetworkInfo(): NetworkInfo {
+fun getActiveNetworkInfo(): NetworkInfo? {
     var cm: ConnectivityManager =
         ContextProvider.getContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     return cm.activeNetworkInfo
 }
 
-fun isNetworkConnected() = getActiveNetworkInfo().isConnected
+fun isNetworkConnected() = getActiveNetworkInfo()?.isConnected ?: false

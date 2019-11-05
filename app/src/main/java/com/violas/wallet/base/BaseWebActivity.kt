@@ -11,7 +11,7 @@ import android.webkit.*
 import androidx.annotation.RequiresApi
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
-import kotlinx.android.synthetic.main.activity_web.*
+import kotlinx.android.synthetic.main.activity_base_web.*
 
 /**
  * Created by elephant on 2019-10-31 17:41.
@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.activity_web.*
 abstract class BaseWebActivity : BaseActivity() {
 
     override fun getLayoutResId(): Int {
-        return R.layout.activity_web
+        return R.layout.activity_base_web
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

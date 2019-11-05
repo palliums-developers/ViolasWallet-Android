@@ -7,17 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
-import androidx.recyclerview.widget.RecyclerView
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.base.BaseViewHolder
+import com.violas.wallet.base.listing.BaseListingActivity
+import com.violas.wallet.base.listing.BaseListingAdapter
+import com.violas.wallet.base.listing.BaseListingViewModel
 import com.violas.wallet.base.recycler.RecycleViewItemDivider
 import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.utils.DensityUtility
 import com.violas.wallet.utils.start
-import kotlinx.android.synthetic.main.activity_add_wallet.*
 import kotlinx.android.synthetic.main.item_add_wallet.view.*
 
 /**
@@ -26,7 +26,8 @@ import kotlinx.android.synthetic.main.item_add_wallet.view.*
  * <p>
  * desc: 添加钱包页面
  */
-class AddWalletActivity : BaseActivity() {
+class AddWalletActivity : BaseListingActivity<AddWalletVo>() {
+
     companion object {
         const val REQUEST_CREATE_IMPORT = 1
 
@@ -35,8 +36,14 @@ class AddWalletActivity : BaseActivity() {
         }
     }
 
-    override fun getLayoutResId(): Int {
-        return R.layout.activity_add_wallet
+    override fun lazyInitViewModel(): BaseListingViewModel<AddWalletVo> {
+        return AddWalletViewModel()
+    }
+
+    override fun lazyInitAdapter(): BaseListingAdapter<AddWalletVo> {
+        return AddWalletAdapter(onItemClick = { accountType ->
+            AddWalletDialog.newInstance(accountType).show()
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +51,86 @@ class AddWalletActivity : BaseActivity() {
 
         setTitle(R.string.add_wallet_title)
 
-        val datas = arrayListOf(
+        getRecyclerView().addItemDecoration(
+            RecycleViewItemDivider(
+                this,
+                DensityUtility.dp2px(this, 10),
+                0,
+                0,
+                0,
+                showFirstTop = true,
+                onlyShowLastBottom = true
+            )
+        )
+
+        mViewModel.execute()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_CREATE_IMPORT -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    finish()
+                }
+            }
+        }
+    }
+}
+
+data class AddWalletVo(
+    @AccountType val accountType: Int,
+    @DrawableRes val logoId: Int,
+    val coinName: String,   //币名
+    val chainName: String   //链名
+)
+
+class AddWalletViewHolder(view: View, private val onItemClick: (Int) -> Unit) :
+    BaseViewHolder<AddWalletVo>(view) {
+
+    init {
+        itemView.setOnClickListener(this)
+    }
+
+    override fun onViewBind(itemIndex: Int, itemDate: AddWalletVo?) {
+        itemDate?.let {
+            itemView.ivLogo.setImageResource(it.logoId)
+            itemView.tvCoinName.text = it.coinName
+            itemView.tvAccountType.text = it.chainName
+        }
+    }
+
+    override fun onViewClick(view: View, itemIndex: Int, itemDate: AddWalletVo?) {
+        itemDate?.let {
+            onItemClick.invoke(it.accountType)
+        }
+    }
+}
+
+class AddWalletAdapter(private val onItemClick: (Int) -> Unit) : BaseListingAdapter<AddWalletVo>() {
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): BaseViewHolder<AddWalletVo> {
+        return AddWalletViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.item_add_wallet,
+                parent,
+                false
+            ), onItemClick
+        )
+    }
+}
+
+class AddWalletViewModel : BaseListingViewModel<AddWalletVo>() {
+
+    override suspend fun loadData(
+        vararg params: Any,
+        onSuccess: (List<AddWalletVo>) -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        val listData = arrayListOf(
             AddWalletVo(
                 AccountType.VIOLAS,
                 R.mipmap.ic_label_violas,
@@ -65,80 +151,10 @@ class AddWalletActivity : BaseActivity() {
             )
         )
 
-        vRecyclerView.addItemDecoration(
-            RecycleViewItemDivider(
-                this,
-                DensityUtility.dp2px(this, 10),
-                0,
-                0,
-                0,
-                showFirstTop = true,
-                onlyShowLastBottom = true
-            )
-        )
-        vRecyclerView.adapter = AddWalletAdapter(datas, onItemClick = { accountType ->
-            AddWalletDialog.newInstance(accountType).show()
-        })
+        onSuccess.invoke(listData)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            REQUEST_CREATE_IMPORT -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    finish()
-                }
-            }
-        }
-    }
-
-    data class AddWalletVo(
-        @AccountType val accountType: Int,
-        @DrawableRes val logoId: Int,
-        val coinName: String,
-        val chainName: String //链名
-    )
-
-    class AddWalletViewHolder(view: View, val onItemClick: (Int) -> Unit) :
-        BaseViewHolder<AddWalletVo>(view) {
-
-        init {
-            itemView.setOnClickListener(this)
-        }
-
-        override fun onViewBind(itemIndex: Int, itemDate: AddWalletVo?) {
-            itemDate?.let {
-                itemView.ivLogo.setImageResource(it.logoId)
-                itemView.tvCoinName.text = it.coinName
-                itemView.tvAccountType.text = it.chainName
-            }
-        }
-
-        override fun onViewClick(view: View, itemIndex: Int, itemDate: AddWalletVo?) {
-            itemDate?.let {
-                onItemClick.invoke(it.accountType)
-            }
-        }
-    }
-
-    class AddWalletAdapter(var datas: ArrayList<AddWalletVo>, val onItemClick: (Int) -> Unit) :
-        RecyclerView.Adapter<AddWalletViewHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddWalletViewHolder {
-            return AddWalletViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_add_wallet,
-                    parent,
-                    false
-                ), onItemClick
-            )
-        }
-
-        override fun onBindViewHolder(holder: AddWalletViewHolder, position: Int) {
-            holder.bind(position, datas[position])
-        }
-
-        override fun getItemCount(): Int {
-            return datas.size
-        }
+    override fun checkNetworkBeforeExecution(): Boolean {
+        return false
     }
 }

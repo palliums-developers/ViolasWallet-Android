@@ -76,6 +76,11 @@ android {
         // but continue the build even when errors are found:
         abortOnError false
     }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = ["-Xallow-result-return-type"]
+    }
 }
 
 dependencies {
@@ -97,6 +102,7 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.androidx_lifecycle"
+    implementation "androidx.activity:activity-ktx:$versions.androidx_activityKtx"
 
     testImplementation "junit:junit:$versions.test_junit"
     androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"

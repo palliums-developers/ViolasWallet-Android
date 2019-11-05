@@ -24,7 +24,7 @@ class HttpException : RuntimeException {
         /** 连接超时 */
         private const val ERROR_CODE_CONNECT_TIMEOUT = -101
         /** Socket超时 */
-        private const val ERROR_CODE_SOCKRT_TIMEOUT = -102
+        private const val ERROR_CODE_SOCKET_TIMEOUT = -102
         /** 服务器证书无效 */
         private const val ERROR_CODE_CERTIFICATE_INVALID = -103
         /** 未知主机（可能是因为无网络） */
@@ -78,7 +78,7 @@ class HttpException : RuntimeException {
             }
             is SocketTimeoutException -> {
                 // Socket超时，此时数据已发送但服务器未应答
-                errorCode = ERROR_CODE_SOCKRT_TIMEOUT
+                errorCode = ERROR_CODE_SOCKET_TIMEOUT
                 errorMsg = getString(R.string.http_socket_timeout)
             }
             is SSLPeerUnverifiedException -> {
