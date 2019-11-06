@@ -79,24 +79,26 @@ class TransferManager {
                     )
                 }
             }
-            CoinTypes.Bitcoin.coinType(),
-            CoinTypes.BitcoinTest.coinType() -> {
-                transferBtc(address, amount, decryptPrivateKey, account, progress, success, error)
-            }
         }
     }
 
     @SuppressLint("CheckResult")
-    private fun transferBtc(
+    fun transferBtc(
+        transactionManager: TransactionManager,
         address: String,
         amount: Double,
-        decryptPrivateKey: ByteArray,
+        password: ByteArray,
         account: AccountDO,
         progress: Int,
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        val transactionManager = TransactionManager(arrayListOf(account.address))
+        val decryptPrivateKey = SimpleSecurity.instance(getContext())
+            .decrypt(password, account.privateKey)
+        if (decryptPrivateKey == null) {
+            error.invoke(WrongPasswordException())
+            return
+        }
         transactionManager.checkBalance(amount, 1, progress)
             .flatMap {
                 transactionManager.obtainTransaction(

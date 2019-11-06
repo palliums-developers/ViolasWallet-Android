@@ -358,25 +358,24 @@ class AccountManager : CoroutineScope by IOScope() {
         return derive as BitCoinECKeyPair
     }
 
-    fun getCurrentBalance(callback: (Double, String) -> Unit) {
+    fun getBalance(account: AccountDO, callback: (Double, String) -> Unit) {
         launch {
-            val currentAccount = currentAccount()
-            when (currentAccount.coinNumber) {
+            when (account.coinNumber) {
                 CoinTypes.VToken.coinType() -> {
                     DataRepository.getViolasService()
-                        .getBalanceInMicroLibras(currentAccount.address) {
+                        .getBalanceInMicroLibras(account.address) {
                             callback.invoke(it.div(1000000.0), CoinTypes.VToken.coinUnit())
                         }
                 }
                 CoinTypes.Libra.coinType() -> {
                     DataRepository.getLibraService()
-                        .getBalanceInMicroLibras(currentAccount.address) {
+                        .getBalanceInMicroLibras(account.address) {
                             callback.invoke(it.div(1000000.0), CoinTypes.Libra.coinUnit())
                         }
                 }
                 CoinTypes.Bitcoin.coinType(),
                 CoinTypes.BitcoinTest.coinType() -> {
-                    DataRepository.getBitcoinService().getBalance(currentAccount.address)
+                    DataRepository.getBitcoinService().getBalance(account.address)
                         .subscribe({
                             try {
                                 if (it <= BigDecimal("0")) {

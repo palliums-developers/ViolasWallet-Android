@@ -1,6 +1,5 @@
 package com.violas.wallet.repository.http.btcBrowser.request;
 
-import com.google.gson.Gson;
 import com.violas.wallet.repository.http.btcBrowser.bean.TransactionBean;
 import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
 
@@ -14,9 +13,8 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -47,7 +45,11 @@ public class BTCTestRequest extends BaseRequest implements BaseChainRequest {
         Observable<TranceBean> getTx(@Path("txhash") String txhash);
 
         @POST("https://tchain.api.btc.com/v3/tools/tx-publish")
-        Observable<BTCRequest.PushTxBean> pushTx(@Body RequestBody tx);
+        @FormUrlEncoded
+        Observable<BTCRequest.PushTxBean> pushTx(@Field("rawhex") String tx);
+
+//        @POST("https://tchain.api.btc.com/v3/tools/tx-publish")
+//        Observable<BTCRequest.PushTxBean> pushTx(@Body RequestBody tx);
 
 //        @GET("http://223.99.243.185:5000/sendrawtransaction/{tx}")
 //        Observable<BTrusteeRequest.PushTxBean> pushTx(@Path("tx") String tx);
@@ -78,15 +80,29 @@ public class BTCTestRequest extends BaseRequest implements BaseChainRequest {
                     @Override
                     public BigDecimal apply(BalanceBean balanceBlockCypher) throws Exception {
                         if (balanceBlockCypher.data == null) return new BigDecimal(0);
-                        return new BigDecimal(balanceBlockCypher.data.balance + "").divide(new BigDecimal("100000000"), 8, BigDecimal.ROUND_HALF_UP);
+                        return new BigDecimal(balanceBlockCypher.data.balance + "");
                     }
                 });
     }
 
+//    @Override
+//    public Observable<String> pushTx(String tx) {
+//        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(new BTCRequest.TxBean(tx)));
+//        return BTCTestRequest.getRequest().pushTx(requestBody)
+//                .map(new Function<BTCRequest.PushTxBean, String>() {
+//                    @Override
+//                    public String apply(BTCRequest.PushTxBean txrefs) throws Exception {
+//                        if (txrefs.data == null || txrefs.err_no != 0) {
+//                            throw new RuntimeException();
+//                        }
+//                        return txrefs.data;
+//                    }
+//                });
+//    }
+
     @Override
     public Observable<String> pushTx(String tx) {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(new BTCRequest.TxBean(tx)));
-        return BTCTestRequest.getRequest().pushTx(requestBody)
+        return BTCTestRequest.getRequest().pushTx(tx)
                 .map(new Function<BTCRequest.PushTxBean, String>() {
                     @Override
                     public String apply(BTCRequest.PushTxBean txrefs) throws Exception {
@@ -97,20 +113,6 @@ public class BTCTestRequest extends BaseRequest implements BaseChainRequest {
                     }
                 });
     }
-
-//    @Override
-//    public Observable<String> pushTx(String tx) {
-//        return BTrusteeRequest.getRequest().pushTx(tx)
-//                .map(new Function<BTrusteeRequest.PushTxBean, String>() {
-//                    @Override
-//                    public String apply(BTrusteeRequest.PushTxBean txrefs) throws Exception {
-//                        if (txrefs.result == null) {
-//                            throw new RuntimeException();
-//                        }
-//                        return txrefs.result;
-//                    }
-//                });
-//    }
 
     @Override
     public Observable<TransactionBean> getTranscation(String TXHash) {

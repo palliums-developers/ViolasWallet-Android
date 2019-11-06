@@ -5,6 +5,7 @@ import com.violas.wallet.repository.http.btcBrowser.request.FeeEstimateRequest;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -17,7 +18,7 @@ public class FeeManager {
         return calculateFee(utxoList, toAddressSize, 60);
     }
 
-    public BigDecimal calculateFee(List<UTXO> utxoList, int toAddressSize, int progress) {
+    public synchronized BigDecimal calculateFee(List<UTXO> utxoList, int toAddressSize, int progress) {
         if (minFee == null || maxFee == null) {
             loadFee();
         }
@@ -25,6 +26,7 @@ public class FeeManager {
     }
 
     private void loadFee() {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
         new FeeEstimateRequest().estimateFee()
                 .subscribe(new Observer<FeeEstimateRequest.FeesBean>() {
                     @Override
@@ -36,11 +38,13 @@ public class FeeManager {
                     public void onNext(FeeEstimateRequest.FeesBean fees) {
                         minFee = fees.hourFee;
                         maxFee = fees.fastestFee;
+                        countDownLatch.countDown();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         checkLoadFee();
+                        countDownLatch.countDown();
                     }
 
                     @Override
@@ -48,6 +52,11 @@ public class FeeManager {
 
                     }
                 });
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void checkLoadFee() {

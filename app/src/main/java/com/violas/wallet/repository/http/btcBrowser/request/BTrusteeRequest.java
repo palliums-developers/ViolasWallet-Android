@@ -77,7 +77,7 @@ public class BTrusteeRequest implements BaseChainRequest {
                 .map(new Function<BtBalanceBean, BigDecimal>() {
                     @Override
                     public BigDecimal apply(BtBalanceBean balanceBlockCypher) throws Exception {
-                        return new BigDecimal(balanceBlockCypher.total + "").divide(new BigDecimal("100000000"), 8, BigDecimal.ROUND_HALF_UP);
+                        return new BigDecimal(balanceBlockCypher.total + "");
                     }
                 });
     }
