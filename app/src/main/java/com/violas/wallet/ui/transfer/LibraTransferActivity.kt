@@ -96,25 +96,27 @@ class LibraTransferActivity : TransferActivity() {
                 dialogFragment.dismiss()
                 account?.let {
                     showProgress()
-                    mTransferManager.transfer(
-                        this,
-                        address,
-                        amount,
-                        bytes,
-                        account!!,
-                        sbQuota.progress,
-                        isToken,
-                        tokenId,
-                        {
-                            dismissProgress()
-                            print(it)
-                            finish()
-                        },
-                        {
-                            it.message?.let { it1 -> showToast(it1) }
-                            dismissProgress()
-                            it.printStackTrace()
-                        })
+                    launch(Dispatchers.IO) {
+                        mTransferManager.transfer(
+                            this@LibraTransferActivity,
+                            address,
+                            amount,
+                            bytes,
+                            account!!,
+                            sbQuota.progress,
+                            isToken,
+                            tokenId,
+                            {
+                                dismissProgress()
+                                print(it)
+                                finish()
+                            },
+                            {
+                                it.message?.let { it1 -> showToast(it1) }
+                                dismissProgress()
+                                it.printStackTrace()
+                            })
+                    }
                 }
             }.show(supportFragmentManager)
     }

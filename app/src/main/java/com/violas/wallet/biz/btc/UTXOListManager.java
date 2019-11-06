@@ -2,7 +2,9 @@ package com.violas.wallet.biz.btc;
 
 import android.util.Log;
 
+import com.violas.wallet.common.Vm;
 import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
+import com.violas.wallet.repository.http.btcBrowser.request.BlockChainRequest;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -11,8 +13,13 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class UTXOListManager {
@@ -242,9 +249,58 @@ public class UTXOListManager {
         }
         do {
             List<String> addressList = getNextSearch(mAddressCursor);
-            mAddressCursor += addressList.size();
+            for (String address : addressList) {
+                List<UTXO> utxoList = getUTXOByAddress(address);
+
+                for (UTXO utxo : utxoList) {
+                    if (utxo.getConfirmations() >= Vm.Confirmations) {
+                        mAllAmount = mAllAmount.add(new BigDecimal(utxo.getAmount() + ""));
+                        mUTXOList.put(generateKey(utxo), utxo);
+                    }
+                }
+
+                mAddressCursor++;
+            }
         } while (mAddressCursor < mAddressList.size()
                 && mAllAmount.compareTo(new BigDecimal(amount + "")) < 0);
+    }
+
+    private List<UTXO> getUTXOByAddress(String addresss) {
+        final List<UTXO> utxoList = new ArrayList<>();
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        BlockChainRequest.get().getUtxo(addresss)
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<List<UTXO>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(List<UTXO> utxos) {
+                        for (UTXO utxo : utxos) {
+                            utxoList.add(utxo);
+                        }
+                        countDownLatch.countDown();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        countDownLatch.countDown();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return utxoList;
     }
 
     /**

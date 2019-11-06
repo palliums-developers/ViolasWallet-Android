@@ -143,23 +143,25 @@ class BTCTransferActivity : TransferActivity() {
                 dialogFragment.dismiss()
                 account?.let {
                     showProgress()
-                    mTransferManager.transferBtc(
-                        mTransactionManager,
-                        address,
-                        amount,
-                        bytes,
-                        account!!,
-                        sbQuota.progress,
-                        {
-                            dismissProgress()
-                            print(it)
-                            finish()
-                        },
-                        {
-                            it.message?.let { it1 -> showToast(it1) }
-                            dismissProgress()
-                            it.printStackTrace()
-                        })
+                    launch(Dispatchers.IO) {
+                        mTransferManager.transferBtc(
+                            mTransactionManager,
+                            address,
+                            amount,
+                            bytes,
+                            account!!,
+                            sbQuota.progress,
+                            {
+                                dismissProgress()
+                                print(it)
+                                finish()
+                            },
+                            {
+                                it.message?.let { it1 -> showToast(it1) }
+                                dismissProgress()
+                                it.printStackTrace()
+                            })
+                    }
                 }
             }.show(supportFragmentManager)
     }
