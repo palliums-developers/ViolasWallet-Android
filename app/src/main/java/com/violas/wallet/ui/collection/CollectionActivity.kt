@@ -44,7 +44,7 @@ class CollectionActivity : BaseActivity() {
             }
 
             val collectionAddress =
-                "${CoinTypes.parseCoinType(currentAccount.coinNumber).coinName().toLowerCase(Locale.CHINA)}:${currentAccount.address}"
+                "${CoinTypes.parseCoinType(currentAccount.coinNumber).fullName().toLowerCase(Locale.CHINA)}:${currentAccount.address}"
             val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
                 collectionAddress,
                 AutoSizeUtils.dp2px(this@CollectionActivity, 164.toFloat()),
