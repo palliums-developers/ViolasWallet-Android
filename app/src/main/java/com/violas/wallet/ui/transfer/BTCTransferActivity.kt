@@ -45,6 +45,7 @@ class BTCTransferActivity : TransferActivity() {
                     0
                 )
 
+
                 val parseCoinType = CoinTypes.parseCoinType(account!!.coinNumber)
                 withContext(Dispatchers.Main) {
                     if (amount > 0) {
