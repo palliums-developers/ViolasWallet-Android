@@ -45,6 +45,7 @@ class BTCTransferActivity : TransferActivity() {
                     0
                 )
 
+
                 val parseCoinType = CoinTypes.parseCoinType(account!!.coinNumber)
                 withContext(Dispatchers.Main) {
                     if (amount > 0) {
@@ -115,7 +116,7 @@ class BTCTransferActivity : TransferActivity() {
 
     private fun refreshCurrentAmount() {
         account?.let {
-            mAccountManager.getBalance(it) { balance, unit ->
+            mAccountManager.getBalanceWithUnit(it) { balance, unit ->
                 launch {
                     tvCoinAmount.text = String.format(
                         getString(R.string.hint_transfer_amount),

@@ -13,6 +13,7 @@ import com.violas.wallet.getContext
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.IOScope
+import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.palliums.libracore.mnemonic.Mnemonic
@@ -20,8 +21,6 @@ import org.palliums.libracore.mnemonic.WordCount
 import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.wallet.KeyFactory
 import org.palliums.libracore.wallet.Seed
-import java.math.BigDecimal
-import java.math.RoundingMode
 import java.util.concurrent.Executors
 
 class MnemonicException : RuntimeException()
@@ -46,30 +45,12 @@ class AccountManager : CoroutineScope by IOScope() {
 
     @WorkerThread
     fun refreshAccountAmount(currentAccount: AccountDO, callback: (AccountDO) -> Unit) {
-        when (CoinTypes.parseCoinType(currentAccount.coinNumber)) {
-            CoinTypes.Libra -> {
-                DataRepository.getLibraService().getBalanceInMicroLibras(currentAccount.address) {
-                    currentAccount.amount = it
-                    mExecutor.submit {
-                        mAccountStorage.update(currentAccount)
-                    }
-                    callback.invoke(currentAccount)
-                }
+        getBalance(currentAccount) { amount ->
+            currentAccount.amount = amount
+            mExecutor.submit {
+                mAccountStorage.update(currentAccount)
             }
-            CoinTypes.Bitcoin -> {
-                DataRepository.getBitcoinService().getBalance(currentAccount.address)
-                    .subscribe({
-                        currentAccount.amount = it.toLong()
-                        mAccountStorage.update(currentAccount)
-                        callback.invoke(currentAccount)
-                    }, {
-                        callback.invoke(currentAccount)
-                    }, {})
-            }
-            CoinTypes.VToken -> {
-                callback.invoke(currentAccount)
-            }
-            else -> callback.invoke(currentAccount)
+            callback.invoke(currentAccount)
         }
     }
 
@@ -358,19 +339,28 @@ class AccountManager : CoroutineScope by IOScope() {
         return derive as BitCoinECKeyPair
     }
 
-    fun getBalance(account: AccountDO, callback: (Double, String) -> Unit) {
+    fun getBalanceWithUnit(account: AccountDO, callback: (String, String) -> Unit) {
+        getBalance(account) { amount ->
+            val parseCoinType = CoinTypes.parseCoinType(account.coinNumber)
+            val convertAmountToDisplayUnit =
+                convertAmountToDisplayUnit(amount, parseCoinType)
+            callback.invoke(convertAmountToDisplayUnit.first, convertAmountToDisplayUnit.first)
+        }
+    }
+
+    fun getBalance(account: AccountDO, callback: (Long) -> Unit) {
         launch {
             when (account.coinNumber) {
                 CoinTypes.VToken.coinType() -> {
                     DataRepository.getViolasService()
                         .getBalanceInMicroLibras(account.address) {
-                            callback.invoke(it.div(1000000.0), CoinTypes.VToken.coinUnit())
+                            callback.invoke(it)
                         }
                 }
                 CoinTypes.Libra.coinType() -> {
                     DataRepository.getLibraService()
                         .getBalanceInMicroLibras(account.address) {
-                            callback.invoke(it.div(1000000.0), CoinTypes.Libra.coinUnit())
+                            callback.invoke(it)
                         }
                 }
                 CoinTypes.Bitcoin.coinType(),
@@ -378,28 +368,15 @@ class AccountManager : CoroutineScope by IOScope() {
                     DataRepository.getBitcoinService().getBalance(account.address)
                         .subscribe({
                             try {
-                                if (it <= BigDecimal("0")) {
-                                    callback.invoke(
-                                        0.0,
-                                        CoinTypes.Bitcoin.coinUnit()
-                                    )
-                                    return@subscribe
-                                }
                                 callback.invoke(
-                                    it.divide(
-                                        BigDecimal("100000000"),
-                                        8,
-                                        RoundingMode.HALF_DOWN
-                                    ).toDouble(),
-                                    CoinTypes.Bitcoin.coinUnit()
+                                    it.toLong()
                                 )
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
                         }, {
                             callback.invoke(
-                                0.0,
-                                CoinTypes.Bitcoin.coinUnit()
+                                0
                             )
                         }, {
 
