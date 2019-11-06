@@ -76,7 +76,7 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
         }
     }
 
-    private fun hasExtraRow(): Boolean {
+    fun hasExtraRow(): Boolean {
         return loadMoreState.status != LoadState.Status.SUCCESS
                 && loadMoreState.status != LoadState.Status.IDLE
     }

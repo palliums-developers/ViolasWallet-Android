@@ -15,6 +15,9 @@ abstract class BaseViewHolder<VO>(view: View) :
     private var itemIndex: Int = -1
     private var itemDate: VO? = null
 
+    /**
+     * 防重点击处理，子类复写[onViewClick]来响应事件
+     */
     final override fun onClick(view: View) {
         if (!BaseActivity.isFastMultiClick(view)) {
             onViewClick(view, itemIndex, itemDate)
@@ -29,5 +32,13 @@ abstract class BaseViewHolder<VO>(view: View) :
 
     abstract fun onViewBind(itemIndex: Int, itemDate: VO?)
 
-    abstract fun onViewClick(view: View, itemIndex: Int, itemDate: VO?)
+    /**
+     * View点击回调，已防重点击处理
+     * @param view
+     * @param itemIndex
+     * @param itemDate
+     */
+    open fun onViewClick(view: View, itemIndex: Int, itemDate: VO?) {
+
+    }
 }
