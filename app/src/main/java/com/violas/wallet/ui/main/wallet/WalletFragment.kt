@@ -203,9 +203,7 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                 setViewData(currentAccount)
             }
             mAccountManager.refreshAccountAmount(currentAccount) {
-                launch(Dispatchers.Main) {
-                    setAmount(currentAccount)
-                }
+                setAmount(currentAccount)
             }
         }
     }
@@ -225,10 +223,12 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     private fun setAmount(currentAccount: AccountDO) {
-        val parseCoinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
-        val convertAmountToDisplayUnit =
-            convertAmountToDisplayUnit(currentAccount.amount, parseCoinType)
-        tvAmount.text = "${convertAmountToDisplayUnit.first}"
+        activity?.runOnUiThread {
+            val parseCoinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
+            val convertAmountToDisplayUnit =
+                convertAmountToDisplayUnit(currentAccount.amount, parseCoinType)
+            tvAmount.text = "${convertAmountToDisplayUnit.first}"
+        }
     }
 
     private fun refreshAssert() {
