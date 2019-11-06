@@ -5,8 +5,8 @@ import io.reactivex.Observable;
 public class FeeEstimateRequest {
 
     public Observable<FeesBean> estimateFee() {
-        return new Fee21Request().getFee();
-//        return new FeeBlockcypherRequest().estimateFee();
+//        return new Fee21Request().getFee();
+        return new FeeBlockcypherRequest().estimateFee();
     }
 
     public static class FeesBean {

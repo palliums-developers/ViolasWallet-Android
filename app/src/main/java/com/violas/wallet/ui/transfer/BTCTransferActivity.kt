@@ -2,6 +2,7 @@ package com.violas.wallet.ui.transfer
 
 import android.accounts.AccountsException
 import android.os.Bundle
+import android.widget.SeekBar
 import androidx.core.widget.addTextChangedListener
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -33,7 +34,7 @@ class BTCTransferActivity : TransferActivity() {
                 account?.apply {
                     mTransactionManager = TransactionManager(arrayListOf(address))
                     mTransactionManager.setFeeCallback {
-                        launch {
+                        this@BTCTransferActivity.runOnUiThread {
                             tvFee.text = "$it BTC"
                         }
                     }
@@ -77,16 +78,35 @@ class BTCTransferActivity : TransferActivity() {
                 )
             }
         }
+        sbQuota.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                account?.apply {
+                    launch(Dispatchers.IO) {
+                        try {
+                            mTransactionManager.transferProgressIntent(sbQuota.progress)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            }
+        })
         editAmountInput.addTextChangedListener {
             account?.apply {
-                if (coinNumber == CoinTypes.Bitcoin.coinType() || coinNumber == CoinTypes.BitcoinTest.coinType()) {
+                launch(Dispatchers.IO) {
                     try {
-                        mTransactionManager.checkBalance(
-                            it.toString().toDouble(),
-                            2,
-                            sbQuota.progress
+                        mTransactionManager.transferAmountIntent(
+                            it.toString().toDouble()
                         )
                     } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
             }
