@@ -78,7 +78,7 @@ public class BTCTestRequest extends BaseRequest implements BaseChainRequest {
                     @Override
                     public BigDecimal apply(BalanceBean balanceBlockCypher) throws Exception {
                         if (balanceBlockCypher.data == null) return new BigDecimal(0);
-                        return new BigDecimal(balanceBlockCypher.data.balance + "").divide(new BigDecimal("100000000"), 8, BigDecimal.ROUND_HALF_UP);
+                        return new BigDecimal(balanceBlockCypher.data.balance + "");
                     }
                 });
     }
