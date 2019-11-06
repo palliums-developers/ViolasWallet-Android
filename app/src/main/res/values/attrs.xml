@@ -31,7 +31,7 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="DataLoadStatusLayout">
+    <declare-styleable name="DefaultStatusLayout">
         <attr name="lsEmptyIcon" format="reference"/>
         <attr name="lsFailIcon" format="reference"/>
         <attr name="lsEmptyTip" format="string"/>

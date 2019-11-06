@@ -37,7 +37,7 @@ abstract class BaseViewModel : ViewModel() {
             retry = { execute(*params) }
 
             val exception = HttpException.networkUnavailable()
-            loadState.value = LoadState.failed(exception)
+            loadState.value = LoadState.failure(exception)
             tipsMessage.value = exception.message
             return false
         }
@@ -51,7 +51,7 @@ abstract class BaseViewModel : ViewModel() {
                 onFailure = {
                     retry = { execute(*params) }
 
-                    loadState.postValue(LoadState.failed(it))
+                    loadState.postValue(LoadState.failure(it))
                     tipsMessage.postValue(it.message)
                 })
         }

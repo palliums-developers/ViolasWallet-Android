@@ -1,4 +1,4 @@
-package com.violas.wallet.widget
+package com.violas.wallet.widget.status
 
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
@@ -9,19 +9,22 @@ import androidx.annotation.StringRes
  * Created by elephant on 2019-08-02 10:11.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: DataLoadStatusControl
+ * desc: 状态布局
  */
+interface IStatusLayout {
 
-
-interface DataLoadStatusControl {
-
-    @IntDef(Status.STATUS_NONE, Status.STATUS_EMPTY, Status.STATUS_FAIL, Status.STATUS_NO_NETWORK)
+    @IntDef(
+        Status.STATUS_NONE,
+        Status.STATUS_EMPTY,
+        Status.STATUS_FAILURE,
+        Status.STATUS_NO_NETWORK
+    )
     annotation class Status {
         companion object {
             const val STATUS_NONE = 1           // 默认状态，隐藏
             const val STATUS_EMPTY = 2          // 空状态
-            const val STATUS_FAIL = 3           // 失败状态
-            const val STATUS_NO_NETWORK = 4     // 无网络
+            const val STATUS_FAILURE = 3           // 失败状态
+            const val STATUS_NO_NETWORK = 4     // 无网络状态
         }
     }
 

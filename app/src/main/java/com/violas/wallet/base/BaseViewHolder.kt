@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
  * <p>
  * desc: Base RecyclerView.ViewHolder
  */
-abstract class BaseViewHolder<Vo>(view: View) :
+abstract class BaseViewHolder<VO>(view: View) :
     RecyclerView.ViewHolder(view), View.OnClickListener {
 
     private var itemIndex: Int = -1
-    private var itemDate: Vo? = null
+    private var itemDate: VO? = null
 
     final override fun onClick(view: View) {
         if (!BaseActivity.isFastMultiClick(view)) {
@@ -21,13 +21,13 @@ abstract class BaseViewHolder<Vo>(view: View) :
         }
     }
 
-    fun bind(itemIndex: Int, itemDate: Vo?) {
+    fun bind(itemIndex: Int, itemDate: VO?) {
         this.itemIndex = itemIndex
         this.itemDate = itemDate
         onViewBind(itemIndex, itemDate)
     }
 
-    abstract fun onViewBind(itemIndex: Int, itemDate: Vo?)
+    abstract fun onViewBind(itemIndex: Int, itemDate: VO?)
 
-    abstract fun onViewClick(view: View, itemIndex: Int, itemDate: Vo?)
+    abstract fun onViewClick(view: View, itemIndex: Int, itemDate: VO?)
 }

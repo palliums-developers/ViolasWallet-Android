@@ -1,4 +1,4 @@
-package com.violas.wallet.base.listing
+package com.violas.wallet.base.paging
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -12,14 +12,14 @@ import com.violas.wallet.widget.status.IStatusLayout
 import kotlinx.android.synthetic.main.activity_base_list.*
 
 /**
- * Created by elephant on 2019-11-05 10:34.
+ * Created by elephant on 2019-11-06 14:56.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 列表页面基类
+ * desc: 分页列表页面基类
  */
-abstract class BaseListingActivity<VO> : BaseActivity(), ListingController<VO> {
+abstract class BasePagingActivity<VO> : BaseActivity(), PagingController<VO> {
 
-    private val mViewModel by viewModels<ListingViewModel<VO>> {
+    private val mViewModel by viewModels<PagingViewModel<VO>> {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return initViewModel() as T
@@ -31,14 +31,14 @@ abstract class BaseListingActivity<VO> : BaseActivity(), ListingController<VO> {
         initViewAdapter()
     }
 
-    private val mListingHandler by lazy {
-        ListingHandler(this, this, this)
+    protected val mPagingHandler by lazy {
+        PagingHandler(this, this, this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mListingHandler
+        mPagingHandler
     }
 
     /**
@@ -69,11 +69,11 @@ abstract class BaseListingActivity<VO> : BaseActivity(), ListingController<VO> {
         return vStatusLayout
     }
 
-    final override fun getViewAdapter(): ListingViewAdapter<VO> {
+    final override fun getViewAdapter(): PagingViewAdapter<VO> {
         return mViewAdapter
     }
 
-    final override fun getViewModel(): ListingViewModel<VO> {
+    final override fun getViewModel(): PagingViewModel<VO> {
         return mViewModel
     }
 }

@@ -1,4 +1,4 @@
-package com.violas.wallet.widget
+package com.violas.wallet.widget.status
 
 import android.annotation.TargetApi
 import android.content.Context
@@ -16,9 +16,9 @@ import kotlinx.android.synthetic.main.widget_data_load_status.view.*
  * Created by elephant on 2019-08-01 18:13.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: DataLoadStatusLayout，负责展现列表空数据和列表加载失败时的UI
+ * desc: 默认的状态布局，负责展现列表空数据和列表加载失败时的UI
  */
-class DataLoadStatusLayout : FrameLayout, DataLoadStatusControl, View.OnClickListener {
+class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
 
     var onReloadListener: OnReloadListener? = null
 
@@ -52,7 +52,7 @@ class DataLoadStatusLayout : FrameLayout, DataLoadStatusControl, View.OnClickLis
         //        tvStatusReload.setOnClickListener(this)
         tvStatusReload.visibility = View.GONE
 
-        var status = DataLoadStatusControl.Status.STATUS_NONE
+        var status = IStatusLayout.Status.STATUS_NONE
         var failTips = context.getString(R.string.data_load_status_failed)
         var emptyTips = context.getString(R.string.data_load_status_empty)
         var noNetWorkTips = context.getString(R.string.data_load_status_no_network)
@@ -60,32 +60,32 @@ class DataLoadStatusLayout : FrameLayout, DataLoadStatusControl, View.OnClickLis
             val typedArray =
                 context.obtainStyledAttributes(
                     it,
-                    R.styleable.DataLoadStatusLayout,
+                    R.styleable.DefaultStatusLayout,
                     defStyleAttr,
                     defStyleRes
                 )
 
-            val failIcon = typedArray.getDrawable(R.styleable.DataLoadStatusLayout_lsFailIcon)
-            val emptyIcon = typedArray.getDrawable(R.styleable.DataLoadStatusLayout_lsEmptyIcon)
+            val failIcon = typedArray.getDrawable(R.styleable.DefaultStatusLayout_lsFailIcon)
+            val emptyIcon = typedArray.getDrawable(R.styleable.DefaultStatusLayout_lsEmptyIcon)
 
-            if (typedArray.hasValue(R.styleable.DataLoadStatusLayout_lsFailTip)) {
-                failTips = typedArray.getString(R.styleable.DataLoadStatusLayout_lsFailTip)!!
+            if (typedArray.hasValue(R.styleable.DefaultStatusLayout_lsFailTip)) {
+                failTips = typedArray.getString(R.styleable.DefaultStatusLayout_lsFailTip)!!
             }
-            if (typedArray.hasValue(R.styleable.DataLoadStatusLayout_lsEmptyTip)) {
-                emptyTips = typedArray.getString(R.styleable.DataLoadStatusLayout_lsEmptyTip)!!
+            if (typedArray.hasValue(R.styleable.DefaultStatusLayout_lsEmptyTip)) {
+                emptyTips = typedArray.getString(R.styleable.DefaultStatusLayout_lsEmptyTip)!!
             }
 
-            status = typedArray.getInt(R.styleable.DataLoadStatusLayout_lsStatus, status)
+            status = typedArray.getInt(R.styleable.DefaultStatusLayout_lsStatus, status)
 
-            emptyIcon?.run { setImageWithStatus(DataLoadStatusControl.Status.STATUS_EMPTY, this) }
-            failIcon?.run { setImageWithStatus(DataLoadStatusControl.Status.STATUS_FAIL, this) }
+            emptyIcon?.run { setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, this) }
+            failIcon?.run { setImageWithStatus(IStatusLayout.Status.STATUS_FAILURE, this) }
 
             typedArray.recycle()
         }
 
-        setTipWithStatus(DataLoadStatusControl.Status.STATUS_FAIL, failTips)
-        setTipWithStatus(DataLoadStatusControl.Status.STATUS_EMPTY, emptyTips)
-        setTipWithStatus(DataLoadStatusControl.Status.STATUS_NO_NETWORK, noNetWorkTips)
+        setTipWithStatus(IStatusLayout.Status.STATUS_FAILURE, failTips)
+        setTipWithStatus(IStatusLayout.Status.STATUS_EMPTY, emptyTips)
+        setTipWithStatus(IStatusLayout.Status.STATUS_NO_NETWORK, noNetWorkTips)
         showStatus(status)
     }
 
@@ -100,56 +100,56 @@ class DataLoadStatusLayout : FrameLayout, DataLoadStatusControl, View.OnClickLis
         }
     }
 
-    override fun setImageWithStatus(@DataLoadStatusControl.Status status: Int, iconRes: Int) {
+    override fun setImageWithStatus(@IStatusLayout.Status status: Int, iconRes: Int) {
         val icon: Drawable? = ResourcesCompat.getDrawable(resources, iconRes, null)
         icon?.let { setImageWithStatus(status, it) }
     }
 
-    override fun setImageWithStatus(@DataLoadStatusControl.Status status: Int, icon: Drawable) {
+    override fun setImageWithStatus(@IStatusLayout.Status status: Int, icon: Drawable) {
         mIconResMap[status] = icon
     }
 
-    override fun setTipWithStatus(@DataLoadStatusControl.Status status: Int, tipRes: Int) {
+    override fun setTipWithStatus(@IStatusLayout.Status status: Int, tipRes: Int) {
         setTipWithStatus(status, context.getString(tipRes))
     }
 
-    override fun setTipWithStatus(@DataLoadStatusControl.Status status: Int, tip: String) {
+    override fun setTipWithStatus(@IStatusLayout.Status status: Int, tip: String) {
         mTextResMap[status] = tip
     }
 
-    override fun showStatus(@DataLoadStatusControl.Status status: Int, errorMsg: String?) {
+    override fun showStatus(@IStatusLayout.Status status: Int, errorMsg: String?) {
         when (status) {
-            DataLoadStatusControl.Status.STATUS_NONE -> {
+            IStatusLayout.Status.STATUS_NONE -> {
                 visibility = View.GONE
             }
 
-            DataLoadStatusControl.Status.STATUS_EMPTY -> {
+            IStatusLayout.Status.STATUS_EMPTY -> {
                 visibility = View.VISIBLE
 
-                val tip: String? = mTextResMap[DataLoadStatusControl.Status.STATUS_EMPTY]
-                val icon: Drawable? = mIconResMap[DataLoadStatusControl.Status.STATUS_EMPTY]
+                val tip: String? = mTextResMap[IStatusLayout.Status.STATUS_EMPTY]
+                val icon: Drawable? = mIconResMap[IStatusLayout.Status.STATUS_EMPTY]
 
                 tip?.let { tvStatusTip.text = it }
                 icon?.let { ivStatusIcon.setImageDrawable(it) }
             }
 
-            DataLoadStatusControl.Status.STATUS_FAIL -> {
+            IStatusLayout.Status.STATUS_FAILURE -> {
                 visibility = View.VISIBLE
 
-                val tip: String? = mTextResMap[DataLoadStatusControl.Status.STATUS_FAIL]
-                val icon: Drawable? = mIconResMap[DataLoadStatusControl.Status.STATUS_FAIL]
-                    ?: mIconResMap[DataLoadStatusControl.Status.STATUS_EMPTY]
+                val tip: String? = mTextResMap[IStatusLayout.Status.STATUS_FAILURE]
+                val icon: Drawable? = mIconResMap[IStatusLayout.Status.STATUS_FAILURE]
+                    ?: mIconResMap[IStatusLayout.Status.STATUS_EMPTY]
 
                 tip?.let { tvStatusTip.text = it }
                 icon?.let { ivStatusIcon.setImageDrawable(it) }
             }
 
-            DataLoadStatusControl.Status.STATUS_NO_NETWORK -> {
+            IStatusLayout.Status.STATUS_NO_NETWORK -> {
                 visibility = View.VISIBLE
 
-                val tip: String? = mTextResMap[DataLoadStatusControl.Status.STATUS_NO_NETWORK]
-                val icon: Drawable? = mIconResMap[DataLoadStatusControl.Status.STATUS_FAIL]
-                    ?: mIconResMap[DataLoadStatusControl.Status.STATUS_EMPTY]
+                val tip: String? = mTextResMap[IStatusLayout.Status.STATUS_NO_NETWORK]
+                val icon: Drawable? = mIconResMap[IStatusLayout.Status.STATUS_FAILURE]
+                    ?: mIconResMap[IStatusLayout.Status.STATUS_EMPTY]
 
                 tip?.let { tvStatusTip.text = it }
                 icon?.let { ivStatusIcon.setImageDrawable(it) }

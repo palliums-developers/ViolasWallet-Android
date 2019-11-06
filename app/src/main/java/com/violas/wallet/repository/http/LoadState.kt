@@ -17,7 +17,7 @@ data class LoadState private constructor(
 
     @IntDef(
         Status.IDLE, Status.RUNNING, Status.SUCCESS,
-        Status.SUCCESS_EMPTY, Status.SUCCESS_NO_MORE, Status.FAILED
+        Status.SUCCESS_EMPTY, Status.SUCCESS_NO_MORE, Status.FAILURE
     )
     annotation class Status {
         companion object {
@@ -26,7 +26,7 @@ data class LoadState private constructor(
             const val SUCCESS = 2           // 加载成功
             const val SUCCESS_EMPTY = 3     // 加载成功且为空（只有刷新状态发出）
             const val SUCCESS_NO_MORE = 4   // 加载成功且没有更多
-            const val FAILED = 5            // 加载失败
+            const val FAILURE = 5           // 加载失败
         }
     }
 
@@ -36,8 +36,8 @@ data class LoadState private constructor(
         val SUCCESS by lazy { LoadState(Status.SUCCESS) }
         val SUCCESS_EMPTY by lazy { LoadState(Status.SUCCESS_EMPTY) }
         val SUCCESS_NO_MORE by lazy { LoadState(Status.SUCCESS_NO_MORE) }
-        fun failed(errorText: String?) = LoadState(Status.FAILED, errorText = errorText)
-        fun failed(throwable: Throwable?) = LoadState(Status.FAILED, throwable = throwable)
+        fun failure(errorText: String?) = LoadState(Status.FAILURE, errorText = errorText)
+        fun failure(throwable: Throwable?) = LoadState(Status.FAILURE, throwable = throwable)
     }
 
     fun isNoNetwork(): Boolean {

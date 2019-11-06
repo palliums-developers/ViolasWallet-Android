@@ -1,4 +1,4 @@
-package com.violas.wallet.widget;
+package com.violas.wallet.widget.refresh;
 
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
@@ -28,7 +28,7 @@ public class PullRefreshLayoutProgress extends View {
     private int   mMaxProgress     = 100;
     private int   mCurrentProgress = 0;
 
-    private RectF mRectF;
+    private RectF         mRectF;
     private ValueAnimator mValueAnimator;
     private boolean       mIsRunningAnim = false;
     private boolean       mNeedReAnim    = false;
