@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 import me.yokeyword.fragmentation.SupportActivity
 import qiu.niorgai.StatusBarCompat
 
-abstract class BaseActivity : SupportActivity(), View.OnClickListener,
+abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewController,
     CoroutineScope by MainScope() {
     private var mLoadingDialog: LoadingDialog? = null
     abstract fun getLayoutResId(): Int
@@ -380,11 +380,11 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener,
 ////        super.attachBaseContext(MultiLanguageUtility.attachBaseContext(newBase))
 //    }
 
-    fun showProgress(@StringRes resId: Int) {
+    override fun showProgress(@StringRes resId: Int) {
         showProgress(getString(resId))
     }
 
-    fun showProgress(msg: String? = null) {
+    override fun showProgress(msg: String?) {
         try {
             launch {
                 mLoadingDialog?.dismiss()
@@ -397,7 +397,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener,
         }
     }
 
-    fun dismissProgress() {
+    override fun dismissProgress() {
         try {
             launch {
                 mLoadingDialog?.dismiss()
@@ -408,11 +408,11 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener,
 
     }
 
-    fun showToast(@StringRes msgId: Int) {
+    override fun showToast(@StringRes msgId: Int) {
         showToast(getString(msgId))
     }
 
-    fun showToast(msg: String) {
+    override fun showToast(msg: String) {
         launch {
             Toast.makeText(this@BaseActivity, msg, Toast.LENGTH_SHORT).show()
         }
