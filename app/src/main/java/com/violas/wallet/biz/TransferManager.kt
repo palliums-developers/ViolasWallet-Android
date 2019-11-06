@@ -87,12 +87,18 @@ class TransferManager {
         transactionManager: TransactionManager,
         address: String,
         amount: Double,
-        decryptPrivateKey: ByteArray,
+        password: ByteArray,
         account: AccountDO,
         progress: Int,
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
+        val decryptPrivateKey = SimpleSecurity.instance(getContext())
+            .decrypt(password, account.privateKey)
+        if (decryptPrivateKey == null) {
+            error.invoke(WrongPasswordException())
+            return
+        }
         transactionManager.checkBalance(amount, 1, progress)
             .flatMap {
                 transactionManager.obtainTransaction(

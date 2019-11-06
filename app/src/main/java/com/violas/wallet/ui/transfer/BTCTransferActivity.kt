@@ -31,8 +31,8 @@ class BTCTransferActivity : TransferActivity() {
             try {
                 account = mAccountManager.getAccountById(accountId)
                 refreshCurrentAmount()
-                account?.apply {
-                    mTransactionManager = TransactionManager(arrayListOf(address))
+                account?.let {
+                    mTransactionManager = TransactionManager(arrayListOf(it.address))
                     mTransactionManager.setFeeCallback {
                         this@BTCTransferActivity.runOnUiThread {
                             tvFee.text = "$it BTC"
