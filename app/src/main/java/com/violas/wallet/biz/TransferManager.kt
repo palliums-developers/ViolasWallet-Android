@@ -79,15 +79,12 @@ class TransferManager {
                     )
                 }
             }
-            CoinTypes.Bitcoin.coinType(),
-            CoinTypes.BitcoinTest.coinType() -> {
-                transferBtc(address, amount, decryptPrivateKey, account, progress, success, error)
-            }
         }
     }
 
     @SuppressLint("CheckResult")
-    private fun transferBtc(
+    fun transferBtc(
+        transactionManager: TransactionManager,
         address: String,
         amount: Double,
         decryptPrivateKey: ByteArray,
@@ -96,7 +93,6 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        val transactionManager = TransactionManager(arrayListOf(account.address))
         transactionManager.checkBalance(amount, 1, progress)
             .flatMap {
                 transactionManager.obtainTransaction(
