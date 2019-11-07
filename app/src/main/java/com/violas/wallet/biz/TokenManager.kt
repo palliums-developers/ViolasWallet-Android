@@ -71,6 +71,7 @@ class TokenManager {
                 AssertToken(
                     id = it.id!!,
                     account_id = it.account_id,
+                    coinType = account.coinNumber,
                     enable = it.enable,
                     isToken = false,
                     name = it.name,
@@ -84,6 +85,7 @@ class TokenManager {
             0, AssertToken(
                 id = 0,
                 account_id = account.id,
+                coinType = account.coinNumber,
                 enable = true,
                 isToken = false,
                 name = CoinTypes.parseCoinType(account.coinNumber).coinName(),
