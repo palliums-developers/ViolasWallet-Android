@@ -344,7 +344,7 @@ class AccountManager : CoroutineScope by IOScope() {
             val parseCoinType = CoinTypes.parseCoinType(account.coinNumber)
             val convertAmountToDisplayUnit =
                 convertAmountToDisplayUnit(amount, parseCoinType)
-            callback.invoke(convertAmountToDisplayUnit.first, convertAmountToDisplayUnit.first)
+            callback.invoke(convertAmountToDisplayUnit.first, convertAmountToDisplayUnit.second)
         }
     }
 

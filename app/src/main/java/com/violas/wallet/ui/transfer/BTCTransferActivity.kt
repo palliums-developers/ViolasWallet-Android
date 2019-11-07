@@ -45,18 +45,25 @@ class BTCTransferActivity : TransferActivity() {
                     0
                 )
 
-
                 val parseCoinType = CoinTypes.parseCoinType(account!!.coinNumber)
                 withContext(Dispatchers.Main) {
-                    if (amount > 0) {
-                        val convertAmountToDisplayUnit =
-                            convertAmountToDisplayUnit(amount, CoinTypes.Bitcoin)
-                        editAmountInput.setText(convertAmountToDisplayUnit.first)
+                    try {
+                        if (amount > 0) {
+                            val convertAmountToDisplayUnit =
+                                convertAmountToDisplayUnit(amount, CoinTypes.Bitcoin)
+                            editAmountInput.setText(convertAmountToDisplayUnit.first)
+                        }
+                        title = "${parseCoinType.coinName()}${getString(R.string.transfer)}"
+                        tvHintCoinName.text = parseCoinType.coinName()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                    title = "${parseCoinType.coinName()}${getString(R.string.transfer)}"
-                    tvHintCoinName.text = parseCoinType.coinName()
                 }
             } catch (e: AccountsException) {
+                e.printStackTrace()
+                finish()
+            } catch (e: Exception) {
+                e.printStackTrace()
                 finish()
             }
         }
@@ -87,7 +94,11 @@ class BTCTransferActivity : TransferActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
             }
 
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            override fun onProgressChanged(
+                seekBar: SeekBar?,
+                progress: Int,
+                fromUser: Boolean
+            ) {
                 account?.apply {
                     launch(Dispatchers.IO) {
                         try {

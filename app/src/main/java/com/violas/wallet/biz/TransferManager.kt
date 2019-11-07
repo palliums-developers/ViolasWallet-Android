@@ -69,6 +69,7 @@ class TransferManager {
                     )
                 } else {
                     transferViolasToken(
+                        context,
                         address,
                         amount,
                         decryptPrivateKey,
@@ -122,6 +123,7 @@ class TransferManager {
     }
 
     private fun transferViolasToken(
+        context: Context,
         address: String,
         amount: Double,
         decryptPrivateKey: ByteArray,
@@ -130,7 +132,24 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val token = DataRepository.getTokenStorage().findById(tokenId)
+        token?.let {
+            DataRepository.getViolasService().sendViolasToken(
+                context,
+                token.tokenAddress,
+                org.palliums.libracore.wallet.Account(
+                    KeyPair(decryptPrivateKey)
+                ),
+                address,
+                (amount * 1000000L).toLong()
+            ) {
+                if (it) {
+                    success.invoke("")
+                } else {
+                    error.invoke(Exception())
+                }
+            }
+        }
     }
 
     private fun transferLibra(

@@ -101,6 +101,9 @@
             android:name=".ui.web.WebCommonActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.changeLanguage.ChangeLanguageActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.record.TransactionRecordActivity"
             android:screenOrientation="portrait" />
 

@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = TokenDo.TABLE_NAME,
     indices = [
-        Index(unique = true, value = ["account_id", "name"])
+        Index(unique = true, value = ["account_id", "tokenAddress"])
     ]
 )
 data class TokenDo(
@@ -17,6 +17,8 @@ data class TokenDo(
     var id: Long? = null,
     @ColumnInfo(name = "account_id")
     var account_id: Long = 0,
+    @ColumnInfo(name = "tokenAddress")
+    var tokenAddress: String = "",
     @ColumnInfo(name = "name")
     var name: String = "Libra",
     @ColumnInfo(name = "enable")

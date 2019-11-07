@@ -235,6 +235,11 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
             val convertAmountToDisplayUnit =
                 convertAmountToDisplayUnit(currentAccount.amount, parseCoinType)
             tvAmount.text = "${convertAmountToDisplayUnit.first}"
+
+            if (mEnableTokens.size >= 1) {
+                mEnableTokens[0].amount = currentAccount.amount
+                mAssertAdapter.notifyItemChanged(0)
+            }
         }
     }
 
@@ -298,7 +303,11 @@ class AssertAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemData = data[position]
         holder.itemView.name.text = itemData.name
-        holder.itemView.amount.text = "${itemData.amount}"
+
+        val parseCoinType = CoinTypes.parseCoinType(itemData.coinType)
+        val convertAmountToDisplayUnit =
+            convertAmountToDisplayUnit(itemData.amount, parseCoinType)
+        holder.itemView.amount.text =  "${convertAmountToDisplayUnit.first}"
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)
