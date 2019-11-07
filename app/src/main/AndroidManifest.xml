@@ -101,11 +101,10 @@
             android:name=".ui.web.WebCommonActivity"
             android:screenOrientation="portrait" />
         <activity
-<<<<<<< HEAD
             android:name=".ui.changeLanguage.ChangeLanguageActivity"
-=======
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.record.TransactionRecordActivity"
->>>>>>> 3dba518376d4bb8a9577c0f38b135ad57e091a32
             android:screenOrientation="portrait" />
 
         <provider
