@@ -1,31 +1,29 @@
-package com.violas.wallet.paging
+package com.violas.wallet.base.paging
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.base.BaseViewHolder
 import com.violas.wallet.repository.http.LoadState
-import com.violas.wallet.widget.PullRefreshLayoutProgress
+import kotlinx.android.synthetic.main.item_load_more.view.*
 
 /**
  * Created by elephant on 2019-08-14 13:58.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: PagingAdapter
+ * desc: PagingViewAdapter
  */
-abstract class PagingAdapter<Vo> : PagedListAdapter<Vo, RecyclerView.ViewHolder> {
+abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHolder> {
 
     private val retryCallback: () -> Unit
     private var loadMoreState: LoadState = LoadState.IDLE
 
-    constructor(retryCallback: () -> Unit, diffCallback: DiffUtil.ItemCallback<Vo>) : super(
+    constructor(retryCallback: () -> Unit, diffCallback: DiffUtil.ItemCallback<VO>) : super(
         diffCallback
     ) {
         this.retryCallback = retryCallback
@@ -33,7 +31,7 @@ abstract class PagingAdapter<Vo> : PagedListAdapter<Vo, RecyclerView.ViewHolder>
 
     constructor(
         retryCallback: () -> Unit,
-        differConfig: AsyncDifferConfig<Vo>
+        differConfig: AsyncDifferConfig<VO>
     ) : super(differConfig) {
         this.retryCallback = retryCallback
     }
@@ -43,20 +41,24 @@ abstract class PagingAdapter<Vo> : PagedListAdapter<Vo, RecyclerView.ViewHolder>
         viewType: Int
     ): RecyclerView.ViewHolder {
         return when (viewType) {
-            R.layout.item_load_more -> LoadMoreViewHolder.create(parent, retryCallback)
-            else -> onCreateContentViewHolder(parent, viewType)
+            R.layout.item_load_more ->
+                LoadMoreViewHolder.create(parent, retryCallback)
+
+            else ->
+                onCreateViewHolderSupport(parent, viewType)
         }
     }
 
     final override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             R.layout.item_load_more -> {
-                (holder as LoadMoreViewHolder).bind(loadMoreState)
+                (holder as BaseViewHolder<LoadState>).bind(position, loadMoreState)
                 holder.itemView.tag = loadMoreState
             }
+
             else -> {
                 val item = getItem(position)
-                (holder as BaseViewHolder<Vo>).bind(position, item)
+                (holder as BaseViewHolder<VO>).bind(position, item)
                 holder.itemView.tag = item
             }
         }
@@ -70,45 +72,47 @@ abstract class PagingAdapter<Vo> : PagedListAdapter<Vo, RecyclerView.ViewHolder>
         return if (hasExtraRow() && position == itemCount - 1) {
             R.layout.item_load_more
         } else {
-            getItemType(position)
+            getItemViewTypeSupport(position)
         }
     }
 
-    private fun hasExtraRow(): Boolean {
+    fun hasExtraRow(): Boolean {
         return loadMoreState.status != LoadState.Status.SUCCESS
                 && loadMoreState.status != LoadState.Status.IDLE
     }
 
-    fun setLoadMoreState(newLoadMoreState: LoadState) {
+    fun setLoadMoreState(loadMoreState: LoadState) {
         val prevLoadMoreState = this.loadMoreState
         val hadExtraRow = hasExtraRow()
-        this.loadMoreState = newLoadMoreState
+
+        this.loadMoreState = loadMoreState
         val hasExtraRow = hasExtraRow()
+
         if (hadExtraRow != hasExtraRow) {
             if (hadExtraRow) {
                 notifyItemRemoved(super.getItemCount() + getOtherItemCount())
             } else {
                 notifyItemInserted(super.getItemCount() + getOtherItemCount())
             }
-        } else if (hasExtraRow && prevLoadMoreState != newLoadMoreState) {
+        } else if (hasExtraRow && prevLoadMoreState != loadMoreState) {
             notifyItemChanged(itemCount - 1)
         }
     }
 
-    abstract fun onCreateContentViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<Vo>
+    abstract fun onCreateViewHolderSupport(parent: ViewGroup, viewType: Int): BaseViewHolder<VO>
 
-    fun getItemType(position: Int): Int {
+    open fun getItemViewTypeSupport(position: Int): Int {
         return 0
     }
 
-    fun getOtherItemCount(): Int {
+    open fun getOtherItemCount(): Int {
         return 0
     }
 
     class LoadMoreViewHolder(
         view: View,
         private val retryCallback: () -> Unit
-    ) : RecyclerView.ViewHolder(view) {
+    ) : BaseViewHolder<LoadState>(view) {
 
         companion object {
             fun create(parent: ViewGroup, retryCallback: () -> Unit): LoadMoreViewHolder {
@@ -118,49 +122,49 @@ abstract class PagingAdapter<Vo> : PagedListAdapter<Vo, RecyclerView.ViewHolder>
             }
         }
 
-        private val process: PullRefreshLayoutProgress =
-            itemView.findViewById(R.id.load_more_progress)
-        private val tips: TextView = itemView.findViewById(R.id.load_more_tips)
-        private var loadMoreState: LoadState = LoadState.IDLE
-
         init {
-            itemView.setOnClickListener {
-                if (!BaseActivity.isFastMultiClick(it)
-                    && loadMoreState.status == LoadState.Status.FAILED
-                ) {
-                    retryCallback()
+            itemView.setOnClickListener(this)
+        }
+
+        override fun onViewBind(itemIndex: Int, itemDate: LoadState?) {
+            itemDate?.let {
+                if (it.status == LoadState.Status.RUNNING) {
+                    itemView.vLoadMoreProgress.visibility = View.VISIBLE
+                    itemView.vLoadMoreProgress.startLoadingAnim()
+                } else {
+                    itemView.vLoadMoreProgress.visibility = View.GONE
+                    itemView.vLoadMoreProgress.stopAnim()
                 }
+
+                itemView.vLoadMoreTips.setText(
+                    when (it.status) {
+                        LoadState.Status.RUNNING ->
+                            R.string.refresh_footer_loading
+
+                        LoadState.Status.SUCCESS_NO_MORE ->
+                            R.string.refresh_footer_no_more
+
+                        LoadState.Status.FAILURE -> {
+                            if (it.isNoNetwork()) {
+                                R.string.refresh_footer_no_network
+                            } else {
+                                R.string.refresh_footer_failed
+                            }
+                        }
+
+                        else ->
+                            R.string.refresh_footer_finish
+                    }
+                )
             }
         }
 
-        fun bind(loadMoreState: LoadState) {
-            this.loadMoreState = loadMoreState
-
-            if (loadMoreState.status == LoadState.Status.RUNNING) {
-                process.visibility = View.VISIBLE
-                process.startLoadingAnim()
-            } else {
-                process.visibility = View.GONE
-                process.stopAnim()
-            }
-
-            tips.setText(
-                when (loadMoreState.status) {
-                    LoadState.Status.RUNNING ->
-                        R.string.refresh_footer_loading
-                    LoadState.Status.SUCCESS_NO_MORE ->
-                        R.string.refresh_footer_no_more
-                    LoadState.Status.FAILED -> {
-                        if (loadMoreState.isNoNetwork()) {
-                            R.string.refresh_footer_no_network
-                        } else {
-                            R.string.refresh_footer_failed
-                        }
-                    }
-                    else ->
-                        R.string.refresh_footer_finish
+        override fun onViewClick(view: View, itemIndex: Int, itemDate: LoadState?) {
+            itemDate?.let {
+                if (it.status == LoadState.Status.FAILURE) {
+                    retryCallback()
                 }
-            )
+            }
         }
     }
 }

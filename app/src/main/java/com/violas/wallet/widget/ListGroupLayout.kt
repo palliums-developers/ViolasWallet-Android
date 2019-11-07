@@ -179,7 +179,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         }
     }
 
-    fun <Vo : ItemData> setData(data: MutableMap<String, List<Vo>>) {
+    fun <VO : ItemData> setData(data: MutableMap<String, List<VO>>) {
         if (isMainThread()) {
             val keys = groupData.setData(data)
             groupData.refreshData()
@@ -282,7 +282,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         var tempDataList: ArrayList<ItemData>? = null
         var tempGroupIdMap: HashMap<String, Int>? = null
 
-        fun <Vo : ItemData> setData(groupDataMap: MutableMap<String, List<Vo>>): List<String> {
+        fun <VO : ItemData> setData(groupDataMap: MutableMap<String, List<VO>>): List<String> {
             this.groupDataMap.clear()
             this.groupDataMap.putAll(groupDataMap)
             return updateData()
@@ -443,7 +443,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     /**
      * 标题与item布局的获取接口
      */
-    interface ItemLayout<Vo : ItemData> {
+    interface ItemLayout<VO : ItemData> {
 
         /**
          * RecyclerView.Adapter#onBindViewHolder 刷新view

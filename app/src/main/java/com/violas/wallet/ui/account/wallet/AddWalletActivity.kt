@@ -11,8 +11,8 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewHolder
 import com.violas.wallet.base.listing.BaseListingActivity
-import com.violas.wallet.base.listing.BaseListingAdapter
-import com.violas.wallet.base.listing.BaseListingViewModel
+import com.violas.wallet.base.listing.ListingViewAdapter
+import com.violas.wallet.base.listing.ListingViewModel
 import com.violas.wallet.base.recycler.RecycleViewItemDivider
 import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.account.AccountType
@@ -36,11 +36,11 @@ class AddWalletActivity : BaseListingActivity<AddWalletVo>() {
         }
     }
 
-    override fun lazyInitViewModel(): BaseListingViewModel<AddWalletVo> {
+    override fun initViewModel(): ListingViewModel<AddWalletVo> {
         return AddWalletViewModel()
     }
 
-    override fun lazyInitAdapter(): BaseListingAdapter<AddWalletVo> {
+    override fun initViewAdapter(): ListingViewAdapter<AddWalletVo> {
         return AddWalletAdapter(onItemClick = { accountType ->
             AddWalletDialog.newInstance(accountType).show()
         })
@@ -63,7 +63,7 @@ class AddWalletActivity : BaseListingActivity<AddWalletVo>() {
             )
         )
 
-        mViewModel.execute()
+        getViewModel().execute()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -107,7 +107,7 @@ class AddWalletViewHolder(view: View, private val onItemClick: (Int) -> Unit) :
     }
 }
 
-class AddWalletAdapter(private val onItemClick: (Int) -> Unit) : BaseListingAdapter<AddWalletVo>() {
+class AddWalletAdapter(private val onItemClick: (Int) -> Unit) : ListingViewAdapter<AddWalletVo>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -123,7 +123,7 @@ class AddWalletAdapter(private val onItemClick: (Int) -> Unit) : BaseListingAdap
     }
 }
 
-class AddWalletViewModel : BaseListingViewModel<AddWalletVo>() {
+class AddWalletViewModel : ListingViewModel<AddWalletVo>() {
 
     override suspend fun loadData(
         vararg params: Any,

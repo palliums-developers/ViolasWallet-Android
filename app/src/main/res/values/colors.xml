@@ -36,6 +36,9 @@
     <color name="color_7A7AEE">#7A7AEE</color>
     <color name="color_F74E4E">#F74E4E</color>
     <color name="color_F7F7F9">#F7F7F9</color>
+    <color name="color_292929">#292929</color>
+    <color name="color_E54040">#E54040</color>
+    <color name="color_13B788">#13B788</color>
 
     <color name="def_activity_bg">@color/white</color>
     <color name="def_activity_vice_bg">@color/color_F7F7F9</color>
@@ -69,6 +72,6 @@
     <!--浅色模式下-条目按下时背景色-->
     <color name="itemBgPressedLight">@color/gray_50</color>
 
-    <color name="account_group_title">#292929</color>
+    <color name="account_group_title">@color/color_292929</color>
     <color name="dividing_line">@color/color_3C3848_10</color>
 </resources>

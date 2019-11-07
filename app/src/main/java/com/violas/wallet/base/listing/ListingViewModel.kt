@@ -16,13 +16,13 @@ import kotlinx.coroutines.launch
  * <p>
  * desc:
  */
-abstract class BaseListingViewModel<Vo> : ViewModel() {
+abstract class ListingViewModel<VO> : ViewModel() {
 
     private var retry: (() -> Any)? = null
 
     val loadState = MutableLiveData<LoadState>()
     val tipsMessage = MutableLiveData<String>()
-    val listData = MutableLiveData<List<Vo>>()
+    val listData = MutableLiveData<List<VO>>()
 
     /**
      * 执行
@@ -38,24 +38,32 @@ abstract class BaseListingViewModel<Vo> : ViewModel() {
             retry = { execute(*params) }
 
             val exception = HttpException.networkUnavailable()
-            loadState.value = LoadState.failed(exception)
+            loadState.value = LoadState.failure(exception)
             tipsMessage.value = exception.message
             return false
         }
 
         loadState.postValue(LoadState.RUNNING)
         viewModelScope.launch {
-            loadData(*params,
-                onSuccess = {
-                    loadState.postValue(LoadState.SUCCESS)
-                    listData.postValue(it)
-                },
-                onFailure = {
-                    retry = { execute(*params) }
+            try {
+                loadData(*params,
+                    onSuccess = {
+                        loadState.postValue(LoadState.SUCCESS)
+                        listData.postValue(it)
+                    },
+                    onFailure = {
+                        retry = { execute(*params) }
 
-                    loadState.postValue(LoadState.failed(it))
-                    tipsMessage.postValue(it.message)
-                })
+                        loadState.postValue(LoadState.failure(it))
+                        tipsMessage.postValue(it.message)
+                    })
+
+            } catch (e: Exception) {
+                retry = { execute(*params) }
+
+                loadState.postValue(LoadState.failure(e))
+                tipsMessage.postValue(e.message)
+            }
         }
         return true
     }
@@ -93,7 +101,7 @@ abstract class BaseListingViewModel<Vo> : ViewModel() {
     @WorkerThread
     protected abstract suspend fun loadData(
         vararg params: Any,
-        onSuccess: (List<Vo>) -> Unit,
+        onSuccess: (List<VO>) -> Unit,
         onFailure: (Throwable) -> Unit
     )
 }

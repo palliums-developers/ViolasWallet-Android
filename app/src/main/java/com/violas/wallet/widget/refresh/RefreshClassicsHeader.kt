@@ -1,4 +1,4 @@
-package com.violas.wallet.widget
+package com.violas.wallet.widget.refresh
 
 import android.content.Context
 import android.util.AttributeSet

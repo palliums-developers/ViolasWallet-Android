@@ -9,7 +9,7 @@ import com.violas.wallet.base.BaseViewHolder
  * <p>
  * desc: 列表适配器基类
  */
-abstract class BaseListingAdapter<VO> : RecyclerView.Adapter<BaseViewHolder<VO>>() {
+abstract class ListingViewAdapter<VO> : RecyclerView.Adapter<BaseViewHolder<VO>>() {
 
     private var listData = mutableListOf<VO>()
 

@@ -19,9 +19,4 @@ interface ViewController {
     fun showToast(@StringRes msgId: Int)
 
     fun showToast(msg: String)
-
-    /**
-     * 加载使用对话框，返回false则使用SmartRefreshLayout的加载View
-     */
-    fun loadingUseDialog() = true
 }

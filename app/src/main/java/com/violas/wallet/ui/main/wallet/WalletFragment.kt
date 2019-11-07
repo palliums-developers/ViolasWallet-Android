@@ -25,6 +25,7 @@ import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
+import com.violas.wallet.ui.record.TransactionRecordActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
@@ -136,6 +137,9 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                     )
                 }
             }
+        }
+        vTransactionRecordLayout.setOnClickListener {
+            startActivity(Intent(activity, TransactionRecordActivity::class.java))
         }
 
         if (mAccountManager.isFastIntoWallet()) {
