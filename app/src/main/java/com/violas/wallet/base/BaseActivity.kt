@@ -1,6 +1,7 @@
 package com.violas.wallet.base
 
 import android.app.Activity
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import com.violas.wallet.R
 import com.violas.wallet.base.widget.LoadingDialog
+import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.utils.DensityUtility
 import com.violas.wallet.utils.LightStatusBarUtil
 import kotlinx.android.synthetic.main.activity_base.*
@@ -375,10 +377,9 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
 
     }
 
-//    override fun attachBaseContext(newBase: Context) {
-//        //todo 对接多语言
-////        super.attachBaseContext(MultiLanguageUtility.attachBaseContext(newBase))
-//    }
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(MultiLanguageUtility.attachBaseContext(newBase))
+    }
 
     override fun showProgress(@StringRes resId: Int) {
         showProgress(getString(resId))

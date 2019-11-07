@@ -2,7 +2,9 @@ package com.violas.wallet
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
+import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import java.util.*
 
 class App : Application() {
@@ -22,6 +24,12 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         initActivityStack()
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(newBase)
+        MultiLanguageUtility.init(newBase)
+        MultiLanguageUtility.attachBaseContext(newBase)
     }
 
     override fun onTerminate() {

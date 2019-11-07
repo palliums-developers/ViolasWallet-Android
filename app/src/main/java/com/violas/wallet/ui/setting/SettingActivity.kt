@@ -6,6 +6,7 @@ import android.view.View
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.ui.changeLanguage.ChangeLanguageActivity
 import com.violas.wallet.ui.web.WebCommonActivity
 import kotlinx.android.synthetic.main.activity_setting.*
 
@@ -43,7 +44,7 @@ class SettingActivity : BaseActivity() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.mivMultiLanguage -> {
-
+                ChangeLanguageActivity.start(this)
             }
 
             R.id.mivServiceAgreement -> {

@@ -1,7 +1,14 @@
 <resources>
     <string name="app_name">ViolasWallet</string>
     <string name="dialog_loading">正在加载…</string>
-
+    <string name="language_follow_system">跟随系统</string>
+    <string name="language_en">English</string>
+    <string name="language_chinese_simplified">简体中文</string>
+    <string name="language_chinese_traditional">繁體中文</string>
+    <string name="language_follow_system_more">跟随系统</string>
+    <string name="language_en_more">英文</string>
+    <string name="language_chinese_simplified_more">简体中文</string>
+    <string name="language_chinese_traditional_more">繁体中文</string>
     <string name="backup_mnemonic_prompt_title">备份提示</string>
     <string name="backup_mnemonic_prompt_menu">稍后备份</string>
     <string name="backup_mnemonic_prompt_btn">开始备份</string>
@@ -191,4 +198,5 @@
     <string name="hint_transfer_number">转出数量</string>
     <string name="hint_receipt_number">收到数量</string>
     <string name="hint_parities">汇率</string>
+    <string name="title_change_language">修改语言</string>
 </resources>
