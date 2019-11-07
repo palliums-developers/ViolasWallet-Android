@@ -139,7 +139,10 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
             }
         }
         vTransactionRecordLayout.setOnClickListener {
-            startActivity(Intent(activity, TransactionRecordActivity::class.java))
+            launch(Dispatchers.IO) {
+                val currentAccount = mAccountManager.currentAccount()
+                activity?.let { TransactionRecordActivity.start(it, currentAccount.id) }
+            }
         }
 
         if (mAccountManager.isFastIntoWallet()) {

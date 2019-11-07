@@ -38,7 +38,6 @@ abstract class BasePagingActivity<VO> : BaseActivity(), PagingController<VO> {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mPagingHandler
     }
 
     /**

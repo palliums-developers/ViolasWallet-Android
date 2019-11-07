@@ -3,116 +3,135 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="@dimen/dp_20"
-    android:paddingTop="@dimen/dp_16"
-    android:paddingEnd="@dimen/dp_20"
-    android:paddingBottom="@dimen/dp_15">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/vTimeLabel"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/vContentContainer"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:text="@string/transaction_record_time"
-        android:textColor="@color/black_50"
-        android:textSize="@dimen/sp_12"
-        app:layout_constraintEnd_toStartOf="@id/vAmountLabel"
-        app:layout_constraintHorizontal_weight="4"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/vTime"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_5"
-        android:textColor="@color/black"
-        android:textSize="@dimen/sp_14"
-        android:ellipsize="middle"
-        android:singleLine="true"
-        app:layout_constraintEnd_toEndOf="@id/vTimeLabel"
-        app:layout_constraintStart_toStartOf="@id/vTimeLabel"
-        app:layout_constraintTop_toBottomOf="@id/vTimeLabel"
-        tools:text="18.05.23 15:42" />
-
-    <TextView
-        android:id="@+id/vAmountLabel"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:text="@string/transaction_record_amount"
-        android:textColor="@color/black_50"
-        android:textSize="@dimen/sp_12"
-        app:layout_constraintBaseline_toBaselineOf="@id/vTimeLabel"
-        app:layout_constraintEnd_toStartOf="@id/vType"
-        app:layout_constraintHorizontal_weight="4"
-        app:layout_constraintStart_toEndOf="@id/vTimeLabel" />
-
-    <TextView
-        android:id="@+id/vAmount"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="@dimen/sp_14"
-        android:ellipsize="middle"
-        android:singleLine="true"
-        app:layout_constraintBaseline_toBaselineOf="@id/vTime"
-        app:layout_constraintEnd_toEndOf="@id/vAmountLabel"
-        app:layout_constraintStart_toStartOf="@id/vAmountLabel"
-        app:layout_constraintTop_toBottomOf="@id/vAmountLabel"
-        tools:text="1.906321 BTC" />
-
-    <TextView
-        android:id="@+id/vType"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        android:textColor="@color/black_50"
-        android:textSize="@dimen/sp_12"
-        app:layout_constraintBaseline_toBaselineOf="@id/vTimeLabel"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingTop="@dimen/dp_16"
+        android:paddingEnd="@dimen/dp_20"
+        android:paddingBottom="@dimen/dp_15"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="1.5"
-        app:layout_constraintStart_toEndOf="@id/vAmountLabel"
-        tools:text="@string/transaction_record_transfer"
-        tools:textColor="@color/color_E54040" />
-
-    <TextView
-        android:id="@+id/vCoinName"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        android:textColor="@color/black"
-        android:textSize="@dimen/sp_14"
-        app:layout_constraintBaseline_toBaselineOf="@id/vTime"
-        app:layout_constraintEnd_toEndOf="@id/vType"
-        app:layout_constraintStart_toStartOf="@id/vType"
-        app:layout_constraintTop_toBottomOf="@id/vType"
-        tools:text="BTC" />
-
-    <TextView
-        android:id="@+id/vAddress"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_10"
-        android:ellipsize="middle"
-        android:singleLine="true"
-        android:textColor="@color/black_50"
-        android:textSize="@dimen/sp_12"
-        app:layout_constraintEnd_toStartOf="@id/vQuery"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vTime"
-        tools:text="mkYUsJ8N1AidNUySQGCpwswQUaoyL2Mu8L" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/vQuery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/dp_10"
-        android:text="@string/transaction_record_query"
-        android:textColor="@color/color_7A7AEE"
-        android:textSize="@dimen/sp_12"
-        app:layout_constraintBaseline_toBaselineOf="@id/vAddress"
+        <TextView
+            android:id="@+id/vTimeLabel"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:text="@string/transaction_record_time"
+            android:textColor="@color/black_50"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toStartOf="@id/vAmountLabel"
+            app:layout_constraintHorizontal_weight="4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/vTime"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_5"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_14"
+            app:layout_constraintEnd_toEndOf="@id/vTimeLabel"
+            app:layout_constraintStart_toStartOf="@id/vTimeLabel"
+            app:layout_constraintTop_toBottomOf="@id/vTimeLabel"
+            tools:text="18.05.23 15:42" />
+
+        <TextView
+            android:id="@+id/vAmountLabel"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:text="@string/transaction_record_amount"
+            android:textColor="@color/black_50"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintBaseline_toBaselineOf="@id/vTimeLabel"
+            app:layout_constraintEnd_toStartOf="@id/vType"
+            app:layout_constraintHorizontal_weight="4"
+            app:layout_constraintStart_toEndOf="@id/vTimeLabel" />
+
+        <TextView
+            android:id="@+id/vAmount"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_14"
+            app:layout_constraintBaseline_toBaselineOf="@id/vTime"
+            app:layout_constraintEnd_toEndOf="@id/vAmountLabel"
+            app:layout_constraintStart_toStartOf="@id/vAmountLabel"
+            app:layout_constraintTop_toBottomOf="@id/vAmountLabel"
+            tools:text="1.906321 BTC" />
+
+        <TextView
+            android:id="@+id/vType"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textColor="@color/black_50"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintBaseline_toBaselineOf="@id/vTimeLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1.5"
+            app:layout_constraintStart_toEndOf="@id/vAmountLabel"
+            tools:text="@string/transaction_record_transfer"
+            tools:textColor="@color/color_E54040" />
+
+        <TextView
+            android:id="@+id/vCoinName"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_14"
+            app:layout_constraintBaseline_toBaselineOf="@id/vTime"
+            app:layout_constraintEnd_toEndOf="@id/vType"
+            app:layout_constraintStart_toStartOf="@id/vType"
+            app:layout_constraintTop_toBottomOf="@id/vType"
+            tools:text="BTC" />
+
+        <TextView
+            android:id="@+id/vAddress"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:textColor="@color/black_50"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toStartOf="@id/vQuery"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vTime"
+            tools:text="mkYUsJ8N1AidNUySQGCpwswQUaoyL2Mu8L" />
+
+        <TextView
+            android:id="@+id/vQuery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/dp_10"
+            android:text="@string/transaction_record_query"
+            android:textColor="@color/color_7A7AEE"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintBaseline_toBaselineOf="@id/vAddress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/vAddress"
+            app:layout_constraintTop_toBottomOf="@id/vTime" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/vDivider"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_5"
+        android:background="@color/dividing_line"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/vAddress"
-        app:layout_constraintTop_toBottomOf="@id/vTime" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vContentContainer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

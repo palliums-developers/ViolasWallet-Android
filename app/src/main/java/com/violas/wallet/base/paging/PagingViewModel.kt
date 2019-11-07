@@ -40,15 +40,18 @@ abstract class PagingViewModel<VO> : ViewModel() {
             return false
         }
 
+        val realPageSize = if (pageSize <= 0) PAGE_SIZE else pageSize
         val executor = ArchTaskExecutor.getIOThreadExecutor()
         val sourceFactory = PagingDataSourceFactory(executor)
 
         val listing: PagingData<VO> = PagingData(
             pagedList = sourceFactory.toLiveData(
                 config = Config(
-                    pageSize = pageSize,
-                    initialLoadSizeHint = pageSize * 2,
-                    prefetchDistance = 1,
+                    pageSize = realPageSize,
+                    initialLoadSizeHint =
+                    if (realPageSize >= PAGE_SIZE * 2) realPageSize else realPageSize * 2,
+                    prefetchDistance =
+                    if (realPageSize < PAGE_SIZE) 0 else realPageSize / 5,
                     enablePlaceholders = false
                 ),
                 fetchExecutor = executor
@@ -72,9 +75,16 @@ abstract class PagingViewModel<VO> : ViewModel() {
         result.value?.retry?.invoke()
     }
 
+    /**
+     * 加载数据
+     * @param pageSize 分页大小，默认为10
+     * @param pageIndex 页码，默认从0开始，按接口定义自行调整
+     * @param onSuccess 成功回调
+     * @param onFailure 失败回调
+     */
     protected abstract suspend fun loadData(
         pageSize: Int,
-        offset: Int,
+        pageIndex: Int,
         onSuccess: (List<VO>, Int) -> Unit,
         onFailure: (Throwable) -> Unit
     )
@@ -99,7 +109,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
         // keep a function reference for the retry event
         private var retry: (() -> Any)? = null
 
-        private var offset = 0
+        private var pageIndex = 0
 
         val refreshState = MutableLiveData<LoadState>()
         val loadMoreState = MutableLiveData<LoadState>()
@@ -141,9 +151,9 @@ abstract class PagingViewModel<VO> : ViewModel() {
                 try {
                     loadData(params.requestedLoadSize, 0,
                         onSuccess = { listData, _ ->
-                            this@PagingDataSource.offset = listData.size
+                            this@PagingDataSource.pageIndex = listData.size
 
-                            callback.onResult(listData, 0, this@PagingDataSource.offset)
+                            callback.onResult(listData, 0, this@PagingDataSource.pageIndex)
 
                             retry = null
 
@@ -207,11 +217,11 @@ abstract class PagingViewModel<VO> : ViewModel() {
 
             this@PagingViewModel.viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    loadData(params.requestedLoadSize, this@PagingDataSource.offset,
+                    loadData(params.requestedLoadSize, this@PagingDataSource.pageIndex,
                         onSuccess = { listData, _ ->
-                            this@PagingDataSource.offset += listData.size
+                            this@PagingDataSource.pageIndex += listData.size
 
-                            callback.onResult(listData, this@PagingDataSource.offset)
+                            callback.onResult(listData, this@PagingDataSource.pageIndex)
 
                             retry = null
 
