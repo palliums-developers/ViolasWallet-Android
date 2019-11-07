@@ -24,4 +24,9 @@ object Move {
         }
         return ByteArray(0)
     }
+
+    fun violasTokenEncode(move: ByteArray, token: ByteArray): ByteArray {
+        System.arraycopy(token, 0, move, 107, token.size)
+        return move
+    }
 }

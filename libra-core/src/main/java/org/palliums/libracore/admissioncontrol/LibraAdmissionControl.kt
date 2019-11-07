@@ -10,6 +10,7 @@ import com.google.protobuf.ByteString
 import com.smallraw.libardemo.grpcResponse.DecodeResponse
 import io.grpc.Channel
 import org.palliums.libracore.move.Move
+import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.transaction.*
 import org.palliums.libracore.utils.HexUtils
 import org.palliums.libracore.wallet.Account
@@ -59,6 +60,90 @@ class LibraAdmissionControl(private val mChannel: Channel) {
         })
     }
 
+    fun sendTransaction(
+        rawTransaction: RawTransaction,
+        publicKey: ByteArray,
+        signed: ByteArray,
+        call: (success: Boolean) -> Unit
+    ) {
+        val signedTransaction = SignedTransaction(
+            rawTransaction,
+            publicKey,
+            signed
+        )
+
+        val signedTransactionGrpc = TransactionOuterClass.SignedTransaction.newBuilder()
+            .setTxnBytes(ByteString.copyFrom(signedTransaction.toByteArray()))
+            .build()
+
+        val submitTxReq =
+            AdmissionControlOuterClass.SubmitTransactionRequest.newBuilder()
+                .setTransaction(
+                    signedTransactionGrpc
+                )
+                .build()
+
+        try {
+            val client = AdmissionControlGrpc.newBlockingStub(mChannel)
+            val response = client.submitTransaction(submitTxReq)
+
+            println(
+                """
+               发送状态
+               AcStatus:${response.acStatus} 
+               MempoolStatus:${response.mempoolStatus} 
+               VmStatus:${response.vmStatus} 
+               StatusCase:${response.statusCase} 
+            """
+            )
+
+            mHandler.post {
+                if (response.statusCase.toString() == "AC_STATUS") {
+                    call.invoke(true)
+                } else {
+                    call.invoke(false)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            call.invoke(false)
+        }
+    }
+
+    fun sendViolasToken(
+        context: Context,
+        tokenAddress: String,
+        account: Account,
+        address: String,
+        amount: Long,
+        call: (success: Boolean) -> Unit
+    ) {
+        val senderAddress = account.getAddress().toHex()
+        getSequenceNumber(senderAddress, {
+
+            val moveEncode = Move.violasTokenEncode(
+                Move.decode(context.assets.open("move/peer_to_peer_transfer.json")),
+                tokenAddress.hexToBytes()
+            )
+            val rawTransaction =
+                generateSendCoinRawTransaction(
+                    address,
+                    senderAddress,
+                    amount,
+                    it,
+                    moveEncode
+                )
+            sendTransaction(
+                rawTransaction,
+                account.keyPair.getPublicKey(),
+                account.keyPair.sign(rawTransaction.toByteArray()),
+                call
+            )
+        }, {
+            call.invoke(false)
+        })
+    }
+
     fun sendCoin(
         context: Context,
         account: Account,
@@ -69,7 +154,7 @@ class LibraAdmissionControl(private val mChannel: Channel) {
         val senderAddress = account.getAddress().toHex()
         getSequenceNumber(senderAddress, {
             val rawTransaction =
-                generateRawTransaction(
+                generateSendCoinRawTransaction(
                     address,
                     senderAddress,
                     amount,
@@ -77,48 +162,12 @@ class LibraAdmissionControl(private val mChannel: Channel) {
                     Move.decode(context.assets.open("move/peer_to_peer_transfer.json"))
                 )
 
-            val signedTransaction = SignedTransaction(
+            sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.sign(rawTransaction.toByteArray())
+                account.keyPair.sign(rawTransaction.toByteArray()),
+                call
             )
-
-            val signedTransactionGrpc = TransactionOuterClass.SignedTransaction.newBuilder()
-                .setTxnBytes(ByteString.copyFrom(signedTransaction.toByteArray()))
-                .build()
-
-            val submitTxReq =
-                AdmissionControlOuterClass.SubmitTransactionRequest.newBuilder()
-                    .setTransaction(
-                        signedTransactionGrpc
-                    )
-                    .build()
-
-            try {
-                val client = AdmissionControlGrpc.newBlockingStub(mChannel)
-                val response = client.submitTransaction(submitTxReq)
-
-                println(
-                    """
-               发送状态
-               AcStatus:${response.acStatus} 
-               MempoolStatus:${response.mempoolStatus} 
-               VmStatus:${response.vmStatus} 
-               StatusCase:${response.statusCase} 
-            """
-                )
-
-                mHandler.post {
-                    if (response.statusCase.toString() == "AC_STATUS") {
-                        call.invoke(true)
-                    } else {
-                        call.invoke(false)
-                    }
-                }
-            }catch (e:Exception){
-                e.printStackTrace()
-                call.invoke(false)
-            }
         }, {
             call.invoke(false)
         })
@@ -176,7 +225,7 @@ class LibraAdmissionControl(private val mChannel: Channel) {
         }
     }
 
-    private fun generateRawTransaction(
+    private fun generateSendCoinRawTransaction(
         address: String,
         senderAddress: String,
         amount: Long,
