@@ -1,7 +1,7 @@
-package com.violas.wallet.repository.http.btcBrowser.respones;
+package com.violas.wallet.repository.http.bitcoinChainApi.respones;
 
 
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXOBlockCypher;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXOBlockCypher;
 
 import java.util.List;
 

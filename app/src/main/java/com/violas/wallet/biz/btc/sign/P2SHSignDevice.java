@@ -3,7 +3,7 @@ package com.violas.wallet.biz.btc.sign;
 
 import com.quincysx.crypto.bitcoin.BTCTransaction;
 import com.quincysx.crypto.bitcoin.script.Script;
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
 
 public class P2SHSignDevice implements SignDevice {
     private final UTXO mUTXO;

@@ -3,8 +3,8 @@ package com.violas.wallet.biz.btc;
 import android.util.Log;
 
 import com.violas.wallet.common.Vm;
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
-import com.violas.wallet.repository.http.btcBrowser.request.BlockChainRequest;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
+import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -268,7 +268,7 @@ public class UTXOListManager {
     private List<UTXO> getUTXOByAddress(String addresss) {
         final List<UTXO> utxoList = new ArrayList<>();
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        BlockChainRequest.get().getUtxo(addresss)
+        BitcoinChainApi.INSTANCE.get().getUtxo(addresss)
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Observer<List<UTXO>>() {
                     @Override

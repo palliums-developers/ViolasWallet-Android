@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.btcBrowser.bean;
+package com.violas.wallet.repository.http.bitcoinChainApi.bean;
 
 public class UTXOBean {
 

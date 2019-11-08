@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.btcBrowser.request;
+package com.violas.wallet.repository.http.bitcoinChainApi.request;
 
 import com.violas.wallet.common.Vm;
 
@@ -7,11 +7,15 @@ import io.reactivex.functions.Function;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-public class FeeBlockcypherRequest extends BaseRequest {
-    private static Api api;
+public class FeeBlockcypherRequest extends BaseRequest<FeeBlockcypherRequest.Api> {
+    @Override
+    public String requestUrl() {
+        return null;
+    }
 
-    static {
-        api = sRetrofit.create(Api.class);
+    @Override
+    protected Class requestApi() {
+        return Api.class;
     }
 
     public interface Api {
@@ -61,7 +65,7 @@ public class FeeBlockcypherRequest extends BaseRequest {
         } else {
             network = "main";
         }
-        return api.getFees(network)
+        return getRequest().getFees(network)
                 .map(new Function<FeesBean, FeeEstimateRequest.FeesBean>() {
                     @Override
                     public FeeEstimateRequest.FeesBean apply(FeesBean feesBean) throws Exception {

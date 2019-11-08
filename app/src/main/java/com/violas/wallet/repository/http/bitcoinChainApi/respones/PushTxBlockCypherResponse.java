@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.btcBrowser.respones;
+package com.violas.wallet.repository.http.bitcoinChainApi.respones;
 
 import java.util.List;
 

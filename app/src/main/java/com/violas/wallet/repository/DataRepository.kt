@@ -2,7 +2,7 @@ package com.violas.wallet.repository
 
 import com.violas.wallet.getContext
 import com.violas.wallet.repository.database.AppDatabase
-import com.violas.wallet.repository.http.btcBrowser.request.BlockChainRequest
+import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import io.grpc.ManagedChannelBuilder
 import org.palliums.libracore.admissioncontrol.LibraAdmissionControl
 
@@ -29,7 +29,7 @@ object DataRepository {
 
     fun getAddressBookStorage() = appDatabase.addressBookDao()
 
-    fun getBitcoinService() = BlockChainRequest.get()
+    fun getBitcoinService() = BitcoinChainApi.get()
 
     fun getLibraService() = LibraAdmissionControl(mChannel)
 

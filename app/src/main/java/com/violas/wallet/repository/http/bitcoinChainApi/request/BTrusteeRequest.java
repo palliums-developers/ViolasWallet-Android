@@ -1,51 +1,40 @@
-package com.violas.wallet.repository.http.btcBrowser.request;
+package com.violas.wallet.repository.http.bitcoinChainApi.request;
 
 import com.google.gson.annotations.SerializedName;
-import com.violas.wallet.repository.http.btcBrowser.bean.TransactionBean;
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
-import com.violas.wallet.repository.http.interceptor.BTrusteeInterceptor;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.TransactionBean;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-public class BTrusteeRequest implements BaseChainRequest {
-    private static Api utxoRequest;
+public class BTrusteeRequest extends BaseRequest<BTrusteeRequest.Api> implements BaseBitcoinChainRequest {
+    private BitcoinChainVersionEnum chainVersionEnum;
 
-    protected static Retrofit sRetrofit;
-
-    static {
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .callTimeout(30, TimeUnit.SECONDS)
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                .addInterceptor(new BTrusteeInterceptor())
-                .build();
-
-        sRetrofit = new Retrofit.Builder()
-                .baseUrl("http://18.220.66.235/")
-                .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
-
-        utxoRequest = sRetrofit.create(Api.class);
+    public BTrusteeRequest(BitcoinChainVersionEnum chainVersionEnum) {
+        this.chainVersionEnum = chainVersionEnum;
     }
 
-    public static Api getRequest() {
-        return utxoRequest;
+    @Override
+    public String requestUrl() {
+        switch (chainVersionEnum) {
+            case Main:
+                return "http://47.52.195.50/";
+            default:
+            case Dev:
+            case TestNet:
+                return "http://18.220.66.235/";
+        }
+    }
+
+    @Override
+    protected Class requestApi() {
+        return Api.class;
     }
 
     public interface Api {
@@ -63,7 +52,7 @@ public class BTrusteeRequest implements BaseChainRequest {
     }
 
     public Observable<List<UTXO>> getUtxo(final String address) {
-        return BTrusteeRequest.getRequest().getUTXO(address)
+        return getRequest().getUTXO(address)
                 .map(new Function<List<BtUtxoBean>, List<UTXO>>() {
                     @Override
                     public List<UTXO> apply(List<BtUtxoBean> btUtxos) throws Exception {
@@ -73,7 +62,7 @@ public class BTrusteeRequest implements BaseChainRequest {
     }
 
     public Observable<BigDecimal> getBalance(final String address) {
-        return BTrusteeRequest.getRequest().getBalance(address)
+        return getRequest().getBalance(address)
                 .map(new Function<BtBalanceBean, BigDecimal>() {
                     @Override
                     public BigDecimal apply(BtBalanceBean balanceBlockCypher) throws Exception {
@@ -84,7 +73,7 @@ public class BTrusteeRequest implements BaseChainRequest {
 
     @Override
     public Observable<String> pushTx(String tx) {
-        return BTrusteeRequest.getRequest().pushTx(tx)
+        return getRequest().pushTx(tx)
                 .map(new Function<PushTxBean, String>() {
                     @Override
                     public String apply(PushTxBean txrefs) throws Exception {
@@ -97,7 +86,7 @@ public class BTrusteeRequest implements BaseChainRequest {
     }
 
     public Observable<TransactionBean> getTranscation(final String TXHash) {
-        return BTrusteeRequest.getRequest().getTx(TXHash)
+        return getRequest().getTx(TXHash)
                 .map(new Function<BtTranceBean, TransactionBean>() {
                     @Override
                     public TransactionBean apply(BtTranceBean btTrance) throws Exception {

@@ -156,7 +156,7 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                 btnConfirm.setOnClickListener {
                     layoutBackupNow?.visibility = View.GONE
 
-                    fragmentManager?.let {
+                    activity?.supportFragmentManager?.let {
                         PasswordInputDialog()
                             .setConfirmListener { bytes, dialogFragment ->
                                 launch(Dispatchers.IO) {
@@ -208,9 +208,9 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
             val currentAccount = mAccountManager.currentAccount()
             withContext(Dispatchers.Main) {
                 setViewData(currentAccount)
-            }
-            mAccountManager.refreshAccountAmount(currentAccount) {
-                setAmount(currentAccount)
+                mAccountManager.refreshAccountAmount(currentAccount) {
+                    setAmount(currentAccount)
+                }
             }
         }
     }
@@ -307,7 +307,7 @@ class AssertAdapter(
         val parseCoinType = CoinTypes.parseCoinType(itemData.coinType)
         val convertAmountToDisplayUnit =
             convertAmountToDisplayUnit(itemData.amount, parseCoinType)
-        holder.itemView.amount.text =  "${convertAmountToDisplayUnit.first}"
+        holder.itemView.amount.text = "${convertAmountToDisplayUnit.first}"
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)

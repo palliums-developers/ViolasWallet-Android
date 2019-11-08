@@ -1,9 +1,9 @@
-package com.violas.wallet.repository.http.btcBrowser.request;
+package com.violas.wallet.repository.http.bitcoinChainApi.request;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.violas.wallet.repository.http.btcBrowser.bean.TransactionBean;
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.TransactionBean;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,35 +18,34 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public class ChainSoRequest extends BaseRequest implements BaseChainRequest {
-    private static Api utxoRequest;
+public class ChainSoRequest extends BaseRequest<ChainSoRequest.Api> implements BaseBitcoinChainRequest {
 
-    static {
-        utxoRequest = sRetrofit.create(Api.class);
+    @Override
+    public String requestUrl() {
+        return "https://chain.so/api/v2/";
     }
 
-    private static Api getRequest() {
-        return utxoRequest;
+    @Override
+    protected Class requestApi() {
+        return Api.class;
     }
 
     public interface Api {
-        static final String BaseUrl = "https://chain.so/api/v2";
-
-        @GET(BaseUrl + "/get_address_balance/BTCTEST/{address}")
+        @GET("get_address_balance/BTCTEST/{address}")
         Observable<BalanceBean> getBalance(@Path("address") String address);
 
-        @GET(BaseUrl + "/get_tx_unspent/BTCTEST/{address}")
+        @GET("get_tx_unspent/BTCTEST/{address}")
         Observable<UTXORequestBean> getUTXO(@Path("address") String address);
 
-        @GET(BaseUrl + "/get_tx/BTCTEST/{txhash}")
+        @GET("get_tx/BTCTEST/{txhash}")
         Observable<TxRequestBean> getTx(@Path("txhash") String txhash);
 
-        @POST(BaseUrl + "/send_tx/BTCTEST")
+        @POST("send_tx/BTCTEST")
         Observable<PushTxBean> pushTx(@Body RequestBody tx);
     }
 
     public Observable<List<UTXO>> getUtxo(String address) {
-        return ChainSoRequest.getRequest().getUTXO(address)
+        return getRequest().getUTXO(address)
                 .map(new Function<UTXORequestBean, List<UTXO>>() {
                     @Override
                     public List<UTXO> apply(UTXORequestBean txrefs) throws Exception {
@@ -57,7 +56,7 @@ public class ChainSoRequest extends BaseRequest implements BaseChainRequest {
 
     @Override
     public Observable<BigDecimal> getBalance(String address) {
-        return ChainSoRequest.getRequest().getBalance(address)
+        return getRequest().getBalance(address)
                 .map(new Function<BalanceBean, BigDecimal>() {
                     @Override
                     public BigDecimal apply(BalanceBean balanceBean) throws Exception {
@@ -79,7 +78,7 @@ public class ChainSoRequest extends BaseRequest implements BaseChainRequest {
 
     @Override
     public Observable<TransactionBean> getTranscation(String TXHash) {
-        return ChainSoRequest.getRequest().getTx(TXHash)
+        return getRequest().getTx(TXHash)
                 .map(new Function<TxRequestBean, TransactionBean>() {
                     @Override
                     public TransactionBean apply(TxRequestBean txRequest) throws Exception {
@@ -110,7 +109,7 @@ public class ChainSoRequest extends BaseRequest implements BaseChainRequest {
         }
     }
 
-    private static Observable<PushTxBean> pushTX(String tx) {
+    private Observable<PushTxBean> pushTX(String tx) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(new TxBean(tx)));
         return getRequest().pushTx(requestBody);
     }

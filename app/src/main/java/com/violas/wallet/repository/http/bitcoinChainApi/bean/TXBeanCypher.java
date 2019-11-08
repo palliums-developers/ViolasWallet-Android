@@ -1,5 +1,5 @@
 
-package com.violas.wallet.repository.http.btcBrowser.bean;;
+package com.violas.wallet.repository.http.bitcoinChainApi.bean;;
 import java.util.List;
 import java.util.Date;
 

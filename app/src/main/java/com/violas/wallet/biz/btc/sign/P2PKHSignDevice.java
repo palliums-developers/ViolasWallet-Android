@@ -4,7 +4,7 @@ import com.quincysx.crypto.bitcoin.BTCTransaction;
 import com.quincysx.crypto.bitcoin.BitCoinECKeyPair;
 import com.quincysx.crypto.bitcoin.script.Script;
 import com.violas.wallet.common.Vm;
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
 
 public class P2PKHSignDevice implements SignDevice {
     private final UTXO mUTXO;

@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.btcBrowser.request;
+package com.violas.wallet.repository.http.bitcoinChainApi.request;
 
 import io.reactivex.Observable;
 

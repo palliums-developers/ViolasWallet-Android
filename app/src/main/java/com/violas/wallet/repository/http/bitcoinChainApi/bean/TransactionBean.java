@@ -1,9 +1,8 @@
-package com.violas.wallet.repository.http.btcBrowser.bean;
+package com.violas.wallet.repository.http.bitcoinChainApi.bean;
 
 
-import com.violas.wallet.repository.http.btcBrowser.request.BTCRequest;
-import com.violas.wallet.repository.http.btcBrowser.request.BTCTestRequest;
-import com.violas.wallet.repository.http.btcBrowser.request.BTrusteeRequest;
+import com.violas.wallet.repository.http.bitcoinChainApi.request.BTCRequest;
+import com.violas.wallet.repository.http.bitcoinChainApi.request.BTrusteeRequest;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -103,37 +102,6 @@ public class TransactionBean {
         VoutBean bean;
         int i = 0;
         for (BTCRequest.TranceBean.DataBean.OutputsBean voutBean : list) {
-            bean = new VoutBean();
-            bean.setN(i);
-            bean.setValue(new BigDecimal(voutBean.value + "").divide(new BigDecimal("100000000"), 8, BigDecimal.ROUND_HALF_UP).doubleValue());
-
-            VoutBean.ScriptPubKeyBean scriptPubKeyBean = new VoutBean.ScriptPubKeyBean();
-            scriptPubKeyBean.setAddresses(voutBean.addresses);
-            scriptPubKeyBean.setAsm(voutBean.script_asm);
-            scriptPubKeyBean.setHex(voutBean.script_hex);
-            scriptPubKeyBean.setType(voutBean.type);
-            bean.setScriptPubKey(scriptPubKeyBean);
-            data.add(bean);
-            i++;
-        }
-        setVout(data);
-    }
-
-    public TransactionBean(BTCTestRequest.TranceBean.DataBean btTrance) {
-        this.blockhash = btTrance.block_hash;
-        this.blocktime = btTrance.block_time;
-        this.confirmations = btTrance.confirmations;
-        this.hash = btTrance.hash;
-        this.hex = btTrance.hash;
-        this.locktime = btTrance.lock_time;
-        this.version = btTrance.version;
-
-        List<BTCTestRequest.TranceBean.DataBean.OutputsBean> list = btTrance.outputs;
-
-        List<VoutBean> data = new LinkedList<>();
-        VoutBean bean;
-        int i = 0;
-        for (BTCTestRequest.TranceBean.DataBean.OutputsBean voutBean : list) {
             bean = new VoutBean();
             bean.setN(i);
             bean.setValue(new BigDecimal(voutBean.value + "").divide(new BigDecimal("100000000"), 8, BigDecimal.ROUND_HALF_UP).doubleValue());

@@ -2,7 +2,7 @@ package com.violas.wallet.biz.btc.sign;
 
 import android.util.Log;
 
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
 
 public class SignDeviceFactory {
     public static SignDevice get(UTXO utxo) {

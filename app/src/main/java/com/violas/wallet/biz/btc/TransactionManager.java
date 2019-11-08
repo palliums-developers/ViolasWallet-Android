@@ -15,7 +15,7 @@ import com.violas.wallet.R;
 import com.violas.wallet.biz.btc.inputScript.InputScriptFactory;
 import com.violas.wallet.biz.btc.outputScript.OutputScriptFactory;
 import com.violas.wallet.biz.btc.sign.SignDeviceFactory;
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

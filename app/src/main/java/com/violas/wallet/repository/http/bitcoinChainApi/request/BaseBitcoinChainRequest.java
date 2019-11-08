@@ -1,15 +1,15 @@
-package com.violas.wallet.repository.http.btcBrowser.request;
+package com.violas.wallet.repository.http.bitcoinChainApi.request;
 
 
-import com.violas.wallet.repository.http.btcBrowser.bean.TransactionBean;
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.TransactionBean;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import io.reactivex.Observable;
 
-public interface BaseChainRequest {
+public interface BaseBitcoinChainRequest {
 
     Observable<List<UTXO>> getUtxo(final String address);
 

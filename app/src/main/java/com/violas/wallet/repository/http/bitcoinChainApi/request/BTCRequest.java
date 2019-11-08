@@ -1,8 +1,10 @@
-package com.violas.wallet.repository.http.btcBrowser.request;
+package com.violas.wallet.repository.http.bitcoinChainApi.request;
+
+import android.util.Log;
 
 import com.google.gson.Gson;
-import com.violas.wallet.repository.http.btcBrowser.bean.TransactionBean;
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.TransactionBean;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -23,41 +25,50 @@ import retrofit2.http.Path;
 /**
  * 比特大陆测试 UTXO 服务器
  */
-public class BTCRequest extends BaseRequest implements BaseChainRequest {
-    private static Api utxoRequest;
+public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitcoinChainRequest {
+    private BitcoinChainVersionEnum mVersionEnum;
 
-    static {
-        utxoRequest = sRetrofit.create(Api.class);
+    public BTCRequest(BitcoinChainVersionEnum chainVersionEnum) {
+        super();
+        mVersionEnum = chainVersionEnum;
     }
 
-    public static Api getRequest() {
-        return utxoRequest;
+    @Override
+    public String requestUrl() {
+        switch (mVersionEnum) {
+            case TestNet:
+                return "https://testnet-chain.api.btc.com/v3/";
+            case Main:
+                return "https://developer-btc-chain.api.btc.com/appkey-e6e2ce95d8df/";
+            default:
+                return "https://tchain.api.btc.com/v3/";
+        }
+    }
+
+    @Override
+    protected Class requestApi() {
+        return BTCRequest.Api.class;
     }
 
     public interface Api {
 
-        @GET("https://developer-btc-chain.api.btc.com/appkey-e6e2ce95d8df/address/{address}/unspent")
+        @GET("address/{address}/unspent")
         Observable<UnSpentBean> getUTXO(@Path("address") String address);
 
-        @GET("https://developer-btc-chain.api.btc.com/appkey-e6e2ce95d8df/address/{address}")
+        @GET("address/{address}")
         Observable<BalanceBean> getBalance(@Path("address") String address);
 
-        @GET("https://developer-btc-chain.api.btc.com/appkey-e6e2ce95d8df/tx/{txhash}?verbose=3")
+        @GET("tx/{txhash}?verbose=3")
         Observable<TranceBean> getTx(@Path("txhash") String txhash);
 
-        @POST("https://developer-btc-chain.api.btc.com/appkey-e6e2ce95d8df/tools/tx-publish")
+        @POST("tools/tx-publish")
         Observable<PushTxBean> pushTx(@Body RequestBody tx);
 
-//        @GET("http://223.99.243.185:5000/sendrawtransaction/{tx}")
-//        Observable<BTrusteeRequest.PushTxBean> pushTx(@Path("tx") String tx);
-
-//        @GET("http://13.68.141.242:5000/sendrawtransaction/{tx}")
-//        Observable<BTrusteeRequest.PushTxBean> pushTx(@Path("tx") String tx);
     }
 
     @Override
     public Observable<List<UTXO>> getUtxo(String address) {
-        return BTCRequest.getRequest().getUTXO(address)
+        return getRequest().getUTXO(address)
                 .map(new Function<UnSpentBean, List<UTXO>>() {
                     @Override
                     public List<UTXO> apply(UnSpentBean unSpent) throws Exception {
@@ -72,12 +83,13 @@ public class BTCRequest extends BaseRequest implements BaseChainRequest {
 
     @Override
     public Observable<BigDecimal> getBalance(String address) {
-        return BTCRequest.getRequest().getBalance(address)
+        return getRequest().getBalance(address)
                 .map(new Function<BalanceBean, BigDecimal>() {
                     @Override
                     public BigDecimal apply(BalanceBean balanceBlockCypher) throws Exception {
                         if (balanceBlockCypher.data == null) return new BigDecimal(0);
-                        return new BigDecimal(balanceBlockCypher.data.balance + "").divide(new BigDecimal("100000000"), 8, BigDecimal.ROUND_HALF_UP);
+                        Log.e("==amount==", balanceBlockCypher.data.balance+"");
+                        return new BigDecimal(balanceBlockCypher.data.balance + "");
                     }
                 });
     }
@@ -85,7 +97,7 @@ public class BTCRequest extends BaseRequest implements BaseChainRequest {
     @Override
     public Observable<String> pushTx(String tx) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(new TxBean(tx)));
-        return BTCRequest.getRequest().pushTx(requestBody)
+        return getRequest().pushTx(requestBody)
                 .map(new Function<PushTxBean, String>() {
                     @Override
                     public String apply(PushTxBean txrefs) throws Exception {
@@ -113,7 +125,7 @@ public class BTCRequest extends BaseRequest implements BaseChainRequest {
 
     @Override
     public Observable<TransactionBean> getTranscation(String TXHash) {
-        return BTCRequest.getRequest().getTx(TXHash)
+        return getRequest().getTx(TXHash)
                 .map(new Function<TranceBean, TransactionBean>() {
                     @Override
                     public TransactionBean apply(TranceBean btTrance) throws Exception {
@@ -143,7 +155,7 @@ public class BTCRequest extends BaseRequest implements BaseChainRequest {
     private UTXO parse(UnSpentBean.DataBean.ListBean bean, String address) {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         final TransactionBean[] transaction = new TransactionBean[1];
-        BlockChainRequest.get().getTranscation(bean.tx_hash)
+        BitcoinChainApi.INSTANCE.get().getTranscation(bean.tx_hash)
                 .subscribe(new Observer<TransactionBean>() {
                     @Override
                     public void onSubscribe(Disposable d) {

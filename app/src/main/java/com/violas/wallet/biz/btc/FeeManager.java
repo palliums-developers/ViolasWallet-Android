@@ -1,7 +1,7 @@
 package com.violas.wallet.biz.btc;
 
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
-import com.violas.wallet.repository.http.btcBrowser.request.FeeEstimateRequest;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
+import com.violas.wallet.repository.http.bitcoinChainApi.request.FeeEstimateRequest;
 
 import java.math.BigDecimal;
 import java.util.List;

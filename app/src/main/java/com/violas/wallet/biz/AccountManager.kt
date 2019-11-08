@@ -1,7 +1,6 @@
 package com.violas.wallet.biz
 
 import android.content.Context
-import androidx.annotation.WorkerThread
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip32.ExtendedKey
 import com.quincysx.crypto.bip44.BIP44
@@ -43,7 +42,6 @@ class AccountManager : CoroutineScope by IOScope() {
         DataRepository.getAccountStorage()
     }
 
-    @WorkerThread
     fun refreshAccountAmount(currentAccount: AccountDO, callback: (AccountDO) -> Unit) {
         getBalance(currentAccount) { amount ->
             currentAccount.amount = amount

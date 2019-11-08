@@ -1,13 +1,13 @@
-package com.violas.wallet.repository.http.btcBrowser.request;
+package com.violas.wallet.repository.http.bitcoinChainApi.request;
 
 import com.google.gson.Gson;
-import com.violas.wallet.repository.http.btcBrowser.bean.TXBeanCypher;
-import com.violas.wallet.repository.http.btcBrowser.bean.TransactionBean;
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXO;
-import com.violas.wallet.repository.http.btcBrowser.bean.UTXOBlockCypher;
-import com.violas.wallet.repository.http.btcBrowser.respones.BalanceBlockCypherResponse;
-import com.violas.wallet.repository.http.btcBrowser.respones.PushTxBlockCypherResponse;
-import com.violas.wallet.repository.http.btcBrowser.respones.UTXOBlockCypherResponse;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.TXBeanCypher;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.TransactionBean;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
+import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXOBlockCypher;
+import com.violas.wallet.repository.http.bitcoinChainApi.respones.BalanceBlockCypherResponse;
+import com.violas.wallet.repository.http.bitcoinChainApi.respones.PushTxBlockCypherResponse;
+import com.violas.wallet.repository.http.bitcoinChainApi.respones.UTXOBlockCypherResponse;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -22,41 +22,39 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public class BlockCypherRequest extends BaseRequest implements BaseChainRequest {
-    private static Api utxoRequest;
-
-    static {
-        utxoRequest = sRetrofit.create(Api.class);
+public class BlockCypherRequest extends BaseRequest<BlockCypherRequest.Api> implements BaseBitcoinChainRequest {
+    @Override
+    public String requestUrl() {
+        return "https://api.blockcypher.com/v1/btc/test3/";
     }
 
-    public static Api getRequest() {
-        return utxoRequest;
+    @Override
+    protected Class requestApi() {
+        return Api.class;
     }
 
     public interface Api {
-        static final String BaseUrl = "https://api.blockcypher.com/v1/btc/test3";
-
-        @GET(BaseUrl + "/addrs/{address}?unspentOnly=true&includeScript=true")
+        @GET("addrs/{address}?unspentOnly=true&includeScript=true")
         Observable<UTXOBlockCypherResponse> getUTXO(@Path("address") String address);
 
-        @GET(BaseUrl + "/addrs/{address}/balance")
+        @GET("addrs/{address}/balance")
         Observable<BalanceBlockCypherResponse> getBalance(@Path("address") String address);
 
-        @GET(BaseUrl + "/txs/{txhash}")
+        @GET("txs/{txhash}")
         Observable<TXBeanCypher> getTx(@Path("txhash") String txhash);
 
-        @POST(BaseUrl + "/txs/push")
+        @POST("txs/push")
         Observable<PushTxBlockCypherResponse> pushTx(@Body RequestBody tx);
     }
 
 
-    private static Observable<PushTxBlockCypherResponse> pushTX(String tx) {
+    private Observable<PushTxBlockCypherResponse> pushTX(String tx) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(new TxBean(tx)));
         return getRequest().pushTx(requestBody);
     }
 
     public Observable<List<UTXO>> getUtxo(final String address) {
-        return BlockCypherRequest.getRequest().getUTXO(address)
+        return getRequest().getUTXO(address)
                 .map(new Function<UTXOBlockCypherResponse, List<UTXO>>() {
                     @Override
                     public List<UTXO> apply(UTXOBlockCypherResponse utxoBlockCypherResponse) throws Exception {
@@ -66,7 +64,7 @@ public class BlockCypherRequest extends BaseRequest implements BaseChainRequest 
     }
 
     public Observable<BigDecimal> getBalance(final String address) {
-        return BlockCypherRequest.getRequest().getBalance(address)
+        return getRequest().getBalance(address)
                 .map(new Function<BalanceBlockCypherResponse, BigDecimal>() {
                     @Override
                     public BigDecimal apply(BalanceBlockCypherResponse balanceBlockCypher) throws Exception {
@@ -76,7 +74,7 @@ public class BlockCypherRequest extends BaseRequest implements BaseChainRequest 
     }
 
     public Observable<String> pushTx(final String tx) {
-        return BlockCypherRequest.pushTX(tx)
+        return pushTX(tx)
                 .map(new Function<PushTxBlockCypherResponse, String>() {
                     @Override
                     public String apply(PushTxBlockCypherResponse txBlockCypherResponse) throws Exception {
@@ -86,7 +84,7 @@ public class BlockCypherRequest extends BaseRequest implements BaseChainRequest 
     }
 
     public Observable<TransactionBean> getTranscation(final String TXHash) {
-        return BlockCypherRequest.getRequest().getTx(TXHash)
+        return getRequest().getTx(TXHash)
                 .map(new Function<TXBeanCypher, TransactionBean>() {
                     @Override
                     public TransactionBean apply(TXBeanCypher txBeanCypher) throws Exception {
@@ -95,7 +93,7 @@ public class BlockCypherRequest extends BaseRequest implements BaseChainRequest 
                 });
     }
 
-    private static List<UTXO> parse(List<UTXOBlockCypher> beans, String address) {
+    private List<UTXO> parse(List<UTXOBlockCypher> beans, String address) {
         List<UTXO> utxos = new ArrayList<>(beans.size());
 
         for (UTXOBlockCypher bean : beans) {
@@ -110,7 +108,7 @@ public class BlockCypherRequest extends BaseRequest implements BaseChainRequest 
     }
 
 
-    private static UTXO parse(UTXOBlockCypher bean, String address) {
+    private UTXO parse(UTXOBlockCypher bean, String address) {
         //String address, String txid, int vout, String scriptPubKey, double amount, int height, int confirmations
         return new UTXO(address, bean.getTx_hash(), bean.getTx_output_n(), bean.getScript(), bean.getValue() / 100000000d, bean.getBlock_height(), bean.getConfirmations());
     }
