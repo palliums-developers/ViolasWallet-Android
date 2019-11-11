@@ -106,7 +106,7 @@ dependencies {
 
     implementation project(':lib-core')
     implementation project(':lib-zbar-scan')
-    implementation project(":lib-switch")
+    implementation project(':lib-switch-button')
     implementation project(':lib-libra-core')
 
     // EventBus see https://github.com/greenrobot/EventBus
