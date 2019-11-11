@@ -1,4 +1,2 @@
-include ':wallet-pay', ':lib-scan', ':libra-core', ':core', ':lib-btc-crypto', ':lib-switch'
+include ':wallet-pay', ':lib-zbar-scan', ':lib-libra-core', ':lib-core', ':lib-btc-core', ':lib-switch'
 rootProject.name='ViolasWallet'
-
-project(':lib-scan').projectDir = new File('zbarlibary')

@@ -115,11 +115,11 @@ dependencies {
     // see https://github.com/googlesamples/easypermissions
     implementation 'pub.devrel:easypermissions:3.0.0'
 
-    implementation project(":core")
-    implementation project(":lib-scan")
+    implementation project(':lib-core')
+    implementation project(':lib-zbar-scan')
     implementation project(":lib-switch")
-    implementation project(":libra-core")
-    implementation project(":lib-btc-crypto")
+    implementation project(':lib-libra-core')
+    implementation project(':lib-btc-core')
 
     // EventBus see https://github.com/greenrobot/EventBus
     implementation 'org.greenrobot:eventbus:3.1.1'
