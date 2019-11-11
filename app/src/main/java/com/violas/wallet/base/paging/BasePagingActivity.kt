@@ -35,11 +35,6 @@ abstract class BasePagingActivity<VO> : BaseActivity(), PagingController<VO> {
         PagingHandler(this, this, this)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     /**
      * 子类通过覆写[getLayoutResId]返回自定义布局，必须包含RecyclerView
      */

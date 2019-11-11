@@ -2,6 +2,7 @@ package com.violas.wallet.ui.record
 
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.base.paging.PagingViewModel
+import com.violas.wallet.repository.http.HttpInjector
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -11,70 +12,56 @@ import kotlin.random.Random
  * <p>
  * desc: 交易记录的ViewModel
  */
-class BitcoinTransactionRecordViewModel(private val helper: TransactionRecordHelper) :
+class TransactionRecordViewModel(private val mAddress: String, coinTypes: CoinTypes) :
     PagingViewModel<TransactionRecordVO>() {
+
+    private val mTransactionRepository =
+        HttpInjector.getTransactionRepository(coinTypes)
 
     override suspend fun loadData(
         pageSize: Int,
-        pageIndex: Int,
-        onSuccess: (List<TransactionRecordVO>, Int) -> Unit,
+        pageNumber: Int,
+        pageKey: Any?,
+        onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
-        helper.getTransactionRecord(pageSize, pageIndex, onSuccess, onFailure)
-    }
-}
-
-class LibraTransactionRecordViewModel(private val mAddress: String) :
-    PagingViewModel<TransactionRecordVO>() {
-
-    override suspend fun loadData(
-        pageSize: Int,
-        pageIndex: Int,
-        onSuccess: (List<TransactionRecordVO>, Int) -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        // TODO 对接接口
-        onSuccess.invoke(fakeData(pageSize, pageIndex), pageSize)
-    }
-}
-
-class ViolasTransactionRecordViewModel(private val mAddress: String) :
-    PagingViewModel<TransactionRecordVO>() {
-
-    override suspend fun loadData(
-        pageSize: Int,
-        pageIndex: Int,
-        onSuccess: (List<TransactionRecordVO>, Int) -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        // TODO 对接接口
-        onSuccess.invoke(fakeData(pageSize, pageIndex), pageSize)
-    }
-}
-
-/**
- * code for test
- */
-private suspend inline fun fakeData(pageSize: Int, pageIndex: Int): List<TransactionRecordVO> {
-    delay(3000)
-
-    val list = mutableListOf<TransactionRecordVO>()
-    repeat(pageSize) {
-        val vo = TransactionRecordVO(
-            id = pageIndex + it + 1,
-            coinTypes = when (it % 3) {
-                0 -> CoinTypes.Bitcoin
-                1 -> CoinTypes.Libra
-                else -> CoinTypes.VToken
-            },
-            transactionType = it % 2,
-            time = System.currentTimeMillis(),
-            amount = Random.nextLong(100000),
-            address = "mkYUsJ8N1AidNUySQGCpwswQUaoyL2Mu8L00000000000000${pageIndex + it + 1}"
+        mTransactionRepository.getTransactionRecord(
+            mAddress, pageSize, pageNumber, pageKey, onSuccess, onFailure
         )
 
-        list.add(vo)
+        //onSuccess.invoke(fakeData(mAddress, pageSize, pageNumber), null)
     }
 
-    return list
+    /**
+     * code for test
+     */
+    private suspend fun fakeData(
+        address: String,
+        pageSize: Int,
+        pageNumber: Int
+    ): List<TransactionRecordVO> {
+        delay(3000)
+
+        val list = mutableListOf<TransactionRecordVO>()
+        repeat(pageSize) {
+            val id = (pageNumber - 1) * pageSize + it + 1
+
+            val vo = TransactionRecordVO(
+                id = id,
+                coinTypes = when (it % 3) {
+                    0 -> CoinTypes.Bitcoin
+                    1 -> CoinTypes.Libra
+                    else -> CoinTypes.VToken
+                },
+                transactionType = it % 2,
+                time = System.currentTimeMillis(),
+                amount = Random.nextLong(100000),
+                address = "${address}00$id"
+            )
+
+            list.add(vo)
+        }
+
+        return list
+    }
 }

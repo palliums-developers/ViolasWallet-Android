@@ -49,7 +49,7 @@ data class LoadState private constructor(
         return throwable?.message ?: errorText
     }
 
-    fun getErrorCode(): Int {
+    fun getErrorCode(): Any {
         return if (throwable != null && throwable is HttpException) {
             throwable.errorCode
         } else {

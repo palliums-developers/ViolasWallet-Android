@@ -15,4 +15,19 @@ data class TransactionRecordVO(
     val time: Long,
     val amount: Long,
     val address: String
-)
+) {
+    companion object {
+        /**
+         * 加以类型：收款
+         */
+        const val TRANSACTION_TYPE_RECEIPT = 1
+        /**
+         * 加以类型：付款
+         */
+        const val TRANSACTION_TYPE_PAYMENT = 2
+
+        fun isReceipt(transactionType: Int): Boolean {
+            return transactionType == TRANSACTION_TYPE_RECEIPT
+        }
+    }
+}

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.ui.main.MainActivity
@@ -51,7 +52,9 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
         mnemonicWords!!.forEachIndexed { index, word ->
             words.add(MnemonicWordModel(word, index))
         }
-        words.shuffle()
+        if (!BuildConfig.DEBUG) {
+            words.shuffle()
+        }
 
         adapter = object : TagAdapter<MnemonicWordModel>(words) {
             override fun getView(

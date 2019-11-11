@@ -80,7 +80,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="1.5"
             app:layout_constraintStart_toEndOf="@id/vAmountLabel"
-            tools:text="@string/transaction_record_transfer"
+            tools:text="@string/transaction_record_payment"
             tools:textColor="@color/color_E54040" />
 
         <TextView

@@ -1,9 +1,15 @@
 package com.violas.wallet.repository.http
 
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
-import com.violas.wallet.repository.http.bitcoin.BitcoinApi
-import com.violas.wallet.repository.http.bitcoin.BitcoinRepository
+import com.violas.wallet.common.Vm
+import com.violas.wallet.repository.http.bitcoin.BitmainApi
+import com.violas.wallet.repository.http.bitcoin.BitmainRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
+import com.violas.wallet.repository.http.libra.LibexplorerApi
+import com.violas.wallet.repository.http.libra.LibexplorerRepository
+import com.violas.wallet.repository.http.violas.ViolasApi
+import com.violas.wallet.repository.http.violas.ViolasRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -18,32 +24,61 @@ import java.util.concurrent.TimeUnit
  */
 object HttpInjector {
 
+    const val BASE_URL_MAIN_NET = "http://52.27.228.84:4000/1.0/"
+    const val BASE_URL_TEST_NET = "http://52.27.228.84:4000/1.0/"
+
     private val okHttp by lazy {
         OkHttpClient.Builder()
+            .addInterceptor(BaseUrlInterceptor())
             .addInterceptor(HttpLoggingInterceptor().also {
                 it.level = if (BuildConfig.DEBUG)
                     HttpLoggingInterceptor.Level.BODY
                 else
                     HttpLoggingInterceptor.Level.NONE
             })
-            .addInterceptor(BaseUrlInterceptor())
             .callTimeout(40, TimeUnit.SECONDS)
             .connectTimeout(40, TimeUnit.SECONDS)
             .readTimeout(40, TimeUnit.SECONDS)
             .build()
     }
 
-
     private val retrofit by lazy {
         Retrofit.Builder()
             .client(okHttp)
-            .baseUrl("")
+            .baseUrl(getBaseUrl())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
-    private val bitCoinApi by lazy { retrofit.create(BitcoinApi::class.java) }
+    fun getBaseUrl(): String {
+        return if (Vm.TestNet) BASE_URL_TEST_NET else BASE_URL_MAIN_NET
+    }
 
-    val bitcoinRepository by lazy { BitcoinRepository(bitCoinApi) }
+    private val bitmainApi by lazy { retrofit.create(BitmainApi::class.java) }
 
+    private val libexplorerApi by lazy { retrofit.create(LibexplorerApi::class.java) }
+
+    private val violasApi by lazy { retrofit.create(ViolasApi::class.java) }
+
+    val bitmainRepository by lazy { BitmainRepository(bitmainApi) }
+
+    val libexplorerRepository by lazy { LibexplorerRepository(libexplorerApi) }
+
+    val violasRepository by lazy { ViolasRepository(violasApi) }
+
+    fun getTransactionRepository(coinTypes: CoinTypes): TransactionRepository {
+        return when (coinTypes) {
+            CoinTypes.VToken -> {
+                violasRepository
+            }
+
+            CoinTypes.Libra -> {
+                libexplorerRepository
+            }
+
+            else -> {
+                bitmainRepository
+            }
+        }
+    }
 }

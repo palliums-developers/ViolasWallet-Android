@@ -52,13 +52,13 @@ class TransactionRecordViewHolder(view: View, private val mSimpleDateFormat: Sim
             itemView.vCoinName.text = it.coinTypes.coinName()
             itemView.vAddress.text = it.address
             when (it.transactionType) {
-                1 -> {
+                TransactionRecordVO.TRANSACTION_TYPE_RECEIPT -> {
                     itemView.vType.setText(R.string.transaction_record_receipt)
                     itemView.vType.setTextColor(getColor(R.color.color_13B788))
                 }
 
                 else -> {
-                    itemView.vType.setText(R.string.transaction_record_transfer)
+                    itemView.vType.setText(R.string.transaction_record_payment)
                     itemView.vType.setTextColor(getColor(R.color.color_E54040))
                 }
             }

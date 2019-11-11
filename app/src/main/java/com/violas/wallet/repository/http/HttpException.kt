@@ -44,6 +44,13 @@ class HttpException : RuntimeException {
                 getString(R.string.http_network_unavailable)
             )
         }
+
+        fun responseDataException(): HttpException {
+            return HttpException(
+                ERROR_CODE_DATA_EXCEPTION,
+                getString(R.string.http_data_exception)
+            )
+        }
     }
 
     /**
@@ -51,7 +58,7 @@ class HttpException : RuntimeException {
      * 正数表示一次http的状态码或错误码，如：404，500，502，服务器返回的非200...
      * 负数表示一个exception的错误码，如：[ERROR_CODE_CERTIFICATE_INVALID]...
      */
-    val errorCode: Int
+    val errorCode: Any
     val errorMsg: String
 
     constructor(exception: Throwable) : super(exception) {
@@ -94,7 +101,7 @@ class HttpException : RuntimeException {
                 errorCode = ERROR_CODE_CONNECT_EXCEPTION
                 errorMsg = getString(R.string.http_connect_exception)
             }
-            is ResponseDataException, is JSONException, is JsonParseException -> {
+            is JSONException, is JsonParseException -> {
                 errorCode = ERROR_CODE_DATA_EXCEPTION
                 errorMsg = getString(R.string.http_data_exception)
             }
@@ -110,15 +117,15 @@ class HttpException : RuntimeException {
         }
     }
 
-    constructor(response: BaseResponse<*>) : super() {
+    constructor(response: ApiResponse) : super() {
 
-        val msg: String = if (response.message.isNullOrEmpty()) {
+        val msg: String = if (response.getErrorMsg() == null) {
             getString(R.string.http_request_fail)
         } else {
-            response.message ?: ""
+            response.getErrorMsg().toString()
         }
 
-        errorCode = response.code
+        errorCode = response.getErrorCode()
         errorMsg = String.format(Locale.ENGLISH, "%s", msg)
     }
 

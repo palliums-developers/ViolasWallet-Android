@@ -38,7 +38,7 @@ class TransactionRecordActivity : BasePagingActivity<TransactionRecordVO>() {
     private lateinit var mCoinTypes: CoinTypes
 
     override fun initViewModel(): PagingViewModel<TransactionRecordVO> {
-        return BitcoinTransactionRecordViewModel(TransactionRecordHelper(mAddress, mCoinTypes))
+        return TransactionRecordViewModel(mAddress, mCoinTypes)
     }
 
     override fun initViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
@@ -86,6 +86,15 @@ class TransactionRecordActivity : BasePagingActivity<TransactionRecordVO>() {
             val accountDO = AccountManager().getAccountById(mAccountId)
             mCoinTypes = CoinTypes.parseCoinType(accountDO.coinNumber)
             mAddress = accountDO.address
+
+            // code for test
+            if (mCoinTypes == CoinTypes.VToken) {
+
+            } else if (mCoinTypes == CoinTypes.Libra) {
+                mAddress = "000000000000000000000000000000000000000000000000000000000a550c18"
+            } else {
+                mAddress = "15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew"
+            }
 
             true
         } catch (e: Exception) {

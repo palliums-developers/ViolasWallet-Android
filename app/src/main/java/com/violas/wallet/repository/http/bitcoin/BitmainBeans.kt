@@ -1,18 +1,56 @@
 package com.violas.wallet.repository.http.bitcoin
 
-import com.violas.wallet.repository.http.BasePagingResponse
+import com.google.gson.annotations.SerializedName
+import com.violas.wallet.repository.http.ApiResponse
 
 /**
  * Created by elephant on 2019-11-07 19:05.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc:
+ * desc: 比特大陆bean
  */
+open class BitmainResponse<T> : ApiResponse {
 
-class TransactionRecordResponse : BasePagingResponse<TransactionRecordResponse.Bean>() {
+    @SerializedName(value = "err_no")
+    var errorCode: Int = 0
+
+    @SerializedName(value = "err_msg")
+    var errorMsg: String? = null
+
+    @SerializedName(value = "data")
+    var data: T? = null
+
+    override fun getSuccessCode(): Any {
+        return 0
+    }
+
+    override fun getErrorMsg(): Any? {
+        return errorMsg
+    }
+
+    override fun getErrorCode(): Any {
+        return errorCode
+    }
+}
+
+open class BitmainPagingResponse<T> : BitmainResponse<BitmainPagingResponse.Data<T>>() {
+
+    data class Data<T>(
+        @SerializedName(value = "pagesize")
+        var pageSize: Int = 0,
+
+        @SerializedName(value = "page")
+        var pageNumber: Int = 0,
+
+        @SerializedName(value = "list")
+        var list: List<T>? = null
+    )
+}
+
+class BitmainTransactionRecordResponse :
+    BitmainPagingResponse<BitmainTransactionRecordResponse.Bean>() {
 
     data class Bean(
-        val balance_diff: Int,
         val block_hash: String,
         val block_height: Int,
         val block_time: Int,
