@@ -1,7 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 // 正式发包，需要在根目录下创建 sign.properties 文件，指定签名文件的位置和密码，参数参考 testSign.properties
-buildscript {
-
+buildscript { 
     ext.versions = [
             'compileSdk'               : 29,
             'minSdk'                   : 21,
