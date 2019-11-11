@@ -121,18 +121,6 @@ dependencies {
     //头条适配方案 see https://github.com/JessYanCoding/AndroidAutoSize
     implementation "me.jessyan:autosize:1.1.2"
 
-    // see https://github.com/square/retrofit
-    implementation "com.squareup.retrofit2:retrofit:$versions.retrofit2"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit2"
-    implementation "com.squareup.retrofit2:converter-gson:$versions.retrofit2"
-
-    implementation "com.squareup.okhttp3:logging-interceptor:$versions.okhttp3"
-    implementation "com.squareup.okhttp3:okhttp:$versions.okhttp3"
-
-    // see https://github.com/ReactiveX/RxJava
-    implementation "io.reactivex.rxjava2:rxjava:$versions.rxjava2"
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-
     // see https://github.com/ittianyu/BottomNavigationViewEx
     implementation 'com.github.ittianyu:BottomNavigationViewEx:2.0.4'
 }
