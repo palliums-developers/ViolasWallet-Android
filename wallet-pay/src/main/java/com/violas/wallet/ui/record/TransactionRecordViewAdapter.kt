@@ -8,6 +8,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewHolder
 import com.violas.wallet.base.paging.PagingViewAdapter
 import com.violas.wallet.getColor
+import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.item_transaction_record.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -48,7 +49,8 @@ class TransactionRecordViewHolder(view: View, private val mSimpleDateFormat: Sim
     override fun onViewBind(itemIndex: Int, itemDate: TransactionRecordVO?) {
         itemDate?.let {
             itemView.vTime.text = mSimpleDateFormat.format(it.time)
-            itemView.vAmount.text = "${it.amount} ${it.coinTypes.coinUnit()}"
+            val displayUnit = convertAmountToDisplayUnit(it.amount, it.coinTypes)
+            itemView.vAmount.text = "${displayUnit.first} ${displayUnit.second}"
             itemView.vCoinName.text = it.coinTypes.coinName()
             itemView.vAddress.text = it.address
             when (it.transactionType) {

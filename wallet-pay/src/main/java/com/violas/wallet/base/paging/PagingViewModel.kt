@@ -40,16 +40,18 @@ abstract class PagingViewModel<VO> : ViewModel() {
             return false
         }
 
-        val realPageSize = if (pageSize <= 0) PAGE_SIZE else pageSize
+        val realPageSize = if (pageSize < PAGE_SIZE / 2) PAGE_SIZE / 2 else pageSize
         val executor = ArchTaskExecutor.getIOThreadExecutor()
-        val sourceFactory = PagingDataSourceFactory(executor)
+        val sourceFactory = PagingDataSourceFactory(executor, realPageSize)
 
         val listing: PagingData<VO> = PagingData(
             pagedList = sourceFactory.toLiveData(
                 config = Config(
                     pageSize = realPageSize,
-                    initialLoadSizeHint = realPageSize,
-                    prefetchDistance = if (realPageSize < PAGE_SIZE) 0 else realPageSize / 5,
+                    // 注意️ initialLoadSizeHint 必须是 pageSize 的2倍及以上整数倍，
+                    // 否则会出现刷新操作之后 loadAfter 不回调的问题
+                    initialLoadSizeHint = realPageSize * 2,
+                    prefetchDistance = 1,
                     enablePlaceholders = false
                 ),
                 fetchExecutor = executor
@@ -89,13 +91,15 @@ abstract class PagingViewModel<VO> : ViewModel() {
         onFailure: (Throwable) -> Unit
     )
 
-    inner class PagingDataSourceFactory(private val retryExecutor: Executor) :
-        DataSource.Factory<Int, VO>() {
+    inner class PagingDataSourceFactory(
+        private val retryExecutor: Executor,
+        private val pageSize: Int
+    ) : DataSource.Factory<Int, VO>() {
 
         val sourceLiveData = MutableLiveData<PagingDataSource>()
 
         override fun create(): DataSource<Int, VO> {
-            val source = PagingDataSource(retryExecutor)
+            val source = PagingDataSource(retryExecutor, pageSize)
 
             sourceLiveData.postValue(source)
 
@@ -103,8 +107,12 @@ abstract class PagingViewModel<VO> : ViewModel() {
         }
     }
 
-    inner class PagingDataSource(private val retryExecutor: Executor) :
-        PageKeyedDataSource<Int, VO>() {
+    inner class PagingDataSource(
+        private val retryExecutor: Executor,
+        private val pageSize: Int
+    ) : PageKeyedDataSource<Int, VO>() {
+
+        private val lock: Any = Any()
 
         // keep a function reference for the retry event
         private var retry: (() -> Any)? = null
@@ -117,21 +125,20 @@ abstract class PagingViewModel<VO> : ViewModel() {
         val tipsMessage = MutableLiveData<String>()
 
         fun refresh() {
-            if (retry == null) {
+            synchronized(lock) {
                 invalidate()
-                return
             }
-
-            retry()
         }
 
         fun retry() {
-            val prevRetry = retry
+            synchronized(lock) {
+                val prevRetry = retry
 
-            retry = null
+                retry = null
 
-            prevRetry?.let {
-                retryExecutor.execute { it.invoke() }
+                prevRetry?.let {
+                    retryExecutor.execute { it.invoke() }
+                }
             }
         }
 
@@ -139,132 +146,154 @@ abstract class PagingViewModel<VO> : ViewModel() {
             params: LoadInitialParams<Int>,
             callback: LoadInitialCallback<Int, VO>
         ) {
-            val currentRefreshState = refreshState.value
-            if (currentRefreshState != null
-                && currentRefreshState.status == LoadState.Status.RUNNING
-            ) {
-                // 处于刷新中时，不需要再次刷新操作
-                return
-            }
+            synchronized(lock) {
+                val currentRefreshState = refreshState.value
+                if (currentRefreshState != null
+                    && currentRefreshState.status == LoadState.Status.RUNNING
+                ) {
+                    // 处于刷新中时，不需要再次刷新操作
+                    return
+                }
 
-            val currentLoadMoreState = loadMoreState.value
-            if (currentLoadMoreState != null
-                && currentLoadMoreState.status == LoadState.Status.RUNNING
-            ) {
-                // 处于加载更多中时，不处理刷新操作
-                return
-            }
+                val currentLoadMoreState = loadMoreState.value
+                if (currentLoadMoreState != null
+                    && currentLoadMoreState.status == LoadState.Status.RUNNING
+                ) {
+                    // 处于加载更多中时，不处理刷新操作
+                    return
+                }
 
-            refreshState.postValue(LoadState.RUNNING)
+                refreshState.postValue(LoadState.RUNNING)
+            }
 
             this@PagingViewModel.viewModelScope.launch(Dispatchers.IO) {
+
                 try {
                     loadData(params.requestedLoadSize, 1, null,
 
                         onSuccess = { listData, pageKey ->
-                            pageNumber = 2
-                            nextPageKey = pageKey
 
-                            callback.onResult(listData, 0, pageNumber)
+                            synchronized(lock) {
 
-                            retry = null
+                                retry = null
+                                pageNumber = params.requestedLoadSize / pageSize + 1
+                                nextPageKey = pageKey
 
-                            when {
-                                listData.isEmpty() -> {
-                                    refreshState.postValue(LoadState.SUCCESS_EMPTY)
-                                    loadMoreState.postValue(LoadState.IDLE)
-                                }
+                                callback.onResult(listData, 0, pageNumber)
 
-                                listData.size < params.requestedLoadSize -> {
-                                    refreshState.postValue(LoadState.SUCCESS_NO_MORE)
-                                    // 为了底部显示没有更多一行
-                                    loadMoreState.postValue(LoadState.SUCCESS_NO_MORE)
-                                }
+                                when {
+                                    listData.isEmpty() -> {
+                                        refreshState.postValue(LoadState.SUCCESS_EMPTY)
+                                        loadMoreState.postValue(LoadState.IDLE)
+                                    }
 
-                                else -> {
-                                    refreshState.postValue(LoadState.SUCCESS)
-                                    loadMoreState.postValue(LoadState.IDLE)
+                                    listData.size < params.requestedLoadSize -> {
+                                        refreshState.postValue(LoadState.SUCCESS_NO_MORE)
+                                        // 为了底部显示没有更多一行
+                                        loadMoreState.postValue(LoadState.SUCCESS_NO_MORE)
+                                    }
+
+                                    else -> {
+                                        refreshState.postValue(LoadState.SUCCESS)
+                                        loadMoreState.postValue(LoadState.IDLE)
+                                    }
                                 }
                             }
                         },
 
                         onFailure = {
-                            retry = { loadInitial(params, callback) }
+                            synchronized(lock) {
+                                retry = { loadInitial(params, callback) }
 
-                            refreshState.postValue(LoadState.failure(it))
-                            tipsMessage.postValue(it.message)
+                                refreshState.postValue(LoadState.failure(it))
+                                tipsMessage.postValue(it.message)
+                            }
                         })
 
                 } catch (e: Exception) {
                     e.printStackTrace()
 
-                    retry = { loadInitial(params, callback) }
+                    synchronized(lock) {
+                        retry = { loadInitial(params, callback) }
 
-                    refreshState.postValue(LoadState.failure(e))
-                    tipsMessage.postValue(e.message)
+                        refreshState.postValue(LoadState.failure(e))
+                        tipsMessage.postValue(e.message)
+                    }
                 }
             }
         }
 
-        override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, VO>) {
-            val currentRefreshState = refreshState.value
-            if (currentRefreshState != null
-                && (currentRefreshState.status == LoadState.Status.RUNNING
-                        || currentRefreshState.status == LoadState.Status.FAILURE
-                        || currentRefreshState.status == LoadState.Status.SUCCESS_NO_MORE)
-            ) {
-                // 处于刷新中、刷新失败、刷新没有更多时，不处理加载更多操作
-                return
-            }
+        override fun loadAfter(
+            params: LoadParams<Int>,
+            callback: LoadCallback<Int, VO>
+        ) {
+            synchronized(lock) {
+                val currentRefreshState = refreshState.value
+                if (currentRefreshState != null
+                    && currentRefreshState.status != LoadState.Status.IDLE
+                    && currentRefreshState.status != LoadState.Status.SUCCESS
+                ) {
+                    // 处于刷新中、刷新失败、刷新没有更多时，不处理加载更多操作
+                    return
+                }
 
-            val currentLoadMoreState = loadMoreState.value
-            if (currentLoadMoreState != null
-                && (currentLoadMoreState.status == LoadState.Status.RUNNING
-                        || currentLoadMoreState.status == LoadState.Status.SUCCESS_NO_MORE)
-            ) {
-                // 处于加载更多中时，不需要再次加载更多操作；处于加载更多没有更多时，不处理加载更多
-                return
-            }
+                val currentLoadMoreState = loadMoreState.value
+                if (currentLoadMoreState != null
+                    && (currentLoadMoreState.status == LoadState.Status.RUNNING
+                            || currentLoadMoreState.status == LoadState.Status.SUCCESS_NO_MORE)
+                ) {
+                    // 处于加载更多中时，不需要再次加载更多操作；处于加载更多没有更多时，不处理加载更多
+                    return
+                }
 
-            loadMoreState.postValue(LoadState.RUNNING)
+                loadMoreState.postValue(LoadState.RUNNING)
+            }
 
             this@PagingViewModel.viewModelScope.launch(Dispatchers.IO) {
+
                 try {
                     loadData(params.requestedLoadSize, pageNumber, nextPageKey,
 
                         onSuccess = { listData, pageKey ->
-                            pageNumber++
-                            nextPageKey = pageKey
 
-                            callback.onResult(listData, pageNumber)
+                            synchronized(lock) {
 
-                            retry = null
+                                retry = null
+                                pageNumber++
+                                nextPageKey = pageKey
 
-                            loadMoreState.postValue(
-                                when {
-                                    listData.size < params.requestedLoadSize ->
-                                        LoadState.SUCCESS_NO_MORE
+                                callback.onResult(listData, pageNumber)
 
-                                    else ->
-                                        LoadState.SUCCESS
-                                }
-                            )
+                                loadMoreState.postValue(
+                                    when {
+                                        listData.size < params.requestedLoadSize ->
+                                            LoadState.SUCCESS_NO_MORE
+
+                                        else ->
+                                            LoadState.SUCCESS
+                                    }
+                                )
+                            }
                         },
 
                         onFailure = {
-                            retry = { loadAfter(params, callback) }
+                            synchronized(lock) {
+                                retry = { loadAfter(params, callback) }
 
-                            loadMoreState.postValue(LoadState.failure(it))
-                            tipsMessage.postValue(it.message)
+                                loadMoreState.postValue(LoadState.failure(it))
+                                tipsMessage.postValue(it.message)
+                            }
                         })
 
                 } catch (e: Exception) {
                     e.printStackTrace()
 
-                    retry = { loadAfter(params, callback) }
+                    synchronized(lock) {
+                        retry = { loadAfter(params, callback) }
 
-                    loadMoreState.postValue(LoadState.failure(e))
-                    tipsMessage.postValue(e.message)
+                        loadMoreState.postValue(LoadState.failure(e))
+                        tipsMessage.postValue(e.message)
+                    }
                 }
             }
         }
