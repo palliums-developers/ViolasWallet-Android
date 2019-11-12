@@ -61,7 +61,8 @@ class SettingActivity : BaseActivity() {
             }
 
             R.id.mivHelpFeedback -> {
-                startActivity(Intent(this, HelpFeedbackActivity::class.java))
+                //startActivity(Intent(this, HelpFeedbackActivity::class.java))
+                startActivity(Intent(this, FeedbackActivity::class.java))
             }
         }
     }
