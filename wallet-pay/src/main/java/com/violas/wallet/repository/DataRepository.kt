@@ -33,5 +33,5 @@ object DataRepository {
 
     fun getLibraService() = LibraAdmissionControl(mChannel)
 
-    fun getViolasService() = LibraAdmissionControl(mViolasChannel)
+    fun getViolasService() = org.palliums.violascore.admissioncontrol.LibraAdmissionControl(mViolasChannel)
 }

@@ -14,6 +14,7 @@ import com.violas.wallet.utils.validationLibraAddress
 import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.wallet.KeyPair
+import org.palliums.violascore.wallet.Account
 
 class WrongPasswordException : RuntimeException()
 class AddressFaultException : RuntimeException()
@@ -137,8 +138,8 @@ class TransferManager {
             DataRepository.getViolasService().sendViolasToken(
                 context,
                 token.tokenAddress,
-                org.palliums.libracore.wallet.Account(
-                    KeyPair(decryptPrivateKey)
+                Account(
+                    org.palliums.violascore.wallet.KeyPair(decryptPrivateKey)
                 ),
                 address,
                 (amount * 1000000L).toLong()
@@ -188,8 +189,8 @@ class TransferManager {
     ) {
         DataRepository.getViolasService().sendCoin(
             context,
-            org.palliums.libracore.wallet.Account(
-                KeyPair(decryptPrivateKey)
+           Account(
+                org.palliums.violascore.wallet.KeyPair(decryptPrivateKey)
             ),
             address,
             (amount * 1000000L).toLong()
