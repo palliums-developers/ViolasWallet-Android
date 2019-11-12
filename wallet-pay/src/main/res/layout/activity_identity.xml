@@ -11,7 +11,7 @@
         android:id="@+id/ivLogo"
         android:layout_width="87dp"
         android:layout_height="87dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@mipmap/ic_logo_corner"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
