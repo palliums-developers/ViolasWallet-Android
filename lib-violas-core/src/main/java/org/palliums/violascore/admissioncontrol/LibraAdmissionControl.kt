@@ -1,4 +1,4 @@
-package org.palliums.libracore.admissioncontrol
+package org.palliums.violascore.admissioncontrol
 
 import admission_control.AdmissionControlGrpc
 import admission_control.AdmissionControlOuterClass
@@ -7,12 +7,12 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.google.protobuf.ByteString
-import com.smallraw.libardemo.grpcResponse.DecodeResponse
 import io.grpc.Channel
-import org.palliums.libracore.move.Move
-import org.palliums.libracore.transaction.*
-import org.palliums.libracore.utils.HexUtils
-import org.palliums.libracore.wallet.Account
+import org.palliums.violascore.move.Move
+import org.palliums.violascore.serialization.hexToBytes
+import org.palliums.violascore.transaction.*
+import org.palliums.violascore.utils.HexUtils
+import org.palliums.violascore.wallet.Account
 import types.GetWithProof
 import types.TransactionOuterClass
 import java.math.BigDecimal
@@ -107,6 +107,40 @@ class LibraAdmissionControl(private val mChannel: Channel) {
             e.printStackTrace()
             call.invoke(false)
         }
+    }
+
+    fun sendViolasToken(
+        context: Context,
+        tokenAddress: String,
+        account: Account,
+        address: String,
+        amount: Long,
+        call: (success: Boolean) -> Unit
+    ) {
+        val senderAddress = account.getAddress().toHex()
+        getSequenceNumber(senderAddress, {
+
+            val moveEncode = Move.violasTokenEncode(
+                Move.decode(context.assets.open("move/peer_to_peer_transfer.json")),
+                tokenAddress.hexToBytes()
+            )
+            val rawTransaction =
+                generateSendCoinRawTransaction(
+                    address,
+                    senderAddress,
+                    amount,
+                    it,
+                    moveEncode
+                )
+            sendTransaction(
+                rawTransaction,
+                account.keyPair.getPublicKey(),
+                account.keyPair.sign(rawTransaction.toByteArray()),
+                call
+            )
+        }, {
+            call.invoke(false)
+        })
     }
 
     fun sendCoin(
