@@ -12,7 +12,7 @@ import com.violas.wallet.repository.http.ApiResponse
 open class ViolasResponse<T> : ApiResponse {
 
     @SerializedName(value = "code")
-    var errorCode: String = ""
+    var errorCode: Int = 0
 
     @SerializedName(value = "message")
     var errorMsg: String? = null
