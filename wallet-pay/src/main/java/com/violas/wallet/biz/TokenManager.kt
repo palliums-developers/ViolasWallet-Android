@@ -62,11 +62,15 @@ class TokenManager {
         val loadSupportToken = loadSupportToken()
 
         val supportTokenMap = HashMap<String, TokenDo>(loadSupportToken.size)
-        DataRepository.getTokenStorage().findByAccountId(account.id).map {
+        val localToken = DataRepository.getTokenStorage().findByAccountId(account.id)
+        localToken.map {
             supportTokenMap[it.name] = it
         }
 
+        val localSupportTokenMap = HashMap<String, Int>()
+
         loadSupportToken.forEach { token ->
+            localSupportTokenMap[token.tokenAddress] = 0
             token.account_id = account.id
             supportTokenMap[token.name]?.let {
                 token.enable = it.enable
@@ -86,6 +90,23 @@ class TokenManager {
             )
         )
         mutableList.addAll(loadSupportToken)
+
+        localToken.map {
+            if (it.enable && !localSupportTokenMap.contains(it.tokenAddress)) {
+                mutableList.add(
+                    AssertToken(
+                        account_id = account.id,
+                        enable = true,
+                        tokenAddress = it.tokenAddress,
+                        isToken = true,
+                        name = it.name,
+                        fullName = "",
+                        amount = 0
+                    )
+                )
+            }
+        }
+
         return mutableList
     }
 
@@ -145,20 +166,21 @@ class TokenManager {
                 tokenAddress.add(it.tokenAddress)
             }
         }
-        return DataRepository.getViolasService().getBalance(address, tokenAddress) { balance, tokens ->
-            val tokenMap = mutableMapOf<String, Long>()
-            tokens?.forEach {
-                tokenMap[it.address] = it.balance
-            }
-            enableTokens.forEach {
-                if (tokenMap.contains(it.tokenAddress)) {
-                    it.amount = tokenMap[it.tokenAddress]!!
+        return DataRepository.getViolasService()
+            .getBalance(address, tokenAddress) { balance, tokens ->
+                val tokenMap = mutableMapOf<String, Long>()
+                tokens?.forEach {
+                    tokenMap[it.address] = it.balance
                 }
-                if (!it.isToken) {
-                    it.amount = balance
+                enableTokens.forEach {
+                    if (tokenMap.contains(it.tokenAddress)) {
+                        it.amount = tokenMap[it.tokenAddress]!!
+                    }
+                    if (!it.isToken) {
+                        it.amount = balance
+                    }
                 }
+                call.invoke(enableTokens)
             }
-            call.invoke(enableTokens)
-        }
     }
 }
