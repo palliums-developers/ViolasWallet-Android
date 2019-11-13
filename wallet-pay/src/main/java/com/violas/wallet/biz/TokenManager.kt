@@ -5,6 +5,7 @@ import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.TokenDo
+import io.reactivex.disposables.Disposable
 import java.util.concurrent.CountDownLatch
 
 class TokenManager {
@@ -41,12 +42,12 @@ class TokenManager {
         val countDownLatch = CountDownLatch(1)
         val list = mutableListOf<AssertToken>()
         DataRepository.getViolasService().getSupportCurrency {
-            it.forEach {
+            it.forEach { item ->
                 list.add(
                     AssertToken(
-                        fullName = it.description,
-                        name = it.name,
-                        tokenAddress = it.address,
+                        fullName = item.description,
+                        name = item.name,
+                        tokenAddress = item.address,
                         isToken = true
                     )
                 )
@@ -97,7 +98,8 @@ class TokenManager {
                     account_id = it.account_id,
                     coinType = account.coinNumber,
                     enable = it.enable,
-                    isToken = false,
+                    isToken = true,
+                    tokenAddress = it.tokenAddress,
                     name = it.name,
                     fullName = "",
                     amount = it.amount
@@ -126,8 +128,37 @@ class TokenManager {
             TokenDo(
                 enable = checked,
                 account_id = assertToken.account_id,
-                name = assertToken.name
+                name = assertToken.name,
+                tokenAddress = assertToken.tokenAddress
             )
         )
+    }
+
+    fun refreshBalance(
+        address: String,
+        enableTokens: List<AssertToken>,
+        call: (List<AssertToken>) -> Unit
+    ): Disposable {
+        val tokenAddress = arrayListOf<String>()
+        enableTokens.forEach {
+            if (it.isToken) {
+                tokenAddress.add(it.tokenAddress)
+            }
+        }
+        return DataRepository.getViolasService().getBalance(address, tokenAddress) { balance, tokens ->
+            val tokenMap = mutableMapOf<String, Long>()
+            tokens?.forEach {
+                tokenMap[it.address] = it.balance
+            }
+            enableTokens.forEach {
+                if (tokenMap.contains(it.tokenAddress)) {
+                    it.amount = tokenMap[it.tokenAddress]!!
+                }
+                if (!it.isToken) {
+                    it.amount = balance
+                }
+            }
+            call.invoke(enableTokens)
+        }
     }
 }

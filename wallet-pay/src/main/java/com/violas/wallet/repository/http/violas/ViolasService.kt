@@ -3,8 +3,10 @@ package com.violas.wallet.repository.http.violas
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.smallraw.core.http.violas.Module
 import com.smallraw.core.http.violas.SupportCurrencyResponse
 import com.smallraw.core.http.violas.ViolasRepository
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import org.palliums.violascore.move.Move
 import org.palliums.violascore.serialization.hexToBytes
@@ -28,6 +30,29 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
                 }
             }, {
                 call.invoke(arrayListOf())
+            })
+    }
+
+    fun getBalance(
+        address: String,
+        tokenAddress: List<String>,
+        call: (amount: Long, modes: List<Module>?) -> Unit
+    ): Disposable {
+        val joinToString = tokenAddress.joinToString(separator = ",")
+        return mViolasRepository.getBalance(address, joinToString)
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                mHandler.post {
+                    if (it.data == null) {
+                        call.invoke(0, arrayListOf())
+                    } else {
+                        call.invoke(it.data!!.balance, it.data!!.modules)
+                    }
+                }
+            }, {
+                mHandler.post {
+                    call.invoke(0, arrayListOf())
+                }
             })
     }
 

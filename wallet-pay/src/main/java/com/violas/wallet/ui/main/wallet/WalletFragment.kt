@@ -199,6 +199,7 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSwitchAccountEvent(event: SwitchAccountEvent) {
+//        mCompositeDisposable.dispose()
         refreshAccountData()
         refreshAssert()
     }
@@ -211,7 +212,7 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                 mAccountManager.refreshAccountAmount(currentAccount) {
                     try {
                         setAmount(currentAccount)
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
@@ -242,7 +243,9 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
 
             if (mEnableTokens.size >= 1) {
                 mEnableTokens[0].amount = currentAccount.amount
-                mAssertAdapter.notifyItemChanged(0)
+                recyclerAssert.post {
+                    mAssertAdapter.notifyItemChanged(0)
+                }
             }
         }
     }
@@ -250,11 +253,28 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
     private fun refreshAssert() {
         launch(Dispatchers.IO) {
             mEnableTokens.clear()
-            val currentAccount = mAccountManager.currentAccount()
-            mEnableTokens.addAll(mTokenManger.loadEnableToken(currentAccount))
-            withContext(Dispatchers.Main) {
-                mAssertAdapter.notifyDataSetChanged()
+            recyclerAssert.post {
+                mAssertAdapter.notifyItemRangeRemoved(0, mAssertAdapter.itemCount)
             }
+            val currentAccount = mAccountManager.currentAccount()
+            val loadEnableToken = mTokenManger.loadEnableToken(currentAccount)
+            if (currentAccount.coinNumber == CoinTypes.VToken.coinType()) {
+                mTokenManger.refreshBalance(
+                    currentAccount.address,
+                    loadEnableToken
+                ) {
+                    mEnableTokens.addAll(it)
+                    recyclerAssert.post {
+                        mAssertAdapter.notifyItemRangeRemoved(0, mAssertAdapter.itemCount)
+                    }
+                }
+            } else {
+                mEnableTokens.addAll(loadEnableToken)
+                recyclerAssert.post {
+                    mAssertAdapter.notifyItemRangeRemoved(0, mAssertAdapter.itemCount)
+                }
+            }
+
         }
     }
 
@@ -311,7 +331,7 @@ class AssertAdapter(
         val parseCoinType = CoinTypes.parseCoinType(itemData.coinType)
         val convertAmountToDisplayUnit =
             convertAmountToDisplayUnit(itemData.amount, parseCoinType)
-        holder.itemView.amount.text = "${convertAmountToDisplayUnit.first}"
+        holder.itemView.amount.text = convertAmountToDisplayUnit.first
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)
