@@ -172,6 +172,7 @@
     <string name="http_data_exception">响应数据无法处理</string>
     <string name="http_network_unavailable">网络不可用, 请检查网络设置</string>
     <string name="http_unknown_error">未知错误</string>
+    <string name="http_user_agent">ViolasWallet Android Client</string>
 
     <string name="data_load_status_empty">没有查询到对应的数据</string>
     <string name="data_load_status_failed">加载失败, 下拉重新加载</string>
@@ -205,6 +206,7 @@
     <string name="transaction_record_receipt">收款</string>
     <string name="transaction_record_payment">付款</string>
     <string name="transaction_record_query">浏览器查询</string>
+    <string name="transaction_record_not_supported_query">暂不支持</string>
 
     <string name="account_tips_not_found">钱包账号不存在</string>
 </resources>

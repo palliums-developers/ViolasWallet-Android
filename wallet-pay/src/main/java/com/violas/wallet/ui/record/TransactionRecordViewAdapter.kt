@@ -19,7 +19,10 @@ import java.util.*
  * <p>
  * desc: 交易记录的ViewAdapter
  */
-class TransactionRecordViewAdapter(retryCallback: () -> Unit) :
+class TransactionRecordViewAdapter(
+    retryCallback: () -> Unit,
+    private val onClickQuery: (TransactionRecordVO) -> Unit
+) :
     PagingViewAdapter<TransactionRecordVO>(retryCallback, TransactionRecordDiffCallback()) {
 
     private val mSimpleDateFormat = SimpleDateFormat("yy.MM.dd HH:mm", Locale.CHINA)
@@ -34,12 +37,17 @@ class TransactionRecordViewAdapter(retryCallback: () -> Unit) :
                 parent,
                 false
             ),
-            mSimpleDateFormat
+            mSimpleDateFormat,
+            onClickQuery
         )
     }
 }
 
-class TransactionRecordViewHolder(view: View, private val mSimpleDateFormat: SimpleDateFormat) :
+class TransactionRecordViewHolder(
+    view: View,
+    private val mSimpleDateFormat: SimpleDateFormat,
+    private val onClickQuery: (TransactionRecordVO) -> Unit
+) :
     BaseViewHolder<TransactionRecordVO>(view) {
 
     init {
@@ -69,7 +77,11 @@ class TransactionRecordViewHolder(view: View, private val mSimpleDateFormat: Sim
 
     override fun onViewClick(view: View, itemIndex: Int, itemDate: TransactionRecordVO?) {
         itemDate?.let {
-            // TODO 浏览器查询
+            when (view) {
+                itemView.vQuery -> {
+                    onClickQuery.invoke(it)
+                }
+            }
         }
     }
 }

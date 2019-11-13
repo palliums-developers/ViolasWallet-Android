@@ -117,7 +117,8 @@ class BitmainRepository(private val bitmainApi: BitmainApi) :
                     transactionType = transactionType,
                     time = bean.block_time * 1000L,
                     amount = showAmount,
-                    address = showAddress
+                    address = showAddress,
+                    url = "https://btc.com/${bean.hash}"
                 )
             }
             onSuccess.invoke(list, null)

@@ -10,6 +10,7 @@ import com.violas.wallet.base.paging.PagingViewAdapter
 import com.violas.wallet.base.paging.PagingViewModel
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ID
+import com.violas.wallet.ui.web.WebCommonActivity
 import com.violas.wallet.utils.start
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,7 +43,17 @@ class TransactionRecordActivity : BasePagingActivity<TransactionRecordVO>() {
     }
 
     override fun initViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
-        return TransactionRecordViewAdapter { getViewModel().retry() }
+        return TransactionRecordViewAdapter(
+            retryCallback = {
+                getViewModel().retry()
+            },
+            onClickQuery = {
+                if (it.url.isNullOrEmpty()) {
+                    showToast(R.string.transaction_record_not_supported_query)
+                } else {
+                    WebCommonActivity.start(this, it.url)
+                }
+            })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

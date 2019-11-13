@@ -14,7 +14,8 @@ data class TransactionRecordVO(
     val transactionType: Int,
     val time: Long,
     val amount: Long,
-    val address: String
+    val address: String,
+    val url: String? = null
 ) {
     companion object {
         /**
