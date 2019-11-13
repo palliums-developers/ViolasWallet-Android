@@ -107,6 +107,9 @@
         <activity
             android:name=".ui.record.TransactionRecordActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.setting.FeedbackActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".contentProvider.InitContentProvider"
