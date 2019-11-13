@@ -56,7 +56,8 @@ class TransactionRecordViewModel(private val mAddress: String, coinTypes: CoinTy
                 transactionType = it % 2,
                 time = System.currentTimeMillis(),
                 amount = Random.nextLong(100000),
-                address = "${address}00$id"
+                address = "${address}00$id",
+                url = "https://www.baidu.com/"
             )
 
             list.add(vo)

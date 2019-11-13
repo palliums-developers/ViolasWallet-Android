@@ -54,7 +54,8 @@ class LibexplorerRepository(private val libexplorerApi: LibexplorerApi) :
                     transactionType = transactionType,
                     time = bean.expirationTime * 1000,
                     amount = bean.value,
-                    address = showAddress
+                    address = showAddress,
+                    url = "https://libexplorer.com/version/${bean.version}"
                 )
             }
 

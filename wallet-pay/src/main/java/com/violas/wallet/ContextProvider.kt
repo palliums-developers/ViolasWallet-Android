@@ -27,8 +27,12 @@ fun getContext(): Context {
 }
 
 @JvmOverloads
-fun getString(@StringRes res: Int, context: Context = getContext()): String {
-    return context.getString(res)
+fun getString(
+    @StringRes res: Int,
+    vararg formatArgs: Any,
+    context: Context = getContext()
+): String {
+    return context.getString(res, formatArgs)
 }
 
 @ColorInt

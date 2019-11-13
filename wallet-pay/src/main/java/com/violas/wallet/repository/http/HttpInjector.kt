@@ -6,6 +6,7 @@ import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.http.bitcoin.BitmainApi
 import com.violas.wallet.repository.http.bitcoin.BitmainRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.repository.http.libra.LibexplorerApi
 import com.violas.wallet.repository.http.libra.LibexplorerRepository
 import com.violas.wallet.repository.http.violas.ViolasApi
@@ -29,6 +30,7 @@ object HttpInjector {
 
     private val okHttp by lazy {
         OkHttpClient.Builder()
+            .addInterceptor(RequestHeaderInterceptor())
             .addInterceptor(BaseUrlInterceptor())
             .addInterceptor(HttpLoggingInterceptor().also {
                 it.level = if (BuildConfig.DEBUG)
