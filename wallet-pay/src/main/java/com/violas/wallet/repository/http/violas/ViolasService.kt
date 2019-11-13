@@ -189,10 +189,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         val amountArgument = TransactionArgument.newU64(amount)
 
         val program = TransactionPayload(
-            TransactionPayload.Program(
+            TransactionPayload.Script(
                 moveCode,
-                arrayListOf(addressArgument, amountArgument),
-                arrayListOf()
+                arrayListOf(addressArgument, amountArgument)
             )
         )
 

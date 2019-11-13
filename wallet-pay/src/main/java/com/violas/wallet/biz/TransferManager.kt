@@ -59,16 +59,6 @@ class TransferManager {
             }
             CoinTypes.VToken.coinType() -> {
                 if (token) {
-                    transferViolas(
-                        context,
-                        address,
-                        amount,
-                        decryptPrivateKey,
-                        account,
-                        success,
-                        error
-                    )
-                } else {
                     transferViolasToken(
                         context,
                         address,
@@ -76,6 +66,16 @@ class TransferManager {
                         decryptPrivateKey,
                         account,
                         tokenId,
+                        success,
+                        error
+                    )
+                } else {
+                    transferViolas(
+                        context,
+                        address,
+                        amount,
+                        decryptPrivateKey,
+                        account,
                         success,
                         error
                     )
@@ -189,7 +189,7 @@ class TransferManager {
     ) {
         DataRepository.getViolasService().sendCoin(
             context,
-           Account(
+            Account(
                 org.palliums.violascore.wallet.KeyPair(decryptPrivateKey)
             ),
             address,
