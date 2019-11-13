@@ -36,12 +36,11 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
     @Override
     public String requestUrl() {
         switch (mVersionEnum) {
+            default:
             case TestNet:
-                return "https://testnet-chain.api.btc.com/v3/";
+                return "https://tchain.api.btc.com/v3/";
             case Main:
                 return "https://developer-btc-chain.api.btc.com/appkey-e6e2ce95d8df/";
-            default:
-                return "https://tchain.api.btc.com/v3/";
         }
     }
 
@@ -88,7 +87,7 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
                     @Override
                     public BigDecimal apply(BalanceBean balanceBlockCypher) throws Exception {
                         if (balanceBlockCypher.data == null) return new BigDecimal(0);
-                        Log.e("==amount==", balanceBlockCypher.data.balance+"");
+                        Log.e("==amount==", balanceBlockCypher.data.balance + "");
                         return new BigDecimal(balanceBlockCypher.data.balance + "");
                     }
                 });

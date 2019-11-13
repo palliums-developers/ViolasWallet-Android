@@ -21,10 +21,7 @@ import com.violas.wallet.utils.LightStatusBarUtil
 import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.activity_base_status_bar.*
 import kotlinx.android.synthetic.main.activity_base_title.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.yokeyword.fragmentation.SupportActivity
 import qiu.niorgai.StatusBarCompat
 
@@ -505,5 +502,9 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
 
         }
         return result
+    }
+
+    val handler = CoroutineExceptionHandler { _, exception ->
+        System.err.println("Caught $exception")
     }
 }

@@ -5,38 +5,56 @@ import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.TokenDo
+import java.util.concurrent.CountDownLatch
 
 class TokenManager {
     /**
      * 本地兼容的币种
      */
     fun loadSupportToken(): List<AssertToken> {
-        return arrayListOf(
+//        return arrayListOf(
+////            AssertToken(
+////                enable = true,
+////                fullName = "VToken",
+////                name = "VToken",
+////                isToken = false
+////            ),
 //            AssertToken(
-//                enable = true,
-//                fullName = "VToken",
-//                name = "VToken",
-//                isToken = false
+//                fullName = "ZCoin",
+//                name = "ZCoin",
+//                tokenAddress = "7257c2417e4d1038e1817c8f283ace2e1041b3396cdbb099eb357bbee024d614",
+//                isToken = true
 //            ),
-            AssertToken(
-                fullName = "ZCoin",
-                name = "ZCoin",
-                tokenAddress = "7257c2417e4d1038e1817c8f283ace2e1041b3396cdbb099eb357bbee024d614",
-                isToken = true
-            ),
-            AssertToken(
-                fullName = "BCoin",
-                name = "BCoin",
-                tokenAddress = "c20bca7777142dc8ada8ea6ced1c02519aac0b1f0d27149eb0bbe02ee22f5cd9",
-                isToken = true
-            ),
-            AssertToken(
-                fullName = "ACoin",
-                name = "ACoin",
-                tokenAddress = "6fa7359891bef85cc7aa12787b17e85d3f75c78525ffd39cb77eb3453eb3bb75",
-                isToken = true
-            )
-        )
+//            AssertToken(
+//                fullName = "BCoin",
+//                name = "BCoin",
+//                tokenAddress = "c20bca7777142dc8ada8ea6ced1c02519aac0b1f0d27149eb0bbe02ee22f5cd9",
+//                isToken = true
+//            ),
+//            AssertToken(
+//                fullName = "ACoin",
+//                name = "ACoin",
+//                tokenAddress = "6fa7359891bef85cc7aa12787b17e85d3f75c78525ffd39cb77eb3453eb3bb75",
+//                isToken = true
+//            )
+//        )
+        val countDownLatch = CountDownLatch(1)
+        val list = mutableListOf<AssertToken>()
+        DataRepository.getViolasService().getSupportCurrency {
+            it.forEach {
+                list.add(
+                    AssertToken(
+                        fullName = it.description,
+                        name = it.name,
+                        tokenAddress = it.address,
+                        isToken = true
+                    )
+                )
+            }
+            countDownLatch.countDown()
+        }
+        countDownLatch.await()
+        return list
     }
 
     fun loadSupportToken(account: AccountDO): List<AssertToken> {

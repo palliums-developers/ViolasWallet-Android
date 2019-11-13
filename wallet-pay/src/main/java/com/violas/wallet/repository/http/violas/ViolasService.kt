@@ -3,7 +3,9 @@ package com.violas.wallet.repository.http.violas
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.smallraw.core.http.violas.SupportCurrencyResponse
 import com.smallraw.core.http.violas.ViolasRepository
+import io.reactivex.schedulers.Schedulers
 import org.palliums.violascore.move.Move
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
@@ -15,8 +17,23 @@ import java.util.*
 class ViolasService(private val mViolasRepository: ViolasRepository) {
     private var mHandler = Handler(Looper.getMainLooper())
 
+    fun getSupportCurrency(call: (list: List<SupportCurrencyResponse>) -> Unit) {
+        val subscribe = mViolasRepository.getSupportCurrency()
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                if (it.data == null) {
+                    call.invoke(arrayListOf())
+                } else {
+                    call.invoke(it.data!!)
+                }
+            }, {
+                call.invoke(arrayListOf())
+            })
+    }
+
     fun getBalanceInMicroLibras(address: String, call: (amount: Long) -> Unit) {
         val subscribe = mViolasRepository.getBalance(address)
+            .subscribeOn(Schedulers.io())
             .subscribe({
                 mHandler.post {
                     if (it.data == null) {
@@ -29,8 +46,6 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
                 mHandler.post {
                     call.invoke(0)
                 }
-            }, {
-
             })
     }
 
@@ -48,12 +63,11 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
 
         val subscribe =
             mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
+                .subscribeOn(Schedulers.io())
                 .subscribe({
                     call.invoke(true)
                 }, {
                     call.invoke(false)
-                }, {
-
                 })
     }
 
@@ -126,6 +140,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         error: (Exception) -> Unit
     ) {
         val subscribe = mViolasRepository.getSequenceNumber(address)
+            .subscribeOn(Schedulers.io())
             .subscribe({
                 if (it.data == null) {
                     call.invoke(0)
@@ -134,8 +149,6 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
                 }
             }, {
                 call.invoke(0)
-            }, {
-
             })
     }
 
