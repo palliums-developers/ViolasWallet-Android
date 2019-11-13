@@ -6,23 +6,23 @@ import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface LibraApi {
-    @GET("1.0/libra/balance?addr={address}")
-    fun getBalance(@Path("address") address: String): Observable<BaseRequest<BalanceResponse>>
+    @GET("1.0/libra/balance")
+    fun getBalance(@Query("addr") address: String): Observable<BaseRequest<BalanceResponse>>
 
-    @GET("1.0/libra/seqnum?addr={address}")
-    fun getSequenceNumber(@Path("address") address: String): Observable<BaseRequest<Long>>
+    @GET("1.0/libra/seqnum")
+    fun getSequenceNumber(@Query("addr") address: String): Observable<BaseRequest<Long>>
 
     @POST("1.0/libra/transaction")
     fun pushTx(@Body address: RequestBody): Observable<BaseRequest<Any>>
 
-    @POST("1.0/libra/transaction?addr={address}&limit={limit}&offset={offset}")
+    @POST("1.0/libra/transaction")
     fun loadTransaction(
-        @Path("address") address: String,
-        @Path("limit") limit: Int,
-        @Path("offset") offset: Int
+        @Query("addr") address: String,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
     ):
             Observable<BaseRequest<List<TransactionResponse>>>
 }
