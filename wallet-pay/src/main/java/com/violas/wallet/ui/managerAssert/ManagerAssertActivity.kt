@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_manager_assert.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ManagerAssertActivity : BaseActivity() {
     override fun getLayoutResId() = R.layout.activity_manager_assert
@@ -69,10 +70,12 @@ class ManagerAssertActivity : BaseActivity() {
             )
         )
         recyclerView.adapter = mAdapter
-        launch(Dispatchers.IO) {
+        launch(Dispatchers.IO + handler) {
             mSupportTokens.clear()
             mSupportTokens.addAll(mTokenManager.loadSupportToken(mAccountManager.currentAccount()))
-            mAdapter.notifyDataSetChanged()
+            withContext(Dispatchers.Main) {
+                mAdapter.notifyDataSetChanged()
+            }
         }
     }
 

@@ -3,7 +3,7 @@ package com.smallraw.core.http.violas
 import com.google.gson.Gson
 import com.smallraw.core.http.BaseRequest
 import com.smallraw.core.http.libra.SignedTxnRequest
-import io.reactivex.Observable
+import io.reactivex.Single
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.http.Path
@@ -15,7 +15,7 @@ class ViolasRepository(private val violasApi: ViolasApi) {
     fun getSequenceNumber(@Path("address") address: String) =
         violasApi.getSequenceNumber(address)
 
-    fun pushTx(tx: String): Observable<BaseRequest<Any>> {
+    fun pushTx(tx: String): Single<BaseRequest<Any>> {
         val requestBody =
             Gson().toJson(SignedTxnRequest(tx))
                 .toRequestBody("application/json".toMediaTypeOrNull())
@@ -27,7 +27,7 @@ class ViolasRepository(private val violasApi: ViolasApi) {
         @Path("limit") limit: Int,
         @Path("offset") offset: Int
     ):
-            Observable<BaseRequest<List<TransactionResponse>>> {
+            Single<BaseRequest<List<TransactionResponse>>> {
         return violasApi.loadTransaction(address, limit, offset)
     }
 

@@ -55,7 +55,9 @@ class LibraAdmissionControl(private val mChannel: Channel) {
                 }
             }
         }, {
-            call.invoke(0)
+            mHandler.post {
+                call.invoke(0)
+            }
         })
     }
 

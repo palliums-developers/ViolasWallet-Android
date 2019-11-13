@@ -13,6 +13,7 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.IOScope
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.palliums.libracore.mnemonic.Mnemonic
@@ -30,6 +31,10 @@ class AccountManager : CoroutineScope by IOScope() {
         private const val CURRENT_ACCOUNT = "ab1"
         private const val IDENTITY_MNEMONIC_BACKUP = "IDENTITY_MNEMONIC_BACKUP"
         private const val FAST_INTO_WALLET = "ab2"
+    }
+
+    private val handler = CoroutineExceptionHandler { _, exception ->
+        println("Caught $exception")
     }
 
     private val mExecutor = Executors.newFixedThreadPool(2)
@@ -347,7 +352,7 @@ class AccountManager : CoroutineScope by IOScope() {
     }
 
     fun getBalance(account: AccountDO, callback: (Long) -> Unit) {
-        launch {
+        launch(handler) {
             when (account.coinNumber) {
                 CoinTypes.VToken.coinType() -> {
                     DataRepository.getViolasService()

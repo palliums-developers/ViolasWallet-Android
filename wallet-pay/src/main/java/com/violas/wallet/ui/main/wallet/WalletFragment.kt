@@ -209,7 +209,11 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
             withContext(Dispatchers.Main) {
                 setViewData(currentAccount)
                 mAccountManager.refreshAccountAmount(currentAccount) {
-                    setAmount(currentAccount)
+                    try {
+                        setAmount(currentAccount)
+                    }catch (e:Exception){
+                        e.printStackTrace()
+                    }
                 }
             }
         }

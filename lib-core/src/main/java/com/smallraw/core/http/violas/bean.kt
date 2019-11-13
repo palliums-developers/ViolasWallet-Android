@@ -22,6 +22,6 @@ data class TransactionResponse(
 
 data class SupportCurrencyResponse(
     var description: String = "",
-    var tokenAddress: String = "",
+    var address: String = "",
     var name: String = ""
 )
