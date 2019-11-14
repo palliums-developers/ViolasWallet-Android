@@ -74,6 +74,50 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             })
     }
 
+    fun publishToken(
+        context: Context,
+        account: Account,
+        tokenAddress: String,
+        call: (success: Boolean) -> Unit
+    ) {
+        val senderAddress = account.getAddress().toHex()
+        getSequenceNumber(senderAddress, { sequenceNumber ->
+            val moveEncode = Move.violasPublishTokenEncode(
+                context.assets.open("move/publish.json"),
+                tokenAddress.hexToBytes()
+            )
+
+            val program = TransactionPayload(
+                TransactionPayload.Script(
+                    moveEncode,
+                    arrayListOf()
+                )
+            )
+
+            val rawTransaction = RawTransaction(
+                AccountAddress(HexUtils.fromHex(senderAddress)),
+                sequenceNumber,
+                program,
+                140000,
+                0,
+                (Date().time / 1000) + 1000
+            )
+
+            val toByteString = rawTransaction.toByteArray()
+            println("rawTransaction ${HexUtils.toHex(toByteString)}")
+            println("code ${HexUtils.toHex(moveEncode)}")
+
+            sendTransaction(
+                rawTransaction,
+                account.keyPair.getPublicKey(),
+                account.keyPair.sign(rawTransaction.toByteArray()),
+                call
+            )
+        }, {
+            call.invoke(false)
+        })
+    }
+
     fun sendTransaction(
         rawTransaction: RawTransaction,
         publicKey: ByteArray,
@@ -90,7 +134,11 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
                 .subscribeOn(Schedulers.io())
                 .subscribe({
-                    call.invoke(true)
+                    if (it.code != 2000) {
+                        call.invoke(false)
+                    } else {
+                        call.invoke(true)
+                    }
                 }, {
                     call.invoke(false)
                 })
@@ -107,8 +155,8 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         val senderAddress = account.getAddress().toHex()
         getSequenceNumber(senderAddress, {
 
-            val moveEncode = Move.violasTokenEncode(
-                Move.decode(context.assets.open("move/peer_to_peer_transfer.json")),
+            val moveEncode = Move.violasTransferTokenEncode(
+                context.assets.open("move/peer_to_peer_transfer.json"),
                 tokenAddress.hexToBytes()
             )
             val rawTransaction =

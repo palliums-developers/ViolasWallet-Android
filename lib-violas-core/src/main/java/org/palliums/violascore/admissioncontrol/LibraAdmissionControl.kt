@@ -120,8 +120,8 @@ class LibraAdmissionControl(private val mChannel: Channel) {
         val senderAddress = account.getAddress().toHex()
         getSequenceNumber(senderAddress, {
 
-            val moveEncode = Move.violasTokenEncode(
-                Move.decode(context.assets.open("move/peer_to_peer_transfer.json")),
+            val moveEncode = Move.violasTransferTokenEncode(
+                context.assets.open("move/peer_to_peer_transfer.json"),
                 tokenAddress.hexToBytes()
             )
             val rawTransaction =

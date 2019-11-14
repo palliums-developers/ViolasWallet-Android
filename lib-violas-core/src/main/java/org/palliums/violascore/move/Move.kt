@@ -25,8 +25,17 @@ object Move {
         return ByteArray(0)
     }
 
-    fun violasTokenEncode(move: ByteArray, token: ByteArray): ByteArray {
-        System.arraycopy(token, 0, move, 107, token.size)
-        return move
+    fun violasTransferTokenEncode(inputStream: InputStream, token: ByteArray): ByteArray {
+        return violasTokenEncode(inputStream, token, 107)
+    }
+
+    fun violasPublishTokenEncode(inputStream: InputStream, token: ByteArray): ByteArray {
+        return violasTokenEncode(inputStream, token, 149)
+    }
+
+    private fun violasTokenEncode(inputStream: InputStream, token: ByteArray, indexOf: Int): ByteArray {
+        val decode = decode(inputStream)
+        System.arraycopy(token, 0, decode, indexOf, token.size)
+        return decode
     }
 }
