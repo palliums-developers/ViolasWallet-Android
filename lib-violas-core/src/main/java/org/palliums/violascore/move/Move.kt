@@ -26,7 +26,7 @@ object Move {
     }
 
     fun violasTransferTokenEncode(inputStream: InputStream, token: ByteArray): ByteArray {
-        return violasTokenEncode(inputStream, token, 107)
+        return violasTokenEncode(inputStream, token, 163)
     }
 
     fun violasPublishTokenEncode(inputStream: InputStream, token: ByteArray): ByteArray {

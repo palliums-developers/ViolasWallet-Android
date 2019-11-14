@@ -38,6 +38,7 @@ import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import kotlin.concurrent.thread
 
 
 class WalletFragment : Fragment(), CoroutineScope by MainScope() {
@@ -332,6 +333,13 @@ class AssertAdapter(
         val convertAmountToDisplayUnit =
             convertAmountToDisplayUnit(itemData.amount, parseCoinType)
         holder.itemView.amount.text = convertAmountToDisplayUnit.first
+        holder.itemView.setOnClickListener {
+            if (itemData.isToken) {
+                thread {
+                    TransferActivity.start(it.context, itemData.account_id, "", 0, true, itemData.id)
+                }.start()
+            }
+        }
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)
