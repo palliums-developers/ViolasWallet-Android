@@ -58,6 +58,8 @@ class TokenManager {
         return list
     }
 
+    fun findTokenById(tokenId: Long) = DataRepository.getTokenStorage().findById(tokenId)
+
     fun loadSupportToken(account: AccountDO): List<AssertToken> {
         val loadSupportToken = loadSupportToken()
 

@@ -27,6 +27,7 @@ import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.record.TransactionRecordActivity
 import com.violas.wallet.ui.scan.ScanActivity
+import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.convertAmountToDisplayUnit
@@ -38,13 +39,13 @@ import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import kotlin.concurrent.thread
 
 
 class WalletFragment : Fragment(), CoroutineScope by MainScope() {
     companion object {
         private const val REQUEST_ADD_ASSERT = 0
         private const val REQUEST_SCAN_QR_CODE = 1
+        private const val REQUEST_TOKEN_INFO = 2
     }
 
     private val mAccountManager by lazy {
@@ -57,7 +58,9 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
 
     private val mEnableTokens = mutableListOf<AssertToken>()
     private val mAssertAdapter by lazy {
-        AssertAdapter(mEnableTokens)
+        AssertAdapter(mEnableTokens) {
+            TokenInfoActivity.start(this@WalletFragment, it.id, REQUEST_TOKEN_INFO)
+        }
     }
 
     private lateinit var mView: View
@@ -310,7 +313,8 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
 }
 
 class AssertAdapter(
-    val data: List<AssertToken>
+    val data: List<AssertToken>,
+    val call: (AssertToken) -> Unit
 ) :
     RecyclerView.Adapter<AssertAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -335,9 +339,7 @@ class AssertAdapter(
         holder.itemView.amount.text = convertAmountToDisplayUnit.first
         holder.itemView.setOnClickListener {
             if (itemData.isToken) {
-                thread {
-                    TransferActivity.start(it.context, itemData.account_id, "", 0, true, itemData.id)
-                }.start()
+                call.invoke(itemData)
             }
         }
     }
