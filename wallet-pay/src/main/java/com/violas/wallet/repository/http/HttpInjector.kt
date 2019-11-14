@@ -34,7 +34,7 @@ object HttpInjector {
             .addInterceptor(BaseUrlInterceptor())
             .addInterceptor(HttpLoggingInterceptor().also {
                 it.level = if (BuildConfig.DEBUG)
-                    HttpLoggingInterceptor.Level.HEADERS
+                    HttpLoggingInterceptor.Level.BODY
                 else
                     HttpLoggingInterceptor.Level.NONE
             })

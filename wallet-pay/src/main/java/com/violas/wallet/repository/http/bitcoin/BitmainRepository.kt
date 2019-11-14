@@ -116,7 +116,7 @@ class BitmainRepository(private val bitmainApi: BitmainApi) :
                     coinTypes = if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin,
                     transactionType = transactionType,
                     time = bean.block_time * 1000L,
-                    amount = showAmount,
+                    amount = showAmount.toString(),
                     address = showAddress,
                     url = "https://btc.com/${bean.hash}"
                 )

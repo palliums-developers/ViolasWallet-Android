@@ -39,7 +39,7 @@ class LibexplorerTransactionRecordResponse :
     data class Bean(
         val to: String,
         val from: String,
-        val value: Long,
+        val value: String,
         val gasUsed: Long,
         val maxGasAmount: Long,
         val gasUnitPrice: Long,

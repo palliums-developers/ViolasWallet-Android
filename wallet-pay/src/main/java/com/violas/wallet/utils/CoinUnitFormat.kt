@@ -33,7 +33,11 @@ fun convertDisplayUnitToAmount(amount: Double, coinTypes: CoinTypes): Long {
 }
 
 fun convertAmountToDisplayUnit(amount: Long, coinTypes: CoinTypes): Pair<String, String> {
-    val amountBigDecimal = BigDecimal(amount.toString())
+    return convertAmountToDisplayUnit(amount.toString(), coinTypes)
+}
+
+fun convertAmountToDisplayUnit(amount: String, coinTypes: CoinTypes): Pair<String, String> {
+    val amountBigDecimal = BigDecimal(amount)
     val scale: Int
     val unitBigDecimal = when (coinTypes) {
         CoinTypes.VToken,

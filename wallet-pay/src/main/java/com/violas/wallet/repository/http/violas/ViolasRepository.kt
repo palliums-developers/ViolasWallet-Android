@@ -39,7 +39,7 @@ class ViolasRepository(private val violasApi: ViolasApi) :
                     coinTypes = CoinTypes.Libra,
                     transactionType = TransactionRecordVO.TRANSACTION_TYPE_RECEIPT,
                     time = bean.expiration_time * 1000,
-                    amount = bean.value,
+                    amount = bean.value.toString(),
                     address = address
                 )
             }

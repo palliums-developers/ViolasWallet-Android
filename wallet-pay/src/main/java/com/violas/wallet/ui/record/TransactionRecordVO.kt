@@ -13,7 +13,7 @@ data class TransactionRecordVO(
     val coinTypes: CoinTypes,
     val transactionType: Int,
     val time: Long,
-    val amount: Long,
+    val amount: String,
     val address: String,
     val url: String? = null
 ) {
