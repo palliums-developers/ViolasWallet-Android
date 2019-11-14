@@ -6,13 +6,17 @@ import com.smallraw.core.http.libra.SignedTxnRequest
 import io.reactivex.Single
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.http.Path
 
 class ViolasRepository(private val violasApi: ViolasApi) {
-    fun getBalance(@Path("address") address: String) =
-        violasApi.getBalance(address)
+    fun getBalance(address: String, modu: String = "") =
+        if (modu.isEmpty()) {
+            violasApi.getBalance(address)
+        } else {
+            violasApi.getBalance(address, modu)
+        }
 
-    fun getSequenceNumber(@Path("address") address: String) =
+
+    fun getSequenceNumber(address: String) =
         violasApi.getSequenceNumber(address)
 
     fun pushTx(tx: String): Single<BaseRequest<Any>> {
@@ -23,9 +27,9 @@ class ViolasRepository(private val violasApi: ViolasApi) {
     }
 
     fun loadTransaction(
-        @Path("address") address: String,
-        @Path("limit") limit: Int,
-        @Path("offset") offset: Int
+        address: String,
+        limit: Int,
+        offset: Int
     ):
             Single<BaseRequest<List<TransactionResponse>>> {
         return violasApi.loadTransaction(address, limit, offset)

@@ -3,8 +3,10 @@ package com.violas.wallet.repository.http.violas
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.smallraw.core.http.violas.Module
 import com.smallraw.core.http.violas.SupportCurrencyResponse
 import com.smallraw.core.http.violas.ViolasRepository
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import org.palliums.violascore.move.Move
 import org.palliums.violascore.serialization.hexToBytes
@@ -31,6 +33,29 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             })
     }
 
+    fun getBalance(
+        address: String,
+        tokenAddress: List<String>,
+        call: (amount: Long, modes: List<Module>?) -> Unit
+    ): Disposable {
+        val joinToString = tokenAddress.joinToString(separator = ",")
+        return mViolasRepository.getBalance(address, joinToString)
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                mHandler.post {
+                    if (it.data == null) {
+                        call.invoke(0, arrayListOf())
+                    } else {
+                        call.invoke(it.data!!.balance, it.data!!.modules)
+                    }
+                }
+            }, {
+                mHandler.post {
+                    call.invoke(0, arrayListOf())
+                }
+            })
+    }
+
     fun getBalanceInMicroLibras(address: String, call: (amount: Long) -> Unit) {
         val subscribe = mViolasRepository.getBalance(address)
             .subscribeOn(Schedulers.io())
@@ -49,6 +74,50 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             })
     }
 
+    fun publishToken(
+        context: Context,
+        account: Account,
+        tokenAddress: String,
+        call: (success: Boolean) -> Unit
+    ) {
+        val senderAddress = account.getAddress().toHex()
+        getSequenceNumber(senderAddress, { sequenceNumber ->
+            val moveEncode = Move.violasPublishTokenEncode(
+                context.assets.open("move/token_publish.json"),
+                tokenAddress.hexToBytes()
+            )
+
+            val program = TransactionPayload(
+                TransactionPayload.Script(
+                    moveEncode,
+                    arrayListOf()
+                )
+            )
+
+            val rawTransaction = RawTransaction(
+                AccountAddress(HexUtils.fromHex(senderAddress)),
+                sequenceNumber,
+                program,
+                140000,
+                0,
+                (Date().time / 1000) + 1000
+            )
+
+            val toByteString = rawTransaction.toByteArray()
+            println("rawTransaction ${HexUtils.toHex(toByteString)}")
+            println("code ${HexUtils.toHex(moveEncode)}")
+
+            sendTransaction(
+                rawTransaction,
+                account.keyPair.getPublicKey(),
+                account.keyPair.sign(rawTransaction.toByteArray()),
+                call
+            )
+        }, {
+            call.invoke(false)
+        })
+    }
+
     fun sendTransaction(
         rawTransaction: RawTransaction,
         publicKey: ByteArray,
@@ -65,7 +134,11 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
                 .subscribeOn(Schedulers.io())
                 .subscribe({
-                    call.invoke(true)
+                    if (it.code != 2000) {
+                        call.invoke(false)
+                    } else {
+                        call.invoke(true)
+                    }
                 }, {
                     call.invoke(false)
                 })
@@ -82,8 +155,8 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         val senderAddress = account.getAddress().toHex()
         getSequenceNumber(senderAddress, {
 
-            val moveEncode = Move.violasTokenEncode(
-                Move.decode(context.assets.open("move/peer_to_peer_transfer.json")),
+            val moveEncode = Move.violasTransferTokenEncode(
+                context.assets.open("move/token_transfer.json"),
                 tokenAddress.hexToBytes()
             )
             val rawTransaction =
@@ -164,10 +237,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         val amountArgument = TransactionArgument.newU64(amount)
 
         val program = TransactionPayload(
-            TransactionPayload.Program(
+            TransactionPayload.Script(
                 moveCode,
-                arrayListOf(addressArgument, amountArgument),
-                arrayListOf()
+                arrayListOf(addressArgument, amountArgument)
             )
         )
 

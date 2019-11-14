@@ -8,18 +8,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.smallraw.support.switchcompat.SwitchButton
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.dialog.PasswordInputDialog
 import com.violas.wallet.base.recycler.RecycleViewItemDivider
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
+import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.DensityUtility
 import kotlinx.android.synthetic.main.activity_manager_assert.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.palliums.violascore.wallet.Account
+import org.palliums.violascore.wallet.KeyPair
+import java.util.*
 
 class ManagerAssertActivity : BaseActivity() {
     override fun getLayoutResId() = R.layout.activity_manager_assert
@@ -39,7 +47,7 @@ class ManagerAssertActivity : BaseActivity() {
         }
     }
 
-
+    private lateinit var mAccount: AccountDO
     private val mAccountManager by lazy {
         AccountManager()
     }
@@ -49,11 +57,52 @@ class ManagerAssertActivity : BaseActivity() {
     }
     private val mSupportTokens = mutableListOf<AssertToken>()
     private val mAdapter by lazy {
-        MyAdapter(mSupportTokens) { checked, assertToken ->
-            launch(Dispatchers.IO) {
-                mTokenManager.insert(checked, assertToken)
+        MyAdapter(mSupportTokens) { checkbox, checked, assertToken ->
+            if (checked) {
+                openToken(checkbox, checked, assertToken)
+            } else {
+                launch(Dispatchers.IO) {
+                    mTokenManager.insert(checked, assertToken)
+                }
             }
         }
+    }
+
+    private fun openToken(checkbox: SwitchButton, checked: Boolean, assertToken: AssertToken) {
+        PasswordInputDialog()
+            .setConfirmListener { bytes, dialogFragment ->
+                dialogFragment.dismiss()
+                showProgress()
+                launch(Dispatchers.IO) {
+                    val decrypt = SimpleSecurity.instance(applicationContext)
+                        .decrypt(bytes, mAccount.privateKey)
+                    Arrays.fill(bytes, 0.toByte())
+                    if (decrypt == null) {
+                        showToast(R.string.hint_password_error)
+                        return@launch
+                    }
+                    DataRepository.getViolasService()
+                        .publishToken(
+                            applicationContext,
+                            Account(KeyPair.fromSecretKey(decrypt)),
+                            assertToken.tokenAddress
+                        ) {
+                            dismissProgress()
+                            if (!it) {
+                                this@ManagerAssertActivity.runOnUiThread {
+                                    checkbox.isChecked = false
+                                }
+                                showToast(getString(R.string.hint_assert_open_error))
+                            } else {
+                                mTokenManager.insert(checked, assertToken)
+                            }
+                        }
+                }
+            }
+            .setCancelListener {
+                checkbox.isChecked = false
+            }
+            .show(supportFragmentManager)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +121,9 @@ class ManagerAssertActivity : BaseActivity() {
         recyclerView.adapter = mAdapter
         launch(Dispatchers.IO + handler) {
             mSupportTokens.clear()
-            mSupportTokens.addAll(mTokenManager.loadSupportToken(mAccountManager.currentAccount()))
+            val currentAccountLong = intent.getLongExtra(EXT_ACCOUNT_ID, -1)
+            mAccount = mAccountManager.getAccountById(currentAccountLong)
+            mSupportTokens.addAll(mTokenManager.loadSupportToken(mAccount))
             withContext(Dispatchers.Main) {
                 mAdapter.notifyDataSetChanged()
             }
@@ -91,7 +142,7 @@ class ManagerAssertActivity : BaseActivity() {
 
 class MyAdapter(
     val data: List<AssertToken>,
-    private val callbacks: (Boolean, AssertToken) -> Unit
+    private val callbacks: (SwitchButton, Boolean, AssertToken) -> Unit
 ) :
     RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -101,18 +152,7 @@ class MyAdapter(
                 parent,
                 false
             )
-        ).also {
-            it.itemView.setOnClickListener { view ->
-                val itemData = data[it.layoutPosition]
-                if (itemData.isToken) {
-                    it.itemView.checkBox.isChecked = !it.itemView.checkBox.isChecked
-                }
-            }
-            it.itemView.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                val itemData = data[it.layoutPosition]
-                callbacks.invoke(isChecked, itemData)
-            }
-        }
+        )
     }
 
     override fun getItemCount() = data.size
@@ -128,6 +168,15 @@ class MyAdapter(
             holder.itemView.checkBox.visibility = View.GONE
         }
         holder.itemView.ivCoinLogo.setImageResource(itemData.logo)
+
+        holder.itemView.setOnClickListener { view ->
+            if (itemData.isToken) {
+                holder.itemView.checkBox.isChecked = !holder.itemView.checkBox.isChecked
+            }
+        }
+        holder.itemView.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            callbacks.invoke(holder.itemView.checkBox, isChecked, itemData)
+        }
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)

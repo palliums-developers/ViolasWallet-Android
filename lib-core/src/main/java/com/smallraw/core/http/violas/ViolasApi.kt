@@ -10,6 +10,9 @@ import retrofit2.http.Query
 
 interface ViolasApi {
     @GET("1.0/violas/balance")
+    fun getBalance(@Query("addr") address: String,@Query("modu") modu: String): Single<BaseRequest<BalanceResponse>>
+
+    @GET("1.0/violas/balance")
     fun getBalance(@Query("addr") address: String): Single<BaseRequest<BalanceResponse>>
 
     @GET("1.0/violas/seqnum")

@@ -110,6 +110,9 @@
         <activity
             android:name=".ui.setting.FeedbackActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.tokenInfo.TokenInfoActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".contentProvider.InitContentProvider"
