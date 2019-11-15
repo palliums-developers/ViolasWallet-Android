@@ -6,4 +6,153 @@
     android:layout_height="match_parent"
     tools:context=".ui.tokenInfo.TokenInfoActivity">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutWalletInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/shape_main_wallet_info"
+        android:paddingLeft="14dp"
+        android:paddingTop="16dp"
+        android:paddingRight="14dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.00000000"
+            android:textColor="#3C3848"
+            android:textSize="27sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvHintCurrentAssets"
+            tools:text="120.00000000" />
+
+        <TextView
+            android:id="@+id/tvUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginBottom="4dp"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvAmount"
+            app:layout_constraintStart_toEndOf="@+id/tvAmount"
+            tools:text="BTC" />
+
+        <TextView
+            android:id="@+id/tvAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="14dp"
+            android:lineHeight="20dp"
+            android:textColor="#3D3949"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/ivCopy"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvUnit"
+            tools:text="mkYUsJ8N1AidNUySQGCpwswQUaoyL2Mu8L" />
+
+        <ImageView
+            android:id="@+id/ivCopy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="6dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:src="@drawable/icon_copy"
+            app:layout_constraintBottom_toBottomOf="@+id/tvAddress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvAddress" />
+
+        <LinearLayout
+            android:id="@+id/layoutOperation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/tvAddress">
+
+            <LinearLayout
+                android:id="@+id/btnTransfer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="12dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_transfer" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:paddingTop="6dp"
+                    android:text="@string/transfer"
+                    android:textColor="#22126C"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="15dp"
+                android:background="@color/black"
+                android:textColor="#22126C" />
+
+            <LinearLayout
+                android:id="@+id/btnCollection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_collection" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:paddingTop="6dp"
+                    android:text="@string/collection"
+                    android:textColor="#22126C"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tvHintTransactionRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="14dp"
+        android:text="@string/hint_transaction_record"
+        android:textColor="#22126C"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutWalletInfo" />
+
+    <View
+        android:layout_width="20dp"
+        android:layout_marginTop="2dp"
+        android:layout_height="4dp"
+        android:background="#22126C"
+        app:layout_constraintEnd_toEndOf="@+id/tvHintTransactionRecord"
+        app:layout_constraintStart_toStartOf="@+id/tvHintTransactionRecord"
+        app:layout_constraintTop_toBottomOf="@+id/tvHintTransactionRecord" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

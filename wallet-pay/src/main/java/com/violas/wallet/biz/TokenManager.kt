@@ -59,6 +59,8 @@ class TokenManager {
     }
 
     fun findTokenById(tokenId: Long) = DataRepository.getTokenStorage().findById(tokenId)
+    fun findTokenByName(accountId: Long, tokenName: String) =
+        DataRepository.getTokenStorage().findByName(accountId, tokenName)
 
     fun loadSupportToken(account: AccountDO): List<AssertToken> {
         val loadSupportToken = loadSupportToken()
@@ -155,6 +157,25 @@ class TokenManager {
                 tokenAddress = assertToken.tokenAddress
             )
         )
+    }
+
+    fun getTokenBalance(
+        address: String,
+        tokenAddress: String,
+        call: (Long) -> Unit
+    ): Disposable {
+        val tokenAddresss = arrayListOf<String>(tokenAddress)
+        return DataRepository.getViolasService()
+            .getBalance(address, tokenAddresss) { balance, tokens ->
+                var amount = 0L
+                tokens?.forEach {
+                    if (it.address == tokenAddress) {
+                        amount = it.balance
+                        return@forEach
+                    }
+                }
+                call.invoke(amount)
+            }
     }
 
     fun refreshBalance(

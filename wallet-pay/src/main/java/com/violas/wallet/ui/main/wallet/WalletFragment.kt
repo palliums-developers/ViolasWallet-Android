@@ -3,6 +3,7 @@ package com.violas.wallet.ui.main.wallet
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -290,14 +291,19 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
             }
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { coinType, address, amount ->
-                        val currentAccount = mAccountManager.currentAccount()
-                        if (coinType == currentAccount.coinNumber) {
-                            activity?.let { TransferActivity.start(it, currentAccount.id, address) }
-                        } else {
-                            val account = mAccountManager.getIdentityByCoinType(coinType)
-                                ?: return@decodeScanQRCode
-                            activity?.let { TransferActivity.start(it, account.id, address) }
+                    decodeScanQRCode(msg) { coinType, address, amount, tokenName ->
+                        Log.e(
+                            "====",
+                            "coinType:$coinType address:$address amount:$amount tokenName:$tokenName"
+                        )
+                        activity?.let {
+                            TransferActivity.start(
+                                it,
+                                coinType,
+                                address,
+                                amount,
+                                tokenName
+                            )
                         }
                     }
                 }

@@ -61,4 +61,20 @@ class SplitMsgUnitTest {
         Assert.assertEquals(qrCodeMsg.amount, 0)
         Assert.assertEquals(qrCodeMsg.label, null)
     }
+
+    @Test
+    fun test_split_token_name() {
+        val qrCodeMsg = splitMsg("bitcoin-usdt:sdsdfsdfsdfsdfsdfsdfsdfsdf")
+        Assert.assertEquals(qrCodeMsg.coinType, "bitcoin")
+        Assert.assertEquals(qrCodeMsg.address, "sdsdfsdfsdfsdfsdfsdfsdfsdf")
+        Assert.assertEquals(qrCodeMsg.tokenName, "usdt")
+    }
+
+    @Test
+    fun test_split_token_name_error() {
+        val qrCodeMsg = splitMsg("bitcoin-:sdsdfsdfsdfsdfsdfsdfsdfsdf")
+        Assert.assertEquals(qrCodeMsg.coinType, "bitcoin")
+        Assert.assertEquals(qrCodeMsg.address, "sdsdfsdfsdfsdfsdfsdfsdfsdf")
+        Assert.assertEquals(qrCodeMsg.tokenName, "")
+    }
 }
