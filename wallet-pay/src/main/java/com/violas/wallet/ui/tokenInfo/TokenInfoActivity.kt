@@ -91,7 +91,9 @@ class TokenInfoActivity : BaseActivity() {
         btnCollection.setOnClickListener {
             launch(Dispatchers.IO) {
                 mAccountDO?.apply {
-                    CollectionActivity.start(this@TokenInfoActivity, id)
+                    mTokenDo?.id?.let {
+                        CollectionActivity.start(this@TokenInfoActivity, id, true, it)
+                    }
                 }
             }
         }
