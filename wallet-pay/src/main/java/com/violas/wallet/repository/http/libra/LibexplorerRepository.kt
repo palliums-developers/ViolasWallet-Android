@@ -32,24 +32,24 @@ class LibexplorerRepository(private val libexplorerApi: LibexplorerApi) :
                 return@onSuccess
             }
 
-            val list = it.data!!.map { bean ->
+            val list = it.data!!.mapIndexed { index, bean ->
 
                 // 解析交易类型，暂时只分收款和付款
-                var transactionType = if (bean.from == address) {
-                    TransactionRecordVO.TRANSACTION_TYPE_PAYMENT
+                val transactionType = if (bean.from == address) {
+                    TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
                 } else {
                     TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
                 }
 
                 // 解析展示地址，收款付款均为对方地址
-                var showAddress = if (TransactionRecordVO.isReceipt(transactionType)) {
-                    bean.from
-                } else {
+                val showAddress = if (bean.from == address) {
                     bean.to
+                } else {
+                    bean.from
                 }
 
                 TransactionRecordVO(
-                    id = bean.sequenceNumber,
+                    id = (pageNumber - 1) * pageSize + index,
                     coinTypes = CoinTypes.Libra,
                     transactionType = transactionType,
                     time = bean.expirationTime * 1000,
@@ -58,7 +58,6 @@ class LibexplorerRepository(private val libexplorerApi: LibexplorerApi) :
                     url = "https://libexplorer.com/version/${bean.version}"
                 )
             }
-
             onSuccess.invoke(list, null)
 
         }.onFailure(onFailure)

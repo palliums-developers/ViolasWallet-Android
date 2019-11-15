@@ -8,6 +8,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewHolder
 import com.violas.wallet.base.paging.PagingViewAdapter
 import com.violas.wallet.getColor
+import com.violas.wallet.getString
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.item_transaction_record.view.*
 import java.text.SimpleDateFormat
@@ -57,18 +58,34 @@ class TransactionRecordViewHolder(
     override fun onViewBind(itemIndex: Int, itemDate: TransactionRecordVO?) {
         itemDate?.let {
             itemView.vTime.text = mSimpleDateFormat.format(it.time)
-            val displayUnit = convertAmountToDisplayUnit(it.amount, it.coinTypes)
-            itemView.vAmount.text = "${displayUnit.first} ${displayUnit.second}"
-            itemView.vCoinName.text = it.coinTypes.coinName()
             itemView.vAddress.text = it.address
+
+            val displayUnit = convertAmountToDisplayUnit(it.amount, it.coinTypes)
+            if (TransactionRecordVO.isStableCoinOpt(it.transactionType)) {
+                itemView.vAmountLabel.setText(R.string.transaction_record_consume)
+                itemView.vAmount.text = "${displayUnit.first} ${displayUnit.second}"
+                itemView.vCoinName.text =
+                    it.coinName ?: getString(R.string.transaction_record_new_coin)
+            } else {
+                itemView.vAmountLabel.setText(R.string.transaction_record_amount)
+                itemView.vAmount.text = displayUnit.first
+                itemView.vCoinName.text = it.coinTypes.coinName()
+            }
+
             when (it.transactionType) {
+                TransactionRecordVO.TRANSACTION_TYPE_OPEN_STABLE_COIN -> {
+                    itemView.vType.setText(R.string.transaction_record_open)
+                    itemView.vType.setTextColor(getColor(R.color.color_FB8F0B))
+                }
+
+                TransactionRecordVO.TRANSACTION_TYPE_STABLE_COIN_RECEIPT,
                 TransactionRecordVO.TRANSACTION_TYPE_RECEIPT -> {
                     itemView.vType.setText(R.string.transaction_record_receipt)
                     itemView.vType.setTextColor(getColor(R.color.color_13B788))
                 }
 
                 else -> {
-                    itemView.vType.setText(R.string.transaction_record_payment)
+                    itemView.vType.setText(R.string.transaction_record_transfer)
                     itemView.vType.setTextColor(getColor(R.color.color_E54040))
                 }
             }

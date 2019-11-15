@@ -78,16 +78,18 @@
             android:textSize="@dimen/sp_12"
             app:layout_constraintBaseline_toBaselineOf="@id/vTimeLabel"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1.5"
+            app:layout_constraintHorizontal_weight="2"
             app:layout_constraintStart_toEndOf="@id/vAmountLabel"
-            tools:text="@string/transaction_record_payment"
+            tools:text="@string/transaction_record_transfer"
             tools:textColor="@color/color_E54040" />
 
         <TextView
             android:id="@+id/vCoinName"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
+            android:ellipsize="middle"
             android:gravity="end"
+            android:singleLine="true"
             android:textColor="@color/black"
             android:textSize="@dimen/sp_14"
             app:layout_constraintBaseline_toBaselineOf="@id/vTime"

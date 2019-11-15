@@ -22,7 +22,7 @@ fun getString(
     vararg formatArgs: Any,
     context: Context = ContextProvider.getContext()
 ): String {
-    return context.getString(res, formatArgs)
+    return context.getString(res, *formatArgs)
 }
 
 @ColorInt

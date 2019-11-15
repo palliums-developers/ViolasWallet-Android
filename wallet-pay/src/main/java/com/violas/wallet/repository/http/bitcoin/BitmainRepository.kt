@@ -33,14 +33,14 @@ class BitmainRepository(private val bitmainApi: BitmainApi) :
                 return@onSuccess
             }
 
-            val list = it.data!!.list!!.map { bean ->
+            val list = it.data!!.list!!.mapIndexed { index, bean ->
 
                 // 解析交易类型，暂时只分收款和付款
                 var transactionType = TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
                 bean.inputs.forEach { inputInfo ->
                     inputInfo.prev_addresses.forEach { inputAddress ->
                         if (inputAddress == address) {
-                            transactionType = TransactionRecordVO.TRANSACTION_TYPE_PAYMENT
+                            transactionType = TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
                         }
                     }
                 }
@@ -112,7 +112,7 @@ class BitmainRepository(private val bitmainApi: BitmainApi) :
                 }
 
                 TransactionRecordVO(
-                    id = bean.block_height,
+                    id = (pageNumber - 1) * pageSize + index,
                     coinTypes = if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin,
                     transactionType = transactionType,
                     time = bean.block_time * 1000L,

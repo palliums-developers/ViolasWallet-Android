@@ -203,8 +203,11 @@
     <string name="transaction_record_title">交易记录</string>
     <string name="transaction_record_time">日期</string>
     <string name="transaction_record_amount">数量</string>
+    <string name="transaction_record_consume">消耗</string>
     <string name="transaction_record_receipt">收款</string>
-    <string name="transaction_record_payment">付款</string>
+    <string name="transaction_record_transfer">转账</string>
+    <string name="transaction_record_open">开启</string>
+    <string name="transaction_record_new_coin">新币种</string>
     <string name="transaction_record_query">浏览器查询</string>
     <string name="transaction_record_not_supported_query">暂不支持</string>
 
