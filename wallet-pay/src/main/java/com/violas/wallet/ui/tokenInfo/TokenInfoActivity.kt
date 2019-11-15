@@ -49,7 +49,6 @@ class TokenInfoActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitleStyle(TITLE_STYLE_GREY_BACKGROUND)
-        title = ""
         launch(Dispatchers.IO) {
             val tokenId = intent.getLongExtra(EXT_TOKEN_ID, -1)
             val tokenDo = mTokenManager.findTokenById(tokenId)
@@ -66,6 +65,7 @@ class TokenInfoActivity : BaseActivity() {
                 finish()
             }
             withContext(Dispatchers.Main) {
+                title = mTokenDo!!.name
                 refreshAccountData()
                 tvUnit.text = mTokenDo!!.name
                 tvAddress.text = mAccountDO!!.address
