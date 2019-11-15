@@ -17,6 +17,7 @@
         tools:replace="android:allowBackup">
         <activity
             android:name=".ui.launch.LaunchActivity"
+            android:theme="@style/AppTheme.Launcher.Translucent"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

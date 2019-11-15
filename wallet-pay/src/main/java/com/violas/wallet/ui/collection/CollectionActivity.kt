@@ -42,10 +42,13 @@ class CollectionActivity : BaseActivity() {
 
     override fun getLayoutResId() = R.layout.activity_collection
 
+    override fun getTitleStyle(): Int {
+        return TITLE_STYLE_GREY_BACKGROUND
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_colletction)
-        setTitleStyle(TITLE_STYLE_GREY_BACKGROUND)
 
         isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
         mTokenId = intent.getLongExtra(EXT_TOKEN_ID, 0L)

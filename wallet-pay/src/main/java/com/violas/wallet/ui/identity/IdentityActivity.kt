@@ -20,9 +20,12 @@ class IdentityActivity : BaseActivity() {
         return R.layout.activity_identity
     }
 
+    override fun getTitleStyle(): Int {
+        return TITLE_STYLE_NOT_TITLE
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitleStyle(TITLE_STYLE_NOT_TITLE)
 
         btnCreate.setOnClickListener {
             CreateIdentityActivity.start(this)

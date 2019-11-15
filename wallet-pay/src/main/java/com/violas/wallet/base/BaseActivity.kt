@@ -66,7 +66,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
     )
     annotation class TitleStyle
 
-    fun setTitleStyle(@TitleStyle style: Int) {
+    private fun setTitleStyle(@TitleStyle style: Int) {
         when (style) {
             TITLE_STYLE_GREY_BACKGROUND -> {
                 rootView.setBackgroundColor(

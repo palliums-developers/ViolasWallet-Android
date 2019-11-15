@@ -14,6 +14,12 @@
         <item name="android:windowAnimationStyle">@style/LauncherWindowAnimation</item>
     </style>
 
+    <style name="AppTheme.Launcher.Translucent">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
     <style name="AppWindowAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/activity_right_in</item>
         <item name="android:activityOpenExitAnimation">@anim/activity_left_out</item>
