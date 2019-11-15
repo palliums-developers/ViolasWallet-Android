@@ -52,11 +52,14 @@ class WalletManagerActivity : BaseActivity() {
 
     override fun getLayoutResId() = R.layout.activity_wallet_manager
 
+    override fun getTitleStyle(): Int {
+        return TITLE_STYLE_GREY_BACKGROUND
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EventBus.getDefault().register(this)
         title = getString(R.string.title_manager)
-        setTitleStyle(TITLE_STYLE_GREY_BACKGROUND)
 
         val accountId = intent.getLongExtra(EXT_ACCOUNT_ID, -1L)
         launch(Dispatchers.IO) {
