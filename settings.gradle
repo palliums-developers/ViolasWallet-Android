@@ -1,2 +1,2 @@
-include ':wallet-pay', ':lib-zbar-scan', ':lib-libra-core',':lib-violas-core', ':lib-core', ':lib-btc-core', ':lib-switch-button', ':wallet-sso'
+include ':wallet-pay', ':lib-zbar-scan', ':lib-libra-core',':lib-violas-core', ':lib-core', ':lib-btc-core', ':lib-switch-button', ':wallet-sso', ':lib-common'
 rootProject.name='ViolasWallet'

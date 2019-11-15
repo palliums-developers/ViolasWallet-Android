@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--状态布局-->
+    <declare-styleable name="StatusLayout">
+        <attr name="slEmptyTip" format="string" />
+        <attr name="slEmptyIcon" format="reference" />
+        <attr name="slFailureTip" format="string" />
+        <attr name="slFailureIcon" format="reference" />
+        <attr name="slNoNetworkTip" format="string" />
+        <attr name="slNoNetworkIcon" format="reference" />
+        <attr name="slStatus" format="enum">
+            <enum name="none" value="1" />
+            <enum name="empty" value="2" />
+            <enum name="failure" value="3" />
+            <enum name="no_network" value="4" />
+        </attr>
+    </declare-styleable>
+
+    <!--公共的菜单栏-->
+    <declare-styleable name="MenuItemView">
+        <attr name="mivShowEndArrow" format="boolean" />
+        <attr name="mivShowEndSwitch" format="boolean" />
+        <attr name="mivShowTopLine" format="boolean" />
+        <attr name="mivShowBottomLine" format="boolean" />
+        <attr name="mivDividingLineColor" format="color" />
+        <attr name="mivStartIcon" format="reference" />
+        <attr name="mivStartTitleText" format="string" />
+        <attr name="mivStartTitleTextSize" format="dimension" />
+        <attr name="mivStartTitleTextColor" format="color" />
+        <attr name="mivStartDescText" format="string" />
+        <attr name="mivStartDescTextSize" format="dimension" />
+        <attr name="mivStartDescTextColor" format="color" />
+        <attr name="mivEndIcon" format="reference" />
+        <attr name="mivEndArrow" format="reference" />
+        <attr name="mivEndDescText" format="string" />
+        <attr name="mivEndDescTextSize" format="dimension" />
+        <attr name="mivEndDescTextColor" format="color" />
+        <attr name="mivEndDescDrawableLeft" format="reference" />
+        <attr name="mivEndDescDrawablePadding" format="dimension" />
+        <attr name="mivEndDescGravity" format="enum">
+            <enum name="left" value="1" />
+            <enum name="right" value="2" />
+        </attr>
+    </declare-styleable>
+
+</resources>

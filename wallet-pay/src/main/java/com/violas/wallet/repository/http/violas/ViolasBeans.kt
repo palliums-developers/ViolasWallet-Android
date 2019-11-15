@@ -37,10 +37,14 @@ class ViolasTransactionRecordResponse :
     ViolasResponse<List<ViolasTransactionRecordResponse.Bean>>() {
 
     data class Bean(
-        val address: String,
-        val value: Long,
+        val amount: String,
+        val receiver: String,
+        val receiver_module: String,
+        val sender: String,
+        val sender_module: String,
         val expiration_time: Long,
         val sequence_number: Int,
+        val type: Int,  // 1:publish transaction(开启稳定币); 2:p2p transaction(转账)
         val version: Int
     )
 }

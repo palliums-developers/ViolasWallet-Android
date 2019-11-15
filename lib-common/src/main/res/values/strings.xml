@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">lib-common</string>
+
+    <string name="common_status_click_reload">点击重新加载</string>
+    <string name="common_status_empty">暂无数据</string>
+    <string name="common_status_failure">加载失败, 下拉重新加载</string>
+    <string name="common_status_no_network">没有网络, 请联网后下拉重试</string>
+
+    <string name="common_refresh_footer_no_network">没有网络, 请联网后点击重试</string>
+    <string name="common_refresh_footer_failure">加载失败, 点击重新加载</string>
+    <string name="common_refresh_footer_finish">加载完成</string>
+    <string name="common_refresh_footer_loading">正在加载…</string>
+    <string name="common_refresh_footer_no_more">没有更多数据了</string>
+    <string name="common_refresh_footer_pulling">上拉加载更多</string>
+    <string name="common_refresh_footer_refreshing">等待头部刷新完成…</string>
+    <string name="common_refresh_footer_release">释放立即加载</string>
+    <string name="common_refresh_header_failure">刷新失败</string>
+    <string name="common_refresh_header_finish">刷新完成</string>
+    <string name="common_refresh_header_loading">等待底部加载完成…</string>
+    <string name="common_refresh_header_pulling">下拉可以刷新</string>
+    <string name="common_refresh_header_refreshing">正在刷新…</string>
+    <string name="common_refresh_header_release">释放立即刷新</string>
+    <string name="common_refresh_header_update">上次更新 M-d HH:mm</string>
+
+    <string name="common_dialog_loading">正在加载…</string>
+
+</resources>

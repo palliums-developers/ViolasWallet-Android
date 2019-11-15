@@ -32,7 +32,7 @@ fun getString(
     vararg formatArgs: Any,
     context: Context = getContext()
 ): String {
-    return context.getString(res, formatArgs)
+    return context.getString(res, *formatArgs)
 }
 
 @ColorInt
