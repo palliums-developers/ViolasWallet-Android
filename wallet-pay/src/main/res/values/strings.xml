@@ -215,4 +215,6 @@
     <string name="hint_assert_open_error">资产开启失败</string>
     <string name="hint_unknown_error">异常错误</string>
     <string name="hint_transaction_record">交易记录</string>
+    <string name="hint_unsupported_tokens">不支持的代币</string>
+    <string name="hint_unsupported_coin">不支持的币种</string>
 </resources>

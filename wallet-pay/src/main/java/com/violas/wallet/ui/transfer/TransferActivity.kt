@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.WorkerThread
 import com.quincysx.crypto.CoinTypes
@@ -58,7 +57,7 @@ abstract class TransferActivity : BaseActivity() {
                         tokenManager.findTokenByName(currentAccount.id, tokenName)
                     if (tokenDo == null) {
                         // 不支持的币种
-                        showToast(context, "不支持的代币")
+                        showToast(context, context.getString(R.string.hint_unsupported_tokens))
                         return
                     } else {
                         start(
@@ -82,20 +81,20 @@ abstract class TransferActivity : BaseActivity() {
                 // NO 当前币种不是当前需要支付的币种
                 val account = accountManager.getIdentityByCoinType(coinType)
                 if (account == null) {
-                    showToast(context, "不支持的代币")
+                    showToast(context, context.getString(R.string.hint_unsupported_coin))
                     return
                 }
                 if (tokenName != null) {
                     val tokenDo =
-                        tokenManager.findTokenByName(currentAccount.id, tokenName)
+                        tokenManager.findTokenByName(account.id, tokenName)
                     if (tokenDo == null) {
                         // 不支持的币种
-                        showToast(context, "不支持的代币")
+                        showToast(context, context.getString(R.string.hint_unsupported_tokens))
                         return
                     } else {
                         start(
                             context,
-                            currentAccount.id,
+                            account.id,
                             address,
                             amount,
                             true,
@@ -169,7 +168,6 @@ abstract class TransferActivity : BaseActivity() {
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
                     decodeScanQRCode(msg) { coinType, address, amount, tokenName ->
-                        Log.e("===scan===", "${coinType}  ${address}  ${amount}")
                         launch {
                             account?.let {
                                 if (coinType == it.coinNumber || coinType == -1) {
