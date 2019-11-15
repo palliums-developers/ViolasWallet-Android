@@ -35,6 +35,10 @@ class TokenInfoActivity : BaseActivity() {
         return R.layout.activity_token_info
     }
 
+    override fun getTitleStyle(): Int {
+        return TITLE_STYLE_GREY_BACKGROUND
+    }
+
     private var mTokenDo: TokenDo? = null
     private var mAccountDO: AccountDO? = null
 
@@ -48,7 +52,7 @@ class TokenInfoActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitleStyle(TITLE_STYLE_GREY_BACKGROUND)
+
         launch(Dispatchers.IO) {
             val tokenId = intent.getLongExtra(EXT_TOKEN_ID, -1)
             val tokenDo = mTokenManager.findTokenById(tokenId)
