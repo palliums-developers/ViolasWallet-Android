@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -505,6 +506,6 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
     }
 
     val handler = CoroutineExceptionHandler { _, exception ->
-        System.err.println("Caught $exception")
+        Log.e("==error==","$exception")
     }
 }

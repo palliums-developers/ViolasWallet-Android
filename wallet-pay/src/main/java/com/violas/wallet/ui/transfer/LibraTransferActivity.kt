@@ -5,6 +5,8 @@ import android.os.Bundle
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.dialog.PasswordInputDialog
+import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.convertAmountToDisplayUnit
@@ -12,9 +14,17 @@ import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class LibraTransferActivity : TransferActivity() {
     override fun getLayoutResId() = R.layout.activity_transfer
+
+    private val mTokenManager by lazy {
+        TokenManager()
+    }
+
+    private var mTokenDo: TokenDo? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +35,11 @@ class LibraTransferActivity : TransferActivity() {
         launch(Dispatchers.IO) {
             try {
                 account = mAccountManager.getAccountById(accountId)
+                mTokenDo = mTokenManager.findTokenById(tokenId)
+                if(mTokenDo==null){
+                    finish()
+                    return@launch
+                }
                 refreshCurrentAmount()
                 val amount = intent.getLongExtra(
                     EXT_AMOUNT,
@@ -39,7 +54,11 @@ class LibraTransferActivity : TransferActivity() {
                         editAmountInput.setText(convertAmountToDisplayUnit.first)
                     }
                     title = "${parseCoinType.coinName()}${getString(R.string.transfer)}"
-                    tvHintCoinName.text = parseCoinType.coinName()
+                    if (isToken) {
+                        tvHintCoinName.text = mTokenDo?.name ?: ""
+                    } else {
+                        tvHintCoinName.text = parseCoinType.coinName()
+                    }
                 }
             } catch (e: AccountsException) {
                 finish()
@@ -68,13 +87,31 @@ class LibraTransferActivity : TransferActivity() {
 
     private fun refreshCurrentAmount() {
         account?.let {
-            mAccountManager.getBalanceWithUnit(it) { balance, unit ->
-                launch {
-                    tvCoinAmount.text = String.format(
-                        getString(R.string.hint_transfer_amount),
-                        balance,
-                        unit
-                    )
+            if (isToken) {
+                mTokenDo?.apply {
+                    mTokenManager.getTokenBalance(it.address, tokenAddress) { balance ->
+                        launch {
+                            tvCoinAmount.text = String.format(
+                                getString(R.string.hint_transfer_amount),
+                                BigDecimal(balance.toString()).divide(
+                                    BigDecimal("1000000"),
+                                    6,
+                                    RoundingMode.HALF_UP
+                                ).stripTrailingZeros().toPlainString(),
+                                name
+                            )
+                        }
+                    }
+                }
+            } else {
+                mAccountManager.getBalanceWithUnit(it) { balance, unit ->
+                    launch {
+                        tvCoinAmount.text = String.format(
+                            getString(R.string.hint_transfer_amount),
+                            balance,
+                            unit
+                        )
+                    }
                 }
             }
         }

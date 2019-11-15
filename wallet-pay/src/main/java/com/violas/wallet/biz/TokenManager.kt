@@ -157,6 +157,25 @@ class TokenManager {
         )
     }
 
+    fun getTokenBalance(
+        address: String,
+        tokenAddress: String,
+        call: (Long) -> Unit
+    ): Disposable {
+        val tokenAddresss = arrayListOf<String>(tokenAddress)
+        return DataRepository.getViolasService()
+            .getBalance(address, tokenAddresss) { balance, tokens ->
+                var amount = 0L
+                tokens?.forEach {
+                    if (it.address == tokenAddress) {
+                        amount = it.balance
+                        return@forEach
+                    }
+                }
+                call.invoke(amount)
+            }
+    }
+
     fun refreshBalance(
         address: String,
         enableTokens: List<AssertToken>,
