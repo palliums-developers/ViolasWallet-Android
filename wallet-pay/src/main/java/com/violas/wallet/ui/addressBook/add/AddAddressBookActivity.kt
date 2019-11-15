@@ -142,7 +142,7 @@ class AddAddressBookActivity : BaseActivity() {
         when (requestCode) {
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { coinType, address, amount ->
+                    decodeScanQRCode(msg) { coinType, address, amount, tokenName ->
                         launch {
                             if (coinType == -1) {
                                 editAddress.setText(address)

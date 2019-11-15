@@ -36,10 +36,6 @@ class LibraTransferActivity : TransferActivity() {
             try {
                 account = mAccountManager.getAccountById(accountId)
                 mTokenDo = mTokenManager.findTokenById(tokenId)
-                if(mTokenDo==null){
-                    finish()
-                    return@launch
-                }
                 refreshCurrentAmount()
                 val amount = intent.getLongExtra(
                     EXT_AMOUNT,
@@ -53,10 +49,11 @@ class LibraTransferActivity : TransferActivity() {
                             convertAmountToDisplayUnit(amount, parseCoinType)
                         editAmountInput.setText(convertAmountToDisplayUnit.first)
                     }
-                    title = "${parseCoinType.coinName()}${getString(R.string.transfer)}"
                     if (isToken) {
+                        title = "${mTokenDo?.name ?: ""} ${getString(R.string.transfer)}"
                         tvHintCoinName.text = mTokenDo?.name ?: ""
                     } else {
+                        title = "${parseCoinType.coinName()} ${getString(R.string.transfer)}"
                         tvHintCoinName.text = parseCoinType.coinName()
                     }
                 }

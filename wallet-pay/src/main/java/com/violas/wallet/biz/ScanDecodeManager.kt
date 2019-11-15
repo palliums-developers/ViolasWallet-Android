@@ -14,7 +14,7 @@ import java.util.*
  */
 fun decodeScanQRCode(
     msg: String,
-    callback: (coinType: Int, address: String, amount: Long) -> Unit
+    callback: (coinType: Int, address: String, amount: Long, tokenName: String?) -> Unit
 ) {
     GlobalScope.launch(Dispatchers.IO) {
 
@@ -37,7 +37,7 @@ fun decodeScanQRCode(
                 -1
             }
         }
-        callback.invoke(coinType, splitMsg.address, splitMsg.amount)
+        callback.invoke(coinType, splitMsg.address, splitMsg.amount, splitMsg.tokenName)
     }
 }
 
@@ -45,18 +45,27 @@ data class QRCodeMsg(
     val coinType: String?,
     val address: String,
     var amount: Long = 0,
-    var label: String? = null
+    var label: String? = null,
+    val tokenName: String? = null
 )
 
 fun splitMsg(msg: String): QRCodeMsg {
     if (!msg.contains(":")) {
         return QRCodeMsg(null, msg)
     }
+    var tokenName: String? = null
     val coinTypeSplit = msg.split(":")
     val coinType = if (coinTypeSplit[0].isEmpty()) {
         null
     } else {
-        coinTypeSplit[0].toLowerCase(Locale.CHINA)
+        val prefix = coinTypeSplit[0].toLowerCase(Locale.CHINA)
+        if (prefix.indexOf("-") != -1) {
+            val split = prefix.split("-")
+            tokenName = split[1]
+            split[0]
+        } else {
+            prefix
+        }
     }
     val addressSplit = coinTypeSplit[1].split("?")
     var amount = 0L
@@ -79,5 +88,5 @@ fun splitMsg(msg: String): QRCodeMsg {
                 }
             }
     }
-    return QRCodeMsg(coinType, addressSplit[0], amount, label)
+    return QRCodeMsg(coinType, addressSplit[0], amount, label, tokenName)
 }

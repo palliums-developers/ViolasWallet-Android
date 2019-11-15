@@ -2,12 +2,16 @@ package com.violas.wallet.ui.transfer
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.WorkerThread
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseActivity
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.TransferManager
 import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -26,6 +30,88 @@ abstract class TransferActivity : BaseActivity() {
 
         const val REQUEST_SELECTOR_ADDRESS = 1
         const val REQUEST_SCAN_QR_CODE = 2
+
+        private val mHandler = Handler(Looper.getMainLooper())
+
+        private fun showToast(context: Context, msg: String) {
+            mHandler.post {
+                Toast.makeText(context.applicationContext, msg, Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+
+        fun start(
+            context: Context,
+            coinType: Int,
+            address: String,
+            amount: Long,
+            tokenName: String?
+        ) {
+            val accountManager = AccountManager()
+            val tokenManager = TokenManager()
+
+            val currentAccount = accountManager.currentAccount()
+            if (coinType == currentAccount.coinNumber) {
+                // YES 当前币种是当前需要支付的币种
+                if (tokenName != null) {
+                    val tokenDo =
+                        tokenManager.findTokenByName(currentAccount.id, tokenName)
+                    if (tokenDo == null) {
+                        // 不支持的币种
+                        showToast(context, "不支持的代币")
+                        return
+                    } else {
+                        start(
+                            context,
+                            currentAccount.id,
+                            address,
+                            amount,
+                            true,
+                            tokenDo.id!!
+                        )
+                    }
+                } else {
+                    start(
+                        context,
+                        currentAccount.id,
+                        address,
+                        amount
+                    )
+                }
+            } else {
+                // NO 当前币种不是当前需要支付的币种
+                val account = accountManager.getIdentityByCoinType(coinType)
+                if (account == null) {
+                    showToast(context, "不支持的代币")
+                    return
+                }
+                if (tokenName != null) {
+                    val tokenDo =
+                        tokenManager.findTokenByName(currentAccount.id, tokenName)
+                    if (tokenDo == null) {
+                        // 不支持的币种
+                        showToast(context, "不支持的代币")
+                        return
+                    } else {
+                        start(
+                            context,
+                            currentAccount.id,
+                            address,
+                            amount,
+                            true,
+                            tokenDo.id!!
+                        )
+                    }
+                } else {
+                    start(
+                        context,
+                        account.id,
+                        address,
+                        amount
+                    )
+                }
+            }
+        }
 
         @WorkerThread
         fun start(
@@ -82,7 +168,7 @@ abstract class TransferActivity : BaseActivity() {
             }
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { coinType, address, amount ->
+                    decodeScanQRCode(msg) { coinType, address, amount, tokenName ->
                         Log.e("===scan===", "${coinType}  ${address}  ${amount}")
                         launch {
                             account?.let {
