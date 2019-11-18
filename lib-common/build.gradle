@@ -50,7 +50,18 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$versions.androidx_appcompat"
     implementation "androidx.recyclerview:recyclerview:$versions.androidx_recyclerview"
     implementation "androidx.constraintlayout:constraintlayout:$versions.androidx_constraintlayout"
+    implementation "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.androidx_lifecycle"
+    implementation "androidx.activity:activity-ktx:$versions.androidx_activityKtx"
     implementation "com.google.android.material:material:1.0.0"
+
+    implementation "com.squareup.okhttp3:logging-interceptor:$versions.okhttp3"
+    implementation "com.squareup.okhttp3:okhttp:$versions.okhttp3"
+
+    // see https://github.com/square/retrofit
+    implementation "com.squareup.retrofit2:retrofit:$versions.retrofit2"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit2"
+    implementation "com.squareup.retrofit2:converter-gson:$versions.retrofit2"
 
     // see https://github.com/niorgai/StatusBarCompat
     implementation('com.github.niorgai:StatusBarCompat:2.3.3', {
@@ -62,8 +73,8 @@ dependencies {
     implementation 'me.yokeyword:fragmentationx:1.0.1'
 
     // see https://github.com/scwang90/SmartRefreshLayout
-    implementation "com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-16"
-    implementation "com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-andx-16"
+    implementation "com.scwang.smartrefresh:SmartRefreshLayout:1.1.0"
+    implementation "com.scwang.smartrefresh:SmartRefreshHeader:1.1.0"
 
     // see https://github.com/li-xiaojun/XPopup
     implementation 'com.lxj:xpopup:1.8.8-x'
