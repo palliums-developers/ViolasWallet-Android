@@ -10,7 +10,7 @@ import retrofit2.http.Query
 
 interface ViolasApi {
     @GET("1.0/violas/balance")
-    fun getBalance(@Query("addr") address: String,@Query("modu") modu: String): Single<BaseRequest<BalanceResponse>>
+    fun getBalance(@Query("addr") address: String, @Query("modu") modu: String): Single<BaseRequest<BalanceResponse>>
 
     @GET("1.0/violas/balance")
     fun getBalance(@Query("addr") address: String): Single<BaseRequest<BalanceResponse>>
@@ -31,4 +31,10 @@ interface ViolasApi {
 
     @GET("1.0/violas/currency")
     fun getSupportCurrency(): Single<BaseRequest<List<SupportCurrencyResponse>>>
+
+    @GET("1.0/violas/module")
+    fun checkRegisterToken(
+        @Query("addr") address: String,
+        @Query("modu") modu: String
+    ): Single<BaseRequest<Int>>
 }

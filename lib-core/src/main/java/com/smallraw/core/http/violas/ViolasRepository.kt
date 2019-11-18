@@ -36,4 +36,8 @@ class ViolasRepository(private val violasApi: ViolasApi) {
     }
 
     fun getSupportCurrency() = violasApi.getSupportCurrency()
+
+    fun checkRegisterToken(
+        address: String, modu: String
+    ) = violasApi.checkRegisterToken(address, modu)
 }

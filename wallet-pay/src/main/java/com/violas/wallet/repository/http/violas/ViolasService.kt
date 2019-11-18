@@ -19,6 +19,20 @@ import java.util.*
 class ViolasService(private val mViolasRepository: ViolasRepository) {
     private var mHandler = Handler(Looper.getMainLooper())
 
+    fun checkTokenRegister(address: String, tokenAddress: String, call: (Boolean) -> Unit) {
+        val subscribe = mViolasRepository.checkRegisterToken(address, tokenAddress)
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                if (it.data == null || it.data == 0) {
+                    call.invoke(false)
+                } else {
+                    call.invoke(true)
+                }
+            }, {
+                call.invoke(false)
+            })
+    }
+
     fun getSupportCurrency(call: (list: List<SupportCurrencyResponse>) -> Unit) {
         val subscribe = mViolasRepository.getSupportCurrency()
             .subscribeOn(Schedulers.io())
