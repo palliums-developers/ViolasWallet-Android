@@ -69,40 +69,55 @@ class ManagerAssertActivity : BaseActivity() {
     }
 
     private fun openToken(checkbox: SwitchButton, checked: Boolean, assertToken: AssertToken) {
-        PasswordInputDialog()
-            .setConfirmListener { bytes, dialogFragment ->
-                dialogFragment.dismiss()
-                showProgress()
-                launch(Dispatchers.IO) {
-                    val decrypt = SimpleSecurity.instance(applicationContext)
-                        .decrypt(bytes, mAccount.privateKey)
-                    Arrays.fill(bytes, 0.toByte())
-                    if (decrypt == null) {
-                        showToast(R.string.hint_password_error)
-                        return@launch
+        showProgress()
+        DataRepository.getViolasService().checkTokenRegister(
+            mAccount.address, assertToken.tokenAddress
+        ) {
+            dismissProgress()
+            launch {
+                if (it) {
+                    withContext(Dispatchers.IO){
+                        mTokenManager.insert(checked, assertToken)
                     }
-                    DataRepository.getViolasService()
-                        .publishToken(
-                            applicationContext,
-                            Account(KeyPair.fromSecretKey(decrypt)),
-                            assertToken.tokenAddress
-                        ) {
-                            dismissProgress()
-                            if (!it) {
-                                this@ManagerAssertActivity.runOnUiThread {
-                                    checkbox.isChecked = false
+                    checkbox.isChecked = true
+                } else {
+                    PasswordInputDialog()
+                        .setConfirmListener { bytes, dialogFragment ->
+                            dialogFragment.dismiss()
+                            showProgress()
+                            launch(Dispatchers.IO) {
+                                val decrypt = SimpleSecurity.instance(applicationContext)
+                                    .decrypt(bytes, mAccount.privateKey)
+                                Arrays.fill(bytes, 0.toByte())
+                                if (decrypt == null) {
+                                    showToast(R.string.hint_password_error)
+                                    return@launch
                                 }
-                                showToast(getString(R.string.hint_assert_open_error))
-                            } else {
-                                mTokenManager.insert(checked, assertToken)
+                                DataRepository.getViolasService()
+                                    .publishToken(
+                                        applicationContext,
+                                        Account(KeyPair.fromSecretKey(decrypt)),
+                                        assertToken.tokenAddress
+                                    ) {
+                                        dismissProgress()
+                                        if (!it) {
+                                            this@ManagerAssertActivity.runOnUiThread {
+                                                checkbox.isChecked = false
+                                            }
+                                            showToast(getString(R.string.hint_assert_open_error))
+                                        } else {
+                                            mTokenManager.insert(checked, assertToken)
+                                        }
+                                    }
                             }
                         }
+                        .setCancelListener {
+                            checkbox.isChecked = false
+                        }
+                        .show(supportFragmentManager)
                 }
             }
-            .setCancelListener {
-                checkbox.isChecked = false
-            }
-            .show(supportFragmentManager)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
