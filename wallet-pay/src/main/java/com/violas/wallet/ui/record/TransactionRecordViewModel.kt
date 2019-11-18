@@ -15,6 +15,7 @@ import kotlin.random.Random
 class TransactionRecordViewModel(private val mAddress: String, coinTypes: CoinTypes) :
     PagingViewModel<TransactionRecordVO>() {
 
+    private var mFirstRefresh = true
     private val mTransactionRepository =
         HttpInjector.getTransactionRepository(coinTypes)
 
@@ -25,6 +26,13 @@ class TransactionRecordViewModel(private val mAddress: String, coinTypes: CoinTy
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
+        // 首次刷新操作，请求结果返回太快时，动画效果太快不流畅体验不好
+        if (pageNumber == 1 && mFirstRefresh) {
+            mFirstRefresh = false
+
+            delay(300)
+        }
+
         mTransactionRepository.getTransactionRecord(
             mAddress, pageSize, pageNumber, pageKey, onSuccess, onFailure
         )
@@ -40,7 +48,7 @@ class TransactionRecordViewModel(private val mAddress: String, coinTypes: CoinTy
         pageSize: Int,
         pageNumber: Int
     ): List<TransactionRecordVO> {
-        delay(3000)
+        delay(500)
 
         val list = mutableListOf<TransactionRecordVO>()
         repeat(pageSize) {

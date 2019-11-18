@@ -44,31 +44,29 @@ class PagingHandler<VO>(
                     //mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_NONE)
                 }
 
-                LoadState.Status.SUCCESS -> {
+                LoadState.Status.SUCCESS,
+                LoadState.Status.SUCCESS_NO_MORE -> {
                     handleRefreshDataUpdate(true)
                     mPagingController.getRefreshLayout()?.finishRefresh(true)
-                    mPagingController.getStatusLayout()
-                        ?.showStatus(IStatusLayout.Status.STATUS_NONE)
+                    mPagingController.getStatusLayout()?.showStatus(
+                        IStatusLayout.Status.STATUS_NONE
+                    )
                 }
 
                 LoadState.Status.SUCCESS_EMPTY -> {
                     handleRefreshDataUpdate(true)
-                    mPagingController.getRefreshLayout()?.finishRefreshWithNoMoreData()
+                    mPagingController.getRefreshLayout()?.finishRefresh(true)
                     //mPagingController.getRefreshLayout()?.setEnableRefresh(false)
-                    mPagingController.getStatusLayout()
-                        ?.showStatus(IStatusLayout.Status.STATUS_EMPTY)
-                }
-
-                LoadState.Status.SUCCESS_NO_MORE -> {
-                    handleRefreshDataUpdate(true)
-                    mPagingController.getRefreshLayout()?.finishRefreshWithNoMoreData()
-                    mPagingController.getStatusLayout()
-                        ?.showStatus(IStatusLayout.Status.STATUS_NONE)
+                    mPagingController.getStatusLayout()?.showStatus(
+                        IStatusLayout.Status.STATUS_EMPTY
+                    )
                 }
 
                 LoadState.Status.FAILURE -> {
                     handleRefreshDataUpdate(false)
-                    mPagingController.getRefreshLayout()?.finishRefresh(false)
+                    mPagingController.getRefreshLayout()?.finishRefresh(
+                        300, false, false
+                    )
                     //mPagingController.getRefreshLayout()?.setEnableRefresh(false)
                     when {
                         mPagingController.getViewAdapter().itemCount > 0 ->
