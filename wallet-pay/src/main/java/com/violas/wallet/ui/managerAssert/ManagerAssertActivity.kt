@@ -90,6 +90,7 @@ class ManagerAssertActivity : BaseActivity() {
                                     .decrypt(bytes, mAccount.privateKey)
                                 Arrays.fill(bytes, 0.toByte())
                                 if (decrypt == null) {
+                                    dismissProgress()
                                     showToast(R.string.hint_password_error)
                                     return@launch
                                 }
