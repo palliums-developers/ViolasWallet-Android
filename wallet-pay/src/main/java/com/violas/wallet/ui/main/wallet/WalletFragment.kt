@@ -200,6 +200,16 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                 }
             }
         }
+
+        swipeRefreshLayout.setOnRefreshListener {
+            onSwitchAccountEvent(SwitchAccountEvent())
+            launch(Dispatchers.IO) {
+                delay(1500)
+                withContext(Dispatchers.Main) {
+                    swipeRefreshLayout.isRefreshing = false
+                }
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
