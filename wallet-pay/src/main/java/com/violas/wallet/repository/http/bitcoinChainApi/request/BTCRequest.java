@@ -36,17 +36,17 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
     @Override
     public String requestUrl() {
         switch (mVersionEnum) {
+            case Main:
+                return "https://developer-btc-chain.api.btc.com/appkey-e6e2ce95d8df/";
             default:
             case TestNet:
                 return "https://tchain.api.btc.com/v3/";
-            case Main:
-                return "https://developer-btc-chain.api.btc.com/appkey-e6e2ce95d8df/";
         }
     }
 
     @Override
     protected Class requestApi() {
-        return BTCRequest.Api.class;
+        return Api.class;
     }
 
     public interface Api {

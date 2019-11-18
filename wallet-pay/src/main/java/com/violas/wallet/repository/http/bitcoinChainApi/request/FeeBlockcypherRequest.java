@@ -10,7 +10,7 @@ import retrofit2.http.Path;
 public class FeeBlockcypherRequest extends BaseRequest<FeeBlockcypherRequest.Api> {
     @Override
     public String requestUrl() {
-        return null;
+        return "https://api.blockcypher.com/";
     }
 
     @Override
@@ -19,7 +19,7 @@ public class FeeBlockcypherRequest extends BaseRequest<FeeBlockcypherRequest.Api
     }
 
     public interface Api {
-        @GET("https://api.blockcypher.com/v1/btc/{network}")
+        @GET("v1/btc/{network}")
         Observable<FeesBean> getFees(@Path("network") String str);
     }
 
