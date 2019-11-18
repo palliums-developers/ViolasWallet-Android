@@ -3,9 +3,9 @@ package com.violas.wallet.ui.identity.importIdentity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.violas.wallet.App
+import com.palliums.content.App
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.MnemonicException
 import com.violas.wallet.ui.main.MainActivity
@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ImportIdentityActivity : BaseActivity() {
+class ImportIdentityActivity : BaseAppActivity() {
     companion object {
         fun start(context: Context) {
             context.startActivity(Intent(context, ImportIdentityActivity::class.java))

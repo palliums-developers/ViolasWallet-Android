@@ -6,9 +6,10 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import androidx.annotation.WorkerThread
+import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.TransferManager
@@ -16,10 +17,9 @@ import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
-import com.violas.wallet.utils.start
 import kotlinx.coroutines.launch
 
-abstract class TransferActivity : BaseActivity() {
+abstract class TransferActivity : BaseAppActivity() {
     companion object {
         const val EXT_ACCOUNT_ID = "0"
         const val EXT_ADDRESS = "1"

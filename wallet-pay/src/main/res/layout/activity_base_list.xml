@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.violas.wallet.widget.refresh.DefaultRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.palliums.widget.refresh.DefaultRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/vRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".base.listing.BaseListingActivity">
+    tools:context=".base.BaseListingActivity">
 
-    <com.violas.wallet.widget.refresh.RefreshClassicsHeader
+    <com.palliums.widget.refresh.RefreshClassicsHeader
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -23,7 +23,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_add_wallet" />
 
-        <com.violas.wallet.widget.status.DefaultStatusLayout
+        <com.palliums.widget.status.DefaultStatusLayout
             android:id="@+id/vStatusLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -31,4 +31,4 @@
 
     </FrameLayout>
 
-</com.violas.wallet.widget.refresh.DefaultRefreshLayout>
+</com.palliums.widget.refresh.DefaultRefreshLayout>

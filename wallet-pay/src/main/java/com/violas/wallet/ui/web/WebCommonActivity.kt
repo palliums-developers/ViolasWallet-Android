@@ -3,10 +3,10 @@ package com.violas.wallet.ui.web
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import com.palliums.utils.start
 import com.violas.wallet.base.BaseWebActivity
 import com.violas.wallet.common.EXTRA_KEY_TITLE
 import com.violas.wallet.common.EXTRA_KEY_URL
-import com.violas.wallet.utils.start
 
 /**
  * Created by elephant on 2019-10-31 18:09.

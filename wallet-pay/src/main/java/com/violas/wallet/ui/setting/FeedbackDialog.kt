@@ -3,9 +3,9 @@ package com.violas.wallet.ui.setting
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import com.palliums.base.BaseDialogFragment
+import com.palliums.utils.TextWatcherSimple
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseDialogFragment
-import com.violas.wallet.utils.TextWatcherSimple
 import kotlinx.android.synthetic.main.dialog_feedback.*
 
 /**

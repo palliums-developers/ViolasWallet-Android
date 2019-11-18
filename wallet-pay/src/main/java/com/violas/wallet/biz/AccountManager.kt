@@ -1,6 +1,8 @@
 package com.violas.wallet.biz
 
 import android.content.Context
+import com.palliums.content.ContextProvider.getContext
+import com.palliums.utils.IOScope
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip32.ExtendedKey
 import com.quincysx.crypto.bip44.BIP44
@@ -8,10 +10,8 @@ import com.quincysx.crypto.bip44.CoinPairDerive
 import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.Vm
-import com.violas.wallet.getContext
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.utils.IOScope
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope

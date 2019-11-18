@@ -6,9 +6,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.palliums.utils.start
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
-import com.violas.wallet.base.dialog.PasswordInputDialog
+import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.ChangeAccountNameEvent
@@ -17,7 +18,6 @@ import com.violas.wallet.event.WalletChangeEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.AccountInfoActivity
 import com.violas.wallet.ui.backup.ShowMnemonicActivity
-import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_wallet_manager.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
-class WalletManagerActivity : BaseActivity() {
+class WalletManagerActivity : BaseAppActivity() {
     companion object {
         private const val EXT_ACCOUNT_ID = "b1"
 

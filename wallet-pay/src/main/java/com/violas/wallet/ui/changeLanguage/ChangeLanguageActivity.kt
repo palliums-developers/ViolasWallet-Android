@@ -5,12 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.palliums.utils.start
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
-import com.violas.wallet.utils.start
+import com.violas.wallet.base.BaseAppActivity
 import kotlinx.android.synthetic.main.activity_change_language.*
 
-class ChangeLanguageActivity : BaseActivity() {
+class ChangeLanguageActivity : BaseAppActivity() {
     companion object {
         fun start(context: Context) {
             Intent(context, ChangeLanguageActivity::class.java).start(context)
@@ -34,18 +34,6 @@ class ChangeLanguageActivity : BaseActivity() {
         val adapter = ChangeLanguageAdapter(viewModel)
         recyclerView.adapter = adapter
 
-//        val dividerItemDecoration = DividerItemDecoration(
-//            this,
-//            DividerItemDecoration.VERTICAL
-//        )
-//        dividerItemDecoration.setDrawable(
-//            ResourcesCompat.getDrawable(
-//                resources,
-//                R.drawable.divider_unit_bitcoin_manager,
-//                null
-//            )!!
-//        )
-//        recyclerView.addItemDecoration(dividerItemDecoration)
         subscribeUi(adapter)
     }
 

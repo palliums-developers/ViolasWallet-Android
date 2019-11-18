@@ -14,15 +14,15 @@ import cn.bertsir.zbar.Qr.Symbol
 import cn.bertsir.zbar.QrConfig
 import cn.bertsir.zbar.ScanCallback
 import cn.bertsir.zbar.utils.QRUtils
+import com.palliums.utils.start
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
-import com.violas.wallet.utils.start
+import com.violas.wallet.base.BaseAppActivity
 import kotlinx.android.synthetic.main.activity_scan.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import qiu.niorgai.StatusBarCompat
 
-class ScanActivity : BaseActivity(), EasyPermissions.PermissionCallbacks {
+class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
     companion object {
         public const val RESULT_QR_CODE_DATA = "a1"
         fun start(context: Activity, requestCde: Int) {

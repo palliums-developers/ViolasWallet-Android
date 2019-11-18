@@ -4,15 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.lxj.xpopup.XPopup
+import com.palliums.utils.start
+import com.palliums.widget.popup.AttachListPopupViewSupport
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
-import com.violas.wallet.base.dialog.AttachListPopupViewSupport
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AddressBookManager
 import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.repository.database.entity.AddressBookDo
 import com.violas.wallet.ui.scan.ScanActivity
-import com.violas.wallet.utils.start
 import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
 import kotlinx.android.synthetic.main.activity_add_address_book.*
@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AddAddressBookActivity : BaseActivity() {
+class AddAddressBookActivity : BaseAppActivity() {
     companion object {
         private const val REQUEST_SCAN_QR_CODE = 1
 

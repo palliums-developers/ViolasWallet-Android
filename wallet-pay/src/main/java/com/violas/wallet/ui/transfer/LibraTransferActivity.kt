@@ -4,7 +4,7 @@ import android.accounts.AccountsException
 import android.os.Bundle
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.dialog.PasswordInputDialog
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.addressBook.AddressBookActivity

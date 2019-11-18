@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseAppActivity
 import kotlinx.android.synthetic.main.activity_about_us.*
 
 /**
@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_about_us.*
  * <p>
  * desc: 关于我们页面
  */
-class AboutUsActivity : BaseActivity() {
+class AboutUsActivity : BaseAppActivity() {
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_about_us

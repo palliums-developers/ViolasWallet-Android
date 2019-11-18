@@ -6,7 +6,7 @@ import android.os.Bundle
 import cn.bertsir.zbar.utils.QRUtils
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.utils.ClipboardUtils
@@ -18,7 +18,7 @@ import me.jessyan.autosize.utils.AutoSizeUtils
 import java.util.*
 
 
-class CollectionActivity : BaseActivity() {
+class CollectionActivity : BaseAppActivity() {
     companion object {
         private const val EXT_ACCOUNT_ID = "0"
         private const val EXT_IS_TOKEN = "1"

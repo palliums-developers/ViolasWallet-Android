@@ -3,8 +3,8 @@ package com.violas.wallet.ui.account.wallet
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import com.palliums.base.BaseDialogFragment
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseDialogFragment
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_TYPE
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.transformAccountType

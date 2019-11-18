@@ -9,20 +9,20 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
+import com.palliums.base.BaseFragment
+import com.palliums.utils.DensityUtility
+import com.palliums.utils.isFastMultiClick
+import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
-import com.violas.wallet.base.BaseFragment
-import com.violas.wallet.base.recycler.RecycleViewItemDivider
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_TYPE
 import com.violas.wallet.common.EXTRA_KEY_OPERATION_MODE
 import com.violas.wallet.event.SwitchAccountEvent
-import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.AccountOperationMode
+import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.AccountVo
 import com.violas.wallet.ui.account.loadAccounts
-import com.violas.wallet.utils.DensityUtility
 import com.violas.wallet.widget.GroupListLayout
 import kotlinx.android.synthetic.main.fragment_account_selection.*
 import kotlinx.coroutines.Dispatchers
@@ -107,12 +107,9 @@ class AccountSelectionFragment : BaseFragment() {
             }
         }
         accOptGroupListLayout.addItemDecoration(
-            RecycleViewItemDivider(
-                requireContext(),
-                DensityUtility.dp2px(context, 10),
-                DensityUtility.dp2px(context, 60),
-                0,
-                0,
+            RecycleViewItemDividers(
+                top = DensityUtility.dp2px(context, 10),
+                bottom = DensityUtility.dp2px(context, 60),
                 showFirstTop = true,
                 onlyShowLastBottom = true
             )
@@ -223,7 +220,7 @@ class AccountSelectionFragment : BaseFragment() {
         }
 
         override fun onClick(view: View) {
-            if (!BaseActivity.isFastMultiClick(view)) {
+            if (!isFastMultiClick(view)) {
                 accountVo?.let {
                     // 切换当前钱包账号
                     AccountManager().switchCurrentAccount(it.accountDO.id)

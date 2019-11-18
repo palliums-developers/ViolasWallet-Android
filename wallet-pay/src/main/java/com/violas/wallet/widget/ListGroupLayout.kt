@@ -14,9 +14,9 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
+import com.palliums.utils.DensityUtility
+import com.palliums.utils.isMainThread
 import com.violas.wallet.R
-import com.violas.wallet.utils.DensityUtility
-import com.violas.wallet.utils.isMainThread
 import java.util.*
 
 /**

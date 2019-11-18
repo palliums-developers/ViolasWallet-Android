@@ -2,9 +2,9 @@ package com.violas.wallet.ui.setting
 
 import android.os.Bundle
 import android.view.View
+import com.palliums.utils.TextWatcherSimple
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
-import com.violas.wallet.utils.TextWatcherSimple
+import com.violas.wallet.base.BaseAppActivity
 import kotlinx.android.synthetic.main.activity_feedback.*
 
 /**
@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_feedback.*
  * <p>
  * desc: 问题反馈页面
  */
-class FeedbackActivity : BaseActivity() {
+class FeedbackActivity : BaseAppActivity() {
 
     companion object {
         private const val CONTENT_MAX_NUMBER = 200

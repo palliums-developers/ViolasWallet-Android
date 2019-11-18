@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.violas.wallet.App
+import com.palliums.content.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainActivity">
 
-    <com.violas.wallet.base.widget.NoSlideViewPager
+    <com.palliums.widget.NoSlideViewPager
         android:id="@+id/view_pager"
         android:layout_width="@dimen/dp_0"
         android:layout_height="@dimen/dp_0"

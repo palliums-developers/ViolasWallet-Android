@@ -1,8 +1,8 @@
 package com.violas.wallet.repository.http.libra
 
+import com.palliums.net.checkResponse
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.http.TransactionRepository
-import com.violas.wallet.repository.http.checkResponse
 import com.violas.wallet.ui.record.TransactionRecordVO
 
 /**

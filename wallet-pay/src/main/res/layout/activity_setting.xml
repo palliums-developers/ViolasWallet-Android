@@ -37,7 +37,7 @@
         app:layout_constraintTop_toBottomOf="@id/ivLogo"
         tools:text="Violas 1.0.0" />
 
-    <com.violas.wallet.widget.MenuItemView
+    <com.palliums.widget.MenuItemView
         android:id="@+id/mivMultiLanguage"
         style="@style/MenuItemView"
         android:layout_marginTop="@dimen/item_spacing"
@@ -46,7 +46,7 @@
         app:layout_constraintTop_toBottomOf="@id/ivHeader"
         app:mivStartTitleText="@string/setting_multi_language" />
 
-    <com.violas.wallet.widget.MenuItemView
+    <com.palliums.widget.MenuItemView
         android:id="@+id/mivServiceAgreement"
         style="@style/MenuItemView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,7 +55,7 @@
         app:mivShowBottomLine="false"
         app:mivStartTitleText="@string/setting_service_agreement" />
 
-    <com.violas.wallet.widget.MenuItemView
+    <com.palliums.widget.MenuItemView
         android:id="@+id/mivAboutUs"
         style="@style/MenuItemView"
         android:layout_marginTop="@dimen/item_spacing"
@@ -65,7 +65,7 @@
         app:mivShowBottomLine="false"
         app:mivStartTitleText="@string/setting_about_us" />
 
-    <com.violas.wallet.widget.MenuItemView
+    <com.palliums.widget.MenuItemView
         android:id="@+id/mivHelpFeedback"
         style="@style/MenuItemView"
         android:layout_marginTop="@dimen/item_spacing"

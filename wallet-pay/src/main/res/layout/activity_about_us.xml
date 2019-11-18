@@ -32,7 +32,7 @@
             app:layout_constraintTop_toBottomOf="@id/ivLogo"
             tools:text="Violas 1.0.0" />
 
-        <com.violas.wallet.widget.MenuItemView
+        <com.palliums.widget.MenuItemView
             android:id="@+id/mivWebsite"
             style="@style/MenuItemView"
             android:layout_marginTop="@dimen/dp_12"
@@ -43,7 +43,7 @@
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_website_key" />
 
-        <com.violas.wallet.widget.MenuItemView
+        <com.palliums.widget.MenuItemView
             android:id="@+id/mivEmail"
             style="@style/MenuItemView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -53,7 +53,7 @@
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_email_key" />
 
-        <com.violas.wallet.widget.MenuItemView
+        <com.palliums.widget.MenuItemView
             android:id="@+id/mivWeChat"
             style="@style/MenuItemView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -63,7 +63,7 @@
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_wechat_key" />
 
-        <com.violas.wallet.widget.MenuItemView
+        <com.palliums.widget.MenuItemView
             android:id="@+id/mivQQ"
             style="@style/MenuItemView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -73,7 +73,7 @@
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_qq_key" />
 
-        <com.violas.wallet.widget.MenuItemView
+        <com.palliums.widget.MenuItemView
             android:id="@+id/mivWeibo"
             style="@style/MenuItemView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -83,7 +83,7 @@
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_weibo_key" />
 
-        <com.violas.wallet.widget.MenuItemView
+        <com.palliums.widget.MenuItemView
             android:id="@+id/mivTelegram"
             style="@style/MenuItemView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -93,7 +93,7 @@
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_telegram_key" />
 
-        <com.violas.wallet.widget.MenuItemView
+        <com.palliums.widget.MenuItemView
             android:id="@+id/mivTwitter"
             style="@style/MenuItemView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -103,7 +103,7 @@
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_twitter_key" />
 
-        <com.violas.wallet.widget.MenuItemView
+        <com.palliums.widget.MenuItemView
             android:id="@+id/mivFacebook"
             style="@style/MenuItemView"
             android:layout_marginBottom="@dimen/dp_60"

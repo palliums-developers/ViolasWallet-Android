@@ -79,35 +79,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin_stdlib"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlin_coroutines"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlin_coroutines"
-    implementation "androidx.core:core-ktx:$versions.androidx_core"
-    implementation "androidx.appcompat:appcompat:$versions.androidx_appcompat"
-    implementation "androidx.constraintlayout:constraintlayout:$versions.androidx_constraintlayout"
-    implementation "androidx.recyclerview:recyclerview:$versions.androidx_recyclerview"
-    implementation "com.google.android.material:material:1.0.0"
-
-    // jetPack paging see https://developer.android.com/jetpack/docs/getting-started?hl=zh-CN
-    implementation "androidx.paging:paging-runtime:$versions.androidx_paging"
-    testImplementation "androidx.paging:paging-common:$versions.androidx_paging"
-    implementation "androidx.paging:paging-runtime-ktx:$versions.androidx_paging"
-
-    implementation "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.androidx_lifecycle"
-    implementation "androidx.activity:activity-ktx:$versions.androidx_activityKtx"
-
-    testImplementation "junit:junit:$versions.test_junit"
-    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
-
-    implementation "androidx.room:room-runtime:$versions.androidx_room"
-    kapt "androidx.room:room-compiler:$versions.androidx_room"
-    implementation "androidx.room:room-ktx:$versions.androidx_room"
-
-    // see https://github.com/googlesamples/easypermissions
-    implementation 'pub.devrel:easypermissions:3.0.0'
-
+    implementation project(':lib-common')
     implementation project(':lib-core')
     implementation project(':lib-zbar-scan')
     implementation project(':lib-switch-button')
@@ -115,14 +87,19 @@ dependencies {
     implementation project(':lib-violas-core')
     implementation project(':lib-btc-core')
 
+    testImplementation "junit:junit:$versions.test_junit"
+    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
+
+    kapt "androidx.room:room-compiler:$versions.androidx_room"
+    implementation "androidx.room:room-runtime:$versions.androidx_room"
+    implementation "androidx.room:room-ktx:$versions.androidx_room"
+
+    // see https://github.com/googlesamples/easypermissions
+    implementation 'pub.devrel:easypermissions:3.0.0'
+
     // EventBus see https://github.com/greenrobot/EventBus
     implementation 'org.greenrobot:eventbus:3.1.1'
-
-    //布局到状态栏 see https://github.com/niorgai/StatusBarCompat
-    implementation('com.github.niorgai:StatusBarCompat:2.3.3', {
-        exclude group: 'androidx.appcompat:appcompat'
-        exclude group: 'com.google.android.material:material'
-    })
 
     //头条适配方案 see https://github.com/JessYanCoding/AndroidAutoSize
     implementation "me.jessyan:autosize:1.1.2"
@@ -130,22 +107,13 @@ dependencies {
     // see https://github.com/ittianyu/BottomNavigationViewEx
     implementation 'com.github.ittianyu:BottomNavigationViewEx:2.0.4'
 
-    // Spinner see https://github.com/li-xiaojun/XPopup
-    implementation 'com.lxj:xpopup:1.8.8-x'
-
     // see https://github.com/hongyangAndroid/FlowLayout
     implementation 'com.hyman:flowlayout-lib:1.1.2'
-
-    // see https://github.com/YoKeyword/Fragmentation
-    implementation 'me.yokeyword:fragmentationx:1.0.1'
 
     debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
     releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
 
     // round ImageView see https://github.com/SheHuan/NiceImageView
     implementation 'com.github.SheHuan:NiceImageView:1.0.5'
-
-    // see https://github.com/scwang90/SmartRefreshLayout
-    implementation "com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-16"
-    implementation "com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-andx-16"
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
 }

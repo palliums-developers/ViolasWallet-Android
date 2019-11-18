@@ -2,10 +2,10 @@ package com.violas.wallet.biz
 
 import android.annotation.SuppressLint
 import android.content.Context
+import com.palliums.content.ContextProvider.getContext
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.getContext
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi

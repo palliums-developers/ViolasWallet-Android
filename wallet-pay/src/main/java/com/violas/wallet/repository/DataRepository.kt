@@ -1,10 +1,10 @@
 package com.violas.wallet.repository
 
+import com.palliums.content.ContextProvider.getContext
 import com.smallraw.core.http.violas.ViolasApi
 import com.smallraw.core.http.violas.ViolasRepository
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.Vm
-import com.violas.wallet.getContext
 import com.violas.wallet.repository.database.AppDatabase
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor

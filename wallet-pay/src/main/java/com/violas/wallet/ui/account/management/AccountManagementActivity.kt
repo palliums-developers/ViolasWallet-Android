@@ -6,17 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
+import com.palliums.utils.DensityUtility
+import com.palliums.utils.isFastMultiClick
+import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
-import com.violas.wallet.base.recycler.RecycleViewItemDivider
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.event.WalletChangeEvent
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.AccountVo
 import com.violas.wallet.ui.account.loadAccounts
 import com.violas.wallet.ui.account.wallet.AddWalletActivity
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
-import com.violas.wallet.utils.DensityUtility
 import com.violas.wallet.widget.GroupListLayout
 import kotlinx.android.synthetic.main.activity_account_management.*
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,7 @@ import org.greenrobot.eventbus.ThreadMode
  * <p>
  * desc: 钱包账户管理页面
  */
-class AccountManagementActivity : BaseActivity() {
+class AccountManagementActivity : BaseAppActivity() {
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_account_management
@@ -66,12 +67,9 @@ class AccountManagementActivity : BaseActivity() {
             }
         }
         accOptGroupListLayout.addItemDecoration(
-            RecycleViewItemDivider(
-                this,
-                DensityUtility.dp2px(this, 12),
-                DensityUtility.dp2px(this, 80),
-                0,
-                0,
+            RecycleViewItemDividers(
+                top = DensityUtility.dp2px(this, 12),
+                bottom = DensityUtility.dp2px(this, 80),
                 showFirstTop = true,
                 onlyShowLastBottom = true
             )

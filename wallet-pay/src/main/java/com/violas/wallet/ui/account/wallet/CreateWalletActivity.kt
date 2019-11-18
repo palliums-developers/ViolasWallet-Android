@@ -3,22 +3,22 @@ package com.violas.wallet.ui.account.wallet
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.event.WalletChangeEvent
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
-import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_create_wallet.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 
-class CreateWalletActivity : BaseActivity() {
+class CreateWalletActivity : BaseAppActivity() {
     companion object {
         private const val REQUEST_BACK_MNEMONIC = 1
         private const val EXT_COIN_TYPE = "a1"

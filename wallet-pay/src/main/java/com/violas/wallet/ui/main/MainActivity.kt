@@ -4,16 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import com.palliums.utils.DensityUtility
+import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
-import com.violas.wallet.base.adapter.ViewPagerAdapter
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.ui.main.me.MeFragment
 import com.violas.wallet.ui.main.quotes.QuotesFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
-import com.violas.wallet.utils.DensityUtility
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseAppActivity() {
 
     companion object {
         private const val QUIT_CHECK_INTERNAL = 2000
@@ -31,7 +31,7 @@ class MainActivity : BaseActivity() {
         return R.layout.activity_main
     }
 
-    private lateinit var viewPagerAdapter: ViewPagerAdapter
+    private lateinit var viewPagerAdapter: FragmentPagerAdapterSupport
     private var mQuitTimePoint: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +66,7 @@ class MainActivity : BaseActivity() {
         }
         bottom_navigation.selectedItemId = bottom_navigation.menu.findItem(R.id.tab_wallet).itemId
 
-        viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
+        viewPagerAdapter = FragmentPagerAdapterSupport(supportFragmentManager)
         viewPagerAdapter.addFragment(WalletFragment())
         viewPagerAdapter.addFragment(QuotesFragment())
         viewPagerAdapter.addFragment(MeFragment())

@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import com.palliums.base.BaseViewHolder
+import com.palliums.utils.getColor
+import com.palliums.utils.getString
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseViewHolder
-import com.violas.wallet.base.paging.PagingViewAdapter
-import com.violas.wallet.getColor
-import com.violas.wallet.getString
+import com.palliums.paging.PagingViewAdapter
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.item_transaction_record.view.*
 import java.text.SimpleDateFormat

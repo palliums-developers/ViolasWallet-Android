@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.activity_base_web.*
  * <p>
  * desc: Web页面基类
  */
-abstract class BaseWebActivity : BaseActivity() {
+abstract class BaseWebActivity : BaseAppActivity() {
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_base_web

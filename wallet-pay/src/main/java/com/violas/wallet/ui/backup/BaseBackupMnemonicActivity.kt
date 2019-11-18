@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseAppActivity
 
 /**
  * Created by elephant on 2019-10-21 17:47.
@@ -12,7 +12,7 @@ import com.violas.wallet.base.BaseActivity
  * <p>
  * desc: 备份助记词相关页面基类
  */
-abstract class BaseBackupMnemonicActivity : BaseActivity() {
+abstract class BaseBackupMnemonicActivity : BaseAppActivity() {
 
     companion object {
         const val INTENT_KET_MNEMONIC_WORDS = "INTENT_KET_MNEMONIC_WORDS"

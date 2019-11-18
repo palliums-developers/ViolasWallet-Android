@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.violas
 
 import com.google.gson.annotations.SerializedName
-import com.violas.wallet.repository.http.ApiResponse
+import com.palliums.net.ApiResponse
 
 /**
  * Created by elephant on 2019-11-11 15:41.

@@ -29,6 +29,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs = ["-Xallow-result-return-type"]
@@ -38,44 +45,45 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    testImplementation "junit:junit:$versions.test_junit"
-    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
+    testApi "junit:junit:$versions.test_junit"
+    androidTestApi "androidx.test.ext:junit:$versions.androidTest_junit"
+    androidTestApi "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin_stdlib"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlin_coroutines"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlin_coroutines"
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin_stdlib"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlin_coroutines"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlin_coroutines"
 
-    implementation "androidx.core:core-ktx:$versions.androidx_core"
-    implementation "androidx.appcompat:appcompat:$versions.androidx_appcompat"
-    implementation "androidx.recyclerview:recyclerview:$versions.androidx_recyclerview"
-    implementation "androidx.constraintlayout:constraintlayout:$versions.androidx_constraintlayout"
-    implementation "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.androidx_lifecycle"
-    implementation "androidx.activity:activity-ktx:$versions.androidx_activityKtx"
-    implementation "com.google.android.material:material:1.0.0"
+    api "androidx.core:core-ktx:$versions.androidx_core"
+    api "androidx.appcompat:appcompat:$versions.androidx_appcompat"
+    api "androidx.recyclerview:recyclerview:$versions.androidx_recyclerview"
+    api "androidx.constraintlayout:constraintlayout:$versions.androidx_constraintlayout"
+    api "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle"
+    api "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.androidx_lifecycle"
+    api "androidx.activity:activity-ktx:$versions.androidx_activityKtx"
+    api "com.google.android.material:material:1.0.0"
 
-    implementation "com.squareup.okhttp3:logging-interceptor:$versions.okhttp3"
+    // jetPack paging see https://developer.android.com/jetpack/docs/getting-started?hl=zh-CN
+    api "androidx.paging:paging-runtime:$versions.androidx_paging"
+    api "androidx.paging:paging-runtime-ktx:$versions.androidx_paging"
+    testApi "androidx.paging:paging-common:$versions.androidx_paging"
+
+    // see https://github.com/square/
     implementation "com.squareup.okhttp3:okhttp:$versions.okhttp3"
-
-    // see https://github.com/square/retrofit
-    implementation "com.squareup.retrofit2:retrofit:$versions.retrofit2"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit2"
     implementation "com.squareup.retrofit2:converter-gson:$versions.retrofit2"
 
     // see https://github.com/niorgai/StatusBarCompat
-    implementation('com.github.niorgai:StatusBarCompat:2.3.3', {
+    api('com.github.niorgai:StatusBarCompat:2.3.3', {
         exclude group: 'androidx.appcompat:appcompat'
         exclude group: 'com.google.android.material:material'
     })
 
     // see https://github.com/YoKeyword/Fragmentation
-    implementation 'me.yokeyword:fragmentationx:1.0.1'
+    api 'me.yokeyword:fragmentationx:1.0.1'
 
     // see https://github.com/scwang90/SmartRefreshLayout
-    implementation "com.scwang.smartrefresh:SmartRefreshLayout:1.1.0"
-    implementation "com.scwang.smartrefresh:SmartRefreshHeader:1.1.0"
+    api "com.scwang.smartrefresh:SmartRefreshLayout:1.1.0"
+    api "com.scwang.smartrefresh:SmartRefreshHeader:1.1.0"
 
     // see https://github.com/li-xiaojun/XPopup
-    implementation 'com.lxj:xpopup:1.8.8-x'
+    api 'com.lxj:xpopup:1.8.8-x'
 }

@@ -7,20 +7,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AddressBookManager
 import com.violas.wallet.repository.database.entity.AddressBookDo
 import com.violas.wallet.ui.addressBook.add.AddAddressBookActivity
-import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.activity_address_book.*
 import kotlinx.android.synthetic.main.item_address_book.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AddressBookActivity : BaseActivity() {
+class AddressBookActivity : BaseAppActivity() {
     companion object {
         private const val EXT_COIN_TYPE = "a1"
         private const val EXT_IS_SELECTOR = "a2"

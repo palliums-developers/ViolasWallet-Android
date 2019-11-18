@@ -8,18 +8,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.palliums.utils.DensityUtility
+import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.smallraw.support.switchcompat.SwitchButton
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
-import com.violas.wallet.base.dialog.PasswordInputDialog
-import com.violas.wallet.base.recycler.RecycleViewItemDivider
+import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.utils.DensityUtility
 import kotlinx.android.synthetic.main.activity_manager_assert.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,7 @@ import org.palliums.violascore.wallet.Account
 import org.palliums.violascore.wallet.KeyPair
 import java.util.*
 
-class ManagerAssertActivity : BaseActivity() {
+class ManagerAssertActivity : BaseAppActivity() {
     override fun getLayoutResId() = R.layout.activity_manager_assert
 
     companion object {
@@ -76,7 +76,7 @@ class ManagerAssertActivity : BaseActivity() {
             dismissProgress()
             launch {
                 if (it) {
-                    withContext(Dispatchers.IO){
+                    withContext(Dispatchers.IO) {
                         mTokenManager.insert(checked, assertToken)
                     }
                     checkbox.isChecked = true
@@ -126,12 +126,11 @@ class ManagerAssertActivity : BaseActivity() {
         title = getString(R.string.title_address_assert)
 
         recyclerView.addItemDecoration(
-            RecycleViewItemDivider(
-                this,
-                DensityUtility.dp2px(this, 5),
-                DensityUtility.dp2px(this, 5),
-                DensityUtility.dp2px(this, 16),
-                DensityUtility.dp2px(this, 16)
+            RecycleViewItemDividers(
+                top = DensityUtility.dp2px(this, 5),
+                bottom = DensityUtility.dp2px(this, 5),
+                left = DensityUtility.dp2px(this, 16),
+                right = DensityUtility.dp2px(this, 16)
             )
         )
         recyclerView.adapter = mAdapter

@@ -6,7 +6,7 @@ import android.widget.SeekBar
 import androidx.core.widget.addTextChangedListener
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.dialog.PasswordInputDialog
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity

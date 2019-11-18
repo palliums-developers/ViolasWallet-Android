@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -19,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class TokenInfoActivity : BaseActivity() {
+class TokenInfoActivity : BaseAppActivity() {
     companion object {
         private const val EXT_TOKEN_ID = "1"
         fun start(fragment: Fragment, tokenId: Long = 0, responseCode: Int) {

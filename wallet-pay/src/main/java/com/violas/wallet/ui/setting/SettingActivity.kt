@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.ui.changeLanguage.ChangeLanguageActivity
 import com.violas.wallet.ui.web.WebCommonActivity
 import kotlinx.android.synthetic.main.activity_setting.*
@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_setting.*
  * <p>
  * desc: 设置页面
  */
-class SettingActivity : BaseActivity() {
+class SettingActivity : BaseAppActivity() {
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_setting

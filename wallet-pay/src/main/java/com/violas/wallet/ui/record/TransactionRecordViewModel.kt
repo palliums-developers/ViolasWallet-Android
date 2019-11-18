@@ -1,7 +1,7 @@
 package com.violas.wallet.ui.record
 
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.base.paging.PagingViewModel
+import com.palliums.paging.PagingViewModel
 import com.violas.wallet.repository.http.HttpInjector
 import kotlinx.coroutines.delay
 import kotlin.random.Random

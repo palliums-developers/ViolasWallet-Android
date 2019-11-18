@@ -1,11 +1,11 @@
 package com.violas.wallet.repository.http.interceptor
 
 import android.os.Build
+import com.palliums.utils.getString
+import com.palliums.utils.getUniquePseudoID
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
-import com.violas.wallet.getString
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
-import com.violas.wallet.utils.getUniquePseudoID
 import okhttp3.Interceptor
 import okhttp3.Response
 

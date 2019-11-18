@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.palliums.base.BaseViewHolder
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
-import com.violas.wallet.base.BaseViewHolder
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.ui.account.AccountType
 import kotlinx.android.synthetic.main.activity_account_selection.*
 import me.yokeyword.fragmentation.Fragmentation
@@ -21,7 +21,7 @@ import me.yokeyword.fragmentation.SupportFragment
  * <p>
  * desc: 钱包账户选择页面
  */
-class AccountSelectionActivity : BaseActivity() {
+class AccountSelectionActivity : BaseAppActivity() {
 
     companion object {
         private const val EXTRA_KEY_LAST_ACCOUNT_TYPE = "EXTRA_KEY_LAST_ACCOUNT_TYPE"

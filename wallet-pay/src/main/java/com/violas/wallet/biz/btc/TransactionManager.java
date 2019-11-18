@@ -5,12 +5,12 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.Pair;
 
+import com.palliums.content.ContextProvider;
 import com.quincysx.crypto.Transaction;
 import com.quincysx.crypto.bitcoin.BTCTransaction;
 import com.quincysx.crypto.bitcoin.BitcoinException;
 import com.quincysx.crypto.bitcoin.script.Script;
 import com.quincysx.crypto.utils.HexUtils;
-import com.violas.wallet.ContextProviderKt;
 import com.violas.wallet.R;
 import com.violas.wallet.biz.btc.inputScript.InputScriptFactory;
 import com.violas.wallet.biz.btc.outputScript.OutputScriptFactory;
@@ -156,7 +156,7 @@ public class TransactionManager {
                 Log.e("====", "到没到目标金额 " + charge + "   总计余额：" + mUTXOListManager.getUseAmount().doubleValue());
 
                 if (!charge) {
-                    emitter.onError(new Exception(ContextProviderKt.getContext().getResources().getString(R.string.hint_insufficient_or_trading_fees_are_confirmed)));
+                    emitter.onError(new Exception(ContextProvider.INSTANCE.getContext().getResources().getString(R.string.hint_insufficient_or_trading_fees_are_confirmed)));
                     emitter.onComplete();
                 } else {
                     emitter.onNext(TransactionManager.generateTransaction(privateKey,publicKey,mUTXOListManager, toAddressList));

@@ -2,13 +2,13 @@ package com.violas.wallet.ui.launch
 
 import android.os.Bundle
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.ui.identity.IdentityActivity
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.coroutines.*
 
-class LaunchActivity : BaseActivity(), CoroutineScope by MainScope() {
+class LaunchActivity : BaseAppActivity(), CoroutineScope by MainScope() {
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_launch

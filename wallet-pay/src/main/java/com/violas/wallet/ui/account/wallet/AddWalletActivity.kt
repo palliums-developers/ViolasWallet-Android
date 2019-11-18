@@ -7,17 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
+import com.palliums.base.BaseViewHolder
+import com.palliums.utils.DensityUtility
+import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseViewHolder
-import com.violas.wallet.base.listing.BaseListingActivity
-import com.violas.wallet.base.listing.ListingViewAdapter
-import com.violas.wallet.base.listing.ListingViewModel
-import com.violas.wallet.base.recycler.RecycleViewItemDivider
+import com.violas.wallet.base.BaseListingActivity
+import com.palliums.listing.ListingViewAdapter
+import com.palliums.listing.ListingViewModel
+import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.account.AccountType
-import com.violas.wallet.utils.DensityUtility
-import com.violas.wallet.utils.start
 import kotlinx.android.synthetic.main.item_add_wallet.view.*
 
 /**
@@ -52,12 +52,9 @@ class AddWalletActivity : BaseListingActivity<AddWalletVo>() {
         setTitle(R.string.add_wallet_title)
 
         getRecyclerView().addItemDecoration(
-            RecycleViewItemDivider(
-                this,
-                DensityUtility.dp2px(this, 10),
-                0,
-                0,
-                0,
+            RecycleViewItemDividers(
+                top = DensityUtility.dp2px(this, 10),
+                bottom = 0,
                 showFirstTop = true,
                 onlyShowLastBottom = true
             )

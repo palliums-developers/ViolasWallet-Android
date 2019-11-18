@@ -3,8 +3,8 @@ package com.violas.wallet.ui.main.me
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import com.palliums.base.BaseFragment
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseFragment
 import com.violas.wallet.ui.account.management.AccountManagementActivity
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.setting.SettingActivity

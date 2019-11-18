@@ -1,10 +1,10 @@
 package com.violas.wallet.ui.account
 
+import com.palliums.utils.getString
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.Vm
-import com.violas.wallet.getString
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 

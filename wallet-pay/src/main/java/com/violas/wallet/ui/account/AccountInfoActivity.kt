@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseActivity
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.AccountNotExistsException
 import com.violas.wallet.event.ChangeAccountNameEvent
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 
-class AccountInfoActivity : BaseActivity() {
+class AccountInfoActivity : BaseAppActivity() {
     companion object {
         private const val EXT_ACCOUNT_ID = "0"
         fun start(context: Context, accountId: Long) {
