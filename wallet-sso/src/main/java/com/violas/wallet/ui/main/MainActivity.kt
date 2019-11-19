@@ -23,8 +23,8 @@ class MainActivity : BaseAppActivity() {
         }
     }
 
-    override fun getTitleStyle(): Int {
-        return TITLE_STYLE_NOT_TITLE
+    override fun getPageStyle(): Int {
+        return TITLE_STYLE_CUSTOM
     }
 
     override fun getLayoutResId(): Int {

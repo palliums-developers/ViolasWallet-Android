@@ -20,8 +20,8 @@ class IdentityActivity : BaseAppActivity() {
         return R.layout.activity_identity
     }
 
-    override fun getTitleStyle(): Int {
-        return TITLE_STYLE_NOT_TITLE
+    override fun getPageStyle(): Int {
+        return TITLE_STYLE_DARK_BACKGROUND_NO_TITLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

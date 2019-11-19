@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/def_activity_vice_bg">
+    android:background="@color/def_page_bg_light_secondary">
 
     <ImageView
         android:id="@+id/ivHeader"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_196"
-        android:background="@drawable/bg_wallet_main"
+        android:background="@drawable/bg_title_dark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

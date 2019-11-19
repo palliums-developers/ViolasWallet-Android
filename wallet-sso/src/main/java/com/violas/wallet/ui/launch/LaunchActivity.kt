@@ -14,8 +14,8 @@ class LaunchActivity : BaseAppActivity(), CoroutineScope by MainScope() {
         return R.layout.activity_launch
     }
 
-    override fun getTitleStyle(): Int {
-        return TITLE_STYLE_NOT_TITLE
+    override fun getPageStyle(): Int {
+        return TITLE_STYLE_DARK_BACKGROUND_NO_TITLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

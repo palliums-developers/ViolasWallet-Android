@@ -53,6 +53,10 @@
     <color name="def_text_color_30">#23393846</color>
     <color name="def_text_color_10">#15393846</color>
     <color name="def_text_color_50">#7F393846</color>
+    <color name="def_page_bg_dark">@color/color_282636</color>
+    <color name="def_page_bg_light_primary">@color/white</color>
+    <color name="def_page_bg_light_secondary">@color/color_F7F7F9</color>
+
     <color name="def_text_font_black">#3B3847</color>
 
     <!--文本-标题颜色-->
