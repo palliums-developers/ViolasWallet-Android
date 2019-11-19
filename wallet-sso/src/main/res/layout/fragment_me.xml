@@ -20,7 +20,7 @@
         android:layout_width="@dimen/dp_75"
         android:layout_height="@dimen/dp_75"
         android:layout_marginTop="@dimen/dp_64"
-        android:src="@mipmap/ic_launcher_round"
+        android:src="@mipmap/ic_launcher"
         app:border_color="@color/white"
         app:border_width="@dimen/dp_2"
         app:is_circle="true"
