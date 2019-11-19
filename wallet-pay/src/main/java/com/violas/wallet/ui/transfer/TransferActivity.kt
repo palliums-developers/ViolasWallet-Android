@@ -10,10 +10,7 @@ import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.TokenManager
-import com.violas.wallet.biz.TransferManager
-import com.violas.wallet.biz.decodeScanQRCode
+import com.violas.wallet.biz.*
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
@@ -167,13 +164,17 @@ abstract class TransferActivity : BaseAppActivity() {
             }
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { coinType, address, amount, tokenName ->
+                    decodeScanQRCode(msg) { scanType, scanBean ->
                         launch {
                             account?.let {
-                                if (coinType == it.coinNumber || coinType == -1) {
-                                    onScanAddressQr(address)
-                                } else {
-                                    showToast(getString(R.string.hint_address_error))
+                                when (scanType) {
+                                    ScanCodeType.Address -> {
+                                        scanBean as ScanTranBean
+                                        onScanAddressQr(scanBean.address)
+                                    }
+                                    ScanCodeType.Text -> {
+                                        onScanAddressQr(scanBean.msg)
+                                    }
                                 }
                             }
                         }
