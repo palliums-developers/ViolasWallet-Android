@@ -1,10 +1,8 @@
 package com.violas.wallet.ui.setting
 
 import android.os.Bundle
-import androidx.core.content.res.ResourcesCompat
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseWebActivity
-import kotlinx.android.synthetic.main.layout_title_bar.*
 
 /**
  * Created by elephant on 2019-10-31 18:37.
@@ -18,13 +16,7 @@ class HelpFeedbackActivity : BaseWebActivity() {
         super.onCreate(savedInstanceState)
 
         setTitleRightText(R.string.help_feedback_menu)
-        vTitleRightTextBtn.setTextColor(
-            ResourcesCompat.getColor(
-                resources,
-                R.color.color_492AC5,
-                null
-            )
-        )
+        setTitleRightTextColor(R.color.color_492AC5)
     }
 
     override fun getUrl(): String {

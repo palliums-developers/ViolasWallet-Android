@@ -76,6 +76,7 @@
     <dimen name="dp_62">62dp</dimen>
     <dimen name="dp_64">64dp</dimen>
     <dimen name="dp_66">66dp</dimen>
+    <dimen name="dp_68">68dp</dimen>
     <dimen name="dp_72">72dp</dimen>
     <dimen name="dp_73">73dp</dimen>
     <dimen name="dp_75">75dp</dimen>
@@ -111,5 +112,9 @@
     <dimen name="dp_346">346dp</dimen>
     <dimen name="dp_468">468dp</dimen>
     <!-- ==================尺寸表规范 end ================== -->
+
+    <dimen name="height_status_bar">@dimen/dp_24</dimen>
+    <dimen name="height_title_bar">@dimen/dp_44</dimen>
+    <dimen name="height_top_bar">@dimen/dp_68</dimen>
 
 </resources>

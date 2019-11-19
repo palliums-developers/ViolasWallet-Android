@@ -3,5 +3,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/vStatusBar"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dp_24"
+    android:layout_height="@dimen/height_status_bar"
     tools:background="@color/white" />

@@ -44,7 +44,7 @@ class AccountManagementActivity : BaseAppActivity() {
         EventBus.getDefault().register(this)
 
         setTitle(R.string.account_management_title)
-        setTitleRightImage(R.drawable.icon_add_address)
+        setTitleRightImageResource(R.drawable.icon_add_address)
 
         initView()
         initData()

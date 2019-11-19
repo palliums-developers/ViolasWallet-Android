@@ -10,7 +10,6 @@ import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_backup_prompt.*
-import kotlinx.android.synthetic.main.layout_title_bar.*
 
 /**
  * Created by elephant on 2019-10-21 13:58.
@@ -56,7 +55,7 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
         if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY) {
             // 如果是创建身份后进入该页面，则不支持后退
             setTitleRightText(R.string.backup_mnemonic_prompt_menu)
-            vTitleLeftImageBtn.visibility = View.GONE
+            setTitleLeftViewVisibility(View.GONE)
         }
         tv_backup_prompt_next_step.setOnClickListener(this)
     }

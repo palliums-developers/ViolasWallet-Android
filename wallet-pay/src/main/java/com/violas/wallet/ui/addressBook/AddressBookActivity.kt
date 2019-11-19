@@ -74,7 +74,7 @@ class AddressBookActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_address_book)
-        setTitleRightImage(R.drawable.icon_add_address)
+        setTitleRightImageResource(R.drawable.icon_add_address)
         mCoinType = intent.getIntExtra(EXT_COIN_TYPE, -1)
         mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)
         recyclerView.adapter = mAdapter

@@ -7,19 +7,10 @@ import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.widget.LinearLayout
-import androidx.annotation.DrawableRes
 import androidx.annotation.IntDef
-import androidx.annotation.StringRes
-import androidx.core.content.res.ResourcesCompat
 import com.palliums.base.BaseActivity
-import com.palliums.utils.StatusBarUtil
-import com.palliums.utils.isFastMultiClick
 import com.violas.wallet.R
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
-import kotlinx.android.synthetic.main.activity_base.*
-import kotlinx.android.synthetic.main.layout_status_bar.*
-import kotlinx.android.synthetic.main.layout_title_bar.*
 
 abstract class BaseAppActivity : BaseActivity() {
 
@@ -30,22 +21,8 @@ abstract class BaseAppActivity : BaseActivity() {
         const val TITLE_STYLE_NOT_TITLE = 3
     }
 
-    abstract fun getLayoutResId(): Int
-    protected open fun getLayoutView(): View? = null
-    fun getRootView(): LinearLayout = vRootView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(com.palliums.R.layout.activity_base)
-
-        val layoutView =
-            getLayoutView() ?: layoutInflater.inflate(getLayoutResId(), vRootView, false)
-        vRootView.addView(layoutView)
-
-        vStatusBar.layoutParams.height = StatusBarUtil.getStatusBarHeight(this)
-
-        vTitleLeftImageBtn?.setOnClickListener(this)
 
         setTitleStyle(getTitleStyle())
     }
@@ -65,238 +42,43 @@ abstract class BaseAppActivity : BaseActivity() {
 
     private fun setTitleStyle(@TitleStyle style: Int) {
         when (style) {
+
             TITLE_STYLE_GREY_BACKGROUND -> {
-                vRootView.setBackgroundColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.def_activity_vice_bg,
-                        null
-                    )
-                )
                 StatusBarMode(this, true)
-                vStatusBar.setBackgroundColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.white,
-                        null
-                    )
-                )
-                vTitleBar.setBackgroundColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.white,
-                        null
-                    )
-                )
-                vTitleLeftImageBtn.setImageDrawable(
-                    ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.icon_back_black,
-                        null
-                    )
-                )
-                vTitleMiddleText.setTextColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.def_text_font_black,
-                        null
-                    )
-                )
-                vTitleRightTextBtn.setTextColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.def_text_font_black,
-                        null
-                    )
-                )
+
+                setContentBackgroundColor(R.color.def_activity_vice_bg)
+                setTitleBackgroundColor(R.color.white)
+
+                setTitleLeftImageResource(R.drawable.icon_back_black)
+                setTitleRightTextColor(R.color.def_text_font_black)
+                titleColor = R.color.def_text_font_black
             }
+
             TITLE_STYLE_MAIN_COLOR -> {
-                vRootView.background = ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.shape_deputy_background,
-                    null
-                )
-                vStatusBar.setBackgroundColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.transparent,
-                        null
-                    )
-                )
-                vTitleBar.setBackgroundColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.transparent,
-                        null
-                    )
-                )
-                vTitleLeftImageBtn.setImageDrawable(
-                    ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.icon_back_white,
-                        null
-                    )
-                )
-                vTitleMiddleText.setTextColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.white,
-                        null
-                    )
-                )
-                vTitleRightTextBtn.setTextColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.white,
-                        null
-                    )
-                )
+                setRootBackgroundResource(R.drawable.shape_deputy_background)
+
+                setTitleLeftImageResource(R.drawable.icon_back_white)
+                setTitleRightTextColor(R.color.white)
+                titleColor = R.color.white
             }
+
             TITLE_STYLE_NOT_TITLE -> {
-                vRootView.setBackgroundColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.def_activity_bg,
-                        null
-                    )
-                )
-                vStatusBar.visibility = View.GONE
-                vTitleBar.visibility = View.GONE
+                setRootBackgroundColor(R.color.def_activity_bg)
+
+                setTitleBarVisibility(View.GONE)
             }
+
             else -> {
-                vRootView.setBackgroundColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.def_activity_bg,
-                        null
-                    )
-                )
                 StatusBarMode(this, true)
-                vStatusBar.setBackgroundColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.white,
-                        null
-                    )
-                )
-                vTitleBar.setBackgroundColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.white,
-                        null
-                    )
-                )
-                vTitleLeftImageBtn.setImageDrawable(
-                    ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.icon_back_black,
-                        null
-                    )
-                )
-                vTitleMiddleText.setTextColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.def_text_font_black,
-                        null
-                    )
-                )
-                vTitleRightTextBtn.setTextColor(
-                    ResourcesCompat.getColor(
-                        resources,
-                        R.color.def_text_font_black,
-                        null
-                    )
-                )
+
+                setContentBackgroundColor(R.color.def_activity_bg)
+                setTitleBackgroundColor(R.color.white)
+
+                setTitleLeftImageResource(R.drawable.icon_back_black)
+                setTitleRightTextColor(R.color.def_text_font_black)
+                titleColor = R.color.def_text_font_black
             }
         }
-    }
-
-    /**
-     * 设置标题
-     */
-    override fun setTitle(@StringRes strId: Int) {
-        if (vTitleMiddleText != null && strId != 0) {
-            vTitleMiddleText.setText(strId)
-        }
-    }
-
-    override fun setTitle(title: CharSequence?) {
-        if (vTitleMiddleText != null && !title.isNullOrEmpty()) {
-            vTitleMiddleText.text = title
-        }
-    }
-
-    fun setTitleRightText(@StringRes strId: Int) {
-        if (vTitleRightTextBtn != null && strId != 0) {
-            vTitleRightTextBtn.setText(strId)
-            vTitleRightTextBtn.visibility = View.VISIBLE
-            vTitleRightTextBtn.setOnClickListener(this)
-        } else if (vTitleRightTextBtn != null) {
-            vTitleRightTextBtn.visibility = View.GONE
-        }
-    }
-
-    fun setTitleRightImage(@DrawableRes resId: Int) {
-        if (vTitleRightImageBtn != null && resId != 0) {
-            vTitleRightImageBtn.setImageResource(resId)
-            vTitleRightImageBtn.visibility = View.VISIBLE
-            vTitleRightImageBtn.setOnClickListener(this)
-        } else if (vTitleRightImageBtn != null) {
-            vTitleRightImageBtn.visibility = View.GONE
-        }
-    }
-
-    /**
-     * 防重点击处理，子类复写[onViewClick]来响应事件
-     */
-    final override fun onClick(view: View) {
-        if (!isFastMultiClick(view)) {
-            // TitleBar的View点击事件与页面其它的View点击事件分开处理
-            when (view.id) {
-                com.palliums.R.id.vTitleLeftImageBtn ->
-                    onTitleLeftViewClick()
-
-                com.palliums.R.id.vTitleRightTextBtn,
-                com.palliums.R.id.vTitleRightImageBtn ->
-                    onTitleRightViewClick()
-
-                else ->
-                    onViewClick(view)
-            }
-        }
-    }
-
-    /**
-     * TitleBar的左侧View点击回调，已防重点击处理
-     * 默认关闭当前页面
-     */
-    protected open fun onTitleLeftViewClick() {
-        finish()
-    }
-
-    /**
-     * TitleBar的右侧View点击回调，已防重点击处理
-     * 没有响应逻辑
-     */
-    protected open fun onTitleRightViewClick() {
-
-    }
-
-    /**
-     * View点击回调，已防重点击处理
-     * 该回调只会分发页面非TitleBar的View点击事件
-     * 如需处理TitleBar的View点击事件，请按需覆写[onTitleLeftViewClick]和[onTitleRightViewClick]
-     * @param view
-     */
-    protected open fun onViewClick(view: View) {
-
-    }
-
-    /**
-     * 浅色状态模式，设置字体为深色
-     */
-    protected fun setLightStatusBar(isLightStatusBar: Boolean) {
-        StatusBarUtil.setLightStatusBarMode(this, isLightStatusBar)
     }
 
     override fun attachBaseContext(newBase: Context) {
