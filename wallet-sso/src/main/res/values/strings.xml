@@ -110,8 +110,12 @@
     <string name="hint_modify_success">修改成功</string>
     <string name="me_wallet_management">钱包管理</string>
     <string name="me_transfer_record">转账记录</string>
+    <string name="me_authentication">身份认证</string>
+    <string name="me_phone_verification">手机验证</string>
+    <string name="me_email_verification">邮箱验证</string>
     <string name="me_address_book">地址薄</string>
     <string name="me_settings">设置</string>
+    <string name="me_unbind">未绑定</string>
     <string name="hint_get_the_camera_permissions">获取相机权限</string>
     <string name="hint_set_permissions_to_open">需要获取相机权限才能扫描二维码，前往开启。</string>
     <string name="hint_scan_need_camera_permissions">扫码需要获取相机权限</string>

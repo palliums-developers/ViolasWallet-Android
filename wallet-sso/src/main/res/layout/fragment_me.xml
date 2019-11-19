@@ -7,7 +7,7 @@
     android:background="@color/def_page_bg_light_secondary">
 
     <ImageView
-        android:id="@+id/ivHeader"
+        android:id="@+id/vHeader"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_196"
         android:background="@drawable/bg_title_dark"
@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.shehuan.niv.NiceImageView
-        android:id="@+id/ivAvatar"
+        android:id="@+id/vAvatar"
         android:layout_width="@dimen/dp_75"
         android:layout_height="@dimen/dp_75"
         android:layout_marginTop="@dimen/dp_64"
@@ -29,7 +29,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvNickname"
+        android:id="@+id/vNickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_9"
@@ -38,47 +38,58 @@
         android:textSize="@dimen/sp_15"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
+        app:layout_constraintTop_toBottomOf="@id/vAvatar" />
 
     <com.palliums.widget.MenuItemView
-        android:id="@+id/mivWalletManagement"
+        android:id="@+id/vAuthentication"
         style="@style/MenuItemView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivHeader"
+        app:layout_constraintTop_toBottomOf="@id/vHeader"
         app:mivStartIcon="@mipmap/ic_me_wallet_management"
-        app:mivShowBottomLine="false"
-        app:mivStartTitleText="@string/me_wallet_management" />
+        app:mivStartTitleText="@string/me_authentication" />
 
     <com.palliums.widget.MenuItemView
-        android:id="@+id/mivTransferRecord"
+        android:id="@+id/vPhoneVerification"
         style="@style/MenuItemView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mivWalletManagement"
-        app:mivShowBottomLine="false"
-        android:visibility="gone"
-        app:mivStartIcon="@mipmap/ic_me_transfer_record"
-        app:mivStartTitleText="@string/me_transfer_record" />
+        app:layout_constraintTop_toBottomOf="@id/vAuthentication"
+        app:mivStartIcon="@drawable/ic_me_phone"
+        app:mivStartTitleText="@string/me_phone_verification"
+        tools:mivEndDescText="@string/me_unbind"
+        tools:mivEndDescTextColor="@color/def_text_warn" />
 
     <com.palliums.widget.MenuItemView
-        android:id="@+id/mivAddressBook"
+        android:id="@+id/vEmailVerification"
+        style="@style/MenuItemView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vPhoneVerification"
+        app:mivShowBottomLine="false"
+        app:mivStartIcon="@drawable/ic_me_email"
+        app:mivStartTitleText="@string/me_email_verification"
+        tools:mivEndDescText="@string/me_unbind"
+        tools:mivEndDescTextColor="@color/def_text_warn" />
+
+    <com.palliums.widget.MenuItemView
+        android:id="@+id/vAddressBook"
         style="@style/MenuItemView"
         android:layout_marginTop="@dimen/item_spacing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mivTransferRecord"
+        app:layout_constraintTop_toBottomOf="@+id/vEmailVerification"
         app:mivShowBottomLine="false"
         app:mivStartIcon="@mipmap/ic_me_address_book"
         app:mivStartTitleText="@string/me_address_book" />
 
     <com.palliums.widget.MenuItemView
-        android:id="@+id/mivSettings"
+        android:id="@+id/vSettings"
         style="@style/MenuItemView"
         android:layout_marginTop="@dimen/item_spacing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mivAddressBook"
+        app:layout_constraintTop_toBottomOf="@+id/vAddressBook"
         app:mivShowBottomLine="false"
         app:mivStartIcon="@mipmap/ic_me_settings"
         app:mivStartTitleText="@string/me_settings" />

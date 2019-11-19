@@ -22,27 +22,32 @@ class MeFragment : BaseFragment() {
     override fun onLazyInitView(savedInstanceState: Bundle?) {
         super.onLazyInitView(savedInstanceState)
 
-        mivWalletManagement.setOnClickListener(this)
-        mivTransferRecord.setOnClickListener(this)
-        mivAddressBook.setOnClickListener(this)
-        mivSettings.setOnClickListener(this)
+        vAuthentication.setOnClickListener(this)
+        vPhoneVerification.setOnClickListener(this)
+        vEmailVerification.setOnClickListener(this)
+        vAddressBook.setOnClickListener(this)
+        vSettings.setOnClickListener(this)
     }
 
     override fun onViewClick(view: View) {
         when (view.id) {
-            R.id.mivWalletManagement -> {
-                startActivity(Intent(_mActivity, AccountManagementActivity::class.java))
-            }
-
-            R.id.mivTransferRecord -> {
+            R.id.vAuthentication -> {
 
             }
 
-            R.id.mivAddressBook -> {
+            R.id.vPhoneVerification -> {
+
+            }
+
+            R.id.vEmailVerification -> {
+
+            }
+
+            R.id.vAddressBook -> {
                 AddressBookActivity.start(_mActivity)
             }
 
-            R.id.mivSettings -> {
+            R.id.vSettings -> {
                 startActivity(Intent(_mActivity, SettingActivity::class.java))
             }
         }
