@@ -24,7 +24,7 @@
                 android:id="@+id/titleBar"
                 android:layout_width="match_parent"
                 android:layout_height="196dp"
-                android:background="@drawable/bg_wallet_main"
+                android:background="@drawable/bg_title_dark"
                 android:paddingTop="24dp">
 
                 <LinearLayout

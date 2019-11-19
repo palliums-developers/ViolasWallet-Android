@@ -10,7 +10,7 @@
         android:id="@+id/ivHeader"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_196"
-        android:background="@drawable/bg_wallet_main"
+        android:background="@drawable/bg_title_dark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
