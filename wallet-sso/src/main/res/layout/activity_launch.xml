@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_282636"
+    tools:background="@color/def_page_bg_dark"
     tools:context=".ui.launch.LaunchActivity">
 
     <com.shehuan.niv.NiceImageView

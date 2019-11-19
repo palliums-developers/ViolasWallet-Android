@@ -52,8 +52,8 @@ class WalletManagerActivity : BaseAppActivity() {
 
     override fun getLayoutResId() = R.layout.activity_wallet_manager
 
-    override fun getTitleStyle(): Int {
-        return TITLE_STYLE_GREY_BACKGROUND
+    override fun getPageStyle(): Int {
+        return TITLE_STYLE_PLIGHT_TITLE_SLIGHT_CONTENT
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

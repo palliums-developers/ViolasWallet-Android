@@ -22,8 +22,8 @@ class SettingActivity : BaseAppActivity() {
         return R.layout.activity_setting
     }
 
-    override fun getTitleStyle(): Int {
-        return TITLE_STYLE_GREY_BACKGROUND
+    override fun getPageStyle(): Int {
+        return TITLE_STYLE_PLIGHT_TITLE_SLIGHT_CONTENT
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

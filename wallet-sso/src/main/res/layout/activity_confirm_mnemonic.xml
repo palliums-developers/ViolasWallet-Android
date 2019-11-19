@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:background="@color/def_activity_vice_bg"
+    tools:background="@color/def_page_bg_light_secondary"
     tools:context=".ui.backup.ConfirmMnemonicActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout

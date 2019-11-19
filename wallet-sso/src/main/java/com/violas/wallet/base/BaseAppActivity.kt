@@ -15,68 +15,101 @@ import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 abstract class BaseAppActivity : BaseActivity() {
 
     companion object {
-        const val TITLE_STYLE_DEFAULT = 0
-        const val TITLE_STYLE_GREY_BACKGROUND = 1
-        const val TITLE_STYLE_MAIN_COLOR = 2
-        const val TITLE_STYLE_NOT_TITLE = 3
+        /**
+         * 主浅色背景
+         */
+        const val TITLE_STYLE_PLIGHT_BACKGROUND = 1
+        /**
+         * 深色背景
+         */
+        const val TITLE_STYLE_DARK_BACKGROUND = 2
+        /**
+         * 深色背景且没有title
+         */
+        const val TITLE_STYLE_DARK_BACKGROUND_NO_TITLE = 3
+        /**
+         * 主浅色title 副浅色content
+         */
+        const val TITLE_STYLE_PLIGHT_TITLE_SLIGHT_CONTENT = 4
+        /**
+         * 深色title 主浅色content
+         */
+        const val TITLE_STYLE_DARK_TITLE_PLIGHT_CONTENT = 5
+        /**
+         * 自定义（会隐藏title）
+         */
+        const val TITLE_STYLE_CUSTOM = 6
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitleStyle(getTitleStyle())
+        setPageStyle(getPageStyle())
     }
 
-    @TitleStyle
-    open fun getTitleStyle(): Int {
-        return TITLE_STYLE_DEFAULT
+    @PageStyle
+    open fun getPageStyle(): Int {
+        return TITLE_STYLE_PLIGHT_BACKGROUND
     }
 
     @IntDef(
-        TITLE_STYLE_DEFAULT,
-        TITLE_STYLE_GREY_BACKGROUND,
-        TITLE_STYLE_MAIN_COLOR,
-        TITLE_STYLE_NOT_TITLE
+        TITLE_STYLE_PLIGHT_BACKGROUND,
+        TITLE_STYLE_DARK_BACKGROUND,
+        TITLE_STYLE_PLIGHT_TITLE_SLIGHT_CONTENT,
+        TITLE_STYLE_DARK_TITLE_PLIGHT_CONTENT,
+        TITLE_STYLE_CUSTOM
     )
-    annotation class TitleStyle
+    annotation class PageStyle
 
-    private fun setTitleStyle(@TitleStyle style: Int) {
+    private fun setPageStyle(@PageStyle style: Int) {
         when (style) {
 
-            TITLE_STYLE_GREY_BACKGROUND -> {
+            TITLE_STYLE_PLIGHT_BACKGROUND -> {
                 StatusBarMode(this, true)
 
-                setContentBackgroundColor(R.color.def_activity_vice_bg)
-                setTitleBackgroundColor(R.color.white)
+                setRootBackgroundColor(R.color.def_page_bg_light_primary)
 
                 setTitleLeftImageResource(R.drawable.icon_back_black)
                 setTitleRightTextColor(R.color.def_text_font_black)
                 titleColor = R.color.def_text_font_black
             }
 
-            TITLE_STYLE_MAIN_COLOR -> {
-                setRootBackgroundResource(R.drawable.shape_deputy_background)
+            TITLE_STYLE_DARK_BACKGROUND -> {
+                setRootBackgroundColor(R.color.def_page_bg_dark)
 
                 setTitleLeftImageResource(R.drawable.icon_back_white)
                 setTitleRightTextColor(R.color.white)
                 titleColor = R.color.white
             }
 
-            TITLE_STYLE_NOT_TITLE -> {
-                setRootBackgroundColor(R.color.def_activity_bg)
+            TITLE_STYLE_DARK_BACKGROUND_NO_TITLE -> {
+                setRootBackgroundColor(R.color.def_page_bg_dark)
 
                 setTitleBarVisibility(View.GONE)
             }
 
-            else -> {
+            TITLE_STYLE_PLIGHT_TITLE_SLIGHT_CONTENT -> {
                 StatusBarMode(this, true)
 
-                setContentBackgroundColor(R.color.def_activity_bg)
-                setTitleBackgroundColor(R.color.white)
+                setTitleBackgroundColor(R.color.def_page_bg_light_primary)
+                setContentBackgroundColor(R.color.def_page_bg_light_secondary)
 
                 setTitleLeftImageResource(R.drawable.icon_back_black)
                 setTitleRightTextColor(R.color.def_text_font_black)
                 titleColor = R.color.def_text_font_black
+            }
+
+            TITLE_STYLE_DARK_TITLE_PLIGHT_CONTENT -> {
+                setTitleBackgroundResource(R.drawable.bg_title_dark)
+                setContentBackgroundColor(R.color.def_page_bg_light_primary)
+
+                setTitleLeftImageResource(R.drawable.icon_back_black)
+                setTitleRightTextColor(R.color.def_text_font_black)
+                titleColor = R.color.def_text_font_black
+            }
+
+            TITLE_STYLE_CUSTOM -> {
+                setTitleBarVisibility(View.GONE)
             }
         }
     }

@@ -27,7 +27,7 @@
         android:id="@+id/vFailed"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/def_activity_vice_bg"
+        android:background="@color/def_page_bg_light_secondary"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="gone"

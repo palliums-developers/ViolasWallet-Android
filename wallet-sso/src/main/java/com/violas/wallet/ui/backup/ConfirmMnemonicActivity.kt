@@ -30,8 +30,8 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
         return R.layout.activity_confirm_mnemonic
     }
 
-    override fun getTitleStyle(): Int {
-        return TITLE_STYLE_GREY_BACKGROUND
+    override fun getPageStyle(): Int {
+        return TITLE_STYLE_PLIGHT_TITLE_SLIGHT_CONTENT
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

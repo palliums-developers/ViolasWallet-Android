@@ -35,8 +35,8 @@ class TokenInfoActivity : BaseAppActivity() {
         return R.layout.activity_token_info
     }
 
-    override fun getTitleStyle(): Int {
-        return TITLE_STYLE_GREY_BACKGROUND
+    override fun getPageStyle(): Int {
+        return TITLE_STYLE_PLIGHT_TITLE_SLIGHT_CONTENT
     }
 
     private var mTokenDo: TokenDo? = null
