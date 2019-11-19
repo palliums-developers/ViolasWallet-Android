@@ -20,8 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:overScrollMode="never"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_add_wallet" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <com.palliums.widget.status.DefaultStatusLayout
             android:id="@+id/vStatusLayout"
