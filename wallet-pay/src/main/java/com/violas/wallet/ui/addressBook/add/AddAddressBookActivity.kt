@@ -10,6 +10,8 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AddressBookManager
+import com.violas.wallet.biz.ScanCodeType
+import com.violas.wallet.biz.ScanTranBean
 import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.repository.database.entity.AddressBookDo
 import com.violas.wallet.ui.scan.ScanActivity
@@ -142,16 +144,20 @@ class AddAddressBookActivity : BaseAppActivity() {
         when (requestCode) {
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { coinType, address, amount, tokenName ->
+                    decodeScanQRCode(msg) { scanType, scanBean ->
                         launch {
-                            if (coinType == -1) {
-                                editAddress.setText(address)
-                            } else {
-                                editAddress.setText(address)
-                                try {
-                                    mCoinTypes = CoinTypes.parseCoinType(coinType)
-                                    refreshCoinType()
-                                } catch (e: Exception) {
+                            when (scanType) {
+                                ScanCodeType.Address -> {
+                                    scanBean as ScanTranBean
+                                    try {
+                                        editAddress.setText(scanBean.address)
+                                        mCoinTypes = CoinTypes.parseCoinType(scanBean.coinType)
+                                        refreshCoinType()
+                                    } catch (e: Exception) {
+                                    }
+                                }
+                                ScanCodeType.Text -> {
+                                    editAddress.setText(scanBean.msg)
                                 }
                             }
                         }

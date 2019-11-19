@@ -7,6 +7,23 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 
+enum class ScanCodeType {
+    Address, Text
+}
+
+open class ScanBean(
+    val msg: String
+)
+
+class ScanTranBean(
+    msg: String,
+    val coinType: Int,
+    val address: String,
+    var amount: Long = 0,
+    var label: String? = null,
+    val tokenName: String? = null
+) : ScanBean(msg)
+
 /**
  * 解析扫码内容
  * @param callback 回掉
@@ -14,11 +31,12 @@ import java.util.*
  */
 fun decodeScanQRCode(
     msg: String,
-    callback: (coinType: Int, address: String, amount: Long, tokenName: String?) -> Unit
+    callback: (scanType: ScanCodeType, msg: ScanBean) -> Unit
 ) {
     GlobalScope.launch(Dispatchers.IO) {
 
         val splitMsg = splitMsg(msg)
+        var scanType = ScanCodeType.Address
         val coinType = when (splitMsg.coinType?.toLowerCase(Locale.CHINA)) {
             CoinTypes.Bitcoin.fullName().toLowerCase(Locale.CHINA) -> {
                 if (Vm.TestNet) {
@@ -34,10 +52,31 @@ fun decodeScanQRCode(
                 CoinTypes.VToken.coinType()
             }
             else -> {
-                -1
+                scanType = ScanCodeType.Text
+                -100
             }
         }
-        callback.invoke(coinType, splitMsg.address, splitMsg.amount, splitMsg.tokenName)
+        when (scanType) {
+            ScanCodeType.Text -> {
+                callback.invoke(
+                    scanType,
+                    ScanBean(msg)
+                )
+            }
+            ScanCodeType.Address -> {
+                callback.invoke(
+                    scanType,
+                    ScanTranBean(
+                        msg,
+                        coinType,
+                        splitMsg.address,
+                        splitMsg.amount,
+                        splitMsg.label,
+                        splitMsg.tokenName
+                    )
+                )
+            }
+        }
     }
 }
 

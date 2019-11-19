@@ -3,7 +3,6 @@ package com.violas.wallet.ui.main.wallet
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,12 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.widget.dialog.FastIntoWalletDialog
-import com.violas.wallet.widget.dialog.PasswordInputDialog
-import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertToken
-import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.selection.AccountSelectionActivity
@@ -29,10 +24,13 @@ import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.record.TransactionRecordActivity
 import com.violas.wallet.ui.scan.ScanActivity
+import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.widget.dialog.FastIntoWalletDialog
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
@@ -301,19 +299,25 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
             }
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { coinType, address, amount, tokenName ->
-                        Log.e(
-                            "====",
-                            "coinType:$coinType address:$address amount:$amount tokenName:$tokenName"
-                        )
-                        activity?.let {
-                            TransferActivity.start(
-                                it,
-                                coinType,
-                                address,
-                                amount,
-                                tokenName
-                            )
+                    decodeScanQRCode(msg) { scanType,scanBean ->
+                        when(scanType){
+                            ScanCodeType.Address->{
+                                scanBean as ScanTranBean
+                                activity?.let {
+                                    TransferActivity.start(
+                                        it,
+                                        scanBean.coinType,
+                                        scanBean.address,
+                                        scanBean.amount,
+                                        scanBean.tokenName
+                                    )
+                                }
+                            }
+                            ScanCodeType.Text->{
+                                activity?.let {
+                                    ScanResultActivity.start(it,scanBean.msg)
+                                }
+                            }
                         }
                     }
                 }
