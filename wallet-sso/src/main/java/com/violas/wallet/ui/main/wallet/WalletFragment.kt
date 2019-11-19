@@ -10,29 +10,26 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.widget.dialog.FastIntoWalletDialog
-import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.ui.account.selection.AccountSelectionActivity
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.collection.CollectionActivity
-import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.record.TransactionRecordActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.widget.dialog.FastIntoWalletDialog
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
@@ -83,21 +80,6 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
         recyclerAssert.adapter = mAssertAdapter
         refreshAssert()
 
-        ivAddAssert.setOnClickListener {
-            launch(Dispatchers.IO) {
-                val currentAccount = mAccountManager.currentAccount()
-                withContext(Dispatchers.Main) {
-                    activity?.let { activity ->
-                        ManagerAssertActivity.start(
-                            this@WalletFragment,
-                            currentAccount.id,
-                            REQUEST_ADD_ASSERT
-                        )
-                    }
-                }
-            }
-        }
-
         ivCopy.setOnClickListener {
             launch(Dispatchers.IO) {
                 val currentAccount = mAccountManager.currentAccount()
@@ -115,15 +97,6 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
             launch(Dispatchers.IO) {
                 val currentAccount = mAccountManager.currentAccount()
                 WalletManagerActivity.start(this@WalletFragment, currentAccount.id)
-            }
-        }
-
-        layoutWalletType.setOnClickListener {
-            activity?.let { it1 ->
-                Intent(
-                    activity,
-                    AccountSelectionActivity::class.java
-                ).start(it1)
             }
         }
 
@@ -151,7 +124,7 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
         }
 
         if (mAccountManager.isFastIntoWallet()) {
-            fragmentManager?.let {
+            activity?.supportFragmentManager?.let {
                 FastIntoWalletDialog()
                     .show(it, "fast")
             }
@@ -242,11 +215,6 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
         tvWalletType.text = "${coinType.coinName()} Wallet"
         tvUnit.text = coinType.coinUnit()
         setAmount(currentAccount)
-        if (coinType == CoinTypes.VToken) {
-            ivAddAssert.visibility = View.VISIBLE
-        } else {
-            ivAddAssert.visibility = View.GONE
-        }
     }
 
     private fun setAmount(currentAccount: AccountDO) {

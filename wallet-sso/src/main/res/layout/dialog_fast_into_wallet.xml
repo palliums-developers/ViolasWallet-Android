@@ -2,27 +2,29 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="421dp"
+    android:layout_height="155dp"
     android:orientation="vertical">
 
     <ImageView
-        android:layout_width="313dp"
-        android:layout_height="421dp"
+        android:id="@+id/ivBg"
+        android:layout_width="274dp"
+        android:layout_height="155dp"
         android:src="@drawable/bg_welcome_violas"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btnConfirm"
-        android:layout_width="238dp"
+        android:layout_width="274dp"
         android:layout_height="40dp"
-        android:layout_marginBottom="15dp"
-        android:background="#FFD701"
+        android:background="@drawable/selector_btn_bg_primary"
         android:text="@string/action_immediately_into"
-        android:textColor="#934701"
-        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/ivBg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

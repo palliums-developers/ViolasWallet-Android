@@ -16,6 +16,7 @@ import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.palliums.libracore.mnemonic.English
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount
 import org.palliums.libracore.wallet.Account
@@ -280,10 +281,10 @@ class AccountManager : CoroutineScope by IOScope() {
         walletName: String,
         password: ByteArray
     ) {
-        val seed = Mnemonic.English()
-            .toByteArray(wordList) ?: throw MnemonicException()
+        if (!Mnemonic(English.INSTANCE).validation(wordList)) {
+            throw MnemonicException()
+        }
 
-        val deriveBitcoin = deriveBitcoin(seed)
         val deriveLibra = deriveLibra(wordList)
 
         val security = SimpleSecurity.instance(context)
@@ -297,33 +298,9 @@ class AccountManager : CoroutineScope by IOScope() {
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "${CoinTypes.VToken.coinName()}-$walletName",
                 walletType = 0
-            ),
-            AccountDO(
-                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
-                publicKey = deriveLibra.getPublicKey(),
-                address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.Libra.coinType(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
-                walletType = 0
-            ),
-            AccountDO(
-                privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
-                publicKey = deriveBitcoin.publicKey,
-                address = deriveBitcoin.address,
-                coinNumber = if (Vm.TestNet) {
-                    CoinTypes.BitcoinTest.coinType()
-                } else {
-                    CoinTypes.Bitcoin.coinType()
-                },
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Bitcoin.coinName()}-$walletName",
-                walletType = 0
             )
         )
-        if (insertIds.isNotEmpty()) {
-            switchCurrentAccount(insertIds[0])
-        }
+        switchCurrentAccount(insertIds)
     }
 
     private fun deriveLibra(wordList: List<String>): Account {
