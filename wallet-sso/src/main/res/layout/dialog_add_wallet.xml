@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:id="@+id/llCreate"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_75"
+            android:background="@drawable/bg_menu_item"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@mipmap/ic_create"
+                android:drawablePadding="@dimen/dp_9"
+                android:text="@string/action_create"
+                android:textColor="@color/def_text_title"
+                android:textSize="@dimen/sp_20"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/vDividingLine1"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_1"
+            android:layout_marginStart="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_30"
+            android:background="@color/dividing_line"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llCreate" />
+
+        <LinearLayout
+            android:id="@+id/llImport"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_75"
+            android:background="@drawable/bg_menu_item"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vDividingLine1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@mipmap/ic_import"
+                android:drawablePadding="@dimen/dp_9"
+                android:text="@string/action_import"
+                android:textColor="@color/def_text_title"
+                android:textSize="@dimen/sp_20"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/vDividingLine2"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_1"
+            android:layout_marginStart="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_30"
+            android:background="@color/dividing_line"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llImport" />
+
+        <TextView
+            android:id="@+id/tvCancel"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_75"
+            android:background="@drawable/bg_menu_item"
+            android:gravity="center"
+            android:text="@string/action_cancel"
+            android:textColor="@color/def_text_btn"
+            android:textSize="@dimen/sp_20"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vDividingLine2" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

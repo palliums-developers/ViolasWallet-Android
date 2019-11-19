@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.backup.BackupPromptActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_backup_prompt_desc_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_32"
+            android:text="@string/backup_mnemonic_prompt_content_01"
+            android:textColor="@color/def_text_font_black"
+            android:textSize="@dimen/sp_20"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_backup_prompt_desc_6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_2"
+            android:text="@string/backup_mnemonic_prompt_content_06"
+            android:textColor="@color/def_text_font_black"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_1" />
+
+        <ImageView
+            android:id="@+id/iv_backup_prompt_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_40"
+            android:src="@mipmap/ic_backup_prompt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_6" />
+
+        <TextView
+            android:id="@+id/tv_backup_prompt_desc_2"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_62"
+            android:layout_marginTop="@dimen/dp_6"
+            android:layout_marginEnd="@dimen/dp_51"
+            android:text="@string/backup_mnemonic_prompt_content_02"
+            android:textColor="@color/def_text_font_black"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_backup_prompt_image" />
+
+        <TextView
+            android:id="@+id/tv_backup_prompt_desc_3"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:lineSpacingExtra="@dimen/dp_10"
+            android:text="@string/backup_mnemonic_prompt_content_03"
+            android:textColor="@color/def_text_font_black"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toEndOf="@id/tv_backup_prompt_desc_2"
+            app:layout_constraintStart_toStartOf="@id/tv_backup_prompt_desc_2"
+            app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_2" />
+
+        <View
+            android:layout_width="@dimen/dp_6"
+            android:layout_height="@dimen/dp_6"
+            android:layout_marginEnd="@dimen/dp_5"
+            android:background="@drawable/shape_circle_black"
+            app:layout_constraintBottom_toBottomOf="@id/tv_backup_prompt_desc_2"
+            app:layout_constraintEnd_toStartOf="@id/tv_backup_prompt_desc_2"
+            app:layout_constraintTop_toTopOf="@id/tv_backup_prompt_desc_2" />
+
+        <TextView
+            android:id="@+id/tv_backup_prompt_desc_4"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_21"
+            android:text="@string/backup_mnemonic_prompt_content_04"
+            android:textColor="@color/def_text_font_black"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintEnd_toEndOf="@id/tv_backup_prompt_desc_2"
+            app:layout_constraintStart_toStartOf="@id/tv_backup_prompt_desc_2"
+            app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_3" />
+
+        <TextView
+            android:id="@+id/tv_backup_prompt_desc_5"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:lineSpacingExtra="@dimen/dp_10"
+            android:text="@string/backup_mnemonic_prompt_content_05"
+            android:textColor="@color/def_text_font_black"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toEndOf="@id/tv_backup_prompt_desc_2"
+            app:layout_constraintStart_toStartOf="@id/tv_backup_prompt_desc_2"
+            app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_4" />
+
+        <View
+            android:layout_width="@dimen/dp_6"
+            android:layout_height="@dimen/dp_6"
+            android:layout_marginEnd="@dimen/dp_5"
+            android:background="@drawable/shape_circle_black"
+            app:layout_constraintBottom_toBottomOf="@id/tv_backup_prompt_desc_4"
+            app:layout_constraintEnd_toStartOf="@id/tv_backup_prompt_desc_4"
+            app:layout_constraintTop_toTopOf="@id/tv_backup_prompt_desc_4" />
+
+        <Button
+            android:id="@+id/tv_backup_prompt_next_step"
+            style="@style/BaseButtonPrimary"
+            android:layout_width="@dimen/dp_238"
+            android:layout_height="@dimen/dp_40"
+            android:layout_marginTop="@dimen/dp_46"
+            android:layout_marginBottom="@dimen/dp_111"
+            android:text="@string/btn_next_step"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_5" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

@@ -115,5 +115,4 @@ dependencies {
 
     // round ImageView see https://github.com/SheHuan/NiceImageView
     implementation 'com.github.SheHuan:NiceImageView:1.0.5'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
 }

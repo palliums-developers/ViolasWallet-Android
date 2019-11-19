@@ -1,0 +1,8 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <dimen name="page_spacing_start">@dimen/dp_15</dimen>
+    <dimen name="page_spacing_end">@dimen/dp_15</dimen>
+
+    <!--默认条目间距-->
+    <dimen name="item_spacing">10dp</dimen>
+</resources>

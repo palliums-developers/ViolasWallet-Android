@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.transfer.LibraTransferActivity">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="15dp"
+        android:elevation="3dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp">
+
+            <TextView
+                android:id="@+id/tvHintCoinName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BTC"
+                android:textColor="@color/def_text_color"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvCoinAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/def_text_color"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/hint_transfer_amount" />
+
+            <EditText
+                android:id="@+id/editAmountInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/selector_edit_bg_box"
+                android:hint="@string/hint_input_amount"
+                android:inputType="numberDecimal"
+                android:padding="7dp"
+                android:textColorHint="@color/def_text_color_30"
+                app:layout_constraintTop_toBottomOf="@+id/tvHintCoinName" />
+
+            <TextView
+                android:id="@+id/tvCollectionAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:text="@string/hint_collection_address"
+                android:textColor="@color/def_text_color"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editAmountInput" />
+
+            <TextView
+                android:id="@+id/tvAddressBook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="@string/hint_address_book"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCollectionAddress"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvCollectionAddress" />
+
+            <EditText
+                android:id="@+id/editAddressInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/selector_edit_bg_box"
+                android:hint="@string/hint_input_collection_address"
+                android:maxLength="64"
+                android:minHeight="48dp"
+                android:padding="7dp"
+                android:paddingStart="7dp"
+                android:paddingTop="7dp"
+                android:paddingEnd="38dp"
+                android:paddingBottom="7dp"
+                android:textColorHint="@color/def_text_color_30"
+                app:layout_constraintTop_toBottomOf="@+id/tvCollectionAddress" />
+
+            <ImageView
+                android:id="@+id/ivScan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
+                android:padding="4dp"
+                android:src="@drawable/icon_scan_purple"
+                app:layout_constraintBottom_toBottomOf="@+id/editAddressInput"
+                app:layout_constraintEnd_toEndOf="@+id/editAddressInput"
+                app:layout_constraintTop_toTopOf="@+id/editAddressInput" />
+
+            <TextView
+                android:id="@+id/tvHintFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:text="@string/hint_fee"
+                android:textColor="@color/def_text_color"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editAddressInput" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:text="@string/hint_slow"
+                android:textColor="@color/def_text_color"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/sbQuota"
+                app:layout_constraintStart_toStartOf="@+id/sbQuota" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="18dp"
+                android:text="@string/hint_fast"
+                android:textColor="@color/def_text_color"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/sbQuota"
+                app:layout_constraintEnd_toEndOf="@+id/sbQuota" />
+
+            <SeekBar
+                android:id="@+id/sbQuota"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:background="@android:color/transparent"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:max="100"
+                android:maxHeight="5dp"
+                android:progress="35"
+                android:progressDrawable="@drawable/progress_bar_transfer"
+                android:splitTrack="false"
+                android:thumb="@drawable/icon_transfer_thumb"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvHintFee" />
+
+            <TextView
+                android:id="@+id/tvFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:textColor="@color/def_text_color"
+                android:textSize="10sp"
+                app:layout_constraintStart_toStartOf="@+id/sbQuota"
+                app:layout_constraintTop_toBottomOf="@+id/sbQuota" />
+
+            <Button
+                android:id="@+id/btnConfirm"
+                style="@style/BaseButtonPrimary"
+                android:layout_width="238dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="74dp"
+                android:layout_marginBottom="50dp"
+                android:text="@string/action_tvHintFee"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sbQuota" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

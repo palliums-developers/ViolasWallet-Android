@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/def_activity_vice_bg">
+
+    <ImageView
+        android:id="@+id/ivHeader"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_196"
+        android:background="@drawable/bg_wallet_main"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.shehuan.niv.NiceImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="@dimen/dp_75"
+        android:layout_height="@dimen/dp_75"
+        android:layout_marginTop="@dimen/dp_64"
+        android:src="@mipmap/ic_launcher_round"
+        app:border_color="@color/white"
+        app:border_width="@dimen/dp_2"
+        app:is_circle="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvNickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_9"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_15"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
+
+    <com.palliums.widget.MenuItemView
+        android:id="@+id/mivWalletManagement"
+        style="@style/MenuItemView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivHeader"
+        app:mivStartIcon="@mipmap/ic_me_wallet_management"
+        app:mivShowBottomLine="false"
+        app:mivStartTitleText="@string/me_wallet_management" />
+
+    <com.palliums.widget.MenuItemView
+        android:id="@+id/mivTransferRecord"
+        style="@style/MenuItemView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mivWalletManagement"
+        app:mivShowBottomLine="false"
+        android:visibility="gone"
+        app:mivStartIcon="@mipmap/ic_me_transfer_record"
+        app:mivStartTitleText="@string/me_transfer_record" />
+
+    <com.palliums.widget.MenuItemView
+        android:id="@+id/mivAddressBook"
+        style="@style/MenuItemView"
+        android:layout_marginTop="@dimen/item_spacing"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mivTransferRecord"
+        app:mivShowBottomLine="false"
+        app:mivStartIcon="@mipmap/ic_me_address_book"
+        app:mivStartTitleText="@string/me_address_book" />
+
+    <com.palliums.widget.MenuItemView
+        android:id="@+id/mivSettings"
+        style="@style/MenuItemView"
+        android:layout_marginTop="@dimen/item_spacing"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mivAddressBook"
+        app:mivShowBottomLine="false"
+        app:mivStartIcon="@mipmap/ic_me_settings"
+        app:mivStartTitleText="@string/me_settings" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

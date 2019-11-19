@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/def_activity_vice_bg"
+    tools:context=".ui.backup.ConfirmMnemonicActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/page_spacing_start"
+        android:paddingEnd="@dimen/page_spacing_end">
+
+        <TextView
+            android:id="@+id/tv_confirm_mnemonic_desc_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            android:text="@string/confirm_mnemonic_content_01"
+            android:textColor="@color/def_text_font_black"
+            android:textSize="@dimen/sp_14"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.zhy.view.flowlayout.TagFlowLayout
+            android:id="@+id/fl_confirm_mnemonic_words_sel"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_258"
+            android:layout_marginTop="@dimen/dp_33"
+            android:background="@drawable/shape_rectangle_white"
+            android:paddingStart="@dimen/dp_14"
+            android:paddingTop="@dimen/dp_24"
+            android:paddingEnd="@dimen/dp_14"
+            android:paddingBottom="@dimen/dp_22"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_confirm_mnemonic_desc_1" />
+
+        <com.zhy.view.flowlayout.TagFlowLayout
+            android:id="@+id/fl_confirm_mnemonic_words"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_258"
+            android:layout_marginTop="@dimen/dp_14"
+            android:background="@drawable/shape_rectangle_white"
+            android:paddingStart="@dimen/dp_14"
+            android:paddingTop="@dimen/dp_24"
+            android:paddingEnd="@dimen/dp_14"
+            android:paddingBottom="@dimen/dp_22"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fl_confirm_mnemonic_words_sel" />
+
+        <Button
+            android:id="@+id/tv_confirm_mnemonic_complete"
+            style="@style/BaseButtonPrimary"
+            android:layout_width="@dimen/dp_238"
+            android:layout_height="@dimen/dp_40"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_105"
+            android:text="@string/btn_complete"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fl_confirm_mnemonic_words" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

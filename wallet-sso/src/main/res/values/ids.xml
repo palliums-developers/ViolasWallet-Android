@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="group_list_layout_data" type="id"/>
+    <item name="view_click_time" type="id"/>
+    <item name="layout_backup_now_wallet" type="id" />
+</resources>

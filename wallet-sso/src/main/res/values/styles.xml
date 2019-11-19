@@ -1,11 +1,92 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:screenOrientation">portrait</item>
+        <item name="android:hyphenationFrequency" tools:ignore="NewApi">none</item>
+        <item name="android:windowAnimationStyle">@style/AppWindowAnimation</item>
+    </style>
+
+    <style name="AppTheme.Launcher">
+        <item name="android:windowAnimationStyle">@style/LauncherWindowAnimation</item>
+    </style>
+
+    <style name="AppTheme.Launcher.Translucent">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="AppWindowAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_right_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_left_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_left_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_right_out</item>
+    </style>
+
+    <style name="LauncherWindowAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_fade_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@null</item>
+        <item name="android:activityCloseExitAnimation">@null</item>
+    </style>
+
+    <style name="BaseButton">
+        <item name="android:width">282dp</item>
+        <item name="android:height">46dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="BaseButtonDeputy" parent="BaseButton">
+        <item name="android:background">@drawable/selector_btn_bg_deputy</item>
+    </style>
+
+    <style name="BaseButtonPrimary" parent="BaseButton">
+        <item name="android:background">@drawable/selector_btn_bg_primary</item>
+    </style>
+
+    <style name="BaseSwitchButton">
+        <item name="BackDrawable">@drawable/selector_bg_switch</item>
+        <item name="ThumbDrawable">@drawable/shape_bg_switch_thumb</item>
+        <item name="ThumbMarginBottom">0dp</item>
+        <item name="ThumbMarginLeft">0dp</item>
+        <item name="ThumbMarginRight">0dp</item>
+        <item name="ThumbMarginTop">0dp</item>
+    </style>
+
+    <style name="MenuItemView">
+        <item name="android:layout_width">@dimen/dp_0</item>
+        <item name="android:layout_height">@dimen/dp_60</item>
+        <item name="android:paddingStart">@dimen/dp_14</item>
+        <item name="android:paddingEnd">@dimen/dp_16</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="mivStartTitleTextSize">@dimen/sp_16</item>
+        <item name="mivStartTitleTextColor">@color/def_text_title</item>
+        <item name="mivStartDescTextSize">@dimen/sp_12</item>
+        <item name="mivStartDescTextColor">@color/def_text_desc</item>
+        <item name="mivEndDescTextSize">@dimen/sp_16</item>
+        <item name="mivEndDescTextColor">@color/def_text_key</item>
+        <item name="android:background">@drawable/bg_menu_item</item>
+    </style>
+
+    <style name="MenuItemView.About">
+        <item name="mivShowEndArrow">false</item>
+    </style>
+
+    <style name="EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/def_text_title</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textColorHint">@color/def_text_hint</item>
+        <item name="android:background">@drawable/selector_edit_bg_line</item>
+        <item name="android:layout_height">@dimen/dp_51</item>
+        <item name="android:layout_width">@dimen/dp_0</item>
+        <item name="android:layout_marginStart">@dimen/dp_20</item>
+        <item name="android:layout_marginEnd">@dimen/dp_23</item>
     </style>
 
 </resources>

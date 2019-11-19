@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tab_wallet"
+        android:icon="@android:drawable/ic_media_play"
+        android:title="钱包" />
+    <item
+        android:id="@+id/tab_market"
+        android:icon="@android:drawable/ic_media_play"
+        android:title="市场" />
+    <item
+        android:id="@+id/tab_me"
+        android:icon="@android:drawable/ic_media_play"
+        android:title="我的 " />
+</menu>
