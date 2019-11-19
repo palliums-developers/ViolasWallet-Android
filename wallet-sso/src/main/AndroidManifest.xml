@@ -102,6 +102,15 @@
         <activity
             android:name=".ui.tokenInfo.TokenInfoActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.verification.PhoneVerificationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.verification.EmailVerificationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.authentication.AuthenticationActivity"
+            android:screenOrientation="portrait" />
 
         <!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data

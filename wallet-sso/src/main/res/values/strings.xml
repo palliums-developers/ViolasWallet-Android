@@ -212,4 +212,11 @@
     <string name="hint_unsupported_coin">不支持的币种</string>
 
     <string name="app_slogan">SSO钱包</string>
+
+    <string name="verification_phone_title">手机验证</string>
+    <string name="verification_email_title">邮箱验证</string>
+    <string name="btn_bind">绑定</string>
+
+    <string name="authentication_title">身份认证</string>
+
 </resources>
