@@ -149,7 +149,7 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
         }
 
         if (mAccountManager.isFastIntoWallet()) {
-            fragmentManager?.let {
+            activity?.supportFragmentManager?.let {
                 FastIntoWalletDialog()
                     .show(it, "fast")
             }

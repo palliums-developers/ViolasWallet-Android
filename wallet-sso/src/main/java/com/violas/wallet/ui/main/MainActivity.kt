@@ -56,7 +56,7 @@ class MainActivity : BaseAppActivity() {
                     it.setIcon(R.drawable.table_wallet_selected);
                 }
                 R.id.tab_market -> {
-                    it.setIcon(R.drawable.table_market_selected);
+                    it.setIcon(R.drawable.table_apply_selected);
                 }
                 R.id.tab_me -> {
                     it.setIcon(R.drawable.table_me_selected);
@@ -78,7 +78,7 @@ class MainActivity : BaseAppActivity() {
 
     private fun resetToDefaultIcon() {
         bottom_navigation.menu.findItem(R.id.tab_wallet).setIcon(R.drawable.table_wallet_normal)
-        bottom_navigation.menu.findItem(R.id.tab_market).setIcon(R.drawable.table_market_normal)
+        bottom_navigation.menu.findItem(R.id.tab_market).setIcon(R.drawable.table_apply_normal)
         bottom_navigation.menu.findItem(R.id.tab_me).setIcon(R.drawable.table_me_normal)
     }
 

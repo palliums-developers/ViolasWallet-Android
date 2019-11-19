@@ -46,11 +46,6 @@
                         android:textStyle="bold"
                         tools:text="BTC 钱包" />
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:src="@drawable/icon_down_arrow_white" />
                 </LinearLayout>
 
                 <ImageView
@@ -190,7 +185,7 @@
                             android:layout_marginStart="5dp"
                             android:paddingTop="6dp"
                             android:text="@string/transfer"
-                            android:textColor="#22126C"
+                            android:textColor="@color/def_text_color"
                             android:textSize="16sp" />
                     </LinearLayout>
 
@@ -219,7 +214,7 @@
                             android:layout_marginStart="8dp"
                             android:paddingTop="6dp"
                             android:text="@string/collection"
-                            android:textColor="#22126C"
+                            android:textColor="@color/def_text_color"
                             android:textSize="16sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -287,17 +282,6 @@
                     android:textColor="#3D3949"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/ivAddAssert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="9dp"
-                    android:layout_marginEnd="8dp"
-                    android:padding="6dp"
-                    android:src="@drawable/icon_add_assert"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
