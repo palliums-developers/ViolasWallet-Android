@@ -118,7 +118,7 @@ public class MenuItemView extends FrameLayout {
         boolean showBottomLine = true;
 
         // 尾部箭头
-        Drawable endArrow = null;
+        Drawable endArrow = ResourcesUtilKt.getDrawable(R.drawable.ic_right_arrow_gray, context);
         // 分界线颜色
         int dividingLineColor = ResourcesUtilKt.getColor(R.color.black_06, context);
 
@@ -148,7 +148,9 @@ public class MenuItemView extends FrameLayout {
             showTopLine = array.getBoolean(R.styleable.MenuItemView_mivShowTopLine, false);
             showBottomLine = array.getBoolean(R.styleable.MenuItemView_mivShowBottomLine, true);
 
-            endArrow = array.getDrawable(R.styleable.MenuItemView_mivEndArrow);
+            if (array.hasValue(R.styleable.MenuItemView_mivEndArrow)) {
+                endArrow = array.getDrawable(R.styleable.MenuItemView_mivEndArrow);
+            }
             dividingLineColor = array.getColor(R.styleable.MenuItemView_mivDividingLineColor, dividingLineColor);
 
             array.recycle();
