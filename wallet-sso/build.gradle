@@ -104,9 +104,6 @@ dependencies {
     // see https://github.com/ittianyu/BottomNavigationViewEx
     implementation 'com.github.ittianyu:BottomNavigationViewEx:2.0.4'
 
-    // see https://github.com/hongyangAndroid/FlowLayout
-    implementation 'com.hyman:flowlayout-lib:1.1.2'
-
     debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
     releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
 

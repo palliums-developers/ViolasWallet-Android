@@ -14,10 +14,11 @@
         android:paddingEnd="@dimen/page_spacing_end">
 
         <TextView
-            android:id="@+id/tv_confirm_mnemonic_desc_1"
-            android:layout_width="wrap_content"
+            android:id="@+id/vDesc1"
+            android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_16"
+            android:gravity="center"
             android:text="@string/confirm_mnemonic_content_01"
             android:textColor="@color/def_text_font_black"
             android:textSize="@dimen/sp_14"
@@ -25,8 +26,23 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.zhy.view.flowlayout.TagFlowLayout
-            android:id="@+id/fl_confirm_mnemonic_words_sel"
+        <TextView
+            android:id="@+id/vTips"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_3"
+            android:gravity="center"
+            android:text="@string/confirm_mnemonic_tips_01"
+            android:textColor="@color/def_text_warn"
+            android:textSize="@dimen/sp_14"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vDesc1"
+            tools:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vConfirmedWords"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_258"
             android:layout_marginTop="@dimen/dp_33"
@@ -37,10 +53,11 @@
             android:paddingBottom="@dimen/dp_22"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_confirm_mnemonic_desc_1" />
+            app:layout_constraintTop_toBottomOf="@id/vDesc1"
+            tools:listitem="@layout/item_mnemonic_word" />
 
-        <com.zhy.view.flowlayout.TagFlowLayout
-            android:id="@+id/fl_confirm_mnemonic_words"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vSourceWords"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_258"
             android:layout_marginTop="@dimen/dp_14"
@@ -51,10 +68,11 @@
             android:paddingBottom="@dimen/dp_22"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/fl_confirm_mnemonic_words_sel" />
+            app:layout_constraintTop_toBottomOf="@id/vConfirmedWords"
+            tools:listitem="@layout/item_mnemonic_word" />
 
         <Button
-            android:id="@+id/tv_confirm_mnemonic_complete"
+            android:id="@+id/vComplete"
             style="@style/BaseButtonPrimary"
             android:layout_width="@dimen/dp_238"
             android:layout_height="@dimen/dp_40"
@@ -64,7 +82,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/fl_confirm_mnemonic_words" />
+            app:layout_constraintTop_toBottomOf="@id/vSourceWords" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

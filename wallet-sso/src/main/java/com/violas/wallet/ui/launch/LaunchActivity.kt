@@ -8,7 +8,7 @@ import com.violas.wallet.ui.identity.IdentityActivity
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.coroutines.*
 
-class LaunchActivity : BaseAppActivity(), CoroutineScope by MainScope() {
+class LaunchActivity : BaseAppActivity() {
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_launch

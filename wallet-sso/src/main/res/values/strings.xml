@@ -28,6 +28,7 @@
     <string name="confirm_mnemonic_title">确认助记词</string>
     <string name="confirm_mnemonic_content_01">请按顺序点击助记词，以确认您正确备份</string>
     <string name="confirm_mnemonic_tips_01">助记词顺序不正确，请校对</string>
+    <string name="confirm_mnemonic_tips_02">请先按顺序点击所有助记词</string>
 
     <string name="account_label_identity">身份</string>
     <string name="account_label_other">创建/导入</string>
