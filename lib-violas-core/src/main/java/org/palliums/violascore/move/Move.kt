@@ -1,10 +1,15 @@
 package org.palliums.violascore.move
 
 import org.json.JSONObject
+import org.palliums.violascore.serialization.hexToBytes
 import java.io.InputStream
 import java.io.InputStreamReader
 
 object Move {
+    val defaultTokenAddress by lazy {
+        "7257c2417e4d1038e1817c8f283ace2e1041b3396cdbb099eb357bbee024d614".hexToBytes()
+    }
+
     fun decode(inputStream: InputStream): ByteArray {
         InputStreamReader(inputStream).use {
             val moveJson = it.readText()
@@ -25,17 +30,33 @@ object Move {
         return ByteArray(0)
     }
 
-    fun violasTransferTokenEncode(inputStream: InputStream, token: ByteArray): ByteArray {
-        return violasTokenEncode(inputStream, token, 156)
-    }
-
-    fun violasPublishTokenEncode(inputStream: InputStream, token: ByteArray): ByteArray {
-        return violasTokenEncode(inputStream, token, 149)
-    }
-
-    private fun violasTokenEncode(inputStream: InputStream, token: ByteArray, indexOf: Int): ByteArray {
+    fun violasTokenEncode(
+        inputStream: InputStream,
+        token: ByteArray
+    ): ByteArray {
         val decode = decode(inputStream)
-        System.arraycopy(token, 0, decode, indexOf, token.size)
+        val findAddressIndex = findAddressIndex(decode, defaultTokenAddress)
+        if (findAddressIndex != -1) {
+            System.arraycopy(token, 0, decode, findAddressIndex, token.size)
+        }
         return decode
+    }
+
+    fun findAddressIndex(moveCode: ByteArray, tokenAddress: ByteArray): Int {
+        for (index in moveCode.indices) {
+            if (moveCode[index] == tokenAddress[0]) {
+                var isSuccess = true
+                for (targetPosition in tokenAddress.indices) {
+                    if (moveCode[index + targetPosition] != tokenAddress[targetPosition]) {
+                        isSuccess = false
+                        break
+                    }
+                }
+                if (isSuccess) {
+                    return index
+                }
+            }
+        }
+        return -1
     }
 }

@@ -33,7 +33,7 @@ class ExampleInstrumentedTest {
 
         val account = LibraWallet(WalletConfig(joinToString)).generateAccount(0)
 
-        val moveEncode = Move.violasPublishTokenEncode(
+        val moveEncode = Move.violasTokenEncode(
             context.assets.open("move/token_publish.json"),
             "05599ef248e215849cc599f563b4883fc8aff31f1e43dff1e3ebe4de1370e054".hexToBytes()
         )

@@ -96,7 +96,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     ) {
         val senderAddress = account.getAddress().toHex()
         getSequenceNumber(senderAddress, { sequenceNumber ->
-            val moveEncode = Move.violasPublishTokenEncode(
+            val moveEncode = Move.violasTokenEncode(
                 context.assets.open("move/token_publish.json"),
                 tokenAddress.hexToBytes()
             )
@@ -169,7 +169,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         val senderAddress = account.getAddress().toHex()
         getSequenceNumber(senderAddress, {
 
-            val moveEncode = Move.violasTransferTokenEncode(
+            val moveEncode = Move.violasTokenEncode(
                 context.assets.open("move/token_transfer.json"),
                 tokenAddress.hexToBytes()
             )
