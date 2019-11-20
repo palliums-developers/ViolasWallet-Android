@@ -21,7 +21,7 @@ class ListingHandler<VO>(
     init {
 
         mListingController.getViewModel().listData.observe(mLifecycleOwner, Observer {
-            mListingController.getViewAdapter().setListData(it)
+            mListingController.getViewAdapter().setDataList(it)
         })
 
         mListingController.getViewModel().loadState.observe(mLifecycleOwner, Observer {

@@ -14,32 +14,32 @@ abstract class BaseViewHolder<VO>(view: View) :
     RecyclerView.ViewHolder(view), View.OnClickListener {
 
     private var itemIndex: Int = -1
-    private var itemDate: VO? = null
+    private var itemData: VO? = null
 
     /**
      * 防重点击处理，子类复写[onViewClick]来响应事件
      */
     final override fun onClick(view: View) {
-        if (!isFastMultiClick(view)) {
-            onViewClick(view, itemIndex, itemDate)
+        if (!isFastMultiClick(view, 200)) {
+            onViewClick(view, itemIndex, itemData)
         }
     }
 
-    fun bind(itemIndex: Int, itemDate: VO?) {
+    fun bind(itemIndex: Int, itemData: VO?) {
         this.itemIndex = itemIndex
-        this.itemDate = itemDate
-        onViewBind(itemIndex, itemDate)
+        this.itemData = itemData
+        onViewBind(itemIndex, itemData)
     }
 
-    abstract fun onViewBind(itemIndex: Int, itemDate: VO?)
+    abstract fun onViewBind(itemIndex: Int, itemData: VO?)
 
     /**
      * View点击回调，已防重点击处理
      * @param view
      * @param itemIndex
-     * @param itemDate
+     * @param itemData
      */
-    open fun onViewClick(view: View, itemIndex: Int, itemDate: VO?) {
+    open fun onViewClick(view: View, itemIndex: Int, itemData: VO?) {
 
     }
 }

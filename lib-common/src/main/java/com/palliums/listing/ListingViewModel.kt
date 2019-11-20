@@ -22,7 +22,7 @@ abstract class ListingViewModel<VO> : ViewModel() {
 
     val loadState = MutableLiveData<LoadState>()
     val tipsMessage = MutableLiveData<String>()
-    val listData = MutableLiveData<List<VO>>()
+    val listData = MutableLiveData<MutableList<VO>>()
 
     /**
      * 执行
@@ -101,7 +101,7 @@ abstract class ListingViewModel<VO> : ViewModel() {
     @WorkerThread
     protected abstract suspend fun loadData(
         vararg params: Any,
-        onSuccess: (List<VO>) -> Unit,
+        onSuccess: (MutableList<VO>) -> Unit,
         onFailure: (Throwable) -> Unit
     )
 }
