@@ -4,7 +4,7 @@ import android.content.Context
 import com.palliums.content.App
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 
-class PayApp : App() {
+class SSOApp : App() {
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(newBase)

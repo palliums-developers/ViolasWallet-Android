@@ -13,13 +13,13 @@ import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.smallraw.support.switchcompat.SwitchButton
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_manager_assert.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.coroutines.Dispatchers
@@ -81,44 +81,52 @@ class ManagerAssertActivity : BaseAppActivity() {
                     }
                     checkbox.isChecked = true
                 } else {
-                    PasswordInputDialog()
-                        .setConfirmListener { bytes, dialogFragment ->
-                            dialogFragment.dismiss()
-                            showProgress()
-                            launch(Dispatchers.IO) {
-                                val decrypt = SimpleSecurity.instance(applicationContext)
-                                    .decrypt(bytes, mAccount.privateKey)
-                                Arrays.fill(bytes, 0.toByte())
-                                if (decrypt == null) {
-                                    dismissProgress()
-                                    showToast(R.string.hint_password_error)
-                                    return@launch
-                                }
-                                DataRepository.getViolasService()
-                                    .publishToken(
-                                        applicationContext,
-                                        Account(KeyPair.fromSecretKey(decrypt)),
-                                        assertToken.tokenAddress
-                                    ) {
-                                        dismissProgress()
-                                        if (!it) {
-                                            this@ManagerAssertActivity.runOnUiThread {
-                                                checkbox.isChecked = false
-                                            }
-                                            showToast(getString(R.string.hint_assert_open_error))
-                                        } else {
-                                            mTokenManager.insert(checked, assertToken)
-                                        }
-                                    }
-                            }
-                        }
-                        .setCancelListener {
-                            checkbox.isChecked = false
-                        }
-                        .show(supportFragmentManager)
+                    showPasswordDialog(assertToken, checkbox, checked)
                 }
             }
         }
+    }
+
+    private fun showPasswordDialog(
+        assertToken: AssertToken,
+        checkbox: SwitchButton,
+        checked: Boolean
+    ) {
+        PasswordInputDialog()
+            .setConfirmListener { bytes, dialogFragment ->
+                dialogFragment.dismiss()
+                showProgress()
+                launch(Dispatchers.IO) {
+                    val decrypt = SimpleSecurity.instance(applicationContext)
+                        .decrypt(bytes, mAccount.privateKey)
+                    Arrays.fill(bytes, 0.toByte())
+                    if (decrypt == null) {
+                        dismissProgress()
+                        showToast(R.string.hint_password_error)
+                        return@launch
+                    }
+                    DataRepository.getViolasService()
+                        .publishToken(
+                            applicationContext,
+                            Account(KeyPair.fromSecretKey(decrypt)),
+                            assertToken.tokenAddress
+                        ) {
+                            dismissProgress()
+                            if (!it) {
+                                this@ManagerAssertActivity.runOnUiThread {
+                                    checkbox.isChecked = false
+                                }
+                                showToast(getString(R.string.hint_assert_open_error))
+                            } else {
+                                mTokenManager.insert(checked, assertToken)
+                            }
+                        }
+                }
+            }
+            .setCancelListener {
+                checkbox.isChecked = false
+            }
+            .show(supportFragmentManager)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
