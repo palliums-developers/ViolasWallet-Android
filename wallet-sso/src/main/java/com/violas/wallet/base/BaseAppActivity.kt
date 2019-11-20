@@ -69,7 +69,7 @@ abstract class BaseAppActivity : BaseActivity() {
 
                 setRootBackgroundColor(R.color.def_page_bg_light_primary)
 
-                setTitleLeftImageResource(R.drawable.icon_back_black)
+                setTitleLeftImageResource(R.drawable.ic_back_dark)
                 setTitleRightTextColor(R.color.def_text_font_black)
                 titleColor = R.color.def_text_font_black
             }
@@ -77,7 +77,7 @@ abstract class BaseAppActivity : BaseActivity() {
             PAGE_STYLE_DARK_BACKGROUND -> {
                 setRootBackgroundColor(R.color.def_page_bg_dark)
 
-                setTitleLeftImageResource(R.drawable.icon_back_white)
+                setTitleLeftImageResource(R.drawable.ic_back_light)
                 setTitleRightTextColor(R.color.white)
                 titleColor = R.color.white
             }
@@ -94,7 +94,7 @@ abstract class BaseAppActivity : BaseActivity() {
                 setTitleBackgroundColor(R.color.def_page_bg_light_primary)
                 setContentBackgroundColor(R.color.def_page_bg_light_secondary)
 
-                setTitleLeftImageResource(R.drawable.icon_back_black)
+                setTitleLeftImageResource(R.drawable.ic_back_dark)
                 setTitleRightTextColor(R.color.def_text_font_black)
                 titleColor = R.color.def_text_font_black
             }
@@ -103,7 +103,7 @@ abstract class BaseAppActivity : BaseActivity() {
                 setTitleBackgroundResource(R.drawable.bg_title_dark)
                 setContentBackgroundColor(R.color.def_page_bg_light_primary)
 
-                setTitleLeftImageResource(R.drawable.icon_back_white)
+                setTitleLeftImageResource(R.drawable.ic_back_light)
                 setTitleRightTextColor(R.color.white)
                 titleColor = R.color.white
             }
