@@ -15,7 +15,7 @@ class LaunchActivity : BaseAppActivity(), CoroutineScope by MainScope() {
     }
 
     override fun getPageStyle(): Int {
-        return TITLE_STYLE_DARK_BACKGROUND_NO_TITLE
+        return PAGE_STYLE_DARK_BACKGROUND_NO_TITLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

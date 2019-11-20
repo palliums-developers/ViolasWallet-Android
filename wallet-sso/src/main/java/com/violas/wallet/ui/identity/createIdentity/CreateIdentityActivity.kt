@@ -24,7 +24,7 @@ class CreateIdentityActivity : BaseAppActivity() {
     override fun getLayoutResId() = R.layout.activity_create_identity
 
     override fun getPageStyle(): Int {
-        return TITLE_STYLE_DARK_BACKGROUND
+        return PAGE_STYLE_DARK_BACKGROUND
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

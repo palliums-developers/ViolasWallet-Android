@@ -31,7 +31,7 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
     }
 
     override fun getPageStyle(): Int {
-        return TITLE_STYLE_PLIGHT_TITLE_SLIGHT_CONTENT
+        return PAGE_STYLE_PLIGHT_TITLE_SLIGHT_CONTENT
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

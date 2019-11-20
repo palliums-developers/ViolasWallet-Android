@@ -24,7 +24,7 @@ class MainActivity : BaseAppActivity() {
     }
 
     override fun getPageStyle(): Int {
-        return TITLE_STYLE_CUSTOM
+        return PAGE_STYLE_CUSTOM
     }
 
     override fun getLayoutResId(): Int {

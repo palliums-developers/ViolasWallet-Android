@@ -33,6 +33,7 @@
     <dimen name="dp_12">12dp</dimen>
     <dimen name="dp_13">13dp</dimen>
     <dimen name="dp_14">14dp</dimen>
+    <dimen name="dp_14.5" tools:ignore="MissingDefaultResource">14.5dp</dimen>
     <dimen name="dp_15">15dp</dimen>
     <dimen name="dp_16">16dp</dimen>
     <dimen name="dp_17">17dp</dimen>
@@ -115,7 +116,7 @@
     <!-- ==================尺寸表规范 end ================== -->
 
     <dimen name="height_status_bar">@dimen/dp_24</dimen>
-    <dimen name="height_title_bar">@dimen/dp_44</dimen>
-    <dimen name="height_top_bar">@dimen/dp_68</dimen>
+    <dimen name="height_title_bar">@dimen/dp_48</dimen>
+    <dimen name="height_top_bar">@dimen/dp_72</dimen>
 
 </resources>

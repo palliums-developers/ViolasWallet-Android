@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.View
 import com.palliums.base.BaseFragment
 import com.violas.wallet.R
-import com.violas.wallet.ui.account.management.AccountManagementActivity
 import com.violas.wallet.ui.addressBook.AddressBookActivity
+import com.violas.wallet.ui.authentication.AuthenticationActivity
 import com.violas.wallet.ui.setting.SettingActivity
+import com.violas.wallet.ui.verification.EmailVerificationActivity
+import com.violas.wallet.ui.verification.PhoneVerificationActivity
 import kotlinx.android.synthetic.main.fragment_me.*
 
 /**
@@ -22,27 +24,32 @@ class MeFragment : BaseFragment() {
     override fun onLazyInitView(savedInstanceState: Bundle?) {
         super.onLazyInitView(savedInstanceState)
 
-        mivWalletManagement.setOnClickListener(this)
-        mivTransferRecord.setOnClickListener(this)
-        mivAddressBook.setOnClickListener(this)
-        mivSettings.setOnClickListener(this)
+        vAuthentication.setOnClickListener(this)
+        vPhoneVerification.setOnClickListener(this)
+        vEmailVerification.setOnClickListener(this)
+        vAddressBook.setOnClickListener(this)
+        vSettings.setOnClickListener(this)
     }
 
     override fun onViewClick(view: View) {
         when (view.id) {
-            R.id.mivWalletManagement -> {
-                startActivity(Intent(_mActivity, AccountManagementActivity::class.java))
+            R.id.vAuthentication -> {
+                startActivity(Intent(_mActivity, AuthenticationActivity::class.java))
             }
 
-            R.id.mivTransferRecord -> {
-
+            R.id.vPhoneVerification -> {
+                startActivity(Intent(_mActivity, PhoneVerificationActivity::class.java))
             }
 
-            R.id.mivAddressBook -> {
+            R.id.vEmailVerification -> {
+                startActivity(Intent(_mActivity, EmailVerificationActivity::class.java))
+            }
+
+            R.id.vAddressBook -> {
                 AddressBookActivity.start(_mActivity)
             }
 
-            R.id.mivSettings -> {
+            R.id.vSettings -> {
                 startActivity(Intent(_mActivity, SettingActivity::class.java))
             }
         }

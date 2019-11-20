@@ -46,6 +46,7 @@
     <color name="color_0085E4">#0085E4</color>
     <color name="color_282636">#282636</color>
     <color name="color_282636_10">#1A282636</color>
+    <color name="color_1465B1">#1465B1</color>
 
     <color name="def_activity_bg">@color/white</color>
     <color name="def_activity_vice_bg">@color/color_F7F7F9</color>
