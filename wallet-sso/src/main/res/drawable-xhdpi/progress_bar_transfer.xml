@@ -14,7 +14,7 @@
         <clip>
             <shape>
                 <corners android:radius="0dp" />
-                <solid android:color="@color/colorAccent" />
+                <gradient android:startColor="#00D1AF" android:endColor="#0085E4"/>
                 <stroke
                     android:width="2dp"
                     android:color="@color/transparent" />
@@ -26,7 +26,7 @@
         <clip>
             <shape>
                 <corners android:radius="0dp" />
-                <solid android:color="@color/colorAccent" />
+                <gradient android:startColor="#00D1AF" android:endColor="#0085E4"/>
                 <stroke
                     android:width="2dp"
                     android:color="@color/transparent" />
