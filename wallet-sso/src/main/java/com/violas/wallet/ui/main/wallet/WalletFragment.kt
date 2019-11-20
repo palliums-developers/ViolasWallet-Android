@@ -212,7 +212,6 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
     private fun setViewData(currentAccount: AccountDO) {
         tvAddress.text = currentAccount.address
         val coinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
-        tvWalletType.text = "${coinType.coinName()} Wallet"
         tvUnit.text = coinType.coinUnit()
         setAmount(currentAccount)
     }

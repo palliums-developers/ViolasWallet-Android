@@ -44,6 +44,7 @@
                         android:textColor="@color/white"
                         android:textSize="20sp"
                         android:textStyle="bold"
+                        android:text="SSO Wallet"
                         tools:text="BTC 钱包" />
 
                 </LinearLayout>
