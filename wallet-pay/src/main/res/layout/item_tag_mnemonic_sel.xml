@@ -9,7 +9,7 @@
         android:layout_width="@dimen/dp_89"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/dp_8"
-        android:background="@drawable/selector_bg_tag_mnemonic_sel"
+        android:background="@drawable/selector_bg_mnemonic_word_comfirmed"
         android:gravity="center_horizontal"
         android:paddingTop="@dimen/dp_9"
         android:paddingBottom="@dimen/dp_8"

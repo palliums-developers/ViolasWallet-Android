@@ -89,16 +89,16 @@ class AddWalletViewHolder(view: View, private val onItemClick: (Int) -> Unit) :
         itemView.setOnClickListener(this)
     }
 
-    override fun onViewBind(itemIndex: Int, itemDate: AddWalletVo?) {
-        itemDate?.let {
+    override fun onViewBind(itemIndex: Int, itemData: AddWalletVo?) {
+        itemData?.let {
             itemView.ivLogo.setImageResource(it.logoId)
             itemView.tvCoinName.text = it.coinName
             itemView.tvAccountType.text = it.chainName
         }
     }
 
-    override fun onViewClick(view: View, itemIndex: Int, itemDate: AddWalletVo?) {
-        itemDate?.let {
+    override fun onViewClick(view: View, itemIndex: Int, itemData: AddWalletVo?) {
+        itemData?.let {
             onItemClick.invoke(it.accountType)
         }
     }
@@ -124,7 +124,7 @@ class AddWalletViewModel : ListingViewModel<AddWalletVo>() {
 
     override suspend fun loadData(
         vararg params: Any,
-        onSuccess: (List<AddWalletVo>) -> Unit,
+        onSuccess: (MutableList<AddWalletVo>) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
         val listData = arrayListOf(

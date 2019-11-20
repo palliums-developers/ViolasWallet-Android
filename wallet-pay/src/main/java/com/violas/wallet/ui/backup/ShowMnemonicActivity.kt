@@ -3,13 +3,10 @@ package com.violas.wallet.ui.backup
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
 import com.palliums.utils.start
 import com.violas.wallet.R
-import com.zhy.view.flowlayout.FlowLayout
-import com.zhy.view.flowlayout.TagAdapter
 import kotlinx.android.synthetic.main.activity_show_mnemonic.*
 
 /**
@@ -37,9 +34,6 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
         }
     }
 
-    lateinit var words: ArrayList<MnemonicWordModel>
-    lateinit var adapter: TagAdapter<MnemonicWordModel>
-
     override fun getLayoutResId(): Int {
         return R.layout.activity_show_mnemonic
     }
@@ -53,41 +47,27 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
 
         setTitle(R.string.show_mnemonic_title)
         if (intent.getBooleanExtra(INTENT_KET_JUST_SHOW, false)) {
-            tv_show_mnemonic_next_step.visibility = View.GONE
+            vNextStep.visibility = View.GONE
         } else {
-            tv_show_mnemonic_next_step.setOnClickListener(this)
+            vNextStep.setOnClickListener(this)
         }
 
         init()
     }
 
     private fun init() {
-        words = arrayListOf()
+        val words: ArrayList<WordVO> = arrayListOf()
         mnemonicWords!!.forEachIndexed { index, word ->
-            words.add(MnemonicWordModel(word, index))
+            words.add(WordVO(word, index, false))
         }
 
-        adapter = object : TagAdapter<MnemonicWordModel>(words) {
-            override fun getView(
-                parent: FlowLayout,
-                position: Int,
-                wordModel: MnemonicWordModel
-            ): View {
-                val view = LayoutInflater.from(this@ShowMnemonicActivity)
-                    .inflate(R.layout.item_tag_mnemonic, fl_show_mnemonic_words, false)
-
-                val word = view.findViewById<TextView>(R.id.tv_word)
-                word.text = wordModel.word
-
-                return view
-            }
-        }
-        fl_show_mnemonic_words.adapter = adapter
+        vSourceWords.layoutManager = GridLayoutManager(this, 3)
+        vSourceWords.adapter = WordViewAdapter(words)
     }
 
     override fun onViewClick(view: View) {
         when (view) {
-            tv_show_mnemonic_next_step -> {
+            vNextStep -> {
                 getBackupIntent(ConfirmMnemonicActivity::class.java)
                     .start(this, BACKUP_REQUEST_CODE)
             }

@@ -40,6 +40,8 @@
     <color name="color_E54040">#E54040</color>
     <color name="color_13B788">#13B788</color>
     <color name="color_FB8F0B">#FB8F0B</color>
+    <color name="color_D4D3D6">#D4D3D6</color>
+    <color name="color_504ACB">#504ACB</color>
 
     <color name="def_activity_bg">@color/white</color>
     <color name="def_activity_vice_bg">@color/color_F7F7F9</color>

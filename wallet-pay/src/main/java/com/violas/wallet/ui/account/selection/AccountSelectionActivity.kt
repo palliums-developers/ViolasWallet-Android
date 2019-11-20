@@ -108,8 +108,8 @@ class AccountSelectionActivity : BaseAppActivity() {
             itemView.setOnClickListener(this)
         }
 
-        override fun onViewBind(itemIndex: Int, itemDate: AccountLabelVo?) {
-            itemDate?.let {
+        override fun onViewBind(itemIndex: Int, itemData: AccountLabelVo?) {
+            itemData?.let {
                 ivAccountLabel.setImageResource(
                     when (it.accountType) {
                         AccountType.BTC -> {
@@ -144,8 +144,8 @@ class AccountSelectionActivity : BaseAppActivity() {
             }
         }
 
-        override fun onViewClick(view: View, itemIndex: Int, itemDate: AccountLabelVo?) {
-            itemDate?.let {
+        override fun onViewClick(view: View, itemIndex: Int, itemData: AccountLabelVo?) {
+            itemData?.let {
                 onItemClick.invoke(itemIndex)
             }
         }

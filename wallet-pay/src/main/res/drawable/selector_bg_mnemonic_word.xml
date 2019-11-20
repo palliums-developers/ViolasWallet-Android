@@ -11,17 +11,11 @@
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <corners android:radius="@dimen/dp_3" />
-            <stroke android:width="@dimen/dp_1" android:color="@color/color_3C3848_50" />
-            <solid android:color="@color/gray_19" />
-        </shape>
-    </item>
-
-    <item>
-        <shape android:shape="rectangle">
-            <corners android:radius="@dimen/dp_3" />
-            <stroke android:width="@dimen/dp_1" android:color="@color/color_3C3848_50" />
+            <stroke android:width="@dimen/dp_1" android:color="@color/black" />
             <solid android:color="@color/white" />
         </shape>
     </item>
+
+    <item android:drawable="@drawable/bg_mnemonic_word_normal" />
 
 </selector>
