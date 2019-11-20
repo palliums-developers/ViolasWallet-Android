@@ -34,7 +34,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
 
         val statusBarHeight = StatusBarUtil.getStatusBarHeight(this)
         vTitleBar.setPadding(0, statusBarHeight, 0, 0)
-        vTitleBar.layoutParams.height = DensityUtility.dp2px(this, 44) + statusBarHeight
+        vTitleBar.layoutParams.height = DensityUtility.dp2px(this, 48) + statusBarHeight
     }
 
     override fun onDestroy() {
@@ -110,7 +110,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
 
     fun setTitleBackgroundResource(@DrawableRes resId: Int) {
         if (resId != 0) {
-            vTitleBarBackground.setImageResource(resId)
+            vTitleBarBackground.setBackgroundResource(resId)
         }
     }
 

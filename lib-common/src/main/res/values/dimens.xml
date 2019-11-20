@@ -116,7 +116,7 @@
     <!-- ==================尺寸表规范 end ================== -->
 
     <dimen name="height_status_bar">@dimen/dp_24</dimen>
-    <dimen name="height_title_bar">@dimen/dp_44</dimen>
-    <dimen name="height_top_bar">@dimen/dp_68</dimen>
+    <dimen name="height_title_bar">@dimen/dp_48</dimen>
+    <dimen name="height_top_bar">@dimen/dp_72</dimen>
 
 </resources>
