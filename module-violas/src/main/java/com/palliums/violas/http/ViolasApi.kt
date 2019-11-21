@@ -32,29 +32,29 @@ interface ViolasApi {
         @Query("addr") address: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
-    ): ViolasApiResponse<List<TransactionRecordDTO>>
+    ): ListResponse<TransactionRecordDTO>
 
     @GET("violas/balance")
     fun getBalance(
         @Query("addr") address: String,
         @Query("modu") module: String
-    ): Single<ViolasApiResponse<BalanceDTO>>
+    ): Single<Response<BalanceDTO>>
 
     @GET("violas/balance")
-    fun getBalance(@Query("addr") address: String): Single<ViolasApiResponse<BalanceDTO>>
+    fun getBalance(@Query("addr") address: String): Single<Response<BalanceDTO>>
 
     @GET("violas/seqnum")
-    fun getSequenceNumber(@Query("addr") address: String): Single<ViolasApiResponse<Long>>
+    fun getSequenceNumber(@Query("addr") address: String): Single<Response<Long>>
 
     @POST("violas/transaction")
-    fun pushTx(@Body requestBody: RequestBody): Single<ViolasApiResponse<Any>>
+    fun pushTx(@Body requestBody: RequestBody): Single<Response<Any>>
 
     @GET("violas/currency")
-    fun getSupportCurrency(): Single<ViolasApiResponse<List<SupportCurrencyDTO>>>
+    fun getSupportCurrency(): Single<ListResponse<SupportCurrencyDTO>>
 
     @GET("violas/module")
     fun checkRegisterToken(
         @Query("addr") address: String,
         @Query("modu") module: String
-    ): Single<ViolasApiResponse<Int>>
+    ): Single<Response<Int>>
 }

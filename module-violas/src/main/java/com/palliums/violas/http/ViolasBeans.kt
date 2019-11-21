@@ -9,7 +9,7 @@ import com.palliums.net.ApiResponse
  * <p>
  * desc: Violas bean
  */
-open class ViolasApiResponse<T> : ApiResponse {
+open class Response<T> : ApiResponse {
 
     @SerializedName(value = "code")
     var errorCode: Int = 0
@@ -32,6 +32,8 @@ open class ViolasApiResponse<T> : ApiResponse {
         return errorCode
     }
 }
+
+class ListResponse<T> : Response<List<T>>()
 
 data class TransactionRecordDTO(
     val amount: String,
