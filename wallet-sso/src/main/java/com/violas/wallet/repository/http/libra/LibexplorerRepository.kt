@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.libra
 
-import com.palliums.net.checkResponse
+import com.palliums.net.checkResponseWithResult
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.http.TransactionRepository
 import com.violas.wallet.ui.record.TransactionRecordVO
@@ -22,7 +22,7 @@ class LibexplorerRepository(private val libexplorerApi: LibexplorerApi) :
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
-        checkResponse {
+        checkResponseWithResult {
             libexplorerApi.getTransactionRecord(address, pageSize, pageNumber)
 
         }.onSuccess {

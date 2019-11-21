@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.violas
 
-import com.palliums.net.checkResponse
+import com.palliums.net.checkResponseWithResult
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.http.TransactionRepository
 import com.violas.wallet.ui.record.TransactionRecordVO
@@ -22,7 +22,7 @@ class ViolasRepository(private val violasApi: ViolasApi) :
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
-        checkResponse {
+        checkResponseWithResult {
             violasApi.getTransactionRecord(address, pageSize, (pageNumber - 1) * pageSize)
 
         }.onSuccess {

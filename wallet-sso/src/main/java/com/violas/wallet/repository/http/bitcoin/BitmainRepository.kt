@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.bitcoin
 
-import com.palliums.net.checkResponse
+import com.palliums.net.checkResponseWithResult
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.http.TransactionRepository
@@ -23,7 +23,7 @@ class BitmainRepository(private val bitmainApi: BitmainApi) :
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
-        checkResponse {
+        checkResponseWithResult {
             bitmainApi.getTransactionRecord(address, pageSize, pageNumber)
 
         }.onSuccess {
