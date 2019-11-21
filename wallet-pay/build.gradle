@@ -87,6 +87,10 @@ dependencies {
     implementation project(':lib-violas-core')
     implementation project(':lib-btc-core')
 
+    testImplementation "junit:junit:$versions.test_junit"
+    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
+
     kapt "androidx.room:room-compiler:$versions.androidx_room"
     implementation "androidx.room:room-runtime:$versions.androidx_room"
     implementation "androidx.room:room-ktx:$versions.androidx_room"

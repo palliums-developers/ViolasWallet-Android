@@ -29,6 +29,10 @@ dependencies {
 
     implementation project(':lib-common')
 
+    testImplementation "junit:junit:$versions.test_junit"
+    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
+
     // see https://github.com/square/retrofit
     api "com.squareup.retrofit2:retrofit:$versions.retrofit2"
     api "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit2"
