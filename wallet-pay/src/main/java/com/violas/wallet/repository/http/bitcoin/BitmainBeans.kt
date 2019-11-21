@@ -9,7 +9,7 @@ import com.palliums.net.ApiResponse
  * <p>
  * desc: 比特大陆bean
  */
-open class BitmainResponse<T> : ApiResponse {
+open class Response<T> : ApiResponse {
 
     @SerializedName(value = "err_no")
     var errorCode: Int = 0
@@ -33,7 +33,7 @@ open class BitmainResponse<T> : ApiResponse {
     }
 }
 
-open class BitmainPagingResponse<T> : BitmainResponse<BitmainPagingResponse.Data<T>>() {
+class ListResponse<T> : Response<ListResponse.Data<T>>() {
 
     data class Data<T>(
         @SerializedName(value = "pagesize")
@@ -47,52 +47,48 @@ open class BitmainPagingResponse<T> : BitmainResponse<BitmainPagingResponse.Data
     )
 }
 
-class BitmainTransactionRecordResponse :
-    BitmainPagingResponse<BitmainTransactionRecordResponse.Bean>() {
+data class TransactionRecordDTO(
+    val block_hash: String,
+    val block_height: Int,
+    val block_time: Int,
+    val confirmations: Int,
+    val created_at: Int,
+    val fee: Int,
+    val hash: String,
+    val inputs: List<InputDTO>,
+    val inputs_count: Int,
+    val inputs_value: Long,
+    val is_coinbase: Boolean,
+    val is_double_spend: Boolean,
+    val is_sw_tx: Boolean,
+    val lock_time: Int,
+    val outputs: List<OutputDTO>,
+    val outputs_count: Int,
+    val outputs_value: Long,
+    val sigops: Int,
+    val size: Int,
+    val version: Int,
+    val vsize: Int,
+    val weight: Int,
+    val witness_hash: String
+)
 
-    data class Bean(
-        val block_hash: String,
-        val block_height: Int,
-        val block_time: Int,
-        val confirmations: Int,
-        val created_at: Int,
-        val fee: Int,
-        val hash: String,
-        val inputs: List<Input>,
-        val inputs_count: Int,
-        val inputs_value: Long,
-        val is_coinbase: Boolean,
-        val is_double_spend: Boolean,
-        val is_sw_tx: Boolean,
-        val lock_time: Int,
-        val outputs: List<Output>,
-        val outputs_count: Int,
-        val outputs_value: Long,
-        val sigops: Int,
-        val size: Int,
-        val version: Int,
-        val vsize: Int,
-        val weight: Int,
-        val witness_hash: String
-    )
+data class InputDTO(
+    val prev_addresses: List<String>,
+    val prev_position: Int,
+    val prev_tx_hash: String,
+    val prev_type: String,
+    val prev_value: Int,
+    val sequence: Long
+)
 
-    data class Input(
-        val prev_addresses: List<String>,
-        val prev_position: Int,
-        val prev_tx_hash: String,
-        val prev_type: String,
-        val prev_value: Int,
-        val sequence: Long
-    )
-
-    data class Output(
-        val addresses: List<String>,
-        val spent_by_tx: String,
-        val spent_by_tx_position: Int,
-        val type: String,
-        val value: Long
-    )
-}
+data class OutputDTO(
+    val addresses: List<String>,
+    val spent_by_tx: String,
+    val spent_by_tx_position: Int,
+    val type: String,
+    val value: Long
+)
 
 
 

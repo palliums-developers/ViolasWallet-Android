@@ -17,7 +17,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.ServiceLocator
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_manager_assert.*
@@ -70,7 +70,7 @@ class ManagerAssertActivity : BaseAppActivity() {
 
     private fun openToken(checkbox: SwitchButton, checked: Boolean, assertToken: AssertToken) {
         showProgress()
-        DataRepository.getViolasService().checkTokenRegister(
+        ServiceLocator.getViolasRepository().checkTokenRegister(
             mAccount.address, assertToken.tokenAddress
         ) {
             dismissProgress()
@@ -105,7 +105,7 @@ class ManagerAssertActivity : BaseAppActivity() {
                         showToast(R.string.hint_password_error)
                         return@launch
                     }
-                    DataRepository.getViolasService()
+                    ServiceLocator.getViolasRepository()
                         .publishToken(
                             applicationContext,
                             Account(KeyPair.fromSecretKey(decrypt)),

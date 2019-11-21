@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.libra
 
-import com.palliums.net.checkResponseWithResult
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.repository.http.TransactionRepository
 import com.violas.wallet.ui.record.TransactionRecordVO
 
@@ -11,28 +11,28 @@ import com.violas.wallet.ui.record.TransactionRecordVO
  * <p>
  * desc: LibExplorer repository
  */
-class LibexplorerRepository(private val libexplorerApi: LibexplorerApi) :
+class LibexplorerRepository(private val mLibexplorerService: LibexplorerService) :
     TransactionRepository {
 
     override suspend fun getTransactionRecord(
         address: String,
+        tokenDO: TokenDo?,
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
-        checkResponseWithResult {
-            libexplorerApi.getTransactionRecord(address, pageSize, pageNumber)
+        try {
+            val response =
+                mLibexplorerService.getTransactionRecord(address, pageSize, pageNumber)
 
-        }.onSuccess {
-
-            if (it.data.isNullOrEmpty()) {
+            if (response.data.isNullOrEmpty()) {
                 onSuccess.invoke(emptyList(), null)
-                return@onSuccess
+                return
             }
 
-            val list = it.data!!.mapIndexed { index, bean ->
+            val list = response.data!!.mapIndexed { index, bean ->
 
                 // 解析交易类型，暂时只分收款和付款
                 val transactionType = if (bean.from == address) {
@@ -60,7 +60,8 @@ class LibexplorerRepository(private val libexplorerApi: LibexplorerApi) :
             }
             onSuccess.invoke(list, null)
 
-        }.onFailure(onFailure)
+        } catch (e: Exception) {
+            onFailure.invoke(e)
+        }
     }
-
 }

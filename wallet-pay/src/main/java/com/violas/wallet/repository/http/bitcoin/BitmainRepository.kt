@@ -1,8 +1,8 @@
 package com.violas.wallet.repository.http.bitcoin
 
-import com.palliums.net.checkResponseWithResult
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
+import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.repository.http.TransactionRepository
 import com.violas.wallet.ui.record.TransactionRecordVO
 
@@ -12,25 +12,25 @@ import com.violas.wallet.ui.record.TransactionRecordVO
  * <p>
  * desc: 比特大陆repository
  */
-class BitmainRepository(private val bitmainApi: BitmainApi) :
+class BitmainRepository(private val mBitmainService: BitmainService) :
     TransactionRepository {
 
     override suspend fun getTransactionRecord(
         address: String,
+        tokenDO: TokenDo?,
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
-        checkResponseWithResult {
-            bitmainApi.getTransactionRecord(address, pageSize, pageNumber)
-
-        }.onSuccess {
+        try {
+            val it =
+                mBitmainService.getTransactionRecord(address, pageSize, pageNumber)
 
             if (it.data == null || it.data!!.list.isNullOrEmpty()) {
                 onSuccess.invoke(emptyList(), null)
-                return@onSuccess
+                return
             }
 
             val list = it.data!!.list!!.mapIndexed { index, bean ->
@@ -123,7 +123,8 @@ class BitmainRepository(private val bitmainApi: BitmainApi) :
             }
             onSuccess.invoke(list, null)
 
-        }.onFailure(onFailure)
+        } catch (e: Exception) {
+            onFailure.invoke(e)
+        }
     }
-
 }
