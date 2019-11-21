@@ -83,6 +83,7 @@ dependencies {
     implementation project(':lib-libra-core')
     implementation project(':lib-violas-core')
     implementation project(':lib-btc-core')
+    implementation project(':module-violas')
 
     testImplementation "junit:junit:$versions.test_junit"
     androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"

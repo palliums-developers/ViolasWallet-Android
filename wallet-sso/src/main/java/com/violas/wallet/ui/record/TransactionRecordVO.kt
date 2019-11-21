@@ -29,35 +29,35 @@ data class TransactionRecordVO(
         const val TRANSACTION_TYPE_TRANSFER = 2
 
         /**
-         * 交易类型：稳定币收款
+         * 交易类型：token收款
          */
-        const val TRANSACTION_TYPE_STABLE_COIN_RECEIPT = 3
+        const val TRANSACTION_TYPE_TOKEN_RECEIPT = 3
         /**
-         * 交易类型：稳定币转账
+         * 交易类型：token转账
          */
-        const val TRANSACTION_TYPE_STABLE_COIN_TRANSFER = 4
+        const val TRANSACTION_TYPE_TOKEN_TRANSFER = 4
 
         /**
-         * 交易类型：开启稳定币
+         * 交易类型：开启token
          */
-        const val TRANSACTION_TYPE_OPEN_STABLE_COIN = 5
+        const val TRANSACTION_TYPE_OPEN_TOKEN = 5
 
         fun isReceipt(transactionType: Int): Boolean {
             return transactionType == TRANSACTION_TYPE_RECEIPT ||
-                    transactionType == TRANSACTION_TYPE_STABLE_COIN_RECEIPT
+                    transactionType == TRANSACTION_TYPE_TOKEN_RECEIPT
         }
 
-        fun isOpenStableCoin(transactionType: Int): Boolean {
-            return transactionType == TRANSACTION_TYPE_OPEN_STABLE_COIN
+        fun isOpenToken(transactionType: Int): Boolean {
+            return transactionType == TRANSACTION_TYPE_OPEN_TOKEN
         }
 
-        fun isStableCoinTransaction(transactionType: Int): Boolean {
-            return transactionType == TRANSACTION_TYPE_STABLE_COIN_RECEIPT ||
-                    transactionType == TRANSACTION_TYPE_STABLE_COIN_TRANSFER
+        fun isTokenTransaction(transactionType: Int): Boolean {
+            return transactionType == TRANSACTION_TYPE_TOKEN_RECEIPT ||
+                    transactionType == TRANSACTION_TYPE_TOKEN_TRANSFER
         }
 
-        fun isStableCoinOpt(transactionType: Int): Boolean {
-            return isOpenStableCoin(transactionType) || isStableCoinTransaction(transactionType)
+        fun isTokenOpt(transactionType: Int): Boolean {
+            return isOpenToken(transactionType) || isTokenTransaction(transactionType)
         }
     }
 }

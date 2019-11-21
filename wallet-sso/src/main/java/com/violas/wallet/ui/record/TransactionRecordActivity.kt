@@ -11,6 +11,8 @@ import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ID
+import com.violas.wallet.common.EXTRA_KEY_TOKEN
+import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.web.WebCommonActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,21 +27,25 @@ import kotlinx.coroutines.withContext
 class TransactionRecordActivity : BasePagingActivity<TransactionRecordVO>() {
 
     companion object {
-        fun start(context: Context, accountId: Long) {
+        fun start(context: Context, accountId: Long, tokenDO: TokenDo? = null) {
             Intent(context, TransactionRecordActivity::class.java)
                 .apply {
                     putExtra(EXTRA_KEY_ACCOUNT_ID, accountId)
+                    if (tokenDO != null) {
+                        putExtra(EXTRA_KEY_TOKEN, tokenDO)
+                    }
                 }
                 .start(context)
         }
     }
 
     private var mAccountId = -100L
+    private var mTokenDO: TokenDo? = null
     private lateinit var mAddress: String
     private lateinit var mCoinTypes: CoinTypes
 
     override fun initViewModel(): PagingViewModel<TransactionRecordVO> {
-        return TransactionRecordViewModel(mAddress, mCoinTypes)
+        return TransactionRecordViewModel(mAddress, mTokenDO, mCoinTypes)
     }
 
     override fun initViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
@@ -77,16 +83,24 @@ class TransactionRecordActivity : BasePagingActivity<TransactionRecordVO>() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putLong(EXTRA_KEY_ACCOUNT_ID, mAccountId)
+        if (mTokenDO != null) {
+            outState.putParcelable(EXTRA_KEY_TOKEN, mTokenDO)
+        }
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
         if (savedInstanceState != null) {
             mAccountId = savedInstanceState.getLong(EXTRA_KEY_ACCOUNT_ID, mAccountId)
+            mTokenDO = savedInstanceState.getParcelable(EXTRA_KEY_TOKEN)
             if (mAccountId == -100L && intent != null) {
                 mAccountId = intent.getLongExtra(EXTRA_KEY_ACCOUNT_ID, mAccountId)
             }
+            if (mTokenDO == null && intent != null) {
+                mTokenDO = intent.getParcelableExtra(EXTRA_KEY_TOKEN)
+            }
         } else if (intent != null) {
             mAccountId = intent.getLongExtra(EXTRA_KEY_ACCOUNT_ID, mAccountId)
+            mTokenDO = intent.getParcelableExtra(EXTRA_KEY_TOKEN)
         }
 
         if (mAccountId == -100L) {

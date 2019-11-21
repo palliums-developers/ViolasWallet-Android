@@ -2,7 +2,7 @@ package com.violas.wallet.biz
 
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.bean.AssertToken
-import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.ServiceLocator
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.TokenDo
 import io.reactivex.disposables.Disposable
@@ -41,7 +41,7 @@ class TokenManager {
 //        )
         val countDownLatch = CountDownLatch(1)
         val list = mutableListOf<AssertToken>()
-        DataRepository.getViolasService().getSupportCurrency {
+        ServiceLocator.getViolasRepository().getSupportCurrency {
             it.forEach { item ->
                 list.add(
                     AssertToken(
@@ -58,15 +58,15 @@ class TokenManager {
         return list
     }
 
-    fun findTokenById(tokenId: Long) = DataRepository.getTokenStorage().findById(tokenId)
+    fun findTokenById(tokenId: Long) = ServiceLocator.getTokenStorage().findById(tokenId)
     fun findTokenByName(accountId: Long, tokenName: String) =
-        DataRepository.getTokenStorage().findByName(accountId, tokenName)
+        ServiceLocator.getTokenStorage().findByName(accountId, tokenName)
 
     fun loadSupportToken(account: AccountDO): List<AssertToken> {
         val loadSupportToken = loadSupportToken()
 
         val supportTokenMap = HashMap<String, TokenDo>(loadSupportToken.size)
-        val localToken = DataRepository.getTokenStorage().findByAccountId(account.id)
+        val localToken = ServiceLocator.getTokenStorage().findByAccountId(account.id)
         localToken.map {
             supportTokenMap[it.name] = it
         }
@@ -115,7 +115,7 @@ class TokenManager {
     }
 
     fun loadEnableToken(account: AccountDO): List<AssertToken> {
-        val enableToken = DataRepository.getTokenStorage()
+        val enableToken = ServiceLocator.getTokenStorage()
             .findEnableTokenByAccountId(account.id)
             .map {
                 AssertToken(
@@ -149,7 +149,7 @@ class TokenManager {
     }
 
     fun insert(checked: Boolean, assertToken: AssertToken) {
-        DataRepository.getTokenStorage().insert(
+        ServiceLocator.getTokenStorage().insert(
             TokenDo(
                 enable = checked,
                 account_id = assertToken.account_id,
@@ -165,7 +165,7 @@ class TokenManager {
         call: (Long) -> Unit
     ): Disposable {
         val tokenAddresss = arrayListOf<String>(tokenAddress)
-        return DataRepository.getViolasService()
+        return ServiceLocator.getViolasRepository()
             .getBalance(address, tokenAddresss) { balance, tokens ->
                 var amount = 0L
                 tokens?.forEach {
@@ -189,7 +189,7 @@ class TokenManager {
                 tokenAddress.add(it.tokenAddress)
             }
         }
-        return DataRepository.getViolasService()
+        return ServiceLocator.getViolasRepository()
             .getBalance(address, tokenAddress) { balance, tokens ->
                 val tokenMap = mutableMapOf<String, Long>()
                 tokens?.forEach {
