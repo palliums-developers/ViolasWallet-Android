@@ -1,4 +1,4 @@
-package com.violas.wallet.utils.crypto;
+package com.smallraw.core.crypto;
 
 import java.math.BigInteger;
 

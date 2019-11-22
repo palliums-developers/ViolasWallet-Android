@@ -1,4 +1,4 @@
-package com.violas.wallet.utils.crypto;
+package com.smallraw.core.crypto;
 
 public class HexUtility {
     public static String byte2Hex(byte[] bytes) {

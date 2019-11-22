@@ -1,8 +1,8 @@
 package com.violas.wallet.utils
 
 import com.quincysx.crypto.utils.SHA256
-import com.violas.wallet.utils.crypto.Base58Utility
-import com.violas.wallet.utils.crypto.Bech32Utility
+import com.smallraw.core.crypto.Base58Utility
+import com.smallraw.core.crypto.Bech32Utility
 import org.palliums.libracore.serialization.hexToBytes
 import java.util.*
 
