@@ -1,9 +1,7 @@
 package com.violas.wallet.repository.http.libra
 
-import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.repository.database.entity.TokenDo
-import com.violas.wallet.repository.http.TransactionRepository
-import com.violas.wallet.ui.record.TransactionRecordVO
+import com.palliums.net.NetworkException
+import com.palliums.net.checkResponse
 
 /**
  * Created by elephant on 2019-11-08 18:04.
@@ -11,57 +9,16 @@ import com.violas.wallet.ui.record.TransactionRecordVO
  * <p>
  * desc: LibExplorer repository
  */
-class LibexplorerRepository(private val mLibexplorerService: LibexplorerService) :
-    TransactionRepository {
+class LibexplorerRepository(private val mLibexplorerApi: LibexplorerApi) {
 
-    override suspend fun getTransactionRecord(
+    @Throws(NetworkException::class)
+    suspend fun getTransactionRecord(
         address: String,
-        tokenDO: TokenDo?,
         pageSize: Int,
-        pageNumber: Int,
-        pageKey: Any?,
-        onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        try {
-            val response =
-                mLibexplorerService.getTransactionRecord(address, pageSize, pageNumber)
-
-            if (response.data.isNullOrEmpty()) {
-                onSuccess.invoke(emptyList(), null)
-                return
-            }
-
-            val list = response.data!!.mapIndexed { index, bean ->
-
-                // 解析交易类型，暂时只分收款和付款
-                val transactionType = if (bean.from == address) {
-                    TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
-                } else {
-                    TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
-                }
-
-                // 解析展示地址，收款付款均为对方地址
-                val showAddress = if (bean.from == address) {
-                    bean.to
-                } else {
-                    bean.from
-                }
-
-                TransactionRecordVO(
-                    id = (pageNumber - 1) * pageSize + index,
-                    coinTypes = CoinTypes.Libra,
-                    transactionType = transactionType,
-                    time = bean.expirationTime * 1000,
-                    amount = bean.value,
-                    address = showAddress,
-                    url = "https://libexplorer.com/version/${bean.version}"
-                )
-            }
-            onSuccess.invoke(list, null)
-
-        } catch (e: Exception) {
-            onFailure.invoke(e)
+        pageNumber: Int
+    ): ListResponse<TransactionRecordDTO> {
+        return checkResponse {
+            mLibexplorerApi.getTransactionRecord(address, pageSize, pageNumber)
         }
     }
 }

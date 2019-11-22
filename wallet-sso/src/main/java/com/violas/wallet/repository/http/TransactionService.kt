@@ -9,7 +9,7 @@ import com.violas.wallet.ui.record.TransactionRecordVO
  * <p>
  * desc:
  */
-interface TransactionRepository {
+interface TransactionService {
 
     /**
      * 获取交易记录

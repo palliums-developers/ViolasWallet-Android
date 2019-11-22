@@ -21,7 +21,7 @@ class TransactionRecordViewModel(
 
     private var mFirstRefresh = true
     private val mTransactionRepository =
-        ServiceLocator.getTransactionRepository(coinTypes)
+        ServiceLocator.getTransactionService(coinTypes)
 
     override suspend fun loadData(
         pageSize: Int,

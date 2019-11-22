@@ -70,7 +70,7 @@ class ManagerAssertActivity : BaseAppActivity() {
 
     private fun openToken(checkbox: SwitchButton, checked: Boolean, assertToken: AssertToken) {
         showProgress()
-        ServiceLocator.getViolasRepository().checkTokenRegister(
+        ServiceLocator.getViolasService().checkTokenRegister(
             mAccount.address, assertToken.tokenAddress
         ) {
             dismissProgress()
@@ -105,7 +105,7 @@ class ManagerAssertActivity : BaseAppActivity() {
                         showToast(R.string.hint_password_error)
                         return@launch
                     }
-                    ServiceLocator.getViolasRepository()
+                    ServiceLocator.getViolasService()
                         .publishToken(
                             applicationContext,
                             Account(KeyPair.fromSecretKey(decrypt)),

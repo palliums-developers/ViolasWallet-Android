@@ -41,7 +41,7 @@ class TokenManager {
 //        )
         val countDownLatch = CountDownLatch(1)
         val list = mutableListOf<AssertToken>()
-        ServiceLocator.getViolasRepository().getSupportCurrency {
+        ServiceLocator.getViolasService().getSupportCurrency {
             it.forEach { item ->
                 list.add(
                     AssertToken(
@@ -165,7 +165,7 @@ class TokenManager {
         call: (Long) -> Unit
     ): Disposable {
         val tokenAddresss = arrayListOf<String>(tokenAddress)
-        return ServiceLocator.getViolasRepository()
+        return ServiceLocator.getViolasService()
             .getBalance(address, tokenAddresss) { balance, tokens ->
                 var amount = 0L
                 tokens?.forEach {
@@ -189,7 +189,7 @@ class TokenManager {
                 tokenAddress.add(it.tokenAddress)
             }
         }
-        return ServiceLocator.getViolasRepository()
+        return ServiceLocator.getViolasService()
             .getBalance(address, tokenAddress) { balance, tokens ->
                 val tokenMap = mutableMapOf<String, Long>()
                 tokens?.forEach {

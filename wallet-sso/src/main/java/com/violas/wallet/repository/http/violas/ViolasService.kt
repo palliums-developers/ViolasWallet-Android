@@ -5,10 +5,10 @@ import android.os.Handler
 import android.os.Looper
 import com.palliums.violas.http.ModuleDTO
 import com.palliums.violas.http.SupportCurrencyDTO
-import com.palliums.violas.http.ViolasService
+import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.database.entity.TokenDo
-import com.violas.wallet.repository.http.TransactionRepository
+import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -24,13 +24,13 @@ import java.util.*
  * Created by elephant on 2019-11-11 15:47.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: Violas repository
+ * desc: Violas service
  */
-class ViolasRepository(private val mViolasService: ViolasService) : TransactionRepository {
+class ViolasService(private val mViolasRepository: ViolasRepository) : TransactionService {
     private var mHandler = Handler(Looper.getMainLooper())
 
     fun checkTokenRegister(address: String, tokenAddress: String, call: (Boolean) -> Unit) {
-        val subscribe = mViolasService.checkRegisterToken(address, tokenAddress)
+        val subscribe = mViolasRepository.checkRegisterToken(address, tokenAddress)
             .subscribeOn(Schedulers.io())
             .subscribe({
                 if (it.data == null || it.data == 0) {
@@ -44,7 +44,7 @@ class ViolasRepository(private val mViolasService: ViolasService) : TransactionR
     }
 
     fun getSupportCurrency(call: (list: List<SupportCurrencyDTO>) -> Unit) {
-        val subscribe = mViolasService.getSupportCurrency()
+        val subscribe = mViolasRepository.getSupportCurrency()
             .subscribeOn(Schedulers.io())
             .subscribe({
                 if (it.data == null) {
@@ -63,7 +63,7 @@ class ViolasRepository(private val mViolasService: ViolasService) : TransactionR
         call: (amount: Long, modes: List<ModuleDTO>?) -> Unit
     ): Disposable {
         val joinToString = tokenAddress.joinToString(separator = ",")
-        return mViolasService.getBalance(address, joinToString)
+        return mViolasRepository.getBalance(address, joinToString)
             .subscribeOn(Schedulers.io())
             .subscribe({
                 mHandler.post {
@@ -81,7 +81,7 @@ class ViolasRepository(private val mViolasService: ViolasService) : TransactionR
     }
 
     fun getBalanceInMicroLibras(address: String, call: (amount: Long) -> Unit) {
-        val subscribe = mViolasService.getBalance(address)
+        val subscribe = mViolasRepository.getBalance(address)
             .subscribeOn(Schedulers.io())
             .subscribe({
                 mHandler.post {
@@ -155,7 +155,7 @@ class ViolasRepository(private val mViolasService: ViolasService) : TransactionR
         )
 
         val subscribe =
-            mViolasService.pushTx(signedTransaction.toByteArray().toHex())
+            mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
                 .subscribeOn(Schedulers.io())
                 .subscribe({
                     if (it.errorCode == it.getSuccessCode()) {
@@ -236,7 +236,7 @@ class ViolasRepository(private val mViolasService: ViolasService) : TransactionR
         call: (sequenceNumber: Long) -> Unit,
         error: (Exception) -> Unit
     ) {
-        val subscribe = mViolasService.getSequenceNumber(address)
+        val subscribe = mViolasRepository.getSequenceNumber(address)
             .subscribeOn(Schedulers.io())
             .subscribe({
                 if (it.data == null) {
@@ -294,7 +294,7 @@ class ViolasRepository(private val mViolasService: ViolasService) : TransactionR
         try {
             val queryToken = tokenDO?.tokenAddress?.isEmpty() ?: false
             val response =
-                mViolasService.getTransactionRecord(address, pageSize, (pageNumber - 1) * pageSize)
+                mViolasRepository.getTransactionRecord(address, pageSize, (pageNumber - 1) * pageSize)
 
             if (response.data.isNullOrEmpty()) {
                 onSuccess.invoke(emptyList(), null)

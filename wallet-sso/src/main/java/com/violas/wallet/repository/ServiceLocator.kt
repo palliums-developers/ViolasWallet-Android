@@ -2,21 +2,21 @@ package com.violas.wallet.repository
 
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.violas.http.ViolasApi
-import com.palliums.violas.http.ViolasService
+import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.database.AppDatabase
-import com.violas.wallet.repository.http.TransactionRepository
+import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.repository.http.bitcoin.BitmainApi
-import com.violas.wallet.repository.http.bitcoin.BitmainRepository
 import com.violas.wallet.repository.http.bitcoin.BitmainService
+import com.violas.wallet.repository.http.bitcoin.BitmainRepository
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.repository.http.libra.LibexplorerApi
-import com.violas.wallet.repository.http.libra.LibexplorerRepository
 import com.violas.wallet.repository.http.libra.LibexplorerService
-import com.violas.wallet.repository.http.violas.ViolasRepository
+import com.violas.wallet.repository.http.libra.LibexplorerRepository
+import com.violas.wallet.repository.http.violas.ViolasService
 import io.grpc.ManagedChannelBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -81,30 +81,22 @@ object ServiceLocator {
 
     fun getLibraService() = LibraAdmissionControl(mChannel)
 
-    fun getViolasRepository(): ViolasRepository {
-        return ViolasRepository(ViolasService(retrofit.create(ViolasApi::class.java)))
+    fun getViolasService(): ViolasService {
+        return ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
     }
 
-    fun getLibexplorerRepository(): LibexplorerRepository {
-        return LibexplorerRepository(LibexplorerService(retrofit.create(LibexplorerApi::class.java)))
-    }
-
-    fun getBitmainRepository(): BitmainRepository {
-        return BitmainRepository(BitmainService(retrofit.create(BitmainApi::class.java)))
-    }
-
-    fun getTransactionRepository(coinTypes: CoinTypes): TransactionRepository {
+    fun getTransactionService(coinTypes: CoinTypes): TransactionService {
         return when (coinTypes) {
             CoinTypes.VToken -> {
-                getViolasRepository()
+                getViolasService()
             }
 
             CoinTypes.Libra -> {
-                getLibexplorerRepository()
+                LibexplorerService(LibexplorerRepository(retrofit.create(LibexplorerApi::class.java)))
             }
 
             else -> {
-                getBitmainRepository()
+                BitmainService(BitmainRepository(retrofit.create(BitmainApi::class.java)))
             }
         }
     }

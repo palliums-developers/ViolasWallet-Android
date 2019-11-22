@@ -355,7 +355,7 @@ class AccountManager : CoroutineScope by IOScope() {
         launch(handler) {
             when (account.coinNumber) {
                 CoinTypes.VToken.coinType() -> {
-                    ServiceLocator.getViolasRepository()
+                    ServiceLocator.getViolasService()
                         .getBalanceInMicroLibras(account.address) {
                             callback.invoke(it)
                         }

@@ -135,7 +135,7 @@ class TransferManager {
     ) {
         val token = ServiceLocator.getTokenStorage().findById(tokenId)
         token?.let {
-            ServiceLocator.getViolasRepository().sendViolasToken(
+            ServiceLocator.getViolasService().sendViolasToken(
                 context,
                 token.tokenAddress,
                 Account(
@@ -187,7 +187,7 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        ServiceLocator.getViolasRepository().sendCoin(
+        ServiceLocator.getViolasService().sendCoin(
             context,
             Account(
                 org.palliums.violascore.wallet.KeyPair(decryptPrivateKey)

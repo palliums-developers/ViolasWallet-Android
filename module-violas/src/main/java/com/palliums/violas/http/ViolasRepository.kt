@@ -11,9 +11,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
  * Created by elephant on 2019-11-11 15:47.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: Violas service
+ * desc: Violas repository
  */
-class ViolasService(private val mViolasApi: ViolasApi) {
+class ViolasRepository(private val mViolasApi: ViolasApi) {
 
     @Throws(NetworkException::class)
     suspend fun getTransactionRecord(
