@@ -15,11 +15,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.shehuan.niv.NiceImageView
+    <com.palliums.widget.NiceImageView
         android:id="@+id/ivLogo"
-        android:layout_width="87dp"
-        android:layout_height="87dp"
-        android:src="@mipmap/ic_launcher"
+        android:layout_width="@dimen/dp_87"
+        android:layout_height="@dimen/dp_87"
+        android:src="@drawable/ic_logo"
         app:corner_radius="@dimen/dp_23"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,8 +41,8 @@
     <Button
         android:id="@+id/btnCreate"
         style="@style/BaseButtonPrimary"
-        android:layout_height="@dimen/dp_46"
         android:layout_width="@dimen/dp_282"
+        android:layout_height="@dimen/dp_46"
         android:text="@string/create_identity"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,8 +53,8 @@
     <Button
         android:id="@+id/btnImport"
         style="@style/BaseButtonDeputy"
-        android:layout_height="@dimen/dp_46"
         android:layout_width="@dimen/dp_282"
+        android:layout_height="@dimen/dp_46"
         android:layout_marginTop="@dimen/dp_16"
         android:text="@string/import_identity"
         app:layout_constraintEnd_toEndOf="parent"
