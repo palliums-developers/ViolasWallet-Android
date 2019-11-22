@@ -79,11 +79,9 @@
         <Button
             android:id="@+id/vConfirm"
             style="@style/BaseButtonPrimary"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="@dimen/dp_40"
-            android:layout_marginStart="@dimen/dp_85"
+            android:layout_width="@dimen/dp_150"
+            android:layout_height="@dimen/dp_36"
             android:layout_marginTop="@dimen/dp_34"
-            android:layout_marginEnd="@dimen/dp_85"
             android:layout_marginBottom="@dimen/dp_23"
             android:text="@string/action_confirm"
             app:layout_constraintBottom_toBottomOf="parent"

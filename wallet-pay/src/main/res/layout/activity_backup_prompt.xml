@@ -118,8 +118,6 @@
         <Button
             android:id="@+id/tv_backup_prompt_next_step"
             style="@style/BaseButtonPrimary"
-            android:layout_width="@dimen/dp_238"
-            android:layout_height="@dimen/dp_40"
             android:layout_marginTop="@dimen/dp_46"
             android:layout_marginBottom="@dimen/dp_111"
             android:text="@string/btn_next_step"

@@ -111,8 +111,6 @@
     <Button
         android:id="@+id/btnAdd"
         style="@style/BaseButtonPrimary"
-        android:layout_width="wrap_content"
-        android:layout_height="45dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="@dimen/dp_60"
         android:text="@string/action_add" />
 </LinearLayout>
