@@ -34,7 +34,6 @@ interface ViolasApi {
 
     @GET("1.0/violas/module")
     fun checkRegisterToken(
-        @Query("addr") address: String,
-        @Query("modu") modu: String
-    ): Single<BaseRequest<Int>>
+        @Query("addr") address: String
+    ): Single<BaseRequest<List<String>>>
 }

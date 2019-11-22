@@ -19,17 +19,16 @@ import java.util.*
 class ViolasService(private val mViolasRepository: ViolasRepository) {
     private var mHandler = Handler(Looper.getMainLooper())
 
-    fun checkTokenRegister(address: String, tokenAddress: String, call: (Boolean) -> Unit) {
-        val subscribe = mViolasRepository.checkRegisterToken(address, tokenAddress)
-            .subscribeOn(Schedulers.io())
+    fun checkTokenRegister(address: String, call: (list: List<String>) -> Unit) {
+        val subscribe = mViolasRepository.checkRegisterToken(address)
             .subscribe({
-                if (it.data == null || it.data == 0) {
-                    call.invoke(false)
-                } else {
-                    call.invoke(true)
+                if (it.data != null) {
+                    call.invoke(it.data!!)
+                }else{
+                    call.invoke(arrayListOf())
                 }
             }, {
-                call.invoke(false)
+                call.invoke(arrayListOf())
             })
     }
 

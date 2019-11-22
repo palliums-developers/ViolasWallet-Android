@@ -1,5 +1,6 @@
 package com.violas.wallet.biz
 
+import androidx.collection.ArrayMap
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.repository.DataRepository
@@ -65,15 +66,28 @@ class TokenManager {
     fun loadSupportToken(account: AccountDO): List<AssertToken> {
         val loadSupportToken = loadSupportToken()
 
+        val onlineTokenMap = ArrayMap<String, Int>()
+        DataRepository.getViolasService().checkTokenRegister(
+            account.address
+        ) {
+            it.forEach { item ->
+                onlineTokenMap[item] = 0
+            }
+        }
+
         val supportTokenMap = HashMap<String, TokenDo>(loadSupportToken.size)
         val localToken = DataRepository.getTokenStorage().findByAccountId(account.id)
         localToken.map {
             supportTokenMap[it.name] = it
         }
 
-        val localSupportTokenMap = HashMap<String, Int>()
+        val localSupportTokenMap = ArrayMap<String, Int>()
 
         loadSupportToken.forEach { token ->
+            if (onlineTokenMap.contains(token.tokenAddress)) {
+                token.netEnable = true
+            }
+
             localSupportTokenMap[token.tokenAddress] = 0
             token.account_id = account.id
             supportTokenMap[token.name]?.let {
