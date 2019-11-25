@@ -6,7 +6,7 @@
         android:topLeftRadius="@dimen/dp_2"
         android:topRightRadius="@dimen/dp_2" />
     <gradient
-        android:endColor="@color/color_7038FD"
-        android:startColor="@color/color_9339F3" />
+        android:endColor="@color/colorAccent"
+        android:startColor="@color/colorPrimary" />
 
 </shape>

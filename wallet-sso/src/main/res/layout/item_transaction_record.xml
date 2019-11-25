@@ -118,7 +118,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/dp_10"
             android:text="@string/transaction_record_query"
-            android:textColor="@color/color_7A7AEE"
+            android:textColor="@color/colorAccent"
             android:textSize="@dimen/sp_12"
             app:layout_constraintBaseline_toBaselineOf="@id/vAddress"
             app:layout_constraintEnd_toEndOf="parent"

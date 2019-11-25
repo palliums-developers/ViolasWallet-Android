@@ -55,7 +55,7 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
         if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY) {
             // 如果是创建身份后进入该页面，则不支持后退
             setTitleRightText(R.string.backup_mnemonic_prompt_menu)
-            setTitleRightTextColor(R.color.color_1465B1)
+            setTitleRightTextColor(R.color.def_text_btn)
             setTitleLeftViewVisibility(View.GONE)
         }
         tv_backup_prompt_next_step.setOnClickListener(this)

@@ -1,14 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.verification.PhoneVerificationActivity">
 
+    <EditText
+        android:id="@+id/vPhoneNumber"
+        style="@style/EditText"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_55"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:gravity="end|center_vertical"
+        android:hint="@string/hint_enter_phone_number"
+        android:paddingStart="@dimen/dp_150"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="123456789123456789123456789123456789123456789123456789" />
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/vPhoneAreaCode"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_0"
+        android:layout_marginStart="@dimen/dp_10"
         android:gravity="center"
-        android:text="@string/verification_phone_title"/>
+        android:paddingStart="@dimen/dp_10"
+        android:paddingEnd="@dimen/dp_10"
+        android:textColor="@color/def_text_body"
+        android:textSize="@dimen/sp_16"
+        app:layout_constraintBottom_toBottomOf="@id/vPhoneNumber"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/vPhoneNumber"
+        tools:text="+86" />
+
+    <EditText
+        android:id="@+id/vVerificationCode"
+        style="@style/EditText"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_55"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:gravity="start|center_vertical"
+        android:hint="@string/hint_enter_verification_code"
+        android:paddingEnd="@dimen/dp_200"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vPhoneNumber"
+        tools:text="234562 234562234562234562234562234562234562" />
+
+    <TextView
+        android:id="@+id/vGetVerificationCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:background="@drawable/selector_btn_get_verification_code"
+        android:gravity="center"
+        android:minWidth="@dimen/dp_76"
+        android:padding="@dimen/dp_8"
+        android:text="@string/get_verification_code"
+        android:textColor="@color/selector_get_verification_code"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintBottom_toBottomOf="@id/vVerificationCode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/vVerificationCode" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/vBind"
+        style="@style/BaseButtonPrimary"
+        android:text="@string/btn_bind"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.45" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

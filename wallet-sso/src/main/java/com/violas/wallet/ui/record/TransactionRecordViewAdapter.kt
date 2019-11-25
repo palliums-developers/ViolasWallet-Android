@@ -81,7 +81,7 @@ class TransactionRecordViewHolder(
                 TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT,
                 TransactionRecordVO.TRANSACTION_TYPE_RECEIPT -> {
                     itemView.vType.setText(R.string.transaction_record_receipt)
-                    itemView.vType.setTextColor(getColor(R.color.color_13B788))
+                    itemView.vType.setTextColor(getColor(R.color.colorPrimary))
                 }
 
                 else -> {

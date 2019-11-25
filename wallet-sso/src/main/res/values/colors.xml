@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#8539f7</color>
-
+    <color name="colorPrimary">#00D1AF</color>
+    <color name="colorPrimaryDark">#009f80</color>
+    <color name="colorAccent">#0085E4</color>
+    <color name="colorAccentDark">#0059b1</color>
     <color name="colorAccent_disable">#999999</color>
+
     <color name="transparent">#00000000</color>
     <color name="translucent">#80000000</color>
     <color name="white">#FFFFFF</color>
@@ -26,39 +27,27 @@
 
     <color name="color_3C3848">#3C3848</color>
     <color name="color_3C3848_80">#CD3C3848</color>
+    <color name="color_3C3848_70">#B33C3848</color>
+    <color name="color_3C3848_60">#9A3C3848</color>
     <color name="color_3C3848_50">#803C3848</color>
     <color name="color_3C3848_30">#4D3C3848</color>
     <color name="color_3C3848_10">#1A3C3848</color>
-    <color name="color_9339F3">#9339F3</color>
-    <color name="color_7038FD">#7038FD</color>
-    <color name="color_6161D2">#6161D2</color>
-    <color name="color_492AC5">#492AC5</color>
-    <color name="color_7A7AEE">#7A7AEE</color>
-    <color name="color_F74E4E">#F74E4E</color>
-    <color name="color_F7F7F9">#F7F7F9</color>
-    <color name="color_292929">#292929</color>
-    <color name="color_E54040">#E54040</color>
-    <color name="color_13B788">#13B788</color>
-    <color name="color_FB8F0B">#FB8F0B</color>
-
-    <color name="color_D4D3D6">#D4D3D6</color>
-    <color name="color_00D1AF">#00D1AF</color>
-    <color name="color_0085E4">#0085E4</color>
     <color name="color_282636">#282636</color>
-    <color name="color_282636_10">#1A282636</color>
+    <color name="color_F74E4E">#F74E4E</color>
+    <color name="color_E54040">#E54040</color>
+    <color name="color_D4D3D6">#D4D3D6</color>
+    <color name="color_F7F7F9">#F7F7F9</color>
+    <color name="color_FB8F0B">#FB8F0B</color>
     <color name="color_1465B1">#1465B1</color>
 
-    <color name="def_activity_bg">@color/white</color>
-    <color name="def_activity_vice_bg">@color/color_F7F7F9</color>
     <color name="def_text_color">#393846</color>
     <color name="def_text_color_30">#23393846</color>
-    <color name="def_text_color_10">#15393846</color>
     <color name="def_text_color_50">#7F393846</color>
+    <color name="def_text_font_black">#3B3847</color>
+
     <color name="def_page_bg_dark">@color/color_282636</color>
     <color name="def_page_bg_light_primary">@color/white</color>
     <color name="def_page_bg_light_secondary">@color/color_F7F7F9</color>
-
-    <color name="def_text_font_black">#3B3847</color>
 
     <!--文本-标题颜色-->
     <color name="def_text_title">@color/color_3C3848</color>
@@ -71,9 +60,9 @@
     <!--文本-提示性文字颜色-->
     <color name="def_text_hint">@color/color_3C3848_30</color>
     <!--文本-关键性文字颜色-->
-    <color name="def_text_key">@color/color_6161D2</color>
+    <color name="def_text_key">@color/colorAccent</color>
     <!--文本-按钮性文字颜色-->
-    <color name="def_text_btn">@color/color_7A7AEE</color>
+    <color name="def_text_btn">@color/color_1465B1</color>
     <!--文本-提醒性文字颜色-->
     <color name="def_text_warn">@color/color_F74E4E</color>
 
@@ -84,8 +73,8 @@
     <!--浅色模式下-条目按下时背景色-->
     <color name="itemBgPressedLight">@color/gray_50</color>
 
-    <color name="account_group_title">@color/color_292929</color>
     <color name="dividing_line">@color/color_3C3848_10</color>
 
     <color name="view_pressed_tint">@color/color_D4D3D6</color>
+
 </resources>
