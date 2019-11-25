@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
  */
 abstract class BaseViewModel : ViewModel() {
 
+    private val lock: Any = Any()
     private var retry: (() -> Any)? = null
 
     val loadState = MutableLiveData<LoadState>()
@@ -25,46 +26,66 @@ abstract class BaseViewModel : ViewModel() {
 
     /**
      * 执行
-     * @return 返回true才会调用[loadData]去加载数据
+     * @return 返回true才会调用[realExecute]去真正执行
      */
     @MainThread
-    fun execute(vararg params: Any?): Boolean {
-        if (loadState.value?.status == LoadState.Status.RUNNING) {
-            return false
-        } else if (!checkParams(*params)) {
-            return false
-        } else if (checkNetworkBeforeExecution() && !isNetworkConnected()) {
-            retry = { execute(*params) }
+    fun execute(vararg params: Any, action: Int = -1, needCheckParam: Boolean = true): Boolean {
+        synchronized(lock) {
+            if (loadState.value?.status == LoadState.Status.RUNNING) {
+                return false
+            } else if (needCheckParam && !checkParams(action, *params)) {
+                return false
+            } else if (checkNetworkBeforeExecute() && !isNetworkConnected()) {
+                retry = { execute(*params, action = action, needCheckParam = true) }
 
-            val exception = NetworkException.networkUnavailable()
-            loadState.value = LoadState.failure(exception)
-            tipsMessage.value = exception.message
-            return false
+                val exception = NetworkException.networkUnavailable()
+                loadState.value = LoadState.failure(exception)
+                tipsMessage.value = exception.message
+                return false
+            }
+
+            loadState.postValue(LoadState.RUNNING)
         }
 
-        loadState.postValue(LoadState.RUNNING)
         viewModelScope.launch {
-            loadData(*params,
-                onSuccess = {
-                    loadState.postValue(LoadState.SUCCESS)
-                },
-                onFailure = {
-                    retry = { execute(*params) }
+            try {
+                realExecute(action, *params,
+                    onSuccess = {
+                        synchronized(lock) {
+                            loadState.postValue(LoadState.SUCCESS)
+                        }
+                    },
+                    onFailure = {
+                        synchronized(lock) {
+                            retry = { execute(*params, action = action, needCheckParam = true) }
 
-                    loadState.postValue(LoadState.failure(it))
-                    tipsMessage.postValue(it.message)
-                })
+                            loadState.postValue(LoadState.failure(it))
+                            tipsMessage.postValue(it.message)
+                        }
+                    })
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                synchronized(lock) {
+                    retry = { execute(*params, action = action, needCheckParam = true) }
+
+                    loadState.postValue(LoadState.failure(e))
+                    tipsMessage.postValue(e.message)
+                }
+            }
         }
         return true
     }
 
     @MainThread
     fun retry() {
-        val prevRetry = retry
+        synchronized(lock) {
+            val prevRetry = retry
 
-        retry = null
+            retry = null
 
-        prevRetry?.invoke()
+            prevRetry?.invoke()
+        }
     }
 
     /**
@@ -72,7 +93,7 @@ abstract class BaseViewModel : ViewModel() {
      * @return 返回true继续执行，反之则中断执行
      */
     @MainThread
-    protected open fun checkParams(vararg params: Any?): Boolean {
+    open fun checkParams(action: Int, vararg params: Any): Boolean {
         return true
     }
 
@@ -81,16 +102,17 @@ abstract class BaseViewModel : ViewModel() {
      * @return 返回true，且检查网络未连接，则中断执行，反之继续执行
      */
     @MainThread
-    protected open fun checkNetworkBeforeExecution(): Boolean {
+    protected open fun checkNetworkBeforeExecute(): Boolean {
         return true
     }
 
     /**
-     * 加载数据
+     * 真实执行
      */
     @WorkerThread
-    protected abstract suspend fun loadData(
-        vararg params: Any?,
+    protected abstract suspend fun realExecute(
+        action: Int,
+        vararg params: Any,
         onSuccess: () -> Unit,
         onFailure: (Throwable) -> Unit
     )

@@ -151,7 +151,7 @@ class AddWalletViewModel : ListingViewModel<AddWalletVo>() {
         onSuccess.invoke(listData)
     }
 
-    override fun checkNetworkBeforeExecution(): Boolean {
+    override fun checkNetworkBeforeExecute(): Boolean {
         return false
     }
 }

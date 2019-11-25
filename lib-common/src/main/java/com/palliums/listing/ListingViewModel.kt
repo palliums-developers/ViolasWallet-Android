@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
  */
 abstract class ListingViewModel<VO> : ViewModel() {
 
+    private val lock: Any = Any()
     private var retry: (() -> Any)? = null
 
     val loadState = MutableLiveData<LoadState>()
@@ -30,39 +31,50 @@ abstract class ListingViewModel<VO> : ViewModel() {
      */
     @MainThread
     fun execute(vararg params: Any): Boolean {
-        if (loadState.value?.status == LoadState.Status.RUNNING) {
-            return false
-        } else if (!checkParams(*params)) {
-            return false
-        } else if (checkNetworkBeforeExecution() && !isNetworkConnected()) {
-            retry = { execute(*params) }
+        synchronized(lock) {
+            if (loadState.value?.status == LoadState.Status.RUNNING) {
+                return false
+            } else if (!checkParams(*params)) {
+                return false
+            } else if (checkNetworkBeforeExecute() && !isNetworkConnected()) {
+                retry = { execute(*params) }
 
-            val exception = NetworkException.networkUnavailable()
-            loadState.value = LoadState.failure(exception)
-            tipsMessage.value = exception.message
-            return false
+                val exception = NetworkException.networkUnavailable()
+                loadState.value = LoadState.failure(exception)
+                tipsMessage.value = exception.message
+                return false
+            }
+
+            loadState.postValue(LoadState.RUNNING)
         }
 
-        loadState.postValue(LoadState.RUNNING)
         viewModelScope.launch {
             try {
                 loadData(*params,
                     onSuccess = {
-                        loadState.postValue(LoadState.SUCCESS)
-                        listData.postValue(it)
+                        synchronized(lock) {
+                            loadState.postValue(LoadState.SUCCESS)
+                            listData.postValue(it)
+                        }
                     },
                     onFailure = {
-                        retry = { execute(*params) }
+                        synchronized(lock) {
+                            retry = { execute(*params) }
 
-                        loadState.postValue(LoadState.failure(it))
-                        tipsMessage.postValue(it.message)
+                            loadState.postValue(LoadState.failure(it))
+                            tipsMessage.postValue(it.message)
+                        }
                     })
 
             } catch (e: Exception) {
-                retry = { execute(*params) }
+                e.printStackTrace()
 
-                loadState.postValue(LoadState.failure(e))
-                tipsMessage.postValue(e.message)
+                synchronized(lock) {
+                    retry = { execute(*params) }
+
+                    loadState.postValue(LoadState.failure(e))
+                    tipsMessage.postValue(e.message)
+                }
             }
         }
         return true
@@ -70,11 +82,13 @@ abstract class ListingViewModel<VO> : ViewModel() {
 
     @MainThread
     fun retry() {
-        val prevRetry = retry
+        synchronized(lock) {
+            val prevRetry = retry
 
-        retry = null
+            retry = null
 
-        prevRetry?.invoke()
+            prevRetry?.invoke()
+        }
     }
 
     /**
@@ -91,7 +105,7 @@ abstract class ListingViewModel<VO> : ViewModel() {
      * @return 返回true，且检查网络未连接，则中断执行，反之继续执行
      */
     @MainThread
-    protected open fun checkNetworkBeforeExecution(): Boolean {
+    protected open fun checkNetworkBeforeExecute(): Boolean {
         return true
     }
 
