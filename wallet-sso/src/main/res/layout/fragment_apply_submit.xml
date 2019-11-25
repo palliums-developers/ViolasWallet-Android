@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="54dp"
+                android:gravity="start|center"
+                android:text="@string/label_types_issuing"
+                android:textColor="#3C3848"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvContent"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_marginEnd="6dp"
+                android:background="@null"
+                android:gravity="end|center"
+                android:text="@string/hint_select_types_issuing"
+                android:textColor="#3C3848"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
+                app:layout_constraintEnd_toStartOf="@+id/ivCoinArrow"
+                app:layout_constraintStart_toEndOf="@+id/tvTitle"
+                app:layout_constraintTop_toTopOf="@+id/tvTitle" />
+
+            <ImageView
+                android:id="@+id/ivCoinArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_right_arrow_gray"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0.5dp"
+                android:background="#E5E5E5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.violas.wallet.widget.ApplySubmitEditItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            app:item_hint="@string/hint_fill_number_types_issuing"
+            app:item_title="@string/label_number_types_issuing" />
+
+        <com.violas.wallet.widget.ApplySubmitEditItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            app:item_hint="@string/hint_fill_stable_currency_value"
+            app:item_title="@string/label_stable_currency_value" />
+
+        <com.violas.wallet.widget.ApplySubmitEditItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            android:inputType="text"
+            android:maxLength="3"
+            app:item_hint="@string/hint_three_capital_letters"
+            app:item_title="@string/label_stable_currency_name" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_wallet_address"
+            tools:item_content="dfjajkdjkfjklajfuwhidoefjc" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_wallet_public_key"
+            tools:item_content="dfjajkdjkfjklajfuwhidoefjc" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_application_date"
+            tools:item_content="2019/11/12 15:00" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_request_deadline"
+            tools:item_content="5天" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_request_expiration_time"
+            tools:item_content="2019/11/12 15:00" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_name"
+            tools:item_content="王依依" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_birthday"
+            tools:item_content="1982/02/21" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_nationality"
+            tools:item_content="中国" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_certificate_type"
+            tools:item_content="身份证" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_id_card"
+            tools:item_content="110832828839932" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_phone"
+            tools:item_content="182***7263" />
+
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:item_title="@string/label_email"
+            tools:item_content="112****@qq.com" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/hine_upload_file1"
+                android:textColor="@color/def_text_color"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="#fff8f9fa"
+                android:paddingStart="15dp"
+                android:paddingTop="9dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="9dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/bg_btn_upload_file">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@null"
+                        android:drawableLeft="@drawable/icon_add_upload"
+                        android:gravity="center"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:text="@string/action_upload"
+                        android:textColor="#0087E3" />
+                </FrameLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/hint_upload_file2"
+                android:textColor="@color/def_text_color"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="#fff8f9fa"
+                android:paddingStart="20dp"
+                android:paddingTop="9dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="9dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hint_upload_file_hint"
+                    android:textColor="#FF5555"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"
+                android:background="#fff8f9fa"
+                android:paddingStart="15dp"
+                android:paddingTop="9dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="9dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/bg_btn_upload_file">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@null"
+                        android:drawableLeft="@drawable/icon_add_upload"
+                        android:gravity="center"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:text="@string/action_upload"
+                        android:textColor="#0087E3" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="#fff8f9fa"
+                android:paddingStart="15dp"
+                android:paddingTop="9dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="9dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/bg_btn_upload_file">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@null"
+                        android:drawableLeft="@drawable/icon_add_upload"
+                        android:gravity="center"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:text="@string/action_upload"
+                        android:textColor="#0087E3" />
+                </FrameLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            style="@style/BaseButtonPrimary"
+            android:layout_width="238dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="50dp"
+            android:text="@string/action_confirm_submit" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
