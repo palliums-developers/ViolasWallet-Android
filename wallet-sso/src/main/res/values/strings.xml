@@ -222,5 +222,30 @@
     <string name="hint_kyc_content">*申请发行SSO必须先进行身份认证及手机、邮箱验证</string>
     <string name="hint_immediately_to">立即前往</string>
     <string name="title_apply_issue_sso">申请发行 SSO</string>
+    <string name="label_types_issuing">发币种类</string>
+    <string name="hint_select_types_issuing">选择发币种类</string>
+    <string name="hint_fill_number_types_issuing">填写发币数量</string>
+    <string name="label_number_types_issuing">发币数量</string>
+    <string name="hint_fill_stable_currency_value">填写稳定币价值</string>
+    <string name="label_stable_currency_value">稳定币价值</string>
+    <string name="hint_three_capital_letters">填写三位大写字母</string>
+    <string name="label_stable_currency_name">稳定币名称</string>
+    <string name="label_wallet_address">SSO钱包地址</string>
+    <string name="label_wallet_public_key">SSO钱包公钥</string>
+    <string name="label_application_date">申请日期</string>
+    <string name="label_request_deadline">申请有效期</string>
+    <string name="label_request_expiration_time">申请失效日期</string>
+    <string name="label_name">姓名</string>
+    <string name="label_birthday">生日</string>
+    <string name="label_nationality">国籍</string>
+    <string name="label_certificate_type">证件类型</string>
+    <string name="label_id_card">证件号码</string>
+    <string name="label_phone">手机号</string>
+    <string name="label_email">邮箱</string>
+    <string name="hine_upload_file1">上传手持储备金文件照片（头部加储备金文件）</string>
+    <string name="hint_upload_file2">上传银行账户信息（银行支付支票正反面带复印件）</string>
+    <string name="hint_upload_file_hint">*正面写上发行SSO注明：SSO钱包地址、稳定币名字、法币种类、法币稳定币数量、证件号码、手机电话号码、电子邮件地址、申请日期。反面带有签字。</string>
+    <string name="action_upload">上传文件</string>
+    <string name="action_confirm_submit">确认提交</string>
 
 </resources>

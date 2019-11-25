@@ -6,4 +6,19 @@
         <attr name="color_background" format="color" />
     </declare-styleable>
 
+    <attr name="item_title" format="string" />
+    <attr name="item_content" format="string" />
+    <declare-styleable name="ApplySubmitItemView">
+        <attr name="item_title" />
+        <attr name="item_content" />
+    </declare-styleable>
+
+    <declare-styleable name="ApplySubmitEditItemView">
+        <attr name="item_title" />
+        <attr name="item_content" />
+        <attr name="android:inputType" />
+        <attr name="android:digits" />
+        <attr name="android:maxLength" />
+        <attr name="item_hint" format="string" />
+    </declare-styleable>
 </resources>
