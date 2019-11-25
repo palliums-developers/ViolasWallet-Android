@@ -226,5 +226,8 @@
     <string name="hint_verification_code_get_success">验证码已发送，请注意查收</string>
 
     <string name="authentication_title">身份认证</string>
+    <string name="hint_kyc_content">*申请发行SSO必须先进行身份认证及手机、邮箱验证</string>
+    <string name="hint_immediately_to">立即前往</string>
+    <string name="title_apply_issue_sso">申请发行 SSO</string>
 
 </resources>

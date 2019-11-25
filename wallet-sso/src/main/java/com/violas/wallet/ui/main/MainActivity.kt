@@ -8,8 +8,8 @@ import com.palliums.utils.DensityUtility
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.ui.main.applyFor.ApplyForSSOFragment
 import com.violas.wallet.ui.main.me.MeFragment
-import com.violas.wallet.ui.main.quotes.QuotesFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -68,7 +68,7 @@ class MainActivity : BaseAppActivity() {
 
         viewPagerAdapter = FragmentPagerAdapterSupport(supportFragmentManager)
         viewPagerAdapter.addFragment(WalletFragment())
-        viewPagerAdapter.addFragment(QuotesFragment())
+        viewPagerAdapter.addFragment(ApplyForSSOFragment())
         viewPagerAdapter.addFragment(MeFragment())
 
         view_pager.adapter = viewPagerAdapter
