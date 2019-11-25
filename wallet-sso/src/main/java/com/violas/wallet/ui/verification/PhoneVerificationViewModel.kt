@@ -1,0 +1,83 @@
+package com.violas.wallet.ui.verification
+
+import androidx.lifecycle.MutableLiveData
+import com.palliums.base.BaseViewModel
+import com.palliums.utils.getString
+import com.violas.wallet.R
+import com.violas.wallet.utils.validationChinaPhone
+import com.violas.wallet.utils.validationHkPhone
+import kotlinx.coroutines.delay
+
+/**
+ * Created by elephant on 2019-11-25 14:28.
+ * Copyright © 2019-2020. All rights reserved.
+ * <p>
+ * desc:
+ */
+class PhoneVerificationViewModel : BaseViewModel() {
+
+    companion object {
+        const val ACTION_GET_VERIFICATION_CODE = 0
+        const val ACTION_BING_PHONE_NUMBER = 1
+    }
+
+    val getVerificationCodeResult = MutableLiveData<Boolean>()
+    val bindPhoneNumberResult = MutableLiveData<Boolean>()
+
+    override suspend fun realExecute(
+        action: Int,
+        vararg params: Any,
+        onSuccess: () -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        // TODO 对接接口
+
+        // test code
+        delay(3000)
+
+        if (action == ACTION_BING_PHONE_NUMBER) {
+            // 绑定手机号操作
+            tipsMessage.postValue(getString(R.string.hint_phone_number_bind_success))
+            bindPhoneNumberResult.postValue(true)
+            onSuccess.invoke()
+            return
+        }
+
+        // 获取验证码操作
+        tipsMessage.postValue(getString(R.string.hint_verification_code_get_success))
+        getVerificationCodeResult.postValue(true)
+        onSuccess.invoke()
+    }
+
+    override fun checkParams(action: Int, vararg params: Any): Boolean {
+        if (params.isEmpty()) {
+            return false
+        }
+
+        val phoneAreaCode = params[0] as String
+        val phoneNumber = params[1] as String
+        if (phoneNumber.isEmpty()) {
+            tipsMessage.postValue(getString(R.string.hint_enter_phone_number))
+            return false
+        }
+
+        if (phoneAreaCode == "86") {
+            if (!validationChinaPhone(phoneNumber)) {
+                tipsMessage.postValue(getString(R.string.hint_phone_number_format_incorrect))
+                return false
+            }
+        } else {
+            if (!validationHkPhone(phoneNumber)) {
+                tipsMessage.postValue(getString(R.string.hint_phone_number_format_incorrect))
+                return false
+            }
+        }
+
+        if (action == ACTION_BING_PHONE_NUMBER && (params[2] as String).isEmpty()) {
+            tipsMessage.postValue(getString(R.string.hint_enter_verification_code))
+            return false
+        }
+
+        return true
+    }
+}

@@ -12,7 +12,7 @@
             <shape
                 android:tint="@color/view_pressed_tint"
                 android:tintMode="multiply">
-                <solid android:color="@color/color_7038FD" />
+                <solid android:color="@color/colorAccent" />
             </shape>
         </clip>
     </item>
@@ -20,7 +20,7 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <solid android:color="@color/color_7038FD" />
+                <solid android:color="@color/colorAccent" />
             </shape>
         </clip>
     </item>

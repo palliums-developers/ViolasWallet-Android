@@ -47,6 +47,12 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
         super.onDestroy()
     }
 
+    fun close(){
+        if(!isDestroyed && !isFinishing){
+            finish()
+        }
+    }
+
     abstract fun getLayoutResId(): Int
 
     protected open fun getLayoutView(): View? = null

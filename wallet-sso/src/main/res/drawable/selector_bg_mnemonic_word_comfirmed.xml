@@ -4,14 +4,14 @@
     <item android:state_pressed="true">
         <shape android:tint="@color/view_pressed_tint" android:tintMode="multiply">
             <corners android:radius="@dimen/dp_3" />
-            <solid android:color="@color/color_0085E4" />
+            <solid android:color="@color/colorAccent" />
         </shape>
     </item>
 
     <item>
         <shape>
             <corners android:radius="@dimen/dp_3" />
-            <solid android:color="@color/color_0085E4" />
+            <solid android:color="@color/colorAccent" />
         </shape>
     </item>
 </selector>

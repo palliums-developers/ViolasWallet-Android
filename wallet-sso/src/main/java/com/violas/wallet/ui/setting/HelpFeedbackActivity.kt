@@ -16,7 +16,7 @@ class HelpFeedbackActivity : BaseWebActivity() {
         super.onCreate(savedInstanceState)
 
         setTitleRightText(R.string.help_feedback_menu)
-        setTitleRightTextColor(R.color.color_492AC5)
+        setTitleRightTextColor(R.color.def_text_btn)
     }
 
     override fun getUrl(): String {
