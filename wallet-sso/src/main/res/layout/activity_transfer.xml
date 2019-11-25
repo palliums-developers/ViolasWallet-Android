@@ -166,8 +166,6 @@
             <Button
                 android:id="@+id/btnConfirm"
                 style="@style/BaseButtonPrimary"
-                android:layout_width="238dp"
-                android:layout_height="40dp"
                 android:layout_marginTop="74dp"
                 android:layout_marginBottom="50dp"
                 android:text="@string/action_tvHintFee"

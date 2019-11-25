@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.interceptor
 
 import com.violas.wallet.common.Vm
-import com.violas.wallet.repository.http.HttpInjector
+import com.violas.wallet.repository.ServiceLocator
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -56,7 +56,7 @@ class BaseUrlInterceptor : Interceptor {
             newUrlBuilder.removePathSegment(0)
         }
 
-        val baseUrl = HttpInjector.getBaseUrl().toHttpUrl()
+        val baseUrl = ServiceLocator.getDefaultBaseUrl().toHttpUrl()
         originalRequest.url.pathSegments.forEach { originalPathSegment ->
             baseUrl.pathSegments.forEach { basePathSegment ->
                 if (originalPathSegment == basePathSegment) {

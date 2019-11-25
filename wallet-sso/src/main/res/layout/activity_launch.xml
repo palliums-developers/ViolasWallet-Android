@@ -7,17 +7,16 @@
     tools:background="@color/def_page_bg_dark"
     tools:context=".ui.launch.LaunchActivity">
 
-    <com.shehuan.niv.NiceImageView
+    <com.palliums.widget.NiceImageView
         android:id="@+id/ivLogo"
-        android:layout_width="87dp"
-        android:layout_height="87dp"
-        android:src="@mipmap/ic_launcher"
+        android:layout_width="@dimen/dp_87"
+        android:layout_height="@dimen/dp_87"
+        android:src="@drawable/ic_logo"
         app:corner_radius="@dimen/dp_23"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.38" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

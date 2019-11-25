@@ -2,7 +2,8 @@ package com.violas.wallet.ui.record
 
 import com.quincysx.crypto.CoinTypes
 import com.palliums.paging.PagingViewModel
-import com.violas.wallet.repository.http.HttpInjector
+import com.violas.wallet.repository.ServiceLocator
+import com.violas.wallet.repository.database.entity.TokenDo
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -12,12 +13,15 @@ import kotlin.random.Random
  * <p>
  * desc: 交易记录的ViewModel
  */
-class TransactionRecordViewModel(private val mAddress: String, coinTypes: CoinTypes) :
-    PagingViewModel<TransactionRecordVO>() {
+class TransactionRecordViewModel(
+    private val mAddress: String,
+    private val mTokenDO: TokenDo?,
+    coinTypes: CoinTypes
+) : PagingViewModel<TransactionRecordVO>() {
 
     private var mFirstRefresh = true
     private val mTransactionRepository =
-        HttpInjector.getTransactionRepository(coinTypes)
+        ServiceLocator.getTransactionService(coinTypes)
 
     override suspend fun loadData(
         pageSize: Int,
@@ -34,7 +38,7 @@ class TransactionRecordViewModel(private val mAddress: String, coinTypes: CoinTy
         }
 
         mTransactionRepository.getTransactionRecord(
-            mAddress, pageSize, pageNumber, pageKey, onSuccess, onFailure
+            mAddress, mTokenDO, pageSize, pageNumber, pageKey, onSuccess, onFailure
         )
 
         //onSuccess.invoke(fakeData(mAddress, pageSize, pageNumber), null)

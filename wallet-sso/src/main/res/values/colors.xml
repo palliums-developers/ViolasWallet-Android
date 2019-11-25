@@ -86,4 +86,6 @@
 
     <color name="account_group_title">@color/color_292929</color>
     <color name="dividing_line">@color/color_3C3848_10</color>
+
+    <color name="view_pressed_tint">@color/color_D4D3D6</color>
 </resources>

@@ -118,14 +118,12 @@
         <Button
             android:id="@+id/tv_backup_prompt_next_step"
             style="@style/BaseButtonPrimary"
-            android:layout_width="@dimen/dp_238"
-            android:layout_height="@dimen/dp_40"
             android:layout_marginTop="@dimen/dp_46"
             android:layout_marginBottom="@dimen/dp_111"
             android:text="@string/btn_next_step"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_5" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

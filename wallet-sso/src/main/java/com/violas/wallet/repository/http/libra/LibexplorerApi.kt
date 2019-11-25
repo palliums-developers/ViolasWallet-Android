@@ -27,5 +27,5 @@ interface LibexplorerApi {
         @Query("address") address: String,
         @Query("offset") pageSize: Int,
         @Query("page") pageNumber: Int
-    ): LibexplorerTransactionRecordResponse
+    ): ListResponse<TransactionRecordDTO>
 }

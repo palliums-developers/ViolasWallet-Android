@@ -130,13 +130,13 @@
     <string name="setting_service_agreement">服务协议</string>
     <string name="setting_about_us">关于我们</string>
     <string name="setting_help_feedback">帮助与反馈</string>
-    <string name="setting_app_name_version">Violas %1$s</string>
+    <string name="setting_app_name_version">SSO %1$s</string>
 
     <string name="about_us_title">关于我们</string>
     <string name="about_us_website_key">官方网站</string>
-    <string name="about_us_website_value">www.violas.io</string>
+    <string name="about_us_website_value">www.violassso.io</string>
     <string name="about_us_email_key">邮箱</string>
-    <string name="about_us_email_value">kf@violas.io</string>
+    <string name="about_us_email_value">kf@violassso.io</string>
     <string name="about_us_wechat_key">微信</string>
     <string name="about_us_wechat_value">xxxxx</string>
     <string name="about_us_qq_key">QQ</string>
@@ -153,7 +153,7 @@
 
     <string name="web_load_failed_tips">无法打开页面</string>
     <string name="web_load_failed_retry">轻触屏幕重新加载</string>
-    <string name="web_user_agent">%1$s/Violas Wallet Android Client %2$s.%3$d</string>
+    <string name="web_user_agent">%1$s/SSO Wallet Android Client %2$s.%3$d</string>
 
     <string name="service_agreement_title">服务协议</string>
     <string name="service_agreement_url">https://www.baidu.com/</string>
@@ -165,7 +165,7 @@
     <string name="feedback_hint_input_contact">请输入您的联系方式</string>
     <string name="feedback_content_count">%1$d/%2$d</string>
 
-    <string name="http_user_agent">ViolasWallet Android Client</string>
+    <string name="http_user_agent">SSO Wallet Android Client</string>
 
     <string name="data_load_status_empty">没有查询到对应的数据</string>
     <string name="data_load_status_failed">加载失败, 下拉重新加载</string>

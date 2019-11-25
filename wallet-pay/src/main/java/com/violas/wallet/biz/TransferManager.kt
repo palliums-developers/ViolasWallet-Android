@@ -6,7 +6,7 @@ import com.palliums.content.ContextProvider.getContext
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.ServiceLocator
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.utils.validationBTCAddress
@@ -133,9 +133,9 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        val token = DataRepository.getTokenStorage().findById(tokenId)
+        val token = ServiceLocator.getTokenStorage().findById(tokenId)
         token?.let {
-            DataRepository.getViolasService().sendViolasToken(
+            ServiceLocator.getViolasService().sendViolasToken(
                 context,
                 token.tokenAddress,
                 Account(
@@ -162,7 +162,7 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        DataRepository.getLibraService().sendCoin(
+        ServiceLocator.getLibraService().sendCoin(
             context,
             org.palliums.libracore.wallet.Account(
                 KeyPair(decryptPrivateKey)
@@ -187,7 +187,7 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        DataRepository.getViolasService().sendCoin(
+        ServiceLocator.getViolasService().sendCoin(
             context,
             Account(
                 org.palliums.violascore.wallet.KeyPair(decryptPrivateKey)

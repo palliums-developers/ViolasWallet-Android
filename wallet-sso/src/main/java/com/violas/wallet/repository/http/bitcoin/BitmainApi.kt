@@ -33,5 +33,5 @@ interface BitmainApi {
         @Query("pagesize") pageSize: Int,
         @Query("page") pageNumber: Int,
         @Query("verbose") verbose: Int = 2
-    ): BitmainTransactionRecordResponse
+    ): ListResponse<TransactionRecordDTO>
 }

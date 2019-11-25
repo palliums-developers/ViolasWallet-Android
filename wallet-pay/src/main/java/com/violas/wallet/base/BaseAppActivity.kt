@@ -49,7 +49,7 @@ abstract class BaseAppActivity : BaseActivity() {
                 setContentBackgroundColor(R.color.def_activity_vice_bg)
                 setTitleBackgroundColor(R.color.white)
 
-                setTitleLeftImageResource(R.drawable.icon_back_black)
+                setTitleLeftImageResource(R.drawable.ic_back_dark)
                 setTitleRightTextColor(R.color.def_text_font_black)
                 titleColor = R.color.def_text_font_black
             }
@@ -57,7 +57,7 @@ abstract class BaseAppActivity : BaseActivity() {
             TITLE_STYLE_MAIN_COLOR -> {
                 setRootBackgroundResource(R.drawable.shape_deputy_background)
 
-                setTitleLeftImageResource(R.drawable.icon_back_white)
+                setTitleLeftImageResource(R.drawable.ic_back_light)
                 setTitleRightTextColor(R.color.white)
                 titleColor = R.color.white
             }
@@ -74,7 +74,7 @@ abstract class BaseAppActivity : BaseActivity() {
                 setContentBackgroundColor(R.color.def_activity_bg)
                 setTitleBackgroundColor(R.color.white)
 
-                setTitleLeftImageResource(R.drawable.icon_back_black)
+                setTitleLeftImageResource(R.drawable.ic_back_dark)
                 setTitleRightTextColor(R.color.def_text_font_black)
                 titleColor = R.color.def_text_font_black
             }

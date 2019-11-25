@@ -47,11 +47,7 @@
     <Button
         android:id="@+id/btnConfirm"
         style="@style/BaseButtonPrimary"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginTop="@dimen/dp_60"
         android:text="@string/action_confirm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

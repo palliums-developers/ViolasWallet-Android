@@ -61,7 +61,7 @@ class TransactionRecordViewHolder(
             itemView.vAddress.text = it.address
 
             val displayUnit = convertAmountToDisplayUnit(it.amount, it.coinTypes)
-            if (TransactionRecordVO.isStableCoinOpt(it.transactionType)) {
+            if (TransactionRecordVO.isTokenOpt(it.transactionType)) {
                 itemView.vAmountLabel.setText(R.string.transaction_record_consume)
                 itemView.vAmount.text = "${displayUnit.first} ${displayUnit.second}"
                 itemView.vCoinName.text =
@@ -73,12 +73,12 @@ class TransactionRecordViewHolder(
             }
 
             when (it.transactionType) {
-                TransactionRecordVO.TRANSACTION_TYPE_OPEN_STABLE_COIN -> {
+                TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN -> {
                     itemView.vType.setText(R.string.transaction_record_open)
                     itemView.vType.setTextColor(getColor(R.color.color_FB8F0B))
                 }
 
-                TransactionRecordVO.TRANSACTION_TYPE_STABLE_COIN_RECEIPT,
+                TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT,
                 TransactionRecordVO.TRANSACTION_TYPE_RECEIPT -> {
                     itemView.vType.setText(R.string.transaction_record_receipt)
                     itemView.vType.setTextColor(getColor(R.color.color_13B788))

@@ -83,6 +83,7 @@ dependencies {
     implementation project(':lib-libra-core')
     implementation project(':lib-violas-core')
     implementation project(':lib-btc-core')
+    implementation project(':module-violas')
 
     testImplementation "junit:junit:$versions.test_junit"
     androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
@@ -106,7 +107,4 @@ dependencies {
 
     debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
     releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
-
-    // round ImageView see https://github.com/SheHuan/NiceImageView
-    implementation 'com.github.SheHuan:NiceImageView:1.0.5'
 }

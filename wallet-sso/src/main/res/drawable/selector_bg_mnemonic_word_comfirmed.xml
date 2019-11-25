@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item android:state_pressed="true">
-        <shape android:tint="@color/color_D4D3D6" android:tintMode="multiply">
+        <shape android:tint="@color/view_pressed_tint" android:tintMode="multiply">
             <corners android:radius="@dimen/dp_3" />
             <solid android:color="@color/color_0085E4" />
         </shape>

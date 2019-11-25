@@ -73,10 +73,8 @@
         <Button
             android:id="@+id/btnCopy"
             style="@style/BaseButtonPrimary"
-            android:layout_width="238dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="52dp"
-            android:layout_marginBottom="28dp"
+            android:layout_marginTop="@dimen/dp_52"
+            android:layout_marginBottom="@dimen/dp_28"
             android:text="@string/action_copy"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

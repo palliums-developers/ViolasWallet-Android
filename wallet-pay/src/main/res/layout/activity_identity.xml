@@ -38,8 +38,8 @@
     <Button
         android:id="@+id/btnCreate"
         style="@style/BaseButtonPrimary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/dp_282"
+        android:layout_height="@dimen/dp_46"
         android:text="@string/create_identity"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -50,9 +50,9 @@
     <Button
         android:id="@+id/btnImport"
         style="@style/BaseButtonDeputy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_width="@dimen/dp_282"
+        android:layout_height="@dimen/dp_46"
+        android:layout_marginTop="@dimen/dp_16"
         android:text="@string/import_identity"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

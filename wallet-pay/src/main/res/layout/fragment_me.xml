@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.shehuan.niv.NiceImageView
+    <com.palliums.widget.NiceImageView
         android:id="@+id/ivAvatar"
         android:layout_width="@dimen/dp_75"
         android:layout_height="@dimen/dp_75"
@@ -46,18 +46,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivHeader"
-        app:mivStartIcon="@mipmap/ic_me_wallet_management"
         app:mivShowBottomLine="false"
+        app:mivStartIcon="@mipmap/ic_me_wallet_management"
         app:mivStartTitleText="@string/me_wallet_management" />
 
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivTransferRecord"
         style="@style/MenuItemView"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivWalletManagement"
         app:mivShowBottomLine="false"
-        android:visibility="gone"
         app:mivStartIcon="@mipmap/ic_me_transfer_record"
         app:mivStartTitleText="@string/me_transfer_record" />
 

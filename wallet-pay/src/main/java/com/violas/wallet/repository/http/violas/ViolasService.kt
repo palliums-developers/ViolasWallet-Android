@@ -3,9 +3,13 @@ package com.violas.wallet.repository.http.violas
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import com.smallraw.core.http.violas.Module
-import com.smallraw.core.http.violas.SupportCurrencyResponse
-import com.smallraw.core.http.violas.ViolasRepository
+import com.palliums.violas.http.ModuleDTO
+import com.palliums.violas.http.SupportCurrencyDTO
+import com.palliums.violas.http.ViolasRepository
+import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.repository.database.entity.TokenDo
+import com.violas.wallet.repository.http.TransactionService
+import com.violas.wallet.ui.record.TransactionRecordVO
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import org.palliums.violascore.move.Move
@@ -16,7 +20,13 @@ import org.palliums.violascore.utils.HexUtils
 import org.palliums.violascore.wallet.Account
 import java.util.*
 
-class ViolasService(private val mViolasRepository: ViolasRepository) {
+/**
+ * Created by elephant on 2019-11-11 15:47.
+ * Copyright © 2019-2020. All rights reserved.
+ * <p>
+ * desc: Violas service
+ */
+class ViolasService(private val mViolasRepository: ViolasRepository) : TransactionService {
     private var mHandler = Handler(Looper.getMainLooper())
 
     fun checkTokenRegister(address: String, call: (list: List<String>) -> Unit) {
@@ -32,7 +42,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             })
     }
 
-    fun getSupportCurrency(call: (list: List<SupportCurrencyResponse>) -> Unit) {
+    fun getSupportCurrency(call: (list: List<SupportCurrencyDTO>) -> Unit) {
         val subscribe = mViolasRepository.getSupportCurrency()
             .subscribeOn(Schedulers.io())
             .subscribe({
@@ -49,7 +59,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     fun getBalance(
         address: String,
         tokenAddress: List<String>,
-        call: (amount: Long, modes: List<Module>?) -> Unit
+        call: (amount: Long, modes: List<ModuleDTO>?) -> Unit
     ): Disposable {
         val joinToString = tokenAddress.joinToString(separator = ",")
         return mViolasRepository.getBalance(address, joinToString)
@@ -147,10 +157,10 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
                 .subscribeOn(Schedulers.io())
                 .subscribe({
-                    if (it.code != 2000) {
-                        call.invoke(false)
-                    } else {
+                    if (it.errorCode == it.getSuccessCode()) {
                         call.invoke(true)
+                    } else {
+                        call.invoke(false)
                     }
                 }, {
                     call.invoke(false)
@@ -269,5 +279,81 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         println("rawTransaction ${HexUtils.toHex(toByteString)}")
 
         return rawTransaction
+    }
+
+    override suspend fun getTransactionRecord(
+        address: String,
+        tokenDO: TokenDo?,
+        pageSize: Int,
+        pageNumber: Int,
+        pageKey: Any?,
+        onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        try {
+            val queryToken = tokenDO?.tokenAddress?.isEmpty() ?: false
+            val response =
+                mViolasRepository.getTransactionRecord(address, pageSize, (pageNumber - 1) * pageSize)
+
+            if (response.data.isNullOrEmpty()) {
+                onSuccess.invoke(emptyList(), null)
+                return
+            }
+
+
+            val list = response.data!!.mapIndexed { index, bean ->
+                // 解析交易类型
+                val transactionType = when {
+                    bean.type == 1 ->
+                        TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN
+
+                    bean.sender == address -> {
+                        if (queryToken) {
+                            TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
+                        } else {
+                            TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
+                        }
+                    }
+
+                    else -> {
+                        if (queryToken) {
+                            TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT
+                        } else {
+                            TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
+                        }
+                    }
+                }
+
+                // 解析展示地址，收款付款均为对方地址
+                val showAddress = when {
+                    bean.type == 1 || bean.sender == address ->
+                        bean.receiver
+
+                    else ->
+                        bean.sender
+                }
+
+                val coinName = if (TransactionRecordVO.isTokenOpt(transactionType)) {
+                    // TODO 解析 if (queryToken) tokenDO!!.name else bean.module_name
+                    if (queryToken) tokenDO!!.name else "Xcoin"
+                } else {
+                    CoinTypes.VToken.coinName()
+                }
+
+                TransactionRecordVO(
+                    id = (pageNumber - 1) * pageSize + index,
+                    coinTypes = CoinTypes.VToken,
+                    transactionType = transactionType,
+                    time = bean.expiration_time * 1000,
+                    amount = bean.amount,
+                    address = showAddress,
+                    coinName = coinName
+                )
+            }
+            onSuccess.invoke(list, null)
+
+        } catch (e: Exception) {
+            onFailure.invoke(e)
+        }
     }
 }

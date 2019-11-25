@@ -10,7 +10,7 @@
     <item android:id="@android:id/secondaryProgress">
         <clip>
             <shape
-                android:tint="@color/gray"
+                android:tint="@color/view_pressed_tint"
                 android:tintMode="multiply">
                 <solid android:color="@color/color_7038FD" />
             </shape>

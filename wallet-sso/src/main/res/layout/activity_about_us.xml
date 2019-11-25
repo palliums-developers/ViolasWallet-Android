@@ -10,12 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <com.palliums.widget.NiceImageView
             android:id="@+id/ivLogo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/dp_70"
+            android:layout_height="@dimen/dp_70"
             android:layout_marginTop="@dimen/dp_39"
-            android:src="@mipmap/ic_logo_corner_shadow"
+            android:src="@drawable/ic_logo"
+            app:corner_radius="@dimen/dp_18"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -24,13 +25,14 @@
             android:id="@+id/tvAppNameVersion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_5"
             android:textColor="@color/def_text_title"
             android:textSize="@dimen/sp_16"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivLogo"
-            tools:text="Violas 1.0.0" />
+            tools:text="SSO 1.0.0" />
 
         <com.palliums.widget.MenuItemView
             android:id="@+id/mivWebsite"

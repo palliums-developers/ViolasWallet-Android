@@ -251,11 +251,7 @@
     <Button
         android:id="@+id/btnExchange"
         style="@style/BaseButtonPrimary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:width="238dp"
-        android:height="40dp"
+        android:layout_marginTop="@dimen/dp_50"
         android:text="闪电兑换"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

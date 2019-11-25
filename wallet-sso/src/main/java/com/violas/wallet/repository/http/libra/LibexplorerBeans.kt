@@ -9,7 +9,7 @@ import com.palliums.net.ApiResponse
  * <p>
  * desc: LibExplorer bean
  */
-open class LibexplorerResponse<T> : ApiResponse {
+open class Response<T> : ApiResponse {
 
     @SerializedName(value = "status")
     var errorCode: String = ""
@@ -33,19 +33,17 @@ open class LibexplorerResponse<T> : ApiResponse {
     }
 }
 
-class LibexplorerTransactionRecordResponse :
-    LibexplorerResponse<List<LibexplorerTransactionRecordResponse.Bean>>() {
+class ListResponse<T> : Response<List<T>>()
 
-    data class Bean(
-        val to: String,
-        val from: String,
-        val value: String,
-        val gasUsed: Long,
-        val maxGasAmount: Long,
-        val gasUnitPrice: Long,
-        val expirationTime: Long,
-        val sequenceNumber: Int,
-        val status: String,
-        val version: String
-    )
-}
+data class TransactionRecordDTO(
+    val to: String,
+    val from: String,
+    val value: String,
+    val gasUsed: Long,
+    val maxGasAmount: Long,
+    val gasUnitPrice: Long,
+    val expirationTime: Long,
+    val sequenceNumber: Int,
+    val status: String,
+    val version: String
+)
