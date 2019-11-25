@@ -215,7 +215,6 @@
     <string name="app_slogan">SSO钱包</string>
 
     <string name="verification_phone_title">手机验证</string>
-    <string name="verification_email_title">邮箱验证</string>
     <string name="hint_enter_phone_number">请输入手机号</string>
     <string name="hint_enter_verification_code">请输入验证码</string>
     <string name="get_verification_code">获取验证码</string>
@@ -224,6 +223,11 @@
     <string name="hint_phone_number_format_incorrect">手机号格式不正确</string>
     <string name="hint_phone_number_bind_success">绑定手机号成功</string>
     <string name="hint_verification_code_get_success">验证码已发送，请注意查收</string>
+    <string name="verification_email_title">邮箱验证</string>
+    <string name="email">邮箱</string>
+    <string name="hint_enter_email_address">请输入邮箱地址</string>
+    <string name="hint_email_format_incorrect">邮箱格式不正确</string>
+    <string name="hint_email_bind_success">绑定邮箱成功</string>
 
     <string name="authentication_title">身份认证</string>
     <string name="hint_kyc_content">*申请发行SSO必须先进行身份认证及手机、邮箱验证</string>

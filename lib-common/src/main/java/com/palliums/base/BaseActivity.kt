@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.layout_title_bar.*
 import kotlinx.coroutines.*
 import me.yokeyword.fragmentation.SupportActivity
+import me.yokeyword.fragmentation.SupportHelper
 import qiu.niorgai.StatusBarCompat
 
 abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewController,
@@ -47,8 +48,16 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
         super.onDestroy()
     }
 
-    fun close(){
-        if(!isDestroyed && !isFinishing){
+    fun showSoftInput(view: View) {
+        SupportHelper.showSoftInput(view)
+    }
+
+    fun hideSoftInput() {
+        SupportHelper.hideSoftInput(this.window.decorView)
+    }
+
+    fun close() {
+        if (!isDestroyed && !isFinishing) {
             finish()
         }
     }

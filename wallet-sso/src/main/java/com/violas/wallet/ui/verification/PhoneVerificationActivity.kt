@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.verification
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -64,11 +65,20 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
         })
         mViewModel.bindPhoneNumberResult.observe(this, Observer {
             if (it) {
+                setResult(Activity.RESULT_OK)
                 vBind.postDelayed({
                     close()
                 }, 2000)
             }
         })
+
+        showSoftInput(vPhoneNumber)
+    }
+
+    override fun onDestroy() {
+        mCountDownTimerUtils.cancel()
+
+        super.onDestroy()
     }
 
     override fun onViewClick(view: View) {
