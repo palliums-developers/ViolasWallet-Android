@@ -101,7 +101,7 @@ abstract class BaseAppActivity : BaseActivity() {
             }
 
             PAGE_STYLE_DARK_TITLE_PLIGHT_CONTENT -> {
-                setTitleBackgroundResource(R.drawable.bg_title_dark)
+                setTitleBackgroundResource(R.drawable.bg_title_black)
                 setContentBackgroundColor(R.color.def_page_bg_light_primary)
 
                 setTitleLeftImageResource(R.drawable.ic_back_light)
