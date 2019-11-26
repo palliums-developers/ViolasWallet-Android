@@ -75,18 +75,27 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
         }
     }
 
+    /**
+     * 设置标题
+     */
     override fun setTitle(title: CharSequence?) {
         if (!title.isNullOrEmpty()) {
             vTitleMiddleText.text = title
         }
     }
 
+    /**
+     * 设置标题的字体颜色
+     */
     override fun setTitleColor(@ColorRes resId: Int) {
         if (resId != 0) {
             vTitleMiddleText.setTextColor(com.palliums.utils.getColor(resId, this))
         }
     }
 
+    /**
+     * 设置标题栏左侧按钮的图片资源
+     */
     fun setTitleLeftImageResource(@DrawableRes resId: Int) {
         if (resId != 0) {
             vTitleLeftImageBtn.setImageResource(resId)
@@ -97,72 +106,118 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
         }
     }
 
+    /**
+     * 设置标题栏右侧按钮的文字
+     */
     fun setTitleRightText(@StringRes resId: Int) {
         if (resId != 0) {
             vTitleRightTextBtn.setText(resId)
             vTitleRightTextBtn.visibility = View.VISIBLE
             vTitleRightTextBtn.setOnClickListener(this)
+
+            vTitleRightImageBtn.visibility = View.GONE
         } else {
             vTitleRightTextBtn.visibility = View.GONE
         }
     }
 
+    /**
+     * 设置标题栏右侧按钮的字体颜色
+     */
     fun setTitleRightTextColor(@ColorRes resId: Int) {
         if (resId != 0) {
             vTitleRightTextBtn.setTextColor(com.palliums.utils.getColor(resId, this))
         }
     }
 
+    /**
+     * 设置标题栏右侧按钮的图片资源
+     */
     fun setTitleRightImageResource(@DrawableRes resId: Int) {
         if (resId != 0) {
             vTitleRightImageBtn.setImageResource(resId)
             vTitleRightImageBtn.visibility = View.VISIBLE
             vTitleRightImageBtn.setOnClickListener(this)
+
+            vTitleRightTextBtn.visibility = View.GONE
         } else {
             vTitleRightImageBtn.visibility = View.GONE
         }
     }
 
+    /**
+     * 设置标题栏的背景资源
+     */
     fun setTitleBackgroundResource(@DrawableRes resId: Int) {
         if (resId != 0) {
-            vTitleBarBackground.setBackgroundResource(resId)
+            vTitleBar.setBackgroundResource(resId)
         }
     }
 
+    /**
+     * 设置标题栏的背景色
+     */
     fun setTitleBackgroundColor(@ColorRes resId: Int) {
         if (resId != 0) {
             vTitleBar.setBackgroundColor(com.palliums.utils.getColor(resId, this))
         }
     }
 
+    /**
+     * 设置内容视图的背景资源，该内容视图不包含标题栏
+     */
     fun setContentBackgroundResource(@DrawableRes resId: Int) {
         if (resId != 0) {
             vContentContainer.setBackgroundResource(resId)
         }
     }
 
+    /**
+     * 设置内容视图的背景色，该内容视图不包含标题栏
+     */
     fun setContentBackgroundColor(@ColorRes resId: Int) {
         if (resId != 0) {
             vContentContainer.setBackgroundColor(com.palliums.utils.getColor(resId, this))
         }
     }
 
+    /**
+     * 设置顶部视图的背景资源，顶部视图在标题栏之下，在根视图之上
+     */
+    fun setTopBackgroundResource(@DrawableRes resId: Int) {
+        if (resId != 0) {
+            vTopView.setBackgroundResource(resId)
+        }
+    }
+
+    /**
+     * 设置根视图的背景资源
+     */
     fun setRootBackgroundResource(@DrawableRes resId: Int) {
         if (resId != 0) {
             vRootView.setBackgroundResource(resId)
         }
     }
 
+    /**
+     * 设置根视图的背景色
+     */
     fun setRootBackgroundColor(@ColorRes resId: Int) {
         if (resId != 0) {
             vRootView.setBackgroundColor(com.palliums.utils.getColor(resId, this))
         }
     }
 
+    /**
+     * 设置标题栏的可见性状态
+     */
     fun setTitleBarVisibility(visibility: Int) {
         vTitleBar.visibility = visibility
     }
 
+    /**
+     * 设置标题栏左侧按钮的可见性状态
+     */
     fun setTitleLeftViewVisibility(visibility: Int) {
         vTitleLeftImageBtn.visibility = visibility
     }
