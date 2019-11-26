@@ -273,5 +273,6 @@
     <string name="hint_upload_file_hint">*正面写上发行SSO注明：SSO钱包地址、稳定币名字、法币种类、法币稳定币数量、证件号码、手机电话号码、电子邮件地址、申请日期。反面带有签字。</string>
     <string name="action_upload">上传文件</string>
     <string name="action_confirm_submit">确认提交</string>
+    <string name="title_select_currency">选择币种</string>
 
 </resources>

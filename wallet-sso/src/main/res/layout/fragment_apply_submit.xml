@@ -69,7 +69,8 @@
             app:item_hint="@string/hint_fill_number_types_issuing"
             app:item_title="@string/label_number_types_issuing" />
 
-        <com.violas.wallet.widget.ApplySubmitEditItemView
+        <com.violas.wallet.widget.ApplySubmitItemView
+            android:id="@+id/tvStableCurrencyValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
@@ -90,72 +91,6 @@
             android:layout_height="wrap_content"
             app:item_title="@string/label_wallet_address"
             tools:item_content="dfjajkdjkfjklajfuwhidoefjc" />
-
-        <com.violas.wallet.widget.ApplySubmitItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:item_title="@string/label_wallet_public_key"
-            tools:item_content="dfjajkdjkfjklajfuwhidoefjc" />
-
-        <com.violas.wallet.widget.ApplySubmitItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:item_title="@string/label_application_date"
-            tools:item_content="2019/11/12 15:00" />
-
-        <com.violas.wallet.widget.ApplySubmitItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:item_title="@string/label_request_deadline"
-            tools:item_content="5天" />
-
-        <com.violas.wallet.widget.ApplySubmitItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:item_title="@string/label_request_expiration_time"
-            tools:item_content="2019/11/12 15:00" />
-
-        <com.violas.wallet.widget.ApplySubmitItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:item_title="@string/label_name"
-            tools:item_content="王依依" />
-
-        <com.violas.wallet.widget.ApplySubmitItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:item_title="@string/label_birthday"
-            tools:item_content="1982/02/21" />
-
-        <com.violas.wallet.widget.ApplySubmitItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:item_title="@string/label_nationality"
-            tools:item_content="中国" />
-
-        <com.violas.wallet.widget.ApplySubmitItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:item_title="@string/label_certificate_type"
-            tools:item_content="身份证" />
-
-        <com.violas.wallet.widget.ApplySubmitItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:item_title="@string/label_id_card"
-            tools:item_content="110832828839932" />
-
-        <com.violas.wallet.widget.ApplySubmitItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:item_title="@string/label_phone"
-            tools:item_content="182***7263" />
-
-        <com.violas.wallet.widget.ApplySubmitItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:item_title="@string/label_email"
-            tools:item_content="112****@qq.com" />
 
         <LinearLayout
             android:layout_width="match_parent"
