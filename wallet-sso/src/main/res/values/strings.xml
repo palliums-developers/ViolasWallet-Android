@@ -230,6 +230,21 @@
     <string name="hint_email_bind_success">绑定邮箱成功</string>
 
     <string name="authentication_title">身份认证</string>
+    <string name="label_country_area">国家或地区</string>
+    <string name="label_id_number_china">身份证号</string>
+    <string name="label_id_number_other">证件号码</string>
+    <string name="hint_select_country_area">请选择您所在国家或地区</string>
+    <string name="hint_enter_name">请填写您的姓名</string>
+    <string name="hint_enter_id_number_china">请填写您的身份证号</string>
+    <string name="hint_enter_id_number_other">请填写您的证件号码</string>
+    <string name="desc_photograph_id_card_china">拍摄/上传您的二代身份证</string>
+    <string name="desc_photograph_id_card_other">拍摄/上传您的证件</string>
+    <string name="desc_photograph_id_card_front_china">点击拍摄/上传人像面</string>
+    <string name="desc_photograph_id_card_front_other">点击拍摄/上传正面</string>
+    <string name="desc_photograph_id_card_back_china">点击拍摄/上传国徽面</string>
+    <string name="desc_photograph_id_card_back_other">点击拍摄/上传背面</string>
+    <string name="action_submit">提交</string>
+
     <string name="hint_kyc_content">*申请发行SSO必须先进行身份认证及手机、邮箱验证</string>
     <string name="hint_immediately_to">立即前往</string>
     <string name="title_apply_issue_sso">申请发行 SSO</string>

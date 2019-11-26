@@ -73,6 +73,7 @@
         <item name="mivEndDescTextSize">@dimen/sp_16</item>
         <item name="mivEndDescTextColor">@color/def_text_key</item>
         <item name="mivDividingLineColor">@color/dividing_line</item>
+        <item name="mivEndArrow">@mipmap/ic_right_arrow_gray</item>
     </style>
 
     <style name="MenuItemView.About">
@@ -85,10 +86,13 @@
         <item name="android:singleLine">true</item>
         <item name="android:textColorHint">@color/def_text_hint</item>
         <item name="android:background">@drawable/selector_edit_bg_line</item>
-        <item name="android:layout_height">@dimen/dp_51</item>
+        <item name="android:layout_height">@dimen/dp_55</item>
         <item name="android:layout_width">@dimen/dp_0</item>
         <item name="android:layout_marginStart">@dimen/dp_20</item>
-        <item name="android:layout_marginEnd">@dimen/dp_23</item>
+        <item name="android:layout_marginEnd">@dimen/dp_20</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
     </style>
 
 </resources>
