@@ -1,0 +1,121 @@
+[
+  {
+    "country_or_territory": "United States",
+    "currency": "US dollar",
+    "flag": "",
+    "indicator": "USD",
+    "exchange": 1.0
+  },
+  {
+    "country_or_territory": "United Kingdom",
+    "currency": "Pound sterling",
+    "flag": "",
+    "indicator": "GBP",
+    "exchange": 0.77
+  },
+  {
+    "country_or_territory": "Japan",
+    "currency": "Japanese yen",
+    "flag": "",
+    "indicator": "JPY",
+    "exchange": 108.51
+  },
+  {
+    "country_or_territory": "Canada",
+    "currency": "Canadian dollar",
+    "flag": "",
+    "indicator": "CAD",
+    "exchange": 1.33
+  },
+  {
+    "country_or_territory": "Australia",
+    "currency": "Australian dollar",
+    "flag": "",
+    "indicator": "AUD",
+    "exchange": 1.47
+  },
+  {
+    "country_or_territory": "Swiss",
+    "currency": "Swiss franc",
+    "flag": "",
+    "indicator": "CHF",
+    "exchange": 0.99
+  },
+  {
+    "country_or_territory": "HongKong",
+    "currency": "Hong Kong dollar",
+    "flag": "",
+    "indicator": "HKD",
+    "exchange": 7.83
+  },
+  {
+    "country_or_territory": "New Zealand",
+    "currency": "New Zealand dollar",
+    "flag": "",
+    "indicator": "NZD",
+    "exchange": 1.56
+  },
+  {
+    "country_or_territory": "Singapore",
+    "currency": "Singapore dollar",
+    "flag": "",
+    "indicator": "SGD",
+    "exchange": 1.36
+  },
+  {
+    "country_or_territory": "South Korean",
+    "currency": "South Korean won",
+    "flag": "",
+    "indicator": "KRW",
+    "exchange": 1170.08
+  },
+  {
+    "country_or_territory": "Taiwan",
+    "currency": "New Taiwan dollar",
+    "flag": "",
+    "indicator": "TWD",
+    "exchange": 30.50
+  },
+  {
+    "country_or_territory": "Thailand",
+    "currency": "Thai baht",
+    "flag": "",
+    "indicator": "THB",
+    "exchange": 30.18
+  },
+  {
+    "country_or_territory": "Malaysian",
+    "currency": "Malaysian ringgit",
+    "flag": "",
+    "indicator": "MYR",
+    "exchange": 4.16
+  },
+  {
+    "country_or_territory": "Indonesian",
+    "currency": "Indonesian rupiah",
+    "flag": "",
+    "indicator": "IDR",
+    "exchange": 14097.58
+  },
+  {
+    "country_or_territory": "Macau",
+    "currency": "Macanese pataca",
+    "flag": "",
+    "indicator": "MOP",
+    "exchange": 8.02
+  },
+  {
+    "country_or_territory": "Philippine",
+    "currency": "Philippine peso",
+    "flag": "",
+    "indicator": "PHP",
+    "exchange": 50.97
+  },
+  {
+    "country_or_territory": "Qatari",
+    "currency": "Qatari riyal",
+    "flag": "",
+    "indicator": "QAR",
+    "exchange": 3.64
+  }
+]

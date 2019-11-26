@@ -15,10 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
+        <activity android:name=".ui.selectCurrency.SelectCurrencyActivity"></activity>
         <activity
             android:name=".ui.launch.LaunchActivity"
-            android:theme="@style/AppTheme.Launcher.Translucent"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Launcher.Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -110,9 +111,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.authentication.AuthenticationActivity"
-            android:screenOrientation="portrait" />
-
-        <!-- 设计图尺寸，用于今日头条适配方案 -->
+            android:screenOrientation="portrait" /> <!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="375" />
