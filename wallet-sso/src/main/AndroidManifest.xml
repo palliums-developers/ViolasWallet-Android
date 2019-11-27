@@ -15,7 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <activity android:name=".ui.selectCurrency.SelectCurrencyActivity"></activity>
+        <activity android:name=".ui.mintSuccess.MintSuccessActivity"></activity>
+        <activity android:name=".ui.applyForMint.ApplyForMintActivity" />
+        <activity android:name=".ui.selectCurrency.SelectCurrencyActivity" />
         <activity
             android:name=".ui.launch.LaunchActivity"
             android:screenOrientation="portrait"
