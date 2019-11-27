@@ -105,37 +105,10 @@
                 android:textColor="@color/def_text_color"
                 android:textSize="12sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="#fff8f9fa"
-                android:paddingStart="15dp"
-                android:paddingTop="9dp"
-                android:paddingEnd="15dp"
-                android:paddingBottom="9dp">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="38dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="5dp"
-                    android:background="@drawable/bg_btn_upload_file">
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:background="@null"
-                        android:drawableLeft="@drawable/icon_add_upload"
-                        android:gravity="center"
-                        android:minWidth="0dp"
-                        android:minHeight="0dp"
-                        android:text="@string/action_upload"
-                        android:textColor="#0087E3" />
-                </FrameLayout>
-            </LinearLayout>
+            <com.violas.wallet.widget.UploadImageView
+                android:id="@+id/upLoadViewReserves"
+                android:layout_width="140dp"
+                android:layout_height="140dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -172,66 +145,17 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="8dp"
-                android:background="#fff8f9fa"
-                android:paddingStart="15dp"
-                android:paddingTop="9dp"
-                android:paddingEnd="15dp"
-                android:paddingBottom="9dp">
+                android:layout_height="wrap_content">
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="38dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="5dp"
-                    android:background="@drawable/bg_btn_upload_file">
+                <com.violas.wallet.widget.UploadImageView
+                    android:id="@+id/upLoadViewAccountPositive"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp" />
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:background="@null"
-                        android:drawableLeft="@drawable/icon_add_upload"
-                        android:gravity="center"
-                        android:minWidth="0dp"
-                        android:minHeight="0dp"
-                        android:text="@string/action_upload"
-                        android:textColor="#0087E3" />
-                </FrameLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="#fff8f9fa"
-                android:paddingStart="15dp"
-                android:paddingTop="9dp"
-                android:paddingEnd="15dp"
-                android:paddingBottom="9dp">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="38dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="5dp"
-                    android:background="@drawable/bg_btn_upload_file">
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:background="@null"
-                        android:drawableLeft="@drawable/icon_add_upload"
-                        android:gravity="center"
-                        android:minWidth="0dp"
-                        android:minHeight="0dp"
-                        android:text="@string/action_upload"
-                        android:textColor="#0087E3" />
-                </FrameLayout>
+                <com.violas.wallet.widget.UploadImageView
+                    android:id="@+id/upLoadViewAccountReverse"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp" />
             </LinearLayout>
         </LinearLayout>
 

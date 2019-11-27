@@ -259,5 +259,8 @@
     <string name="action_upload">上传文件</string>
     <string name="action_confirm_submit">确认提交</string>
     <string name="title_select_currency">选择币种</string>
+    <string name="hint_album">相册</string>
+    <string name="hint_take_photo">拍照</string>
+    <string name="hint_image_load_error">图片加载失败</string>
 
 </resources>

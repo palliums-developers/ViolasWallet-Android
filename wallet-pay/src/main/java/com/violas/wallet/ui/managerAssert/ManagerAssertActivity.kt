@@ -69,27 +69,10 @@ class ManagerAssertActivity : BaseAppActivity() {
     }
 
     private fun openToken(checkbox: SwitchButton, checked: Boolean, assertToken: AssertToken) {
-        showProgress()
-<<<<<<< HEAD
-        dismissProgress()
         launch {
             if (assertToken.netEnable) {
                 withContext(Dispatchers.IO) {
                     mTokenManager.insert(checked, assertToken)
-=======
-        ServiceLocator.getViolasService().checkTokenRegister(
-            mAccount.address, assertToken.tokenAddress
-        ) {
-            dismissProgress()
-            launch {
-                if (it) {
-                    withContext(Dispatchers.IO) {
-                        mTokenManager.insert(checked, assertToken)
-                    }
-                    checkbox.isChecked = true
-                } else {
-                    showPasswordDialog(assertToken, checkbox, checked)
->>>>>>> dd1dca027ea420590af8ce8d5edec30424aa9fd5
                 }
                 checkbox.isChecked = true
             } else {
