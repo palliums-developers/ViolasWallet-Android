@@ -5,7 +5,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.Vm
-import com.violas.wallet.repository.ServiceLocator
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 
 /**
@@ -22,7 +22,7 @@ fun loadAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
     val data = mutableMapOf<String, List<AccountVo>>()
 
     val currentAccount = AccountManager().currentAccount()
-    val accountStorage = ServiceLocator.getAccountStorage()
+    val accountStorage = DataRepository.getAccountStorage()
     if (accountType == AccountType.ALL) {
 
         val identityAccounts = arrayListOf<AccountVo>()

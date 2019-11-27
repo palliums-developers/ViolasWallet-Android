@@ -13,6 +13,7 @@ import com.violas.wallet.repository.http.bitcoin.BitmainService
 import com.violas.wallet.repository.http.bitcoin.BitmainRepository
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.repository.http.libra.LibexplorerApi
 import com.violas.wallet.repository.http.libra.LibexplorerService
 import com.violas.wallet.repository.http.libra.LibexplorerRepository
@@ -26,7 +27,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object ServiceLocator {
+object DataRepository {
     private val appDatabase by lazy {
         AppDatabase.getInstance(getContext())
     }
@@ -46,6 +47,7 @@ object ServiceLocator {
     private val okHttpClient by lazy {
         OkHttpClient.Builder()
             .addInterceptor(BaseUrlInterceptor())
+            .addInterceptor(RequestHeaderInterceptor())
             .addInterceptor(HttpLoggingInterceptor().also {
                 it.level = if (BuildConfig.DEBUG)
                     HttpLoggingInterceptor.Level.BODY
