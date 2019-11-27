@@ -1,22 +1,22 @@
-package com.violas.wallet.widget
+package com.palliums.widget.groupList
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.NO_POSITION
+import com.palliums.R
 import com.palliums.utils.DensityUtility
+import com.palliums.utils.getColor
 import com.palliums.utils.isMainThread
-import com.violas.wallet.R
 import java.util.*
 
 /**
@@ -32,13 +32,14 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     private val dataAdapter: DataAdapter = DataAdapter()
     private val layoutManager: LinearLayoutManager = LinearLayoutManager(context)
     private val recyclerView: RecyclerView = RecyclerView(context)
+    val slideBar = SlideBar(context)
 
     private var firstAddData: Boolean = true
     private var lastItemGroup: ItemData? = null
     private var floatTitleItem: ItemLayout<out ItemData>? = null
 
     /**
-     * 设置是否显示分组,默认不显示,该方法需要在设置数据之前调用
+     * 设置是否显示悬浮分组,默认不显示,该方法需要在设置数据之前调用
      */
     var showFloatGroup: Boolean = false
     /**
@@ -52,13 +53,35 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
     init {
-        recyclerView.layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
+        recyclerView.layoutParams =
+            LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = dataAdapter
         recyclerView.itemAnimator = null
         recyclerView.setItemViewCacheSize(0)
-
         addView(recyclerView)
+
+        slideBar.layoutParams = LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).also {
+            it.gravity = Gravity.END or Gravity.CENTER_VERTICAL
+        }
+        slideBar.setPadding(
+            DensityUtility.dp2px(context, 10),
+            slideBar.top,
+            DensityUtility.dp2px(context, 10),
+            slideBar.bottom
+        )
+        addView(slideBar)
+
+        slideBar.setOnKeyCheckedListener(object : SlideBar.OnKeyCheckedListener {
+            override fun onKeyChecked(key: String, fromSetting: Boolean) {
+                if (!fromSetting) {
+                    selectGroup(key)
+                }
+            }
+        })
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
@@ -101,7 +124,10 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
 
         if (floatTitleItem == null) {
             floatTitleItem = itemFactory!!.createTitle(context, true)
-            floatTitleItem!!.getItemView().layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            floatTitleItem!!.getItemView().layoutParams = LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
             addView(floatTitleItem!!.getItemView())
         }
 
@@ -146,7 +172,18 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         if (lastItemGroup != itemData) {
             lastItemGroup = itemData
             groupSelectedListener?.let { it.onSelected(itemData) }
+
+            slideBar.setCurrentKey(lastItemGroup!!.getGroupName())
         }
+    }
+
+    /**
+     * 是否显示快速索引,默认显示
+     * @param show
+     * @return
+     */
+    fun showSlideBar(show: Boolean) {
+        slideBar.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     fun addItemDecoration(decor: RecyclerView.ItemDecoration) {
@@ -159,7 +196,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
      * @param groupName 组名
      */
     fun selectGroup(groupName: String) {
-        val index = groupData.groupIdMap[groupName]
+        val index = groupData.getGroupIndex(groupName)
         index?.let {
             recyclerView.scrollToPosition(it)
             layoutManager.scrollToPositionWithOffset(it, 0)
@@ -172,6 +209,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     fun clear() {
         if (isMainThread()) {
             groupData.clear()
+            slideBar.clear()
             refreshAdapter()
             initFloatingItem()
         } else {
@@ -182,6 +220,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     fun <VO : ItemData> setData(data: MutableMap<String, List<VO>>) {
         if (isMainThread()) {
             val keys = groupData.setData(data)
+            slideBar.setData(keys)
             groupData.refreshData()
             refreshAdapter()
             initFloatingItem()
@@ -208,7 +247,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         val firstPosition = layoutManager.findFirstVisibleItemPosition()
         val lastPosition = layoutManager.findLastVisibleItemPosition()
 
-        if (dataAdapter.itemCount == 0 || firstPosition == NO_POSITION || lastPosition == NO_POSITION) {
+        if (dataAdapter.itemCount == 0 || firstPosition == RecyclerView.NO_POSITION || lastPosition == RecyclerView.NO_POSITION) {
             dataAdapter.notifyDataSetChanged()
         } else {
             dataAdapter.notifyItemRangeChanged(firstPosition, lastPosition - firstPosition + 1)
@@ -249,7 +288,10 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         private var itemData: ItemData? = null
 
         init {
-            layoutParams = RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            layoutParams = RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
             orientation = VERTICAL
 
             itemTitle = itemFactory!!.createTitle(context, false)
@@ -275,12 +317,12 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     }
 
     inner class GroupData {
-        var dataList = arrayListOf<ItemData>()
-        var groupIdMap = hashMapOf<String, Int>()
-        var groupDataMap: MutableMap<String, List<ItemData>> = linkedMapOf()
+        private var dataList = arrayListOf<ItemData>()
+        private var groupIdMap = hashMapOf<String, Int>()
+        private var groupDataMap: MutableMap<String, List<ItemData>> = linkedMapOf()
 
-        var tempDataList: ArrayList<ItemData>? = null
-        var tempGroupIdMap: HashMap<String, Int>? = null
+        private var tempDataList: ArrayList<ItemData>? = null
+        private var tempGroupIdMap: HashMap<String, Int>? = null
 
         fun <VO : ItemData> setData(groupDataMap: MutableMap<String, List<VO>>): List<String> {
             this.groupDataMap.clear()
@@ -341,6 +383,10 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                 null
             }
         }
+
+        fun getGroupIndex(groupName: String): Int? {
+            return groupIdMap[groupName]
+        }
     }
 
     /**
@@ -383,17 +429,14 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
          */
         private fun createDefaultTitle(context: Context, isFloat: Boolean): TextView {
             return TextView(context).apply {
-                layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
-                setTextColor(
-                    ResourcesCompat.getColor(
-                        context.resources,
-                        R.color.account_group_title,
-                        null
-                    )
+                layoutParams = LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
                 )
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
+                setTextColor(Color.parseColor("#3C3848"))
                 //setTypeface(Typeface.DEFAULT, Typeface.BOLD)
-                //setBackgroundColor(ResourcesCompat.getColor(context.resources, R.color.white, null))
+                //setBackgroundColor(Color.WHITE)
             }
         }
 
@@ -428,7 +471,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     /**
      * item数据接口
      */
-    interface ItemData {
+    interface ItemData : Comparable<String> {
         /**
          * 获取组名
          */

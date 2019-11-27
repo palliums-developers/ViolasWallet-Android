@@ -84,21 +84,21 @@ public class MenuItemView extends FrameLayout {
         // 头部标题
         String startTitleText = null;
         // 头部标题的字体大小
-        int startTitleTextSize = DensityUtility.sp2px(context, 16);
+        int startTitleTextSize = (int) DensityUtility.sp2px(context, 16);
         // 头部标题的文本颜色
         int startTitleTextColor = ResourcesUtilKt.getColor(R.color.black, context);
 
         // 头部描述
         String startDescText = null;
         // 头部描述的字体大小
-        int startDescTextSize = DensityUtility.sp2px(getContext(), 12);
+        int startDescTextSize = (int) DensityUtility.sp2px(getContext(), 12);
         // 头部描述的文本颜色
         int startDescTextColor = ResourcesUtilKt.getColor(R.color.black_50, context);
 
         // 尾部描述
         String endDescText = null;
         // 尾部描述的字体大小
-        int endDescTextSize = DensityUtility.sp2px(getContext(), 16);
+        int endDescTextSize = (int) DensityUtility.sp2px(getContext(), 16);
         // 尾部描述的文本颜色
         int endDescTextColor = ResourcesUtilKt.getColor(R.color.blue_50, context);
         // 尾部描述的文本对齐方式

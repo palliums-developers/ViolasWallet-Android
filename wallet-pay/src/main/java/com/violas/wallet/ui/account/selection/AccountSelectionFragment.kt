@@ -11,8 +11,10 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import com.palliums.base.BaseFragment
 import com.palliums.utils.DensityUtility
+import com.palliums.utils.getColor
 import com.palliums.utils.isFastMultiClick
 import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.palliums.widget.groupList.GroupListLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
@@ -23,7 +25,6 @@ import com.violas.wallet.ui.account.AccountOperationMode
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.AccountVo
 import com.violas.wallet.ui.account.loadAccounts
-import com.violas.wallet.widget.GroupListLayout
 import kotlinx.android.synthetic.main.fragment_account_selection.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -90,7 +91,8 @@ class AccountSelectionFragment : BaseFragment() {
     }
 
     private fun initView() {
-        accOptGroupListLayout.itemFactory = object : GroupListLayout.ItemFactory() {
+        vAccountList.showSlideBar(false)
+        vAccountList.itemFactory = object : GroupListLayout.ItemFactory() {
 
             override fun createContentItemLayout(
                 context: Context,
@@ -106,7 +108,7 @@ class AccountSelectionFragment : BaseFragment() {
                 return TitleItem(context, isFloat)
             }
         }
-        accOptGroupListLayout.addItemDecoration(
+        vAccountList.addItemDecoration(
             RecycleViewItemDividers(
                 top = DensityUtility.dp2px(context, 10),
                 bottom = DensityUtility.dp2px(context, 60),
@@ -121,7 +123,7 @@ class AccountSelectionFragment : BaseFragment() {
             //val data = fakeAccounts(accountType)
             val data = loadAccounts(accountType)
             withContext(Dispatchers.Main) {
-                accOptGroupListLayout.setData(data)
+                vAccountList.setData(data)
             }
         }
     }
@@ -135,13 +137,7 @@ class AccountSelectionFragment : BaseFragment() {
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
-            setTextColor(
-                ResourcesCompat.getColor(
-                    context.resources,
-                    R.color.account_group_title,
-                    null
-                )
-            )
+            setTextColor(getColor(R.color.account_group_title, context))
         }
 
         override fun refreshView(itemData: GroupListLayout.ItemData?) {

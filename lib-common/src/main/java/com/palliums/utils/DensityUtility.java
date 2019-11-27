@@ -70,8 +70,8 @@ public class DensityUtility {
      * @param spVal
      * @return
      */
-    public static int sp2px(Context context, float spVal) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+    public static float sp2px(Context context, float spVal) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
                 spVal, context.getResources().getDisplayMetrics());
     }
 

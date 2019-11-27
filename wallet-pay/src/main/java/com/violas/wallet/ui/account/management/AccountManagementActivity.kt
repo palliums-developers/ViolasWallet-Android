@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.isFastMultiClick
 import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.palliums.widget.groupList.GroupListLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -18,7 +19,6 @@ import com.violas.wallet.ui.account.AccountVo
 import com.violas.wallet.ui.account.loadAccounts
 import com.violas.wallet.ui.account.wallet.AddWalletActivity
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
-import com.violas.wallet.widget.GroupListLayout
 import kotlinx.android.synthetic.main.activity_account_management.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,7 +55,8 @@ class AccountManagementActivity : BaseAppActivity() {
     }
 
     private fun initView() {
-        accOptGroupListLayout.itemFactory = object : GroupListLayout.ItemFactory() {
+        vAccountList.showSlideBar(false)
+        vAccountList.itemFactory = object : GroupListLayout.ItemFactory() {
 
             override fun createContentItemLayout(
                 context: Context,
@@ -66,7 +67,7 @@ class AccountManagementActivity : BaseAppActivity() {
                 }
             }
         }
-        accOptGroupListLayout.addItemDecoration(
+        vAccountList.addItemDecoration(
             RecycleViewItemDividers(
                 top = DensityUtility.dp2px(this, 12),
                 bottom = DensityUtility.dp2px(this, 80),
@@ -81,7 +82,7 @@ class AccountManagementActivity : BaseAppActivity() {
             //val data = fakeAccounts(AccountType.ALL)
             val data = loadAccounts(AccountType.ALL)
             withContext(Dispatchers.Main) {
-                accOptGroupListLayout.setData(data)
+                vAccountList.setData(data)
             }
         }
     }

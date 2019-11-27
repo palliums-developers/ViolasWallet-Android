@@ -1,5 +1,8 @@
 package com.palliums.utils
 
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
 import android.view.View
 import com.palliums.R
 
@@ -43,4 +46,22 @@ fun isFastMultiClick(view: View?, duration: Long): Boolean {
     view.setTag(R.id.view_click_time, System.currentTimeMillis())
 
     return false
+}
+
+fun drawTextInRect(
+    canvas: Canvas,
+    text: String,
+    rect: Rect,
+    paint: Paint
+) {
+    val bounds = Rect()
+    paint.getTextBounds(text, 0, text.length, bounds)
+    val height = rect.bottom - rect.top.toFloat()
+    val width = rect.right - rect.left.toFloat()
+    canvas.drawText(
+        text,
+        rect.left + width / 2 - bounds.width() / 2 - bounds.left,
+        rect.top + height / 2 + bounds.height() / 2,
+        paint
+    )
 }

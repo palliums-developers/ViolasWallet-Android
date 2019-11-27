@@ -20,7 +20,7 @@
         tools:text="123456789123456789123456789123456789123456789123456789" />
 
     <TextView
-        android:id="@+id/vPhoneAreaCode"
+        android:id="@+id/vAreaCode"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_0"
         android:layout_marginStart="@dimen/dp_10"

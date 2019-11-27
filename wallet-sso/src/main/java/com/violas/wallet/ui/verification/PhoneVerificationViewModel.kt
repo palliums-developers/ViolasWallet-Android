@@ -1,12 +1,16 @@
 package com.violas.wallet.ui.verification
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.getString
 import com.violas.wallet.R
+import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
+import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import com.violas.wallet.utils.validationChinaPhone
 import com.violas.wallet.utils.validationHkPhone
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Created by elephant on 2019-11-25 14:28.
@@ -23,6 +27,14 @@ class PhoneVerificationViewModel : BaseViewModel() {
 
     val getVerificationCodeResult = MutableLiveData<Boolean>()
     val bindPhoneNumberResult = MutableLiveData<Boolean>()
+    val countryAreaVO = MutableLiveData<CountryAreaVO>()
+
+    fun loadCountryArea() {
+        viewModelScope.launch {
+            val countryArea = getCountryArea()
+            countryAreaVO.postValue(countryArea)
+        }
+    }
 
     override suspend fun realExecute(
         action: Int,
