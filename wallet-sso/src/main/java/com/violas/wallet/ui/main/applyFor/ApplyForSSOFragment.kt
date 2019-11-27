@@ -15,8 +15,8 @@ class ApplyForSSOFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         vTitleMiddleText.text = getString(R.string.title_apply_issue_sso)
         childFragmentManager.beginTransaction()
-//            .replace(R.id.fragmentContainerView,ApplySubmitFragment())
-            .replace(R.id.fragmentContainerView,ApplyStatusFragment())
+            .replace(R.id.fragmentContainerView,ApplySubmitFragment())
+//            .replace(R.id.fragmentContainerView,ApplyStatusFragment())
             .commit()
     }
 }
