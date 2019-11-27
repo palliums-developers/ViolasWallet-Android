@@ -48,7 +48,8 @@
             android:id="@+id/vContent"
             style="@style/EditText"
             android:layout_height="@dimen/dp_135"
-            android:gravity="top|start"
+            android:layout_marginEnd="@dimen/dp_23"
+            android:gravity="start|top"
             android:hint="@string/feedback_hint_input_content"
             android:paddingTop="@dimen/dp_17"
             android:paddingBottom="@dimen/dp_25"
@@ -70,6 +71,8 @@
         <EditText
             android:id="@+id/vContact"
             style="@style/EditText"
+            android:layout_height="@dimen/dp_51"
+            android:layout_marginEnd="@dimen/dp_23"
             android:hint="@string/feedback_hint_input_contact"
             android:singleLine="true"
             app:layout_constraintEnd_toEndOf="parent"

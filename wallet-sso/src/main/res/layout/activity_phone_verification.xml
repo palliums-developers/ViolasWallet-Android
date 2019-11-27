@@ -9,10 +9,6 @@
     <EditText
         android:id="@+id/vPhoneNumber"
         style="@style/EditText"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_55"
-        android:layout_marginStart="@dimen/dp_20"
-        android:layout_marginEnd="@dimen/dp_20"
         android:gravity="end|center_vertical"
         android:hint="@string/hint_enter_phone_number"
         android:imeOptions="actionNext"
@@ -41,11 +37,6 @@
     <EditText
         android:id="@+id/vVerificationCode"
         style="@style/EditText"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_55"
-        android:layout_marginStart="@dimen/dp_20"
-        android:layout_marginEnd="@dimen/dp_20"
-        android:gravity="start|center_vertical"
         android:hint="@string/hint_enter_verification_code"
         android:imeOptions="actionDone"
         android:inputType="number"

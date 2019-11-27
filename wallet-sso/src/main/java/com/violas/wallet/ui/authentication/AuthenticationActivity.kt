@@ -1,8 +1,10 @@
 package com.violas.wallet.ui.authentication
 
 import android.os.Bundle
+import android.view.View
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import kotlinx.android.synthetic.main.activity_authentication.*
 
 /**
  * Created by elephant on 2019-11-19 19:24.
@@ -24,6 +26,44 @@ class AuthenticationActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.authentication_title)
-        // TODO UI 逻辑
+        // TODO 逻辑
+
+        vCountryAreaLabel.setOnClickListener(this)
+        vCountryAreaInput.setOnClickListener(this)
+        vSelectCountryAreaBtn.setOnClickListener(this)
+        vPhotographFrontBtn.setOnClickListener(this)
+        vDeleteFrontBtn.setOnClickListener(this)
+        vPhotographBackBtn.setOnClickListener(this)
+        vDeleteBackBtn.setOnClickListener(this)
+        vSubmitBtn.setOnClickListener(this)
+    }
+
+    override fun onViewClick(view: View) {
+        when (view.id) {
+            R.id.vCountryAreaInput,
+            R.id.vSelectCountryAreaBtn -> {
+                showToast("select country or area")
+            }
+
+            R.id.vPhotographFrontBtn -> {
+                showToast("photograph id card front")
+            }
+
+            R.id.vDeleteFrontBtn -> {
+                showToast("delete id card front")
+            }
+
+            R.id.vPhotographBackBtn -> {
+                showToast("photograph id card back")
+            }
+
+            R.id.vDeleteBackBtn -> {
+                showToast("delete id card back")
+            }
+
+            R.id.vSubmitBtn -> {
+                showToast("submit")
+            }
+        }
     }
 }
