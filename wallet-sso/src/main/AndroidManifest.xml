@@ -112,7 +112,7 @@
             android:name=".ui.verification.EmailVerificationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.authentication.AuthenticationActivity"
+            android:name=".ui.authentication.IDAuthenticationActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.selectCountryArea.SelectCountryAreaActivity"

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.palliums.widget.NiceImageView
+        android:id="@+id/ivIdCard"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0"
+        app:border_color="@color/white_70"
+        app:border_width="@dimen/dp_1"
+        app:corner_radius="@dimen/dp_6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivPhotograph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_32"
+        android:src="@drawable/selector_authentication_photograph"
+        app:layout_constraintEnd_toEndOf="@id/ivIdCard"
+        app:layout_constraintStart_toStartOf="@id/ivIdCard"
+        app:layout_constraintTop_toTopOf="@id/ivIdCard" />
+
+    <TextView
+        android:id="@+id/tvPhotographDesc"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/dp_7"
+        android:text="@string/desc_photograph_id_card_front_other"
+        android:textColor="@color/colorAccent"
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/ivIdCard"
+        app:layout_constraintStart_toStartOf="@id/ivIdCard"
+        app:layout_constraintTop_toBottomOf="@id/ivPhotograph" />
+
+    <ImageView
+        android:id="@+id/ivDeleteBg"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_31"
+        android:src="@drawable/bg_authentication_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dp_5"
+        android:src="@drawable/selector_authentication_delete"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/ivIdCard"
+        app:layout_constraintEnd_toEndOf="@id/ivIdCard"
+        app:layout_constraintStart_toStartOf="@id/ivIdCard"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

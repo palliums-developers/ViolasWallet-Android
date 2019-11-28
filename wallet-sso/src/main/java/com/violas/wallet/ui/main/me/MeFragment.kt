@@ -6,7 +6,7 @@ import android.view.View
 import com.palliums.base.BaseFragment
 import com.violas.wallet.R
 import com.violas.wallet.ui.addressBook.AddressBookActivity
-import com.violas.wallet.ui.authentication.AuthenticationActivity
+import com.violas.wallet.ui.authentication.IDAuthenticationActivity
 import com.violas.wallet.ui.setting.SettingActivity
 import com.violas.wallet.ui.verification.EmailVerificationActivity
 import com.violas.wallet.ui.verification.PhoneVerificationActivity
@@ -34,7 +34,7 @@ class MeFragment : BaseFragment() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.vAuthentication -> {
-                startActivity(Intent(_mActivity, AuthenticationActivity::class.java))
+                startActivity(Intent(_mActivity, IDAuthenticationActivity::class.java))
             }
 
             R.id.vPhoneVerification -> {

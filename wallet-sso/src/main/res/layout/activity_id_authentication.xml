@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.authentication.IDAuthenticationActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.palliums.widget.MarqueTextView
+            android:id="@+id/tvCountryArea"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_55"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:background="@drawable/shape_edit_bg_line_normal"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="end|center_vertical"
+            android:hint="@string/hint_select_country_area"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:paddingStart="@dimen/dp_120"
+            android:paddingEnd="@dimen/dp_15"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textColor="@color/def_text_title"
+            android:textColorHint="@color/def_text_hint"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="12345678901234567890123456789012345678901234567890" />
+
+        <ImageView
+            android:id="@+id/ivSelectCountryArea"
+            android:layout_width="@dimen/dp_15"
+            android:layout_height="@dimen/dp_15"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:rotation="180"
+            android:src="@drawable/ic_back_light"
+            android:tint="@color/color_3C3848_80"
+            android:tintMode="multiply"
+            app:layout_constraintBottom_toBottomOf="@id/tvCountryArea"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvCountryArea" />
+
+        <TextView
+            android:id="@+id/tvCountryAreaLabel"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:text="@string/label_country_area"
+            android:textColor="@color/def_text_title"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintBottom_toBottomOf="@id/tvCountryArea"
+            app:layout_constraintStart_toStartOf="@id/tvCountryArea"
+            app:layout_constraintTop_toTopOf="@id/tvCountryArea" />
+
+        <EditText
+            android:id="@+id/etName"
+            style="@style/EditText"
+            android:gravity="end|center_vertical"
+            android:hint="@string/hint_enter_name"
+            android:imeOptions="actionNext"
+            android:paddingStart="@dimen/dp_120"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCountryArea"
+            tools:text="12345678901234567890123456789012345678901234567890" />
+
+        <TextView
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:text="@string/label_name"
+            android:textColor="@color/def_text_title"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintBottom_toBottomOf="@id/etName"
+            app:layout_constraintStart_toStartOf="@id/etName"
+            app:layout_constraintTop_toTopOf="@id/etName" />
+
+        <EditText
+            android:id="@+id/etIdNumber"
+            style="@style/EditText"
+            android:gravity="end|center_vertical"
+            android:hint="@string/hint_enter_id_number_other"
+            android:imeOptions="actionDone"
+            android:paddingStart="@dimen/dp_120"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etName"
+            tools:text="12345678901234567890123456789012345678901234567890" />
+
+        <TextView
+            android:id="@+id/tvIdNumberLabel"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:text="@string/label_id_number_other"
+            android:textColor="@color/def_text_title"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintBottom_toBottomOf="@id/etIdNumber"
+            app:layout_constraintStart_toStartOf="@id/etIdNumber"
+            app:layout_constraintTop_toTopOf="@id/etIdNumber" />
+
+        <TextView
+            android:id="@+id/tvPhotographDesc"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_24"
+            android:gravity="center"
+            android:text="@string/desc_photograph_id_card_other"
+            android:textColor="@color/def_text_title"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintEnd_toEndOf="@id/etIdNumber"
+            app:layout_constraintStart_toStartOf="@id/etIdNumber"
+            app:layout_constraintTop_toBottomOf="@id/etIdNumber" />
+
+        <com.violas.wallet.widget.IDCardLayout
+            android:id="@+id/iclIDCardFront"
+            android:layout_width="@dimen/dp_247"
+            android:layout_height="@dimen/dp_154"
+            android:layout_marginTop="@dimen/dp_17"
+            app:icl_id_card_default="@drawable/bg_id_card_front"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvPhotographDesc"
+            tools:icl_photograph_desc="@string/desc_photograph_id_card_front_other" />
+
+        <com.violas.wallet.widget.IDCardLayout
+            android:id="@+id/iclIDCardBack"
+            android:layout_width="@dimen/dp_247"
+            android:layout_height="@dimen/dp_154"
+            android:layout_marginTop="@dimen/dp_31"
+            app:icl_id_card_default="@drawable/bg_id_card_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iclIDCardFront"
+            tools:icl_photograph_desc="@string/desc_photograph_id_card_back_other" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSubmit"
+            style="@style/BaseButtonPrimary"
+            android:layout_marginTop="@dimen/dp_27"
+            android:layout_marginBottom="@dimen/dp_86"
+            android:text="@string/action_submit"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iclIDCardBack" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

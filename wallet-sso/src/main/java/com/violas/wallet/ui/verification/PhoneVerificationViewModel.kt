@@ -67,13 +67,13 @@ class PhoneVerificationViewModel : BaseViewModel() {
             return false
         }
 
-        val phoneNumber = params[1] as String
+        val phoneNumber = params[0] as String
         if (phoneNumber.isEmpty()) {
             tipsMessage.postValue(getString(R.string.hint_enter_phone_number))
             return false
         }
 
-        val countryAreaVO = params[0] as CountryAreaVO
+        val countryAreaVO = countryAreaVO.value ?: return false
         if (isChinaMainland(countryAreaVO)) {
             if (!validationChinaPhone(phoneNumber)) {
                 tipsMessage.postValue(getString(R.string.hint_phone_number_format_incorrect))
@@ -86,7 +86,7 @@ class PhoneVerificationViewModel : BaseViewModel() {
             }
         }
 
-        if (action == ACTION_BING_PHONE_NUMBER && (params[2] as String).isEmpty()) {
+        if (action == ACTION_BING_PHONE_NUMBER && (params[1] as String).isEmpty()) {
             tipsMessage.postValue(getString(R.string.hint_enter_verification_code))
             return false
         }

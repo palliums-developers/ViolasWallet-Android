@@ -109,14 +109,13 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
             R.id.ivSelectAreaCode
             -> {
                 hideSoftInput()
-                SelectCountryAreaActivity.start(this, REQUEST_CODE_SELECT_COUNTRY_AREA, true)
+                SelectCountryAreaActivity.start(
+                    this, REQUEST_CODE_SELECT_COUNTRY_AREA, true
+                )
             }
 
             R.id.tvGetVerificationCode -> {
-                val countryAreaVO = mViewModel.countryAreaVO.value ?: return
-
                 if (mViewModel.execute(
-                        countryAreaVO,
                         etPhoneNumber.text.toString().trim(),
                         action = ACTION_GET_VERIFICATION_CODE
                     )
@@ -126,10 +125,7 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
             }
 
             R.id.btnBind -> {
-                val countryAreaVO = mViewModel.countryAreaVO.value ?: return
-
                 mViewModel.execute(
-                    countryAreaVO,
                     etPhoneNumber.text.toString().trim(),
                     etVerificationCode.text.toString().trim(),
                     action = ACTION_BING_PHONE_NUMBER

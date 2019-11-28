@@ -6,6 +6,17 @@ import com.smallraw.core.crypto.Bech32Utility
 import org.palliums.libracore.serialization.hexToBytes
 import java.util.*
 
+fun validationIDCar15(idNumber: CharSequence): Boolean {
+    val regex = Regex("^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}\$")
+    return regex.matches(idNumber)
+}
+
+fun validationIDCar18(idNumber: CharSequence): Boolean {
+    val regex =
+        Regex("^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9Xx])$")
+    return regex.matches(idNumber)
+}
+
 fun validationChinaPhone(phoneNumber: String): Boolean {
     if (phoneNumber.isEmpty()) {
         return false
