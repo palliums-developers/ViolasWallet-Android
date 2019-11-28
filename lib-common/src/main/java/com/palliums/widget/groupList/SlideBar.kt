@@ -321,7 +321,7 @@ class SlideBar : View {
                         mKeyView.visibility = GONE
                     }
                 })
-                it.duration = 1500
+                it.duration = 500
             }
         valueAnimator.start()
 

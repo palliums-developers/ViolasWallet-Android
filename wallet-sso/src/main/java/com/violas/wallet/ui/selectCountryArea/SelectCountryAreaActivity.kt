@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -31,11 +32,24 @@ import kotlinx.coroutines.withContext
 class SelectCountryAreaActivity : BaseAppActivity() {
 
     companion object {
-        fun start(activity: Activity, requestCode: Int) {
-            val intent = Intent(activity, SelectCountryAreaActivity::class.java)
+
+        private const val EXTRA_KEY_SELECT_AREA_CODE = "EXTRA_KEY_SELECT_AREA_CODE"
+
+        /**
+         * 启动
+         * @param activity
+         * @param requestCode
+         * @param selectAreaCode true表示选择电话区号，false表示选择国家或地区
+         */
+        fun start(activity: Activity, requestCode: Int, selectAreaCode: Boolean) {
+            val intent = Intent(activity, SelectCountryAreaActivity::class.java).apply {
+                putExtra(EXTRA_KEY_SELECT_AREA_CODE, selectAreaCode)
+            }
             activity.startActivityForResult(intent, requestCode)
         }
     }
+
+    private var selectAreaCode = true
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_group_list
@@ -44,38 +58,49 @@ class SelectCountryAreaActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (savedInstanceState != null) {
+            selectAreaCode = savedInstanceState.getBoolean(EXTRA_KEY_SELECT_AREA_CODE, true)
+        } else if (intent != null) {
+            selectAreaCode = intent.getBooleanExtra(EXTRA_KEY_SELECT_AREA_CODE, true)
+        }
+
+        setTitle(
+            if (selectAreaCode) {
+                R.string.title_select_phone_area_code
+            } else {
+                R.string.title_select_country_or_area
+            }
+        )
+
         initView()
-        initData(true)
+        initData()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean(EXTRA_KEY_SELECT_AREA_CODE, selectAreaCode)
     }
 
     private fun initView() {
-        vGroupList.slideBar.indexColorNormal = getColor(R.color.color_3C3848, this)
+        vGroupList.slideBar.indexColorNormal = getColor(R.color.def_text_desc, this)
         vGroupList.slideBar.indexColorSelected = getColor(R.color.colorAccent, this)
+
         vGroupList.showFloatGroup = true
         vGroupList.showSlideBar(true)
-        vGroupList.itemFactory = object : GroupListLayout.ItemFactory() {
 
-            override fun createContentItemLayout(
-                context: Context,
-                viewType: Int
-            ): GroupListLayout.ItemLayout<out GroupListLayout.ItemData> {
-                return ContentItem(context)
+        vGroupList.itemFactory = GroupListItemFactory(selectAreaCode) {
+            val intent = Intent().apply {
+                putExtra(EXTRA_KEY_COUNTRY_AREA, it)
             }
-
-            override fun createTitleItemLayout(
-                context: Context,
-                isFloat: Boolean
-            ): GroupListLayout.ItemLayout<out GroupListLayout.ItemData>? {
-                return TitleItem(context, isFloat)
-            }
+            setResult(Activity.RESULT_OK, intent)
+            finish()
         }
     }
 
-    private fun initData(first:Boolean) {
+    private fun initData() {
         launch(Dispatchers.IO) {
             val data = getGroupedCountryAreas()
-
-            if(!first) return@launch
 
             withContext(Dispatchers.Main) {
                 vGroupList.setData(data)
@@ -83,7 +108,27 @@ class SelectCountryAreaActivity : BaseAppActivity() {
         }
     }
 
-    class TitleItem(context: Context, isFloat: Boolean) :
+    class GroupListItemFactory(
+        private val showAreaCode: Boolean,
+        private val onItemClick: (CountryAreaVO) -> Unit
+    ) : GroupListLayout.ItemFactory() {
+
+        override fun createContentItemLayout(
+            context: Context,
+            viewType: Int
+        ): GroupListLayout.ItemLayout<out GroupListLayout.ItemData> {
+            return GroupListContentItem(context, showAreaCode, onItemClick)
+        }
+
+        override fun createTitleItemLayout(
+            context: Context,
+            isFloat: Boolean
+        ): GroupListLayout.ItemLayout<out GroupListLayout.ItemData>? {
+            return GroupListTitleItem(context, isFloat)
+        }
+    }
+
+    class GroupListTitleItem(context: Context, isFloat: Boolean) :
         GroupListLayout.ItemLayout<CountryAreaVO> {
 
         private val tvTitle: TextView = TextView(context).apply {
@@ -98,10 +143,7 @@ class SelectCountryAreaActivity : BaseAppActivity() {
                 DensityUtility.dp2px(context, 4)
             )
             setTextColor(
-                getColor(
-                    if (isFloat) R.color.colorAccent else R.color.def_text_title,
-                    context
-                )
+                getColor(if (isFloat) R.color.colorAccent else R.color.def_text_desc, context)
             )
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             setBackgroundColor(getColor(R.color.color_F4F4F4, context))
@@ -121,8 +163,11 @@ class SelectCountryAreaActivity : BaseAppActivity() {
         }
     }
 
-    inner class ContentItem(context: Context) : GroupListLayout.ItemLayout<CountryAreaVO>,
-        View.OnClickListener {
+    class GroupListContentItem(
+        context: Context,
+        private val showAreaCode: Boolean,
+        private val onItemClick: (CountryAreaVO) -> Unit
+    ) : GroupListLayout.ItemLayout<CountryAreaVO>, View.OnClickListener {
 
         private val rootView: View = View.inflate(context, R.layout.item_country_area, null)
 
@@ -135,13 +180,18 @@ class SelectCountryAreaActivity : BaseAppActivity() {
             )
 
             rootView.setOnClickListener(this)
+            if (!showAreaCode) {
+                rootView.vAreaCode.visibility = View.GONE
+            }
         }
 
         override fun refreshView(itemData: GroupListLayout.ItemData?) {
             countryAreaVO = itemData as? CountryAreaVO
 
             countryAreaVO?.let {
-                rootView.vAreaCode.text = "+${it.areaCode}"
+                if (showAreaCode) {
+                    rootView.vAreaCode.text = "+${it.areaCode}"
+                }
                 rootView.vCountryName.text = it.countryName
             }
         }
@@ -152,15 +202,9 @@ class SelectCountryAreaActivity : BaseAppActivity() {
 
         override fun onClick(view: View) {
             if (!isFastMultiClick(view)) {
-//                countryAreaVO?.let {
-//                    val intent = Intent().apply {
-//                        putExtra(EXTRA_KEY_COUNTRY_AREA, it)
-//                    }
-//                    setResult(Activity.RESULT_OK, intent)
-//                    finish()
-//                }
-
-                initData(false)
+                countryAreaVO?.let {
+                    onItemClick.invoke(it)
+                }
             }
         }
     }
