@@ -97,9 +97,9 @@ class SlideBar : View {
         mKeyView.setTextColor(Color.WHITE)
         mKeyView.gravity = Gravity.CENTER
         mKeyView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-        mKeyView.setBackgroundResource(R.drawable.bg_slide_bar_key)
+        mKeyView.setBackgroundResource(R.drawable.bg_slide_bar_index)
         mKeyView.gravity = Gravity.CENTER
-        mKeyView.setPadding(0, 0, DensityUtility.dp2px(context, 5), 0)
+        //mKeyView.setPadding(0, 0, DensityUtility.dp2px(context, 5), 0)
 
         mWindowParams.token = applicationWindowToken
         //设置类型为应用类型,不需要权限
@@ -114,7 +114,7 @@ class SlideBar : View {
         mWindowParams.gravity = Gravity.TOP or Gravity.END
         //设置悬浮窗口长宽数据
         mWindowParams.width = DensityUtility.dp2px(context, 50)
-        mWindowParams.height = DensityUtility.dp2px(context, 41)
+        mWindowParams.height = DensityUtility.dp2px(context, 50)
         //以屏幕左上角为原点，设置x、y初始值，相对于gravity
         mWindowParams.x = 0
         mWindowParams.y = 0

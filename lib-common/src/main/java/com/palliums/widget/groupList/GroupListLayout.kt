@@ -97,7 +97,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                     val twoChild = layoutManager.getChildAt(1) ?: return
                     val twoGroup = twoChild.getTag(R.id.group_list_layout_data) as? ItemData
                     if (firstGroup != null && twoGroup != null
-                        && firstGroup.getGroupName() == twoGroup.getGroupName()
+                        && firstGroup.getGroupName() != twoGroup.getGroupName()
                         && twoChild.top <= floatTitleItem!!.getItemView().height
                     ) {
                         targetY = twoChild.top - floatTitleItem!!.getItemView().height
@@ -237,7 +237,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
     /**
      * 手动刷新数据改变
      */
-    fun refreshAdapter() {
+    private fun refreshAdapter() {
         if (recyclerView.isComputingLayout) {
             post { refreshAdapter() }
             return
