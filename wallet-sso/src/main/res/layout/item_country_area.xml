@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/vCountryName"
+            android:id="@+id/tvCountryName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/def_text_title"
@@ -26,7 +26,7 @@
             tools:text="Singapore" />
 
         <TextView
-            android:id="@+id/vAreaCode"
+            android:id="@+id/tvAreaCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_15"

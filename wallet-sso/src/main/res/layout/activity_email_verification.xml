@@ -7,7 +7,7 @@
     tools:context=".ui.verification.PhoneVerificationActivity">
 
     <EditText
-        android:id="@+id/vEmail"
+        android:id="@+id/etEmailAddress"
         style="@style/EditText"
         android:gravity="end|center_vertical"
         android:hint="@string/hint_enter_email_address"
@@ -29,12 +29,12 @@
         android:text="@string/email"
         android:textColor="@color/def_text_body"
         android:textSize="@dimen/sp_16"
-        app:layout_constraintBottom_toBottomOf="@id/vEmail"
+        app:layout_constraintBottom_toBottomOf="@id/etEmailAddress"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/vEmail" />
+        app:layout_constraintTop_toTopOf="@id/etEmailAddress" />
 
     <EditText
-        android:id="@+id/vVerificationCode"
+        android:id="@+id/etVerificationCode"
         style="@style/EditText"
         android:hint="@string/hint_enter_verification_code"
         android:imeOptions="actionDone"
@@ -42,11 +42,11 @@
         android:paddingEnd="@dimen/dp_200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vEmail"
+        app:layout_constraintTop_toBottomOf="@id/etEmailAddress"
         tools:text="234562 234562234562234562234562234562234562" />
 
     <TextView
-        android:id="@+id/vGetVerificationCode"
+        android:id="@+id/tvGetVerificationCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_20"
@@ -57,12 +57,12 @@
         android:text="@string/get_verification_code"
         android:textColor="@color/selector_get_verification_code"
         android:textSize="@dimen/sp_12"
-        app:layout_constraintBottom_toBottomOf="@id/vVerificationCode"
+        app:layout_constraintBottom_toBottomOf="@id/etVerificationCode"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/vVerificationCode" />
+        app:layout_constraintTop_toTopOf="@id/etVerificationCode" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/vBind"
+        android:id="@+id/btnBind"
         style="@style/BaseButtonPrimary"
         android:text="@string/btn_bind"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -40,7 +40,7 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
     }
 
     private val mCountDownTimerUtils by lazy {
-        CountDownTimerUtils(vGetVerificationCode, 1000 * 60 * 3, 1000)
+        CountDownTimerUtils(tvGetVerificationCode, 1000 * 60 * 3, 1000)
     }
 
     override fun getLayoutResId(): Int {
@@ -60,9 +60,10 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
 
         setTitle(R.string.verification_phone_title)
 
-        vAreaCode.setOnClickListener(this)
-        vGetVerificationCode.setOnClickListener(this)
-        vBind.setOnClickListener(this)
+        tvAreaCode.setOnClickListener(this)
+        ivSelectAreaCode.setOnClickListener(this)
+        tvGetVerificationCode.setOnClickListener(this)
+        btnBind.setOnClickListener(this)
 
         mViewModel.getVerificationCodeResult.observe(this, Observer {
             if (it) {
@@ -72,17 +73,17 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
         mViewModel.bindPhoneNumberResult.observe(this, Observer {
             if (it) {
                 setResult(Activity.RESULT_OK)
-                vBind.postDelayed({
+                btnBind.postDelayed({
                     close()
                 }, 2000)
             }
         })
         mViewModel.countryAreaVO.observe(this, Observer {
-            vAreaCode.text = "+${it.areaCode}"
+            tvAreaCode.text = "+${it.areaCode}"
         })
 
         mViewModel.loadCountryArea()
-        showSoftInput(vPhoneNumber)
+        showSoftInput(etPhoneNumber)
     }
 
     override fun onDestroy() {
@@ -104,27 +105,33 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
 
     override fun onViewClick(view: View) {
         when (view.id) {
-            R.id.vAreaCode -> {
+            R.id.tvAreaCode,
+            R.id.ivSelectAreaCode
+            -> {
                 hideSoftInput()
-                SelectCountryAreaActivity.start(this, REQUEST_CODE_SELECT_COUNTRY_AREA)
+                SelectCountryAreaActivity.start(this, REQUEST_CODE_SELECT_COUNTRY_AREA, true)
             }
 
-            R.id.vGetVerificationCode -> {
+            R.id.tvGetVerificationCode -> {
+                val countryAreaVO = mViewModel.countryAreaVO.value ?: return
+
                 if (mViewModel.execute(
-                        vAreaCode.text.toString().trim().substring(1),
-                        vPhoneNumber.text.toString().trim(),
+                        countryAreaVO,
+                        etPhoneNumber.text.toString().trim(),
                         action = ACTION_GET_VERIFICATION_CODE
                     )
                 ) {
-                    vVerificationCode.requestFocus()
+                    etVerificationCode.requestFocus()
                 }
             }
 
-            R.id.vBind -> {
+            R.id.btnBind -> {
+                val countryAreaVO = mViewModel.countryAreaVO.value ?: return
+
                 mViewModel.execute(
-                    vAreaCode.text.toString().trim().substring(1),
-                    vPhoneNumber.text.toString().trim(),
-                    vVerificationCode.text.toString().trim(),
+                    countryAreaVO,
+                    etPhoneNumber.text.toString().trim(),
+                    etVerificationCode.text.toString().trim(),
                     action = ACTION_BING_PHONE_NUMBER
                 )
             }

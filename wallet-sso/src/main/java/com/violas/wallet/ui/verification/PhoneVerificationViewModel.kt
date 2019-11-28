@@ -7,6 +7,7 @@ import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
+import com.violas.wallet.ui.selectCountryArea.isChinaMainland
 import com.violas.wallet.utils.validationChinaPhone
 import com.violas.wallet.utils.validationHkPhone
 import kotlinx.coroutines.delay
@@ -66,14 +67,14 @@ class PhoneVerificationViewModel : BaseViewModel() {
             return false
         }
 
-        val phoneAreaCode = params[0] as String
         val phoneNumber = params[1] as String
         if (phoneNumber.isEmpty()) {
             tipsMessage.postValue(getString(R.string.hint_enter_phone_number))
             return false
         }
 
-        if (phoneAreaCode == "86") {
+        val countryAreaVO = params[0] as CountryAreaVO
+        if (isChinaMainland(countryAreaVO)) {
             if (!validationChinaPhone(phoneNumber)) {
                 tipsMessage.postValue(getString(R.string.hint_phone_number_format_incorrect))
                 return false

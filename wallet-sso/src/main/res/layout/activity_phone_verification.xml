@@ -7,7 +7,7 @@
     tools:context=".ui.verification.PhoneVerificationActivity">
 
     <EditText
-        android:id="@+id/vPhoneNumber"
+        android:id="@+id/etPhoneNumber"
         style="@style/EditText"
         android:gravity="end|center_vertical"
         android:hint="@string/hint_enter_phone_number"
@@ -20,22 +20,37 @@
         tools:text="123456789123456789123456789123456789123456789123456789" />
 
     <TextView
-        android:id="@+id/vAreaCode"
+        android:id="@+id/tvAreaCode"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_0"
         android:layout_marginStart="@dimen/dp_10"
         android:gravity="center"
         android:paddingStart="@dimen/dp_10"
-        android:paddingEnd="@dimen/dp_10"
+        android:paddingEnd="@dimen/dp_5"
         android:textColor="@color/def_text_body"
         android:textSize="@dimen/sp_16"
-        app:layout_constraintBottom_toBottomOf="@id/vPhoneNumber"
+        app:layout_constraintBottom_toBottomOf="@id/etPhoneNumber"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/vPhoneNumber"
+        app:layout_constraintTop_toTopOf="@id/etPhoneNumber"
         tools:text="+86" />
 
+    <ImageView
+        android:id="@+id/ivSelectAreaCode"
+        android:layout_width="@dimen/dp_22"
+        android:layout_height="@dimen/dp_0"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:paddingTop="@dimen/dp_3"
+        android:paddingEnd="@dimen/dp_10"
+        android:rotation="0"
+        android:src="@drawable/icon_down_arrow_white"
+        android:tint="@color/color_3C3848_80"
+        android:tintMode="multiply"
+        app:layout_constraintBottom_toBottomOf="@id/etPhoneNumber"
+        app:layout_constraintStart_toEndOf="@id/tvAreaCode"
+        app:layout_constraintTop_toTopOf="@id/etPhoneNumber" />
+
     <EditText
-        android:id="@+id/vVerificationCode"
+        android:id="@+id/etVerificationCode"
         style="@style/EditText"
         android:hint="@string/hint_enter_verification_code"
         android:imeOptions="actionDone"
@@ -43,11 +58,11 @@
         android:paddingEnd="@dimen/dp_200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vPhoneNumber"
-        tools:text="234562 234562234562234562234562234562234562" />
+        app:layout_constraintTop_toBottomOf="@id/etPhoneNumber"
+        tools:text="234562234562234562234562234562234562234562" />
 
     <TextView
-        android:id="@+id/vGetVerificationCode"
+        android:id="@+id/tvGetVerificationCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_20"
@@ -58,12 +73,12 @@
         android:text="@string/get_verification_code"
         android:textColor="@color/selector_get_verification_code"
         android:textSize="@dimen/sp_12"
-        app:layout_constraintBottom_toBottomOf="@id/vVerificationCode"
+        app:layout_constraintBottom_toBottomOf="@id/etVerificationCode"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/vVerificationCode" />
+        app:layout_constraintTop_toTopOf="@id/etVerificationCode" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/vBind"
+        android:id="@+id/btnBind"
         style="@style/BaseButtonPrimary"
         android:text="@string/btn_bind"
         app:layout_constraintBottom_toBottomOf="parent"

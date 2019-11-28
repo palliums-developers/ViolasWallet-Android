@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -181,7 +180,7 @@ class SelectCountryAreaActivity : BaseAppActivity() {
 
             rootView.setOnClickListener(this)
             if (!showAreaCode) {
-                rootView.vAreaCode.visibility = View.GONE
+                rootView.tvAreaCode.visibility = View.GONE
             }
         }
 
@@ -190,9 +189,9 @@ class SelectCountryAreaActivity : BaseAppActivity() {
 
             countryAreaVO?.let {
                 if (showAreaCode) {
-                    rootView.vAreaCode.text = "+${it.areaCode}"
+                    rootView.tvAreaCode.text = "+${it.areaCode}"
                 }
-                rootView.vCountryName.text = it.countryName
+                rootView.tvCountryName.text = it.countryName
             }
         }
 

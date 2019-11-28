@@ -18,6 +18,10 @@ import java.util.*
  * desc:
  */
 
+fun isChinaMainland(countryAreaVO: CountryAreaVO): Boolean {
+    return countryAreaVO.areaCode == "86"
+}
+
 fun getGroupedCountryAreas(): LinkedHashMap<String, List<CountryAreaVO>> {
     val assetsFileName = getCountryAreaAssetsFileName()
     val countryAreaJsonData = getCountryAreaJsonData(assetsFileName)

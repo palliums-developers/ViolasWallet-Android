@@ -32,7 +32,7 @@ class EmailVerificationActivity : BaseViewModelActivity() {
     }
 
     private val mCountDownTimerUtils by lazy {
-        CountDownTimerUtils(vGetVerificationCode, 1000 * 60 * 3, 1000)
+        CountDownTimerUtils(tvGetVerificationCode, 1000 * 60 * 3, 1000)
     }
 
     override fun getLayoutResId(): Int {
@@ -52,8 +52,8 @@ class EmailVerificationActivity : BaseViewModelActivity() {
 
         setTitle(R.string.verification_email_title)
 
-        vGetVerificationCode.setOnClickListener(this)
-        vBind.setOnClickListener(this)
+        tvGetVerificationCode.setOnClickListener(this)
+        btnBind.setOnClickListener(this)
 
         mViewModel.getVerificationCodeResult.observe(this, Observer {
             if (it) {
@@ -63,13 +63,13 @@ class EmailVerificationActivity : BaseViewModelActivity() {
         mViewModel.bindEmailResult.observe(this, Observer {
             if (it) {
                 setResult(Activity.RESULT_OK)
-                vBind.postDelayed({
+                btnBind.postDelayed({
                     close()
                 }, 2000)
             }
         })
 
-        showSoftInput(vEmail)
+        showSoftInput(etEmailAddress)
     }
 
     override fun onDestroy() {
@@ -80,20 +80,20 @@ class EmailVerificationActivity : BaseViewModelActivity() {
 
     override fun onViewClick(view: View) {
         when (view.id) {
-            R.id.vGetVerificationCode -> {
+            R.id.tvGetVerificationCode -> {
                 if (mViewModel.execute(
-                        vEmail.text.toString().trim(),
+                        etEmailAddress.text.toString().trim(),
                         action = ACTION_GET_VERIFICATION_CODE
                     )
                 ) {
-                    vGetVerificationCode.requestFocus()
+                    tvGetVerificationCode.requestFocus()
                 }
             }
 
-            R.id.vBind -> {
+            R.id.btnBind -> {
                 mViewModel.execute(
-                    vEmail.text.toString().trim(),
-                    vVerificationCode.text.toString().trim(),
+                    etEmailAddress.text.toString().trim(),
+                    etVerificationCode.text.toString().trim(),
                     action = ACTION_BING_EMAIL
                 )
             }
