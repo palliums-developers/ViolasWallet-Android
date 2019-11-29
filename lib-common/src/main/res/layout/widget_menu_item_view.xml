@@ -121,7 +121,7 @@
     <View
         android:id="@+id/widget_menu_item_top_line"
         android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_1"
+        android:layout_height="@dimen/dp_0.7"
         android:layout_marginStart="@dimen/dp_2"
         android:layout_marginEnd="@dimen/dp_2"
         android:background="@color/black_06"
@@ -136,7 +136,7 @@
     <View
         android:id="@+id/widget_menu_item_bottom_line"
         android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_1"
+        android:layout_height="@dimen/dp_0.7"
         android:layout_marginStart="@dimen/dp_2"
         android:layout_marginEnd="@dimen/dp_2"
         android:background="@color/black_06"

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/def_page_bg_light_primary">
+
+    <com.palliums.widget.MenuItemView
+        android:id="@+id/mivCountryArea"
+        style="@style/MenuItemView"
+        android:layout_height="@dimen/dp_55"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_20"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:mivEndDescTextColor="@color/def_text_title"
+        app:mivShowEndArrow="false"
+        app:mivStartTitleText="@string/label_country_area"
+        tools:mivEndDescText="China" />
+
+    <com.palliums.widget.MenuItemView
+        android:id="@+id/mivName"
+        style="@style/MenuItemView"
+        android:layout_height="@dimen/dp_55"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_20"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mivCountryArea"
+        app:mivEndDescTextColor="@color/def_text_title"
+        app:mivShowEndArrow="false"
+        app:mivStartTitleText="@string/label_name"
+        tools:mivEndDescText="Jake" />
+
+    <com.palliums.widget.MenuItemView
+        android:id="@+id/mivIDNumber"
+        style="@style/MenuItemView"
+        android:layout_height="@dimen/dp_55"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_20"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mivName"
+        app:mivEndDescTextColor="@color/def_text_title"
+        app:mivShowEndArrow="false"
+        tools:mivEndDescText="1234567890"
+        tools:mivStartTitleText="@string/label_id_number_other" />
+
+    <com.palliums.widget.NiceImageView
+        android:id="@+id/ivIDCardFront"
+        android:layout_width="@dimen/dp_247"
+        android:layout_height="@dimen/dp_154"
+        android:layout_marginTop="@dimen/dp_31"
+        android:src="@drawable/bg_id_card_front"
+        app:border_color="@color/white_70"
+        app:border_width="@dimen/dp_1"
+        app:corner_radius="@dimen/dp_6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mivIDNumber" />
+
+    <com.palliums.widget.NiceImageView
+        android:id="@+id/ivIDCardBack"
+        android:layout_width="@dimen/dp_247"
+        android:layout_height="@dimen/dp_154"
+        android:layout_marginTop="@dimen/dp_31"
+        android:src="@drawable/bg_id_card_back"
+        app:border_color="@color/white_70"
+        app:border_width="@dimen/dp_1"
+        app:corner_radius="@dimen/dp_6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivIDCardFront" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

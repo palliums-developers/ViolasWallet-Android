@@ -254,6 +254,7 @@
 
     <string name="title_select_phone_area_code">选择电话区号</string>
     <string name="title_select_country_or_area">选择国家或地区</string>
+    <string name="title_id_information">身份信息</string>
 
     <string name="hint_kyc_content">*申请发行SSO必须先进行身份认证及手机、邮箱验证</string>
     <string name="hint_immediately_to">立即前往</string>
