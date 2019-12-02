@@ -67,7 +67,7 @@ class TokenManager {
         val loadSupportToken = loadSupportToken()
 
         val onlineTokenMap = ArrayMap<String, Int>()
-        ServiceLocator.getViolasService().checkTokenRegister(
+        DataRepository.getViolasService().checkTokenRegister(
             account.address
         ) {
             it.forEach { item ->
