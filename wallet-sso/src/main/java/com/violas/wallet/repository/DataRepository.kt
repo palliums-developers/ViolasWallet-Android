@@ -17,6 +17,8 @@ import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.repository.http.libra.LibexplorerApi
 import com.violas.wallet.repository.http.libra.LibexplorerRepository
 import com.violas.wallet.repository.http.libra.LibexplorerService
+import com.violas.wallet.repository.http.sso.SSOApi
+import com.violas.wallet.repository.http.sso.SSORepository
 import com.violas.wallet.repository.http.violas.ViolasService
 import com.violas.wallet.repository.local.user.LocalUserService
 import io.grpc.ManagedChannelBuilder
@@ -107,4 +109,6 @@ object DataRepository {
     fun getLocalUserService(): LocalUserService {
         return LocalUserService()
     }
+
+    fun getSSOService() = SSORepository(retrofit.create(SSOApi::class.java))
 }

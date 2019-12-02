@@ -295,5 +295,6 @@
     <string name="action_mint">铸币</string>
     <string name="title_mint_success">铸币成功</string>
     <string name="hint_mint_success">恭喜铸币成功\n请在钱包首页查看</string>
+    <string name="hint_upload_failure">上传失败</string>
 
 </resources>

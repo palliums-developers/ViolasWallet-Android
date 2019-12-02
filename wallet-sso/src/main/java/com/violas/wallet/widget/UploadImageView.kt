@@ -15,6 +15,7 @@ class UploadImageView : LinearLayout {
     private var attrs: AttributeSet? = null
     private var defStyleAttr: Int = 0
     private var defStyleRes: Int = 0
+    private var closeCallBack: (() -> Unit)? = null
 
     constructor(
         context: Context
@@ -56,6 +57,10 @@ class UploadImageView : LinearLayout {
 
     }
 
+    fun setCloseContentCallback(call: () -> Unit) {
+        closeCallBack = call
+    }
+
     fun setContentImage(drawable: Drawable?) {
         drawable?.let {
             view?.ivContent?.background = drawable
@@ -69,6 +74,7 @@ class UploadImageView : LinearLayout {
         view?.ivClose?.visibility = View.GONE
         view?.ivAdd?.visibility = View.VISIBLE
         view?.progress?.visibility = View.GONE
+        closeCallBack?.invoke()
     }
 
     fun startLoadingImage() {
