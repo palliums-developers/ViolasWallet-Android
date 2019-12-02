@@ -10,7 +10,7 @@ import com.quincysx.crypto.bip44.CoinPairDerive
 import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.Vm
-import com.violas.wallet.repository.ServiceLocator
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -45,7 +45,7 @@ class AccountManager : CoroutineScope by IOScope() {
     }
 
     private val mAccountStorage by lazy {
-        ServiceLocator.getAccountStorage()
+        DataRepository.getAccountStorage()
     }
 
     fun refreshAccountAmount(currentAccount: AccountDO, callback: (AccountDO) -> Unit) {
@@ -332,20 +332,20 @@ class AccountManager : CoroutineScope by IOScope() {
         launch(handler) {
             when (account.coinNumber) {
                 CoinTypes.VToken.coinType() -> {
-                    ServiceLocator.getViolasService()
+                    DataRepository.getViolasService()
                         .getBalanceInMicroLibras(account.address) {
                             callback.invoke(it)
                         }
                 }
                 CoinTypes.Libra.coinType() -> {
-                    ServiceLocator.getLibraService()
+                    DataRepository.getLibraService()
                         .getBalanceInMicroLibras(account.address) {
                             callback.invoke(it)
                         }
                 }
                 CoinTypes.Bitcoin.coinType(),
                 CoinTypes.BitcoinTest.coinType() -> {
-                    ServiceLocator.getBitcoinService().getBalance(account.address)
+                    DataRepository.getBitcoinService().getBalance(account.address)
                         .subscribe({
                             try {
                                 callback.invoke(

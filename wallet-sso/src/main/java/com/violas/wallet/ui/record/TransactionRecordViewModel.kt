@@ -2,7 +2,7 @@ package com.violas.wallet.ui.record
 
 import com.quincysx.crypto.CoinTypes
 import com.palliums.paging.PagingViewModel
-import com.violas.wallet.repository.ServiceLocator
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.TokenDo
 import kotlinx.coroutines.delay
 import kotlin.random.Random
@@ -21,7 +21,7 @@ class TransactionRecordViewModel(
 
     private var mFirstRefresh = true
     private val mTransactionRepository =
-        ServiceLocator.getTransactionService(coinTypes)
+        DataRepository.getTransactionService(coinTypes)
 
     override suspend fun loadData(
         pageSize: Int,

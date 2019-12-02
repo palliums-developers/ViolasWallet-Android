@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
  */
 abstract class BaseViewModel : ViewModel() {
 
-    private val lock: Any = Any()
+    protected val lock: Any = Any()
     private var retry: (() -> Any)? = null
 
     val loadState = MutableLiveData<LoadState>()

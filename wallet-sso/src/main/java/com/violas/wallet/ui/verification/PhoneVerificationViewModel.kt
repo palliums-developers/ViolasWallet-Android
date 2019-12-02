@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.getString
 import com.violas.wallet.R
+import com.violas.wallet.event.BindPhoneEvent
+import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.local.user.PhoneInfo
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import com.violas.wallet.ui.selectCountryArea.isChinaMainland
@@ -12,6 +15,7 @@ import com.violas.wallet.utils.validationChinaPhone
 import com.violas.wallet.utils.validationHkPhone
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 2019-11-25 14:28.
@@ -24,6 +28,10 @@ class PhoneVerificationViewModel : BaseViewModel() {
     companion object {
         const val ACTION_GET_VERIFICATION_CODE = 0
         const val ACTION_BING_PHONE_NUMBER = 1
+    }
+
+    private val localUserService by lazy {
+        DataRepository.getLocalUserService()
     }
 
     val getVerificationCodeResult = MutableLiveData<Boolean>()
@@ -48,17 +56,25 @@ class PhoneVerificationViewModel : BaseViewModel() {
         // test code
         delay(3000)
 
-        if (action == ACTION_BING_PHONE_NUMBER) {
-            // 绑定手机号操作
-            tipsMessage.postValue(getString(R.string.hint_phone_number_bind_success))
-            bindPhoneNumberResult.postValue(true)
+        val areaCode = countryAreaVO.value!!.areaCode
+        val phoneNumber = params[0] as String
+
+        if (action == ACTION_GET_VERIFICATION_CODE) {
+            // 获取验证码操作
+            tipsMessage.postValue(getString(R.string.hint_verification_code_get_success))
+            getVerificationCodeResult.postValue(true)
             onSuccess.invoke()
             return
         }
 
-        // 获取验证码操作
-        tipsMessage.postValue(getString(R.string.hint_verification_code_get_success))
-        getVerificationCodeResult.postValue(true)
+        // 绑定手机号操作
+        tipsMessage.postValue(getString(R.string.hint_phone_number_bind_success))
+        bindPhoneNumberResult.postValue(true)
+
+        val phoneInfo = PhoneInfo(areaCode, phoneNumber)
+        localUserService.setPhoneInfo(phoneInfo)
+        EventBus.getDefault().post(BindPhoneEvent(phoneInfo))
+
         onSuccess.invoke()
     }
 

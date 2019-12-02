@@ -4,8 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.getString
 import com.violas.wallet.R
+import com.violas.wallet.event.BindEmailEvent
+import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.local.user.EmailInfo
 import com.violas.wallet.utils.validationEmailAddress
 import kotlinx.coroutines.delay
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 2019-11-25 17:43.
@@ -18,6 +22,10 @@ class EmailVerificationViewModel : BaseViewModel() {
     companion object {
         const val ACTION_GET_VERIFICATION_CODE = 0
         const val ACTION_BING_EMAIL = 1
+    }
+
+    private val localUserService by lazy {
+        DataRepository.getLocalUserService()
     }
 
     val getVerificationCodeResult = MutableLiveData<Boolean>()
@@ -34,17 +42,24 @@ class EmailVerificationViewModel : BaseViewModel() {
         // test code
         delay(3000)
 
-        if (action == ACTION_BING_EMAIL) {
-            // 绑定邮箱操作
-            tipsMessage.postValue(getString(R.string.hint_email_bind_success))
-            bindEmailResult.postValue(true)
+        val emailAddress = params[0] as String
+
+        if (action == ACTION_GET_VERIFICATION_CODE) {
+            // 获取验证码操作
+            tipsMessage.postValue(getString(R.string.hint_verification_code_get_success))
+            getVerificationCodeResult.postValue(true)
             onSuccess.invoke()
             return
         }
 
-        // 获取验证码操作
-        tipsMessage.postValue(getString(R.string.hint_verification_code_get_success))
-        getVerificationCodeResult.postValue(true)
+        // 绑定邮箱操作
+        tipsMessage.postValue(getString(R.string.hint_email_bind_success))
+        bindEmailResult.postValue(true)
+
+        val emailInfo = EmailInfo(emailAddress)
+        localUserService.setEmailInfo(emailInfo)
+        EventBus.getDefault().post(BindEmailEvent(emailInfo))
+
         onSuccess.invoke()
     }
 
@@ -53,13 +68,13 @@ class EmailVerificationViewModel : BaseViewModel() {
             return false
         }
 
-        val phoneNumber = params[0] as String
-        if (phoneNumber.isEmpty()) {
+        val emailAddress = params[0] as String
+        if (emailAddress.isEmpty()) {
             tipsMessage.postValue(getString(R.string.hint_enter_email_address))
             return false
         }
 
-        if (!validationEmailAddress(phoneNumber)) {
+        if (!validationEmailAddress(emailAddress)) {
             tipsMessage.postValue(getString(R.string.hint_email_format_incorrect))
             return false
         }

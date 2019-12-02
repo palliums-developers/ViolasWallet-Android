@@ -7,7 +7,7 @@
     tools:background="@color/def_page_bg_light_secondary">
 
     <View
-        android:id="@+id/vHeader"
+        android:id="@+id/ivHeaderBg"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_171"
         android:background="@color/white"
@@ -45,7 +45,7 @@
         android:layout_marginTop="@dimen/item_spacing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vHeader"
+        app:layout_constraintTop_toBottomOf="@id/ivHeaderBg"
         app:mivStartTitleText="@string/setting_multi_language" />
 
     <com.palliums.widget.MenuItemView

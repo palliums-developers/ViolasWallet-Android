@@ -39,8 +39,9 @@ fun getGroupedCountryAreas(): LinkedHashMap<String, List<CountryAreaVO>> {
 
         val areaCode = jsonObject.optString("areaCode")
         val countryName = jsonObject.optString("countryName")
+        val countryCode = jsonObject.optString("countryCode")
 
-        val countryAreaVO = CountryAreaVO(areaCode, countryName)
+        val countryAreaVO = CountryAreaVO(areaCode, countryName, countryCode)
 
         // 快速索引关键字
         var key = countryName.substring(0, 1)
@@ -63,11 +64,11 @@ fun getGroupedCountryAreas(): LinkedHashMap<String, List<CountryAreaVO>> {
     return data
 }
 
-fun getCountryArea(): CountryAreaVO {
+fun getCountryArea(defaultCountryCode: String? = null): CountryAreaVO {
     val countryAreaJsonData = getCountryAreaJsonData()
 
     val locale = MultiLanguageUtility.getInstance().languageLocale
-    val localCountry = locale.country
+    val localCountryCode = locale.country
 
     for (i in 0 until countryAreaJsonData.length()) {
 
@@ -79,20 +80,22 @@ fun getCountryArea(): CountryAreaVO {
             val countryName = jsonObject.optString("countryName")
             val countryCode = jsonObject.optString("countryCode")
 
-            if (localCountry.equals(countryCode, ignoreCase = true)) {
-
-                return CountryAreaVO(areaCode, countryName)
+            if (defaultCountryCode.equals(countryCode, ignoreCase = true)
+                || localCountryCode.equals(countryCode, ignoreCase = true)
+            ) {
+                return CountryAreaVO(areaCode, countryName, countryCode)
             }
         }
     }
 
     return CountryAreaVO(
-        "65",
-        if (locale.language == "zh") {
+        areaCode = "65",
+        countryName = if (locale.language == "zh") {
             "新加坡"
         } else {
             "Singapore"
-        }
+        },
+        countryCode = "SG"
     )
 }
 

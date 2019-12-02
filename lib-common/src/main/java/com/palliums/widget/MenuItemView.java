@@ -78,8 +78,6 @@ public class MenuItemView extends FrameLayout {
 
         // 头部图标
         Drawable startIcon = null;
-        // 尾部图标
-        Drawable endIcon = null;
 
         // 头部标题
         String startTitleText = null;
@@ -108,6 +106,14 @@ public class MenuItemView extends FrameLayout {
         // 尾部描述的左侧图标
         Drawable endDescDrawableLeft = null;
 
+        // 尾部图标
+        Drawable endIcon = null;
+        // 尾部箭头
+        Drawable endArrow = ResourcesUtilKt.getDrawable(R.drawable.ic_right_arrow_gray, context);
+
+        // 分界线颜色
+        int dividingLineColor = ResourcesUtilKt.getColor(R.color.black_06, context);
+
         // 是否显示尾部箭头
         boolean showEndArrow = true;
         // 是否显示尾部开关
@@ -116,11 +122,6 @@ public class MenuItemView extends FrameLayout {
         boolean showTopLine = false;
         // 是否显示底部分界线
         boolean showBottomLine = true;
-
-        // 尾部箭头
-        Drawable endArrow = ResourcesUtilKt.getDrawable(R.drawable.ic_right_arrow_gray, context);
-        // 分界线颜色
-        int dividingLineColor = ResourcesUtilKt.getColor(R.color.black_06, context);
 
         if (attrs != null) {
             TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.MenuItemView, defStyleAttr, defStyleRes);
@@ -157,7 +158,6 @@ public class MenuItemView extends FrameLayout {
         }
 
         setStartIcon(startIcon);
-        setEndIcon(endIcon);
 
         setStartTitleText(startTitleText);
         setStartTitleTextSize(startTitleTextSize);
@@ -174,13 +174,15 @@ public class MenuItemView extends FrameLayout {
         setEdnDescDrawableLeft(endDescDrawableLeft);
         setEndDescDrawablePadding(endDescDrawablePadding);
 
-        setShowEndArrow(showEndArrow);
-        setShowEndSwitch(showEndSwitch);
-        setShowTopLine(showTopLine);
-        setShowBottomLine(showBottomLine);
-
+        setEndIcon(endIcon);
         setEndArrow(endArrow);
+
         setDividingLineColor(dividingLineColor);
+
+        showEndArrow(showEndArrow);
+        showEndSwitch(showEndSwitch);
+        showTopLine(showTopLine);
+        showBottomLine(showBottomLine);
     }
 
     /**
@@ -458,7 +460,7 @@ public class MenuItemView extends FrameLayout {
      *
      * @param show
      */
-    public void setShowEndArrow(boolean show) {
+    public void showEndArrow(boolean show) {
         if (show) {
             mEndSwitch.setVisibility(GONE);
             mEndArrow.setVisibility(VISIBLE);
@@ -472,7 +474,7 @@ public class MenuItemView extends FrameLayout {
      *
      * @param show
      */
-    public void setShowEndSwitch(boolean show) {
+    public void showEndSwitch(boolean show) {
         if (show) {
             mEndArrow.setVisibility(GONE);
             mEndDesc.setVisibility(GONE);
@@ -515,7 +517,7 @@ public class MenuItemView extends FrameLayout {
      *
      * @param show
      */
-    public void setShowTopLine(boolean show) {
+    public void showTopLine(boolean show) {
         mTopLine.setVisibility(show ? VISIBLE : GONE);
     }
 
@@ -538,7 +540,7 @@ public class MenuItemView extends FrameLayout {
      *
      * @param show
      */
-    public void setShowBottomLine(boolean show) {
+    public void showBottomLine(boolean show) {
         mBottomLine.setVisibility(show ? VISIBLE : GONE);
     }
 

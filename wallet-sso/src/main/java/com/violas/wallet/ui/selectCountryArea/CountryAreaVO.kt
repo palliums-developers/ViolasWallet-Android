@@ -12,7 +12,8 @@ import com.palliums.widget.groupList.GroupListLayout
  */
 data class CountryAreaVO(
     val areaCode: String,
-    val countryName: String
+    val countryName: String,
+    val countryCode: String
 ) : GroupListLayout.ItemData, Parcelable {
 
     private var groupName: String? = null
@@ -31,6 +32,7 @@ data class CountryAreaVO(
 
     constructor(source: Parcel) : this(
         source.readString()!!,
+        source.readString()!!,
         source.readString()!!
     )
 
@@ -39,6 +41,7 @@ data class CountryAreaVO(
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(areaCode)
         writeString(countryName)
+        writeString(countryCode)
     }
 
     companion object CREATOR : Parcelable.Creator<CountryAreaVO> {

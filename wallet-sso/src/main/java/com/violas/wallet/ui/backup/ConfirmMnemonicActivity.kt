@@ -8,6 +8,7 @@ import com.palliums.content.App
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_confirm_mnemonic.*
 
@@ -92,6 +93,10 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
 
                         // 如果是来自创建身份，完成后需要跳转到App首页
                         if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY) {
+
+                            // 设置邮箱手机的绑定状态为未绑定状态，身份的认证状态为未认证状态
+                            DataRepository.getLocalUserService().setAllStatusToNoOperation()
+
                             MainActivity.start(this)
                             App.finishAllActivity()
                             return

@@ -7,7 +7,7 @@
     android:background="@color/def_page_bg_light_secondary">
 
     <ImageView
-        android:id="@+id/vHeader"
+        android:id="@+id/ivHeaderBg"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_196"
         android:background="@drawable/bg_title_dark"
@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.palliums.widget.NiceImageView
-        android:id="@+id/vAvatar"
+        android:id="@+id/nivAvatar"
         android:layout_width="@dimen/dp_75"
         android:layout_height="@dimen/dp_75"
         android:layout_marginTop="@dimen/dp_64"
@@ -29,7 +29,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/vNickname"
+        android:id="@+id/tvNickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_9"
@@ -38,58 +38,105 @@
         android:textSize="@dimen/sp_15"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vAvatar" />
+        app:layout_constraintTop_toBottomOf="@id/nivAvatar" />
 
     <com.palliums.widget.MenuItemView
-        android:id="@+id/vAuthentication"
+        android:id="@+id/mivIDAuthentication"
         style="@style/MenuItemView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vHeader"
+        app:layout_constraintTop_toBottomOf="@id/ivHeaderBg"
         app:mivStartIcon="@mipmap/ic_me_wallet_management"
-        app:mivStartTitleText="@string/me_authentication" />
-
-    <com.palliums.widget.MenuItemView
-        android:id="@+id/vPhoneVerification"
-        style="@style/MenuItemView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vAuthentication"
-        app:mivStartIcon="@drawable/ic_me_phone"
-        app:mivStartTitleText="@string/me_phone_verification"
-        tools:mivEndDescText="@string/me_unbind"
+        app:mivStartTitleText="@string/me_authentication"
+        tools:mivEndDescText="@string/desc_unauthorized"
         tools:mivEndDescTextColor="@color/def_text_warn" />
 
+    <ProgressBar
+        android:id="@+id/pbIDAuthenticationLoading"
+        android:layout_width="@dimen/dp_25"
+        android:layout_height="@dimen/dp_25"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:indeterminateBehavior="repeat"
+        android:indeterminateDrawable="@drawable/progress_bar_menu_item"
+        android:indeterminateDuration="2000"
+        android:indeterminateOnly="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/mivIDAuthentication"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/mivIDAuthentication"
+        tools:visibility="visible" />
+
     <com.palliums.widget.MenuItemView
-        android:id="@+id/vEmailVerification"
+        android:id="@+id/mivPhoneVerification"
         style="@style/MenuItemView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vPhoneVerification"
+        app:layout_constraintTop_toBottomOf="@id/mivIDAuthentication"
+        app:mivStartIcon="@drawable/ic_me_phone"
+        app:mivStartTitleText="@string/me_phone_verification"
+        tools:mivEndDescText="@string/desc_unbound"
+        tools:mivEndDescTextColor="@color/def_text_warn" />
+
+    <ProgressBar
+        android:id="@+id/pbPhoneVerificationLoading"
+        android:layout_width="@dimen/dp_25"
+        android:layout_height="@dimen/dp_25"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:indeterminateBehavior="repeat"
+        android:indeterminateDrawable="@drawable/progress_bar_menu_item"
+        android:indeterminateDuration="2000"
+        android:indeterminateOnly="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/mivPhoneVerification"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/mivPhoneVerification"
+        tools:visibility="visible" />
+
+    <com.palliums.widget.MenuItemView
+        android:id="@+id/mivEmailVerification"
+        style="@style/MenuItemView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mivPhoneVerification"
         app:mivShowBottomLine="false"
         app:mivStartIcon="@drawable/ic_me_email"
         app:mivStartTitleText="@string/me_email_verification"
-        tools:mivEndDescText="@string/me_unbind"
+        tools:mivEndDescText="@string/desc_unbound"
         tools:mivEndDescTextColor="@color/def_text_warn" />
 
+    <ProgressBar
+        android:id="@+id/pbEmailVerificationLoading"
+        android:layout_width="@dimen/dp_25"
+        android:layout_height="@dimen/dp_25"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:indeterminateBehavior="repeat"
+        android:indeterminateDrawable="@drawable/progress_bar_menu_item"
+        android:indeterminateDuration="2000"
+        android:indeterminateOnly="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/mivEmailVerification"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/mivEmailVerification"
+        tools:visibility="visible" />
+
     <com.palliums.widget.MenuItemView
-        android:id="@+id/vAddressBook"
+        android:id="@+id/mivAddressBook"
         style="@style/MenuItemView"
         android:layout_marginTop="@dimen/item_spacing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vEmailVerification"
+        app:layout_constraintTop_toBottomOf="@+id/mivEmailVerification"
         app:mivShowBottomLine="false"
         app:mivStartIcon="@mipmap/ic_me_address_book"
         app:mivStartTitleText="@string/me_address_book" />
 
     <com.palliums.widget.MenuItemView
-        android:id="@+id/vSettings"
+        android:id="@+id/mivSettings"
         style="@style/MenuItemView"
         android:layout_marginTop="@dimen/item_spacing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vAddressBook"
+        app:layout_constraintTop_toBottomOf="@+id/mivAddressBook"
         app:mivShowBottomLine="false"
         app:mivStartIcon="@mipmap/ic_me_settings"
         app:mivStartTitleText="@string/me_settings" />

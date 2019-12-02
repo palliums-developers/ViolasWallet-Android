@@ -177,9 +177,9 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
                 if (!uriList.isNullOrEmpty()) {
                     uriList[0].let {
                         if (front) {
-                            mViewModel.idCardFrontImage.value = it
+                            mViewModel.idCardFrontImage.value = it.toString()
                         } else {
-                            mViewModel.idCardBackImage.value = it
+                            mViewModel.idCardBackImage.value = it.toString()
                         }
                     }
                 }

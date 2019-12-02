@@ -5,12 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.getString
 import com.violas.wallet.R
+import com.violas.wallet.event.AuthenticationIDEvent
+import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.local.user.IDInfo
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import com.violas.wallet.ui.selectCountryArea.isChinaMainland
 import com.violas.wallet.utils.validationIDCar18
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 2019-11-28 15:20.
@@ -20,9 +24,13 @@ import kotlinx.coroutines.launch
  */
 class IDAuthenticationViewModel : BaseViewModel() {
 
+    private val localUserService by lazy {
+        DataRepository.getLocalUserService()
+    }
+
     val countryAreaVO = MutableLiveData<CountryAreaVO>()
-    val idCardFrontImage = MutableLiveData<Any?>()
-    val idCardBackImage = MutableLiveData<Any?>()
+    val idCardFrontImage = MutableLiveData<String?>()
+    val idCardBackImage = MutableLiveData<String?>()
     val authenticationResult = MutableLiveData<Boolean>()
 
     fun loadDefaultCountryArea() {
@@ -43,8 +51,25 @@ class IDAuthenticationViewModel : BaseViewModel() {
         // test code
         delay(3000)
 
+        val countryCode = countryAreaVO.value!!.countryCode
+        val idName = params[0] as String
+        val idNumber = params[1] as String
+        val idCardFrontImage = idCardFrontImage.value!!
+        val idCardBackImage = idCardBackImage.value!!
+
         tipsMessage.postValue(getString(R.string.hint_id_authentication_success))
         authenticationResult.postValue(true)
+
+        val idInfo = IDInfo(
+            idName = idName,
+            idNumber = idNumber,
+            idCardFrontUrl = idCardFrontImage,
+            idCardBackUrl = idCardBackImage,
+            idCountryCode = countryCode
+        )
+        localUserService.setIDInfo(idInfo)
+        EventBus.getDefault().post(AuthenticationIDEvent(idInfo))
+
         onSuccess.invoke()
     }
 
@@ -59,8 +84,8 @@ class IDAuthenticationViewModel : BaseViewModel() {
             return false
         }
 
-        val name = params[0] as String
-        if (name.isEmpty()) {
+        val idName = params[0] as String
+        if (idName.isEmpty()) {
             tipsMessage.postValue(getString(R.string.hint_enter_name))
             return false
         }

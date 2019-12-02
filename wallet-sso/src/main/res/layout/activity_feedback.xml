@@ -17,7 +17,7 @@
         android:paddingEnd="@dimen/dp_10">
 
         <View
-            android:id="@+id/vHeader"
+            android:id="@+id/ivHeaderBg"
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_40"
             android:layout_marginTop="@dimen/dp_5"
@@ -33,10 +33,10 @@
             android:text="@string/feedback_title"
             android:textColor="@color/white"
             android:textSize="@dimen/sp_16"
-            app:layout_constraintBottom_toBottomOf="@id/vHeader"
-            app:layout_constraintEnd_toEndOf="@id/vHeader"
-            app:layout_constraintStart_toStartOf="@id/vHeader"
-            app:layout_constraintTop_toTopOf="@id/vHeader" />
+            app:layout_constraintBottom_toBottomOf="@id/ivHeaderBg"
+            app:layout_constraintEnd_toEndOf="@id/ivHeaderBg"
+            app:layout_constraintStart_toStartOf="@id/ivHeaderBg"
+            app:layout_constraintTop_toTopOf="@id/ivHeaderBg" />
 
         <ImageView
             android:id="@+id/vClose"
@@ -44,9 +44,9 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/dp_12"
             android:src="@drawable/selector_close_white"
-            app:layout_constraintBottom_toBottomOf="@id/vHeader"
-            app:layout_constraintEnd_toEndOf="@id/vHeader"
-            app:layout_constraintTop_toTopOf="@id/vHeader" />
+            app:layout_constraintBottom_toBottomOf="@id/ivHeaderBg"
+            app:layout_constraintEnd_toEndOf="@id/ivHeaderBg"
+            app:layout_constraintTop_toTopOf="@id/ivHeaderBg" />
 
         <EditText
             android:id="@+id/vContent"
@@ -59,7 +59,7 @@
             android:paddingBottom="@dimen/dp_25"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/vHeader" />
+            app:layout_constraintTop_toBottomOf="@id/ivHeaderBg" />
 
         <TextView
             android:id="@+id/vCount"

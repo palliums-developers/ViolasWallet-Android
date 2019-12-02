@@ -8,7 +8,7 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.AccountNotExistsException
 import com.violas.wallet.event.ChangeAccountNameEvent
-import com.violas.wallet.repository.ServiceLocator
+import com.violas.wallet.repository.DataRepository
 import kotlinx.android.synthetic.main.activity_account_info.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,7 +61,7 @@ class AccountInfoActivity : BaseAppActivity() {
                     val account =
                         mAccountManager.getAccountById(intent.getLongExtra(EXT_ACCOUNT_ID, 1))
                     account.walletNickname = name
-                    ServiceLocator.getAccountStorage().update(account)
+                    DataRepository.getAccountStorage().update(account)
                     EventBus.getDefault().post(ChangeAccountNameEvent())
                     showToast(getString(R.string.hint_modify_success))
                     finish()

@@ -21,7 +21,7 @@
         tools:mivEndDescText="China" />
 
     <com.palliums.widget.MenuItemView
-        android:id="@+id/mivName"
+        android:id="@+id/mivIDName"
         style="@style/MenuItemView"
         android:layout_height="@dimen/dp_55"
         android:paddingStart="@dimen/dp_20"
@@ -42,7 +42,7 @@
         android:paddingEnd="@dimen/dp_20"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mivName"
+        app:layout_constraintTop_toBottomOf="@id/mivIDName"
         app:mivEndDescTextColor="@color/def_text_title"
         app:mivShowEndArrow="false"
         tools:mivEndDescText="1234567890"
