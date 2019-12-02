@@ -27,7 +27,5 @@ interface SSOApi {
 
     @GET("violas/verify_code")
     suspend fun sendVerifyCode(@Query("receiver") receiver: String): Response<Any>
-
-    @GET("violas/sso/user")
-    suspend fun loadUserInfo(@Query("address") address:String):Response<Any>
+    
 }
