@@ -7,7 +7,6 @@ import android.os.Looper
 import android.widget.Toast
 import androidx.annotation.WorkerThread
 import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
@@ -121,22 +120,14 @@ abstract class TransferActivity : BaseAppActivity() {
             isToken: Boolean = false,
             tokenId: Long = 0
         ) {
-            val account = AccountManager().getAccountById(accountId)
-            when (account.coinNumber) {
-                CoinTypes.BitcoinTest.coinType(),
-                CoinTypes.Bitcoin.coinType() -> {
-                    Intent(context, BTCTransferActivity::class.java)
-                }
-                else -> {
-                    Intent(context, LibraTransferActivity::class.java)
-                }
-            }.apply {
-                putExtra(EXT_ACCOUNT_ID, accountId)
-                putExtra(EXT_ADDRESS, address)
-                putExtra(EXT_AMOUNT, amount)
-                putExtra(EXT_IS_TOKEN, isToken)
-                putExtra(EXT_TOKEN_ID, tokenId)
-            }.start(context)
+            Intent(context, LibraTransferActivity::class.java)
+                .apply {
+                    putExtra(EXT_ACCOUNT_ID, accountId)
+                    putExtra(EXT_ADDRESS, address)
+                    putExtra(EXT_AMOUNT, amount)
+                    putExtra(EXT_IS_TOKEN, isToken)
+                    putExtra(EXT_TOKEN_ID, tokenId)
+                }.start(context)
         }
     }
 

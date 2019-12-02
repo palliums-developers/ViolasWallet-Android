@@ -1,18 +1,13 @@
 package com.violas.wallet.biz
 
-import android.annotation.SuppressLint
 import android.content.Context
 import com.palliums.content.ContextProvider.getContext
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
-import org.palliums.libracore.serialization.hexToBytes
-import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 
@@ -83,46 +78,7 @@ class TransferManager {
             }
         }
     }
-
-    @SuppressLint("CheckResult")
-    fun transferBtc(
-        transactionManager: TransactionManager,
-        address: String,
-        amount: Double,
-        password: ByteArray,
-        account: AccountDO,
-        progress: Int,
-        success: (String) -> Unit,
-        error: (Throwable) -> Unit
-    ) {
-        val decryptPrivateKey = SimpleSecurity.instance(getContext())
-            .decrypt(password, account.privateKey)
-        if (decryptPrivateKey == null) {
-            error.invoke(WrongPasswordException())
-            return
-        }
-        transactionManager.checkBalance(amount, 1, progress)
-            .flatMap {
-                transactionManager.obtainTransaction(
-                    decryptPrivateKey,
-                    account.publicKey.hexToBytes(),
-                    it,
-                    address,
-                    account.address
-                )
-            }
-            .flatMap {
-                BitcoinChainApi.get().pushTx(it.signBytes.toHex())
-            }
-            .subscribe({
-                success.invoke(it)
-            }, {
-                error.invoke(it)
-            }, {
-
-            })
-    }
-
+    
     private fun transferViolasToken(
         context: Context,
         address: String,
