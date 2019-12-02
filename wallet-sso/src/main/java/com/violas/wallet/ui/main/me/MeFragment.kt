@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import com.palliums.base.BaseFragment
-import com.palliums.net.LoadState
 import com.palliums.utils.getColor
 import com.violas.wallet.R
 import com.violas.wallet.repository.local.user.AccountBindingStatus
@@ -13,6 +12,8 @@ import com.violas.wallet.repository.local.user.IDAuthenticationStatus
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.authentication.IDAuthenticationActivity
 import com.violas.wallet.ui.authentication.IDInformationActivity
+import com.violas.wallet.ui.main.UserViewModel
+import com.violas.wallet.ui.main.provideUserViewModel
 import com.violas.wallet.ui.setting.SettingActivity
 import com.violas.wallet.ui.verification.EmailVerificationActivity
 import com.violas.wallet.ui.verification.PhoneVerificationActivity
@@ -23,9 +24,7 @@ import kotlinx.android.synthetic.main.fragment_me.*
  */
 class MeFragment : BaseFragment() {
 
-    private val mViewModel by lazy {
-        MeViewModel()
-    }
+    private lateinit var mViewModel: UserViewModel
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_me
@@ -40,13 +39,15 @@ class MeFragment : BaseFragment() {
         mivAddressBook.setOnClickListener(this)
         mivSettings.setOnClickListener(this)
 
+        mViewModel = requireActivity().provideUserViewModel()
+
         mViewModel.tipsMessage.observe(this, Observer {
             if (it.isNotEmpty()) {
                 showToast(it)
             }
         })
 
-        mViewModel.idInfo.observe(this, Observer {
+        mViewModel.getIdInfo().observe(this, Observer {
             when (it.idAuthenticationStatus) {
                 IDAuthenticationStatus.UNKNOWN -> {
                     mivIDAuthentication.showEndArrow(false)
@@ -59,6 +60,8 @@ class MeFragment : BaseFragment() {
                     mivIDAuthentication.showEndArrow(true)
                     mivIDAuthentication.setEndDescText(R.string.desc_authenticated)
                     mivIDAuthentication.setEndDescTextColor(getColor(R.color.def_text_title))
+
+                    pbIDAuthenticationLoading.visibility = View.GONE
                 }
 
                 else -> {
@@ -71,7 +74,7 @@ class MeFragment : BaseFragment() {
             }
         })
 
-        mViewModel.phoneInfo.observe(this, Observer {
+        mViewModel.getPhoneInfo().observe(this, Observer {
             when (it.accountBindingStatus) {
                 AccountBindingStatus.UNKNOWN -> {
                     mivPhoneVerification.showEndArrow(false)
@@ -86,6 +89,8 @@ class MeFragment : BaseFragment() {
                     mivPhoneVerification.setEndDescTextColor(getColor(R.color.def_text_title))
                     mivPhoneVerification.setOnClickListener(null)
                     mivPhoneVerification.setBackgroundColor(getColor(R.color.white))
+
+                    pbPhoneVerificationLoading.visibility = View.GONE
                 }
 
                 else -> {
@@ -98,7 +103,7 @@ class MeFragment : BaseFragment() {
             }
         })
 
-        mViewModel.emailInfo.observe(this, Observer {
+        mViewModel.getEmailInfo().observe(this, Observer {
             when (it.accountBindingStatus) {
                 AccountBindingStatus.UNKNOWN -> {
                     mivEmailVerification.showEndArrow(false)
@@ -113,6 +118,8 @@ class MeFragment : BaseFragment() {
                     mivEmailVerification.setEndDescTextColor(getColor(R.color.def_text_title))
                     mivEmailVerification.setOnClickListener(null)
                     mivEmailVerification.setBackgroundColor(getColor(R.color.white))
+
+                    pbEmailVerificationLoading.visibility = View.GONE
                 }
 
                 else -> {
@@ -131,54 +138,74 @@ class MeFragment : BaseFragment() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.mivIDAuthentication -> {
-                val idInfo = mViewModel.idInfo.value ?: return
+                val idInfo = mViewModel.getIdInfo().value ?: return
                 when (idInfo.idAuthenticationStatus) {
                     IDAuthenticationStatus.UNKNOWN -> {
                         mViewModel.execute()
                     }
 
                     IDAuthenticationStatus.AUTHENTICATED -> {
-                        startActivity(Intent(_mActivity, IDInformationActivity::class.java))
+                        startActivity(
+                            Intent(
+                                requireActivity(),
+                                IDInformationActivity::class.java
+                            )
+                        )
                     }
 
                     else -> {
-                        startActivity(Intent(_mActivity, IDAuthenticationActivity::class.java))
+                        startActivity(
+                            Intent(
+                                requireActivity(),
+                                IDAuthenticationActivity::class.java
+                            )
+                        )
                     }
                 }
             }
 
             R.id.mivPhoneVerification -> {
-                val phoneInfo = mViewModel.phoneInfo.value ?: return
+                val phoneInfo = mViewModel.getPhoneInfo().value ?: return
                 when (phoneInfo.accountBindingStatus) {
                     AccountBindingStatus.UNKNOWN -> {
                         mViewModel.execute()
                     }
 
                     AccountBindingStatus.UNBOUND -> {
-                        startActivity(Intent(_mActivity, PhoneVerificationActivity::class.java))
+                        startActivity(
+                            Intent(
+                                requireActivity(),
+                                PhoneVerificationActivity::class.java
+                            )
+                        )
                     }
                 }
             }
 
             R.id.mivEmailVerification -> {
-                val emailInfo = mViewModel.emailInfo.value ?: return
+                val emailInfo = mViewModel.getEmailInfo().value ?: return
                 when (emailInfo.accountBindingStatus) {
                     AccountBindingStatus.UNKNOWN -> {
                         mViewModel.execute()
                     }
 
                     AccountBindingStatus.UNBOUND -> {
-                        startActivity(Intent(_mActivity, EmailVerificationActivity::class.java))
+                        startActivity(
+                            Intent(
+                                requireActivity(),
+                                EmailVerificationActivity::class.java
+                            )
+                        )
                     }
                 }
             }
 
             R.id.mivAddressBook -> {
-                AddressBookActivity.start(_mActivity)
+                AddressBookActivity.start(requireActivity())
             }
 
             R.id.mivSettings -> {
-                startActivity(Intent(_mActivity, SettingActivity::class.java))
+                startActivity(Intent(requireActivity(), SettingActivity::class.java))
             }
         }
     }

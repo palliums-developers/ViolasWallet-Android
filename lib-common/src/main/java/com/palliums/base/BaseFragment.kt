@@ -53,11 +53,11 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener,
     }
 
     fun showProgress(msg: String? = null) {
-        (_mActivity as? BaseActivity)?.showProgress(msg)
+        (activity as? BaseActivity)?.showProgress(msg)
     }
 
     fun dismissProgress() {
-        (_mActivity as? BaseActivity)?.dismissProgress()
+        (activity as? BaseActivity)?.dismissProgress()
     }
 
     fun showToast(@StringRes msgId: Int) {
@@ -65,10 +65,10 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener,
     }
 
     fun showToast(msg: String) {
-        (_mActivity as? BaseActivity)?.showToast(msg)
+        (activity as? BaseActivity)?.showToast(msg)
     }
 
     fun finishActivity(){
-        _mActivity.finish()
+        activity?.finish()
     }
 }
