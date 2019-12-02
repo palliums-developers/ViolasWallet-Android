@@ -78,7 +78,7 @@ class TransferManager {
             }
         }
     }
-    
+
     private fun transferViolasToken(
         context: Context,
         address: String,
