@@ -15,6 +15,46 @@ class SSORepository(private val ssoApi: SSOApi) {
         return null
     }
 
+    /**
+     * 绑定身份证信息
+     */
+    suspend fun bindIdNumber(
+        walletAddress: String,
+        name: String,
+        country: Long,
+        idNumber: String,
+        idPhotoPositiveUrl: String,
+        idPhotoBackUrl: String
+    ): Response<Any>? {
+        val toRequestBody = """{
+    "wallet_address":"$walletAddress",
+    "name":"$name",
+    "country":"$country",
+    "id_number":"$idNumber",
+    "id_photo_positive_url":"$idPhotoPositiveUrl",
+    "id_photo_back_url":"$idPhotoBackUrl"
+}""".toRequestBody("application/json".toMediaTypeOrNull())
+        return try {
+            checkResponse(ssoApi.bindIdNumber(toRequestBody))
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * 获取用户基本信息，包括绑定状态
+     */
+    suspend fun loadUserInfo(address: String): Response<UserInfoDTO>? {
+        return try {
+            checkResponse(ssoApi.loadUserInfo(address))
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * 申请发行稳定币
+     */
     suspend fun applyForIssuing(
         walletAddress: String,
         tokenType: String,
@@ -23,7 +63,9 @@ class SSORepository(private val ssoApi: SSOApi) {
         tokenName: String,
         reserivePhotoUrl: String,
         accountInfoPhotoPositiveUrl: String,
-        accountInfoPhotoBackUrl: String
+        accountInfoPhotoBackUrl: String,
+        phoneVerifyCode: String,
+        emailVerifyCode: String
     ): Response<Any>? {
         val toRequestBody = """{
     "wallet_address":"$walletAddress",
@@ -33,7 +75,9 @@ class SSORepository(private val ssoApi: SSOApi) {
     "token_name":"$tokenName",
     "reserive_photo_url":"$reserivePhotoUrl",
     "account_info_photo_positive_url":"$accountInfoPhotoPositiveUrl",
-    "account_info_photo_back_url":"$accountInfoPhotoBackUrl"
+    "account_info_photo_back_url":"$accountInfoPhotoBackUrl",
+    "phone_verify_code":"$phoneVerifyCode",
+    "email_verify_code":"$emailVerifyCode"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
         return try {
             checkResponse(ssoApi.applyForIssuing(toRequestBody))
@@ -42,6 +86,9 @@ class SSORepository(private val ssoApi: SSOApi) {
         }
     }
 
+    /**
+     * 查询审批状态
+     */
     suspend fun selectApplyForStatus(address: String): Response<ApplyForStatusDTO>? {
         return try {
             checkResponse(ssoApi.selectApplyForStatus(address))
@@ -50,6 +97,9 @@ class SSORepository(private val ssoApi: SSOApi) {
         }
     }
 
+    /**
+     * 更改Publish状态
+     */
     suspend fun selectPublishStatus(address: String): Response<Any>? {
         val toRequestBody = """{
     "address":"$address"
@@ -61,6 +111,9 @@ class SSORepository(private val ssoApi: SSOApi) {
         }
     }
 
+    /**
+     * 上传图片
+     */
     suspend fun uploadImage(file: File): Response<String>? {
         val asRequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
         val createFormData = MultipartBody.Part.createFormData("photo", file.name, asRequestBody)
@@ -72,22 +125,63 @@ class SSORepository(private val ssoApi: SSOApi) {
         }
     }
 
-    suspend fun sendVerifyCode(receiver: String): Response<Any>? {
+    /**
+     * 获取手机验证码
+     */
+    suspend fun sendPhoneVerifyCode(address: String, receiver: String): Response<Any>? {
+        val toRequestBody = """{
+    "address":"$address",
+    "receiver":"$receiver"
+}""".toRequestBody("application/json".toMediaTypeOrNull())
         return try {
-            checkResponse(ssoApi.sendVerifyCode(receiver))
+            checkResponse(ssoApi.sendVerifyCode(toRequestBody))
         } catch (e: Exception) {
             null
         }
     }
 
-    suspend fun verifyCode(receiver: String, code: String): Response<Any>? {
+    /**
+     * 获取邮箱验证码
+     */
+    suspend fun sendEmailVerifyCode(address: String, receiver: String): Response<Any>? {
         val toRequestBody = """{
-    "receiver":"$receiver",
+    "address":"$address",
+    "receiver":"$receiver"
+}""".toRequestBody("application/json".toMediaTypeOrNull())
+        return try {
+            checkResponse(ssoApi.sendVerifyCode(toRequestBody))
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * 绑定手机
+     */
+    suspend fun bindPhone(address: String, phone: String, code: String): Response<Any>? {
+        val toRequestBody = """{
+    "address":"$address",
+    "receiver":"$phone",
     "code":$code
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-
         return try {
-            checkResponse(ssoApi.verifyCode(toRequestBody))
+            checkResponse(ssoApi.bind(toRequestBody))
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * 绑定邮箱
+     */
+    suspend fun bindEmail(address: String, email: String, code: String): Response<Any>? {
+        val toRequestBody = """{
+    "address":"$address",
+    "receiver":"$email",
+    "code":$code
+}""".toRequestBody("application/json".toMediaTypeOrNull())
+        return try {
+            checkResponse(ssoApi.bind(toRequestBody))
         } catch (e: Exception) {
             null
         }
