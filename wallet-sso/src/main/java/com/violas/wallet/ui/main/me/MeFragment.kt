@@ -13,7 +13,6 @@ import com.violas.wallet.repository.local.user.IDAuthenticationStatus
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.authentication.IDAuthenticationActivity
 import com.violas.wallet.ui.authentication.IDInformationActivity
-import com.violas.wallet.ui.main.UserViewModel
 import com.violas.wallet.ui.main.provideUserViewModel
 import com.violas.wallet.ui.setting.SettingActivity
 import com.violas.wallet.ui.verification.EmailVerificationActivity
@@ -25,7 +24,9 @@ import kotlinx.android.synthetic.main.fragment_me.*
  */
 class MeFragment : BaseFragment() {
 
-    private lateinit var mViewModel: UserViewModel
+    private val mViewModel by lazy {
+        requireActivity().provideUserViewModel()
+    }
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_me
@@ -39,8 +40,6 @@ class MeFragment : BaseFragment() {
         mivEmailVerification.setOnClickListener(this)
         mivAddressBook.setOnClickListener(this)
         mivSettings.setOnClickListener(this)
-
-        mViewModel = requireActivity().provideUserViewModel()
 
         mViewModel.tipsMessage.observe(this, Observer {
             if (it.isNotEmpty()) {

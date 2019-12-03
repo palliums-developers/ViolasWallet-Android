@@ -213,18 +213,13 @@ class UserViewModel : BaseViewModel() {
 
         synchronized(lock) {
             // 解析存储分发身份信息
-            val idName = userInfoDTO?.name
-            val idNumber = userInfoDTO?.id_number
-            val idPhotoFrontUrl = userInfoDTO?.id_photo_positive_url
-            val idPhotoBackUrl = userInfoDTO?.id_photo_back_url
-            val idCountryCode = userInfoDTO?.country
-
             val idInfo = this.idInfo.value!!
-            if (idName.isNullOrEmpty()
-                || idNumber.isNullOrEmpty()
-                || idPhotoFrontUrl.isNullOrEmpty()
-                || idPhotoBackUrl.isNullOrEmpty()
-                || idCountryCode.isNullOrEmpty()
+            if (userInfoDTO == null
+                || userInfoDTO.idName.isNullOrEmpty()
+                || userInfoDTO.idNumber.isNullOrEmpty()
+                || userInfoDTO.idPhotoFrontUrl.isNullOrEmpty()
+                || userInfoDTO.idPhotoBackUrl.isNullOrEmpty()
+                || userInfoDTO.countryCode.isNullOrEmpty()
             ) {
                 idInfo.idName = ""
                 idInfo.idNumber = ""
@@ -233,49 +228,47 @@ class UserViewModel : BaseViewModel() {
                 idInfo.idCountryCode = ""
                 idInfo.idAuthenticationStatus = IDAuthenticationStatus.UNAUTHORIZED
             } else {
-                idInfo.idName = idName
-                idInfo.idNumber = idNumber
-                idInfo.idPhotoFrontUrl = idPhotoFrontUrl
-                idInfo.idPhotoBackUrl = idPhotoBackUrl
-                idInfo.idCountryCode = idCountryCode
+                idInfo.idName = userInfoDTO.idName
+                idInfo.idNumber = userInfoDTO.idNumber
+                idInfo.idPhotoFrontUrl = userInfoDTO.idPhotoFrontUrl
+                idInfo.idPhotoBackUrl = userInfoDTO.idPhotoBackUrl
+                idInfo.idCountryCode = userInfoDTO.countryCode
                 idInfo.idAuthenticationStatus = IDAuthenticationStatus.AUTHENTICATED
             }
             this.localUserService.setIDInfo(idInfo)
             this.idInfo.postValue(idInfo)
 
             // 解析存储分发邮箱信息
-            val emailAddress = userInfoDTO?.email_address
-
             val emailInfo = this.emailInfo.value!!
-            if (emailAddress.isNullOrEmpty()) {
+            if (userInfoDTO == null
+                || userInfoDTO.emailAddress.isNullOrEmpty()
+            ) {
                 emailInfo.emailAddress = ""
                 emailInfo.accountBindingStatus = AccountBindingStatus.UNBOUND
             } else {
-                emailInfo.emailAddress = emailAddress
+                emailInfo.emailAddress = userInfoDTO.emailAddress
                 emailInfo.accountBindingStatus = AccountBindingStatus.BOUND
             }
             this.localUserService.setEmailInfo(emailInfo)
             this.emailInfo.postValue(emailInfo)
 
             // 解析存储分发手机信息
-            val phoneAreaCode = userInfoDTO?.phone_local_number
-            val phoneNumber = userInfoDTO?.phone_number
-
             val phoneInfo = this.phoneInfo.value!!
-            if (phoneAreaCode.isNullOrEmpty()
-                || phoneNumber.isNullOrEmpty()
+            if (userInfoDTO == null
+                || userInfoDTO.phoneAreaCode.isNullOrEmpty()
+                || userInfoDTO.phoneNumber.isNullOrEmpty()
             ) {
                 phoneInfo.areaCode = ""
                 phoneInfo.phoneNumber = ""
                 phoneInfo.accountBindingStatus = AccountBindingStatus.UNBOUND
             } else {
-                phoneInfo.areaCode = if (phoneAreaCode.startsWith("+")) {
-                    phoneAreaCode.substring(1)
+                phoneInfo.areaCode = if (userInfoDTO.phoneAreaCode.startsWith("+")) {
+                    userInfoDTO.phoneAreaCode.substring(1)
                 } else {
-                    phoneAreaCode
+                    userInfoDTO.phoneAreaCode
                 }
-                phoneInfo.phoneNumber = phoneNumber
-                phoneInfo.accountBindingStatus = AccountBindingStatus.UNBOUND
+                phoneInfo.phoneNumber = userInfoDTO.phoneNumber
+                phoneInfo.accountBindingStatus = AccountBindingStatus.BOUND
             }
             this.localUserService.setPhoneInfo(phoneInfo)
             this.phoneInfo.postValue(phoneInfo)

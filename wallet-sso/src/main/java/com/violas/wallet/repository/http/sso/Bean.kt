@@ -1,5 +1,7 @@
 package com.violas.wallet.repository.http.sso
 
+import com.google.gson.annotations.SerializedName
+
 data class ApplyForStatusDTO(
     val amount: Int,
     val approval_status: Int,
@@ -7,13 +9,20 @@ data class ApplyForStatusDTO(
 )
 
 data class UserInfoDTO(
-    val country: String,
-    val email_address: String,
-    val id_number: String,
-    val id_photo_back_url: String,
-    val id_photo_positive_url: String,
-    val name: String,
-    val phone_number: String,
-    val wallet_address: String,
-    val phone_local_number: String
+    @SerializedName("country")
+    val countryCode: String?,
+    @SerializedName("name")
+    val idName: String?,
+    @SerializedName("id_number")
+    val idNumber: String?,
+    @SerializedName("id_photo_positive_url")
+    val idPhotoFrontUrl: String?,
+    @SerializedName("id_photo_back_url")
+    val idPhotoBackUrl: String?,
+    @SerializedName("email_address")
+    val emailAddress: String?,
+    @SerializedName("phone_number")
+    val phoneNumber: String?,
+    @SerializedName("phone_local_number")
+    val phoneAreaCode: String?
 )
