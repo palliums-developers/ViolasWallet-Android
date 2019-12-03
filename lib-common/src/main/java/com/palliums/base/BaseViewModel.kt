@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palliums.net.LoadState
-import com.palliums.net.NetworkException
+import com.palliums.net.RequestException
 import com.palliums.utils.isNetworkConnected
 import kotlinx.coroutines.launch
 
@@ -38,7 +38,7 @@ abstract class BaseViewModel : ViewModel() {
             } else if (checkNetworkBeforeExecute() && !isNetworkConnected()) {
                 retry = { execute(*params, action = action, needCheckParam = true) }
 
-                val exception = NetworkException.networkUnavailable()
+                val exception = RequestException.networkUnavailable()
                 loadState.value = LoadState.failure(exception)
                 tipsMessage.value = exception.message
                 return false

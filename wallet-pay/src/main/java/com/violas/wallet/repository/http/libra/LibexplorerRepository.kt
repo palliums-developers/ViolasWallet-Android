@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.libra
 
-import com.palliums.net.NetworkException
+import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
 
 /**
@@ -11,7 +11,7 @@ import com.palliums.net.checkResponse
  */
 class LibexplorerRepository(private val mLibexplorerApi: LibexplorerApi) {
 
-    @Throws(NetworkException::class)
+    @Throws(RequestException::class)
     suspend fun getTransactionRecord(
         address: String,
         pageSize: Int,

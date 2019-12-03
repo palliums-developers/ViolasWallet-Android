@@ -1,7 +1,7 @@
 package com.palliums.violas.http
 
 import com.google.gson.Gson
-import com.palliums.net.NetworkException
+import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
 import io.reactivex.Single
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -15,7 +15,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
  */
 class ViolasRepository(private val mViolasApi: ViolasApi) {
 
-    @Throws(NetworkException::class)
+    @Throws(RequestException::class)
     suspend fun getTransactionRecord(
         address: String,
         pageSize: Int,
