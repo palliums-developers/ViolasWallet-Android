@@ -12,15 +12,20 @@ import com.sl.utakephoto.exception.TakeException
 import com.sl.utakephoto.manager.ITakePhotoResult
 import com.sl.utakephoto.manager.UTakePhoto
 import com.violas.wallet.R
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ApplyManager
+import com.violas.wallet.event.RefreshPageEvent
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.selectCurrency.SelectCurrencyActivity
 import com.violas.wallet.ui.selectCurrency.bean.CurrencyBean
 import com.violas.wallet.utils.getFilePathFromContentUri
+import com.violas.wallet.widget.dialog.EmailPhoneValidationDialog
 import com.violas.wallet.widget.dialog.TakePhotoPopup
 import kotlinx.android.synthetic.main.fragment_apply_submit.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 import java.io.File
 
 class ApplySubmitFragment : BaseFragment() {
@@ -34,9 +39,15 @@ class ApplySubmitFragment : BaseFragment() {
     private var reservesImage: String? = null
     private var accountPositiveImage: String? = null
     private var accountReverseImage: String? = null
+    private var mAccount: AccountDO? = null
+    private var mCurrencyBean: CurrencyBean? = null
 
     private val mApplyManager by lazy {
         ApplyManager()
+    }
+
+    private val mAccountManager by lazy {
+        AccountManager()
     }
 
     override fun getLayoutResId(): Int {
@@ -45,6 +56,16 @@ class ApplySubmitFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        launch(Dispatchers.IO) {
+            mAccount = mAccountManager.currentAccount()
+            if (mAccount == null) {
+                finishActivity()
+            }
+            withContext(Dispatchers.Main) {
+                mAccount?.address?.let { itemWalletAddress.setContent(it) }
+            }
+        }
 
         tvContent.setOnClickListener {
             SelectCurrencyActivity.start(this@ApplySubmitFragment, REQUEST_CURRENCY_CODE)
@@ -67,6 +88,64 @@ class ApplySubmitFragment : BaseFragment() {
         }
         upLoadViewAccountReverse.setCloseContentCallback {
             accountReverseImage = null
+        }
+        btnSubmit.setOnClickListener {
+            if (mCurrencyBean == null) {
+                showToast(getString(R.string.hint_select_issuing_type))
+                return@setOnClickListener
+            }
+            if (itemCoinNumber.getContent()?.toString()?.isEmpty() == true) {
+                showToast(getString(R.string.hint_issuing_number))
+                return@setOnClickListener
+            }
+            if (itemName.getContent()?.toString()?.isEmpty() == true) {
+                showToast(getString(R.string.hint_fill_token_name))
+                return@setOnClickListener
+            }
+            if (reservesImage?.isEmpty() == true) {
+                showToast(getString(R.string.hint_upload_reserves))
+                return@setOnClickListener
+            }
+            if (accountPositiveImage?.isEmpty() == true) {
+                showToast(getString(R.string.hint_pay_account_positive_image))
+                return@setOnClickListener
+            }
+            if (accountReverseImage?.isEmpty() == true) {
+                showToast(getString(R.string.hint_pay_account_reverse_image))
+                return@setOnClickListener
+            }
+            showValidationDialog()
+        }
+    }
+
+    private fun showValidationDialog() {
+        EmailPhoneValidationDialog()
+            .setConfirmListener { phone, email, dialog ->
+                submitData(phone, email)
+                dialog.dismiss()
+            }
+            .show(childFragmentManager)
+    }
+
+    private fun submitData(phone: String, email: String) {
+        launch(Dispatchers.IO) {
+            val applyForIssuing = mApplyManager.applyForIssuing(
+                mAccount!!.address,
+                mCurrencyBean!!.indicator,
+                itemCoinNumber.getContent()!!.toString().toLong(),
+                mCurrencyBean!!.exchange,
+                itemName.getContent()!!.toString(),
+                reservesImage!!,
+                accountPositiveImage!!,
+                accountReverseImage!!,
+                phone,
+                email
+            )
+            if (applyForIssuing != null) {
+                EventBus.getDefault().post(RefreshPageEvent())
+            } else {
+                showToast(getString(R.string.hint_net_work_error))
+            }
         }
     }
 
@@ -173,6 +252,7 @@ class ApplySubmitFragment : BaseFragment() {
                 if (resultCode == Activity.RESULT_OK) {
                     val parcelable =
                         data?.getParcelableExtra<CurrencyBean>(SelectCurrencyActivity.EXT_CURRENCY_ITEM)
+                    mCurrencyBean = parcelable
                     tvContent.text = parcelable?.currency
                     tvStableCurrencyValue.setContent("${parcelable?.exchange}")
                 }

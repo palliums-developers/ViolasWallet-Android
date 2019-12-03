@@ -63,6 +63,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.violas.wallet.widget.ApplySubmitEditItemView
+            android:id="@+id/itemCoinNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
@@ -78,6 +79,7 @@
             app:item_title="@string/label_stable_currency_value" />
 
         <com.violas.wallet.widget.ApplySubmitEditItemView
+            android:id="@+id/itemName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -87,6 +89,7 @@
             app:item_title="@string/label_stable_currency_name" />
 
         <com.violas.wallet.widget.ApplySubmitItemView
+            android:id="@+id/itemWalletAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:item_title="@string/label_wallet_address"
@@ -160,6 +163,7 @@
         </LinearLayout>
 
         <Button
+            android:id="@+id/btnSubmit"
             style="@style/BaseButtonPrimary"
             android:layout_width="238dp"
             android:layout_height="40dp"

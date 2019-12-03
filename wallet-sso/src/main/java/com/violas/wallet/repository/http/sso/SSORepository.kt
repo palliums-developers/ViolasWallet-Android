@@ -59,7 +59,7 @@ class SSORepository(private val ssoApi: SSOApi) {
         walletAddress: String,
         tokenType: String,
         amount: Long,
-        tokenValue: Long,
+        tokenValue: Float,
         tokenName: String,
         reservePhotoUrl: String,
         accountInfoPhotoPositiveUrl: String,

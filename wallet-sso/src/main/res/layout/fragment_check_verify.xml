@@ -31,7 +31,7 @@
                 android:textSize="14dp" />
 
             <Button
-                android:id="@+id/btn"
+                android:id="@+id/btnGo"
                 style="@style/BaseButtonPrimary"
                 android:layout_width="93dp"
                 android:layout_height="31dp"

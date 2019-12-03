@@ -96,6 +96,8 @@ class ApplySubmitEditItemView : LinearLayout {
         }
     }
 
+    fun getContent() = tvContent.text
+
     fun setHint(hint: String) {
         view?.apply {
             tvContent.hint = hint
