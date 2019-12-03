@@ -2,12 +2,14 @@ package com.violas.wallet.ui.main.applyFor
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import com.palliums.base.BaseFragment
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ApplyManager
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.sso.ApplyForStatusDTO
+import com.violas.wallet.ui.main.provideUserViewModel
 import kotlinx.android.synthetic.main.fragment_apply_for_sso.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,6 +20,9 @@ class ApplyForSSOFragment : BaseFragment() {
     private var mAccount: AccountDO? = null
     private val mAccountManager by lazy {
         AccountManager()
+    }
+    private val mUserViewModel by lazy {
+        requireActivity().provideUserViewModel()
     }
 
     private val mApplyManager by lazy {
@@ -39,11 +44,20 @@ class ApplyForSSOFragment : BaseFragment() {
             }
         }
 
-        // todo delete
         childFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, ApplySubmitFragment())
             // .replace(R.id.fragmentContainerView,ApplyStatusFragment())
             .commit()
+        activity?.let {
+            mUserViewModel.getAllReady().observe(it, Observer { ready ->
+                if (ready) {
+                    childFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainerView, ApplySubmitFragment())
+                        // .replace(R.id.fragmentContainerView,ApplyStatusFragment())
+                        .commit()
+                }
+            })
+        }
     }
 
     private suspend fun refreshFragment(status: ApplyForStatusDTO?) {
