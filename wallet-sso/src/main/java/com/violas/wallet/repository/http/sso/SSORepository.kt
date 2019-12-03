@@ -59,9 +59,9 @@ class SSORepository(private val ssoApi: SSOApi) {
         walletAddress: String,
         tokenType: String,
         amount: Long,
-        tokenValue: String,
+        tokenValue: Long,
         tokenName: String,
-        reserivePhotoUrl: String,
+        reservePhotoUrl: String,
         accountInfoPhotoPositiveUrl: String,
         accountInfoPhotoBackUrl: String,
         phoneVerifyCode: String,
@@ -70,14 +70,14 @@ class SSORepository(private val ssoApi: SSOApi) {
         val toRequestBody = """{
     "wallet_address":"$walletAddress",
     "token_type":"$tokenType",
-    "amount":"$amount",
-    "token_value":"$tokenValue",
+    "amount":$amount,
+    "token_value":$tokenValue,
     "token_name":"$tokenName",
-    "reserive_photo_url":"$reserivePhotoUrl",
+    "reserve_photo_url":"$reservePhotoUrl",
     "account_info_photo_positive_url":"$accountInfoPhotoPositiveUrl",
     "account_info_photo_back_url":"$accountInfoPhotoBackUrl",
-    "phone_verify_code":"$phoneVerifyCode",
-    "email_verify_code":"$emailVerifyCode"
+    "phone_verify_code":$phoneVerifyCode,
+    "email_verify_code":$emailVerifyCode
 }""".toRequestBody("application/json".toMediaTypeOrNull())
         return try {
             checkResponse(ssoApi.applyForIssuing(toRequestBody))
