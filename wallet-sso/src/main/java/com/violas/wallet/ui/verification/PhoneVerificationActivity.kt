@@ -82,8 +82,12 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
             tvAreaCode.text = "+${it.areaCode}"
         })
 
-        mViewModel.loadCountryArea()
         showSoftInput(etPhoneNumber)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        hideSoftInput()
     }
 
     override fun onDestroy() {

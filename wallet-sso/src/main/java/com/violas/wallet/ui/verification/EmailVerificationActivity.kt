@@ -72,6 +72,11 @@ class EmailVerificationActivity : BaseViewModelActivity() {
         showSoftInput(etEmailAddress)
     }
 
+    override fun onPause() {
+        super.onPause()
+        hideSoftInput()
+    }
+
     override fun onDestroy() {
         mCountDownTimerUtils.cancel()
 

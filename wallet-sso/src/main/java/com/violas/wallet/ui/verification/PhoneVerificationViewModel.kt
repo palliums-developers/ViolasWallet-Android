@@ -5,15 +5,17 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.getString
 import com.violas.wallet.R
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.BindPhoneEvent
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.local.user.PhoneInfo
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import com.violas.wallet.ui.selectCountryArea.isChinaMainland
 import com.violas.wallet.utils.validationChinaPhone
 import com.violas.wallet.utils.validationHkPhone
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 
@@ -30,6 +32,12 @@ class PhoneVerificationViewModel : BaseViewModel() {
         const val ACTION_BING_PHONE_NUMBER = 1
     }
 
+    private lateinit var currentAccount: AccountDO
+
+    private val ssoService by lazy {
+        DataRepository.getSSOService()
+    }
+
     private val localUserService by lazy {
         DataRepository.getLocalUserService()
     }
@@ -38,44 +46,39 @@ class PhoneVerificationViewModel : BaseViewModel() {
     val bindPhoneNumberResult = MutableLiveData<Boolean>()
     val countryAreaVO = MutableLiveData<CountryAreaVO>()
 
-    fun loadCountryArea() {
-        viewModelScope.launch {
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            currentAccount = AccountManager().currentAccount()
+
             val countryArea = getCountryArea()
             countryAreaVO.postValue(countryArea)
         }
     }
 
-    override suspend fun realExecute(
-        action: Int,
-        vararg params: Any,
-        onSuccess: () -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        // TODO 对接接口
-
-        // test code
-        delay(3000)
-
-        val areaCode = countryAreaVO.value!!.areaCode
+    override suspend fun realExecute(action: Int, vararg params: Any) {
+        val areaCode = "+${countryAreaVO.value!!.areaCode}"
         val phoneNumber = params[0] as String
+        val walletAddress = currentAccount.address
 
+        // 获取验证码操作
         if (action == ACTION_GET_VERIFICATION_CODE) {
-            // 获取验证码操作
+            ssoService.sendPhoneVerifyCode(walletAddress, phoneNumber, areaCode)
+
             tipsMessage.postValue(getString(R.string.hint_verification_code_get_success))
             getVerificationCodeResult.postValue(true)
-            onSuccess.invoke()
             return
         }
 
         // 绑定手机号操作
-        tipsMessage.postValue(getString(R.string.hint_phone_number_bind_success))
-        bindPhoneNumberResult.postValue(true)
+        val verificationCode = params[1] as String
+        ssoService.bindPhone(walletAddress, phoneNumber, areaCode, verificationCode)
 
         val phoneInfo = PhoneInfo(areaCode, phoneNumber)
         localUserService.setPhoneInfo(phoneInfo)
         EventBus.getDefault().post(BindPhoneEvent(phoneInfo))
 
-        onSuccess.invoke()
+        tipsMessage.postValue(getString(R.string.hint_phone_number_bind_success))
+        bindPhoneNumberResult.postValue(true)
     }
 
     override fun checkParams(action: Int, vararg params: Any): Boolean {

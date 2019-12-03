@@ -4,15 +4,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.lifecycle.*
 import com.palliums.base.BaseViewModel
+import com.palliums.net.LoadState
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.AuthenticationIDEvent
 import com.violas.wallet.event.BindEmailEvent
 import com.violas.wallet.event.BindPhoneEvent
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.local.user.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Created by elephant on 2019-11-29 17:25.
@@ -33,6 +38,12 @@ fun ComponentActivity.provideUserViewModel(): UserViewModel {
 
 class UserViewModel : BaseViewModel() {
 
+    private lateinit var currentAccount: AccountDO
+
+    private val ssoService by lazy {
+        DataRepository.getSSOService()
+    }
+
     private val localUserService by lazy {
         DataRepository.getLocalUserService()
     }
@@ -40,6 +51,7 @@ class UserViewModel : BaseViewModel() {
     private val idInfo = MutableLiveData<IDInfo>()
     private val emailInfo = MutableLiveData<EmailInfo>()
     private val phoneInfo = MutableLiveData<PhoneInfo>()
+
     /**
      * 表示身份已认证，邮箱已绑定，手机已绑定
      */
@@ -55,117 +67,235 @@ class UserViewModel : BaseViewModel() {
     }
 
     fun getIdInfo(): LiveData<IDInfo> {
-        return this.idInfo
+        synchronized(lock) {
+            return this.idInfo
+        }
     }
 
     fun getEmailInfo(): LiveData<EmailInfo> {
-        return this.emailInfo
+        synchronized(lock) {
+            return this.emailInfo
+        }
     }
 
     fun getPhoneInfo(): LiveData<PhoneInfo> {
-        return this.phoneInfo
+        synchronized(lock) {
+            return this.phoneInfo
+        }
     }
 
     fun getAllReady(): LiveData<Boolean> {
-        return this.allReady
+        synchronized(lock) {
+            return this.allReady
+        }
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onAuthenticationIDEvent(event: AuthenticationIDEvent) {
-        this.idInfo.postValue(event.idInfo)
+        synchronized(lock) {
+            this.idInfo.postValue(event.idInfo)
+
+            val emailInfo = this.emailInfo.value
+            val phoneInfo = this.phoneInfo.value
+            if (emailInfo != null && emailInfo.isBoundEmail()
+                && phoneInfo != null && phoneInfo.isBoundPhone()
+            ) {
+                allReady.postValue(true)
+            }
+        }
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onBindEmailEvent(event: BindEmailEvent) {
-        this.emailInfo.postValue(event.emailInfo)
+        synchronized(lock) {
+            this.emailInfo.postValue(event.emailInfo)
+
+            val idInfo = this.idInfo.value
+            val phoneInfo = this.phoneInfo.value
+            if (idInfo != null && idInfo.isAuthenticatedID()
+                && phoneInfo != null && phoneInfo.isBoundPhone()
+            ) {
+                allReady.postValue(true)
+            }
+        }
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onBindPhoneEvent(event: BindPhoneEvent) {
-        this.phoneInfo.postValue(event.phoneInfo)
+        synchronized(lock) {
+            this.phoneInfo.postValue(event.phoneInfo)
+
+            val idInfo = this.idInfo.value
+            val emailInfo = this.emailInfo.value
+            if (idInfo != null && idInfo.isAuthenticatedID()
+                && emailInfo != null && emailInfo.isBoundEmail()
+            ) {
+                allReady.postValue(true)
+            }
+        }
     }
 
     fun init() {
-        if (this.idInfo.value != null) {
-            return
+        synchronized(lock) {
+            if (this.idInfo.value != null) {
+                return
+            }
         }
 
-        viewModelScope.launch {
-            var allReady = true
+        viewModelScope.launch(Dispatchers.IO) {
+            synchronized(lock) {
+                // 通知开始加载，此时外部获取用户信息为空
+                loadState.postValue(LoadState.RUNNING)
 
-            val idInfo = this@UserViewModel.localUserService.getIDInfo()
-            if (!idInfo.isAuthenticatedID()) {
-                // 身份认证状态不为已认证先当作未知状态
-                idInfo.idAuthenticationStatus = IDAuthenticationStatus.UNKNOWN
-                allReady = false
+                var allReady = true
+
+                val idInfo = localUserService.getIDInfo()
+                if (!idInfo.isAuthenticatedID()) {
+                    // 身份认证状态不为已认证先当作未知状态
+                    idInfo.idAuthenticationStatus = IDAuthenticationStatus.UNKNOWN
+                    allReady = false
+                }
+                this@UserViewModel.idInfo.postValue(idInfo)
+
+                val emailInfo = localUserService.getEmailInfo()
+                if (!emailInfo.isBoundEmail()) {
+                    // 邮箱绑定状态不为已绑定先当作未知状态
+                    emailInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
+                    allReady = false
+                }
+                this@UserViewModel.emailInfo.postValue(emailInfo)
+
+                val phoneInfo = localUserService.getPhoneInfo()
+                if (!phoneInfo.isBoundPhone()) {
+                    // 手机绑定状态不为已绑定先当作未知状态
+                    phoneInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
+                    allReady = false
+                }
+                this@UserViewModel.phoneInfo.postValue(phoneInfo)
+
+                if (allReady) {
+                    this@UserViewModel.allReady.postValue(true)
+                    loadState.postValue(LoadState.SUCCESS)
+                    return@launch
+                }
+
+                // 再次通知在加载中，用以展示loading，此时外部获取用户信息不为空
+                loadState.postValue(LoadState.RUNNING)
             }
-            this@UserViewModel.idInfo.postValue(idInfo)
 
-            val emailInfo = localUserService.getEmailInfo()
-            if (!emailInfo.isBoundEmail()) {
-                // 邮箱绑定状态不为已绑定先当作未知状态
-                emailInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
-                allReady = false
-            }
-            this@UserViewModel.emailInfo.postValue(emailInfo)
+            // 为了loading的连贯性，此处没有调用execute，而是直接调用的realExecute
+            // 注意execute内部处理了异常，这里需要处理异常情况
+            try {
+                currentAccount = AccountManager().currentAccount()
 
-            val phoneInfo = localUserService.getPhoneInfo()
-            if (!phoneInfo.isBoundPhone()) {
-                // 手机绑定状态不为已绑定先当作未知状态
-                phoneInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
-                allReady = false
-            }
-            this@UserViewModel.phoneInfo.postValue(phoneInfo)
+                realExecute(-1)
 
-            if (allReady) {
-                this@UserViewModel.allReady.postValue(true)
-            } else {
-                execute()
+                synchronized(lock) {
+                    loadState.postValue(LoadState.SUCCESS)
+                }
+            } catch (e: Exception) {
+                synchronized(lock) {
+                    tipsMessage.postValue(e.message)
+
+                    loadState.postValue(LoadState.failure(e))
+                }
             }
         }
     }
 
-    override suspend fun realExecute(
-        action: Int,
-        vararg params: Any,
-        onSuccess: () -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        // TODO 对接接口
+    override suspend fun realExecute(action: Int, vararg params: Any) {
 
-        // test code
-        delay(5000)
+        delay(2000)
 
-        val idInfo = getIdInfo().value!!
-        if (!idInfo.isAuthenticatedID()) {
-            idInfo.idAuthenticationStatus = IDAuthenticationStatus.UNAUTHORIZED
+        // 从服务器获取用户信息
+        val walletAddress = currentAccount.address
+        val userInfoDTO = ssoService.loadUserInfo(walletAddress).data
+
+        synchronized(lock) {
+            // 解析存储分发身份信息
+            val idName = userInfoDTO?.name
+            val idNumber = userInfoDTO?.id_number
+            val idPhotoFrontUrl = userInfoDTO?.id_photo_positive_url
+            val idPhotoBackUrl = userInfoDTO?.id_photo_back_url
+            val idCountryCode = userInfoDTO?.country
+
+            val idInfo = this.idInfo.value!!
+            if (idName.isNullOrEmpty()
+                || idNumber.isNullOrEmpty()
+                || idPhotoFrontUrl.isNullOrEmpty()
+                || idPhotoBackUrl.isNullOrEmpty()
+                || idCountryCode.isNullOrEmpty()
+            ) {
+                idInfo.idName = ""
+                idInfo.idNumber = ""
+                idInfo.idPhotoFrontUrl = ""
+                idInfo.idPhotoBackUrl = ""
+                idInfo.idCountryCode = ""
+                idInfo.idAuthenticationStatus = IDAuthenticationStatus.UNAUTHORIZED
+            } else {
+                idInfo.idName = idName
+                idInfo.idNumber = idNumber
+                idInfo.idPhotoFrontUrl = idPhotoFrontUrl
+                idInfo.idPhotoBackUrl = idPhotoBackUrl
+                idInfo.idCountryCode = idCountryCode
+                idInfo.idAuthenticationStatus = IDAuthenticationStatus.AUTHENTICATED
+            }
             this.localUserService.setIDInfo(idInfo)
-
             this.idInfo.postValue(idInfo)
-        }
 
-        val emailInfo = getEmailInfo().value!!
-        if (!emailInfo.isBoundEmail()) {
-            emailInfo.accountBindingStatus = AccountBindingStatus.UNBOUND
+            // 解析存储分发邮箱信息
+            val emailAddress = userInfoDTO?.email_address
+
+            val emailInfo = this.emailInfo.value!!
+            if (emailAddress.isNullOrEmpty()) {
+                emailInfo.emailAddress = ""
+                emailInfo.accountBindingStatus = AccountBindingStatus.UNBOUND
+            } else {
+                emailInfo.emailAddress = emailAddress
+                emailInfo.accountBindingStatus = AccountBindingStatus.BOUND
+            }
             this.localUserService.setEmailInfo(emailInfo)
-
             this.emailInfo.postValue(emailInfo)
-        }
 
-        val phoneInfo = getPhoneInfo().value!!
-        if (!phoneInfo.isBoundPhone()) {
-            phoneInfo.accountBindingStatus = AccountBindingStatus.UNBOUND
+            // 解析存储分发手机信息
+            val phoneAreaCode = userInfoDTO?.phone_local_number
+            val phoneNumber = userInfoDTO?.phone_number
+
+            val phoneInfo = this.phoneInfo.value!!
+            if (phoneAreaCode.isNullOrEmpty()
+                || phoneNumber.isNullOrEmpty()
+            ) {
+                phoneInfo.areaCode = ""
+                phoneInfo.phoneNumber = ""
+                phoneInfo.accountBindingStatus = AccountBindingStatus.UNBOUND
+            } else {
+                phoneInfo.areaCode = if (phoneAreaCode.startsWith("+")) {
+                    phoneAreaCode.substring(1)
+                } else {
+                    phoneAreaCode
+                }
+                phoneInfo.phoneNumber = phoneNumber
+                phoneInfo.accountBindingStatus = AccountBindingStatus.UNBOUND
+            }
             this.localUserService.setPhoneInfo(phoneInfo)
-
             this.phoneInfo.postValue(phoneInfo)
+
+            // 分发申请发行准备进度
+            this.allReady.postValue(
+                idInfo.isAuthenticatedID()
+                        && emailInfo.isBoundEmail()
+                        && phoneInfo.isBoundPhone()
+            )
         }
+    }
 
-        this.allReady.postValue(
-            idInfo.isAuthenticatedID()
-                    && emailInfo.isBoundEmail()
-                    && phoneInfo.isBoundPhone()
-        )
+    override fun checkParams(action: Int, vararg params: Any): Boolean {
+        val idInfo = this.idInfo.value
+        val emailInfo = this.emailInfo.value
+        val phoneInfo = this.phoneInfo.value
 
-        onSuccess.invoke()
+        return (idInfo != null && !idInfo.isAuthenticatedID())
+                || (emailInfo != null && !emailInfo.isBoundEmail())
+                || (phoneInfo != null && !phoneInfo.isBoundPhone())
     }
 }

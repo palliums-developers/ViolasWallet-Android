@@ -78,13 +78,11 @@ class IDCardLayout : FrameLayout, View.OnClickListener {
         if (!isFastMultiClick(view)) {
             when (view.id) {
                 R.id.ivPhotograph -> {
-                    onViewClickListener?.let { it.onClickPhotograph() }
+                    onViewClickListener?.onClickPhotograph()
                 }
 
                 R.id.ivDelete -> {
-
-
-                    onViewClickListener?.let { it.onClickDelete() }
+                    onViewClickListener?.onClickDelete()
                 }
             }
         }

@@ -1,14 +1,18 @@
 package com.violas.wallet.ui.verification
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.getString
 import com.violas.wallet.R
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.BindEmailEvent
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.local.user.EmailInfo
 import com.violas.wallet.utils.validationEmailAddress
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 
 /**
@@ -24,6 +28,12 @@ class EmailVerificationViewModel : BaseViewModel() {
         const val ACTION_BING_EMAIL = 1
     }
 
+    private lateinit var currentAccount: AccountDO
+
+    private val ssoService by lazy {
+        DataRepository.getSSOService()
+    }
+
     private val localUserService by lazy {
         DataRepository.getLocalUserService()
     }
@@ -31,36 +41,35 @@ class EmailVerificationViewModel : BaseViewModel() {
     val getVerificationCodeResult = MutableLiveData<Boolean>()
     val bindEmailResult = MutableLiveData<Boolean>()
 
-    override suspend fun realExecute(
-        action: Int,
-        vararg params: Any,
-        onSuccess: () -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        // TODO 对接接口
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            currentAccount = AccountManager().currentAccount()
+        }
+    }
 
-        // test code
-        delay(3000)
-
+    override suspend fun realExecute(action: Int, vararg params: Any) {
+        val walletAddress = currentAccount.address
         val emailAddress = params[0] as String
 
+        // 获取验证码操作
         if (action == ACTION_GET_VERIFICATION_CODE) {
-            // 获取验证码操作
+            ssoService.sendEmailVerifyCode(walletAddress, emailAddress)
+
             tipsMessage.postValue(getString(R.string.hint_verification_code_get_success))
             getVerificationCodeResult.postValue(true)
-            onSuccess.invoke()
             return
         }
 
         // 绑定邮箱操作
+        val verificationCode = params[1] as String
+        ssoService.bindEmail(walletAddress, emailAddress, verificationCode)
+
         tipsMessage.postValue(getString(R.string.hint_email_bind_success))
         bindEmailResult.postValue(true)
 
         val emailInfo = EmailInfo(emailAddress)
         localUserService.setEmailInfo(emailInfo)
         EventBus.getDefault().post(BindEmailEvent(emailInfo))
-
-        onSuccess.invoke()
     }
 
     override fun checkParams(action: Int, vararg params: Any): Boolean {

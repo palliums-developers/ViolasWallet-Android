@@ -112,28 +112,28 @@ class LocalUserService {
             && idInfo.idAuthenticationStatus != IDAuthenticationStatus.UNAUTHORIZED
             && (idInfo.idName.isEmpty()
                     || idInfo.idNumber.isEmpty()
-                    || idInfo.idCardFrontUrl.isEmpty()
-                    || idInfo.idCardBackUrl.isEmpty()
+                    || idInfo.idPhotoFrontUrl.isEmpty()
+                    || idInfo.idPhotoBackUrl.isEmpty()
                     || idInfo.idCountryCode.isEmpty())
         ) {
             idInfo.idAuthenticationStatus = IDAuthenticationStatus.UNKNOWN
             idInfo.idName = ""
             idInfo.idNumber = ""
-            idInfo.idCardFrontUrl = ""
-            idInfo.idCardBackUrl = ""
+            idInfo.idPhotoFrontUrl = ""
+            idInfo.idPhotoBackUrl = ""
             idInfo.idCountryCode = ""
         } else if (idInfo.idName.isNotEmpty()
             && idInfo.idNumber.isNotEmpty()
-            && idInfo.idCardFrontUrl.isNotEmpty()
-            && idInfo.idCardBackUrl.isNotEmpty()
+            && idInfo.idPhotoFrontUrl.isNotEmpty()
+            && idInfo.idPhotoBackUrl.isNotEmpty()
             && idInfo.idCountryCode.isNotEmpty()
             && (idInfo.idAuthenticationStatus == IDAuthenticationStatus.UNKNOWN
                     || idInfo.idAuthenticationStatus == IDAuthenticationStatus.UNAUTHORIZED)
         ) {
             idInfo.idName = ""
             idInfo.idNumber = ""
-            idInfo.idCardFrontUrl = ""
-            idInfo.idCardBackUrl = ""
+            idInfo.idPhotoFrontUrl = ""
+            idInfo.idPhotoBackUrl = ""
             idInfo.idCountryCode = ""
         }
 
