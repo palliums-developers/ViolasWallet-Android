@@ -7,7 +7,7 @@ package com.palliums.net
  * desc:
  */
 
-@Throws(NetworkException::class)
+@Throws(RequestException::class)
 suspend inline fun <T, R> T.checkResponse(
     crossinline func: suspend T.() -> R
 ): R {
@@ -17,13 +17,13 @@ suspend inline fun <T, R> T.checkResponse(
             if (func1.getErrorCode() == func1.getSuccessCode()) {
                 return func1
             } else {
-                throw NetworkException(func1)
+                throw RequestException(func1)
             }
         } else {
-            throw NetworkException.responseDataException()
+            throw RequestException.responseDataException()
         }
     } catch (e: Throwable) {
-        throw NetworkException(e)
+        throw RequestException(e)
     }
 }
 
@@ -36,12 +36,12 @@ suspend inline fun <T, R> T.checkResponseWithResult(
             if (func1.getErrorCode() == func1.getSuccessCode()) {
                 Result.success<R>(func1)
             } else {
-                Result.failure(NetworkException(func1))
+                Result.failure(RequestException(func1))
             }
         } else {
-            Result.failure(NetworkException.responseDataException())
+            Result.failure(RequestException.responseDataException())
         }
     } catch (e: Throwable) {
-        Result.failure(NetworkException(e))
+        Result.failure(RequestException(e))
     }
 }

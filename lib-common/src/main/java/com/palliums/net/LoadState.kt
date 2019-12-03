@@ -41,8 +41,8 @@ data class LoadState private constructor(
     }
 
     fun isNoNetwork(): Boolean {
-        return throwable != null && throwable is NetworkException
-                && throwable.errorCode == NetworkException.ERROR_CODE_NO_NETWORK
+        return throwable != null && throwable is RequestException
+                && throwable.errorCode == RequestException.ERROR_CODE_NO_NETWORK
     }
 
     fun getErrorMsg(): String? {
@@ -50,10 +50,10 @@ data class LoadState private constructor(
     }
 
     fun getErrorCode(): Any {
-        return if (throwable != null && throwable is NetworkException) {
+        return if (throwable != null && throwable is RequestException) {
             throwable.errorCode
         } else {
-            NetworkException.ERROR_CODE_UNKNOWN_ERROR
+            RequestException.ERROR_CODE_UNKNOWN_ERROR
         }
     }
 }

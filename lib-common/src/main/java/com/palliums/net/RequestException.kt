@@ -16,9 +16,9 @@ import javax.net.ssl.SSLPeerUnverifiedException
  * Created by elephant on 2019-08-01 10:22.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 网络异常，统一处理网络请求出现的exception、error code
+ * desc: 请求异常，统一处理网络请求中出现的exception、http error、server error、响应数据无法解析、无网络情况
  */
-class NetworkException : RuntimeException {
+class RequestException : RuntimeException {
 
     companion object {
         /** 连接超时 */
@@ -38,15 +38,15 @@ class NetworkException : RuntimeException {
         /** 未知错误 */
         const val ERROR_CODE_UNKNOWN_ERROR = -100
 
-        fun networkUnavailable(): NetworkException {
-            return NetworkException(
+        fun networkUnavailable(): RequestException {
+            return RequestException(
                 ERROR_CODE_NO_NETWORK,
                 getString(R.string.common_http_network_unavailable)
             )
         }
 
-        fun responseDataException(): NetworkException {
-            return NetworkException(
+        fun responseDataException(): RequestException {
+            return RequestException(
                 ERROR_CODE_DATA_EXCEPTION,
                 getString(R.string.common_http_data_exception)
             )
