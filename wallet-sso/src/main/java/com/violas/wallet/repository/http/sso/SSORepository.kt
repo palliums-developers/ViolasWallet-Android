@@ -10,12 +10,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class SSORepository(private val ssoApi: SSOApi) {
-    private fun <T> checkResponse(response: Response<T>): Response<T>? {
-        if (response.errorCode == 2000) {
-            return response
-        }
-        return null
-    }
 
     /**
      * 绑定身份证信息
@@ -36,6 +30,7 @@ class SSORepository(private val ssoApi: SSOApi) {
     "id_photo_positive_url":"$idPhotoPositiveUrl",
     "id_photo_back_url":"$idPhotoBackUrl"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
+
         return checkResponse {
             ssoApi.bindIdNumber(toRequestBody)
         }
@@ -77,8 +72,11 @@ class SSORepository(private val ssoApi: SSOApi) {
     "phone_verify_code":$phoneVerifyCode,
     "email_verify_code":$emailVerifyCode
 }""".toRequestBody("application/json".toMediaTypeOrNull())
+
         return try {
-            checkResponse(ssoApi.applyForIssuing(toRequestBody))
+            checkResponse {
+                ssoApi.applyForIssuing(toRequestBody)
+            }
         } catch (e: Exception) {
             null
         }
@@ -89,7 +87,9 @@ class SSORepository(private val ssoApi: SSOApi) {
      */
     suspend fun selectApplyForStatus(address: String): Response<ApplyForStatusDTO>? {
         return try {
-            checkResponse(ssoApi.selectApplyForStatus(address))
+            checkResponse {
+                ssoApi.selectApplyForStatus(address)
+            }
         } catch (e: Exception) {
             null
         }
@@ -102,8 +102,11 @@ class SSORepository(private val ssoApi: SSOApi) {
         val toRequestBody = """{
     "address":"$address"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
+
         return try {
-            checkResponse(ssoApi.selectPublishStatus(toRequestBody))
+            checkResponse {
+                ssoApi.selectPublishStatus(toRequestBody)
+            }
         } catch (e: Exception) {
             null
         }
@@ -114,9 +117,13 @@ class SSORepository(private val ssoApi: SSOApi) {
      */
     suspend fun uploadImage(file: File): Response<String>? {
         val asRequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val createFormData = MultipartBody.Part.createFormData("photo", file.name, asRequestBody)
+        val createFormData =
+            MultipartBody.Part.createFormData("photo", file.name, asRequestBody)
+
         return try {
-            checkResponse(ssoApi.uploadImage(createFormData))
+            checkResponse {
+                ssoApi.uploadImage(createFormData)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -128,7 +135,9 @@ class SSORepository(private val ssoApi: SSOApi) {
      */
     suspend fun uploadImage2(file: File): Response<String> {
         val asRequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val createFormData = MultipartBody.Part.createFormData("photo", file.name, asRequestBody)
+        val createFormData =
+            MultipartBody.Part.createFormData("photo", file.name, asRequestBody)
+
         return checkResponse {
             ssoApi.uploadImage(createFormData).also {
                 if (it.data.isNullOrEmpty()) {
@@ -151,6 +160,7 @@ class SSORepository(private val ssoApi: SSOApi) {
     "receiver":"$phoneNumber",
     "phone_local_number":"$areaCode"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
+
         return checkResponse {
             ssoApi.sendVerifyCode(toRequestBody)
         }
@@ -164,6 +174,7 @@ class SSORepository(private val ssoApi: SSOApi) {
     "address":"$address",
     "receiver":"$emailAddress"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
+
         return checkResponse {
             ssoApi.sendVerifyCode(toRequestBody)
         }
@@ -184,6 +195,7 @@ class SSORepository(private val ssoApi: SSOApi) {
     "phone_local_number":"$areaCode",
     "code":"$verificationCode"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
+
         return checkResponse {
             ssoApi.bind(toRequestBody)
         }
@@ -202,6 +214,7 @@ class SSORepository(private val ssoApi: SSOApi) {
     "receiver":"$emailAddress",
     "code":"$verificationCode"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
+
         return checkResponse {
             ssoApi.bind(toRequestBody)
         }
