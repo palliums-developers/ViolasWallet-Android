@@ -45,10 +45,12 @@ class RequestException : RuntimeException {
             )
         }
 
-        fun responseDataException(): RequestException {
+        fun responseDataException(
+            errorMsg: String = getString(R.string.common_http_data_exception)
+        ): RequestException {
             return RequestException(
                 ERROR_CODE_DATA_EXCEPTION,
-                getString(R.string.common_http_data_exception)
+                errorMsg
             )
         }
     }

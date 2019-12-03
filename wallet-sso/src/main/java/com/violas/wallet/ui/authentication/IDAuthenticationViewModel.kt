@@ -1,18 +1,21 @@
 package com.violas.wallet.ui.authentication
 
+import android.net.Uri
+import androidx.core.net.toFile
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.getString
 import com.violas.wallet.R
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.AuthenticationIDEvent
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.local.user.IDInfo
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
-import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import com.violas.wallet.ui.selectCountryArea.isChinaMainland
 import com.violas.wallet.utils.validationIDCar18
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 
@@ -24,53 +27,66 @@ import org.greenrobot.eventbus.EventBus
  */
 class IDAuthenticationViewModel : BaseViewModel() {
 
+    private lateinit var currentAccount: AccountDO
+
+    private val ssoService by lazy {
+        DataRepository.getSSOService()
+    }
+
     private val localUserService by lazy {
         DataRepository.getLocalUserService()
     }
 
     val countryAreaVO = MutableLiveData<CountryAreaVO>()
-    val idCardFrontImage = MutableLiveData<String?>()
-    val idCardBackImage = MutableLiveData<String?>()
+    val idPhotoFront = MutableLiveData<Uri?>()
+    val idPhotoBack = MutableLiveData<Uri?>()
     val authenticationResult = MutableLiveData<Boolean>()
 
-    fun loadDefaultCountryArea() {
-        viewModelScope.launch {
-            val countryArea = getCountryArea()
-            countryAreaVO.postValue(countryArea)
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            // 加载默认的国家地区
+            /*val countryArea = getCountryArea()
+            countryAreaVO.postValue(countryArea)*/
+
+            currentAccount = AccountManager().currentAccount()
         }
     }
 
-    override suspend fun realExecute(
-        action: Int,
-        vararg params: Any,
-        onSuccess: () -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        // TODO 对接接口
+    override suspend fun realExecute(action: Int, vararg params: Any) {
+        // 上传证件正面图片
+        val idPhotoFrontFile = idPhotoFront.value!!.toFile()
+        val idPhotoFrontUrl = ssoService.uploadImage2(idPhotoFrontFile).data!!
 
-        // test code
-        delay(3000)
+        // 上传证件背面图片
+        val idPhotoBackFile = idPhotoBack.value!!.toFile()
+        val idPhotoBackUrl = ssoService.uploadImage2(idPhotoBackFile).data!!
 
+        // 绑定身份信息
+        val walletAddress = currentAccount.address
         val countryCode = countryAreaVO.value!!.countryCode
         val idName = params[0] as String
         val idNumber = params[1] as String
-        val idCardFrontImage = idCardFrontImage.value!!
-        val idCardBackImage = idCardBackImage.value!!
-
-        tipsMessage.postValue(getString(R.string.hint_id_authentication_success))
-        authenticationResult.postValue(true)
+        ssoService.bindIdNumber(
+            walletAddress = walletAddress,
+            name = idName,
+            countryCode = countryCode,
+            idNumber = idNumber,
+            idPhotoPositiveUrl = idPhotoFrontUrl,
+            idPhotoBackUrl = idPhotoBackUrl
+        )
 
         val idInfo = IDInfo(
             idName = idName,
             idNumber = idNumber,
-            idCardFrontUrl = idCardFrontImage,
-            idCardBackUrl = idCardBackImage,
+            idPhotoFrontUrl = idPhotoFrontUrl,
+            idPhotoBackUrl = idPhotoBackUrl,
             idCountryCode = countryCode
         )
         localUserService.setIDInfo(idInfo)
         EventBus.getDefault().post(AuthenticationIDEvent(idInfo))
 
-        onSuccess.invoke()
+        tipsMessage.postValue(getString(R.string.hint_id_authentication_success))
+        authenticationResult.postValue(true)
     }
 
     override fun checkParams(action: Int, vararg params: Any): Boolean {
@@ -107,7 +123,7 @@ class IDAuthenticationViewModel : BaseViewModel() {
             return false
         }
 
-        if (idCardFrontImage.value == null) {
+        if (idPhotoFront.value == null) {
             tipsMessage.postValue(
                 getString(
                     if (isChinaMainland(countryAreaVO)) {
@@ -118,7 +134,7 @@ class IDAuthenticationViewModel : BaseViewModel() {
                 )
             )
             return false
-        } else if (idCardBackImage.value == null) {
+        } else if (idPhotoBack.value == null) {
             tipsMessage.postValue(
                 getString(
                     if (isChinaMainland(countryAreaVO)) {

@@ -25,7 +25,7 @@ interface SSOApi {
     @POST("violas/sso/bind")
     suspend fun bind(@Body body: RequestBody): Response<Any>
 
-    @GET("violas/verify_code")
+    @POST("violas/verify_code")
     suspend fun sendVerifyCode(@Body body: RequestBody): Response<Any>
 
     @POST("violas/sso/user")

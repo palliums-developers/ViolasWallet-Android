@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import com.palliums.base.BaseFragment
+import com.palliums.net.LoadState
 import com.palliums.utils.getColor
 import com.violas.wallet.R
 import com.violas.wallet.repository.local.user.AccountBindingStatus
@@ -47,29 +48,50 @@ class MeFragment : BaseFragment() {
             }
         })
 
+        mViewModel.loadState.observe(this, Observer {
+            when (it.status) {
+                LoadState.Status.RUNNING -> {
+                    val idInfo = mViewModel.getIdInfo().value
+                    if (idInfo != null && !idInfo.isAuthenticatedID()) {
+                        pbIDAuthenticationLoading.visibility = View.VISIBLE
+                    }
+
+                    val phoneInfo = mViewModel.getPhoneInfo().value
+                    if (phoneInfo != null && !phoneInfo.isBoundPhone()) {
+                        pbPhoneVerificationLoading.visibility = View.VISIBLE
+                    }
+
+                    val emailInfo = mViewModel.getEmailInfo().value
+                    if (emailInfo != null && !emailInfo.isBoundEmail()) {
+                        pbEmailVerificationLoading.visibility = View.VISIBLE
+                    }
+                }
+
+                else -> {
+                    pbIDAuthenticationLoading.visibility = View.GONE
+                    pbPhoneVerificationLoading.visibility = View.GONE
+                    pbEmailVerificationLoading.visibility = View.GONE
+                }
+            }
+        })
+
         mViewModel.getIdInfo().observe(this, Observer {
             when (it.idAuthenticationStatus) {
                 IDAuthenticationStatus.UNKNOWN -> {
                     mivIDAuthentication.showEndArrow(false)
                     mivIDAuthentication.setEndDescText("")
-
-                    pbIDAuthenticationLoading.visibility = View.VISIBLE
                 }
 
                 IDAuthenticationStatus.AUTHENTICATED -> {
                     mivIDAuthentication.showEndArrow(true)
                     mivIDAuthentication.setEndDescText(R.string.desc_authenticated)
                     mivIDAuthentication.setEndDescTextColor(getColor(R.color.def_text_title))
-
-                    pbIDAuthenticationLoading.visibility = View.GONE
                 }
 
                 else -> {
                     mivIDAuthentication.showEndArrow(true)
                     mivIDAuthentication.setEndDescText(R.string.desc_unauthorized)
                     mivIDAuthentication.setEndDescTextColor(getColor(R.color.def_text_warn))
-
-                    pbIDAuthenticationLoading.visibility = View.GONE
                 }
             }
         })
@@ -79,8 +101,6 @@ class MeFragment : BaseFragment() {
                 AccountBindingStatus.UNKNOWN -> {
                     mivPhoneVerification.showEndArrow(false)
                     mivPhoneVerification.setEndDescText("")
-
-                    pbPhoneVerificationLoading.visibility = View.VISIBLE
                 }
 
                 AccountBindingStatus.BOUND -> {
@@ -89,16 +109,12 @@ class MeFragment : BaseFragment() {
                     mivPhoneVerification.setEndDescTextColor(getColor(R.color.def_text_title))
                     mivPhoneVerification.setOnClickListener(null)
                     mivPhoneVerification.setBackgroundColor(getColor(R.color.white))
-
-                    pbPhoneVerificationLoading.visibility = View.GONE
                 }
 
                 else -> {
                     mivPhoneVerification.showEndArrow(true)
                     mivPhoneVerification.setEndDescText(R.string.desc_unbound)
                     mivPhoneVerification.setEndDescTextColor(getColor(R.color.def_text_warn))
-
-                    pbPhoneVerificationLoading.visibility = View.GONE
                 }
             }
         })
@@ -108,8 +124,6 @@ class MeFragment : BaseFragment() {
                 AccountBindingStatus.UNKNOWN -> {
                     mivEmailVerification.showEndArrow(false)
                     mivEmailVerification.setEndDescText("")
-
-                    pbEmailVerificationLoading.visibility = View.VISIBLE
                 }
 
                 AccountBindingStatus.BOUND -> {
@@ -118,16 +132,12 @@ class MeFragment : BaseFragment() {
                     mivEmailVerification.setEndDescTextColor(getColor(R.color.def_text_title))
                     mivEmailVerification.setOnClickListener(null)
                     mivEmailVerification.setBackgroundColor(getColor(R.color.white))
-
-                    pbEmailVerificationLoading.visibility = View.GONE
                 }
 
                 else -> {
                     mivEmailVerification.showEndArrow(true)
                     mivEmailVerification.setEndDescText(R.string.desc_unbound)
                     mivEmailVerification.setEndDescTextColor(getColor(R.color.def_text_warn))
-
-                    pbEmailVerificationLoading.visibility = View.GONE
                 }
             }
         })

@@ -53,7 +53,7 @@ class IDInformationActivity : BaseAppActivity() {
                 )
 
                 GlideApp.with(this@IDInformationActivity)
-                    .load(idInfo.idCardFrontUrl)
+                    .load(idInfo.idPhotoFrontUrl)
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .placeholder(R.drawable.bg_id_card_front)
@@ -61,7 +61,7 @@ class IDInformationActivity : BaseAppActivity() {
                     .into(ivIDCardFront)
 
                 GlideApp.with(this@IDInformationActivity)
-                    .load(idInfo.idCardBackUrl)
+                    .load(idInfo.idPhotoBackUrl)
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .placeholder(R.drawable.bg_id_card_back)

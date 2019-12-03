@@ -14,5 +14,6 @@ data class UserInfoDTO(
     val id_photo_positive_url: String,
     val name: String,
     val phone_number: String,
-    val wallet_address: String
+    val wallet_address: String,
+    val phone_local_number: String
 )

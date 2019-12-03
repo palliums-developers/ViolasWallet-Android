@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.net.LoadState
 import com.palliums.net.RequestException
 import com.palliums.utils.isNetworkConnected
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -47,22 +48,16 @@ abstract class BaseViewModel : ViewModel() {
             loadState.postValue(LoadState.RUNNING)
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                realExecute(action, *params,
-                    onSuccess = {
-                        synchronized(lock) {
-                            loadState.postValue(LoadState.SUCCESS)
-                        }
-                    },
-                    onFailure = {
-                        synchronized(lock) {
-                            retry = { execute(*params, action = action, needCheckParam = true) }
 
-                            loadState.postValue(LoadState.failure(it))
-                            tipsMessage.postValue(it.message)
-                        }
-                    })
+                realExecute(action, *params)
+
+                synchronized(lock) {
+                    retry = null
+
+                    loadState.postValue(LoadState.SUCCESS)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
 
@@ -110,10 +105,6 @@ abstract class BaseViewModel : ViewModel() {
      * 真实执行
      */
     @WorkerThread
-    protected abstract suspend fun realExecute(
-        action: Int,
-        vararg params: Any,
-        onSuccess: () -> Unit,
-        onFailure: (Throwable) -> Unit
-    )
+    @Throws(Throwable::class)
+    protected abstract suspend fun realExecute(action: Int, vararg params: Any)
 }

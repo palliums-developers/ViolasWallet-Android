@@ -13,17 +13,17 @@ suspend inline fun <T, R> T.checkResponse(
 ): R {
     try {
         val func1 = func()
-        if (func1 is ApiResponse) {
-            if (func1.getErrorCode() == func1.getSuccessCode()) {
-                return func1
-            } else {
-                throw RequestException(func1)
-            }
-        } else {
+        if (func1 !is ApiResponse) {
             throw RequestException.responseDataException()
         }
+
+        if (func1.getErrorCode() != func1.getSuccessCode()) {
+            throw RequestException(func1)
+        }
+
+        return func1
     } catch (e: Throwable) {
-        throw RequestException(e)
+        throw if (e is RequestException) e else RequestException(e)
     }
 }
 

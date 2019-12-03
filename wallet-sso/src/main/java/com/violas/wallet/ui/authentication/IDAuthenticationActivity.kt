@@ -68,7 +68,7 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
 
         iclIDCardFront.setOnViewClickListener(object : IDCardLayout.OnViewClickListener {
             override fun onClickDelete() {
-                mViewModel.idCardFrontImage.value = null
+                mViewModel.idPhotoFront.value = null
             }
 
             override fun onClickPhotograph() {
@@ -77,7 +77,7 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
         })
         iclIDCardBack.setOnViewClickListener(object : IDCardLayout.OnViewClickListener {
             override fun onClickDelete() {
-                mViewModel.idCardBackImage.value = null
+                mViewModel.idPhotoBack.value = null
             }
 
             override fun onClickPhotograph() {
@@ -102,14 +102,14 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
                 iclIDCardBack.setPhotographDesc(R.string.desc_photograph_id_card_back_other)
             }
         })
-        mViewModel.idCardFrontImage.observe(this, Observer {
+        mViewModel.idPhotoFront.observe(this, Observer {
             if (it == null) {
                 iclIDCardFront.clearIDCardImage()
             } else {
                 iclIDCardFront.setIDCardImage(it)
             }
         })
-        mViewModel.idCardBackImage.observe(this, Observer {
+        mViewModel.idPhotoBack.observe(this, Observer {
             if (it == null) {
                 iclIDCardBack.clearIDCardImage()
             } else {
@@ -124,8 +124,6 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
                 }, 2000)
             }
         })
-
-        mViewModel.loadDefaultCountryArea()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -177,9 +175,9 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
                 if (!uriList.isNullOrEmpty()) {
                     uriList[0].let {
                         if (front) {
-                            mViewModel.idCardFrontImage.value = it.toString()
+                            mViewModel.idPhotoFront.value = it
                         } else {
-                            mViewModel.idCardBackImage.value = it.toString()
+                            mViewModel.idPhotoBack.value = it
                         }
                     }
                 }
