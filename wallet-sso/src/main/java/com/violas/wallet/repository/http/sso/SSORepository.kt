@@ -40,7 +40,7 @@ class SSORepository(private val ssoApi: SSOApi) {
      * 获取用户基本信息，包括绑定状态
      */
     suspend fun loadUserInfo(address: String): Response<UserInfoDTO> {
-        return checkResponse {
+        return checkResponse(2005) {
             ssoApi.loadUserInfo(address)
         }
     }
@@ -87,7 +87,7 @@ class SSORepository(private val ssoApi: SSOApi) {
      */
     suspend fun selectApplyForStatus(address: String): Response<ApplyForStatusDTO>? {
         return try {
-            checkResponse {
+            checkResponse(2005) {
                 ssoApi.selectApplyForStatus(address)
             }
         } catch (e: Exception) {
