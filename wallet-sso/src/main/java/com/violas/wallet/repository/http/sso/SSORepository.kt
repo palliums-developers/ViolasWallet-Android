@@ -98,14 +98,14 @@ class SSORepository(private val ssoApi: SSOApi) {
     /**
      * 更改Publish状态
      */
-    suspend fun selectPublishStatus(address: String): Response<Any>? {
+    suspend fun changePublishStatus(address: String): Response<Any>? {
         val toRequestBody = """{
     "address":"$address"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
         return try {
             checkResponse {
-                ssoApi.selectPublishStatus(toRequestBody)
+                ssoApi.changePublishStatus(toRequestBody)
             }
         } catch (e: Exception) {
             null
