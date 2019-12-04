@@ -51,10 +51,9 @@
 
     <EditText
         android:id="@+id/etVerificationCode"
-        style="@style/EditText"
+        style="@style/EditText.Code"
         android:hint="@string/hint_enter_verification_code"
         android:imeOptions="actionDone"
-        android:inputType="number"
         android:paddingEnd="@dimen/dp_200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

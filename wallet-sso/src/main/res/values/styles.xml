@@ -95,4 +95,11 @@
         <item name="layout_constraintEnd_toEndOf">parent</item>
     </style>
 
+    <style name="EditText.Code">
+        <item name="android:inputType">number</item>
+        <item name="android:digits">
+            "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        </item>
+    </style>
+
 </resources>

@@ -69,7 +69,20 @@ class EmailVerificationActivity : BaseViewModelActivity() {
             }
         })
 
-        showSoftInput(etEmailAddress)
+        etEmailAddress.requestFocus()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (etEmailAddress.hasFocus()
+            && etEmailAddress.text.toString().trim().isEmpty()
+        ) {
+            showSoftInput(etEmailAddress)
+        } else if (etVerificationCode.hasFocus()
+            && etVerificationCode.text.toString().trim().isEmpty()
+        ) {
+            showSoftInput(etVerificationCode)
+        }
     }
 
     override fun onPause() {
@@ -91,16 +104,19 @@ class EmailVerificationActivity : BaseViewModelActivity() {
                         action = ACTION_GET_VERIFICATION_CODE
                     )
                 ) {
-                    tvGetVerificationCode.requestFocus()
+                    etVerificationCode.requestFocus()
                 }
             }
 
             R.id.btnBind -> {
-                mViewModel.execute(
-                    etEmailAddress.text.toString().trim(),
-                    etVerificationCode.text.toString().trim(),
-                    action = ACTION_BING_EMAIL
-                )
+                if (mViewModel.execute(
+                        etEmailAddress.text.toString().trim(),
+                        etVerificationCode.text.toString().trim(),
+                        action = ACTION_BING_EMAIL
+                    )
+                ) {
+                    hideSoftInput()
+                }
             }
         }
     }

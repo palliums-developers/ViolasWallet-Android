@@ -82,7 +82,20 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
             tvAreaCode.text = "+${it.areaCode}"
         })
 
-        showSoftInput(etPhoneNumber)
+        etPhoneNumber.requestFocus()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (etPhoneNumber.hasFocus()
+            && etPhoneNumber.text.toString().trim().isEmpty()
+        ) {
+            showSoftInput(etPhoneNumber)
+        } else if (etVerificationCode.hasFocus()
+            && etVerificationCode.text.toString().trim().isEmpty()
+        ) {
+            showSoftInput(etVerificationCode)
+        }
     }
 
     override fun onPause() {
@@ -112,7 +125,6 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
             R.id.tvAreaCode,
             R.id.ivSelectAreaCode
             -> {
-                hideSoftInput()
                 SelectCountryAreaActivity.start(
                     this, REQUEST_CODE_SELECT_COUNTRY_AREA, true
                 )
@@ -129,11 +141,14 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
             }
 
             R.id.btnBind -> {
-                mViewModel.execute(
-                    etPhoneNumber.text.toString().trim(),
-                    etVerificationCode.text.toString().trim(),
-                    action = ACTION_BING_PHONE_NUMBER
-                )
+                if (mViewModel.execute(
+                        etPhoneNumber.text.toString().trim(),
+                        etVerificationCode.text.toString().trim(),
+                        action = ACTION_BING_PHONE_NUMBER
+                    )
+                ) {
+                    hideSoftInput()
+                }
             }
         }
     }

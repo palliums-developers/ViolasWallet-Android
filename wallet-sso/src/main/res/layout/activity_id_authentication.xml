@@ -60,11 +60,12 @@
             app:layout_constraintTop_toTopOf="@id/tvCountryArea" />
 
         <EditText
-            android:id="@+id/etName"
+            android:id="@+id/etIDName"
             style="@style/EditText"
             android:gravity="end|center_vertical"
             android:hint="@string/hint_enter_name"
             android:imeOptions="actionNext"
+            android:inputType="textPersonName"
             android:paddingStart="@dimen/dp_120"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -77,20 +78,20 @@
             android:text="@string/label_name"
             android:textColor="@color/def_text_title"
             android:textSize="@dimen/sp_16"
-            app:layout_constraintBottom_toBottomOf="@id/etName"
-            app:layout_constraintStart_toStartOf="@id/etName"
-            app:layout_constraintTop_toTopOf="@id/etName" />
+            app:layout_constraintBottom_toBottomOf="@id/etIDName"
+            app:layout_constraintStart_toStartOf="@id/etIDName"
+            app:layout_constraintTop_toTopOf="@id/etIDName" />
 
         <EditText
             android:id="@+id/etIdNumber"
-            style="@style/EditText"
+            style="@style/EditText.Code"
             android:gravity="end|center_vertical"
             android:hint="@string/hint_enter_id_number_other"
             android:imeOptions="actionDone"
             android:paddingStart="@dimen/dp_120"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etName"
+            app:layout_constraintTop_toBottomOf="@id/etIDName"
             tools:text="12345678901234567890123456789012345678901234567890" />
 
         <TextView

@@ -126,6 +126,24 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (etIDName.hasFocus()
+            && etIDName.text.toString().trim().isEmpty()
+        ) {
+            showSoftInput(etIDName)
+        } else if (etIdNumber.hasFocus()
+            && etIdNumber.text.toString().trim().isEmpty()
+        ) {
+            showSoftInput(etIdNumber)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        hideSoftInput()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
@@ -133,6 +151,10 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
                 val countryAreaVO =
                     data?.getParcelableExtra<CountryAreaVO>(EXTRA_KEY_COUNTRY_AREA)
                 countryAreaVO?.let { mViewModel.countryAreaVO.value = it }
+
+                if (!etIDName.hasFocus() && !etIdNumber.hasFocus()) {
+                    etIDName.requestFocus()
+                }
             }
         }
     }
@@ -147,12 +169,16 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
             }
 
             R.id.btnSubmit -> {
-                mViewModel.execute(etName.text.toString().trim(), etIdNumber.text.toString().trim())
+                mViewModel.execute(
+                    etIDName.text.toString().trim(),
+                    etIdNumber.text.toString().trim()
+                )
             }
         }
     }
 
     private fun showTakePhotoPopup(front: Boolean) {
+        hideSoftInput()
         XPopup.Builder(this)
             .hasStatusBarShadow(true)
             .asCustom(TakePhotoPopup(this, {
