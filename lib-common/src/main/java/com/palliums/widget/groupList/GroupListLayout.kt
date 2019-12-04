@@ -10,12 +10,10 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.R
 import com.palliums.utils.DensityUtility
-import com.palliums.utils.getColor
 import com.palliums.utils.isMainThread
 import java.util.*
 
@@ -69,9 +67,9 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         }
         slideBar.setPadding(
             DensityUtility.dp2px(context, 10),
-            slideBar.top,
             DensityUtility.dp2px(context, 10),
-            slideBar.bottom
+            DensityUtility.dp2px(context, 5),
+            DensityUtility.dp2px(context, 10)
         )
         addView(slideBar)
 
@@ -161,19 +159,25 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                     }
             }
 
-            groupChanged(itemData)
+            groupChanged(itemData, true)
         }
     }
 
     /**
      * 当前组发生改变
      */
-    private fun groupChanged(itemData: ItemData?) {
+    private fun groupChanged(itemData: ItemData?, fromRecyclerViewScroll: Boolean) {
         if (lastItemGroup != itemData) {
             lastItemGroup = itemData
             groupSelectedListener?.let { it.onSelected(itemData) }
 
-            slideBar.setCurrentKey(lastItemGroup!!.getGroupName())
+            if (fromRecyclerViewScroll) {
+                slideBar.setCurrentKey(lastItemGroup!!.getGroupName())
+            } else {
+                postDelayed({
+                    slideBar.setCurrentKey(lastItemGroup!!.getGroupName())
+                }, 200)
+            }
         }
     }
 
@@ -225,9 +229,14 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
             refreshAdapter()
             initFloatingItem()
 
-            if (firstAddData && showFloatGroup && groupData.getCount() > 0) {
-                firstAddData = false
-                groupChanged(groupData.getItemData(0))
+            if (groupData.getCount() > 0) {
+                groupChanged(groupData.getItemData(0), false)
+
+                if (firstAddData) {
+                    firstAddData = false
+                } else {
+                    selectGroup(keys[0])
+                }
             }
         } else {
             post { setData(data) }

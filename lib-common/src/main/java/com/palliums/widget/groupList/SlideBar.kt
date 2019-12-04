@@ -42,7 +42,6 @@ class SlideBar : View {
     private var mIsAddWindow = false
     private var mThisWindowY = 0 //当前View所在的Window的Y点
 
-
     private var mDefaultTypeface = Typeface.create(
         Typeface.DEFAULT,
         Typeface.NORMAL
@@ -192,18 +191,18 @@ class SlideBar : View {
         }
 
         setMeasuredDimension(
-            measureWidth + paddingLeft + paddingRight,
-            measureHeight + paddingBottom + paddingTop
+            measureWidth + paddingStart + paddingEnd,
+            measureHeight + paddingTop + paddingBottom
         )
     }
 
     override fun onDraw(canvas: Canvas) {
         val rect = Rect()
-        var startY = 0
+        var startY = paddingTop
         for (i in mKeys.indices) {
             rect.left = paddingLeft
             rect.top = startY
-            rect.right = width
+            rect.right = paddingLeft + mKeyRect.width()
             rect.bottom = startY + mKeyRect.height()
             //当前点击的字符
             if (rect == mCurrent) {
@@ -234,6 +233,8 @@ class SlideBar : View {
                 var index = (y / mKeyRect.height()).toInt()
                 if (index >= mKeys.size) {
                     index = mKeys.size - 1
+                } else if (index < 0) {
+                    index = 0
                 }
                 showKey(index, false)
             }
@@ -249,7 +250,7 @@ class SlideBar : View {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         if (mIsAddWindow) {
-            mWindowManager.removeView(mKeyView)
+            mWindowManager.removeViewImmediate(mKeyView)
             mIsAddWindow = false
         }
     }
@@ -258,9 +259,9 @@ class SlideBar : View {
         if (index >= 0 && index < mKeys.size) {
             val rect = Rect(
                 paddingLeft,
-                index * mKeyRect.height(),
-                measuredWidth,
-                (index + 1) * mKeyRect.height()
+                index * mKeyRect.height() + paddingTop,
+                paddingLeft + mKeyRect.width(),
+                (index + 1) * mKeyRect.height() + paddingTop
             )
             if (rect == mCurrent) {
                 return
@@ -321,7 +322,7 @@ class SlideBar : View {
                         mKeyView.visibility = GONE
                     }
                 })
-                it.duration = 500
+                it.duration = 650
             }
         valueAnimator.start()
 
