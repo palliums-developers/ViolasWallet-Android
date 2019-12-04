@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import com.palliums.utils.CustomMainScope
 import com.palliums.utils.isFastMultiClick
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
 import me.yokeyword.fragmentation.SupportFragment
 
 /**
@@ -18,7 +18,7 @@ import me.yokeyword.fragmentation.SupportFragment
  * desc:
  */
 abstract class BaseFragment : SupportFragment(), View.OnClickListener,
-    CoroutineScope by MainScope() {
+    CoroutineScope by CustomMainScope() {
 
     override fun onCreateView(
         inflater: LayoutInflater,

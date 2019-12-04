@@ -1,6 +1,10 @@
 package com.palliums.utils
 
 import android.os.Build
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import java.util.*
 
 /**
@@ -33,4 +37,11 @@ fun getUniquePseudoID(): String {
     }
 
     return UUID(szDevIDShort.toString().hashCode().toLong(), serial.hashCode().toLong()).toString()
+}
+
+fun CustomMainScope(): CoroutineScope =
+    CoroutineScope(SupervisorJob() + Dispatchers.Main + coroutineExceptionHandler())
+
+fun coroutineExceptionHandler() = CoroutineExceptionHandler { _, exception ->
+    exception.printStackTrace()
 }

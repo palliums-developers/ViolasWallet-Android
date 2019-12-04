@@ -6,19 +6,23 @@ import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.palliums.utils.CustomMainScope
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.isFastMultiClick
 import com.palliums.widget.loading.LoadingDialog
 import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.layout_title_bar.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import me.yokeyword.fragmentation.SupportActivity
 import me.yokeyword.fragmentation.SupportHelper
 import qiu.niorgai.StatusBarCompat
 
 abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewController,
-    CoroutineScope by MainScope() {
+    CoroutineScope by CustomMainScope() {
 
     private var mLoadingDialog: LoadingDialog? = null
 

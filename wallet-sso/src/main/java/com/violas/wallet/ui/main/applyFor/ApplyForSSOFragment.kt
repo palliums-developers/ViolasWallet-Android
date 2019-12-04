@@ -2,6 +2,7 @@ package com.violas.wallet.ui.main.applyFor
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import com.palliums.base.BaseFragment
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
@@ -48,34 +49,27 @@ class ApplyForSSOFragment : BaseFragment() {
         }
         mUserViewModel.init()
 
-        childFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerView, ApplySubmitFragment())
-            .commit()
-
-//        activity?.let {
-//            mUserViewModel.getAllReady().observe(it, Observer { ready ->
-//                if (ready) {
-//                    childFragmentManager.beginTransaction()
-//                        .replace(R.id.fragmentContainerView, ApplySubmitFragment())
-//                        .commit()
-//                }else{
-//                    childFragmentManager.beginTransaction()
-//                        .replace(R.id.fragmentContainerView, CheckVerifyFragment())
-//                        .commit()
-//                }
-//            })
-//        }
+        activity?.let {
+            mUserViewModel.getAllReadyLiveData().observe(it, Observer { ready ->
+                if (ready) {
+                    childFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainerView, ApplySubmitFragment())
+                        .commit()
+                } else {
+                    childFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainerView, CheckVerifyFragment())
+                        .commit()
+                }
+            })
+        }
     }
 
     @Subscribe
     fun onRefreshPage(event: RefreshPageEvent? = null) {
         launch(Dispatchers.IO) {
             mAccount?.let {
-                // todo
-//                if (mApplyStatus == it.xxx) {
-                    val applyStatus = mApplyManager.getApplyStatus(it.address)
-                    refreshFragment(applyStatus?.data)
-//                }
+                val applyStatus = mApplyManager.getApplyStatus(it.address)
+                refreshFragment(applyStatus?.data)
             }
         }
     }
@@ -83,12 +77,21 @@ class ApplyForSSOFragment : BaseFragment() {
     private suspend fun refreshFragment(status: ApplyForStatusDTO?) {
         mAccount?.let {
             status?.apply {
-                // todo
-                mApplyStatus = 0
+                if (mApplyStatus == status.approval_status) {
+                    return
+                }
+                mApplyStatus = status.approval_status
                 withContext(Dispatchers.Main) {
+                    val fragment = when (status.approval_status) {
+                        0, 1, 2, 3, 4 -> {
+                            ApplyStatusFragment.getInstance(status.approval_status)
+                        }
+                        else -> {
+                            CheckVerifyFragment()
+                        }
+                    }
                     childFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainerView, ApplySubmitFragment())
-                        // .replace(R.id.fragmentContainerView,ApplyStatusFragment())
+                        .replace(R.id.fragmentContainerView, fragment)
                         .commit()
                 }
             }
