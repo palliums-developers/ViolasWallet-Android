@@ -56,7 +56,7 @@ class PhoneVerificationViewModel : BaseViewModel() {
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        val areaCode = "+${countryAreaVO.value!!.areaCode}"
+        val areaCode = "${countryAreaVO.value!!.areaCode}"
         val phoneNumber = params[0] as String
         val walletAddress = currentAccount.address
 

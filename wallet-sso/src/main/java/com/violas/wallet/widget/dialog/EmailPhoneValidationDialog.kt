@@ -13,10 +13,7 @@ import com.violas.wallet.R
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.utils.CountDownTimerUtils
 import kotlinx.android.synthetic.main.dialog_email_phone_validation.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class EmailPhoneValidationDialog : DialogFragment(), CoroutineScope by CustomMainScope() {
     private lateinit var mRootView: View
@@ -100,7 +97,9 @@ class EmailPhoneValidationDialog : DialogFragment(), CoroutineScope by CustomMai
                     phoneInfo.phoneNumber,
                     phoneInfo.areaCode
                 )
-                mPhoneCountDownTimerUtils.start()
+                withContext(Dispatchers.Main) {
+                    mPhoneCountDownTimerUtils.start()
+                }
             }
         }
         mRootView.tvEmailGetVerificationCode.setOnClickListener {
@@ -109,7 +108,9 @@ class EmailPhoneValidationDialog : DialogFragment(), CoroutineScope by CustomMai
                     currentAccount.address,
                     emailInfo.emailAddress
                 )
-                mEmailCountDownTimerUtils.start()
+                withContext(Dispatchers.Main){
+                    mEmailCountDownTimerUtils.start()
+                }
             }
         }
         val phoneIndexOf = if (phoneInfo.phoneNumber.length > 6) {
@@ -130,7 +131,7 @@ class EmailPhoneValidationDialog : DialogFragment(), CoroutineScope by CustomMai
         } else {
             emailIndexOf
         }
-        mRootView.tvPhoneHint.text =
+        mRootView.tvEmailHint.text =
             emailInfo.emailAddress.replaceRange(emailStart, emailIndexOf, "*")
         return mRootView
     }
