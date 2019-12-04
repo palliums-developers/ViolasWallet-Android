@@ -309,5 +309,10 @@
     <string name="hint_security_verification">安全验证</string>
     <string name="hint_email_junk_mailbox">若未收到邮箱，请检查邮箱垃圾箱</string>
     <string name="hint_net_work_error">网络异常</string>
+    <string name="hint_mint_condition">铸币状态</string>
+    <string name="hint_mint_wait">等待审批</string>
+    <string name="hint_mint_through">审批通过</string>
+    <string name="hint_mint_error">审批失败</string>
+    <string name="hint_mint_wait_publish">等待铸币</string>
 
 </resources>

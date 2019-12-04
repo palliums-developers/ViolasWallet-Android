@@ -5,7 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class ApplyForStatusDTO(
     val amount: Int,
     val approval_status: Int,
-    val token_name: String
+    val token_name: String,
+    val token_address: String?
 )
 
 data class UserInfoDTO(

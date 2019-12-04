@@ -8,12 +8,17 @@ import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import com.palliums.utils.CustomMainScope
 import com.violas.wallet.R
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.utils.CountDownTimerUtils
-import kotlinx.android.synthetic.main.dialog_email_phone_validation.*
 import kotlinx.android.synthetic.main.dialog_email_phone_validation.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
-class EmailPhoneValidationDialog : DialogFragment() {
+class EmailPhoneValidationDialog : DialogFragment(), CoroutineScope by CustomMainScope() {
     private lateinit var mRootView: View
 
     private var confirmCallback: ((String, String, DialogFragment) -> Unit)? = null
@@ -23,6 +28,26 @@ class EmailPhoneValidationDialog : DialogFragment() {
     }
     private val mEmailCountDownTimerUtils by lazy {
         CountDownTimerUtils(mRootView.tvEmailGetVerificationCode, 1000 * 60 * 3, 1000)
+    }
+
+    private val localUserService by lazy {
+        DataRepository.getLocalUserService()
+    }
+
+    private val phoneInfo by lazy {
+        localUserService.getPhoneInfo()
+    }
+
+    private val emailInfo by lazy {
+        localUserService.getEmailInfo()
+    }
+
+    private val currentAccount by lazy {
+        com.violas.wallet.biz.AccountManager().currentAccount()
+    }
+
+    private val ssoService by lazy {
+        DataRepository.getSSOService()
     }
 
     override fun onCreateView(
@@ -69,11 +94,44 @@ class EmailPhoneValidationDialog : DialogFragment() {
             cancelCallback?.invoke()
         }
         mRootView.tvPhoneGetVerificationCode.setOnClickListener {
-            mPhoneCountDownTimerUtils.start()
+            launch(Dispatchers.IO) {
+                ssoService.sendPhoneVerifyCode(
+                    currentAccount.address,
+                    phoneInfo.phoneNumber,
+                    phoneInfo.areaCode
+                )
+                mPhoneCountDownTimerUtils.start()
+            }
         }
         mRootView.tvEmailGetVerificationCode.setOnClickListener {
-            mEmailCountDownTimerUtils.start()
+            launch(Dispatchers.IO) {
+                ssoService.sendEmailVerifyCode(
+                    currentAccount.address,
+                    emailInfo.emailAddress
+                )
+                mEmailCountDownTimerUtils.start()
+            }
         }
+        val phoneIndexOf = if (phoneInfo.phoneNumber.length > 6) {
+            6
+        } else {
+            phoneInfo.phoneNumber.length
+        }
+        val phoneStart = if (phoneIndexOf >= 3) {
+            3
+        } else {
+            phoneIndexOf
+        }
+        mRootView.tvPhoneHint.text =
+            phoneInfo.phoneNumber.replaceRange(phoneStart, phoneIndexOf, "*")
+        val emailIndexOf = emailInfo.emailAddress.indexOf("@")
+        val emailStart = if (emailIndexOf >= 3) {
+            3
+        } else {
+            emailIndexOf
+        }
+        mRootView.tvPhoneHint.text =
+            emailInfo.emailAddress.replaceRange(emailStart, emailIndexOf, "*")
         return mRootView
     }
 
@@ -90,6 +148,7 @@ class EmailPhoneValidationDialog : DialogFragment() {
     override fun onDestroy() {
         mPhoneCountDownTimerUtils.cancel()
         mEmailCountDownTimerUtils.cancel()
+        cancel()
         super.onDestroy()
     }
 

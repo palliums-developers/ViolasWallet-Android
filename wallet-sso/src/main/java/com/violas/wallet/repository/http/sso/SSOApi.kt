@@ -16,7 +16,7 @@ interface SSOApi {
     suspend fun selectApplyForStatus(@Query("address") address: String): Response<ApplyForStatusDTO>
 
     @PUT("/1.0/violas/sso/token")
-    suspend fun selectPublishStatus(@Body body: RequestBody): Response<Any>
+    suspend fun changePublishStatus(@Body body: RequestBody): Response<Any>
 
     @Multipart
     @POST("/1.0/violas/photo")

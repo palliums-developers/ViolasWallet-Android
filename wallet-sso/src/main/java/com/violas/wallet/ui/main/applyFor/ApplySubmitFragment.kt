@@ -102,15 +102,15 @@ class ApplySubmitFragment : BaseFragment() {
                 showToast(getString(R.string.hint_fill_token_name))
                 return@setOnClickListener
             }
-            if (reservesImage?.isEmpty() == true) {
+            if (reservesImage == null || reservesImage?.isEmpty() == true) {
                 showToast(getString(R.string.hint_upload_reserves))
                 return@setOnClickListener
             }
-            if (accountPositiveImage?.isEmpty() == true) {
+            if (accountPositiveImage == null || accountPositiveImage?.isEmpty() == true) {
                 showToast(getString(R.string.hint_pay_account_positive_image))
                 return@setOnClickListener
             }
-            if (accountReverseImage?.isEmpty() == true) {
+            if (accountReverseImage == null || accountReverseImage?.isEmpty() == true) {
                 showToast(getString(R.string.hint_pay_account_reverse_image))
                 return@setOnClickListener
             }

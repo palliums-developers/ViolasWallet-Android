@@ -9,6 +9,7 @@
     tools:context="com.violas.wallet.ui.applyForMint.ApplyForMintActivity">
 
     <com.violas.wallet.widget.ApplySubmitItemView
+        android:id="@+id/itemWalletAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -18,6 +19,7 @@
         tools:item_content="dfjajkdjkfjklajfuwhidoefjc" />
 
     <com.violas.wallet.widget.ApplySubmitItemView
+        android:id="@+id/itemTokenName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -27,6 +29,7 @@
         tools:item_content="dfjajkdjkfjklajfuwhidoefjc" />
 
     <com.violas.wallet.widget.ApplySubmitItemView
+        android:id="@+id/itemTokenAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -36,6 +39,7 @@
         tools:item_content="dfjajkdjkfjklajfuwhidoefjc" />
 
     <Button
+        android:id="@+id/btnMint"
         style="@style/BaseButtonPrimary"
         android:layout_width="238dp"
         android:layout_height="40dp"

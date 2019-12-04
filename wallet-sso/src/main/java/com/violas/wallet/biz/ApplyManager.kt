@@ -16,6 +16,8 @@ class ApplyManager {
 
     suspend fun uploadImage(file: File) = mSSOService.uploadImage(file)
 
+    suspend fun changePublishStatus(address: String) = mSSOService.changePublishStatus(address)
+
     suspend fun applyForIssuing(
         walletAddress: String,
         tokenType: String,
