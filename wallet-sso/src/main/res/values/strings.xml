@@ -316,5 +316,6 @@
     <string name="hint_mint_wait_publish">等待铸币</string>
     <string name="hint_emila_phone_verification_error">邮箱或手机验证码验证失败</string>
     <string name="hint_mint_condition_success">申请铸币成功</string>
+    <string name="hint_mint_condition_error">申请铸币失败</string>
 
 </resources>

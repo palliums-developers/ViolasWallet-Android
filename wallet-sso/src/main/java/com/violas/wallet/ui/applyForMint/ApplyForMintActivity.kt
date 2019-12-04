@@ -66,14 +66,16 @@ class ApplyForMintActivity
         }
     }
 
-    private fun submitMint(assertToken: AssertToken) = launch(Dispatchers.IO) {
+    private fun submitMint(assertToken: AssertToken) {
         publish(assertToken) {
             launch(Dispatchers.IO) {
                 val changePublishStatus = mApplyManager.changePublishStatus(mAccount.address)
-                if (changePublishStatus != null && changePublishStatus.errorCode == 2000) {
-                    EventBus.getDefault().post(RefreshPageEvent())
-                    EventBus.getDefault().post(SwitchAccountEvent())
-                    finish()
+                withContext(Dispatchers.Main) {
+                    if (changePublishStatus != null && changePublishStatus.errorCode == 2000) {
+                        EventBus.getDefault().post(RefreshPageEvent())
+                        EventBus.getDefault().post(SwitchAccountEvent())
+                        finish()
+                    }
                 }
             }
         }
@@ -101,7 +103,7 @@ class ApplyForMintActivity
                         ) {
                             dismissProgress()
                             if (!it) {
-                                showToast(getString(R.string.hint_assert_open_error))
+                                showToast(getString(R.string.hint_mint_condition_error))
                             } else {
                                 mTokenManager.insert(true, assertToken)
                                 success.invoke()
