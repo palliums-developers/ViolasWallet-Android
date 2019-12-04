@@ -1,10 +1,10 @@
 package com.violas.wallet.ui.authentication
 
 import android.net.Uri
-import androidx.core.net.toFile
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
+import com.palliums.utils.getFilePathByUri
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
@@ -18,6 +18,9 @@ import com.violas.wallet.utils.validationIDCar18
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
 
 /**
  * Created by elephant on 2019-11-28 15:20.
@@ -54,11 +57,31 @@ class IDAuthenticationViewModel : BaseViewModel() {
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
         // 上传证件正面图片
-        val idPhotoFrontFile = idPhotoFront.value!!.toFile()
+        val idPhotoFrontFilePath = getFilePathByUri(idPhotoFront.value!!)
+        if (idPhotoFrontFilePath.isNullOrEmpty()) {
+            throw FileNotFoundException(getString(R.string.hint_id_photo_front_not_found))
+        }
+        val idPhotoFrontFile = try {
+            File(idPhotoFrontFilePath)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            throw IOException(getString(R.string.hint_id_photo_front_unavailable))
+        }
         val idPhotoFrontUrl = ssoService.uploadImage2(idPhotoFrontFile).data!!
 
         // 上传证件背面图片
-        val idPhotoBackFile = idPhotoBack.value!!.toFile()
+        val idPhotoBackFilePath = getFilePathByUri(idPhotoBack.value!!)
+        if (idPhotoBackFilePath.isNullOrEmpty()) {
+            throw FileNotFoundException(getString(R.string.hint_id_photo_back_not_found))
+        }
+        val idPhotoBackFile = try {
+            File(idPhotoBackFilePath)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            throw IOException(getString(R.string.hint_id_photo_back_unavailable))
+        }
         val idPhotoBackUrl = ssoService.uploadImage2(idPhotoBackFile).data!!
 
         // 绑定身份信息
