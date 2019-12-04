@@ -17,8 +17,8 @@ import retrofit2.http.Query
 interface ViolasApi {
 
     companion object {
-        const val BASE_URL_MAIN_NET = "http://52.27.228.84:4000/1.0/"
-        const val BASE_URL_TEST_NET = "http://52.27.228.84:4000/1.0/"
+        const val BASE_URL_MAIN_NET = "http://52.27.228.84:4000"
+        const val BASE_URL_TEST_NET = "http://52.27.228.84:4000"
     }
 
     /**
@@ -27,31 +27,31 @@ interface ViolasApi {
      * @param pageSize 分页大小
      * @param offset 偏移量，从0开始
      */
-    @GET("violas/transaction")
+    @GET("/1.0/violas/transaction")
     suspend fun getTransactionRecord(
         @Query("addr") address: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
     ): ListResponse<TransactionRecordDTO>
 
-    @GET("violas/balance")
+    @GET("/1.0/violas/balance")
     fun getBalance(
         @Query("addr") address: String,
         @Query("modu") module: String
     ): Single<Response<BalanceDTO>>
 
-    @GET("violas/balance")
+    @GET("/1.0/violas/balance")
     fun getBalance(@Query("addr") address: String): Single<Response<BalanceDTO>>
 
-    @GET("violas/seqnum")
+    @GET("/1.0/violas/seqnum")
     fun getSequenceNumber(@Query("addr") address: String): Single<Response<Long>>
 
-    @POST("violas/transaction")
+    @POST("/1.0/violas/transaction")
     fun pushTx(@Body requestBody: RequestBody): Single<Response<Any>>
 
-    @GET("violas/currency")
+    @GET("/1.0/violas/currency")
     fun getSupportCurrency(): Single<ListResponse<SupportCurrencyDTO>>
 
-    @GET("violas/module")
+    @GET("/1.0/violas/module")
     fun checkRegisterToken(@Query("addr") address: String): Single<ListResponse<String>>
 }
