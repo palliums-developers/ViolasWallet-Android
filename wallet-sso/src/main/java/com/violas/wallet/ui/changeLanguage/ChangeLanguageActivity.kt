@@ -37,10 +37,6 @@ class ChangeLanguageActivity : BaseAppActivity() {
         subscribeUi(adapter)
     }
 
-    override fun onTitleLeftViewClick() {
-        onBackPressed()
-    }
-
     private fun subscribeUi(adapter: ChangeLanguageAdapter) {
         viewModel.mLanguageList.observe(this, Observer {
             adapter.submitList(it)

@@ -71,10 +71,6 @@ abstract class BaseWebActivity : BaseAppActivity() {
         super.onDestroy()
     }
 
-    override fun onTitleLeftViewClick() {
-        onBackPressedSupport()
-    }
-
     override fun onBackPressedSupport() {
         if (vWeb.canGoBack()) {
             vWeb.goBack()

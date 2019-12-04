@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.app.ActivityCompat
 import com.palliums.utils.CustomMainScope
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
@@ -62,7 +63,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
 
     fun close() {
         if (!isDestroyed && !isFinishing) {
-            finish()
+            ActivityCompat.finishAfterTransition(this)
         }
     }
 
@@ -251,7 +252,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
      * 默认关闭当前页面
      */
     protected open fun onTitleLeftViewClick() {
-        finish()
+        onBackPressedSupport()
     }
 
     /**

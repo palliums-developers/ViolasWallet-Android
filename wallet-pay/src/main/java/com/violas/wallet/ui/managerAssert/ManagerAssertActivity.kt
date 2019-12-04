@@ -147,10 +147,6 @@ class ManagerAssertActivity : BaseAppActivity() {
         }
     }
 
-    override fun onTitleLeftViewClick() {
-        onBackPressed()
-    }
-
     override fun onBackPressedSupport() {
         setResult(Activity.RESULT_OK)
         super.onBackPressedSupport()
