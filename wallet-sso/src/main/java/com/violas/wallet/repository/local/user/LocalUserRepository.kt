@@ -119,8 +119,19 @@ class LocalUserRepository(private val sharedPreferences: SharedPreferences) {
                 idAuthenticationStatus = status
             )
         } else {
-            Gson().fromJson(idInformationJson, IDInfo::class.java).apply {
-                idAuthenticationStatus = status
+            try {
+                Gson().fromJson(idInformationJson, IDInfo::class.java).apply {
+                    idAuthenticationStatus = status
+                }
+            } catch (e: Exception) {
+                IDInfo(
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    idAuthenticationStatus = status
+                )
             }
         }
     }
