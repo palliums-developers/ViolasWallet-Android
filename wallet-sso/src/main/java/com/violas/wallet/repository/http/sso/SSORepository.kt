@@ -74,7 +74,7 @@ class SSORepository(private val ssoApi: SSOApi) {
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
         return try {
-            checkResponse {
+            checkResponse(2003) {
                 ssoApi.applyForIssuing(toRequestBody)
             }
         } catch (e: Exception) {
@@ -158,7 +158,7 @@ class SSORepository(private val ssoApi: SSOApi) {
         val toRequestBody = """{
     "address":"$address",
     "receiver":"$phoneNumber",
-    "phone_local_number":"$areaCode"
+    "phone_local_number":"+$areaCode"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
         return checkResponse {
@@ -192,7 +192,7 @@ class SSORepository(private val ssoApi: SSOApi) {
         val toRequestBody = """{
     "address":"$address",
     "receiver":"$phoneNumber",
-    "phone_local_number":"$areaCode",
+    "phone_local_number":"+$areaCode",
     "code":"$verificationCode"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 

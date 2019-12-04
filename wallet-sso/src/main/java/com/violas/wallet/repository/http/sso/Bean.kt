@@ -6,6 +6,7 @@ data class ApplyForStatusDTO(
     val amount: Int,
     val approval_status: Int,
     val token_name: String,
+    @SerializedName("module_address")
     val token_address: String?
 )
 

@@ -142,7 +142,14 @@ class ApplySubmitFragment : BaseFragment() {
                 email
             )
             if (applyForIssuing != null) {
-                EventBus.getDefault().post(RefreshPageEvent())
+                when {
+                    applyForIssuing.errorCode == 2000 -> {
+                        EventBus.getDefault().post(RefreshPageEvent())
+                        showToast(getString(R.string.hint_mint_condition_success))
+                    }
+                    applyForIssuing.errorCode == 2003 -> showToast(getString(R.string.hint_net_work_error))
+                    else -> showToast(getString(R.string.hint_emila_phone_verification_error))
+                }
             } else {
                 showToast(getString(R.string.hint_net_work_error))
             }

@@ -19,7 +19,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
 class ApplyForSSOFragment : BaseFragment() {
-    private var mApplyStatus = 0
+    private var mApplyStatus = -1
     private var mAccount: AccountDO? = null
     private val mAccountManager by lazy {
         AccountManager()
