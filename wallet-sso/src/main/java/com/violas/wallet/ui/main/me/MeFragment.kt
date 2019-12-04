@@ -3,6 +3,7 @@ package com.violas.wallet.ui.main.me
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ProgressBar
 import androidx.lifecycle.Observer
 import com.palliums.base.BaseFragment
 import com.palliums.net.LoadState
@@ -47,96 +48,87 @@ class MeFragment : BaseFragment() {
             }
         })
 
-        mViewModel.loadState.observe(this, Observer {
-            when (it.status) {
-                LoadState.Status.RUNNING -> {
-                    val idInfo = mViewModel.getIdInfo().value
-                    if (idInfo != null && !idInfo.isAuthenticatedID()) {
-                        pbIDAuthenticationLoading.visibility = View.VISIBLE
-                    }
-
-                    val phoneInfo = mViewModel.getPhoneInfo().value
-                    if (phoneInfo != null && !phoneInfo.isBoundPhone()) {
-                        pbPhoneVerificationLoading.visibility = View.VISIBLE
-                    }
-
-                    val emailInfo = mViewModel.getEmailInfo().value
-                    if (emailInfo != null && !emailInfo.isBoundEmail()) {
-                        pbEmailVerificationLoading.visibility = View.VISIBLE
-                    }
-                }
-
-                else -> {
-                    pbIDAuthenticationLoading.visibility = View.GONE
-                    pbPhoneVerificationLoading.visibility = View.GONE
-                    pbEmailVerificationLoading.visibility = View.GONE
-                }
-            }
-        })
-
-        mViewModel.getIdInfo().observe(this, Observer {
-            when (it.idAuthenticationStatus) {
+        mViewModel.getIdInfoLiveData().observe(this, Observer {
+            when (it.first.idAuthenticationStatus) {
                 IDAuthenticationStatus.UNKNOWN -> {
                     mivIDAuthentication.showEndArrow(false)
                     mivIDAuthentication.setEndDescText("")
+
+                    handLoadState(pbIDAuthenticationLoading, it.second)
                 }
 
                 IDAuthenticationStatus.AUTHENTICATED -> {
                     mivIDAuthentication.showEndArrow(true)
                     mivIDAuthentication.setEndDescText(R.string.desc_authenticated)
                     mivIDAuthentication.setEndDescTextColor(getColor(R.color.def_text_title))
+
+                    handLoadState(pbIDAuthenticationLoading, it.second)
                 }
 
                 else -> {
                     mivIDAuthentication.showEndArrow(true)
                     mivIDAuthentication.setEndDescText(R.string.desc_unauthorized)
                     mivIDAuthentication.setEndDescTextColor(getColor(R.color.def_text_warn))
+
+                    handLoadState(pbIDAuthenticationLoading, it.second)
                 }
             }
         })
 
-        mViewModel.getPhoneInfo().observe(this, Observer {
-            when (it.accountBindingStatus) {
+        mViewModel.getPhoneInfoLiveData().observe(this, Observer {
+            when (it.first.accountBindingStatus) {
                 AccountBindingStatus.UNKNOWN -> {
                     mivPhoneVerification.showEndArrow(false)
                     mivPhoneVerification.setEndDescText("")
+
+                    handLoadState(pbPhoneVerificationLoading, it.second)
                 }
 
                 AccountBindingStatus.BOUND -> {
                     mivPhoneVerification.showEndArrow(false)
-                    mivPhoneVerification.setEndDescText(it.phoneNumber)
+                    mivPhoneVerification.setEndDescText(it.first.phoneNumber)
                     mivPhoneVerification.setEndDescTextColor(getColor(R.color.def_text_title))
                     mivPhoneVerification.setOnClickListener(null)
                     mivPhoneVerification.setBackgroundColor(getColor(R.color.white))
+
+                    handLoadState(pbPhoneVerificationLoading, it.second)
                 }
 
                 else -> {
                     mivPhoneVerification.showEndArrow(true)
                     mivPhoneVerification.setEndDescText(R.string.desc_unbound)
                     mivPhoneVerification.setEndDescTextColor(getColor(R.color.def_text_warn))
+
+                    handLoadState(pbPhoneVerificationLoading, it.second)
                 }
             }
         })
 
-        mViewModel.getEmailInfo().observe(this, Observer {
-            when (it.accountBindingStatus) {
+        mViewModel.getEmailInfoLiveData().observe(this, Observer {
+            when (it.first.accountBindingStatus) {
                 AccountBindingStatus.UNKNOWN -> {
                     mivEmailVerification.showEndArrow(false)
                     mivEmailVerification.setEndDescText("")
+
+                    handLoadState(pbEmailVerificationLoading, it.second)
                 }
 
                 AccountBindingStatus.BOUND -> {
                     mivEmailVerification.showEndArrow(false)
-                    mivEmailVerification.setEndDescText(it.emailAddress)
+                    mivEmailVerification.setEndDescText(it.first.emailAddress)
                     mivEmailVerification.setEndDescTextColor(getColor(R.color.def_text_title))
                     mivEmailVerification.setOnClickListener(null)
                     mivEmailVerification.setBackgroundColor(getColor(R.color.white))
+
+                    handLoadState(pbEmailVerificationLoading, it.second)
                 }
 
                 else -> {
                     mivEmailVerification.showEndArrow(true)
                     mivEmailVerification.setEndDescText(R.string.desc_unbound)
                     mivEmailVerification.setEndDescTextColor(getColor(R.color.def_text_warn))
+
+                    handLoadState(pbEmailVerificationLoading, it.second)
                 }
             }
         })
@@ -144,10 +136,26 @@ class MeFragment : BaseFragment() {
         mViewModel.init()
     }
 
+    private fun handLoadState(progressBar: ProgressBar, loadState: LoadState) {
+        when (loadState.status) {
+            LoadState.Status.IDLE -> {
+                // ignore
+            }
+
+            LoadState.Status.RUNNING -> {
+                progressBar.visibility = View.VISIBLE
+            }
+
+            else -> {
+                progressBar.visibility = View.GONE
+            }
+        }
+    }
+
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.mivIDAuthentication -> {
-                val idInfo = mViewModel.getIdInfo().value ?: return
+                val idInfo = mViewModel.getIdInfo() ?: return
                 when (idInfo.idAuthenticationStatus) {
                     IDAuthenticationStatus.UNKNOWN -> {
                         mViewModel.execute()
@@ -174,7 +182,7 @@ class MeFragment : BaseFragment() {
             }
 
             R.id.mivPhoneVerification -> {
-                val phoneInfo = mViewModel.getPhoneInfo().value ?: return
+                val phoneInfo = mViewModel.getPhoneInfo() ?: return
                 when (phoneInfo.accountBindingStatus) {
                     AccountBindingStatus.UNKNOWN -> {
                         mViewModel.execute()
@@ -192,7 +200,7 @@ class MeFragment : BaseFragment() {
             }
 
             R.id.mivEmailVerification -> {
-                val emailInfo = mViewModel.getEmailInfo().value ?: return
+                val emailInfo = mViewModel.getEmailInfo() ?: return
                 when (emailInfo.accountBindingStatus) {
                     AccountBindingStatus.UNKNOWN -> {
                         mViewModel.execute()

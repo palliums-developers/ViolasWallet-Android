@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main
 
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.lifecycle.*
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Created by elephant on 2019-11-29 17:25.
@@ -38,6 +40,10 @@ fun ComponentActivity.provideUserViewModel(): UserViewModel {
 
 class UserViewModel : BaseViewModel() {
 
+    companion object {
+        private const val ACTION_INIT = 0x123
+    }
+
     private lateinit var currentAccount: AccountDO
 
     private val ssoService by lazy {
@@ -48,14 +54,16 @@ class UserViewModel : BaseViewModel() {
         DataRepository.getLocalUserService()
     }
 
-    private val idInfo = MutableLiveData<IDInfo>()
-    private val emailInfo = MutableLiveData<EmailInfo>()
-    private val phoneInfo = MutableLiveData<PhoneInfo>()
+    private val idInfoLiveData = MutableLiveData<Pair<IDInfo, LoadState>>()
+    private val emailInfoLiveData = MutableLiveData<Pair<EmailInfo, LoadState>>()
+    private val phoneInfoLiveData = MutableLiveData<Pair<PhoneInfo, LoadState>>()
 
     /**
      * 表示身份已认证，邮箱已绑定，手机已绑定
      */
-    private val allReady = MutableLiveData<Boolean>()
+    private val allReadyLiveData = MutableLiveData<Boolean>()
+
+    private val initFlag = AtomicBoolean(false)
 
     init {
         EventBus.getDefault().register(this)
@@ -66,41 +74,71 @@ class UserViewModel : BaseViewModel() {
         EventBus.getDefault().unregister(this)
     }
 
-    fun getIdInfo(): LiveData<IDInfo> {
+    private fun idInfo(): IDInfo? {
+        return idInfoLiveData.value?.first
+    }
+
+    fun getIdInfo(): IDInfo? {
         synchronized(lock) {
-            return this.idInfo
+            return idInfo()
         }
     }
 
-    fun getEmailInfo(): LiveData<EmailInfo> {
+    fun getIdInfoLiveData(): LiveData<Pair<IDInfo, LoadState>> {
         synchronized(lock) {
-            return this.emailInfo
+            return idInfoLiveData
         }
     }
 
-    fun getPhoneInfo(): LiveData<PhoneInfo> {
+    private fun emailInfo(): EmailInfo? {
+        return emailInfoLiveData.value?.first
+    }
+
+    fun getEmailInfo(): EmailInfo? {
         synchronized(lock) {
-            return this.phoneInfo
+            return emailInfoLiveData.value?.first
         }
     }
 
-    fun getAllReady(): LiveData<Boolean> {
+    fun getEmailInfoLiveData(): LiveData<Pair<EmailInfo, LoadState>> {
         synchronized(lock) {
-            return this.allReady
+            return emailInfoLiveData
+        }
+    }
+
+    private fun phoneInfo(): PhoneInfo? {
+        return phoneInfoLiveData.value?.first
+    }
+
+    fun getPhoneInfo(): PhoneInfo? {
+        synchronized(lock) {
+            return phoneInfoLiveData.value?.first
+        }
+    }
+
+    fun getPhoneInfoLiveData(): LiveData<Pair<PhoneInfo, LoadState>> {
+        synchronized(lock) {
+            return phoneInfoLiveData
+        }
+    }
+
+    fun getAllReadyLiveData(): LiveData<Boolean> {
+        synchronized(lock) {
+            return allReadyLiveData
         }
     }
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onAuthenticationIDEvent(event: AuthenticationIDEvent) {
         synchronized(lock) {
-            this.idInfo.postValue(event.idInfo)
+            idInfoLiveData.postValue(Pair(event.idInfo, LoadState.IDLE))
 
-            val emailInfo = this.emailInfo.value
-            val phoneInfo = this.phoneInfo.value
+            val emailInfo = emailInfo()
+            val phoneInfo = phoneInfo()
             if (emailInfo != null && emailInfo.isBoundEmail()
                 && phoneInfo != null && phoneInfo.isBoundPhone()
             ) {
-                allReady.postValue(true)
+                allReadyLiveData.postValue(true)
             }
         }
     }
@@ -108,14 +146,14 @@ class UserViewModel : BaseViewModel() {
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onBindEmailEvent(event: BindEmailEvent) {
         synchronized(lock) {
-            this.emailInfo.postValue(event.emailInfo)
+            emailInfoLiveData.postValue(Pair(event.emailInfo, LoadState.IDLE))
 
-            val idInfo = this.idInfo.value
-            val phoneInfo = this.phoneInfo.value
+            val idInfo = idInfo()
+            val phoneInfo = phoneInfo()
             if (idInfo != null && idInfo.isAuthenticatedID()
                 && phoneInfo != null && phoneInfo.isBoundPhone()
             ) {
-                allReady.postValue(true)
+                allReadyLiveData.postValue(true)
             }
         }
     }
@@ -123,72 +161,76 @@ class UserViewModel : BaseViewModel() {
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onBindPhoneEvent(event: BindPhoneEvent) {
         synchronized(lock) {
-            this.phoneInfo.postValue(event.phoneInfo)
+            phoneInfoLiveData.postValue(Pair(event.phoneInfo, LoadState.IDLE))
 
-            val idInfo = this.idInfo.value
-            val emailInfo = this.emailInfo.value
+            val idInfo = idInfo()
+            val emailInfo = emailInfo()
             if (idInfo != null && idInfo.isAuthenticatedID()
                 && emailInfo != null && emailInfo.isBoundEmail()
             ) {
-                allReady.postValue(true)
+                allReadyLiveData.postValue(true)
             }
         }
     }
 
     fun init() {
-        synchronized(lock) {
-            if (this.idInfo.value != null) {
-                return
-            }
+        if (initFlag.get()) {
+            return
         }
+
+        initFlag.set(true)
+
+        // 通知开始加载，此时外部获取用户信息为空
+        loadState.postValue(LoadState.RUNNING)
 
         viewModelScope.launch(Dispatchers.IO) {
             synchronized(lock) {
-                // 通知开始加载，此时外部获取用户信息为空
-                loadState.postValue(LoadState.RUNNING)
-
                 var allReady = true
 
                 val idInfo = localUserService.getIDInfo()
+                var infoLoadState = LoadState.IDLE
                 if (!idInfo.isAuthenticatedID()) {
                     // 身份认证状态不为已认证先当作未知状态
                     idInfo.idAuthenticationStatus = IDAuthenticationStatus.UNKNOWN
                     allReady = false
+                    infoLoadState = LoadState.RUNNING
                 }
-                this@UserViewModel.idInfo.postValue(idInfo)
+                idInfoLiveData.postValue(Pair(idInfo, infoLoadState))
 
                 val emailInfo = localUserService.getEmailInfo()
+                infoLoadState = LoadState.IDLE
                 if (!emailInfo.isBoundEmail()) {
                     // 邮箱绑定状态不为已绑定先当作未知状态
                     emailInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
                     allReady = false
+                    infoLoadState = LoadState.RUNNING
                 }
-                this@UserViewModel.emailInfo.postValue(emailInfo)
+                emailInfoLiveData.postValue(Pair(emailInfo, infoLoadState))
 
                 val phoneInfo = localUserService.getPhoneInfo()
+                infoLoadState = LoadState.IDLE
                 if (!phoneInfo.isBoundPhone()) {
                     // 手机绑定状态不为已绑定先当作未知状态
                     phoneInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
                     allReady = false
+                    infoLoadState = LoadState.RUNNING
                 }
-                this@UserViewModel.phoneInfo.postValue(phoneInfo)
+                phoneInfoLiveData.postValue(Pair(phoneInfo, infoLoadState))
+
+                currentAccount = AccountManager().currentAccount()
 
                 if (allReady) {
-                    this@UserViewModel.allReady.postValue(true)
+                    allReadyLiveData.postValue(true)
                     loadState.postValue(LoadState.SUCCESS)
                     return@launch
                 }
-
-                // 再次通知在加载中，用以展示loading，此时外部获取用户信息不为空
-                loadState.postValue(LoadState.RUNNING)
             }
 
             // 为了loading的连贯性，此处没有调用execute，而是直接调用的realExecute
             // 注意execute内部处理了异常，这里需要处理异常情况
             try {
-                currentAccount = AccountManager().currentAccount()
 
-                realExecute(-1)
+                realExecute(ACTION_INIT)
 
                 synchronized(lock) {
                     loadState.postValue(LoadState.SUCCESS)
@@ -205,15 +247,27 @@ class UserViewModel : BaseViewModel() {
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
 
-        delay(2000)
+        if (action != ACTION_INIT) {
+            postStateIfNotReady(LoadState.RUNNING)
+        }
+
+        // 加载太快动画效果不好看
+        delay(500)
 
         // 从服务器获取用户信息
         val walletAddress = currentAccount.address
-        val userInfoDTO = ssoService.loadUserInfo(walletAddress).data
+        val userInfoDTO = try {
+            ssoService.loadUserInfo(walletAddress).data
+        } catch (e: Exception) {
+
+            postStateIfNotReady(LoadState.failure(e))
+
+            throw e
+        }
 
         synchronized(lock) {
             // 解析存储分发身份信息
-            val idInfo = this.idInfo.value!!
+            val idInfo = idInfo()!!
             if (userInfoDTO == null
                 || userInfoDTO.idName.isNullOrEmpty()
                 || userInfoDTO.idNumber.isNullOrEmpty()
@@ -235,11 +289,11 @@ class UserViewModel : BaseViewModel() {
                 idInfo.idCountryCode = userInfoDTO.countryCode
                 idInfo.idAuthenticationStatus = IDAuthenticationStatus.AUTHENTICATED
             }
-            this.localUserService.setIDInfo(idInfo)
-            this.idInfo.postValue(idInfo)
+            localUserService.setIDInfo(idInfo)
+            idInfoLiveData.postValue(Pair(idInfo, LoadState.SUCCESS))
 
             // 解析存储分发邮箱信息
-            val emailInfo = this.emailInfo.value!!
+            val emailInfo = emailInfo()!!
             if (userInfoDTO == null
                 || userInfoDTO.emailAddress.isNullOrEmpty()
             ) {
@@ -249,11 +303,11 @@ class UserViewModel : BaseViewModel() {
                 emailInfo.emailAddress = userInfoDTO.emailAddress
                 emailInfo.accountBindingStatus = AccountBindingStatus.BOUND
             }
-            this.localUserService.setEmailInfo(emailInfo)
-            this.emailInfo.postValue(emailInfo)
+            localUserService.setEmailInfo(emailInfo)
+            emailInfoLiveData.postValue(Pair(emailInfo, LoadState.SUCCESS))
 
             // 解析存储分发手机信息
-            val phoneInfo = this.phoneInfo.value!!
+            val phoneInfo = phoneInfo()!!
             if (userInfoDTO == null
                 || userInfoDTO.phoneAreaCode.isNullOrEmpty()
                 || userInfoDTO.phoneNumber.isNullOrEmpty()
@@ -270,11 +324,11 @@ class UserViewModel : BaseViewModel() {
                 phoneInfo.phoneNumber = userInfoDTO.phoneNumber
                 phoneInfo.accountBindingStatus = AccountBindingStatus.BOUND
             }
-            this.localUserService.setPhoneInfo(phoneInfo)
-            this.phoneInfo.postValue(phoneInfo)
+            localUserService.setPhoneInfo(phoneInfo)
+            phoneInfoLiveData.postValue(Pair(phoneInfo, LoadState.SUCCESS))
 
             // 分发申请发行准备进度
-            this.allReady.postValue(
+            allReadyLiveData.postValue(
                 idInfo.isAuthenticatedID()
                         && emailInfo.isBoundEmail()
                         && phoneInfo.isBoundPhone()
@@ -282,13 +336,36 @@ class UserViewModel : BaseViewModel() {
         }
     }
 
+    private fun postStateIfNotReady(loadState: LoadState) {
+        synchronized(lock) {
+            val idInfo = idInfo()!!
+            if (!idInfo.isAuthenticatedID()) {
+                idInfoLiveData.postValue(Pair(idInfo, loadState))
+            }
+
+            val emailInfo = emailInfo()!!
+            if (!emailInfo.isBoundEmail()) {
+                emailInfoLiveData.postValue(Pair(emailInfo, loadState))
+            }
+
+            val phoneInfo = phoneInfo()!!
+            if (!phoneInfo.isBoundPhone()) {
+                phoneInfoLiveData.postValue(Pair(phoneInfo, loadState))
+            }
+        }
+    }
+
     override fun checkParams(action: Int, vararg params: Any): Boolean {
-        val idInfo = this.idInfo.value
-        val emailInfo = this.emailInfo.value
-        val phoneInfo = this.phoneInfo.value
+        val idInfo = idInfo()
+        val emailInfo = emailInfo()
+        val phoneInfo = phoneInfo()
 
         return (idInfo != null && !idInfo.isAuthenticatedID())
                 || (emailInfo != null && !emailInfo.isBoundEmail())
                 || (phoneInfo != null && !phoneInfo.isBoundPhone())
+    }
+
+    override fun checkNetworkBeforeExecute(): Boolean {
+        return false
     }
 }
