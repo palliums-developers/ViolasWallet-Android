@@ -12,9 +12,9 @@ import com.palliums.content.ContextProvider
  * desc:
  */
 
-fun getActiveNetworkInfo(): NetworkInfo? {
+fun getActiveNetworkInfo(context: Context = ContextProvider.getContext()): NetworkInfo? {
     var cm: ConnectivityManager =
-        ContextProvider.getContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     return cm.activeNetworkInfo
 }
 
