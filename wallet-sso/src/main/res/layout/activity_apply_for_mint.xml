@@ -29,7 +29,7 @@
         tools:item_content="dfjajkdjkfjklajfuwhidoefjc" />
 
     <com.violas.wallet.widget.ApplySubmitItemView
-        android:id="@+id/itemTokenAddress"
+        android:id="@+id/itemTokenAmount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"

@@ -1,35 +1,30 @@
 package com.violas.wallet.ui.main.applyFor
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseFragment
 import com.violas.wallet.R
-import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.ApplyManager
-import com.violas.wallet.event.RefreshPageEvent
-import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.repository.http.sso.ApplyForStatusDTO
+import com.violas.wallet.event.ApplyPageRefreshEvent
+import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_APPLY_SSO
+import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_NETWORK_ERROR
+import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_NETWORK_LOADING
+import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_VERIFICATION_ACCOUNT
 import com.violas.wallet.ui.main.provideUserViewModel
 import kotlinx.android.synthetic.main.fragment_apply_for_sso.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
 class ApplyForSSOFragment : BaseFragment() {
-    private var mApplyStatus = -1
-    private var mAccount: AccountDO? = null
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
     private val mUserViewModel by lazy {
         requireActivity().provideUserViewModel()
     }
-
-    private val mApplyManager by lazy {
-        ApplyManager()
+    private val mApplyForSSOViewModel by lazy {
+        ViewModelProvider(this, ApplyForSSOViewModelFactory(mUserViewModel)).get(
+            ApplyForSSOViewModel::class.java
+        )
     }
 
     override fun getLayoutResId(): Int {
@@ -38,69 +33,40 @@ class ApplyForSSOFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        EventBus.getDefault().register(this)
         vTitleMiddleText.text = getString(R.string.title_apply_issue_sso)
-        launch(Dispatchers.IO) {
-            mAccount = mAccountManager.currentAccount()
-            mAccount?.let {
-                val applyStatus = mApplyManager.getApplyStatus(it.address)
-                refreshFragment(applyStatus?.data)
-            }
-        }
-        mUserViewModel.init()
+        EventBus.getDefault().register(this)
 
-        activity?.let {
-            mUserViewModel.getAllReadyLiveData().observe(it, Observer { ready ->
-                if (ready) {
-                    childFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainerView, ApplySubmitFragment())
-                        .commit()
-                } else {
-                    childFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainerView, CheckVerifyFragment())
-                        .commit()
+        mApplyForSSOViewModel.getApplyStatusLiveData().observe(viewLifecycleOwner, Observer {
+            Log.e("====", "====监听状态==${it}")
+            val fragment = when (it) {
+                CODE_NETWORK_LOADING -> {
+                    NetworkStatusFragment()
                 }
-            })
-        }
+                CODE_NETWORK_ERROR -> {
+                    NetworkLoadingFragment()
+                }
+                CODE_APPLY_SSO -> {
+                    ApplySubmitFragment()
+                }
+                0, 1, 2, 3, 4 -> {
+                    ApplyStatusFragment.getInstance(it)
+                }
+                CODE_VERIFICATION_ACCOUNT -> {
+                    CheckVerifyFragment()
+                }
+                else -> {
+                    CheckVerifyFragment()
+                }
+            }
+            childFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerView, fragment)
+                .commit()
+        })
     }
 
     @Subscribe
-    fun onRefreshPage(event: RefreshPageEvent? = null) {
-        launch(Dispatchers.IO) {
-            mAccount?.let {
-                val applyStatus = mApplyManager.getApplyStatus(it.address)
-                refreshFragment(applyStatus?.data)
-            }
-        }
-    }
-
-    private suspend fun refreshFragment(status: ApplyForStatusDTO?) {
-        mAccount?.let {
-            status?.apply {
-                if (mApplyStatus == status.approval_status) {
-                    return
-                }
-                mApplyStatus = status.approval_status
-                withContext(Dispatchers.Main) {
-                    val fragment = when (status.approval_status) {
-                        0, 1, 2, 3, 4 -> {
-                            ApplyStatusFragment.getInstance(status.approval_status)
-                        }
-                        else -> {
-                            CheckVerifyFragment()
-                        }
-                    }
-                    childFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainerView, fragment)
-                        .commit()
-                }
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        onRefreshPage()
+    fun onApplyPageRefreshEvent(event: ApplyPageRefreshEvent) {
+        mApplyForSSOViewModel.refreshApplyStatus()
     }
 
     override fun onDestroy() {
