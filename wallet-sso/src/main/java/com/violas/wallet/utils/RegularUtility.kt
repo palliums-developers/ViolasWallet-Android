@@ -1,10 +1,24 @@
 package com.violas.wallet.utils
 
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.quincysx.crypto.utils.SHA256
 import com.smallraw.core.crypto.Base58Utility
 import com.smallraw.core.crypto.Bech32Utility
 import org.palliums.libracore.serialization.hexToBytes
 import java.util.*
+
+fun isValidPhoneNumber(phoneNumber: String, countryCode: String): Boolean {
+    return try {
+        val phoneNumberUtil = PhoneNumberUtil.getInstance()
+        val phoneNumberProto = phoneNumberUtil.parse(phoneNumber, countryCode)
+
+        phoneNumberUtil.isValidNumber(phoneNumberProto)
+    } catch (e: Exception) {
+        e.printStackTrace()
+
+        false
+    }
+}
 
 fun validationIDCar15(idNumber: CharSequence): Boolean {
     val regex = Regex("^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}\$")

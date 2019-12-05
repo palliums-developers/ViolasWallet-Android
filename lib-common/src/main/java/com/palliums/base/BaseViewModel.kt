@@ -37,7 +37,7 @@ abstract class BaseViewModel : ViewModel() {
             } else if (needCheckParam && !checkParams(action, *params)) {
                 return false
             } else if (checkNetworkBeforeExecute() && !isNetworkConnected()) {
-                retry = { execute(*params, action = action, needCheckParam = true) }
+                retry = { execute(*params, action = action, needCheckParam = needCheckParam) }
 
                 val exception = RequestException.networkUnavailable()
                 loadState.value = LoadState.failure(exception)
@@ -62,7 +62,7 @@ abstract class BaseViewModel : ViewModel() {
                 e.printStackTrace()
 
                 synchronized(lock) {
-                    retry = { execute(*params, action = action, needCheckParam = true) }
+                    retry = { execute(*params, action = action, needCheckParam = needCheckParam) }
 
                     loadState.postValue(LoadState.failure(e))
                     tipsMessage.postValue(e.message)
