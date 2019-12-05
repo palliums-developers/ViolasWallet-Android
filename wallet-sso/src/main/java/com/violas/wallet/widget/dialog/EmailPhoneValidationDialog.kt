@@ -8,6 +8,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import com.palliums.base.BaseActivity
 import com.palliums.utils.CustomMainScope
 import com.violas.wallet.R
 import com.violas.wallet.repository.DataRepository
@@ -91,6 +92,7 @@ class EmailPhoneValidationDialog : DialogFragment(), CoroutineScope by CustomMai
             cancelCallback?.invoke()
         }
         mRootView.tvPhoneGetVerificationCode.setOnClickListener {
+            (activity as BaseActivity).showProgress()
             launch(Dispatchers.IO) {
                 ssoService.sendPhoneVerifyCode(
                     currentAccount.address,
@@ -98,17 +100,20 @@ class EmailPhoneValidationDialog : DialogFragment(), CoroutineScope by CustomMai
                     phoneInfo.areaCode
                 )
                 withContext(Dispatchers.Main) {
+                    (activity as BaseActivity).dismissProgress()
                     mPhoneCountDownTimerUtils.start()
                 }
             }
         }
         mRootView.tvEmailGetVerificationCode.setOnClickListener {
+            (activity as BaseActivity).showProgress()
             launch(Dispatchers.IO) {
                 ssoService.sendEmailVerifyCode(
                     currentAccount.address,
                     emailInfo.emailAddress
                 )
                 withContext(Dispatchers.Main){
+                    (activity as BaseActivity).dismissProgress()
                     mEmailCountDownTimerUtils.start()
                 }
             }

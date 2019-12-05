@@ -35,17 +35,6 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="TitleTitleTitleTitleTitleTitleTitleTitleTitle" />
 
-        <ImageView
-            android:id="@+id/vTitleLeftImageBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:maxWidth="@dimen/dp_60"
-            android:paddingLeft="@dimen/dp_13"
-            android:paddingRight="@dimen/dp_13"
-            android:src="@drawable/ic_back_light"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.fragment.app.FragmentContainerView

@@ -47,7 +47,7 @@ class ApplyForMintActivity
                 applyStatus?.data?.let { status ->
                     itemWalletAddress.setContent(mAccount.address)
                     itemTokenName.setContent(status.token_name)
-                    itemTokenAddress.setContent(status.token_address ?: "error")
+                    itemTokenAmount.setContent("${status.amount}")
 
                     status.token_address?.let {
                         val assertToken = AssertToken(
