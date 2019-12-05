@@ -1,6 +1,5 @@
 package com.violas.wallet.ui.main
 
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.lifecycle.*

@@ -12,9 +12,7 @@ import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.local.user.PhoneInfo
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
-import com.violas.wallet.ui.selectCountryArea.isChinaMainland
-import com.violas.wallet.utils.validationChinaPhone
-import com.violas.wallet.utils.validationHkPhone
+import com.violas.wallet.utils.isValidPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
@@ -56,7 +54,7 @@ class PhoneVerificationViewModel : BaseViewModel() {
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        val areaCode = "${countryAreaVO.value!!.areaCode}"
+        val areaCode = countryAreaVO.value!!.areaCode
         val phoneNumber = params[0] as String
         val walletAddress = currentAccount.address
 
@@ -86,23 +84,21 @@ class PhoneVerificationViewModel : BaseViewModel() {
             return false
         }
 
+        val countryAreaVO = countryAreaVO.value ?: return false
+
         val phoneNumber = params[0] as String
         if (phoneNumber.isEmpty()) {
             tipsMessage.postValue(getString(R.string.hint_enter_phone_number))
             return false
         }
 
-        val countryAreaVO = countryAreaVO.value ?: return false
-        if (isChinaMainland(countryAreaVO)) {
-            if (!validationChinaPhone(phoneNumber)) {
-                tipsMessage.postValue(getString(R.string.hint_phone_number_format_incorrect))
-                return false
-            }
-        } else {
-            if (!validationHkPhone(phoneNumber)) {
-                tipsMessage.postValue(getString(R.string.hint_phone_number_format_incorrect))
-                return false
-            }
+        if (!isValidPhoneNumber(
+                "+${countryAreaVO.areaCode}$phoneNumber",
+                countryAreaVO.countryCode
+            )
+        ) {
+            tipsMessage.postValue(getString(R.string.hint_phone_number_format_incorrect))
+            return false
         }
 
         if (action == ACTION_BING_PHONE_NUMBER && (params[1] as String).isEmpty()) {

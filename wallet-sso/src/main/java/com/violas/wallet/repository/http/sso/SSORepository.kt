@@ -158,7 +158,7 @@ class SSORepository(private val ssoApi: SSOApi) {
         val toRequestBody = """{
     "address":"$address",
     "receiver":"$phoneNumber",
-    "phone_local_number":"+$areaCode"
+    "phone_local_number":"${if (areaCode.startsWith("+")) areaCode else "+$areaCode"}"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
         return checkResponse {
@@ -192,7 +192,7 @@ class SSORepository(private val ssoApi: SSOApi) {
         val toRequestBody = """{
     "address":"$address",
     "receiver":"$phoneNumber",
-    "phone_local_number":"+$areaCode",
+    "phone_local_number":"${if (areaCode.startsWith("+")) areaCode else "+$areaCode"}",
     "code":"$verificationCode"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
