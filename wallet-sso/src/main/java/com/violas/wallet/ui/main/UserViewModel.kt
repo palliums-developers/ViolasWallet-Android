@@ -129,7 +129,10 @@ class UserViewModel : BaseViewModel() {
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onAuthenticationIDEvent(event: AuthenticationIDEvent) {
-        synchronized(lock) {
+        // 上传图片时返回的图片url不是全路径，所以接收到认证事件后，从服务器获取用户的身份信息
+        execute()
+
+        /*synchronized(lock) {
             idInfoLiveData.postValue(Pair(event.idInfo, LoadState.IDLE))
 
             val emailInfo = emailInfo()
@@ -139,7 +142,7 @@ class UserViewModel : BaseViewModel() {
             ) {
                 allReadyLiveData.postValue(true)
             }
-        }
+        }*/
     }
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)

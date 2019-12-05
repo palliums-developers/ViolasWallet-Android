@@ -105,7 +105,9 @@ class IDAuthenticationViewModel : BaseViewModel() {
             idPhotoBackUrl = idPhotoBackUrl,
             idCountryCode = countryCode
         )
-        localUserService.setIDInfo(idInfo)
+
+        // 上传图片时返回的图片url不是全路径，所以这里不存储身份信息，通过发送事件让我的页面刷新用户身份信息
+        //localUserService.setIDInfo(idInfo)
         EventBus.getDefault().post(AuthenticationIDEvent(idInfo))
 
         tipsMessage.postValue(getString(R.string.hint_id_authentication_success))
