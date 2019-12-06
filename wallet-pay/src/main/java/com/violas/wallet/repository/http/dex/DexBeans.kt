@@ -13,9 +13,9 @@ import com.palliums.net.ApiResponse
 open class Response<T> : ApiResponse {
 
     @SerializedName(value = "code")
-    var errorCode: Int = 200
+    var errorCode: Int = 0
         get() {
-          return  if(errorMsg.isNullOrEmpty()) 200 else 0
+            return if (errorMsg.isNullOrEmpty()) 200 else field
         }
 
     @SerializedName(value = "error")
@@ -36,3 +36,20 @@ open class Response<T> : ApiResponse {
         return errorCode
     }
 }
+
+class ListResponse<T> : Response<List<T>>()
+
+data class MyOrderDTO(
+    val amountFilled: String,
+    val amountGet: String,
+    val amountGive: String,
+    val availableVolume: String,
+    val date: String,
+    val id: String,
+    val state: String,
+    val tokenGet: String,
+    val tokenGive: String,
+    val updated: String,
+    val user: String,
+    val version: String
+)
