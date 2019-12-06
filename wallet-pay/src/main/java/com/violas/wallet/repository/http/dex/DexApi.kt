@@ -33,5 +33,9 @@ interface DexApi {
         @Query("state") orderState: String? = null,
         @Query("base") baseTokenAddress: String? = null,
         @Query("quote") quoteTokenAddress: String? = null
-    ): ListResponse<MyOrderDTO>
+    ): ListResponse<DexOrderDTO>
+
+    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_DEX}"])
+    @GET("/v1/prices")
+    suspend fun getTokenPrices(): ListResponse<DexTokenPriceDTO>
 }

@@ -39,7 +39,7 @@ open class Response<T> : ApiResponse {
 
 class ListResponse<T> : Response<List<T>>()
 
-data class MyOrderDTO(
+data class DexOrderDTO(
     val amountFilled: String,
     val amountGet: String,
     val amountGive: String,
@@ -52,4 +52,11 @@ data class MyOrderDTO(
     val updated: String,
     val user: String,
     val version: String
+)
+
+data class DexTokenPriceDTO(
+    @SerializedName(value = "addr")
+    val address: String,
+    val name: String,
+    val price: Int
 )

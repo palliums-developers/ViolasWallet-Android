@@ -208,4 +208,8 @@
     <string name="hint_unsupported_tokens">未打开或不支持的代币</string>
     <string name="hint_unsupported_coin">不支持的数字货币</string>
     <string name="hint_scan_result">扫码结果</string>
+
+    <string name="title_orders">订单</string>
+    <string name="title_tab_uncompleted">未完成</string>
+    <string name="title_tab_completed">已完成</string>
 </resources>

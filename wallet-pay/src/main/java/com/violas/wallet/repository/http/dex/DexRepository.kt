@@ -17,7 +17,7 @@ class DexRepository(private val dexApi: DexApi) {
         orderState: String? = null,
         baseTokenAddress: String? = null,
         quoteTokenAddress: String? = null
-    ): ListResponse<MyOrderDTO> {
+    ): ListResponse<DexOrderDTO> {
 
         return checkResponse {
             dexApi.getMyOrders(
@@ -28,6 +28,12 @@ class DexRepository(private val dexApi: DexApi) {
                 baseTokenAddress,
                 quoteTokenAddress
             )
+        }
+    }
+
+    suspend fun getTokenPrices(): ListResponse<DexTokenPriceDTO> {
+        return checkResponse {
+            dexApi.getTokenPrices()
         }
     }
 }
