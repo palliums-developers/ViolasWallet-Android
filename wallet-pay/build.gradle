@@ -108,6 +108,8 @@ dependencies {
     // see https://github.com/ittianyu/BottomNavigationViewEx
     implementation 'com.github.ittianyu:BottomNavigationViewEx:2.0.4'
 
-    debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
-    releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
+    compile ('io.socket:socket.io-client:1.0.0') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
 }
