@@ -1,6 +1,8 @@
 package com.palliums.utils
 
 import android.os.Build
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,3 +47,5 @@ fun CustomMainScope(): CoroutineScope =
 fun coroutineExceptionHandler() = CoroutineExceptionHandler { _, exception ->
     exception.printStackTrace()
 }
+
+class CommonViewHolder(view: View) : RecyclerView.ViewHolder(view)

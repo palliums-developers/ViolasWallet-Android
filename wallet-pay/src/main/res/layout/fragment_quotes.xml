@@ -1,258 +1,501 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F7F9"
-    android:gravity="center|top"
-    android:orientation="vertical">
+    android:background="#ffffff">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/titleBar"
-        android:layout_width="match_parent"
-        android:layout_height="196dp"
-        android:background="@drawable/bg_wallet_main"
-        android:paddingTop="24dp">
-
-        <TextView
-            android:id="@+id/layoutTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:gravity="center"
-            android:text="@string/title_market"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutWalletInfo"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="-102dp"
-        android:layout_marginEnd="15dp"
-        android:background="@drawable/bg_quotes_info"
-        android:paddingLeft="14dp"
-        android:paddingTop="16dp"
-        android:paddingRight="14dp">
+        android:gravity="center|top"
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutCoinConversion"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/titleBar"
+            android:layout_width="match_parent"
+            android:layout_height="196dp"
+            android:background="@drawable/bg_wallet_main"
+            android:paddingTop="24dp">
 
-            <LinearLayout
-                android:id="@+id/layoutFromCoin"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/layoutTitle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="13dp"
-                android:layout_marginBottom="13dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/layoutToCoin"
+                android:layout_marginTop="28dp"
+                android:gravity="center"
+                android:text="@string/title_market"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/ivFromCoin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@mipmap/ic_label_btc" />
-
-                <TextView
-                    android:layout_width="60dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="7dp"
-                    android:gravity="center|start"
-                    android:text="BTC"
-                    android:textColor="#3C3848"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutToCoin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
-                android:layout_marginTop="13dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/layoutFromCoin"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/ivToCoin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@mipmap/ic_label_violas" />
-
-                <TextView
-                    android:layout_width="60dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="7dp"
-                    android:gravity="center|start"
-                    android:text="Violas"
-                    android:textColor="#3C3848"
-                    android:textSize="20sp" />
-            </LinearLayout>
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <View
-            android:id="@+id/viewConversionDivision"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="@color/def_text_color_30"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layoutCoinConversion" />
-
-        <ImageView
-            android:id="@+id/ivConversion"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_coin_conversion"
-            app:layout_constraintBottom_toBottomOf="@+id/viewConversionDivision"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/viewConversionDivision" />
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="-96dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/bg_quotes_info"
+            android:paddingLeft="14dp"
+            android:paddingTop="16dp"
+            android:paddingRight="14dp"
+            app:cardElevation="3dp">
 
-        <EditText
-            android:id="@+id/editFromCoin"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="21dp"
-            android:background="@null"
-            android:gravity="start|center"
-            android:hint="@string/hint_transfer_number"
-            android:maxLines="1"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:textColorHint="@color/def_text_color_30"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@+id/editToCoin"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/viewConversionDivision" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutWalletInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/editToCoin"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:background="@null"
-            android:gravity="end|center"
-            android:hint="@string/hint_receipt_number"
-            android:maxLines="1"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:textColorHint="@color/def_text_color_30"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/editFromCoin"
-            app:layout_constraintTop_toTopOf="@+id/editFromCoin" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutCoinConversion"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-        <View
-            android:id="@+id/viewConversionCountDivision"
+                    <LinearLayout
+                        android:id="@+id/layoutFromCoin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="13dp"
+                        android:layout_marginBottom="13dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/layoutToCoin"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/tvFromCoin"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="7dp"
+                            android:gravity="center|start"
+                            android:textColor="#3C3848"
+                            android:textSize="20sp"
+                            tools:text="BTC" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:padding="7dp"
+                            android:src="@drawable/icon_down_black" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutToCoin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="60dp"
+                        android:layout_marginTop="13dp"
+                        android:layout_marginBottom="13dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/layoutFromCoin"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/tvToCoin"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="7dp"
+                            android:gravity="center|start"
+                            android:textColor="#3C3848"
+                            android:textSize="20sp"
+                            tools:text="Violas" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:padding="7dp"
+                            android:src="@drawable/icon_down_black" />
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:id="@+id/viewConversionDivision"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@color/def_text_color_10"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutCoinConversion" />
+
+                <ImageView
+                    android:id="@+id/ivConversion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_coin_conversion"
+                    app:layout_constraintBottom_toBottomOf="@+id/viewConversionDivision"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/viewConversionDivision" />
+
+                <EditText
+                    android:id="@+id/editFromCoin"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="21dp"
+                    android:background="@null"
+                    android:gravity="start|center"
+                    android:hint="@string/hint_transfer_number"
+                    android:inputType="numberDecimal"
+                    android:maxLength="12"
+                    android:maxLines="1"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textColorHint="@color/def_text_color_30"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/editToCoin"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/viewConversionDivision" />
+
+                <EditText
+                    android:id="@+id/editToCoin"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:background="@null"
+                    android:gravity="end|center"
+                    android:hint="@string/hint_receipt_number"
+                    android:inputType="numberDecimal"
+                    android:maxLength="12"
+                    android:maxLines="1"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textColorHint="@color/def_text_color_30"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/editFromCoin"
+                    app:layout_constraintTop_toTopOf="@+id/editFromCoin" />
+
+                <View
+                    android:id="@+id/viewConversionCountDivision"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@color/def_text_color_10"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editFromCoin" />
+
+                <TextView
+                    android:id="@+id/collectionAddress"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="13dp"
+                    android:text="@string/hint_collection_address"
+                    android:textColor="@color/def_text_color"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/viewConversionCountDivision" />
+
+                <EditText
+                    android:id="@+id/editCollectionAddress"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="40dp"
+                    android:background="@null"
+                    android:hint="@string/hint_input_collection_address"
+                    android:padding="2dp"
+                    android:textColor="@color/def_text_color"
+                    android:textColorHint="@color/def_text_color_30"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/collectionAddress" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@color/def_text_color_10"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editCollectionAddress" />
+
+
+                <ImageView
+                    android:id="@+id/ivCollectionAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="9dp"
+                    android:src="@drawable/icon_wallet_address"
+                    app:layout_constraintBottom_toBottomOf="@+id/editCollectionAddress"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/editCollectionAddress" />
+
+                <TextView
+                    android:id="@+id/tvParities"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="13dp"
+                    android:text="@string/hint_parities"
+                    android:textColor="@color/def_text_color"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ivCollectionAddress" />
+
+                <TextView
+                    android:id="@+id/tvParitiesInfo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="6dp"
+                    android:padding="2dp"
+                    android:textColor="@color/def_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvParities"
+                    tools:text="1BTC=1Violas" />
+
+                <View
+                    android:id="@+id/viewParitiesInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="13dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@color/def_text_color_10"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvParitiesInfo" />
+
+                <TextView
+                    android:id="@+id/tvHintFee"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="13dp"
+                    android:text="@string/hint_fee"
+                    android:textColor="@color/def_text_color"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/viewParitiesInfo" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="18dp"
+                    android:text="@string/hint_slow"
+                    android:textColor="@color/def_text_color"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toTopOf="@+id/sbQuota"
+                    app:layout_constraintStart_toStartOf="@+id/sbQuota" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="18dp"
+                    android:text="@string/hint_fast"
+                    android:textColor="@color/def_text_color"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toTopOf="@+id/sbQuota"
+                    app:layout_constraintEnd_toEndOf="@+id/sbQuota" />
+
+                <SeekBar
+                    android:id="@+id/sbQuota"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:background="@android:color/transparent"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:max="100"
+                    android:maxHeight="5dp"
+                    android:progress="35"
+                    android:progressDrawable="@drawable/progress_bar_transfer"
+                    android:splitTrack="false"
+                    android:thumb="@drawable/icon_transfer_thumb"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvHintFee" />
+
+                <TextView
+                    android:id="@+id/tvFee"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="18dp"
+                    android:textColor="@color/def_text_color"
+                    android:textSize="10sp"
+                    app:layout_constraintStart_toStartOf="@+id/sbQuota"
+                    app:layout_constraintTop_toBottomOf="@+id/sbQuota" />
+
+                <Button
+                    android:id="@+id/btnExchange"
+                    style="@style/BaseButtonPrimary"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginBottom="28dp"
+                    android:text="@string/action_exchange"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/sbQuota" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="@color/def_text_color_30"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editFromCoin" />
-
-        <TextView
-            android:id="@+id/collectionAddress"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="10dp"
-            android:text="@string/hint_collection_address"
-            android:textColor="@color/def_text_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/viewConversionCountDivision" />
-
-        <EditText
-            android:id="@+id/editCollectionAddress"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="6dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="20dp"
-            android:layout_marginEnd="40dp"
-            android:background="@null"
-            android:hint="@string/hint_input_collection_address"
-            android:padding="2dp"
-            android:textColor="@color/def_text_color"
-            android:textColorHint="@color/def_text_color_30"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/collectionAddress" />
+            android:layout_marginEnd="16dp"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="当前委托"
+                android:textColor="#60606D"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:text="全部"
+                android:textColor="#60606D"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="@color/def_text_color_30"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:background="#F6F6F6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editCollectionAddress" />
+            app:layout_constraintTop_toBottomOf="@+id/tvParitiesInfo" />
 
-
-        <ImageView
-            android:id="@+id/ivCollectionAddress"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="9dp"
-            android:src="@drawable/icon_wallet_address"
-            app:layout_constraintBottom_toBottomOf="@+id/editCollectionAddress"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="13dp"
+            android:layout_marginEnd="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="10"
+                android:text="市场" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="12"
+                android:gravity="end"
+                android:text="数量(BBBUSD)" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="12"
+                android:gravity="end"
+                android:text="价格(BBBUSD)" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewMeOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="3"
+            tools:listitem="@layout/item_quotes_entrust" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center|start">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="他人委托"
+                android:textColor="#60606D"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="7dp"
+                android:src="@drawable/icon_down_black" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:background="#F6F6F6"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/editCollectionAddress" />
-
-        <TextView
-            android:id="@+id/tvParities"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="10dp"
-            android:text="@string/hint_parities"
-            android:textColor="@color/def_text_color"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivCollectionAddress" />
+            app:layout_constraintTop_toBottomOf="@+id/tvParitiesInfo" />
 
-        <TextView
-            android:id="@+id/tvParitiesInfo"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="6dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="6dp"
-            android:padding="2dp"
-            android:textColor="@color/def_text_color"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvParities"
-            tools:text="1BTC=1Violas" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="13dp"
+            android:layout_marginEnd="16dp">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="数量" />
 
-    <Button
-        android:id="@+id/btnExchange"
-        style="@style/BaseButtonPrimary"
-        android:layout_marginTop="@dimen/dp_50"
-        android:text="闪电兑换"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-</LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:gravity="center"
+                android:text="价格(BBBUSD)" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewAllOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="10"
+            tools:listitem="@layout/item_quotes_deepness" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

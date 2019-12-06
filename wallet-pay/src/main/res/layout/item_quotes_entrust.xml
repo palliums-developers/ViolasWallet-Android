@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="38dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:gravity="center|start">
+
+            <ImageView
+                android:id="@+id/ivOrderStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                tools:src="@drawable/icon_quotes_buy" />
+
+            <TextView
+                android:id="@+id/tvFromCoin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="@color/def_text_color"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="BBBUSD/" />
+
+            <TextView
+                android:id="@+id/tvToCoin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#ADADAD"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="AAAUSD" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvCoinNumber"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="12"
+            android:gravity="center|end"
+            android:textColor="#60606D"
+            android:textSize="14sp"
+            tools:text="200" />
+
+        <TextView
+            android:id="@+id/tvCoinPrice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="12"
+            android:gravity="center|end"
+            android:textColor="#60606D"
+            android:textSize="14sp"
+            tools:text="7.1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:id="@+id/tvYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#BABABA"
+            android:textSize="12sp"
+            tools:text="01/18" />
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#BABABA"
+            android:textSize="12sp"
+            tools:text="12:06:23" />
+    </LinearLayout>
+</LinearLayout>
