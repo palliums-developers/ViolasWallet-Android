@@ -28,14 +28,14 @@ class DexOrdersActivity : BaseAppActivity() {
         tlTabs.setupWithViewPager(vpFragments)
         tlTabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(vpFragments))
         tlTabs.post {
-            tlTabs.getTabAt(0)?.setText(R.string.title_tab_completed)
-            tlTabs.getTabAt(1)?.setText(R.string.title_tab_uncompleted)
+            tlTabs.getTabAt(0)?.setText(R.string.title_tab_uncompleted)
+            tlTabs.getTabAt(1)?.setText(R.string.title_tab_completed)
             tlTabs.setIndicatorLineWidth(50f, 50f)
         }
 
         vpFragments.adapter = FragmentPagerAdapterSupport(supportFragmentManager).apply {
-            addFragment(DexOrdersFragment.newInstance(DexOrdersType.OPEN))
-            addFragment(DexOrdersFragment.newInstance(DexOrdersType.FINISHED))
+            addFragment(DexOrdersFragment.newInstance(DexOrdersState.OPEN))
+            addFragment(DexOrdersFragment.newInstance(DexOrdersState.FINISHED))
         }
     }
 }

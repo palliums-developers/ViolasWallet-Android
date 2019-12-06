@@ -2,8 +2,15 @@ package com.violas.wallet.ui.dexOrder
 
 import android.os.Bundle
 import androidx.annotation.StringDef
-import com.palliums.base.BaseFragment
+import com.palliums.paging.PagingViewAdapter
+import com.palliums.paging.PagingViewModel
 import com.violas.wallet.R
+import com.violas.wallet.base.BasePagingFragment
+import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.repository.http.dex.DexOrderDTO
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Created by elephant on 2019-12-06 12:02.
@@ -13,12 +20,12 @@ import com.violas.wallet.R
  */
 
 @StringDef(
-    DexOrdersType.OPEN,
-    DexOrdersType.FILLED,
-    DexOrdersType.CANCELED,
-    DexOrdersType.FINISHED
+    DexOrdersState.OPEN,
+    DexOrdersState.FILLED,
+    DexOrdersState.CANCELED,
+    DexOrdersState.FINISHED
 )
-annotation class DexOrdersType {
+annotation class DexOrdersState {
     companion object {
         const val OPEN = "0"        // open
         const val FILLED = "1"      // filled
@@ -27,14 +34,14 @@ annotation class DexOrdersType {
     }
 }
 
-class DexOrdersFragment : BaseFragment() {
+class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
 
     companion object {
-        private const val EXTRA_KEY_ORDER_TYPE = "EXTRA_KEY_ORDER_TYPE"
+        private const val EXTRA_KEY_ORDER_STATE = "EXTRA_KEY_ORDER_STATE"
 
-        fun newInstance(@DexOrdersType orderType: String): DexOrdersFragment {
+        fun newInstance(@DexOrdersState orderState: String): DexOrdersFragment {
             val bundle = Bundle().apply {
-                putString(EXTRA_KEY_ORDER_TYPE, orderType)
+                putString(EXTRA_KEY_ORDER_STATE, orderState)
             }
 
             return DexOrdersFragment().apply {
@@ -43,11 +50,53 @@ class DexOrdersFragment : BaseFragment() {
         }
     }
 
-    override fun getLayoutResId(): Int {
-        return R.layout.fragment_dex_orders
+    private var orderState = DexOrdersState.OPEN
+    private lateinit var address: String
+
+    override fun initViewModel(): PagingViewModel<DexOrderDTO> {
+        return DexOrdersViewModel(address, orderState)
+    }
+
+    override fun initViewAdapter(): PagingViewAdapter<DexOrderDTO> {
+        return DexOrdersViewAdapter(
+            viewModel = getViewModel() as DexOrdersViewModel,
+            retryCallback = {
+                getViewModel().retry()
+            },
+            onClickItem = {
+
+            })
     }
 
     override fun onLazyInitView(savedInstanceState: Bundle?) {
         super.onLazyInitView(savedInstanceState)
+
+        launch(Dispatchers.IO) {
+            val result = initData(savedInstanceState)
+            withContext(Dispatchers.Main) {
+                if (result) {
+                    mPagingHandler.start()
+                } else {
+                    finishActivity()
+                }
+            }
+        }
+    }
+
+    private fun initData(savedInstanceState: Bundle?): Boolean {
+
+        if (savedInstanceState != null) {
+            orderState = savedInstanceState.getString(EXTRA_KEY_ORDER_STATE, orderState)
+        } else if (arguments != null) {
+            orderState = arguments!!.getString(EXTRA_KEY_ORDER_STATE, orderState)
+        }
+
+        return try {
+            val currentAccount = AccountManager().currentAccount()
+            address = currentAccount.address
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }

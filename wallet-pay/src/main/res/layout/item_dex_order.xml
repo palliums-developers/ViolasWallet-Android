@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_menu_item"
+    android:paddingStart="@dimen/page_spacing_start"
+    android:paddingTop="@dimen/dp_16"
+    android:paddingEnd="@dimen/page_spacing_end"
+    android:paddingBottom="@dimen/dp_16">
+
+    <View
+        android:id="@+id/vType"
+        android:layout_width="@dimen/dp_14"
+        android:layout_height="@dimen/dp_14"
+        android:background="@mipmap/ic_label_violas"
+        app:layout_constraintBottom_toBottomOf="@id/tvBaseName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvBaseName" />
+
+    <TextView
+        android:id="@+id/tvBaseName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_7"
+        android:textColor="@color/color_3C3848"
+        android:textSize="@dimen/sp_16"
+        app:layout_constraintStart_toEndOf="@id/vType"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="BBBUSD /" />
+
+    <TextView
+        android:id="@+id/tvQuoteName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_7"
+        android:textColor="@color/color_B3B3B3"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvBaseName"
+        app:layout_constraintStart_toEndOf="@id/tvBaseName"
+        tools:text="AAAUSD" />
+
+    <TextView
+        android:id="@+id/tvRevoke"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_7"
+        android:text="@string/action_revoke"
+        android:textColor="@color/color_726BD9"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintBottom_toBottomOf="@id/tvBaseName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvBaseName" />
+
+    <TextView
+        android:id="@+id/tvLabelPrice"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_11"
+        android:text="@string/label_price"
+        android:textColor="@color/color_BABABA"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintEnd_toStartOf="@id/tvLabelTotalAmount"
+        app:layout_constraintHorizontal_weight="3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvBaseName" />
+
+    <TextView
+        android:id="@+id/tvPrice"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        android:textColor="@color/color_3C3848_80"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintEnd_toEndOf="@id/tvLabelPrice"
+        app:layout_constraintStart_toStartOf="@id/tvLabelPrice"
+        app:layout_constraintTop_toBottomOf="@id/tvLabelPrice"
+        tools:text="9.2" />
+
+    <TextView
+        android:id="@+id/tvLabelTotalAmount"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:text="@string/label_total_amount"
+        android:textColor="@color/color_BABABA"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvLabelPrice"
+        app:layout_constraintEnd_toStartOf="@id/tvLabelTime"
+        app:layout_constraintHorizontal_weight="3"
+        app:layout_constraintStart_toEndOf="@id/tvLabelPrice" />
+
+    <TextView
+        android:id="@+id/tvTotalAmount"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        android:textColor="@color/color_3C3848_80"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvPrice"
+        app:layout_constraintEnd_toEndOf="@id/tvLabelTotalAmount"
+        app:layout_constraintStart_toStartOf="@id/tvLabelTotalAmount"
+        tools:text="2000.82" />
+
+    <TextView
+        android:id="@+id/tvLabelTime"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:text="@string/transaction_record_time"
+        android:textColor="@color/color_BABABA"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvLabelPrice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="3.5"
+        app:layout_constraintStart_toEndOf="@id/tvLabelTotalAmount" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        android:textColor="@color/color_3C3848_80"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvPrice"
+        app:layout_constraintEnd_toEndOf="@id/tvLabelTime"
+        app:layout_constraintStart_toStartOf="@id/tvLabelTime"
+        tools:text="01/18 12:06:23" />
+
+    <TextView
+        android:id="@+id/tvLabelTradeAmount"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_11"
+        android:text="@string/label_traded_amount"
+        android:textColor="@color/color_BABABA"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintEnd_toStartOf="@id/tvLabelFee"
+        app:layout_constraintHorizontal_weight="3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvPrice" />
+
+    <TextView
+        android:id="@+id/tvTradeAmount"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_7"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        android:textColor="@color/color_3C3848_80"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintEnd_toEndOf="@id/tvLabelTradeAmount"
+        app:layout_constraintStart_toStartOf="@id/tvLabelTradeAmount"
+        app:layout_constraintTop_toBottomOf="@id/tvLabelTradeAmount"
+        tools:text="50" />
+
+    <TextView
+        android:id="@+id/tvLabelFee"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:text="@string/label_fee"
+        android:textColor="@color/color_BABABA"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvLabelTradeAmount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="6.5"
+        app:layout_constraintStart_toEndOf="@id/tvLabelTradeAmount" />
+
+    <TextView
+        android:id="@+id/tvFee"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        android:textColor="@color/color_3C3848_80"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvTradeAmount"
+        app:layout_constraintEnd_toEndOf="@id/tvLabelFee"
+        app:layout_constraintStart_toStartOf="@id/tvLabelFee"
+        tools:text="0.01Vtoken" />
+
+    <View
+        android:layout_width="@dimen/dp_6"
+        android:layout_height="@dimen/dp_7"
+        android:background="@drawable/ic_right_arrow_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
