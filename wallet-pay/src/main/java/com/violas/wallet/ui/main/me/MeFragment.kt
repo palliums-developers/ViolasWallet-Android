@@ -7,6 +7,7 @@ import com.palliums.base.BaseFragment
 import com.violas.wallet.R
 import com.violas.wallet.ui.account.management.AccountManagementActivity
 import com.violas.wallet.ui.addressBook.AddressBookActivity
+import com.violas.wallet.ui.dexOrder.DexOrdersActivity
 import com.violas.wallet.ui.setting.SettingActivity
 import kotlinx.android.synthetic.main.fragment_me.*
 
@@ -26,6 +27,8 @@ class MeFragment : BaseFragment() {
         mivTransferRecord.setOnClickListener(this)
         mivAddressBook.setOnClickListener(this)
         mivSettings.setOnClickListener(this)
+
+        mivTransferRecord.visibility = View.VISIBLE
     }
 
     override fun onViewClick(view: View) {
@@ -35,7 +38,7 @@ class MeFragment : BaseFragment() {
             }
 
             R.id.mivTransferRecord -> {
-
+                startActivity(Intent(_mActivity, DexOrdersActivity::class.java))
             }
 
             R.id.mivAddressBook -> {

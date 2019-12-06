@@ -1,10 +1,16 @@
 package com.palliums.utils
 
+import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
+import android.util.TypedValue
 import android.view.View
+import android.widget.LinearLayout
+import com.google.android.material.tabs.TabLayout
 import com.palliums.R
+import java.lang.reflect.Field
+
 
 /**
  * Created by elephant on 2019-11-14 17:29.
@@ -64,4 +70,50 @@ fun drawTextInRect(
         rect.top + height / 2 + bounds.height() / 2,
         paint
     )
+}
+
+/**
+ * 调节TabLayout指示线宽度
+ * @param leftDip
+ * @param rightDip
+ */
+fun TabLayout.setIndicatorLineWidth(leftDip: Float, rightDip: Float) {
+
+    val indicatorContainer: LinearLayout = try {
+        val slidingTabIndicator: Field = this.javaClass.getDeclaredField("slidingTabIndicator")
+        slidingTabIndicator.isAccessible = true
+
+        slidingTabIndicator.get(this) as LinearLayout
+    } catch (e: Exception) {
+        e.printStackTrace()
+
+        return
+    }
+
+    val left = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        leftDip,
+        Resources.getSystem().displayMetrics
+    ).toInt()
+
+    val right = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        rightDip,
+        Resources.getSystem().displayMetrics
+    ).toInt()
+
+    for (i in 0 until indicatorContainer.childCount) {
+
+        val child: View = indicatorContainer.getChildAt(i)
+        child.setPadding(0, 0, 0, 0)
+
+        val params: LinearLayout.LayoutParams =
+            LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f)
+
+        params.leftMargin = left
+        params.rightMargin = right
+
+        child.layoutParams = params
+        child.invalidate()
+    }
 }

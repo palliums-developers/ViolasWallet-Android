@@ -12,6 +12,8 @@ import com.violas.wallet.repository.http.bitcoin.BitmainApi
 import com.violas.wallet.repository.http.bitcoin.BitmainService
 import com.violas.wallet.repository.http.bitcoin.BitmainRepository
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
+import com.violas.wallet.repository.http.dex.DexApi
+import com.violas.wallet.repository.http.dex.DexRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.repository.http.libra.LibexplorerApi
@@ -101,5 +103,9 @@ object DataRepository {
                 BitmainService(BitmainRepository(retrofit.create(BitmainApi::class.java)))
             }
         }
+    }
+
+    fun getDexService(): DexRepository {
+        return DexRepository(retrofit.create(DexApi::class.java))
     }
 }

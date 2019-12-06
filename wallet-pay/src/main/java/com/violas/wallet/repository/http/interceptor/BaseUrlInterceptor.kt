@@ -20,12 +20,27 @@ class BaseUrlInterceptor : Interceptor {
         const val HEADER_KEY_URLNAME = "urlname"
         const val HEADER_VALUE_BITMAIN = "bitmain"
         const val HEADER_VALUE_LIBEXPLORER = "libexplorer"
+        const val HEADER_VALUE_DEX = "dex"
 
         const val BITMAIN_URL_MAIN_NET = "https://chain.api.btc.com/v3/"
         const val BITMAIN_URL_TEST_NET = "https://testnet-chain.api.btc.com/v3/"
 
         const val LIBEXPLORER_URL_MAIN_NET = "https://api-test.libexplorer.com/api"
         const val LIBEXPLORER_URL_TEST_NET = "https://api-test.libexplorer.com/api"
+
+        const val DEX_URL_MAIN_NET = "http://192.168.1.253:8181"
+        const val DEX_URL_TEST_NET = "http://192.168.1.253:8181"
+    }
+
+    private val baseUrls: Map<String, String> by lazy {
+        mutableMapOf<String, String>().apply {
+            this[HEADER_VALUE_DEX] =
+                if (Vm.TestNet) DEX_URL_TEST_NET else DEX_URL_MAIN_NET
+            this[HEADER_VALUE_BITMAIN] =
+                if (Vm.TestNet) BITMAIN_URL_TEST_NET else BITMAIN_URL_MAIN_NET
+            this[HEADER_VALUE_LIBEXPLORER] =
+                if (Vm.TestNet) LIBEXPLORER_URL_TEST_NET else LIBEXPLORER_URL_MAIN_NET
+        }
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -36,18 +51,8 @@ class BaseUrlInterceptor : Interceptor {
             return chain.proceed(originalRequest)
         }
 
-        var replaceUrl: HttpUrl? = null
-        if (urlNameList[0] == HEADER_VALUE_BITMAIN) {
-            val url = if (Vm.TestNet) BITMAIN_URL_MAIN_NET else BITMAIN_URL_MAIN_NET
-            replaceUrl = url.toHttpUrlOrNull()
-        } else if (urlNameList[0] == HEADER_VALUE_LIBEXPLORER) {
-            val url = if (Vm.TestNet) LIBEXPLORER_URL_MAIN_NET else LIBEXPLORER_URL_TEST_NET
-            replaceUrl = url.toHttpUrlOrNull()
-        }
-
-        if (replaceUrl == null) {
-            return chain.proceed(originalRequest)
-        }
+        val replaceUrl: HttpUrl = baseUrls[urlNameList[0]]?.toHttpUrlOrNull()
+            ?: return chain.proceed(originalRequest)
 
         val newUrlBuilder = originalRequest.url.newBuilder()
         val originalPathSegments = ArrayList<String>(originalRequest.url.pathSegments)
