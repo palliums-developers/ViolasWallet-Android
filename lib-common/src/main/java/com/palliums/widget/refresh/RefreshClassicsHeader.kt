@@ -33,6 +33,17 @@ class RefreshClassicsHeader : ClassicsHeader {
         mTextUpdate = context.getString(R.string.common_refresh_header_update)
 
         mLastUpdateFormat = SimpleDateFormat(mTextUpdate, Locale.getDefault())
-        setLastUpdateTime(Date(mShared.getLong(KEY_LAST_UPDATE_TIME, System.currentTimeMillis())))
+        if (mShared == null) {
+            setLastUpdateTime(Date())
+        } else {
+            setLastUpdateTime(
+                Date(
+                    mShared.getLong(
+                        KEY_LAST_UPDATE_TIME,
+                        System.currentTimeMillis()
+                    )
+                )
+            )
+        }
     }
 }
