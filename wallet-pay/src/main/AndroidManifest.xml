@@ -118,6 +118,9 @@
         <activity
             android:name=".ui.dexOrder.DexOrdersActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.dexOrder.DexOrderDetailsActivity"
+            android:screenOrientation="portrait" />
 
         <!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data

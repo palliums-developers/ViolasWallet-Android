@@ -38,10 +38,19 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
 
     companion object {
         private const val EXTRA_KEY_ORDER_STATE = "EXTRA_KEY_ORDER_STATE"
+        private const val EXTRA_KEY_BASE_TOKEN_ADDRESS = "EXTRA_KEY_BASE_TOKEN_ADDRESS"
+        private const val EXTRA_KEY_QUOTE_TOKEN_ADDRESS = "EXTRA_KEY_QUOTE_TOKEN_ADDRESS"
 
-        fun newInstance(@DexOrdersState orderState: String): DexOrdersFragment {
+        fun newInstance(
+            @DexOrdersState
+            orderState: String?,
+            baseTokenAddress: String? = null,
+            quoteTokenAddress: String? = null
+        ): DexOrdersFragment {
             val bundle = Bundle().apply {
-                putString(EXTRA_KEY_ORDER_STATE, orderState)
+                orderState?.let { putString(EXTRA_KEY_ORDER_STATE, it) }
+                baseTokenAddress?.let { putString(EXTRA_KEY_BASE_TOKEN_ADDRESS, it) }
+                quoteTokenAddress?.let { putString(EXTRA_KEY_QUOTE_TOKEN_ADDRESS, it) }
             }
 
             return DexOrdersFragment().apply {
@@ -50,21 +59,31 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
         }
     }
 
-    private var orderState = DexOrdersState.OPEN
-    private lateinit var address: String
+    @DexOrdersState
+    private var orderState: String? = null
+    private var baseTokenAddress: String? = null
+    private var quoteTokenAddress: String? = null
+    private lateinit var accountAddress: String
 
     override fun initViewModel(): PagingViewModel<DexOrderDTO> {
-        return DexOrdersViewModel(address, orderState)
+        return DexOrdersViewModel(accountAddress, orderState, baseTokenAddress, quoteTokenAddress)
+    }
+
+    private fun showItemAllInfo(): Boolean {
+        return baseTokenAddress.isNullOrEmpty() || quoteTokenAddress.isNullOrEmpty()
     }
 
     override fun initViewAdapter(): PagingViewAdapter<DexOrderDTO> {
         return DexOrdersViewAdapter(
             viewModel = getViewModel() as DexOrdersViewModel,
-            retryCallback = {
-                getViewModel().retry()
+            showItemAllInfo = showItemAllInfo(),
+            retryCallback = { getViewModel().retry() },
+            onOpenOrderDetails = {
+                DexOrderDetailsActivity.start(requireContext(), it)
             },
-            onClickItem = {
-
+            onOpenBrowserView = {
+                // TODO violas浏览器暂未实现
+                showToast(R.string.transaction_record_not_supported_query)
             })
     }
 
@@ -83,17 +102,29 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        orderState?.let { outState.putString(EXTRA_KEY_ORDER_STATE, it) }
+        baseTokenAddress?.let { outState.putString(EXTRA_KEY_BASE_TOKEN_ADDRESS, it) }
+        quoteTokenAddress?.let { outState.putString(EXTRA_KEY_QUOTE_TOKEN_ADDRESS, it) }
+    }
+
     private fun initData(savedInstanceState: Bundle?): Boolean {
 
         if (savedInstanceState != null) {
-            orderState = savedInstanceState.getString(EXTRA_KEY_ORDER_STATE, orderState)
+            orderState = savedInstanceState.getString(EXTRA_KEY_ORDER_STATE, null)
+            baseTokenAddress = savedInstanceState.getString(EXTRA_KEY_BASE_TOKEN_ADDRESS, null)
+            quoteTokenAddress = savedInstanceState.getString(EXTRA_KEY_QUOTE_TOKEN_ADDRESS, null)
         } else if (arguments != null) {
             orderState = arguments!!.getString(EXTRA_KEY_ORDER_STATE, orderState)
+            baseTokenAddress = arguments!!.getString(EXTRA_KEY_BASE_TOKEN_ADDRESS, null)
+            quoteTokenAddress = arguments!!.getString(EXTRA_KEY_QUOTE_TOKEN_ADDRESS, null)
         }
 
         return try {
             val currentAccount = AccountManager().currentAccount()
-            address = currentAccount.address
+            accountAddress = currentAccount.address
+            accountAddress = "0xe744bc4894feef25111dc40ec39644468e797ec07270c3c6d234675630c1797f"
             true
         } catch (e: Exception) {
             false

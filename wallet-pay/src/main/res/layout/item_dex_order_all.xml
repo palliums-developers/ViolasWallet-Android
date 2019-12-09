@@ -7,14 +7,13 @@
     android:background="@drawable/bg_menu_item"
     android:paddingStart="@dimen/page_spacing_start"
     android:paddingTop="@dimen/dp_16"
-    android:paddingEnd="@dimen/page_spacing_end"
-    android:paddingBottom="@dimen/dp_16">
+    android:paddingEnd="@dimen/page_spacing_end">
 
     <View
         android:id="@+id/vType"
         android:layout_width="@dimen/dp_14"
         android:layout_height="@dimen/dp_14"
-        android:background="@mipmap/ic_label_violas"
+        android:background="@drawable/icon_quotes_buy"
         app:layout_constraintBottom_toBottomOf="@id/tvBaseName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvBaseName" />
@@ -34,7 +33,7 @@
         android:id="@+id/tvQuoteName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_7"
+        android:layout_marginStart="@dimen/dp_2"
         android:textColor="@color/color_B3B3B3"
         android:textSize="@dimen/sp_12"
         app:layout_constraintBaseline_toBaselineOf="@id/tvBaseName"
@@ -42,7 +41,7 @@
         tools:text="AAAUSD" />
 
     <TextView
-        android:id="@+id/tvRevoke"
+        android:id="@+id/tvState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_7"
@@ -109,7 +108,7 @@
         android:id="@+id/tvLabelTime"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:text="@string/transaction_record_time"
+        android:text="@string/label_time"
         android:textColor="@color/color_BABABA"
         android:textSize="@dimen/sp_12"
         app:layout_constraintBaseline_toBaselineOf="@id/tvLabelPrice"
@@ -185,9 +184,20 @@
     <View
         android:layout_width="@dimen/dp_6"
         android:layout_height="@dimen/dp_7"
-        android:background="@drawable/ic_right_arrow_gray"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/ic_order_right_arrow_gray"
+        app:layout_constraintBottom_toTopOf="@id/tvFee"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/vDividingLine"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginTop="@dimen/dp_16"
+        android:background="@color/color_F6F6F6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvFee" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

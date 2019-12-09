@@ -217,4 +217,10 @@
     <string name="label_total_amount">数量</string>
     <string name="label_traded_amount">已成交的数量</string>
     <string name="label_fee">手续费</string>
+
+    <string name="title_order_details">订单详情</string>
+    <string name="title_group_orders">成交纪录</string>
+    <string name="label_time">时间</string>
+    <string name="state_revoked">已撤销</string>
+    <string name="state_completed">已完成</string>
 </resources>
