@@ -30,16 +30,28 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
     private var mHandler = Handler(Looper.getMainLooper())
 
     fun checkTokenRegister(address: String, call: (list: List<String>) -> Unit) {
-        val subscribe = mViolasRepository.checkRegisterToken(address)
+        val subscribe = mViolasRepository.getRegisterToken(address)
             .subscribe({
                 if (it.data != null) {
                     call.invoke(it.data!!)
-                }else{
+                } else {
                     call.invoke(arrayListOf())
                 }
             }, {
                 call.invoke(arrayListOf())
             })
+    }
+
+    suspend fun getRegisterToken(address: String): List<String>? {
+        var registerToken: List<String>? = null
+        val subscribe = mViolasRepository.getRegisterToken(address)
+            .subscribe({
+                if (it.data != null) {
+                    registerToken = it.data!!
+                }
+            }, {
+            })
+        return registerToken
     }
 
     fun getSupportCurrency(call: (list: List<SupportCurrencyDTO>) -> Unit) {
@@ -293,7 +305,11 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         try {
             val queryToken = tokenDO?.tokenAddress?.isEmpty() ?: false
             val response =
-                mViolasRepository.getTransactionRecord(address, pageSize, (pageNumber - 1) * pageSize)
+                mViolasRepository.getTransactionRecord(
+                    address,
+                    pageSize,
+                    (pageNumber - 1) * pageSize
+                )
 
             if (response.data.isNullOrEmpty()) {
                 onSuccess.invoke(emptyList(), null)

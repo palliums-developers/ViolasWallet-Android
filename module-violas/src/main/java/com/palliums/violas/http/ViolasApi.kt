@@ -53,5 +53,5 @@ interface ViolasApi {
     fun getSupportCurrency(): Single<ListResponse<SupportCurrencyDTO>>
 
     @GET("/1.0/violas/module")
-    fun checkRegisterToken(@Query("addr") address: String): Single<ListResponse<String>>
+    fun getRegisterToken(@Query("addr") address: String): Single<ListResponse<String>>
 }
