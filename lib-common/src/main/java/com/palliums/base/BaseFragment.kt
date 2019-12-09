@@ -17,7 +17,7 @@ import me.yokeyword.fragmentation.SupportFragment
  * <p>
  * desc:
  */
-abstract class BaseFragment : SupportFragment(), View.OnClickListener,
+abstract class BaseFragment : SupportFragment(), View.OnClickListener, ViewController,
     CoroutineScope by CustomMainScope() {
 
     override fun onCreateView(
@@ -48,27 +48,27 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener,
         }
     }
 
-    fun showProgress(@StringRes resId: Int) {
+    override fun showProgress(@StringRes resId: Int) {
         showProgress(getString(resId))
     }
 
-    fun showProgress(msg: String? = null) {
+    override fun showProgress(msg: String?) {
         (activity as? BaseActivity)?.showProgress(msg)
     }
 
-    fun dismissProgress() {
+    override fun dismissProgress() {
         (activity as? BaseActivity)?.dismissProgress()
     }
 
-    fun showToast(@StringRes msgId: Int) {
+    override fun showToast(@StringRes msgId: Int) {
         showToast(getString(msgId))
     }
 
-    fun showToast(msg: String) {
+    override fun showToast(msg: String) {
         (activity as? BaseActivity)?.showToast(msg)
     }
 
-    fun finishActivity(){
+    fun finishActivity() {
         activity?.finish()
     }
 }
