@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.palliums.utils.CommonViewHolder
 import com.violas.wallet.R
-import com.violas.wallet.ui.main.quotes.IToken
+import com.violas.wallet.ui.main.quotes.bean.IToken
 import kotlinx.android.synthetic.main.fragment_token_sheet_sheet.*
 import kotlinx.android.synthetic.main.item_token_sheet_quotes.view.*
 

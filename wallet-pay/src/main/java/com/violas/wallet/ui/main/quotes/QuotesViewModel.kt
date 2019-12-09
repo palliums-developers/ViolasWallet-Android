@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.main.quotes
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
 import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
@@ -12,45 +11,16 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.socket.ExchangeSocket
 import com.violas.wallet.repository.socket.Subscriber
+import com.violas.wallet.ui.main.quotes.bean.ExchangeToken
+import com.violas.wallet.ui.main.quotes.bean.IOrder
+import com.violas.wallet.ui.main.quotes.bean.IToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import org.json.JSONObject
 import java.math.BigDecimal
 import java.math.RoundingMode
-
-interface IToken {
-    fun isNetEnable(): Boolean = false
-    fun isEnable(): Boolean = false
-    fun tokenAddress(): String
-    fun tokenName(): String
-    fun tokenUnit(): String = tokenName()
-    fun tokenPrice(): BigDecimal
-}
-
-class ExchangeToken(
-    private val address: String,
-    private val name: String,
-    private val price: BigDecimal,
-    private var localEnable: Boolean = false,
-    private var remoteEnable: Boolean = false
-) : IToken {
-    override fun tokenAddress() = address
-
-    override fun tokenName() = name
-
-    override fun tokenPrice() = price
-
-    override fun isNetEnable() = remoteEnable
-
-    override fun isEnable() = localEnable
-}
-
-interface IOrder {
-    fun version(): Long
-}
 
 class QuotesViewModel(application: Application) : AndroidViewModel(application), Subscriber {
     // 是否开启兑换功能
@@ -93,6 +63,10 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
 
     fun getTokenList(): List<IToken> {
         return mTokenList.subList(0, mTokenList.size)
+    }
+
+    fun clickShowMoreAllOrder(){
+        isShowMoreAllOrderLiveData.value = !isShowMoreAllOrderLiveData.value!!
     }
 
     private fun handleAccountEvent() =
@@ -199,11 +173,22 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
 
     private fun initAllDisplayOrdersLiveData() {
         allDisplayOrdersLiveData.addSource(isShowMoreAllOrderLiveData, Observer {
-
+            handleDisplayOrder()
         })
         allDisplayOrdersLiveData.addSource(allOrdersLiveData, Observer {
-
+            handleDisplayOrder()
         })
+    }
+
+    private fun handleDisplayOrder() {
+        val take = allOrdersLiveData.value?.sortedBy { it.version() }?.take(
+            if (isShowMoreAllOrderLiveData.value == true) {
+                20
+            } else {
+                3
+            }
+        )
+        allDisplayOrdersLiveData.postValue(take)
     }
 
     private fun handleExchangeRateLiveData() {
@@ -253,17 +238,26 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         isPositiveChangeLiveData.value = !isPositiveChangeLiveData.value!!
     }
 
-    override fun onMarkCall(msg: JSONObject) {
-        Log.e("====", msg.toString())
-        val mutableList = MutableList<IOrder>(10) {
-            object : IOrder {
-                override fun version(): Long {
-                    return it.toLong()
-                }
-            }
+    override fun onMarkCall(
+        meOrder: List<IOrder>,
+        buyOrder: List<IOrder>,
+        sellsOrder: List<IOrder>
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            meOrdersLiveData.postValue(meOrder)
+
+            val allOrderList = buyOrder.plus(sellsOrder)
+//                .filter {
+//                    if (isPositiveChangeLiveData.value == true) {
+//                        it.tokenGet() == currentFormCoinLiveData.value?.tokenAddress() &&
+//                                it.tokenGive() == currentToCoinLiveData.value?.tokenAddress()
+//                    } else {
+//                        it.tokenGet() == currentToCoinLiveData.value?.tokenAddress() &&
+//                                it.tokenGive() == currentFormCoinLiveData.value?.tokenAddress()
+//                    }
+//                }
+            allOrdersLiveData.postValue(allOrderList)
         }
-        meOrdersLiveData.postValue(mutableList)
-        allDisplayOrdersLiveData.postValue(mutableList)
     }
 
     override fun onCleared() {

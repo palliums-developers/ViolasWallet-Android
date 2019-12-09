@@ -2,10 +2,13 @@ package com.violas.wallet.ui.main.quotes
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.palliums.utils.CommonViewHolder
 import com.violas.wallet.R
+import com.violas.wallet.ui.main.quotes.bean.IOrder
+import com.violas.wallet.ui.main.quotes.bean.IOrderType
 import kotlinx.android.synthetic.main.item_quotes_deepness.view.*
 
 class AllOrderAdapter :
@@ -22,9 +25,23 @@ class AllOrderAdapter :
 
     override fun onBindViewHolder(holder: CommonViewHolder, position: Int) {
         val item = getItem(position)
-        holder.itemView.ivOrderStatus.setImageDrawable(null)
-        holder.itemView.tvCoinNumber.text = ""
-        holder.itemView.tvCoinPrice.text = ""
+        val drawableRes = when (item.type()) {
+            IOrderType.SELLS -> {
+                R.drawable.icon_quotes_sell
+            }
+            IOrderType.BUY -> {
+                R.drawable.icon_quotes_buy
+            }
+        }
+        holder.itemView.ivOrderStatus.setImageDrawable(
+            ResourcesCompat.getDrawable(
+                holder.itemView.context.resources,
+                drawableRes,
+                null
+            )
+        )
+        holder.itemView.tvCoinNumber.text = item.amount()
+        holder.itemView.tvCoinPrice.text = item.price()
     }
 }
 
