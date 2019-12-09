@@ -58,5 +58,5 @@ data class DexTokenPriceDTO(
     @SerializedName(value = "addr")
     val address: String,
     val name: String,
-    val price: Int
+    val price: Double
 )

@@ -212,4 +212,5 @@
     <string name="title_orders">订单</string>
     <string name="title_tab_uncompleted">未完成</string>
     <string name="title_tab_completed">已完成</string>
+    <string name="hint_quotes_not_open">将钱包切换到 Violas 账户，才可以使用市场功能。</string>
 </resources>

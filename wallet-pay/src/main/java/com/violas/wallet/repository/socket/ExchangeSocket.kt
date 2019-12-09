@@ -47,11 +47,10 @@ object ExchangeSocket {
         }
     }
 
-    fun getMark(data: String) {
-//        mSocket.emit("getMarket", data)
+    fun getMark(tokenBase: String, tokenQuote: String, userAddress: String) {
         mSocket.emit(
             "getMarket",
-            """{"tokenBase":"0x0f7100fcf2d114ef199575f0651620001d210718c680fbe7568c72d6e0160731","tokenQuote":"0x352ba42b3a2fb66bff15f08ea691b5b87eff0fe6a69b79cda364c4cdf787a0a2" ,"user":"0x8e8f033830c60602ef491d0f850094d72d483e602c9a5df845eac7efc3387a38"}"""
+            """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote" ,"user":"0x$userAddress"}"""
         )
     }
 }

@@ -11,7 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.violas.wallet.R
+import com.violas.wallet.ui.main.quotes.tokenList.TokenBottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_quotes.*
+import kotlinx.android.synthetic.main.fragment_quotes_content.*
+import kotlinx.android.synthetic.main.fragment_quotes_did_not_open.*
 
 class QuotesFragment : Fragment() {
     private val mConstraintSet = ConstraintSet()
@@ -40,11 +43,28 @@ class QuotesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initAnim()
         initViewEvent()
+        handleIsEnableObserve()
         handleExchangeCoinObserve()
         handlePositiveChangeObserve()
         handleExchangeRateObserve()
         handleMeOrderObserve()
         handleAllOrderObserve()
+    }
+
+    private fun handleIsEnableObserve() {
+        mQuotesViewModel.isEnable.observe(viewLifecycleOwner, Observer {
+            try {
+                layoutNotOpen.inflate()
+            } catch (e: Exception) {
+            }
+            if (it) {
+                layoutNotOpenRoot.visibility = View.GONE
+                layoutQuotesContent.visibility = View.VISIBLE
+            } else {
+                layoutNotOpenRoot.visibility = View.VISIBLE
+                layoutQuotesContent.visibility = View.GONE
+            }
+        })
     }
 
     private fun initAnim() {
@@ -56,6 +76,23 @@ class QuotesFragment : Fragment() {
         ivConversion.setOnClickListener { mQuotesViewModel.clickPositiveChange() }
         recyclerViewMeOrder.adapter = mMeOrderAdapter
         recyclerViewAllOrder.adapter = mAllOrderAdapter
+        layoutFromCoin.setOnClickListener { showTokenFragment(it) }
+        layoutToCoin.setOnClickListener { showTokenFragment(it) }
+    }
+
+    private fun showTokenFragment(view: View?) {
+        val sheetDialogFragment = TokenBottomSheetDialogFragment.newInstance()
+        sheetDialogFragment.show(childFragmentManager, mQuotesViewModel.getTokenList()) {
+            sheetDialogFragment.dismiss()
+            when (view?.id) {
+                R.id.layoutFromCoin -> {
+                    mQuotesViewModel.currentFormCoinLiveData.postValue(it)
+                }
+                R.id.layoutToCoin -> {
+                    mQuotesViewModel.currentToCoinLiveData.postValue(it)
+                }
+            }
+        }
     }
 
     private fun handleExchangeCoinObserve() {

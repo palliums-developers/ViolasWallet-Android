@@ -31,9 +31,7 @@ class DexRepository(private val dexApi: DexApi) {
         }
     }
 
-    suspend fun getTokenPrices(): ListResponse<DexTokenPriceDTO> {
-        return checkResponse {
-            dexApi.getTokenPrices()
-        }
+    suspend fun getTokenPrices(): List<DexTokenPriceDTO>? {
+        return dexApi.getTokenPrices()
     }
 }
