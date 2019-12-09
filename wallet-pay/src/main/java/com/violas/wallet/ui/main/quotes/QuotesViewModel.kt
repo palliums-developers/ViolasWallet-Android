@@ -39,6 +39,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     val isShowMoreAllOrderLiveData = MutableLiveData(false)
     val allDisplayOrdersLiveData = MediatorLiveData<List<IOrder>>()
     private val allOrdersLiveData = MutableLiveData<List<IOrder>>()
+    private val mShowMoreAllOrderMaxCount = 20
+    private val mShowMoreAllOrderMinCount = 5
     // Token 列表
     private val mTokenList = ArrayList<IToken>()
 
@@ -65,7 +67,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         return mTokenList.subList(0, mTokenList.size)
     }
 
-    fun clickShowMoreAllOrder(){
+    fun clickShowMoreAllOrder() {
         isShowMoreAllOrderLiveData.value = !isShowMoreAllOrderLiveData.value!!
     }
 
@@ -183,9 +185,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     private fun handleDisplayOrder() {
         val take = allOrdersLiveData.value?.sortedBy { it.version() }?.take(
             if (isShowMoreAllOrderLiveData.value == true) {
-                20
+                mShowMoreAllOrderMaxCount
             } else {
-                3
+                mShowMoreAllOrderMinCount
             }
         )
         allDisplayOrdersLiveData.postValue(take)
