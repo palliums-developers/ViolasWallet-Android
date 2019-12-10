@@ -54,13 +54,14 @@ class QuotesFragment : Fragment() {
         handleMeOrderObserve()
         handleAllOrderObserve()
         handleIvEntrustOthersAnimObserve()
+        handleCurrentExchangeCoinObserve()
     }
 
     private fun handleIvEntrustOthersAnimObserve() {
         mQuotesViewModel.isShowMoreAllOrderLiveData.observe(viewLifecycleOwner, Observer {
-            if(it){
+            if (it) {
                 mIvEntrustOthersAnim?.reverse()
-            }else{
+            } else {
                 mIvEntrustOthersAnim?.start()
             }
         })
@@ -115,6 +116,18 @@ class QuotesFragment : Fragment() {
         }
     }
 
+    private fun handleCurrentExchangeCoinObserve() {
+        mQuotesViewModel.currentExchangeCoinLiveData.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                tvMeOrderEntrustNumber.text =
+                    "${getString(R.string.label_number)}(${it.tokenUnit()})"
+                tvMeOrderEntrustPrice.text = "${getString(R.string.label_price)}(${it.tokenUnit()})"
+                tvAllOrderEntrustPrice.text =
+                    "${getString(R.string.label_price)}(${it.tokenUnit()})"
+            }
+        })
+    }
+
     private fun handleExchangeCoinObserve() {
         mQuotesViewModel.currentFormCoinLiveData.observe(viewLifecycleOwner, Observer {
             tvFromCoin.text = it.tokenName()
@@ -146,12 +159,26 @@ class QuotesFragment : Fragment() {
     private fun handleMeOrderObserve() {
         mQuotesViewModel.meOrdersLiveData.observe(viewLifecycleOwner, Observer {
             mMeOrderAdapter.submitList(it)
+            if (it == null || it.isEmpty()) {
+                viewMeOrderNull.visibility = View.VISIBLE
+                layoutMeOrder.visibility = View.GONE
+            } else {
+                viewMeOrderNull.visibility = View.GONE
+                layoutMeOrder.visibility = View.VISIBLE
+            }
         })
     }
 
     private fun handleAllOrderObserve() {
         mQuotesViewModel.allDisplayOrdersLiveData.observe(viewLifecycleOwner, Observer {
             mAllOrderAdapter.submitList(it)
+            if (it == null || it.isEmpty()) {
+                viewAllOrderNull.visibility = View.VISIBLE
+                layoutAllOrder.visibility = View.GONE
+            } else {
+                viewAllOrderNull.visibility = View.GONE
+                layoutAllOrder.visibility = View.VISIBLE
+            }
         })
     }
 }

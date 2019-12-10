@@ -1,7 +1,10 @@
 package com.violas.wallet.ui.main.quotes
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
@@ -28,10 +31,13 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     // 当前选择的币种
     val currentFormCoinLiveData = MutableLiveData<IToken>()
     val currentToCoinLiveData = MutableLiveData<IToken>()
+    // 当前兑换的币种
+    val currentExchangeCoinLiveData = MediatorLiveData<IToken>()
     // 是否是正向兑换
     val isPositiveChangeLiveData = MutableLiveData(true)
     // 汇率
     val exchangeRateLiveData = MediatorLiveData<String>()
+    private val exchangeRateNumberLiveData = MediatorLiveData<BigDecimal>()
     private val exchangeRate = MutableLiveData("... = ...")
     // 当前委托
     val meOrdersLiveData = MutableLiveData<List<IOrder>>()
@@ -60,7 +66,28 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         handleAccountEvent()
         initExchangeRateLiveData()
         initAllDisplayOrdersLiveData()
+        initCurrentExchangeCoinLiveDataLiveData()
         handleMarkSocket()
+    }
+
+    private fun initCurrentExchangeCoinLiveDataLiveData() {
+        val change = {
+            val token = if (isPositiveChangeLiveData.value == true) {
+                currentFormCoinLiveData.value
+            } else {
+                currentToCoinLiveData.value
+            }
+            currentExchangeCoinLiveData.postValue(token)
+        }
+        currentExchangeCoinLiveData.addSource(isPositiveChangeLiveData) {
+            change()
+        }
+        currentExchangeCoinLiveData.addSource(currentToCoinLiveData) {
+            change()
+        }
+        currentExchangeCoinLiveData.addSource(currentFormCoinLiveData) {
+            change()
+        }
     }
 
     fun getTokenList(): List<IToken> {
@@ -174,12 +201,12 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     private fun initAllDisplayOrdersLiveData() {
-        allDisplayOrdersLiveData.addSource(isShowMoreAllOrderLiveData, Observer {
+        allDisplayOrdersLiveData.addSource(isShowMoreAllOrderLiveData) {
             handleDisplayOrder()
-        })
-        allDisplayOrdersLiveData.addSource(allOrdersLiveData, Observer {
+        }
+        allDisplayOrdersLiveData.addSource(allOrdersLiveData) {
             handleDisplayOrder()
-        })
+        }
     }
 
     private fun handleDisplayOrder() {
@@ -211,14 +238,17 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     toUnit = currentFormCoinLiveData.value!!.tokenUnit()
                     toPrice = currentFormCoinLiveData.value!!.tokenPrice()
                 }
+                val divide = toPrice.divide(
+                    fromPrice,
+                    2,
+                    RoundingMode.HALF_DOWN
+                )
+                exchangeRateNumberLiveData.postValue(divide)
                 exchangeRateLiveData.postValue(
-                    "1 $toUnit = ${toPrice.divide(
-                        fromPrice,
-                        2,
-                        RoundingMode.HALF_DOWN
-                    ).stripTrailingZeros().toPlainString()} $fromUnit"
+                    "1 $toUnit = ${divide.stripTrailingZeros().toPlainString()} $fromUnit"
                 )
             } else {
+                exchangeRateNumberLiveData.postValue(BigDecimal("0"))
                 exchangeRateLiveData.postValue("... = ...")
             }
         }
@@ -241,14 +271,14 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     override fun onMarkCall(
-        meOrder: List<IOrder>,
+        myOrder: List<IOrder>,
         buyOrder: List<IOrder>,
-        sellsOrder: List<IOrder>
+        sellOrder: List<IOrder>
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            meOrdersLiveData.postValue(meOrder)
+            meOrdersLiveData.postValue(myOrder)
 
-            val allOrderList = buyOrder.plus(sellsOrder)
+            val allOrderList = buyOrder.plus(sellOrder)
 //                .filter {
 //                    if (isPositiveChangeLiveData.value == true) {
 //                        it.tokenGet() == currentFormCoinLiveData.value?.tokenAddress() &&
