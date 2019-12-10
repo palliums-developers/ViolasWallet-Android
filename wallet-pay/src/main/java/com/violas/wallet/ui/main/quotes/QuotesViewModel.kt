@@ -276,10 +276,10 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         buyOrder: List<IOrder>,
         sellOrder: List<IOrder>
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            meOrdersLiveData.postValue(myOrder)
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
+            meOrdersLiveData.postValue(myOrder.map(setOrderPrice()))
             val allOrderList = buyOrder.plus(sellOrder)
-            allOrdersLiveData.postValue(allOrderList)
+            allOrdersLiveData.postValue(allOrderList.map(setOrderPrice()))
         }
     }
 
@@ -287,7 +287,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         buyOrder: List<IOrder>,
         sellOrder: List<IOrder>
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             val allOrderList = buyOrder.plus(sellOrder)
             val meOrderList = allOrderList
                 .filter {
@@ -303,6 +303,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 meOrdersLiveData.postValue(
                     newMeOrderList.values.toList()
                         .sortedBy { it.version() }
+                        .map(setOrderPrice())
                         .take(3)
                 )
             }
@@ -311,7 +312,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             allOrderList.forEach {
                 newAllOrderList[it.id()] = it
             }
-            allOrdersLiveData.postValue(newAllOrderList.values.toList())
+            allOrdersLiveData.postValue(newAllOrderList.values.toList().map(setOrderPrice()))
         }
     }
 
@@ -319,5 +320,18 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         EventBus.getDefault().unregister(this)
         ExchangeSocket.removeSubscriber(this)
         super.onCleared()
+    }
+
+    fun setOrderPrice(): (IOrder) -> IOrder = {
+        currentToCoinLiveData.value?.let { token ->
+            it.setPrice(
+                token.tokenPrice().divide(
+                    BigDecimal("100"),
+                    2,
+                    RoundingMode.HALF_DOWN
+                ).stripTrailingZeros().toPlainString()
+            )
+        }
+        it
     }
 }

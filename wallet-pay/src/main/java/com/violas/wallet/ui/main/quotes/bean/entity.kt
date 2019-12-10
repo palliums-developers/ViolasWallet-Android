@@ -52,6 +52,7 @@ interface IOrder {
     fun state(): IOrderStatus
     fun amount(): String
     fun price(): String
+    fun setPrice(price:String)
     fun date(): Date
 }
 
@@ -88,13 +89,13 @@ class ExchangeOrder(
                         type,
                         when (any.getString("state")) {
                             "OPEN" -> IOrderStatus.OPEN
-                            "OPEN" -> IOrderStatus.FILLED
-                            "OPEN" -> IOrderStatus.CANCELED
-                            else -> IOrderStatus.OPEN
+                            "FILLED" -> IOrderStatus.FILLED
+                            "CANCELED" -> IOrderStatus.CANCELED
+                            else -> IOrderStatus.FILLED_CANCELED
                         },
-                        any.getString("amountGet"),
-                        "1",
-                        sim.parse(any.getString("date").replace("T", " "))
+                        any.getString("amountGive"),
+                        "",
+                        Date(any.getLong("update_date"))
                     )
                 )
             }
@@ -124,6 +125,10 @@ class ExchangeOrder(
 
     override fun tokenGet(): String {
         return tokenGet.replace("0x", "")
+    }
+
+    override fun setPrice(price:String){
+        this.price = price
     }
 
     override fun tokenGive(): String {

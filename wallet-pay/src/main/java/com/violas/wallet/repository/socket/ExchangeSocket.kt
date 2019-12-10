@@ -26,6 +26,7 @@ object ExchangeSocket {
             mExecutor.submit {
                 if (args.isNotEmpty()) {
                     val depthsJsonObject = (args[0] as JSONObject).getJSONObject("depths")
+                    LogUtil.e("==market==",depthsJsonObject.toString())
                     val buysOrder =
                         ExchangeOrder.parse(depthsJsonObject.getJSONArray("buys"), IOrderType.BUY)
                     val sellsOrder =
@@ -46,6 +47,7 @@ object ExchangeSocket {
             mExecutor.submit {
                 if (args.isNotEmpty()) {
                     val depthsJsonObject = (args[0] as JSONObject)
+                    LogUtil.e("==depths==",depthsJsonObject.toString())
                     val buysOrder =
                         ExchangeOrder.parse(depthsJsonObject.getJSONArray("buys"), IOrderType.BUY)
                     val sellsOrder =
