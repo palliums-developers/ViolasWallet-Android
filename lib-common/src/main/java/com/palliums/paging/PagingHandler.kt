@@ -92,7 +92,7 @@ class PagingHandler<VO>(
             mPagingController.getViewAdapter().setLoadMoreState(it)
         })
 
-        mPagingController.getViewModel().tipsMessage.observe(mLifecycleOwner, Observer {
+        mPagingController.getViewModel().pagingTipsMessage.observe(mLifecycleOwner, Observer {
             if (it.isNotEmpty()) {
                 mViewController.showToast(it)
             }

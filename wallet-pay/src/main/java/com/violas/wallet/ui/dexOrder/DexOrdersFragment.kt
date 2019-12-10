@@ -2,12 +2,13 @@ package com.violas.wallet.ui.dexOrder
 
 import android.os.Bundle
 import androidx.annotation.StringDef
+import androidx.lifecycle.Observer
+import com.palliums.net.LoadState
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
-import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.repository.http.dex.DexOrderDTO
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -34,23 +35,20 @@ annotation class DexOrdersState {
     }
 }
 
-class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
+class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
 
     companion object {
         private const val EXTRA_KEY_ORDER_STATE = "EXTRA_KEY_ORDER_STATE"
-        private const val EXTRA_KEY_BASE_TOKEN_ADDRESS = "EXTRA_KEY_BASE_TOKEN_ADDRESS"
-        private const val EXTRA_KEY_QUOTE_TOKEN_ADDRESS = "EXTRA_KEY_QUOTE_TOKEN_ADDRESS"
 
+        /**
+         * @param orderState 订单状态，若为null则查询所有
+         */
         fun newInstance(
             @DexOrdersState
-            orderState: String?,
-            baseTokenAddress: String? = null,
-            quoteTokenAddress: String? = null
+            orderState: String?
         ): DexOrdersFragment {
             val bundle = Bundle().apply {
                 orderState?.let { putString(EXTRA_KEY_ORDER_STATE, it) }
-                baseTokenAddress?.let { putString(EXTRA_KEY_BASE_TOKEN_ADDRESS, it) }
-                quoteTokenAddress?.let { putString(EXTRA_KEY_QUOTE_TOKEN_ADDRESS, it) }
             }
 
             return DexOrdersFragment().apply {
@@ -61,29 +59,39 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
 
     @DexOrdersState
     private var orderState: String? = null
-    private var baseTokenAddress: String? = null
-    private var quoteTokenAddress: String? = null
     private lateinit var accountAddress: String
 
-    override fun initViewModel(): PagingViewModel<DexOrderDTO> {
-        return DexOrdersViewModel(accountAddress, orderState, baseTokenAddress, quoteTokenAddress)
+    override fun initViewModel(): PagingViewModel<DexOrderVO> {
+        return DexOrderViewModel(
+            accountAddress = accountAddress,
+            orderState = orderState,
+            giveTokenAddress = null,
+            getTokenAddress = null
+        )
     }
 
-    private fun showItemAllInfo(): Boolean {
-        return baseTokenAddress.isNullOrEmpty() || quoteTokenAddress.isNullOrEmpty()
-    }
-
-    override fun initViewAdapter(): PagingViewAdapter<DexOrderDTO> {
-        return DexOrdersViewAdapter(
-            viewModel = getViewModel() as DexOrdersViewModel,
-            showItemAllInfo = showItemAllInfo(),
+    override fun initViewAdapter(): PagingViewAdapter<DexOrderVO> {
+        return DexOrderViewAdapter(
             retryCallback = { getViewModel().retry() },
+            showOrderDetails = false,
+            viewModel = getViewModel() as DexOrderViewModel,
             onOpenOrderDetails = {
                 DexOrderDetailsActivity.start(requireContext(), it)
             },
             onOpenBrowserView = {
                 // TODO violas浏览器暂未实现
-                showToast(R.string.transaction_record_not_supported_query)
+                //showToast(R.string.transaction_record_not_supported_query)
+            },
+            onClickRevokeOrder = { dexOrder, position ->
+                PasswordInputDialog().setConfirmListener { password, dialog ->
+                    dialog.dismiss()
+
+                    (getViewModel() as DexOrderViewModel).revokeOrder(password, dexOrder) {
+                        dexOrder.revokedFlag = true
+                        getViewAdapter().notifyItemChanged(position)
+                    }
+
+                }.show(this@DexOrdersFragment.childFragmentManager)
             })
     }
 
@@ -94,7 +102,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
             val result = initData(savedInstanceState)
             withContext(Dispatchers.Main) {
                 if (result) {
-                    mPagingHandler.start()
+                    initView()
                 } else {
                     finishActivity()
                 }
@@ -105,26 +113,41 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         orderState?.let { outState.putString(EXTRA_KEY_ORDER_STATE, it) }
-        baseTokenAddress?.let { outState.putString(EXTRA_KEY_BASE_TOKEN_ADDRESS, it) }
-        quoteTokenAddress?.let { outState.putString(EXTRA_KEY_QUOTE_TOKEN_ADDRESS, it) }
+    }
+
+    private fun initView() {
+        (getViewModel() as DexOrderViewModel).loadState.observe(this, Observer {
+            when (it.status) {
+                LoadState.Status.RUNNING -> {
+                    showProgress()
+                }
+
+                else -> {
+                    dismissProgress()
+                }
+            }
+        })
+
+        (getViewModel() as DexOrderViewModel).tipsMessage.observe(this, Observer {
+            if (it.isNotEmpty()) {
+                showToast(it)
+            }
+        })
+
+        mPagingHandler.start()
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
 
         if (savedInstanceState != null) {
             orderState = savedInstanceState.getString(EXTRA_KEY_ORDER_STATE, null)
-            baseTokenAddress = savedInstanceState.getString(EXTRA_KEY_BASE_TOKEN_ADDRESS, null)
-            quoteTokenAddress = savedInstanceState.getString(EXTRA_KEY_QUOTE_TOKEN_ADDRESS, null)
         } else if (arguments != null) {
-            orderState = arguments!!.getString(EXTRA_KEY_ORDER_STATE, orderState)
-            baseTokenAddress = arguments!!.getString(EXTRA_KEY_BASE_TOKEN_ADDRESS, null)
-            quoteTokenAddress = arguments!!.getString(EXTRA_KEY_QUOTE_TOKEN_ADDRESS, null)
+            orderState = arguments!!.getString(EXTRA_KEY_ORDER_STATE, null)
         }
 
         return try {
             val currentAccount = AccountManager().currentAccount()
             accountAddress = currentAccount.address
-            accountAddress = "0xe744bc4894feef25111dc40ec39644468e797ec07270c3c6d234675630c1797f"
             true
         } catch (e: Exception) {
             false

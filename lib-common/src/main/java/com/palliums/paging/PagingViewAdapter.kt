@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.palliums.R
 import com.palliums.base.BaseViewHolder
 import com.palliums.net.LoadState
+import com.palliums.utils.RecyclerViewDataObserverProxy
 import kotlinx.android.synthetic.main.item_load_more.view.*
 
 /**
@@ -51,22 +52,29 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
     }
 
     final override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (getItemViewType(position)) {
-            R.layout.item_load_more -> {
+        val viewType = getItemViewType(position)
+        when {
+            viewType == R.layout.item_load_more -> {
                 (holder as BaseViewHolder<LoadState>).bind(position, loadMoreState)
                 holder.itemView.tag = loadMoreState
             }
 
+            isHeaderItem(viewType) -> {
+                val itemData = getHeaderItem(position, viewType)
+                (holder as BaseViewHolder<Any>).bind(position, itemData)
+                holder.itemView.tag = itemData
+            }
+
             else -> {
-                val item = getItem(position)
-                (holder as BaseViewHolder<VO>).bind(position, item)
-                holder.itemView.tag = item
+                val itemData = getItem(position)
+                (holder as BaseViewHolder<Any>).bind(position, itemData)
+                holder.itemView.tag = itemData
             }
         }
     }
 
     final override fun getItemCount(): Int {
-        return super.getItemCount() + getOtherItemCount() + if (hasExtraRow()) 1 else 0
+        return super.getItemCount() + getHeaderItemCount() + if (hasExtraRow()) 1 else 0
     }
 
     final override fun getItemViewType(position: Int): Int {
@@ -74,6 +82,24 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
             R.layout.item_load_more
         } else {
             getItemViewTypeSupport(position)
+        }
+    }
+
+    override fun getItem(position: Int): VO? {
+        return super.getItem(position - getHeaderItemCount())
+    }
+
+    override fun registerAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) {
+        val headerItemCount = getHeaderItemCount()
+        if (headerItemCount <= 0) {
+            super.registerAdapterDataObserver(observer)
+        } else {
+            super.registerAdapterDataObserver(
+                RecyclerViewDataObserverProxy(
+                    observer,
+                    headerItemCount
+                )
+            )
         }
     }
 
@@ -91,9 +117,9 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
 
         if (hadExtraRow != hasExtraRow) {
             if (hadExtraRow) {
-                notifyItemRemoved(super.getItemCount() + getOtherItemCount())
+                notifyItemRemoved(super.getItemCount() + getHeaderItemCount())
             } else {
-                notifyItemInserted(super.getItemCount() + getOtherItemCount())
+                notifyItemInserted(super.getItemCount() + getHeaderItemCount())
             }
         } else if (hasExtraRow && prevLoadMoreState != loadMoreState) {
             notifyItemChanged(itemCount - 1)
@@ -106,7 +132,15 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
         return 0
     }
 
-    open fun getOtherItemCount(): Int {
+    open fun isHeaderItem(viewType: Int): Boolean {
+        return false
+    }
+
+    open fun getHeaderItem(position: Int, viewType: Int): Any? {
+        return null
+    }
+
+    open fun getHeaderItemCount(): Int {
         return 0
     }
 

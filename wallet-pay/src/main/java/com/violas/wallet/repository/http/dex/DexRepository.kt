@@ -1,5 +1,6 @@
 package com.violas.wallet.repository.http.dex
 
+import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
 
 /**
@@ -10,13 +11,14 @@ import com.palliums.net.checkResponse
  */
 class DexRepository(private val dexApi: DexApi) {
 
+    @Throws(RequestException::class)
     suspend fun getMyOrders(
         accountAddress: String,
         pageSize: String,
         lastVersion: String,
         orderState: String? = null,
-        baseTokenAddress: String? = null,
-        quoteTokenAddress: String? = null
+        giveTokenAddress: String? = null,
+        getTokenAddress: String? = null
     ): ListResponse<DexOrderDTO> {
 
         return checkResponse {
@@ -25,13 +27,18 @@ class DexRepository(private val dexApi: DexApi) {
                 pageSize,
                 lastVersion,
                 orderState,
-                baseTokenAddress,
-                quoteTokenAddress
+                giveTokenAddress,
+                getTokenAddress
             )
         }
     }
 
-    suspend fun getTokenPrices(): List<DexTokenPriceDTO>? {
-        return dexApi.getTokenPrices()
+    @Throws(RequestException::class)
+    suspend fun getTokenPrices(): List<DexTokenPriceDTO> {
+        return try {
+            dexApi.getTokenPrices()
+        } catch (e: Exception) {
+            throw RequestException(e)
+        }
     }
 }

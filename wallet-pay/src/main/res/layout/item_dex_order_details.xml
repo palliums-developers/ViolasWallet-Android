@@ -6,14 +6,13 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_menu_item"
     android:paddingStart="@dimen/page_spacing_start"
-    android:paddingTop="@dimen/dp_21"
+    android:paddingTop="@dimen/dp_20"
     android:paddingEnd="@dimen/page_spacing_end">
 
     <TextView
         android:id="@+id/tvLabelTime"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_11"
         android:text="@string/label_time"
         android:textColor="@color/color_BABABA"
         android:textSize="@dimen/sp_12"
@@ -70,7 +69,7 @@
         android:textSize="@dimen/sp_12"
         app:layout_constraintBaseline_toBaselineOf="@id/tvLabelTime"
         app:layout_constraintEnd_toStartOf="@id/tvBrowserQuery"
-        app:layout_constraintHorizontal_weight="1.5"
+        app:layout_constraintHorizontal_weight="1.7"
         app:layout_constraintStart_toEndOf="@id/tvLabelPrice" />
 
     <TextView
@@ -81,10 +80,10 @@
         android:text="@string/transaction_record_query"
         android:textColor="@color/color_958FE5"
         android:textSize="@dimen/sp_12"
+        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@id/tvLabelTotalAmount"
         app:layout_constraintBaseline_toBaselineOf="@id/tvLabelTime"
         app:layout_constraintEnd_toEndOf="parent" />
-
 
     <TextView
         android:id="@+id/tvTotalAmount"

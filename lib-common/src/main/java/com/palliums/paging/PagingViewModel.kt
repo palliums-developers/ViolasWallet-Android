@@ -30,7 +30,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
     val pagedList = Transformations.switchMap(result) { it.pagedList }
     val refreshState = Transformations.switchMap(result) { it.refreshState }
     val loadMoreState = Transformations.switchMap(result) { it.loadMoreState }
-    val tipsMessage = Transformations.switchMap(result) { it.tipsMessage }
+    val pagingTipsMessage = Transformations.switchMap(result) { it.tipsMessage }
 
     /**
      * Just need to call once

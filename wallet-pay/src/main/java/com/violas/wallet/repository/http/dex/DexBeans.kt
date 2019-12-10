@@ -42,31 +42,21 @@ open class Response<T> : ApiResponse {
 class ListResponse<T> : Response<List<T>>()
 
 data class DexOrderDTO(
-    val amountFilled: String,
-    val amountGet: String,
-    val amountGive: String,
-    val availableVolume: String,
-    val date: String,
     val id: String,
-    val state: String,
-    val tokenGet: String,
-    val tokenGive: String,
-    val updated: String,
     val user: String,
-    val version: String
+    val state: String,
+    val tokenGive: String,
+    val amountGive: String,
+    val tokenGet: String,
+    val amountGet: String,
+    val amountFilled: String,
+    val version: String,
+    @SerializedName(value = "update_version")
+    val updateVersion: String,
+    val date: Long,
+    @SerializedName(value = "update_date")
+    val updateDate: Long
 ) : Parcelable {
-
-    fun isFinished(): Boolean {
-        return state == "FILLED" || state == "CANCELED"
-    }
-
-    fun isCanceled(): Boolean {
-        return state == "CANCELED"
-    }
-
-    fun isOpen(): Boolean {
-        return state == "OPEN"
-    }
 
     constructor(source: Parcel) : this(
         source.readString()!!,
@@ -79,25 +69,25 @@ data class DexOrderDTO(
         source.readString()!!,
         source.readString()!!,
         source.readString()!!,
-        source.readString()!!,
-        source.readString()!!
+        source.readLong(),
+        source.readLong()
     )
 
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeString(amountFilled)
-        writeString(amountGet)
-        writeString(amountGive)
-        writeString(availableVolume)
-        writeString(date)
         writeString(id)
-        writeString(state)
-        writeString(tokenGet)
-        writeString(tokenGive)
-        writeString(updated)
         writeString(user)
+        writeString(state)
+        writeString(tokenGive)
+        writeString(amountGive)
+        writeString(tokenGet)
+        writeString(amountGet)
+        writeString(amountFilled)
         writeString(version)
+        writeString(updateVersion)
+        writeLong(date)
+        writeLong(updateDate)
     }
 
     companion object CREATOR : Parcelable.Creator<DexOrderDTO> {
