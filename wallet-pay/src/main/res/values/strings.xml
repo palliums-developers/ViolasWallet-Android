@@ -225,4 +225,9 @@
     <string name="label_all_order_entrust">他人委托</string>
     <string name="hint_me_order_empty">您没有该交易对的委托</string>
     <string name="hint_all_order_empty">交易所没有该交易对的委托</string>
+    <string name="title_order_details">订单详情</string>
+    <string name="title_group_orders">成交纪录</string>
+    <string name="label_time">时间</string>
+    <string name="state_revoked">已撤销</string>
+    <string name="state_completed">已完成</string>
 </resources>

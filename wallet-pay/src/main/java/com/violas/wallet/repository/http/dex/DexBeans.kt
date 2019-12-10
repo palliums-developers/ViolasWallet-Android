@@ -1,5 +1,7 @@
 package com.violas.wallet.repository.http.dex
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
 
@@ -52,7 +54,57 @@ data class DexOrderDTO(
     val updated: String,
     val user: String,
     val version: String
-)
+) : Parcelable {
+
+    fun isFinished(): Boolean {
+        return state == "FILLED" || state == "CANCELED"
+    }
+
+    fun isCanceled(): Boolean {
+        return state == "CANCELED"
+    }
+
+    fun isOpen(): Boolean {
+        return state == "OPEN"
+    }
+
+    constructor(source: Parcel) : this(
+        source.readString()!!,
+        source.readString()!!,
+        source.readString()!!,
+        source.readString()!!,
+        source.readString()!!,
+        source.readString()!!,
+        source.readString()!!,
+        source.readString()!!,
+        source.readString()!!,
+        source.readString()!!,
+        source.readString()!!,
+        source.readString()!!
+    )
+
+    override fun describeContents() = 0
+
+    override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
+        writeString(amountFilled)
+        writeString(amountGet)
+        writeString(amountGive)
+        writeString(availableVolume)
+        writeString(date)
+        writeString(id)
+        writeString(state)
+        writeString(tokenGet)
+        writeString(tokenGive)
+        writeString(updated)
+        writeString(user)
+        writeString(version)
+    }
+
+    companion object CREATOR : Parcelable.Creator<DexOrderDTO> {
+        override fun createFromParcel(source: Parcel): DexOrderDTO = DexOrderDTO(source)
+        override fun newArray(size: Int): Array<DexOrderDTO?> = arrayOfNulls(size)
+    }
+}
 
 data class DexTokenPriceDTO(
     @SerializedName(value = "addr")

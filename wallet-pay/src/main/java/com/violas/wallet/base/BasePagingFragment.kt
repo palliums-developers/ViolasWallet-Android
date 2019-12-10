@@ -23,13 +23,14 @@ import kotlinx.android.synthetic.main.activity_base_list.*
 abstract class BasePagingFragment<VO> : BaseFragment(), PagingController<VO> {
 
     private val mViewModel by lazy {
-        requireActivity().viewModels<PagingViewModel<VO>> {
+        /*requireActivity().viewModels<PagingViewModel<VO>> {
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return initViewModel() as T
                 }
             }
-        }.value
+        }.value*/
+        initViewModel()
     }
 
     private val mViewAdapter by lazy {

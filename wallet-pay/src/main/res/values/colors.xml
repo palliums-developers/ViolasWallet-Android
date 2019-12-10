@@ -46,6 +46,10 @@
     <color name="color_B3B3B3">#B3B3B3</color>
     <color name="color_BABABA">#BABABA</color>
     <color name="color_726BD9">#726BD9</color>
+    <color name="color_63636F">#63636F</color>
+    <color name="color_FF8C8C">#FF8C8C</color>
+    <color name="color_F6F6F6">#F6F6F6</color>
+    <color name="color_958FE5">#958FE5</color>
 
     <color name="def_activity_bg">@color/white</color>
     <color name="def_activity_vice_bg">@color/color_F7F7F9</color>

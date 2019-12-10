@@ -26,7 +26,7 @@ class TransactionRecordViewAdapter(
 ) :
     PagingViewAdapter<TransactionRecordVO>(retryCallback, TransactionRecordDiffCallback()) {
 
-    private val mSimpleDateFormat = SimpleDateFormat("yy.MM.dd HH:mm", Locale.CHINA)
+    private val mSimpleDateFormat = SimpleDateFormat("yy.MM.dd HH:mm", Locale.ENGLISH)
 
     override fun onCreateViewHolderSupport(
         parent: ViewGroup,
