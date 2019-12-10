@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.main.quotes
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.TransitionManager
@@ -11,6 +12,8 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.palliums.utils.TextWatcherSimple
+import com.palliums.utils.stripTrailingZeros
 import com.violas.wallet.R
 import com.violas.wallet.ui.main.quotes.tokenList.TokenBottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_quotes.*
@@ -55,6 +58,7 @@ class QuotesFragment : Fragment() {
         handleAllOrderObserve()
         handleIvEntrustOthersAnimObserve()
         handleCurrentExchangeCoinObserve()
+        handleEditExchangeCoinObserve()
     }
 
     private fun handleIvEntrustOthersAnimObserve() {
@@ -89,7 +93,6 @@ class QuotesFragment : Fragment() {
 
         mIvEntrustOthersAnim = ObjectAnimator.ofFloat(ivEntrustOthers, "rotation", 0F, 180F)
             .setDuration(400)
-//        mIvEntrustOthersAnim?.interpolator = OvershootInterpolator()
     }
 
     private fun initViewEvent() {
@@ -99,6 +102,8 @@ class QuotesFragment : Fragment() {
         layoutFromCoin.setOnClickListener { showTokenFragment(it) }
         layoutToCoin.setOnClickListener { showTokenFragment(it) }
         layoutEntrustOthers.setOnClickListener { mQuotesViewModel.clickShowMoreAllOrder() }
+        editFromCoin.addTextChangedListener(mFromAmountTextWatcher)
+        editToCoin.addTextChangedListener(mToAmountTextWatcher)
     }
 
     private fun showTokenFragment(view: View?) {
@@ -116,6 +121,7 @@ class QuotesFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun handleCurrentExchangeCoinObserve() {
         mQuotesViewModel.currentExchangeCoinLiveData.observe(viewLifecycleOwner, Observer {
             if (it != null) {
@@ -134,6 +140,22 @@ class QuotesFragment : Fragment() {
         })
         mQuotesViewModel.currentToCoinLiveData.observe(viewLifecycleOwner, Observer {
             tvToCoin.text = it.tokenName()
+        })
+    }
+
+    private fun handleEditExchangeCoinObserve() {
+        val calculate = {
+            mQuotesViewModel.changeToCoinAmount(editFromCoin.text.toString())
+        }
+        mQuotesViewModel.exchangeRateNumberLiveData.observe(viewLifecycleOwner, Observer {
+            calculate()
+        })
+
+        mQuotesViewModel.mFromCoinAmountLiveData.observe(viewLifecycleOwner, Observer {
+            editFromCoin.setText(it)
+        })
+        mQuotesViewModel.mToCoinAmountLiveData.observe(viewLifecycleOwner, Observer {
+            editToCoin.setText(it)
         })
     }
 
@@ -180,6 +202,66 @@ class QuotesFragment : Fragment() {
                 layoutAllOrder.visibility = View.VISIBLE
             }
         })
+    }
+
+    private val mFromAmountTextWatcher = object : TextWatcherSimple() {
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if (editFromCoin.isFocused) {
+                val inputText = s?.toString() ?: ""
+                var amoutStr = inputText
+
+                if (inputText.startsWith(".")) {
+                    amoutStr = "0$inputText"
+                } else if (inputText.isNotEmpty()) {
+                    amoutStr = (inputText + 1).stripTrailingZeros()
+                    amoutStr = amoutStr.substring(0, amoutStr.length - 1)
+                    if (amoutStr.isEmpty()) {
+                        amoutStr = "0"
+                    }
+                }
+
+                if (inputText != amoutStr) {
+                    editFromCoin.removeTextChangedListener(this)
+
+                    editFromCoin.setText(amoutStr)
+                    editFromCoin.setSelection(amoutStr.length)
+
+                    editFromCoin.addTextChangedListener(this)
+                }
+
+                mQuotesViewModel.changeToCoinAmount(amoutStr)
+            }
+        }
+    }
+
+    private val mToAmountTextWatcher = object : TextWatcherSimple() {
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if (editToCoin.isFocused) {
+                val inputText = s?.toString() ?: ""
+                var amoutStr = inputText
+
+                if (inputText.startsWith(".")) {
+                    amoutStr = "0$inputText"
+                } else if (inputText.isNotEmpty()) {
+                    amoutStr = (inputText + 1).stripTrailingZeros()
+                    amoutStr = amoutStr.substring(0, amoutStr.length - 1)
+                    if (amoutStr.isEmpty()) {
+                        amoutStr = "0"
+                    }
+                }
+
+                if (inputText != amoutStr) {
+                    editToCoin.removeTextChangedListener(this)
+
+                    editToCoin.setText(amoutStr)
+                    editToCoin.setSelection(amoutStr.length)
+
+                    editToCoin.addTextChangedListener(this)
+                }
+
+                mQuotesViewModel.changeFromCoinAmount(amoutStr)
+            }
+        }
     }
 }
 
