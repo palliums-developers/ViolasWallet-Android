@@ -2,6 +2,7 @@ package com.violas.wallet.ui.main.quotes
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.TransitionManager
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
 import com.violas.wallet.R
+import com.violas.wallet.ui.dexOrder.DexOrdersActivity
 import com.violas.wallet.ui.main.quotes.tokenList.TokenBottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_quotes.*
 import kotlinx.android.synthetic.main.fragment_quotes_content.*
@@ -104,6 +106,9 @@ class QuotesFragment : Fragment() {
         layoutEntrustOthers.setOnClickListener { mQuotesViewModel.clickShowMoreAllOrder() }
         editFromCoin.addTextChangedListener(mFromAmountTextWatcher)
         editToCoin.addTextChangedListener(mToAmountTextWatcher)
+        tvMyAllEntrust.setOnClickListener{
+            startActivity(Intent(context, DexOrdersActivity::class.java))
+        }
     }
 
     private fun showTokenFragment(view: View?) {
