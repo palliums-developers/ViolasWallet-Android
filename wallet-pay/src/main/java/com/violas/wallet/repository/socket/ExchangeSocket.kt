@@ -11,6 +11,7 @@ import java.util.concurrent.Executors
 
 interface Subscriber {
     fun onMarkCall(myOrder: List<IOrder>, buyOrder: List<IOrder>, sellOrder: List<IOrder>) {}
+    fun onDepthsCall(buyOrder: List<IOrder>, sellOrder: List<IOrder>) {}
 }
 
 object ExchangeSocket {
@@ -25,6 +26,7 @@ object ExchangeSocket {
             mExecutor.submit {
                 if (args.isNotEmpty()) {
                     val depthsJsonObject = (args[0] as JSONObject).getJSONObject("depths")
+                    LogUtil.e("==market==",depthsJsonObject.toString())
                     val buysOrder =
                         ExchangeOrder.parse(depthsJsonObject.getJSONArray("buys"), IOrderType.BUY)
                     val sellsOrder =
@@ -38,6 +40,23 @@ object ExchangeSocket {
                     )
                     mSubscriber.forEach {
                         it.onMarkCall(meOrder, buysOrder, sellsOrder)
+                    }
+                }
+            }
+        }.on("depths") { args ->
+            mExecutor.submit {
+                if (args.isNotEmpty()) {
+                    val depthsJsonObject = (args[0] as JSONObject)
+                    LogUtil.e("==depths==",depthsJsonObject.toString())
+                    val buysOrder =
+                        ExchangeOrder.parse(depthsJsonObject.getJSONArray("buys"), IOrderType.BUY)
+                    val sellsOrder =
+                        ExchangeOrder.parse(
+                            depthsJsonObject.getJSONArray("sells"),
+                            IOrderType.SELLS
+                        )
+                    mSubscriber.forEach {
+                        it.onDepthsCall(buysOrder, sellsOrder)
                     }
                 }
             }
@@ -70,7 +89,7 @@ object ExchangeSocket {
         mSocket.emit(
             "getMarket",
 //            """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote" ,"user":"0x$userAddress"}"""
-            """{"tokenBase":"0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095","tokenQuote":"0x4ce68dd6e81b400a4edf4146307b10e5030a372414fd49b1accecc0767753070" ,"user":"0x2629bbd938e5680cf04b57b2624ca90993d5616f454432f897d1abac43ec26f6"}"""
+            """{"tokenBase":"0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095","tokenQuote":"0x4ce68dd6e81b400a4edf4146307b10e5030a372414fd49b1accecc0767753070" ,"user":"0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095"}"""
         )
     }
 }

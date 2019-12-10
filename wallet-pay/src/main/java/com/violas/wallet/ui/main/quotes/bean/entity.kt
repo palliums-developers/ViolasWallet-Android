@@ -41,7 +41,9 @@ enum class IOrderStatus {
 }
 
 interface IOrder {
+    fun id(): String
     fun version(): Long
+    fun userAddress(): String
     fun tokenGetSymbol(): String
     fun tokenGet(): String
     fun tokenGiveSymbol(): String
@@ -50,6 +52,7 @@ interface IOrder {
     fun state(): IOrderStatus
     fun amount(): String
     fun price(): String
+    fun setPrice(price:String)
     fun date(): Date
 }
 
@@ -57,6 +60,7 @@ private var sim = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
 
 class ExchangeOrder(
     private val id: String,
+    private val userAddress: String,
     private val version: Long,
     private val tokenGetSymbol: String,
     private val tokenGet: String,
@@ -76,6 +80,7 @@ class ExchangeOrder(
                 mOrder.add(
                     ExchangeOrder(
                         any.getString("id"),
+                        any.getString("user"),
                         any.getString("version").toLong(),
                         any.getString("tokenGetSymbol"),
                         any.getString("tokenGet"),
@@ -84,13 +89,13 @@ class ExchangeOrder(
                         type,
                         when (any.getString("state")) {
                             "OPEN" -> IOrderStatus.OPEN
-                            "OPEN" -> IOrderStatus.FILLED
-                            "OPEN" -> IOrderStatus.CANCELED
-                            else -> IOrderStatus.OPEN
+                            "FILLED" -> IOrderStatus.FILLED
+                            "CANCELED" -> IOrderStatus.CANCELED
+                            else -> IOrderStatus.FILLED_CANCELED
                         },
-                        any.getString("amountGet"),
-                        "1",
-                        sim.parse(any.getString("date").replace("T", " "))
+                        any.getString("amountGive"),
+                        "",
+                        Date(any.getLong("update_date"))
                     )
                 )
             }
@@ -98,7 +103,11 @@ class ExchangeOrder(
         }
     }
 
+    override fun id() = id
+
     override fun version() = version
+
+    override fun userAddress() = userAddress
 
     override fun tokenGetSymbol() = tokenGetSymbol
 
@@ -116,6 +125,10 @@ class ExchangeOrder(
 
     override fun tokenGet(): String {
         return tokenGet.replace("0x", "")
+    }
+
+    override fun setPrice(price:String){
+        this.price = price
     }
 
     override fun tokenGive(): String {
