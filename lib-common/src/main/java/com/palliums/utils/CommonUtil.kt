@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * Created by elephant on 2019-11-14 11:18.
@@ -49,3 +50,19 @@ fun coroutineExceptionHandler() = CoroutineExceptionHandler { _, exception ->
 }
 
 class CommonViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+fun <T> List<T>.toMap(key: (T) -> String): Map<String, T> {
+    val map = HashMap<String, T>(this.size)
+    this.iterator().forEach {
+        map[key.invoke(it)] = it
+    }
+    return map
+}
+
+fun <T> List<T>.toMutableMap(key: (T) -> String): MutableMap<String, T> {
+    val map = mutableMapOf<String, T>()
+    this.iterator().forEach {
+        map[key.invoke(it)] = it
+    }
+    return map
+}

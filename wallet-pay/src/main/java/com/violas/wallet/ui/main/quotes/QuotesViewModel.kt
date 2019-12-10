@@ -6,6 +6,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.utils.coroutineExceptionHandler
+import com.palliums.utils.toMutableMap
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
@@ -277,18 +278,40 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             meOrdersLiveData.postValue(myOrder)
-
             val allOrderList = buyOrder.plus(sellOrder)
-//                .filter {
-//                    if (isPositiveChangeLiveData.value == true) {
-//                        it.tokenGet() == currentFormCoinLiveData.value?.tokenAddress() &&
-//                                it.tokenGive() == currentToCoinLiveData.value?.tokenAddress()
-//                    } else {
-//                        it.tokenGet() == currentToCoinLiveData.value?.tokenAddress() &&
-//                                it.tokenGive() == currentFormCoinLiveData.value?.tokenAddress()
-//                    }
-//                }
             allOrdersLiveData.postValue(allOrderList)
+        }
+    }
+
+    override fun onDepthsCall(
+        buyOrder: List<IOrder>,
+        sellOrder: List<IOrder>
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val allOrderList = buyOrder.plus(sellOrder)
+            val meOrderList = allOrderList
+                .filter {
+                    mAccount?.address == it.userAddress()
+                }
+                .toList()
+            if (meOrderList.isNotEmpty()) {
+                val newMeOrderList =
+                    meOrdersLiveData.value?.toMutableMap { it.id() } ?: mutableMapOf()
+                meOrderList.forEach {
+                    newMeOrderList[it.id()] = it
+                }
+                meOrdersLiveData.postValue(
+                    newMeOrderList.values.toList()
+                        .sortedBy { it.version() }
+                        .take(3)
+                )
+            }
+            val newAllOrderList =
+                allOrdersLiveData.value?.toMutableMap { it.id() } ?: mutableMapOf()
+            allOrderList.forEach {
+                newAllOrderList[it.id()] = it
+            }
+            allOrdersLiveData.postValue(newAllOrderList.values.toList())
         }
     }
 
