@@ -9,7 +9,9 @@ import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
+import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.widget.dialog.PasswordInputDialog
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 2019-12-09 11:34.
@@ -46,10 +48,7 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderVO>() {
         return DexOrderViewAdapter(
             retryCallback = { getViewModel().retry() },
             showOrderDetails = true,
-            viewModel = getViewModel() as DexOrderViewModel,
-            onOpenOrderDetails = {
-                // ignore
-            },
+            addHeader = true,
             onOpenBrowserView = {
                 // TODO violas浏览器暂未实现
                 //showToast(R.string.transaction_record_not_supported_query)
@@ -60,7 +59,11 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderVO>() {
 
                     (getViewModel() as DexOrderViewModel).revokeOrder(password, dexOrder) {
                         dexOrder.revokedFlag = true
+                        dexOrder.dexOrderDTO.date = System.currentTimeMillis()
+
                         getViewAdapter().notifyItemChanged(position)
+
+                        EventBus.getDefault().post(RevokeDexOrderEvent(dexOrder.dexOrderDTO.id))
                     }
 
                 }.show(this@DexOrderDetailsActivity.supportFragmentManager)

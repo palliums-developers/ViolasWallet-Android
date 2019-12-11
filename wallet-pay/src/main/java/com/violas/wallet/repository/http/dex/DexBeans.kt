@@ -53,7 +53,7 @@ data class DexOrderDTO(
     val version: String,
     @SerializedName(value = "update_version")
     val updateVersion: String,
-    val date: Long,
+    var date: Long,
     @SerializedName(value = "update_date")
     val updateDate: Long
 ) : Parcelable {

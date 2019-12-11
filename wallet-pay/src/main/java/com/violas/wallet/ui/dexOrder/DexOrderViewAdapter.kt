@@ -17,11 +17,11 @@ import java.util.*
  */
 class DexOrderViewAdapter(
     retryCallback: () -> Unit,
-    private val showOrderDetails: Boolean,
-    private val viewModel: DexOrderViewModel,
-    private val onOpenOrderDetails: (DexOrderVO) -> Unit,
-    private val onOpenBrowserView: (DexOrderVO) -> Unit,
-    private val onClickRevokeOrder: (DexOrderVO, Int) -> Unit
+    private val showOrderDetails: Boolean = false,
+    private val addHeader: Boolean = false,
+    private val onOpenOrderDetails: ((DexOrderVO) -> Unit)? = null,
+    private val onOpenBrowserView: ((DexOrderVO) -> Unit)? = null,
+    private val onClickRevokeOrder: ((DexOrderVO, Int) -> Unit)? = null
 ) : PagingViewAdapter<DexOrderVO>(retryCallback, DexOrdersDiffCallback()) {
 
     var headerData: DexOrderVO? = null
@@ -40,7 +40,6 @@ class DexOrderViewAdapter(
                         parent,
                         false
                     ),
-                    viewModel,
                     simpleDateFormat,
                     onOpenBrowserView,
                     onClickRevokeOrder
@@ -54,7 +53,6 @@ class DexOrderViewAdapter(
                         parent,
                         false
                     ),
-                    viewModel,
                     simpleDateFormat,
                     onOpenBrowserView
                 )
@@ -67,7 +65,6 @@ class DexOrderViewAdapter(
                         parent,
                         false
                     ),
-                    viewModel,
                     simpleDateFormat,
                     onOpenOrderDetails,
                     onClickRevokeOrder
@@ -78,7 +75,7 @@ class DexOrderViewAdapter(
 
     override fun getItemViewTypeSupport(position: Int): Int {
         return if (showOrderDetails) {
-            if (position == 0) {
+            if (position == 0 && addHeader) {
                 R.layout.item_dex_order_details_header
             } else {
                 R.layout.item_dex_order_details
@@ -101,7 +98,7 @@ class DexOrderViewAdapter(
     }
 
     override fun getHeaderItemCount(): Int {
-        return if (showOrderDetails) 1 else 0
+        return if (showOrderDetails && addHeader) 1 else 0
     }
 }
 

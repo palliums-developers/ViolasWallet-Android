@@ -13,9 +13,8 @@ import java.text.SimpleDateFormat
  */
 class DexOrderDetailsViewHolder(
     view: View,
-    private val viewModel: DexOrderViewModel,
     private val simpleDateFormat: SimpleDateFormat,
-    private val onClickBrowserQuery: (DexOrderVO) -> Unit
+    private val onClickBrowserQuery: ((DexOrderVO) -> Unit)? = null
 ) : BaseViewHolder<DexOrderVO>(view) {
 
     init {
@@ -39,7 +38,10 @@ class DexOrderDetailsViewHolder(
         itemData?.let {
             when (view) {
                 itemView.tvBrowserQuery -> {
-                    onClickBrowserQuery.invoke(it)
+                    onClickBrowserQuery?.invoke(it)
+                }
+
+                else -> {
                 }
             }
         }
