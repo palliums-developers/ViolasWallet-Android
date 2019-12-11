@@ -35,6 +35,7 @@
             android:layout_marginStart="@dimen/dp_7"
             android:textColor="@color/white"
             android:textSize="@dimen/sp_18"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/vType"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_goneMarginStart="@dimen/dp_0"
@@ -47,6 +48,7 @@
             android:layout_marginStart="@dimen/dp_2"
             android:textColor="@color/white"
             android:textSize="@dimen/sp_12"
+            android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvGiveTokenName"
             app:layout_constraintStart_toEndOf="@id/tvGiveTokenName"
             tools:text="AAAUSD" />
@@ -59,6 +61,7 @@
             android:text="@string/action_revoke"
             android:textColor="@color/white"
             android:textSize="@dimen/sp_12"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/tvGiveTokenName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvGiveTokenName" />
@@ -224,6 +227,7 @@
         android:text="@string/title_group_orders"
         android:textColor="@color/def_text_title"
         android:textSize="@dimen/sp_14"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/vGroup" />
 

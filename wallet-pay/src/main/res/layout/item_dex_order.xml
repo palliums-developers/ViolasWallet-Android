@@ -26,6 +26,7 @@
         android:layout_marginStart="@dimen/dp_7"
         android:textColor="@color/color_3C3848"
         android:textSize="@dimen/sp_16"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/vType"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_goneMarginStart="@dimen/dp_0"
@@ -38,6 +39,7 @@
         android:layout_marginStart="@dimen/dp_2"
         android:textColor="@color/color_B3B3B3"
         android:textSize="@dimen/sp_12"
+        android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@id/tvGiveTokenName"
         app:layout_constraintStart_toEndOf="@id/tvGiveTokenName"
         tools:text="AAAUSD" />

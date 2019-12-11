@@ -23,6 +23,7 @@
     <style name="DexOrdersTabLayoutTextAppearance" parent="TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse">
         <item name="android:textSize">@dimen/sp_14</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="AppWindowAnimation" parent="@android:style/Animation.Activity">
