@@ -4,11 +4,13 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextWatcher
 import android.transition.AutoTransition
 import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -106,7 +108,7 @@ class QuotesFragment : Fragment() {
         layoutEntrustOthers.setOnClickListener { mQuotesViewModel.clickShowMoreAllOrder() }
         editFromCoin.addTextChangedListener(mFromAmountTextWatcher)
         editToCoin.addTextChangedListener(mToAmountTextWatcher)
-        tvMyAllEntrust.setOnClickListener{
+        tvMyAllEntrust.setOnClickListener {
             startActivity(Intent(context, DexOrdersActivity::class.java))
         }
     }
@@ -209,32 +211,41 @@ class QuotesFragment : Fragment() {
         })
     }
 
+    private val mHandlerAmountEdit: (String) -> String = { inputText ->
+        var amoutStr = inputText
+        if (inputText.startsWith(".")) {
+            amoutStr = "0$inputText"
+        } else if (inputText.isNotEmpty()) {
+            amoutStr = (inputText + 1).stripTrailingZeros()
+            amoutStr = amoutStr.substring(0, amoutStr.length - 1)
+            if (amoutStr.isEmpty()) {
+                amoutStr = "0"
+            }
+        }
+        amoutStr
+    }
+
+    private val mHandlerAmountEditTextWatcher: (String, EditText, TextWatcher) -> Unit =
+        { amountStr, editAmountCoin, textWatcher ->
+            editAmountCoin.removeTextChangedListener(textWatcher)
+
+            editAmountCoin.setText(amountStr)
+            editAmountCoin.setSelection(amountStr.length)
+
+            editAmountCoin.addTextChangedListener(textWatcher)
+        }
+
     private val mFromAmountTextWatcher = object : TextWatcherSimple() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if (editFromCoin.isFocused) {
                 val inputText = s?.toString() ?: ""
-                var amoutStr = inputText
+                val amountStr = mHandlerAmountEdit(inputText)
 
-                if (inputText.startsWith(".")) {
-                    amoutStr = "0$inputText"
-                } else if (inputText.isNotEmpty()) {
-                    amoutStr = (inputText + 1).stripTrailingZeros()
-                    amoutStr = amoutStr.substring(0, amoutStr.length - 1)
-                    if (amoutStr.isEmpty()) {
-                        amoutStr = "0"
-                    }
+                if (inputText != amountStr) {
+                    mHandlerAmountEditTextWatcher(amountStr, editFromCoin, this)
                 }
 
-                if (inputText != amoutStr) {
-                    editFromCoin.removeTextChangedListener(this)
-
-                    editFromCoin.setText(amoutStr)
-                    editFromCoin.setSelection(amoutStr.length)
-
-                    editFromCoin.addTextChangedListener(this)
-                }
-
-                mQuotesViewModel.changeToCoinAmount(amoutStr)
+                mQuotesViewModel.changeToCoinAmount(amountStr)
             }
         }
     }
@@ -243,28 +254,13 @@ class QuotesFragment : Fragment() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if (editToCoin.isFocused) {
                 val inputText = s?.toString() ?: ""
-                var amoutStr = inputText
+                val amountStr = mHandlerAmountEdit(inputText)
 
-                if (inputText.startsWith(".")) {
-                    amoutStr = "0$inputText"
-                } else if (inputText.isNotEmpty()) {
-                    amoutStr = (inputText + 1).stripTrailingZeros()
-                    amoutStr = amoutStr.substring(0, amoutStr.length - 1)
-                    if (amoutStr.isEmpty()) {
-                        amoutStr = "0"
-                    }
+                if (inputText != amountStr) {
+                    mHandlerAmountEditTextWatcher(amountStr, editToCoin, this)
                 }
 
-                if (inputText != amoutStr) {
-                    editToCoin.removeTextChangedListener(this)
-
-                    editToCoin.setText(amoutStr)
-                    editToCoin.setSelection(amoutStr.length)
-
-                    editToCoin.addTextChangedListener(this)
-                }
-
-                mQuotesViewModel.changeFromCoinAmount(amoutStr)
+                mQuotesViewModel.changeFromCoinAmount(amountStr)
             }
         }
     }
