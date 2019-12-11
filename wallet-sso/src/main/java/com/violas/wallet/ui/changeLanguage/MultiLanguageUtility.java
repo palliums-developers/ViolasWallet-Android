@@ -26,7 +26,7 @@ public class MultiLanguageUtility {
     static {
         mLocaleLanguageMap.put(LanguageType.LANGUAGE_CHINESE_SIMPLIFIED, new LanguageBean(LanguageType.LANGUAGE_CHINESE_SIMPLIFIED, Locale.SIMPLIFIED_CHINESE, R.string.language_chinese_simplified, R.string.language_chinese_simplified_more));
         mLocaleLanguageMap.put(LanguageType.LANGUAGE_EN, new LanguageBean(LanguageType.LANGUAGE_EN, Locale.ENGLISH, R.string.language_en, R.string.language_en_more));
-        mLocaleLanguageMap.put(LanguageType.LANGUAGE_CHINESE_TRADITIONAL, new LanguageBean(LanguageType.LANGUAGE_CHINESE_TRADITIONAL, Locale.TRADITIONAL_CHINESE, R.string.language_chinese_traditional, R.string.language_chinese_traditional_more));
+        //mLocaleLanguageMap.put(LanguageType.LANGUAGE_CHINESE_TRADITIONAL, new LanguageBean(LanguageType.LANGUAGE_CHINESE_TRADITIONAL, Locale.TRADITIONAL_CHINESE, R.string.language_chinese_traditional, R.string.language_chinese_traditional_more));
     }
 
     private static final String TAG = "MultiLanguageUtil";
@@ -129,7 +129,7 @@ public class MultiLanguageUtility {
      * @return
      */
     public int getSaveLanguageType() {
-        return LanguageShared.getInstance(mContext).getInt(MultiLanguageUtility.SAVE_LANGUAGE, LanguageType.LANGUAGE_CHINESE_TRADITIONAL);
+        return LanguageShared.getInstance(mContext).getInt(MultiLanguageUtility.SAVE_LANGUAGE, LanguageType.LANGUAGE_EN);
     }
 
     public static Context attachBaseContext(Context context) {
@@ -157,10 +157,8 @@ public class MultiLanguageUtility {
         switch (getSaveLanguageType()) {
             case LanguageType.LANGUAGE_CHINESE_SIMPLIFIED:
                 return "CN";
-            case LanguageType.LANGUAGE_EN:
-                return "EN";
             default:
-                return "CNT";
+                return "EN";
         }
 
     }
