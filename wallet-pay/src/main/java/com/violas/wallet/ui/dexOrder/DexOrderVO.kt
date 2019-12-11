@@ -30,6 +30,20 @@ data class DexOrderVO(
         return dexOrderDTO.state == "OPEN"
     }
 
+    fun getDate(): Long {
+        return if (dexOrderDTO.date.toString().length == 10)
+            dexOrderDTO.date * 1000
+        else
+            dexOrderDTO.date
+    }
+
+    fun getUpdateDate(): Long {
+        return if (dexOrderDTO.updateDate.toString().length == 10)
+            dexOrderDTO.updateDate * 1000
+        else
+            dexOrderDTO.updateDate
+    }
+
     constructor(source: Parcel) : this(
         source.readParcelable<DexOrderDTO>(DexOrderDTO::class.java.classLoader)!!,
         source.readString()!!,

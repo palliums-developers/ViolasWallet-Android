@@ -25,7 +25,7 @@ class DexOrderDetailsViewHolder(
         itemData?.let {
             // 未完成时为订单创建的时间，已完成时为订单更新的时间
             itemView.tvTime.text = simpleDateFormat.format(
-                if (it.isOpen()) it.dexOrderDTO.date else it.dexOrderDTO.updateDate
+                if (it.isOpen()) it.getDate() else it.getUpdateDate()
             )
 
             // 若拿A换B，价格、数量、已成交数量均为B的数据

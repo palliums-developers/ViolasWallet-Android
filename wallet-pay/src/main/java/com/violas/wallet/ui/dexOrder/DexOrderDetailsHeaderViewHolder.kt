@@ -45,7 +45,7 @@ class DexOrderDetailsHeaderViewHolder(
                         else
                             R.string.state_completed
                     )
-                    itemView.tvTime.text = simpleDateFormat.format(it.dexOrderDTO.updateDate)
+                    itemView.tvTime.text = simpleDateFormat.format(it.getUpdateDate())
                 }
                 it.isOpen() -> {
                     itemView.tvState.setText(
@@ -54,11 +54,11 @@ class DexOrderDetailsHeaderViewHolder(
                         else
                             R.string.action_revoke
                     )
-                    itemView.tvTime.text = simpleDateFormat.format(it.dexOrderDTO.date)
+                    itemView.tvTime.text = simpleDateFormat.format(it.getDate())
                 }
                 else -> {
                     itemView.tvState.text = ""
-                    itemView.tvTime.text = simpleDateFormat.format(it.dexOrderDTO.updateDate)
+                    itemView.tvTime.text = simpleDateFormat.format(it.getUpdateDate())
                 }
             }
         }

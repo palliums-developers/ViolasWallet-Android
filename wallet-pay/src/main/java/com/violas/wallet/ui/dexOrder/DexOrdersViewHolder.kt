@@ -47,7 +47,7 @@ class DexOrdersViewHolder(
                             R.string.state_completed
                     )
                     itemView.tvState.setTextColor(getColor(R.color.color_63636F, itemView.context))
-                    itemView.tvTime.text = simpleDateFormat.format(it.dexOrderDTO.updateDate)
+                    itemView.tvTime.text = simpleDateFormat.format(it.getUpdateDate())
                 }
                 it.isOpen() -> {
                     itemView.tvState.setText(
@@ -57,11 +57,11 @@ class DexOrdersViewHolder(
                             R.string.action_revoke
                     )
                     itemView.tvState.setTextColor(getColor(R.color.color_726BD9, itemView.context))
-                    itemView.tvTime.text = simpleDateFormat.format(it.dexOrderDTO.date)
+                    itemView.tvTime.text = simpleDateFormat.format(it.getDate())
                 }
                 else -> {
                     itemView.tvState.text = ""
-                    itemView.tvTime.text = simpleDateFormat.format(it.dexOrderDTO.updateDate)
+                    itemView.tvTime.text = simpleDateFormat.format(it.getUpdateDate())
                 }
             }
         }

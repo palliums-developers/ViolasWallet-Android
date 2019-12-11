@@ -181,6 +181,10 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
         return try {
             val currentAccount = AccountManager().currentAccount()
             accountAddress = currentAccount.address
+
+            // TODO code for test
+            accountAddress = "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095"
+
             true
         } catch (e: Exception) {
             false
