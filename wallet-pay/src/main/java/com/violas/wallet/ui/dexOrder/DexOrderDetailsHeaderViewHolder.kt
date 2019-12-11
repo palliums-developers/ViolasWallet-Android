@@ -14,10 +14,9 @@ import java.text.SimpleDateFormat
  */
 class DexOrderDetailsHeaderViewHolder(
     view: View,
-    private val viewModel: DexOrderViewModel,
     private val simpleDateFormat: SimpleDateFormat,
-    private val onClickBrowserQuery: (DexOrderVO) -> Unit,
-    private val onClickRevokeOrder: (DexOrderVO, Int) -> Unit
+    private val onClickBrowserQuery: ((DexOrderVO) -> Unit)? = null,
+    private val onClickRevokeOrder: ((DexOrderVO, Int) -> Unit)? = null
 ) : BaseViewHolder<DexOrderVO>(view) {
 
     init {
@@ -70,12 +69,16 @@ class DexOrderDetailsHeaderViewHolder(
             when (view) {
                 itemView.tvState -> {
                     if (it.isOpen() && !it.revokedFlag) {
-                        onClickRevokeOrder.invoke(itemData, itemIndex)
+                        onClickRevokeOrder?.invoke(itemData, itemIndex)
+                    } else {
                     }
                 }
 
                 itemView.tvBrowserQuery -> {
-                    onClickBrowserQuery.invoke(it)
+                    onClickBrowserQuery?.invoke(it)
+                }
+
+                else -> {
                 }
             }
         }

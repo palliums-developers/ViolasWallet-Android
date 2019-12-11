@@ -15,10 +15,9 @@ import java.text.SimpleDateFormat
  */
 class DexOrdersViewHolder(
     view: View,
-    private val viewModel: DexOrderViewModel,
     private val simpleDateFormat: SimpleDateFormat,
-    private val onClickItem: (DexOrderVO) -> Unit,
-    private val onClickRevokeOrder: (DexOrderVO, Int) -> Unit
+    private val onClickItem: ((DexOrderVO) -> Unit)? = null,
+    private val onClickRevokeOrder: ((DexOrderVO, Int) -> Unit)? = null
 ) : BaseViewHolder<DexOrderVO>(view) {
 
     init {
@@ -72,13 +71,17 @@ class DexOrdersViewHolder(
         itemData?.let {
             when (view) {
                 itemView -> {
-                    onClickItem.invoke(it)
+                    onClickItem?.invoke(it)
                 }
 
                 itemView.tvState -> {
                     if (it.isOpen() && !it.revokedFlag) {
-                        onClickRevokeOrder.invoke(itemData, itemIndex)
+                        onClickRevokeOrder?.invoke(itemData, itemIndex)
+                    } else {
                     }
+                }
+
+                else -> {
                 }
             }
         }

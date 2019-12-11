@@ -101,7 +101,7 @@
             android:textColor="@color/white_60"
             android:textSize="@dimen/sp_12"
             app:layout_constraintBaseline_toBaselineOf="@id/tvLabelPrice"
-            app:layout_constraintEnd_toStartOf="@id/tvLabelTime"
+            app:layout_constraintEnd_toStartOf="@id/tvTime"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toEndOf="@id/tvLabelPrice" />
 
@@ -126,21 +126,20 @@
             android:textColor="@color/white_60"
             android:textSize="@dimen/sp_12"
             app:layout_constraintBaseline_toBaselineOf="@id/tvLabelPrice"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="2.5"
-            app:layout_constraintStart_toEndOf="@id/tvLabelTotalAmount" />
+            app:layout_constraintEnd_toEndOf="@id/tvTime"
+            app:layout_constraintStart_toStartOf="@id/tvTime" />
 
         <TextView
             android:id="@+id/tvTime"
-            android:layout_width="@dimen/dp_0"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="middle"
             android:singleLine="true"
             android:textColor="@color/white"
             android:textSize="@dimen/sp_14"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvLabelTotalAmount"
             app:layout_constraintBaseline_toBaselineOf="@id/tvPrice"
-            app:layout_constraintEnd_toEndOf="@id/tvLabelTime"
-            app:layout_constraintStart_toStartOf="@id/tvLabelTime"
             tools:text="01/18 12:06:23" />
 
         <TextView
@@ -179,7 +178,7 @@
             android:textSize="@dimen/sp_12"
             app:layout_constraintBaseline_toBaselineOf="@id/tvLabelTradeAmount"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="5.5"
+            app:layout_constraintHorizontal_weight="5.15"
             app:layout_constraintStart_toEndOf="@id/tvLabelTradeAmount" />
 
         <TextView
@@ -224,10 +223,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/page_spacing_start"
         android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_2"
         android:text="@string/title_group_orders"
         android:textColor="@color/def_text_title"
         android:textSize="@dimen/sp_14"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/vGroup" />
 

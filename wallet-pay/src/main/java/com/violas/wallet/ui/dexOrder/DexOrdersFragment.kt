@@ -8,10 +8,13 @@ import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 /**
  * Created by elephant on 2019-12-06 12:02.
@@ -73,10 +76,9 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
     override fun initViewAdapter(): PagingViewAdapter<DexOrderVO> {
         return DexOrderViewAdapter(
             retryCallback = { getViewModel().retry() },
-            showOrderDetails = false,
-            viewModel = getViewModel() as DexOrderViewModel,
             onOpenOrderDetails = {
-                DexOrderDetailsActivity.start(requireContext(), it)
+                //DexOrderDetailsActivity.start(requireContext(), it)
+                DexOrderDetails2Activity.start(requireContext(), it)
             },
             onOpenBrowserView = {
                 // TODO violas浏览器暂未实现
@@ -88,6 +90,8 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
 
                     (getViewModel() as DexOrderViewModel).revokeOrder(password, dexOrder) {
                         dexOrder.revokedFlag = true
+                        dexOrder.dexOrderDTO.date = System.currentTimeMillis()
+
                         getViewAdapter().notifyItemChanged(position)
                     }
 
@@ -115,7 +119,36 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
         orderState?.let { outState.putString(EXTRA_KEY_ORDER_STATE, it) }
     }
 
+    override fun onDestroyView() {
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this)
+        }
+        super.onDestroyView()
+    }
+
+    @Subscribe
+    fun onRevokeDexOrderEvent(event: RevokeDexOrderEvent) {
+        if (event.orderId.isEmpty()) {
+            return
+        }
+
+        getViewAdapter().currentList?.let {
+            it.forEachIndexed { index, dexOrderVO ->
+                if (dexOrderVO.dexOrderDTO.id == event.orderId) {
+                    dexOrderVO.revokedFlag = true
+                    dexOrderVO.dexOrderDTO.date = System.currentTimeMillis()
+
+                    getViewAdapter().notifyItemChanged(index)
+                }
+            }
+        }
+    }
+
     private fun initView() {
+        if (orderState.isNullOrEmpty() || orderState == DexOrdersState.OPEN) {
+            EventBus.getDefault().register(this)
+        }
+
         (getViewModel() as DexOrderViewModel).loadState.observe(this, Observer {
             when (it.status) {
                 LoadState.Status.RUNNING -> {
