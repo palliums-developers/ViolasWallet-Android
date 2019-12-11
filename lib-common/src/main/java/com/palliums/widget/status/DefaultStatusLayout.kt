@@ -129,7 +129,12 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
                 val icon: Drawable? = mIconResMap[IStatusLayout.Status.STATUS_EMPTY]
 
                 tip?.let { vStatusTip.text = it }
-                icon?.let { vStatusIcon.setImageDrawable(it) }
+                if(icon == null){
+                    vStatusIcon.visibility = View.GONE
+                }else{
+                    vStatusIcon.visibility = View.VISIBLE
+                    vStatusIcon.setImageDrawable(icon)
+                }
             }
 
             IStatusLayout.Status.STATUS_FAILURE -> {
@@ -140,7 +145,12 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
                     ?: mIconResMap[IStatusLayout.Status.STATUS_EMPTY]
 
                 tip?.let { vStatusTip.text = it }
-                icon?.let { vStatusIcon.setImageDrawable(it) }
+                if(icon == null){
+                    vStatusIcon.visibility = View.GONE
+                }else{
+                    vStatusIcon.visibility = View.VISIBLE
+                    vStatusIcon.setImageDrawable(icon)
+                }
             }
 
             IStatusLayout.Status.STATUS_NO_NETWORK -> {
@@ -151,7 +161,12 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
                     ?: mIconResMap[IStatusLayout.Status.STATUS_EMPTY]
 
                 tip?.let { vStatusTip.text = it }
-                icon?.let { vStatusIcon.setImageDrawable(it) }
+                if(icon == null){
+                    vStatusIcon.visibility = View.GONE
+                }else{
+                    vStatusIcon.visibility = View.VISIBLE
+                    vStatusIcon.setImageDrawable(icon)
+                }
             }
         }
     }
