@@ -5,6 +5,7 @@ import android.view.View
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.ui.web.WebCommonActivity
 import kotlinx.android.synthetic.main.activity_about_us.*
 
 /**
@@ -28,11 +29,11 @@ class AboutUsActivity : BaseAppActivity() {
             BuildConfig.VERSION_NAME
         )
 
+        mivWebsite.setEndDescText("violas.io")
+
         mivWebsite.setOnClickListener(this)
         mivEmail.setOnClickListener(this)
         mivWeChat.setOnClickListener(this)
-        mivQQ.setOnClickListener(this)
-        mivWeibo.setOnClickListener(this)
         mivTelegram.setOnClickListener(this)
         mivTwitter.setOnClickListener(this)
         mivFacebook.setOnClickListener(this)
@@ -42,7 +43,7 @@ class AboutUsActivity : BaseAppActivity() {
         // TODO 跳转
         when (view.id) {
             R.id.mivWebsite -> {
-
+                WebCommonActivity.start(this, getString(R.string.about_us_website_value))
             }
 
             R.id.mivEmail -> {
@@ -50,14 +51,6 @@ class AboutUsActivity : BaseAppActivity() {
             }
 
             R.id.mivWeChat -> {
-
-            }
-
-            R.id.mivQQ -> {
-
-            }
-
-            R.id.mivWeibo -> {
 
             }
 

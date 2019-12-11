@@ -132,6 +132,14 @@ abstract class BaseWebActivity : BaseAppActivity() {
 
         settings.useWideViewPort = true
         settings.loadWithOverviewMode = true
+
+        settings.setSupportZoom(true)
+        settings.builtInZoomControls = true
+        settings.displayZoomControls = false
+
+        /*settings.defaultFontSize = 30
+        settings.minimumFontSize = 12*/
+
         settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
 
         // 5.0以上开启混合模式加载(https加载时需要)
