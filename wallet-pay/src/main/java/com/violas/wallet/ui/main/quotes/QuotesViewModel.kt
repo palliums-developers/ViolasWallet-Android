@@ -328,11 +328,13 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     private fun setOrderPrice(): (IOrder) -> IOrder = {
         currentToCoinLiveData.value?.let { token ->
             it.setPrice(
-                token.tokenPrice().divide(
-                    BigDecimal("100"),
-                    2,
-                    RoundingMode.HALF_DOWN
-                ).stripTrailingZeros().toPlainString()
+                token.tokenPrice()
+//                    .divide(
+//                        BigDecimal("100"),
+//                        2,
+//                        RoundingMode.HALF_DOWN
+//                    )
+                    .stripTrailingZeros().toPlainString()
             )
         }
         it

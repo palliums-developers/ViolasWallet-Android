@@ -26,7 +26,7 @@ object ExchangeSocket {
             mExecutor.submit {
                 if (args.isNotEmpty()) {
                     val depthsJsonObject = (args[0] as JSONObject).getJSONObject("depths")
-                    LogUtil.e("==market==",depthsJsonObject.toString())
+                    LogUtil.e("==market==", depthsJsonObject.toString())
                     val buysOrder =
                         ExchangeOrder.parse(depthsJsonObject.getJSONArray("buys"), IOrderType.BUY)
                     val sellsOrder =
@@ -47,7 +47,7 @@ object ExchangeSocket {
             mExecutor.submit {
                 if (args.isNotEmpty()) {
                     val depthsJsonObject = (args[0] as JSONObject)
-                    LogUtil.e("==depths==",depthsJsonObject.toString())
+                    LogUtil.e("==depths==", depthsJsonObject.toString())
                     val buysOrder =
                         ExchangeOrder.parse(depthsJsonObject.getJSONArray("buys"), IOrderType.BUY)
                     val sellsOrder =
@@ -90,6 +90,11 @@ object ExchangeSocket {
             "getMarket",
 //            """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote" ,"user":"0x$userAddress"}"""
             """{"tokenBase":"0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095","tokenQuote":"0x4ce68dd6e81b400a4edf4146307b10e5030a372414fd49b1accecc0767753070" ,"user":"0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095"}"""
+        )
+        mSocket.emit(
+            "subscribe",
+            //            """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote"}"""
+            """{"tokenBase":"0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095","tokenQuote":"0x4ce68dd6e81b400a4edf4146307b10e5030a372414fd49b1accecc0767753070"}"""
         )
     }
 }
