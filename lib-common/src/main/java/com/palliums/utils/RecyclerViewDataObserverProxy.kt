@@ -19,14 +19,14 @@ class RecyclerViewDataObserverProxy(
 
     override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
         adapterDataObserver.onItemRangeChanged(
-            if (isHeaderItem(positionStart)) positionStart else positionStart + headerCount,
+            getRealPosition(positionStart, itemCount),
             itemCount
         )
     }
 
     override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
         adapterDataObserver.onItemRangeChanged(
-            if (isHeaderItem(positionStart)) positionStart else positionStart + headerCount,
+            getRealPosition(positionStart, itemCount),
             itemCount,
             payload
         )
@@ -34,27 +34,31 @@ class RecyclerViewDataObserverProxy(
 
     override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
         adapterDataObserver.onItemRangeInserted(
-            if (isHeaderItem(positionStart)) positionStart else positionStart + headerCount,
+            getRealPosition(positionStart, itemCount),
             itemCount
         )
     }
 
     override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
         adapterDataObserver.onItemRangeMoved(
-            if (isHeaderItem(fromPosition)) fromPosition else fromPosition + headerCount,
-            if (isHeaderItem(toPosition)) toPosition else toPosition + headerCount,
+            getRealPosition(fromPosition, itemCount),
+            getRealPosition(toPosition, itemCount),
             itemCount
         )
     }
 
     override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
         adapterDataObserver.onItemRangeRemoved(
-            if (isHeaderItem(positionStart)) positionStart else positionStart + headerCount,
+            getRealPosition(positionStart, itemCount),
             itemCount
         )
     }
 
-    private fun isHeaderItem(position: Int): Boolean {
-        return position < headerCount
+    private fun getRealPosition(position: Int, itemCount: Int): Int {
+        return if (itemCount == 1 && position < headerCount) {
+            position
+        } else {
+            position + headerCount
+        }
     }
 }
