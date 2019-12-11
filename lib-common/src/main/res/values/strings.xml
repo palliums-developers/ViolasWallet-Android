@@ -35,5 +35,7 @@
     <string name="common_refresh_header_update">上次更新 M-d HH:mm</string>
 
     <string name="common_dialog_loading">正在加载…</string>
+    <string name="title_select_mail_app">请选择邮件应用</string>
+    <string name="tips_open_email_failure">无法打开邮件应用</string>
 
 </resources>
