@@ -29,7 +29,7 @@ class ChangeLanguageActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle(R.string.title_change_language)
+        setTitle(R.string.setting_multi_language)
 
         val adapter = ChangeLanguageAdapter(viewModel)
         recyclerView.adapter = adapter

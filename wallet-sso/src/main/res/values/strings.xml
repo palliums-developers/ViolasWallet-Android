@@ -319,4 +319,6 @@
     <string name="hint_mint_condition_error">申请铸币失败</string>
     <string name="hint_retry">重试</string>
 
+    <string name="subject_feedback">SSO Wallet 问题反馈</string>
+
 </resources>

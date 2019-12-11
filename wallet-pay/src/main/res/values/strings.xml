@@ -130,15 +130,11 @@
 
     <string name="about_us_title">关于我们</string>
     <string name="about_us_website_key">官方网站</string>
-    <string name="about_us_website_value">www.violas.io</string>
+    <string name="about_us_website_value">https://violas.io/</string>
     <string name="about_us_email_key">邮箱</string>
     <string name="about_us_email_value">kf@violas.io</string>
     <string name="about_us_wechat_key">微信</string>
     <string name="about_us_wechat_value">xxxxx</string>
-    <string name="about_us_qq_key">QQ</string>
-    <string name="about_us_qq_value">xxxxx</string>
-    <string name="about_us_weibo_key">微博</string>
-    <string name="about_us_weibo_value">xxxxx</string>
     <string name="about_us_telegram_key">Telegram</string>
     <string name="about_us_telegram_value">xxxxx</string>
     <string name="about_us_twitter_key">Twitter</string>
@@ -152,7 +148,7 @@
     <string name="web_user_agent">%1$s/Violas Wallet Android Client %2$s.%3$d</string>
 
     <string name="service_agreement_title">服务协议</string>
-    <string name="service_agreement_url">https://www.baidu.com/</string>
+    <string name="service_agreement_url">https://violas.io/violas_service_html/service_agreement_cn.html</string>
     <string name="help_feedback_title">帮助与反馈</string>
     <string name="help_feedback_menu">问题反馈</string>
     <string name="help_feedback_url">https://www.baidu.com/</string>
@@ -230,4 +226,8 @@
     <string name="label_time">时间</string>
     <string name="state_revoked">已撤销</string>
     <string name="state_completed">已完成</string>
+
+    <string name="subject_feedback">Violas Wallet 问题反馈</string>
+    <string name="title_privacy_policy">隐私条例</string>
+    <string name="url_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy.html</string>
 </resources>

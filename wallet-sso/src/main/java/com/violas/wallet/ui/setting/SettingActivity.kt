@@ -8,6 +8,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.ui.changeLanguage.ChangeLanguageActivity
 import com.violas.wallet.ui.web.WebCommonActivity
+import com.violas.wallet.utils.feedbackByEmail
 import kotlinx.android.synthetic.main.activity_setting.*
 
 /**
@@ -62,7 +63,8 @@ class SettingActivity : BaseAppActivity() {
 
             R.id.mivHelpFeedback -> {
                 //startActivity(Intent(this, HelpFeedbackActivity::class.java))
-                startActivity(Intent(this, FeedbackActivity::class.java))
+                //startActivity(Intent(this, FeedbackActivity::class.java))
+                feedbackByEmail(this)
             }
         }
     }
