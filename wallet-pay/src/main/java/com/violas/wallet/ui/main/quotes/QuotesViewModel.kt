@@ -127,7 +127,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         ) {
             val baseToken: String
             val tokenQuote: String
-            if (isPositiveChangeLiveData.value == true) {
+            if (isPositiveChangeLiveData.value == false) {
                 baseToken = currentFormCoinLiveData.value!!.tokenAddress()
                 tokenQuote = currentToCoinLiveData.value!!.tokenAddress()
             } else {

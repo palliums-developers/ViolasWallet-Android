@@ -66,31 +66,11 @@
             app:mivStartTitleText="@string/about_us_wechat_key" />
 
         <com.palliums.widget.MenuItemView
-            android:id="@+id/mivQQ"
-            style="@style/MenuItemView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mivWeChat"
-            app:mivEndDescText="@string/about_us_qq_value"
-            app:mivShowEndArrow="false"
-            app:mivStartTitleText="@string/about_us_qq_key" />
-
-        <com.palliums.widget.MenuItemView
-            android:id="@+id/mivWeibo"
-            style="@style/MenuItemView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mivQQ"
-            app:mivEndDescText="@string/about_us_weibo_value"
-            app:mivShowEndArrow="false"
-            app:mivStartTitleText="@string/about_us_weibo_key" />
-
-        <com.palliums.widget.MenuItemView
             android:id="@+id/mivTelegram"
             style="@style/MenuItemView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mivWeibo"
+            app:layout_constraintTop_toBottomOf="@+id/mivTwitter"
             app:mivEndDescText="@string/about_us_telegram_value"
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_telegram_key" />

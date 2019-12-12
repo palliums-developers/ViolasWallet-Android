@@ -31,8 +31,6 @@ class AboutUsActivity : BaseAppActivity() {
         mivWebsite.setOnClickListener(this)
         mivEmail.setOnClickListener(this)
         mivWeChat.setOnClickListener(this)
-        mivQQ.setOnClickListener(this)
-        mivWeibo.setOnClickListener(this)
         mivTelegram.setOnClickListener(this)
         mivTwitter.setOnClickListener(this)
         mivFacebook.setOnClickListener(this)
@@ -50,14 +48,6 @@ class AboutUsActivity : BaseAppActivity() {
             }
 
             R.id.mivWeChat -> {
-
-            }
-
-            R.id.mivQQ -> {
-
-            }
-
-            R.id.mivWeibo -> {
 
             }
 
