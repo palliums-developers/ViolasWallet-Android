@@ -29,17 +29,17 @@ object ExchangeSocket {
                     LogUtil.e("==market==", depthsJsonObject.toString())
                     val buysOrder =
                         ExchangeOrder.parse(depthsJsonObject.getJSONArray("buys"), IOrderType.BUY)
-                    val sellsOrder =
-                        ExchangeOrder.parse(
-                            depthsJsonObject.getJSONArray("sells"),
-                            IOrderType.SELLS
-                        )
+//                    val sellsOrder =
+//                        ExchangeOrder.parse(
+//                            depthsJsonObject.getJSONArray("sells"),
+//                            IOrderType.SELLS
+//                        )
                     val meOrder = ExchangeOrder.parse(
                         (args[0] as JSONObject).getJSONArray("orders"),
                         IOrderType.BUY
                     )
                     mSubscriber.forEach {
-                        it.onMarkCall(meOrder, buysOrder, sellsOrder)
+                        it.onMarkCall(meOrder, buysOrder, arrayListOf())
                     }
                 }
             }
@@ -50,13 +50,13 @@ object ExchangeSocket {
                     LogUtil.e("==depths==", depthsJsonObject.toString())
                     val buysOrder =
                         ExchangeOrder.parse(depthsJsonObject.getJSONArray("buys"), IOrderType.BUY)
-                    val sellsOrder =
-                        ExchangeOrder.parse(
-                            depthsJsonObject.getJSONArray("sells"),
-                            IOrderType.SELLS
-                        )
+//                    val sellsOrder =
+//                        ExchangeOrder.parse(
+//                            depthsJsonObject.getJSONArray("sells"),
+//                            IOrderType.SELLS
+//                        )
                     mSubscriber.forEach {
-                        it.onDepthsCall(buysOrder, sellsOrder)
+                        it.onDepthsCall(buysOrder, arrayListOf())
                     }
                 }
             }

@@ -315,4 +315,9 @@
     <string name="hint_mint_condition_error">Application of Issuing Failed</string>
     <string name="hint_retry">Retry</string>
     <string name="subject_feedback">SSO Wallet Feedback</string>
+    <string name="hint_back_up_mnemonic_words">Your identity mnemonic is not backed up. Be sure to back up the mnemonic</string>
+    <string name="hint_back_up_mnemonic_words_content">Mnemonic words can be used to recover the wallet assets under the identity, to prevent the asset loss caused by forgotten password, application deletion, mobile phone loss, etc</string>
+    <string name="tab_wallet">Wallet</string>
+    <string name="tab_applyfor">Apply</string>
+    <string name="tab_me">Me</string>
 </resources>
