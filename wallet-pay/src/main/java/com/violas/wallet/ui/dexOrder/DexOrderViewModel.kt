@@ -2,9 +2,15 @@ package com.violas.wallet.ui.dexOrder
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.palliums.content.ContextProvider
 import com.palliums.net.LoadState
 import com.palliums.paging.PagingViewModel
+import com.palliums.utils.getString
+import com.violas.wallet.R
+import com.violas.wallet.biz.ExchangeManager
+import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexTokenCache
 import com.violas.wallet.repository.http.dex.DexTokenPriceDTO
@@ -12,6 +18,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.palliums.violascore.wallet.Account
+import org.palliums.violascore.wallet.KeyPair
 
 /**
  * Created by elephant on 2019-12-06 17:12.
@@ -34,10 +42,15 @@ class DexOrderViewModel(
     private val dexService by lazy {
         DataRepository.getDexService()
     }
+    private val exchangeManager by lazy {
+        ExchangeManager()
+    }
 
     fun revokeOrder(
+        account: AccountDO,
         password: ByteArray,
         dexOrderVO: DexOrderVO,
+        onCheckPassword: (Boolean) -> Unit,
         onRevokeSuccess: () -> Unit
     ): Boolean {
         synchronized(lock) {
@@ -46,21 +59,44 @@ class DexOrderViewModel(
             } else if (!dexOrderVO.isOpen()) {
                 return false
             }
-
-            loadState.postValue(LoadState.RUNNING)
         }
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // TODO 撤销操作
-                delay(2000)
+                val decryptPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
+                    .decrypt(password, account.privateKey)
+                if (decryptPrivateKey == null) {
+                    tipsMessage.postValue(getString(R.string.hint_password_error))
+                    onCheckPassword.invoke(false)
+                    return@launch
+                }
 
-                withContext(Dispatchers.Main) {
-                    onRevokeSuccess.invoke()
+                onCheckPassword.invoke(true)
+                loadState.postValue(LoadState.RUNNING)
+
+                val account = Account(KeyPair.fromSecretKey(decryptPrivateKey!!))
+                val result = exchangeManager.undoExchangeToken(
+                    account,
+                    dexOrderVO.dexOrderDTO.tokenGive,
+                    dexOrderVO.dexOrderDTO.version
+                )
+
+                if (result) {
+                    withContext(Dispatchers.Main) {
+                        onRevokeSuccess.invoke()
+                    }
                 }
 
                 synchronized(lock) {
                     loadState.postValue(LoadState.SUCCESS)
+                    tipsMessage.postValue(
+                        getString(
+                            if (result)
+                                R.string.tips_revoke_success
+                            else
+                                R.string.tips_revoke_failure
+                        )
+                    )
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -198,8 +234,8 @@ class DexOrderViewModel(
                     ?: "0xb9e3266ca9f28103ca7c9bb9e5eb6d0d8c1a9d774a11b384798a3c4784d5411e",
                 amountGet = "100",
                 amountFilled = "1",
-                version = "1",
-                updateVersion = "1",
+                version = 1,
+                updateVersion = 1,
                 date = System.currentTimeMillis(),
                 updateDate = System.currentTimeMillis()
             )
@@ -216,8 +252,8 @@ class DexOrderViewModel(
                     ?: "0xe90e4f077bef23b32a6694a18a1fa34244532400869e4e8c87ce66d0b6c004bd",
                 amountGet = "1277",
                 amountFilled = "1",
-                version = "2",
-                updateVersion = "2",
+                version = 2,
+                updateVersion = 2,
                 date = System.currentTimeMillis(),
                 updateDate = System.currentTimeMillis()
             )
@@ -234,8 +270,8 @@ class DexOrderViewModel(
                     ?: "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
                 amountGet = "0.1",
                 amountFilled = "1",
-                version = "3",
-                updateVersion = "3",
+                version = 3,
+                updateVersion = 3,
                 date = System.currentTimeMillis(),
                 updateDate = System.currentTimeMillis()
             )

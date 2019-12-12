@@ -234,4 +234,7 @@
     <string name="hint_unable_change">无法兑换</string>
     <string name="hint_unknown_error">未知错误</string>
     <string name="hint_change_number_not_zero">兑换数量不能为零</string>
+
+    <string name="tips_revoke_success">撤销成功</string>
+    <string name="tips_revoke_failure">撤销失败</string>
 </resources>

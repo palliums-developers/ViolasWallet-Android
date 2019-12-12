@@ -9,8 +9,13 @@ import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.RevokeDexOrderEvent
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.widget.dialog.PasswordInputDialog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 
 /**
@@ -34,6 +39,7 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderVO>() {
     }
 
     private var dexOrderDO: DexOrderVO? = null
+    private lateinit var currentAccount: AccountDO
 
     override fun initViewModel(): PagingViewModel<DexOrderVO> {
         return DexOrderViewModel(
@@ -54,16 +60,28 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderVO>() {
                 //showToast(R.string.transaction_record_not_supported_query)
             },
             onClickRevokeOrder = { dexOrder, position ->
+
                 PasswordInputDialog().setConfirmListener { password, dialog ->
-                    dialog.dismiss()
 
-                    (getViewModel() as DexOrderViewModel).revokeOrder(password, dexOrder) {
-                        dexOrder.revokedFlag = true
-                        dexOrder.dexOrderDTO.date = System.currentTimeMillis()
+                    if (!(getViewModel() as DexOrderViewModel).revokeOrder(
+                            currentAccount,
+                            password,
+                            dexOrder,
+                            onCheckPassword = {
+                                if (it) {
+                                    dialog.dismiss()
+                                }
+                            }
+                        ) {
+                            dexOrder.revokedFlag = true
+                            dexOrder.dexOrderDTO.date = System.currentTimeMillis()
 
-                        getViewAdapter().notifyItemChanged(position)
+                            getViewAdapter().notifyItemChanged(position)
 
-                        EventBus.getDefault().post(RevokeDexOrderEvent(dexOrder.dexOrderDTO.id))
+                            EventBus.getDefault().post(RevokeDexOrderEvent(dexOrder.dexOrderDTO.id))
+                        }
+                    ) {
+                        dialog.dismiss()
                     }
 
                 }.show(this@DexOrderDetailsActivity.supportFragmentManager)
@@ -74,6 +92,20 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderVO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        launch(Dispatchers.IO) {
+            val result = initData(savedInstanceState)
+            withContext(Dispatchers.Main) {
+                if (result) {
+                    initView()
+                } else {
+                    finish()
+                }
+            }
+        }
+    }
+
+    private fun initData(savedInstanceState: Bundle?): Boolean {
+
         if (savedInstanceState != null) {
             dexOrderDO = savedInstanceState.getParcelable(EXTRA_KEY_DEX_ORDER)
         } else if (intent != null) {
@@ -81,10 +113,19 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderVO>() {
         }
 
         if (dexOrderDO == null) {
-            finish()
-            return
+            return false
         }
 
+        return try {
+            currentAccount = AccountManager().currentAccount()
+
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun initView() {
         setTitle(R.string.title_order_details)
 
         (getViewModel() as DexOrderViewModel).loadState.observe(this, Observer {

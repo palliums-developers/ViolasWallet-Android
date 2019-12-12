@@ -13,10 +13,15 @@ import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.RevokeDexOrderEvent
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_dex_order_details.*
 import kotlinx.android.synthetic.main.item_dex_order_details_header.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,6 +47,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
     }
 
     private var dexOrderDO: DexOrderVO? = null
+    private lateinit var currentAccount: AccountDO
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_dex_order_details
@@ -82,6 +88,20 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        launch(Dispatchers.IO) {
+            val result = initData(savedInstanceState)
+            withContext(Dispatchers.Main) {
+                if (result) {
+                    initView()
+                } else {
+                    finish()
+                }
+            }
+        }
+    }
+
+    private fun initData(savedInstanceState: Bundle?): Boolean {
+
         if (savedInstanceState != null) {
             dexOrderDO = savedInstanceState.getParcelable(EXTRA_KEY_DEX_ORDER)
         } else if (intent != null) {
@@ -89,10 +109,19 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
         }
 
         if (dexOrderDO == null) {
-            finish()
-            return
+            return false
         }
 
+        return try {
+            currentAccount = AccountManager().currentAccount()
+
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun initView() {
         setTitle(R.string.title_order_details)
 
         (getViewModel() as DexOrderViewModel).loadState.observe(this, Observer {
@@ -163,24 +192,34 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
             R.id.tvState -> {
 
                 dexOrderDO?.let { dexOrder ->
-
                     if (dexOrder.isOpen() && !dexOrder.revokedFlag) {
 
                         PasswordInputDialog().setConfirmListener { password, dialog ->
-                            dialog.dismiss()
 
-                            (getViewModel() as DexOrderViewModel).revokeOrder(password, dexOrder) {
-                                dexOrder.revokedFlag = true
-                                dexOrder.dexOrderDTO.date = System.currentTimeMillis()
+                            if (!(getViewModel() as DexOrderViewModel).revokeOrder(
+                                    currentAccount,
+                                    password,
+                                    dexOrder,
+                                    onCheckPassword = {
+                                        if (it) {
+                                            dialog.dismiss()
+                                        }
+                                    }
+                                ) {
+                                    dexOrder.revokedFlag = true
+                                    dexOrder.dexOrderDTO.date = System.currentTimeMillis()
 
-                                tvState.setText(R.string.state_revoked)
-                                tvTime.text = SimpleDateFormat(
-                                    "MM.dd HH:mm:ss",
-                                    Locale.ENGLISH
-                                ).format(dexOrder.getDate())
+                                    tvState.setText(R.string.state_revoked)
+                                    tvTime.text = SimpleDateFormat(
+                                        "MM.dd HH:mm:ss",
+                                        Locale.ENGLISH
+                                    ).format(dexOrder.getDate())
 
-                                EventBus.getDefault()
-                                    .post(RevokeDexOrderEvent(dexOrder.dexOrderDTO.id))
+                                    EventBus.getDefault()
+                                        .post(RevokeDexOrderEvent(dexOrder.dexOrderDTO.id))
+                                }
+                            ) {
+                                dialog.dismiss()
                             }
 
                         }.show(this@DexOrderDetails2Activity.supportFragmentManager)
