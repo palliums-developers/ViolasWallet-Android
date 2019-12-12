@@ -203,24 +203,26 @@ class TransferManager {
         }
     }
 
-    private fun checkAddress(address: String, coinNumber: Int): Boolean {
-        when (coinNumber) {
-            CoinTypes.Libra.coinType(),
-            CoinTypes.VToken.coinType() -> {
-                if (!validationLibraAddress(address)) {
+    companion object {
+        fun checkAddress(address: String, coinNumber: Int): Boolean {
+            when (coinNumber) {
+                CoinTypes.Libra.coinType(),
+                CoinTypes.VToken.coinType() -> {
+                    if (!validationLibraAddress(address)) {
+                        return false
+                    }
+                }
+                CoinTypes.Bitcoin.coinType(),
+                CoinTypes.BitcoinTest.coinType() -> {
+                    if (!validationBTCAddress(address)) {
+                        return false
+                    }
+                }
+                else -> {
                     return false
                 }
             }
-            CoinTypes.Bitcoin.coinType(),
-            CoinTypes.BitcoinTest.coinType() -> {
-                if (!validationBTCAddress(address)) {
-                    return false
-                }
-            }
-            else -> {
-                return false
-            }
+            return true
         }
-        return true
     }
 }

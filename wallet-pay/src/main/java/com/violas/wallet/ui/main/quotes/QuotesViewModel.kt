@@ -1,15 +1,20 @@
 package com.violas.wallet.ui.main.quotes
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.palliums.content.ContextProvider
 import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.toMutableMap
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.WrongPasswordException
+import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -18,11 +23,12 @@ import com.violas.wallet.repository.socket.Subscriber
 import com.violas.wallet.ui.main.quotes.bean.ExchangeToken
 import com.violas.wallet.ui.main.quotes.bean.IOrder
 import com.violas.wallet.ui.main.quotes.bean.IToken
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import org.palliums.violascore.wallet.Account
+import org.palliums.violascore.wallet.KeyPair
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -60,6 +66,10 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
 
     private val mAccountManager by lazy {
         AccountManager()
+    }
+
+    private val mExchangeManager by lazy {
+        ExchangeManager()
     }
 
     private var mAccount: AccountDO? = null
@@ -377,4 +387,89 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             }
         }
     }
+
+    private fun getCurrentUnPublishToken(): List<IToken> {
+        val notEnable = mutableListOf<IToken>()
+        if (currentFormCoinLiveData.value?.isNetEnable() == false) {
+            notEnable.add(currentFormCoinLiveData.value!!)
+        }
+        if (currentToCoinLiveData.value?.isNetEnable() == false) {
+            notEnable.add(currentToCoinLiveData.value!!)
+        }
+        return notEnable
+    }
+
+    @Throws(ExchangeCoinEqualException::class, WrongPasswordException::class)
+    suspend fun handleExchange(
+        password: ByteArray,
+        fromCoinAmount: BigDecimal,
+        toCoinAmount: BigDecimal
+    ) = withContext(Dispatchers.IO) {
+        if (currentFormCoinLiveData.value != null && currentFormCoinLiveData.value == currentToCoinLiveData.value) {
+            throw ExchangeCoinEqualException()
+        }
+
+        val decryptPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
+            .decrypt(password, mAccount?.privateKey)
+            ?: throw WrongPasswordException()
+
+        val account = Account(KeyPair.fromSecretKey(decryptPrivateKey))
+        val currentUnPublishToken = getCurrentUnPublishToken()
+
+        // publish
+        val list = arrayListOf<Deferred<*>>()
+        currentUnPublishToken.forEach {
+            list.add(async {
+                val publishToken = publishToken(account, it.tokenAddress())
+                if (publishToken) {
+                    it.setNetEnable(true)
+                }
+                publishToken
+            })
+        }
+        list.forEach {
+            it.await()
+        }
+
+        // exchange
+        val fromCoin: IToken
+        val toCoin: IToken
+
+        if (isPositiveChangeLiveData.value == false) {
+            fromCoin = currentFormCoinLiveData.value!!
+            toCoin = currentToCoinLiveData.value!!
+        } else {
+            fromCoin = currentToCoinLiveData.value!!
+            toCoin = currentFormCoinLiveData.value!!
+        }
+
+        Log.e("==exchange==", "${fromCoin.tokenName()}   ${toCoin.tokenName()}")
+        mExchangeManager.exchangeToken(
+            getApplication(),
+            account,
+            fromCoin,
+            fromCoinAmount,
+            toCoin,
+            toCoinAmount
+        )
+    }
+
+    private suspend fun publishToken(mAccount: Account, tokenAddress: String): Boolean {
+        val channel = Channel<Boolean>()
+        DataRepository.getViolasService()
+            .publishToken(
+                getApplication(),
+                mAccount,
+                tokenAddress
+            ) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    channel.send(it)
+                    channel.close()
+                }
+            }
+        return channel.receive()
+        return true
+    }
 }
+
+class ExchangeCoinEqualException : RuntimeException()

@@ -199,7 +199,6 @@
 
     <string name="account_tips_not_found">钱包账号不存在</string>
     <string name="hint_assert_open_error">资产开启失败</string>
-    <string name="hint_unknown_error">异常错误</string>
     <string name="hint_transaction_record">交易记录</string>
     <string name="hint_unsupported_tokens">未打开或不支持的代币</string>
     <string name="hint_unsupported_coin">不支持的数字货币</string>
@@ -230,4 +229,9 @@
     <string name="subject_feedback">Violas Wallet 问题反馈</string>
     <string name="title_privacy_policy">隐私条例</string>
     <string name="url_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy.html</string>
+    <string name="hint_exchange_successful">兑换成功</string>
+    <string name="hint_exchange_error">兑换失败</string>
+    <string name="hint_unable_change">无法兑换</string>
+    <string name="hint_unknown_error">未知错误</string>
+    <string name="hint_change_number_not_zero">兑换数量不能为零</string>
 </resources>

@@ -66,3 +66,11 @@ fun <T> List<T>.toMutableMap(key: (T) -> String): MutableMap<String, T> {
     }
     return map
 }
+
+public inline fun String.toBigDecimal(): java.math.BigDecimal {
+    return if (this.isEmpty()) {
+        java.math.BigDecimal("0")
+    } else {
+        java.math.BigDecimal(this)
+    }
+}
