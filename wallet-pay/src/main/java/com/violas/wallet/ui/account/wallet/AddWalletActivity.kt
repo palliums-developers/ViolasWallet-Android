@@ -122,12 +122,8 @@ class AddWalletAdapter(private val onItemClick: (Int) -> Unit) : ListingViewAdap
 
 class AddWalletViewModel : ListingViewModel<AddWalletVo>() {
 
-    override suspend fun loadData(
-        vararg params: Any,
-        onSuccess: (MutableList<AddWalletVo>) -> Unit,
-        onFailure: (Throwable) -> Unit
-    ) {
-        val listData = arrayListOf(
+    override suspend fun loadData(vararg params: Any): MutableList<AddWalletVo> {
+        return arrayListOf(
             AddWalletVo(
                 AccountType.VIOLAS,
                 R.mipmap.ic_label_violas,
@@ -147,8 +143,6 @@ class AddWalletViewModel : ListingViewModel<AddWalletVo>() {
                 CoinTypes.Libra.fullName()
             )
         )
-
-        onSuccess.invoke(listData)
     }
 
     override fun checkNetworkBeforeExecute(): Boolean {

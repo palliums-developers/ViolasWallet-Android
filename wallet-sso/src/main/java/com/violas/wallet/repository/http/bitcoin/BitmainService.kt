@@ -21,110 +21,104 @@ class BitmainService(private val mBitmainRepository: BitmainRepository) :
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
-        onFailure: (Throwable) -> Unit
+        onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
-        try {
-            val it =
-                mBitmainRepository.getTransactionRecord(address, pageSize, pageNumber)
+        val it =
+            mBitmainRepository.getTransactionRecord(address, pageSize, pageNumber)
 
-            if (it.data == null || it.data!!.list.isNullOrEmpty()) {
-                onSuccess.invoke(emptyList(), null)
-                return
+        if (it.data == null || it.data!!.list.isNullOrEmpty()) {
+            onSuccess.invoke(emptyList(), null)
+            return
+        }
+
+        val list = it.data!!.list!!.mapIndexed { index, bean ->
+
+            // 解析交易类型，暂时只分收款和付款
+            var transactionType = TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
+            bean.inputs.forEach { inputInfo ->
+                inputInfo.prev_addresses.forEach { inputAddress ->
+                    if (inputAddress == address) {
+                        transactionType = TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
+                    }
+                }
             }
 
-            val list = it.data!!.list!!.mapIndexed { index, bean ->
+            // 解析展示地址，收款付款均为对方第一个地址
+            var showAddress = if (TransactionRecordVO.isReceipt(transactionType)) {
+                if (bean.inputs.isNotEmpty()
+                    && bean.inputs[0].prev_addresses.isNotEmpty()
+                ) {
+                    bean.inputs[0].prev_addresses[0]
+                } else {
+                    address
+                }
+            } else {
+                if (bean.outputs.isNotEmpty()
+                    && bean.outputs[0].addresses.isNotEmpty()
+                ) {
+                    bean.outputs[0].addresses[0]
+                } else {
+                    address
+                }
+            }
 
-                // 解析交易类型，暂时只分收款和付款
-                var transactionType = TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
+            // 解析展示金额，收款为自己接收的金额，付款为自己交付的金额减去自己接收的金额（系统找零）
+            var showAmount = 0L
+            if (TransactionRecordVO.isReceipt(transactionType)) {
+                bean.outputs.forEach { outputInfo ->
+                    var me = false
+                    outputInfo.addresses.forEach { outputAddress ->
+                        if (outputAddress == address) {
+                            me = true
+                        }
+                    }
+
+                    if (me) {
+                        showAmount = outputInfo.value
+                    }
+                }
+            } else {
+                var inputAmount = 0L
                 bean.inputs.forEach { inputInfo ->
+                    var me = false
                     inputInfo.prev_addresses.forEach { inputAddress ->
                         if (inputAddress == address) {
-                            transactionType = TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
+                            me = true
                         }
+                    }
+
+                    if (me) {
+                        inputAmount += inputInfo.prev_value
                     }
                 }
 
-                // 解析展示地址，收款付款均为对方第一个地址
-                var showAddress = if (TransactionRecordVO.isReceipt(transactionType)) {
-                    if (bean.inputs.isNotEmpty()
-                        && bean.inputs[0].prev_addresses.isNotEmpty()
-                    ) {
-                        bean.inputs[0].prev_addresses[0]
-                    } else {
-                        address
+                var outputAmount = 0L
+                bean.outputs.forEach { outputInfo ->
+                    var me = false
+                    outputInfo.addresses.forEach { outputAddress ->
+                        if (outputAddress == address) {
+                            me = true
+                        }
                     }
-                } else {
-                    if (bean.outputs.isNotEmpty()
-                        && bean.outputs[0].addresses.isNotEmpty()
-                    ) {
-                        bean.outputs[0].addresses[0]
-                    } else {
-                        address
+
+                    if (me) {
+                        outputAmount += outputInfo.value
                     }
                 }
 
-                // 解析展示金额，收款为自己接收的金额，付款为自己交付的金额减去自己接收的金额（系统找零）
-                var showAmount = 0L
-                if (TransactionRecordVO.isReceipt(transactionType)) {
-                    bean.outputs.forEach { outputInfo ->
-                        var me = false
-                        outputInfo.addresses.forEach { outputAddress ->
-                            if (outputAddress == address) {
-                                me = true
-                            }
-                        }
-
-                        if (me) {
-                            showAmount = outputInfo.value
-                        }
-                    }
-                } else {
-                    var inputAmount = 0L
-                    bean.inputs.forEach { inputInfo ->
-                        var me = false
-                        inputInfo.prev_addresses.forEach { inputAddress ->
-                            if (inputAddress == address) {
-                                me = true
-                            }
-                        }
-
-                        if (me) {
-                            inputAmount += inputInfo.prev_value
-                        }
-                    }
-
-                    var outputAmount = 0L
-                    bean.outputs.forEach { outputInfo ->
-                        var me = false
-                        outputInfo.addresses.forEach { outputAddress ->
-                            if (outputAddress == address) {
-                                me = true
-                            }
-                        }
-
-                        if (me) {
-                            outputAmount += outputInfo.value
-                        }
-                    }
-
-                    showAmount = inputAmount - outputAmount
-                }
-
-                TransactionRecordVO(
-                    id = (pageNumber - 1) * pageSize + index,
-                    coinTypes = if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin,
-                    transactionType = transactionType,
-                    time = bean.block_time * 1000L,
-                    amount = showAmount.toString(),
-                    address = showAddress,
-                    url = "https://btc.com/${bean.hash}"
-                )
+                showAmount = inputAmount - outputAmount
             }
-            onSuccess.invoke(list, null)
 
-        } catch (e: Exception) {
-            onFailure.invoke(e)
+            TransactionRecordVO(
+                id = (pageNumber - 1) * pageSize + index,
+                coinTypes = if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin,
+                transactionType = transactionType,
+                time = bean.block_time * 1000L,
+                amount = showAmount.toString(),
+                address = showAddress,
+                url = "https://btc.com/${bean.hash}"
+            )
         }
+        onSuccess.invoke(list, null)
     }
 }

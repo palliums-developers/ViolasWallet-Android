@@ -61,11 +61,12 @@ abstract class BaseViewModel : ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
 
+                val exception = if (e is RequestException) e else RequestException(e)
                 synchronized(lock) {
                     retry = { execute(*params, action = action, needCheckParam = needCheckParam) }
 
-                    loadState.postValue(LoadState.failure(e))
-                    tipsMessage.postValue(e.message)
+                    loadState.postValue(LoadState.failure(exception))
+                    tipsMessage.postValue(exception.message)
                 }
             }
         }

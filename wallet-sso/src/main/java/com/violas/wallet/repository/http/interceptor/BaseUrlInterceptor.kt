@@ -28,6 +28,15 @@ class BaseUrlInterceptor : Interceptor {
         const val LIBEXPLORER_URL_TEST_NET = "https://api-test.libexplorer.com/api"
     }
 
+    private val baseUrls: Map<String, String> by lazy {
+        mutableMapOf<String, String>().apply {
+            this[HEADER_VALUE_BITMAIN] =
+                if (Vm.TestNet) BITMAIN_URL_TEST_NET else BITMAIN_URL_MAIN_NET
+            this[HEADER_VALUE_LIBEXPLORER] =
+                if (Vm.TestNet) LIBEXPLORER_URL_TEST_NET else LIBEXPLORER_URL_MAIN_NET
+        }
+    }
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
@@ -36,18 +45,8 @@ class BaseUrlInterceptor : Interceptor {
             return chain.proceed(originalRequest)
         }
 
-        var replaceUrl: HttpUrl? = null
-        if (urlNameList[0] == HEADER_VALUE_BITMAIN) {
-            val url = if (Vm.TestNet) BITMAIN_URL_MAIN_NET else BITMAIN_URL_MAIN_NET
-            replaceUrl = url.toHttpUrlOrNull()
-        } else if (urlNameList[0] == HEADER_VALUE_LIBEXPLORER) {
-            val url = if (Vm.TestNet) LIBEXPLORER_URL_MAIN_NET else LIBEXPLORER_URL_TEST_NET
-            replaceUrl = url.toHttpUrlOrNull()
-        }
-
-        if (replaceUrl == null) {
-            return chain.proceed(originalRequest)
-        }
+        val replaceUrl: HttpUrl = baseUrls[urlNameList[0]]?.toHttpUrlOrNull()
+            ?: return chain.proceed(originalRequest)
 
         val newUrlBuilder = originalRequest.url.newBuilder()
         val originalPathSegments = ArrayList<String>(originalRequest.url.pathSegments)
