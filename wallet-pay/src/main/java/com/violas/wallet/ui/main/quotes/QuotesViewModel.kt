@@ -22,6 +22,7 @@ import com.violas.wallet.repository.socket.ExchangeSocket
 import com.violas.wallet.repository.socket.Subscriber
 import com.violas.wallet.ui.main.quotes.bean.ExchangeToken
 import com.violas.wallet.ui.main.quotes.bean.IOrder
+import com.violas.wallet.ui.main.quotes.bean.IOrderStatus
 import com.violas.wallet.ui.main.quotes.bean.IToken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -311,7 +312,12 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 val newMeOrderList =
                     meOrdersLiveData.value?.toMutableMap { it.id() } ?: mutableMapOf()
                 meOrderList.forEach {
-                    newMeOrderList[it.id()] = it
+                    when (it.state()) {
+                        IOrderStatus.OPEN -> newMeOrderList[it.id()] = it
+                        IOrderStatus.FILLED,
+                        IOrderStatus.CANCELED,
+                        IOrderStatus.FILLED_CANCELED -> newMeOrderList.remove(it.id())
+                    }
                 }
                 meOrdersLiveData.postValue(
                     newMeOrderList.values.toList()
