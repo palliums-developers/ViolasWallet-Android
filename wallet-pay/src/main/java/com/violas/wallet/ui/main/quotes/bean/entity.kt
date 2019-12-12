@@ -7,6 +7,7 @@ import java.util.*
 
 interface IToken {
     fun isNetEnable(): Boolean = false
+    fun setNetEnable(enable: Boolean)
     fun isEnable(): Boolean = false
     fun tokenAddress(): String
     fun tokenName(): String
@@ -28,6 +29,10 @@ class ExchangeToken(
     override fun tokenPrice() = price
 
     override fun isNetEnable() = remoteEnable
+
+    override fun setNetEnable(enable: Boolean) {
+        remoteEnable = enable
+    }
 
     override fun isEnable() = localEnable
 }
@@ -52,7 +57,7 @@ interface IOrder {
     fun state(): IOrderStatus
     fun amount(): String
     fun price(): String
-    fun setPrice(price:String)
+    fun setPrice(price: String)
     fun date(): Date
 }
 
@@ -127,7 +132,7 @@ class ExchangeOrder(
         return tokenGet.replace("0x", "")
     }
 
-    override fun setPrice(price:String){
+    override fun setPrice(price: String) {
         this.price = price
     }
 

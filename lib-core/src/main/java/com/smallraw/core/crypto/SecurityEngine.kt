@@ -24,7 +24,10 @@ open class SecurityEngine(
         return AESDigest.encrypt(content, digest)
     }
 
-    fun decrypt(password: ByteArray, content: ByteArray): ByteArray? {
+    fun decrypt(password: ByteArray, content: ByteArray?): ByteArray? {
+        if (content == null) {
+            return null
+        }
         val randomByteArray = obtainUniqueKey()
         val digest = MD5Digest.digest(salt.plus(password).plus(randomByteArray))
         return AESDigest.decrypt(content, digest)

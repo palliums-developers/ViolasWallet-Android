@@ -7,25 +7,33 @@ import android.os.Bundle
 import android.text.TextWatcher
 import android.transition.AutoTransition
 import android.transition.TransitionManager
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.palliums.base.BaseFragment
 import com.palliums.utils.TextWatcherSimple
+import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.stripTrailingZeros
+import com.palliums.utils.toBigDecimal
 import com.violas.wallet.R
+import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.ui.dexOrder.DexOrdersActivity
 import com.violas.wallet.ui.main.quotes.tokenList.TokenBottomSheetDialogFragment
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.fragment_quotes.*
 import kotlinx.android.synthetic.main.fragment_quotes_content.*
 import kotlinx.android.synthetic.main.fragment_quotes_did_not_open.*
+import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 
-class QuotesFragment : Fragment() {
+class QuotesFragment : BaseFragment() {
+    override fun getLayoutResId(): Int {
+        return R.layout.fragment_quotes
+    }
+
     private val mConstraintSet = ConstraintSet()
     private val mConstraintSet2 = ConstraintSet()
 
@@ -41,14 +49,6 @@ class QuotesFragment : Fragment() {
     }
 
     private var mIvEntrustOthersAnim: ObjectAnimator? = null
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_quotes, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -111,6 +111,45 @@ class QuotesFragment : Fragment() {
         tvMyAllEntrust.setOnClickListener {
             startActivity(Intent(context, DexOrdersActivity::class.java))
         }
+        btnExchange.setOnClickListener {
+            handleBtnExchangeClick()
+        }
+    }
+
+    private fun handleBtnExchangeClick() {
+        val fromBigDecimal = editFromCoin.text.toString().toBigDecimal()
+        val toBigDecimal = editToCoin.text.toString().toBigDecimal()
+        if(fromBigDecimal== BigDecimal("0") || toBigDecimal== BigDecimal("0") ){
+            showToast(getString(R.string.hint_change_number_not_zero))
+            return
+        }
+        PasswordInputDialog()
+            .setConfirmListener { password, dialogFragment ->
+                launch(coroutineExceptionHandler()) {
+                    showProgress()
+                    try {
+                        val handleExchange =
+                            mQuotesViewModel.handleExchange(password, fromBigDecimal, toBigDecimal)
+                        if (handleExchange) {
+                            showToast(getString(R.string.hint_exchange_successful))
+                        } else {
+                            showToast(getString(R.string.hint_exchange_error))
+                        }
+                    } catch (e: ExchangeCoinEqualException) {
+                        showToast("${tvFromCoin.text}${getString(R.string.hint_unable_change)}${tvToCoin.text}")
+                        e.printStackTrace()
+                    } catch (e: WrongPasswordException) {
+                        showToast(getString(R.string.hint_password_error))
+                        e.printStackTrace()
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                        showToast(getString(R.string.hint_unknown_error))
+                    }
+                    dismissProgress()
+                }
+                dialogFragment.dismiss()
+            }
+            .show(childFragmentManager)
     }
 
     private fun showTokenFragment(view: View?) {
