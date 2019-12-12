@@ -16,7 +16,7 @@ interface Subscriber {
 
 object ExchangeSocket {
     private val mSubscriber = mutableListOf<Subscriber>()
-    private val mSocket = IO.socket("http://192.168.1.253:8181")
+    private val mSocket = IO.socket("http://18.220.66.235:38181")
     private val mExecutor = Executors.newSingleThreadExecutor()
 
     init {
@@ -86,6 +86,10 @@ object ExchangeSocket {
     }
 
     fun getMark(tokenBase: String, tokenQuote: String, userAddress: String) {
+        Log.e(
+            "===",
+            """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote" ,"user":"0x$userAddress"}"""
+        )
         mSocket.emit(
             "getMarket",
             """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote" ,"user":"0x$userAddress"}"""

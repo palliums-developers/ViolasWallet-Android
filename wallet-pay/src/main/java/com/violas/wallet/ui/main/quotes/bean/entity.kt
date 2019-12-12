@@ -2,7 +2,6 @@ package com.violas.wallet.ui.main.quotes.bean
 
 import org.json.JSONArray
 import java.math.BigDecimal
-import java.text.SimpleDateFormat
 import java.util.*
 
 interface IToken {
@@ -60,8 +59,6 @@ interface IOrder {
     fun setPrice(price: String)
     fun date(): Date
 }
-
-private var sim = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
 
 class ExchangeOrder(
     private val id: String,
