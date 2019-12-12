@@ -9,6 +9,7 @@ import com.palliums.paging.PagingViewModel
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.RevokeDexOrderEvent
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,11 +63,12 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
 
     @DexOrdersState
     private var orderState: String? = null
-    private lateinit var accountAddress: String
+    private lateinit var currentAccount: AccountDO
 
     override fun initViewModel(): PagingViewModel<DexOrderVO> {
         return DexOrderViewModel(
-            accountAddress = accountAddress,
+            //accountAddress = currentAccount.address,
+            accountAddress = "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
             orderState = orderState,
             giveTokenAddress = null,
             getTokenAddress = null
@@ -85,14 +87,28 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
                 //showToast(R.string.transaction_record_not_supported_query)
             },
             onClickRevokeOrder = { dexOrder, position ->
+
                 PasswordInputDialog().setConfirmListener { password, dialog ->
-                    dialog.dismiss()
 
-                    (getViewModel() as DexOrderViewModel).revokeOrder(password, dexOrder) {
-                        dexOrder.revokedFlag = true
-                        dexOrder.dexOrderDTO.date = System.currentTimeMillis()
+                    if (!(getViewModel() as DexOrderViewModel).revokeOrder(
+                            currentAccount,
+                            password,
+                            dexOrder,
+                            onCheckPassword = {
+                                if (it) {
+                                    dialog.dismiss()
+                                }
+                            }
+                        ) {
 
-                        getViewAdapter().notifyItemChanged(position)
+                            dexOrder.revokedFlag = true
+                            dexOrder.dexOrderDTO.date = System.currentTimeMillis()
+
+                            getViewAdapter().notifyItemChanged(position)
+                        }
+
+                    ) {
+                        dialog.dismiss()
                     }
 
                 }.show(this@DexOrdersFragment.childFragmentManager)
@@ -109,36 +125,6 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
                     initView()
                 } else {
                     finishActivity()
-                }
-            }
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        orderState?.let { outState.putString(EXTRA_KEY_ORDER_STATE, it) }
-    }
-
-    override fun onDestroyView() {
-        if (EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().unregister(this)
-        }
-        super.onDestroyView()
-    }
-
-    @Subscribe
-    fun onRevokeDexOrderEvent(event: RevokeDexOrderEvent) {
-        if (event.orderId.isEmpty()) {
-            return
-        }
-
-        getViewAdapter().currentList?.let {
-            it.forEachIndexed { index, dexOrderVO ->
-                if (dexOrderVO.dexOrderDTO.id == event.orderId) {
-                    dexOrderVO.revokedFlag = true
-                    dexOrderVO.dexOrderDTO.date = System.currentTimeMillis()
-
-                    getViewAdapter().notifyItemChanged(index)
                 }
             }
         }
@@ -179,15 +165,41 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
         }
 
         return try {
-            val currentAccount = AccountManager().currentAccount()
-            accountAddress = currentAccount.address
-
-            // TODO code for test
-            accountAddress = "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095"
+            currentAccount = AccountManager().currentAccount()
 
             true
         } catch (e: Exception) {
             false
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        orderState?.let { outState.putString(EXTRA_KEY_ORDER_STATE, it) }
+    }
+
+    override fun onDestroyView() {
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this)
+        }
+        super.onDestroyView()
+    }
+
+    @Subscribe
+    fun onRevokeDexOrderEvent(event: RevokeDexOrderEvent) {
+        if (event.orderId.isEmpty()) {
+            return
+        }
+
+        getViewAdapter().currentList?.let {
+            it.forEachIndexed { index, dexOrderVO ->
+                if (dexOrderVO.dexOrderDTO.id == event.orderId) {
+                    dexOrderVO.revokedFlag = true
+                    dexOrderVO.dexOrderDTO.date = System.currentTimeMillis()
+
+                    getViewAdapter().notifyItemChanged(index)
+                }
+            }
         }
     }
 }

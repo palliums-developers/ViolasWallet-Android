@@ -50,9 +50,9 @@ data class DexOrderDTO(
     val tokenGet: String,
     val amountGet: String,
     val amountFilled: String,
-    val version: String,
+    val version: Long,
     @SerializedName(value = "update_version")
-    val updateVersion: String,
+    val updateVersion: Long,
     var date: Long,
     @SerializedName(value = "update_date")
     val updateDate: Long
@@ -67,8 +67,8 @@ data class DexOrderDTO(
         source.readString()!!,
         source.readString()!!,
         source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
+        source.readLong(),
+        source.readLong(),
         source.readLong(),
         source.readLong()
     )
@@ -84,8 +84,8 @@ data class DexOrderDTO(
         writeString(tokenGet)
         writeString(amountGet)
         writeString(amountFilled)
-        writeString(version)
-        writeString(updateVersion)
+        writeLong(version)
+        writeLong(updateVersion)
         writeLong(date)
         writeLong(updateDate)
     }

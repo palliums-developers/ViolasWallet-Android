@@ -1,6 +1,7 @@
 package com.violas.wallet.biz
 
 import android.content.Context
+import com.palliums.content.ContextProvider
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.quotes.bean.IToken
 import kotlinx.coroutines.GlobalScope
@@ -27,16 +28,17 @@ class ExchangeManager {
     private val receiveAddress = "07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095"
 
     suspend fun undoExchangeToken(
-        context: Context,
         account: Account,
-        fromCoin: IToken,
+        giveTokenAddress: String,
         version: Long
     ): Boolean {
         val sequenceNumber = GlobalScope.async { getSequenceNumber(account.getAddress().toHex()) }
         val optionExchangePayload = optionUndoExchangePayload(
-            context,
             receiveAddress,
-            fromCoin.tokenAddress(),
+            if (giveTokenAddress.startsWith("0x"))
+                giveTokenAddress.replace("0x", "")
+            else
+                giveTokenAddress,
             version
         )
 
@@ -93,7 +95,6 @@ class ExchangeManager {
     }
 
     private fun optionUndoExchangePayload(
-        context: Context,
         receiveAddress: String,
         sendTokenAddress: String,
         version: Long
@@ -108,7 +109,7 @@ class ExchangeManager {
             TransactionArgument.newByteArray(subExchangeDate.toString().toByteArray())
 
         val moveEncode = Move.violasTokenEncode(
-            context.assets.open("move/transfer_with_data.json"),
+            ContextProvider.getContext().assets.open("move/transfer_with_data.json"),
             sendTokenAddress.hexToBytes()
         )
 

@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.dialog_password_input.view.*
+import me.yokeyword.fragmentation.SupportHelper
 
 class PasswordInputDialog : DialogFragment() {
     private lateinit var mRootView: View
@@ -47,6 +48,9 @@ class PasswordInputDialog : DialogFragment() {
                 ).show()
                 return@setOnClickListener
             }
+
+            SupportHelper.hideSoftInput(mRootView.editPassword)
+
             confirmCallback?.invoke(trim, this)
         }
         mRootView.btnCancel.setOnClickListener {
