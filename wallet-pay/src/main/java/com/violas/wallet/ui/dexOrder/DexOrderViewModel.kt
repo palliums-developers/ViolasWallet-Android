@@ -6,6 +6,7 @@ import com.palliums.net.LoadState
 import com.palliums.paging.PagingViewModel
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.dex.DexOrderDTO
+import com.violas.wallet.repository.http.dex.DexTokenCache
 import com.violas.wallet.repository.http.dex.DexTokenPriceDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -81,7 +82,7 @@ class DexOrderViewModel(
         onFailure: (Throwable) -> Unit
     ) {
 
-        delay(1000)
+        /*delay(1000)
         val fakeOrdersData = fakeOrdersData()
         val fakeTokensData = fakeTokensData()
 
@@ -98,16 +99,16 @@ class DexOrderViewModel(
             )
         }
 
-        onSuccess.invoke(fakeOrders, fakeOrders.last().dexOrderDTO.version)
+        onSuccess.invoke(fakeOrders, fakeOrders.last().dexOrderDTO.version)*/
 
-        /*try {
+        try {
             val listResponse = dexService.getMyOrders(
                 accountAddress = accountAddress,
                 pageSize = pageSize.toString(),
                 lastVersion = if (pageKey == null) "" else pageKey as String,
                 orderState = orderState,
-                baseTokenAddress = baseTokenAddress,
-                quoteTokenAddress = quoteTokenAddress
+                giveTokenAddress = giveTokenAddress,
+                getTokenAddress = getTokenAddress
             )
 
             if (listResponse.data.isNullOrEmpty()) {
@@ -115,11 +116,24 @@ class DexOrderViewModel(
                 return
             }
 
-            onSuccess.invoke(listResponse.data!!, listResponse.data!!.last().version)
+            val dexTokens = DexTokenCache.getDexTokens(dexService)
+            val dexOrders = listResponse.data!!.map {
+                val tokenGive = dexTokens[it.tokenGive] ?: error("give token not found")
+                val tokenGet = dexTokens[it.tokenGet] ?: error("get token not found")
 
+                DexOrderVO(
+                    dexOrderDTO = it,
+                    giveTokenName = tokenGive.name,
+                    giveTokenPrice = tokenGive.price,
+                    getTokenName = tokenGet.name,
+                    getTokenPrice = tokenGet.price
+                )
+            }
+
+            onSuccess.invoke(dexOrders, dexOrders.last().dexOrderDTO.version)
         } catch (e: Exception) {
             onFailure.invoke(e)
-        }*/
+        }
     }
 
     private fun fakeTokensData(): Map<String, DexTokenPriceDTO> {

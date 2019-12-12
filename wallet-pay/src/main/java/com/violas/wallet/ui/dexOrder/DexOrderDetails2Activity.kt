@@ -138,7 +138,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
                     else
                         R.string.state_completed
                 )
-                tvTime.text = simpleDateFormat.format(it.dexOrderDTO.updateDate)
+                tvTime.text = simpleDateFormat.format(it.getUpdateDate())
             }
             it.isOpen() -> {
                 tvState.setText(
@@ -147,11 +147,11 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
                     else
                         R.string.action_revoke
                 )
-                tvTime.text = simpleDateFormat.format(it.dexOrderDTO.date)
+                tvTime.text = simpleDateFormat.format(it.getDate())
             }
             else -> {
                 tvState.text = ""
-                tvTime.text = simpleDateFormat.format(it.dexOrderDTO.updateDate)
+                tvTime.text = simpleDateFormat.format(it.getUpdateDate())
             }
         }
 
@@ -177,7 +177,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
                                 tvTime.text = SimpleDateFormat(
                                     "MM.dd HH:mm:ss",
                                     Locale.ENGLISH
-                                ).format(dexOrder.dexOrderDTO.date)
+                                ).format(dexOrder.getDate())
 
                                 EventBus.getDefault()
                                     .post(RevokeDexOrderEvent(dexOrder.dexOrderDTO.id))
