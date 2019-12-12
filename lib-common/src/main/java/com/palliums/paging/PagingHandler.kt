@@ -28,6 +28,9 @@ class PagingHandler<VO>(
      */
     private var cachePagedList: PagedList<VO>? = null
 
+    private var autoRefresh = false
+    private var pageSize = PagingViewModel.PAGE_SIZE
+
     init {
 
         mPagingController.getViewModel().pagedList.observe(mLifecycleOwner, Observer {
@@ -103,11 +106,18 @@ class PagingHandler<VO>(
             it.setEnableOverScrollBounce(true)  // 启用越界回弹
             it.setEnableOverScrollDrag(true)    // 启用越界拖动
             it.setOnRefreshListener {
-                // 刷新时原有数据会被清空，造成短暂的页面闪屏或页面空白
-                // 刷新时先不更新数据，刷新完成后再做处理
-                updateDataFlag = false
+                if (autoRefresh) {
+                    autoRefresh = false
+                    if (!mPagingController.getViewModel().start(pageSize)) {
+                        mPagingController.getViewModel().refresh()
+                    }
+                } else {
+                    // 刷新时原有数据会被清空，造成短暂的页面闪屏或页面空白
+                    // 刷新时先不更新数据，刷新完成后再做处理
+                    updateDataFlag = false
 
-                mPagingController.getViewModel().refresh()
+                    mPagingController.getViewModel().refresh()
+                }
             }
         }
 
@@ -138,9 +148,14 @@ class PagingHandler<VO>(
     }
 
     fun start(pageSize: Int = PagingViewModel.PAGE_SIZE) {
-        mPagingController.getRefreshLayout()?.autoRefreshAnimationOnly()
+        this.pageSize = pageSize
+        autoRefresh = true
+        mPagingController.getRefreshLayout()?.autoRefresh()
+
+        // 使用下面的方式初始化刷新加载，SmartRefreshLayout第一次下滑会出现onRefresh刷新回调
+        /*mPagingController.getRefreshLayout()?.autoRefreshAnimationOnly()
         if (!mPagingController.getViewModel().start(pageSize)) {
             mPagingController.getViewModel().refresh()
-        }
+        }*/
     }
 }
