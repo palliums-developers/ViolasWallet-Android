@@ -2,6 +2,7 @@ package com.violas.wallet.ui.main.quotes.bean
 
 import org.json.JSONArray
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 
 interface IToken {
@@ -95,9 +96,9 @@ class ExchangeOrder(
                             "CANCELED" -> IOrderStatus.CANCELED
                             else -> IOrderStatus.FILLED_CANCELED
                         },
-                        any.getString("amountGive"),
+                        BigDecimal(any.getString("amountGet")).divide(BigDecimal("1000000"),2,RoundingMode.HALF_UP).stripTrailingZeros().toPlainString(),
                         "",
-                        Date(any.getLong("update_date"))
+                        Date(any.getLong("update_date") * 1000)
                     )
                 )
             }
