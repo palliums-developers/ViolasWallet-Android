@@ -50,30 +50,21 @@ abstract class ListingViewModel<VO> : ViewModel() {
 
         viewModelScope.launch {
             try {
-                loadData(*params,
-                    onSuccess = {
-                        synchronized(lock) {
-                            loadState.postValue(LoadState.SUCCESS)
-                            listData.postValue(it)
-                        }
-                    },
-                    onFailure = {
-                        synchronized(lock) {
-                            retry = { execute(*params) }
-
-                            loadState.postValue(LoadState.failure(it))
-                            tipsMessage.postValue(it.message)
-                        }
-                    })
+                val list = loadData(params)
+                synchronized(lock) {
+                    loadState.postValue(LoadState.SUCCESS)
+                    listData.postValue(list)
+                }
 
             } catch (e: Exception) {
                 e.printStackTrace()
 
+                val exception = if (e is RequestException) e else RequestException(e)
                 synchronized(lock) {
                     retry = { execute(*params) }
 
-                    loadState.postValue(LoadState.failure(e))
-                    tipsMessage.postValue(e.message)
+                    loadState.postValue(LoadState.failure(exception))
+                    tipsMessage.postValue(exception.message)
                 }
             }
         }
@@ -113,9 +104,5 @@ abstract class ListingViewModel<VO> : ViewModel() {
      * 加载数据
      */
     @WorkerThread
-    protected abstract suspend fun loadData(
-        vararg params: Any,
-        onSuccess: (MutableList<VO>) -> Unit,
-        onFailure: (Throwable) -> Unit
-    )
+    protected abstract suspend fun loadData(vararg params: Any): MutableList<VO>
 }

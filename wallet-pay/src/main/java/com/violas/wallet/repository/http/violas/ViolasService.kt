@@ -299,77 +299,70 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
-        onFailure: (Throwable) -> Unit
+        onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
-        try {
-            val queryToken = tokenDO?.tokenAddress?.isEmpty() ?: false
-            val response =
-                mViolasRepository.getTransactionRecord(
-                    address,
-                    pageSize,
-                    (pageNumber - 1) * pageSize
-                )
+        val queryToken = tokenDO?.tokenAddress?.isEmpty() ?: false
+        val response =
+            mViolasRepository.getTransactionRecord(
+                address,
+                pageSize,
+                (pageNumber - 1) * pageSize
+            )
 
-            if (response.data.isNullOrEmpty()) {
-                onSuccess.invoke(emptyList(), null)
-                return
-            }
-
-
-            val list = response.data!!.mapIndexed { index, bean ->
-                // 解析交易类型
-                val transactionType = when {
-                    bean.type == 1 ->
-                        TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN
-
-                    bean.sender == address -> {
-                        if (queryToken) {
-                            TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
-                        } else {
-                            TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
-                        }
-                    }
-
-                    else -> {
-                        if (queryToken) {
-                            TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT
-                        } else {
-                            TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
-                        }
-                    }
-                }
-
-                // 解析展示地址，收款付款均为对方地址
-                val showAddress = when {
-                    bean.type == 1 || bean.sender == address ->
-                        bean.receiver
-
-                    else ->
-                        bean.sender
-                }
-
-                val coinName = if (TransactionRecordVO.isTokenOpt(transactionType)) {
-                    // TODO 解析 if (queryToken) tokenDO!!.name else bean.module_name
-                    if (queryToken) tokenDO!!.name else "Xcoin"
-                } else {
-                    CoinTypes.VToken.coinName()
-                }
-
-                TransactionRecordVO(
-                    id = (pageNumber - 1) * pageSize + index,
-                    coinTypes = CoinTypes.VToken,
-                    transactionType = transactionType,
-                    time = bean.expiration_time * 1000,
-                    amount = bean.amount,
-                    address = showAddress,
-                    coinName = coinName
-                )
-            }
-            onSuccess.invoke(list, null)
-
-        } catch (e: Exception) {
-            onFailure.invoke(e)
+        if (response.data.isNullOrEmpty()) {
+            onSuccess.invoke(emptyList(), null)
+            return
         }
+
+        val list = response.data!!.mapIndexed { index, bean ->
+            // 解析交易类型
+            val transactionType = when {
+                bean.type == 1 ->
+                    TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN
+
+                bean.sender == address -> {
+                    if (queryToken) {
+                        TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
+                    } else {
+                        TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
+                    }
+                }
+
+                else -> {
+                    if (queryToken) {
+                        TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT
+                    } else {
+                        TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
+                    }
+                }
+            }
+
+            // 解析展示地址，收款付款均为对方地址
+            val showAddress = when {
+                bean.type == 1 || bean.sender == address ->
+                    bean.receiver
+
+                else ->
+                    bean.sender
+            }
+
+            val coinName = if (TransactionRecordVO.isTokenOpt(transactionType)) {
+                // TODO 解析 if (queryToken) tokenDO!!.name else bean.module_name
+                if (queryToken) tokenDO!!.name else "Xcoin"
+            } else {
+                CoinTypes.VToken.coinName()
+            }
+
+            TransactionRecordVO(
+                id = (pageNumber - 1) * pageSize + index,
+                coinTypes = CoinTypes.VToken,
+                transactionType = transactionType,
+                time = bean.expiration_time * 1000,
+                amount = bean.amount,
+                address = showAddress,
+                coinName = coinName
+            )
+        }
+        onSuccess.invoke(list, null)
     }
 }

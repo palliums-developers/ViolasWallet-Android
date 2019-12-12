@@ -19,7 +19,6 @@ class TransactionRecordViewModel(
     coinTypes: CoinTypes
 ) : PagingViewModel<TransactionRecordVO>() {
 
-    private var mFirstRefresh = true
     private val mTransactionRepository =
         DataRepository.getTransactionService(coinTypes)
 
@@ -27,18 +26,10 @@ class TransactionRecordViewModel(
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
-        onFailure: (Throwable) -> Unit
+        onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
-        // 首次刷新操作，请求结果返回太快时，动画效果太快不流畅体验不好
-        if (pageNumber == 1 && mFirstRefresh) {
-            mFirstRefresh = false
-
-            delay(300)
-        }
-
         mTransactionRepository.getTransactionRecord(
-            mAddress, mTokenDO, pageSize, pageNumber, pageKey, onSuccess, onFailure
+            mAddress, mTokenDO, pageSize, pageNumber, pageKey, onSuccess
         )
 
         //onSuccess.invoke(fakeData(mAddress, pageSize, pageNumber), null)

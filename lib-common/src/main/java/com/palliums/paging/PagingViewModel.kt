@@ -10,6 +10,7 @@ import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.toLiveData
 import com.palliums.net.LoadState
+import com.palliums.net.RequestException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
@@ -81,14 +82,12 @@ abstract class PagingViewModel<VO> : ViewModel() {
      * @param pageNumber 页码，从1开始
      * @param pageKey 页面键，来源[onSuccess]返回的第二个数据，开始为null
      * @param onSuccess 成功回调
-     * @param onFailure 失败回调
      */
     protected abstract suspend fun loadData(
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<VO>, Any?) -> Unit,
-        onFailure: (Throwable) -> Unit
+        onSuccess: (List<VO>, Any?) -> Unit
     )
 
     inner class PagingDataSourceFactory(
@@ -199,25 +198,17 @@ abstract class PagingViewModel<VO> : ViewModel() {
                                     }
                                 }
                             }
-                        },
-
-                        onFailure = {
-                            synchronized(lock) {
-                                retry = { loadInitial(params, callback) }
-
-                                refreshState.postValue(LoadState.failure(it))
-                                tipsMessage.postValue(it.message)
-                            }
                         })
 
                 } catch (e: Exception) {
                     e.printStackTrace()
 
+                    val exception = if (e is RequestException) e else RequestException(e)
                     synchronized(lock) {
                         retry = { loadInitial(params, callback) }
 
-                        refreshState.postValue(LoadState.failure(e))
-                        tipsMessage.postValue(e.message)
+                        refreshState.postValue(LoadState.failure(exception))
+                        tipsMessage.postValue(exception.message)
                     }
                 }
             }
@@ -274,25 +265,17 @@ abstract class PagingViewModel<VO> : ViewModel() {
                                     }
                                 )
                             }
-                        },
-
-                        onFailure = {
-                            synchronized(lock) {
-                                retry = { loadAfter(params, callback) }
-
-                                loadMoreState.postValue(LoadState.failure(it))
-                                tipsMessage.postValue(it.message)
-                            }
                         })
 
                 } catch (e: Exception) {
                     e.printStackTrace()
 
+                    val exception = if (e is RequestException) e else RequestException(e)
                     synchronized(lock) {
                         retry = { loadAfter(params, callback) }
 
-                        loadMoreState.postValue(LoadState.failure(e))
-                        tipsMessage.postValue(e.message)
+                        loadMoreState.postValue(LoadState.failure(exception))
+                        tipsMessage.postValue(exception.message)
                     }
                 }
             }

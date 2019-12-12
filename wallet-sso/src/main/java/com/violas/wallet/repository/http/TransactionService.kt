@@ -19,7 +19,6 @@ interface TransactionService {
      * @param pageNumber 页码，从1开始
      * @param pageKey 页面键，来源上一次[onSuccess]返回的第二个数据，开始为null
      * @param onSuccess 成功回调
-     * @param onFailure 失败回调
      */
     suspend fun getTransactionRecord(
         address: String,
@@ -27,7 +26,6 @@ interface TransactionService {
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<TransactionRecordVO>, Any?) -> Unit,
-        onFailure: (Throwable) -> Unit
+        onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     )
 }

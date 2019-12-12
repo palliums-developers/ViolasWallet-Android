@@ -78,8 +78,7 @@ class DexOrderViewModel(
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<DexOrderVO>, Any?) -> Unit,
-        onFailure: (Throwable) -> Unit
+        onSuccess: (List<DexOrderVO>, Any?) -> Unit
     ) {
 
         /*delay(1000)
@@ -101,39 +100,35 @@ class DexOrderViewModel(
 
         onSuccess.invoke(fakeOrders, fakeOrders.last().dexOrderDTO.version)*/
 
-        try {
-            val listResponse = dexService.getMyOrders(
-                accountAddress = accountAddress,
-                pageSize = pageSize.toString(),
-                lastVersion = if (pageKey == null) "" else pageKey as String,
-                orderState = orderState,
-                giveTokenAddress = giveTokenAddress,
-                getTokenAddress = getTokenAddress
-            )
+        val response = dexService.getMyOrders(
+            accountAddress = accountAddress,
+            pageSize = pageSize.toString(),
+            lastVersion = if (pageKey == null) "" else pageKey as String,
+            orderState = orderState,
+            giveTokenAddress = giveTokenAddress,
+            getTokenAddress = getTokenAddress
+        )
 
-            if (listResponse.data.isNullOrEmpty()) {
-                onSuccess.invoke(emptyList(), null)
-                return
-            }
-
-            val dexTokens = DexTokenCache.getDexTokens(dexService)
-            val dexOrders = listResponse.data!!.map {
-                val tokenGive = dexTokens[it.tokenGive] ?: error("give token not found")
-                val tokenGet = dexTokens[it.tokenGet] ?: error("get token not found")
-
-                DexOrderVO(
-                    dexOrderDTO = it,
-                    giveTokenName = tokenGive.name,
-                    giveTokenPrice = tokenGive.price,
-                    getTokenName = tokenGet.name,
-                    getTokenPrice = tokenGet.price
-                )
-            }
-
-            onSuccess.invoke(dexOrders, dexOrders.last().dexOrderDTO.version)
-        } catch (e: Exception) {
-            onFailure.invoke(e)
+        if (response.data.isNullOrEmpty()) {
+            onSuccess.invoke(emptyList(), null)
+            return
         }
+
+        val dexTokens = DexTokenCache.getDexTokens(dexService)
+        val dexOrders = response.data!!.map {
+            val tokenGive = dexTokens[it.tokenGive] ?: error("give token not found")
+            val tokenGet = dexTokens[it.tokenGet] ?: error("get token not found")
+
+            DexOrderVO(
+                dexOrderDTO = it,
+                giveTokenName = tokenGive.name,
+                giveTokenPrice = tokenGive.price,
+                getTokenName = tokenGet.name,
+                getTokenPrice = tokenGet.price
+            )
+        }
+
+        onSuccess.invoke(dexOrders, dexOrders.last().dexOrderDTO.version)
     }
 
     private fun fakeTokensData(): Map<String, DexTokenPriceDTO> {
