@@ -3,6 +3,7 @@ package com.violas.wallet.ui.dexOrder
 import android.view.View
 import com.palliums.base.BaseViewHolder
 import com.violas.wallet.R
+import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.item_dex_order_details_header.view.*
 import java.text.SimpleDateFormat
 
@@ -32,8 +33,8 @@ class DexOrderDetailsHeaderViewHolder(
 
             // 若拿A换B，价格、数量、已成交数量均为B的数据
             itemView.tvPrice.text = it.getTokenPrice.toString()
-            itemView.tvTotalAmount.text = it.dexOrderDTO.amountGet
-            itemView.tvTradeAmount.text = it.dexOrderDTO.amountFilled
+            itemView.tvTotalAmount.text = convertViolasTokenUnit(it.dexOrderDTO.amountGet)
+            itemView.tvTradeAmount.text = convertViolasTokenUnit(it.dexOrderDTO.amountFilled)
 
             itemView.tvFee.text = "0.00Vtoken"
 

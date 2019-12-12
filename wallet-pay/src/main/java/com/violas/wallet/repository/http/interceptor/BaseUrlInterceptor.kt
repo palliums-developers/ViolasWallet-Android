@@ -22,24 +22,33 @@ class BaseUrlInterceptor : Interceptor {
         const val HEADER_VALUE_LIBEXPLORER = "libexplorer"
         const val HEADER_VALUE_DEX = "dex"
 
-        const val BITMAIN_URL_MAIN_NET = "https://chain.api.btc.com/v3/"
-        const val BITMAIN_URL_TEST_NET = "https://testnet-chain.api.btc.com/v3/"
+        private const val BITMAIN_URL_MAIN_NET = "https://chain.api.btc.com/v3/"
+        private const val BITMAIN_URL_TEST_NET = "https://testnet-chain.api.btc.com/v3/"
 
-        const val LIBEXPLORER_URL_MAIN_NET = "https://api-test.libexplorer.com/api"
-        const val LIBEXPLORER_URL_TEST_NET = "https://api-test.libexplorer.com/api"
+        private const val LIBEXPLORER_URL_MAIN_NET = "https://api-test.libexplorer.com/api"
+        private const val LIBEXPLORER_URL_TEST_NET = "https://api-test.libexplorer.com/api"
 
-        const val DEX_URL_MAIN_NET = "http://192.168.1.253:8181"
-        const val DEX_URL_TEST_NET = "http://192.168.1.253:8181"
+        private const val DEX_URL_MAIN_NET = "http://18.220.66.235:38181"
+        private const val DEX_URL_TEST_NET = "http://18.220.66.235:38181"
+
+        fun getDexBaseUrl(): String {
+            return if (Vm.TestNet) DEX_URL_TEST_NET else DEX_URL_MAIN_NET
+        }
+
+        fun getBitmainBaseUrl(): String {
+            return if (Vm.TestNet) BITMAIN_URL_TEST_NET else BITMAIN_URL_MAIN_NET
+        }
+
+        fun getLibexplorerBaseUrl(): String {
+            return if (Vm.TestNet) LIBEXPLORER_URL_TEST_NET else LIBEXPLORER_URL_MAIN_NET
+        }
     }
 
     private val baseUrls: Map<String, String> by lazy {
         mutableMapOf<String, String>().apply {
-            this[HEADER_VALUE_DEX] =
-                if (Vm.TestNet) DEX_URL_TEST_NET else DEX_URL_MAIN_NET
-            this[HEADER_VALUE_BITMAIN] =
-                if (Vm.TestNet) BITMAIN_URL_TEST_NET else BITMAIN_URL_MAIN_NET
-            this[HEADER_VALUE_LIBEXPLORER] =
-                if (Vm.TestNet) LIBEXPLORER_URL_TEST_NET else LIBEXPLORER_URL_MAIN_NET
+            this[HEADER_VALUE_DEX] = getDexBaseUrl()
+            this[HEADER_VALUE_BITMAIN] = getBitmainBaseUrl()
+            this[HEADER_VALUE_LIBEXPLORER] = getLibexplorerBaseUrl()
         }
     }
 

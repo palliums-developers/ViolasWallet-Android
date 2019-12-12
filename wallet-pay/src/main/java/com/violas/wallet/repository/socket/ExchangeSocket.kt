@@ -1,6 +1,7 @@
 package com.violas.wallet.repository.socket
 
 import android.util.Log
+import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.ui.main.quotes.bean.ExchangeOrder
 import com.violas.wallet.ui.main.quotes.bean.IOrder
 import com.violas.wallet.ui.main.quotes.bean.IOrderType
@@ -16,7 +17,7 @@ interface Subscriber {
 
 object ExchangeSocket {
     private val mSubscriber = mutableListOf<Subscriber>()
-    private val mSocket = IO.socket("http://18.220.66.235:38181")
+    private val mSocket = IO.socket(BaseUrlInterceptor.getDexBaseUrl())
     private val mExecutor = Executors.newSingleThreadExecutor()
 
     init {

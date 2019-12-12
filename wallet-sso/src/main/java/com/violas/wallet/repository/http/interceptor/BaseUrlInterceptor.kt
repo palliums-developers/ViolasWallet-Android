@@ -21,19 +21,25 @@ class BaseUrlInterceptor : Interceptor {
         const val HEADER_VALUE_BITMAIN = "bitmain"
         const val HEADER_VALUE_LIBEXPLORER = "libexplorer"
 
-        const val BITMAIN_URL_MAIN_NET = "https://chain.api.btc.com/v3/"
-        const val BITMAIN_URL_TEST_NET = "https://testnet-chain.api.btc.com/v3/"
+        private const val BITMAIN_URL_MAIN_NET = "https://chain.api.btc.com/v3/"
+        private const val BITMAIN_URL_TEST_NET = "https://testnet-chain.api.btc.com/v3/"
 
-        const val LIBEXPLORER_URL_MAIN_NET = "https://api-test.libexplorer.com/api"
-        const val LIBEXPLORER_URL_TEST_NET = "https://api-test.libexplorer.com/api"
+        private const val LIBEXPLORER_URL_MAIN_NET = "https://api-test.libexplorer.com/api"
+        private const val LIBEXPLORER_URL_TEST_NET = "https://api-test.libexplorer.com/api"
+
+        fun getBitmainBaseUrl(): String {
+            return if (Vm.TestNet) BITMAIN_URL_TEST_NET else BITMAIN_URL_MAIN_NET
+        }
+
+        fun getLibexplorerBaseUrl(): String {
+            return if (Vm.TestNet) LIBEXPLORER_URL_TEST_NET else LIBEXPLORER_URL_MAIN_NET
+        }
     }
 
     private val baseUrls: Map<String, String> by lazy {
         mutableMapOf<String, String>().apply {
-            this[HEADER_VALUE_BITMAIN] =
-                if (Vm.TestNet) BITMAIN_URL_TEST_NET else BITMAIN_URL_MAIN_NET
-            this[HEADER_VALUE_LIBEXPLORER] =
-                if (Vm.TestNet) LIBEXPLORER_URL_TEST_NET else LIBEXPLORER_URL_MAIN_NET
+            this[HEADER_VALUE_BITMAIN] = getBitmainBaseUrl()
+            this[HEADER_VALUE_LIBEXPLORER] = getLibexplorerBaseUrl()
         }
     }
 

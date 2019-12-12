@@ -67,8 +67,8 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
 
     override fun initViewModel(): PagingViewModel<DexOrderVO> {
         return DexOrderViewModel(
-            //accountAddress = currentAccount.address,
-            accountAddress = "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
+            accountAddress = currentAccount.address,
+            //accountAddress = "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
             orderState = orderState,
             giveTokenAddress = null,
             getTokenAddress = null
