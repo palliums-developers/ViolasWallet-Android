@@ -114,6 +114,7 @@ class ImportWalletActivity : BaseAppActivity() {
                 } catch (e: Exception) {
                     dismissProgress()
                     showToast(getString(R.string.hint_mnemonic_error))
+                    e.printStackTrace()
                 }
             }
         }

@@ -63,6 +63,7 @@ class ImportIdentityActivity : BaseAppActivity() {
                         App.finishAllActivity()
                     }
                 } catch (e: Exception) {
+                    dismissProgress()
                     showToast(getString(R.string.hint_mnemonic_error))
                     e.printStackTrace()
                 }
