@@ -141,7 +141,7 @@ class AccountManager : CoroutineScope by IOScope() {
     /**
      * 导入钱包
      */
-    @Throws(MnemonicException::class)
+    @Throws(MnemonicException::class,ArrayIndexOutOfBoundsException::class)
     fun importWallet(
         coinTypes: CoinTypes,
         context: Context,
@@ -149,6 +149,7 @@ class AccountManager : CoroutineScope by IOScope() {
         walletName: String,
         password: ByteArray
     ): Long {
+        checkMnemonicCount(wordList)
         return when (coinTypes) {
             CoinTypes.Libra -> {
                 AccountManager().importLibraWallet(
@@ -270,6 +271,17 @@ class AccountManager : CoroutineScope by IOScope() {
         return generate
     }
 
+    private fun checkMnemonicCount(wordList: List<String>) {
+        if (!(wordList.size == 12 ||
+            wordList.size == 15 ||
+            wordList.size == 18 ||
+            wordList.size == 21 ||
+            wordList.size == 24)
+        ) {
+            throw MnemonicException()
+        }
+    }
+
     /**
      * 导入身份
      */
@@ -280,6 +292,8 @@ class AccountManager : CoroutineScope by IOScope() {
         walletName: String,
         password: ByteArray
     ) {
+        checkMnemonicCount(wordList)
+
         val seed = Mnemonic.English()
             .toByteArray(wordList) ?: throw MnemonicException()
 

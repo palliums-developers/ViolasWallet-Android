@@ -7,7 +7,6 @@ import com.palliums.content.App
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.MnemonicException
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_import_identity.*
 import kotlinx.coroutines.Dispatchers
@@ -63,7 +62,8 @@ class ImportIdentityActivity : BaseAppActivity() {
                         MainActivity.start(this@ImportIdentityActivity)
                         App.finishAllActivity()
                     }
-                } catch (e: MnemonicException) {
+                } catch (e: Exception) {
+                    dismissProgress()
                     showToast(getString(R.string.hint_mnemonic_error))
                 }
             }
