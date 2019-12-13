@@ -5,7 +5,7 @@ import com.violas.wallet.repository.database.entity.AddressBookDo
 
 class AddressBookManager {
     fun loadAddressBook(coinType: Int): List<AddressBookDo> {
-        return if (coinType == -1) {
+        return if (coinType == Int.MIN_VALUE) {
             DataRepository.getAddressBookStorage().findAll()
         } else {
             DataRepository.getAddressBookStorage().findByCoinType(coinType)
