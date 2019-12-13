@@ -17,6 +17,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.biz.decodeScanQRCode
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
@@ -197,9 +198,19 @@ class WalletFragment : BaseFragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSwitchAccountEvent(event: SwitchAccountEvent) {
-//        mCompositeDisposable.dispose()
         refreshAccountData()
         refreshAssert()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onRefreshBalanceEvent(event: RefreshBalanceEvent) {
+        launch(Dispatchers.IO) {
+            delay(event.delay * 1000L)
+            withContext(Dispatchers.Main) {
+                refreshAccountData()
+                refreshAssert()
+            }
+        }
     }
 
     private fun refreshAccountData() {

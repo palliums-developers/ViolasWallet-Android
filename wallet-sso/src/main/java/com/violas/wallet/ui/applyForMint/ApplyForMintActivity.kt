@@ -7,6 +7,7 @@ import com.violas.wallet.biz.ApplyManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.RefreshPageEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.DataRepository
@@ -105,6 +106,7 @@ class ApplyForMintActivity
                             if (!it) {
                                 showToast(getString(R.string.hint_mint_condition_error))
                             } else {
+                                EventBus.getDefault().post(RefreshBalanceEvent())
                                 mTokenManager.insert(true, assertToken)
                                 success.invoke()
                             }
