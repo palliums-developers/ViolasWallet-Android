@@ -13,6 +13,7 @@ import com.palliums.widget.groupList.GroupListLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.event.ChangeAccountNameEvent
 import com.violas.wallet.event.WalletChangeEvent
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.AccountVo
@@ -89,6 +90,11 @@ class AccountManagementActivity : BaseAppActivity() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWalletChangeEvent(event: WalletChangeEvent) {
+        initData()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onChangeAccountNameEvent(event: ChangeAccountNameEvent) {
         initData()
     }
 

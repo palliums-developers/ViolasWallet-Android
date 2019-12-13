@@ -30,7 +30,7 @@
     <string name="confirm_mnemonic_tips_01">助记词顺序不正确，请校对</string>
     <string name="confirm_mnemonic_tips_02">请先按顺序点击所有助记词</string>
 
-    <string name="account_label_identity">身份</string>
+    <string name="account_label_identity">身份钱包</string>
     <string name="account_label_other">创建/导入</string>
     <string name="account_management_title">钱包管理</string>
     <string name="account_selection_title">选择钱包</string>
@@ -44,15 +44,11 @@
     <string name="collection">收款</string>
     <string name="copy_success">复制成功</string>
     <string name="hint_insufficient_or_trading_fees_are_confirmed">余额不足或资产还未确认</string>
-    <string name="account_operation_identity_wallet">身份钱包</string>
-    <string name="account_operation_other_wallet">创建/导入</string>
     <string name="title_colletction">收款</string>
     <string name="title_import_the_wallet">导入身份</string>
     <string name="title_create_the_wallet">创建身份</string>
     <string name="create_identity">创建身份</string>
     <string name="import_identity">导入身份</string>
-    <string name="account_label_identity_wallet">身份钱包</string>
-    <string name="account_label_other_wallet">创建/导入</string>
     <string name="action_create">创建</string>
     <string name="action_import">导入</string>
     <string name="hint_input_nickname">输入昵称</string>
@@ -89,7 +85,7 @@
     <string name="hint_input_collection_address">输入收款地址</string>
     <string name="action_copy">复制</string>
     <string name="hint_transfer_amount">余额：%1$s %2$s</string>
-    <string name="hint_input_amount">输入余额</string>
+    <string name="hint_input_amount">输入金额</string>
     <string name="hint_slow">慢</string>
     <string name="hint_fast">快</string>
     <string name="hint_fee">手续费</string>

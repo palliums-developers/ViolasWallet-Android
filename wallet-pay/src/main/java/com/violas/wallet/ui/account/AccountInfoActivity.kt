@@ -35,7 +35,7 @@ class AccountInfoActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle(getString(R.string.hint_wallet_info))
+        title = getString(R.string.hint_wallet_info)
 
         launch(Dispatchers.IO) {
             try {
