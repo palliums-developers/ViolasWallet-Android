@@ -88,7 +88,7 @@
     <string name="hint_input_collection_address">输入收款地址</string>
     <string name="action_copy">复制</string>
     <string name="hint_transfer_amount">余额：%1$s %2$s</string>
-    <string name="hint_input_amount">输入余额</string>
+    <string name="hint_input_amount">输入金额</string>
     <string name="hint_slow">慢</string>
     <string name="hint_fast">快</string>
     <string name="hint_fee">手续费</string>
