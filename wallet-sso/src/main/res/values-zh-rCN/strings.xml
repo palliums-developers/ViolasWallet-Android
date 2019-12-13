@@ -30,11 +30,6 @@
     <string name="confirm_mnemonic_tips_01">助记词顺序不正确，请校对</string>
     <string name="confirm_mnemonic_tips_02">请先按顺序点击所有助记词</string>
 
-    <string name="account_label_identity">身份</string>
-    <string name="account_label_other">创建/导入</string>
-    <string name="account_management_title">钱包管理</string>
-    <string name="account_selection_title">选择钱包</string>
-
     <string name="btn_next_step">下一步</string>
     <string name="btn_complete">完成</string>
     <string name="action_back">返回</string>

@@ -30,11 +30,6 @@
     <string name="confirm_mnemonic_tips_01">Invalid order of the nemonic words. Please correct it</string>
     <string name="confirm_mnemonic_tips_02">Please click in the order of the mnemonic words</string>
 
-    <string name="account_label_identity">Identity</string>
-    <string name="account_label_other">Create/Import</string>
-    <string name="account_management_title">Manage Wallet</string>
-    <string name="account_selection_title">Select Wallet</string>
-
     <string name="btn_next_step">Next</string>
     <string name="btn_complete">Complete</string>
     <string name="action_back">Back</string>
