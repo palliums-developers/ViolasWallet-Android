@@ -28,7 +28,7 @@ class AddressBookActivity : BaseAppActivity() {
         private const val REQUEST_ADD_COIN = 1
         fun start(
             context: Activity,
-            coinType: Int = -1,
+            coinType: Int = Int.MIN_VALUE,
             isSelector: Boolean = false,
             requestCode: Int = -1
         ) {
@@ -50,7 +50,7 @@ class AddressBookActivity : BaseAppActivity() {
         AddressBookManager()
     }
 
-    private var mCoinType = -1
+    private var mCoinType = Int.MIN_VALUE
     private var mSelector = false
     private val mAddressBookList = mutableListOf<AddressBookDo>()
     private val mAdapter by lazy {
@@ -75,7 +75,7 @@ class AddressBookActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_address_book)
         setTitleRightImageResource(R.drawable.icon_add_address)
-        mCoinType = intent.getIntExtra(EXT_COIN_TYPE, -1)
+        mCoinType = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
         mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)
         recyclerView.adapter = mAdapter
         loadAddressList(mCoinType)
@@ -83,7 +83,7 @@ class AddressBookActivity : BaseAppActivity() {
 
     override fun onTitleRightViewClick() {
         var coinType = mCoinType
-        if (mCoinType == -1) {
+        if (mCoinType == Int.MIN_VALUE) {
             coinType = CoinTypes.Libra.coinType()
         }
         AddAddressBookActivity.start(this, REQUEST_ADD_COIN, coinType)
