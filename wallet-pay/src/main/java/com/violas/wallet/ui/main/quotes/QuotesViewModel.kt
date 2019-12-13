@@ -15,6 +15,7 @@ import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -436,6 +437,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         list.forEach {
             it.await()
         }
+        EventBus.getDefault().post(RefreshBalanceEvent())
 
         // exchange
         val fromCoin: IToken
