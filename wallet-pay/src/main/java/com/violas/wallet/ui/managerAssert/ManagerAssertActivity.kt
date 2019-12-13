@@ -97,6 +97,9 @@ class ManagerAssertActivity : BaseAppActivity() {
                     if (decrypt == null) {
                         dismissProgress()
                         showToast(R.string.hint_password_error)
+                        this@ManagerAssertActivity.runOnUiThread {
+                            checkbox.isChecked = false
+                        }
                         return@launch
                     }
                     DataRepository.getViolasService()

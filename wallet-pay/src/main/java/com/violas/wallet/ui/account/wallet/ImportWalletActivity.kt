@@ -8,7 +8,6 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.MnemonicException
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.event.WalletChangeEvent
 import kotlinx.android.synthetic.main.activity_create_wallet.*
@@ -112,8 +111,10 @@ class ImportWalletActivity : BaseAppActivity() {
                         setResult(Activity.RESULT_OK)
                         finish()
                     }
-                } catch (e: MnemonicException) {
+                } catch (e: Exception) {
+                    dismissProgress()
                     showToast(getString(R.string.hint_mnemonic_error))
+                    e.printStackTrace()
                 }
             }
         }

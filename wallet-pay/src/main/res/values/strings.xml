@@ -237,4 +237,5 @@
 
     <string name="tips_revoke_success">撤销成功</string>
     <string name="tips_revoke_failure">撤销失败</string>
+    <string name="hint_transfer_failed">转账失败</string>
 </resources>

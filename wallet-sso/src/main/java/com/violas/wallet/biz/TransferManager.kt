@@ -2,7 +2,9 @@ package com.violas.wallet.biz
 
 import android.content.Context
 import com.palliums.content.ContextProvider.getContext
+import com.palliums.utils.getString
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.R
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -11,8 +13,11 @@ import com.violas.wallet.utils.validationLibraAddress
 import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 
-class WrongPasswordException : RuntimeException()
-class AddressFaultException : RuntimeException()
+class WrongPasswordException : RuntimeException(getString(R.string.hint_password_error))
+class AddressFaultException : RuntimeException(getString(R.string.hint_address_error))
+class TransferUnknownException : RuntimeException(getString(R.string.hint_transfer_failed))
+class LackOfBalanceException :
+    RuntimeException(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
 
 class TransferManager {
     @Throws(AddressFaultException::class, WrongPasswordException::class)
@@ -103,7 +108,7 @@ class TransferManager {
                 if (it) {
                     success.invoke("")
                 } else {
-                    error.invoke(Exception())
+                    error.invoke(TransferUnknownException())
                 }
             }
         }
@@ -129,7 +134,7 @@ class TransferManager {
             if (it) {
                 success.invoke("")
             } else {
-                error.invoke(Exception())
+                error.invoke(TransferUnknownException())
             }
         }
     }
@@ -154,7 +159,7 @@ class TransferManager {
             if (it) {
                 success.invoke("")
             } else {
-                error.invoke(Exception())
+                error.invoke(TransferUnknownException())
             }
         }
     }

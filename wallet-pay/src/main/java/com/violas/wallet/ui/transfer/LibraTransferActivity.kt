@@ -4,12 +4,13 @@ import android.accounts.AccountsException
 import android.os.Bundle
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.widget.dialog.PasswordInputDialog
+import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,6 +26,7 @@ class LibraTransferActivity : TransferActivity() {
     }
 
     private var mTokenDo: TokenDo? = null
+    private var mBalance: BigDecimal? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,15 +90,17 @@ class LibraTransferActivity : TransferActivity() {
                 mTokenDo?.apply {
                     mTokenManager.getTokenBalance(it.address, tokenAddress) { balance ->
                         launch {
+                            val balanceStr = BigDecimal(balance.toString()).divide(
+                                BigDecimal("1000000"),
+                                6,
+                                RoundingMode.HALF_UP
+                            ).stripTrailingZeros().toPlainString()
                             tvCoinAmount.text = String.format(
                                 getString(R.string.hint_transfer_amount),
-                                BigDecimal(balance.toString()).divide(
-                                    BigDecimal("1000000"),
-                                    6,
-                                    RoundingMode.HALF_UP
-                                ).stripTrailingZeros().toPlainString(),
+                                balanceStr,
                                 name
                             )
+                            mBalance = BigDecimal(balanceStr)
                         }
                     }
                 }
@@ -108,6 +112,7 @@ class LibraTransferActivity : TransferActivity() {
                             balance,
                             unit
                         )
+                        mBalance = BigDecimal(balance)
                     }
                 }
             }
@@ -125,6 +130,16 @@ class LibraTransferActivity : TransferActivity() {
             showToast(getString(R.string.hint_please_input_address))
             return
         }
+        when (account?.coinNumber) {
+            CoinTypes.Libra.coinType(),
+            CoinTypes.VToken.coinType() -> {
+                if (BigDecimal(editAmountInput.text.toString().trim()) >= mBalance) {
+                    LackOfBalanceException().message?.let { showToast(it) }
+                    return
+                }
+            }
+        }
+
         PasswordInputDialog()
             .setConfirmListener { bytes, dialogFragment ->
                 dialogFragment.dismiss()

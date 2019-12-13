@@ -3,7 +3,9 @@ package com.violas.wallet.biz
 import android.annotation.SuppressLint
 import android.content.Context
 import com.palliums.content.ContextProvider.getContext
+import com.palliums.utils.getString
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
@@ -15,9 +17,13 @@ import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
+import java.lang.Exception
 
-class WrongPasswordException : RuntimeException()
-class AddressFaultException : RuntimeException()
+class WrongPasswordException : RuntimeException(getString(R.string.hint_password_error))
+class AddressFaultException : RuntimeException(getString(R.string.hint_address_error))
+class TransferUnknownException : RuntimeException(getString(R.string.hint_transfer_failed))
+class LackOfBalanceException :
+    RuntimeException(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
 
 class TransferManager {
     @Throws(AddressFaultException::class, WrongPasswordException::class)
@@ -101,18 +107,31 @@ class TransferManager {
             error.invoke(WrongPasswordException())
             return
         }
+        if (!checkAddress(address, account.coinNumber)) {
+            error.invoke(AddressFaultException())
+            return
+        }
         transactionManager.checkBalance(amount, 1, progress)
             .flatMap {
-                transactionManager.obtainTransaction(
-                    decryptPrivateKey,
-                    account.publicKey.hexToBytes(),
-                    it,
-                    address,
-                    account.address
-                )
+                if (it) {
+                    transactionManager.obtainTransaction(
+                        decryptPrivateKey,
+                        account.publicKey.hexToBytes(),
+                        it,
+                        address,
+                        account.address
+                    )
+                } else {
+                    throw LackOfBalanceException()
+                }
             }
             .flatMap {
-                BitcoinChainApi.get().pushTx(it.signBytes.toHex())
+                try {
+                    BitcoinChainApi.get().pushTx(it.signBytes.toHex())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    throw TransferUnknownException()
+                }
             }
             .subscribe({
                 success.invoke(it)
@@ -147,7 +166,7 @@ class TransferManager {
                 if (it) {
                     success.invoke("")
                 } else {
-                    error.invoke(Exception())
+                    error.invoke(TransferUnknownException())
                 }
             }
         }
@@ -173,7 +192,7 @@ class TransferManager {
             if (it) {
                 success.invoke("")
             } else {
-                error.invoke(Exception())
+                error.invoke(TransferUnknownException())
             }
         }
     }
@@ -198,7 +217,7 @@ class TransferManager {
             if (it) {
                 success.invoke("")
             } else {
-                error.invoke(Exception())
+                error.invoke(TransferUnknownException())
             }
         }
     }
