@@ -15,6 +15,7 @@ import org.palliums.violascore.wallet.Account
 
 class WrongPasswordException : RuntimeException(getString(R.string.hint_password_error))
 class AddressFaultException : RuntimeException(getString(R.string.hint_address_error))
+class TransferUnknownException : RuntimeException(getString(R.string.hint_transfer_failed))
 class LackOfBalanceException :
     RuntimeException(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
 
@@ -107,7 +108,7 @@ class TransferManager {
                 if (it) {
                     success.invoke("")
                 } else {
-                    error.invoke(Exception())
+                    error.invoke(TransferUnknownException())
                 }
             }
         }
@@ -133,7 +134,7 @@ class TransferManager {
             if (it) {
                 success.invoke("")
             } else {
-                error.invoke(Exception())
+                error.invoke(TransferUnknownException())
             }
         }
     }
@@ -158,7 +159,7 @@ class TransferManager {
             if (it) {
                 success.invoke("")
             } else {
-                error.invoke(Exception())
+                error.invoke(TransferUnknownException())
             }
         }
     }
