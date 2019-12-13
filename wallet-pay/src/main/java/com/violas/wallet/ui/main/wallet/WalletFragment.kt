@@ -15,6 +15,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertToken
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.selection.AccountSelectionActivity
@@ -41,7 +42,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 
-class WalletFragment : BaseFragment(){
+class WalletFragment : BaseFragment() {
     companion object {
         private const val REQUEST_ADD_ASSERT = 0
         private const val REQUEST_SCAN_QR_CODE = 1
@@ -224,9 +225,19 @@ class WalletFragment : BaseFragment(){
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSwitchAccountEvent(event: SwitchAccountEvent) {
-//        mCompositeDisposable.dispose()
         refreshAccountData()
         refreshAssert()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onRefreshBalanceEvent(event: RefreshBalanceEvent) {
+        launch(Dispatchers.IO) {
+            delay(event.delay * 1000L)
+            withContext(Dispatchers.Main) {
+                refreshAccountData()
+                refreshAssert()
+            }
+        }
     }
 
     private fun refreshAccountData() {

@@ -17,6 +17,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.widget.dialog.PasswordInputDialog
@@ -25,6 +26,7 @@ import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 import org.palliums.violascore.wallet.Account
 import org.palliums.violascore.wallet.KeyPair
 import java.util.*
@@ -115,6 +117,7 @@ class ManagerAssertActivity : BaseAppActivity() {
                                 }
                                 showToast(getString(R.string.hint_assert_open_error))
                             } else {
+                                EventBus.getDefault().post(RefreshBalanceEvent())
                                 mTokenManager.insert(checked, assertToken)
                             }
                         }
@@ -128,7 +131,7 @@ class ManagerAssertActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.title_address_assert)
+        title = getString(R.string.title_assert_manager)
 
         recyclerView.addItemDecoration(
             RecycleViewItemDividers(

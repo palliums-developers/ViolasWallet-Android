@@ -8,6 +8,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.collection.CollectionActivity
@@ -16,8 +17,11 @@ import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.activity_token_info.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class TokenInfoActivity : BaseAppActivity() {
     companion object {
@@ -99,6 +103,16 @@ class TokenInfoActivity : BaseAppActivity() {
                         CollectionActivity.start(this@TokenInfoActivity, id, true, it)
                     }
                 }
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onRefreshBalanceEvent(event: RefreshBalanceEvent) {
+        launch(Dispatchers.IO) {
+            delay(event.delay * 1000L)
+            withContext(Dispatchers.Main) {
+                refreshAccountData()
             }
         }
     }
