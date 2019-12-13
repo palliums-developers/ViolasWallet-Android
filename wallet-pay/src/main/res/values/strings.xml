@@ -54,7 +54,7 @@
     <string name="hint_input_nickname">输入昵称</string>
     <string name="hint_wallet_password">输入钱包密码</string>
     <string name="hint_input_confirm_password">再次确认密码</string>
-    <string name="hint_confirm_password_fault">确认密码不正确</string>
+    <string name="hint_confirm_password_fault">密码输入不一致</string>
     <string name="hint_nickname_empty">钱包昵称不能为空</string>
     <string name="hint_input_password_short">输入的密码太短</string>
     <string name="hint_input_mnemonic_word">输入助记词单词，并用空格分隔</string>
@@ -92,7 +92,7 @@
     <string name="title_transfer">转账</string>
     <string name="hint_please_input_amount">请填写转账金额</string>
     <string name="hint_please_input_address">请填写转账地址</string>
-    <string name="title_address_assert">添加币种</string>
+    <string name="title_assert_manager">币种管理</string>
     <string name="title_manager">管理</string>
     <string name="hint_output_back">导出助记词</string>
     <string name="action_delete_wallet">删除钱包</string>
@@ -234,4 +234,8 @@
     <string name="tips_revoke_success">撤销成功</string>
     <string name="tips_revoke_failure">撤销失败</string>
     <string name="hint_transfer_failed">转账失败</string>
+
+    <string name="tab_wallet">钱包</string>
+    <string name="tab_market">市场</string>
+    <string name="tab_me">我的</string>
 </resources>

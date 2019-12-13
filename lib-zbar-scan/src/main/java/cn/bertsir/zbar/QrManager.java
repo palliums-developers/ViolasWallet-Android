@@ -2,7 +2,6 @@ package cn.bertsir.zbar;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -61,7 +60,7 @@ public class QrManager {
                     @Override
                     public void onDenied(List<String> permissionsDeniedForever,
                                          List<String> permissionsDenied) {
-                        Toast.makeText(activity,"摄像头权限被拒绝！",Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(activity,"摄像头权限被拒绝！",Toast.LENGTH_SHORT).show();
 
                     }
                 }).request();

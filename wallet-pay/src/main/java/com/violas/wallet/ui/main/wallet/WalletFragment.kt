@@ -15,6 +15,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertToken
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.selection.AccountSelectionActivity
@@ -211,6 +212,16 @@ class WalletFragment : BaseFragment() {
                     val currentAccount = mAccountManager.currentAccount()
                     activity?.let { TransactionRecordActivity.start(it, currentAccount.id) }
                 }
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onRefreshBalanceEvent(event: RefreshBalanceEvent) {
+        launch(Dispatchers.IO) {
+            delay(event.delay * 1000L)
+            withContext(Dispatchers.Main) {
+                refreshAssert(true, false)
             }
         }
     }

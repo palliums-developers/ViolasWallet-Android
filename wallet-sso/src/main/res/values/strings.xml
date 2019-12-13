@@ -53,7 +53,7 @@
     <string name="hint_input_nickname">Input Nickname</string>
     <string name="hint_wallet_password">Input Wallet Access Code</string>
     <string name="hint_input_confirm_password">Confirm Wallet Access Code</string>
-    <string name="hint_confirm_password_fault">Invalid Wallet Access Code</string>
+    <string name="hint_confirm_password_fault">Password input is inconsistent</string>
     <string name="hint_nickname_empty">Wallet nickname cannot be empty</string>
     <string name="hint_input_password_short">Wallet Access Code too short</string>
     <string name="hint_input_mnemonic_word">Input mnemonic words with space</string>

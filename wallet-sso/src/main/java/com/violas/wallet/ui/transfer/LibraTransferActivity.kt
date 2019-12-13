@@ -6,6 +6,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
@@ -15,6 +16,7 @@ import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -156,6 +158,7 @@ class LibraTransferActivity : TransferActivity() {
                             tokenId,
                             {
                                 dismissProgress()
+                                EventBus.getDefault().post(RefreshBalanceEvent())
                                 print(it)
                                 finish()
                             },
