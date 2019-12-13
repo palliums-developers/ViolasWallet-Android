@@ -15,6 +15,7 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AddressBookManager
 import com.violas.wallet.repository.database.entity.AddressBookDo
 import com.violas.wallet.ui.addressBook.add.AddAddressBookActivity
+import com.violas.wallet.widget.dialog.DeleteAddressDialog
 import kotlinx.android.synthetic.main.activity_address_book.*
 import kotlinx.android.synthetic.main.item_address_book.view.*
 import kotlinx.coroutines.Dispatchers
@@ -83,42 +84,41 @@ class AddressBookActivity : BaseAppActivity() {
             }.show(supportFragmentManager, "delete")
         })
     }
-}
 
-override fun getLayoutResId() = R.layout.activity_address_book
+    override fun getLayoutResId() = R.layout.activity_address_book
 
-override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    title = getString(R.string.title_address_book)
-    setTitleRightImageResource(R.drawable.icon_add_address)
-    mCoinType = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
-    mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)
-    recyclerView.adapter = mAdapter
-    loadAddressList(mCoinType)
-}
-
-override fun onTitleRightViewClick() {
-    var coinType = mCoinType
-    AddAddressBookActivity.start(this, REQUEST_ADD_COIN, coinType)
-}
-
-override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-    if (requestCode == REQUEST_ADD_COIN && resultCode == Activity.RESULT_OK) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        title = getString(R.string.title_address_book)
+        setTitleRightImageResource(R.drawable.icon_add_address)
+        mCoinType = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
+        mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)
+        recyclerView.adapter = mAdapter
         loadAddressList(mCoinType)
     }
-}
 
-private fun loadAddressList(coinType: Int) {
-    launch(Dispatchers.IO) {
-        val list = mAddressBookManager.loadAddressBook(coinType)
-        mAddressBookList.clear()
-        mAddressBookList.addAll(list)
-        withContext(Dispatchers.Main) {
-            mAdapter.notifyDataSetChanged()
+    override fun onTitleRightViewClick() {
+        var coinType = mCoinType
+        AddAddressBookActivity.start(this, REQUEST_ADD_COIN, coinType)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_ADD_COIN && resultCode == Activity.RESULT_OK) {
+            loadAddressList(mCoinType)
         }
     }
-}
+
+    private fun loadAddressList(coinType: Int) {
+        launch(Dispatchers.IO) {
+            val list = mAddressBookManager.loadAddressBook(coinType)
+            mAddressBookList.clear()
+            mAddressBookList.addAll(list)
+            withContext(Dispatchers.Main) {
+                mAdapter.notifyDataSetChanged()
+            }
+        }
+    }
 }
 
 class MyAdapter(
