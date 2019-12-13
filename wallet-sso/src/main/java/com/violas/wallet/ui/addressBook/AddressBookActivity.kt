@@ -21,7 +21,6 @@ import kotlinx.android.synthetic.main.item_address_book.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.spongycastle.asn1.x500.style.RFC4519Style.title
 
 class AddressBookActivity : BaseAppActivity() {
     companion object {
