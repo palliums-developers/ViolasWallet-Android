@@ -308,7 +308,7 @@ class WalletFragment : BaseFragment() {
         tvAddress.text = currentAccount.address
 
         val coinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
-        tvWalletType.text = "${coinType.coinName()} Wallet"
+        tvWalletType.text = "${coinType.fullName()} Wallet"
         tvUnit.text = coinType.coinUnit()
 
         val parseCoinType = CoinTypes.parseCoinType(currentAccount.coinNumber)

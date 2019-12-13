@@ -313,7 +313,7 @@ class AccountManager : CoroutineScope by IOScope() {
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Violas.coinName()}-$walletName",
+                walletNickname = "${CoinTypes.Violas.fullName()}-$walletName",
                 walletType = 0
             ),
             AccountDO(
@@ -322,7 +322,7 @@ class AccountManager : CoroutineScope by IOScope() {
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
+                walletNickname = "${CoinTypes.Libra.fullName()}-$walletName",
                 walletType = 0
             ),
             AccountDO(
@@ -335,7 +335,7 @@ class AccountManager : CoroutineScope by IOScope() {
                     CoinTypes.Bitcoin.coinType()
                 },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Bitcoin.coinName()}-$walletName",
+                walletNickname = "${CoinTypes.Bitcoin.fullName()}-$walletName",
                 walletType = 0
             )
         )
