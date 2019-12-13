@@ -15,7 +15,7 @@ class DexRepository(private val dexApi: DexApi) {
     suspend fun getMyOrders(
         accountAddress: String,
         pageSize: String,
-        lastVersion: String,
+        lastVersion: String? = null,
         orderState: String? = null,
         giveTokenAddress: String? = null,
         getTokenAddress: String? = null

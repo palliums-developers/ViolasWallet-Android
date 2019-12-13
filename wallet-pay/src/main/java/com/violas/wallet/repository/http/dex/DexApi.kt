@@ -29,7 +29,7 @@ interface DexApi {
     suspend fun getMyOrders(
         @Query("user") accountAddress: String,
         @Query("limit") pageSize: String,
-        @Query("version") lastVersion: String,
+        @Query("version") lastVersion: String? = null,
         @Query("state") orderState: String? = null,
         @Query("give") giveTokenAddress: String? = null,
         @Query("get") getTokenAddress: String? = null

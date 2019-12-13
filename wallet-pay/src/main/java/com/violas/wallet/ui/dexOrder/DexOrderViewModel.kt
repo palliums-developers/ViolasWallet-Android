@@ -139,7 +139,7 @@ class DexOrderViewModel(
         val response = dexService.getMyOrders(
             accountAddress = accountAddress,
             pageSize = pageSize.toString(),
-            lastVersion = if (pageKey == null) "" else pageKey as String,
+            lastVersion = if (pageKey == null) null else pageKey as String,
             orderState = orderState,
             giveTokenAddress = giveTokenAddress,
             getTokenAddress = getTokenAddress
