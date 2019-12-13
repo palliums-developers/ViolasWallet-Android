@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SSO Wallet</string>
+    <string name="app_name">ViolasSSO</string>
     <string name="language_follow_system">Default to System Settings</string>
     <string name="language_en">English</string>
     <string name="language_chinese_simplified">Simplified Chinese</string>
@@ -128,7 +128,7 @@
     <string name="setting_service_agreement">Service Agreement</string>
     <string name="setting_about_us">About Us</string>
     <string name="setting_help_feedback">Help &amp; Feedback</string>
-    <string name="setting_app_name_version">SSO %1$s</string>
+    <string name="setting_app_name_version">ViolasSSO %1$s</string>
 
     <string name="about_us_title">About Us</string>
     <string name="about_us_website_key">Official Website</string>

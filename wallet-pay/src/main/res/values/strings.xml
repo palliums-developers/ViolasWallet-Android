@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ViolasWallet</string>
+    <string name="app_name">ViolasPay</string>
     <string name="language_follow_system">跟随系统</string>
     <string name="language_en">English</string>
     <string name="language_chinese_simplified">简体中文</string>
@@ -123,7 +123,7 @@
     <string name="setting_service_agreement">服务协议</string>
     <string name="setting_about_us">关于我们</string>
     <string name="setting_help_feedback">帮助与反馈</string>
-    <string name="setting_app_name_version">Violas %1$s</string>
+    <string name="setting_app_name_version">ViolasPay %1$s</string>
 
     <string name="about_us_title">关于我们</string>
     <string name="about_us_website_key">官方网站</string>
