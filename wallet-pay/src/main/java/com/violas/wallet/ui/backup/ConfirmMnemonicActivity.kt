@@ -46,7 +46,7 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
             wordsSource.add(WordVO(word, index, true))
         }
 
-        if (!BuildConfig.DEBUG) {
+        if (BuildConfig.SHUFFLE_MNEMONIC) {
             wordsSource.shuffle()
         }
 
