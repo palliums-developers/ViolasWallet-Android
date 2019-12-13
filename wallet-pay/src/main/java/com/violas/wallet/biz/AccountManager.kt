@@ -50,10 +50,14 @@ class AccountManager : CoroutineScope by IOScope() {
     fun refreshAccountAmount(currentAccount: AccountDO, callback: (AccountDO) -> Unit) {
         getBalance(currentAccount) { amount ->
             currentAccount.amount = amount
-            mExecutor.submit {
-                mAccountStorage.update(currentAccount)
-            }
+            updateAccount(currentAccount)
             callback.invoke(currentAccount)
+        }
+    }
+
+    fun updateAccount(account: AccountDO){
+        mExecutor.submit {
+            mAccountStorage.update(account)
         }
     }
 

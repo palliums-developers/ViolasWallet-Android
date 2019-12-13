@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -56,6 +57,7 @@ class TokenInfoActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EventBus.getDefault().register(this)
 
         launch(Dispatchers.IO) {
             val tokenId = intent.getLongExtra(EXT_TOKEN_ID, -1)
@@ -138,5 +140,10 @@ class TokenInfoActivity : BaseAppActivity() {
         val convertAmountToDisplayUnit =
             convertAmountToDisplayUnit(currentAccount, CoinTypes.VToken)
         tvAmount.text = "${convertAmountToDisplayUnit.first}"
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 }
