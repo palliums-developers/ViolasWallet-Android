@@ -58,7 +58,7 @@
     <string name="hint_input_nickname">输入昵称</string>
     <string name="hint_wallet_password">输入钱包密码</string>
     <string name="hint_input_confirm_password">再次确认密码</string>
-    <string name="hint_confirm_password_fault">确认密码不正确</string>
+    <string name="hint_confirm_password_fault">密码输入不一致</string>
     <string name="hint_nickname_empty">钱包昵称不能为空</string>
     <string name="hint_input_password_short">输入的密码太短</string>
     <string name="hint_input_mnemonic_word">输入助记词单词，并用空格分隔</string>
