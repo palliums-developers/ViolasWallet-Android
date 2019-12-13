@@ -8,8 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.palliums.base.BaseFragment
+import com.palliums.utils.isFastMultiClick
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
@@ -39,7 +40,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 
-class WalletFragment : Fragment(), CoroutineScope by MainScope() {
+class WalletFragment : BaseFragment() {
     companion object {
         private const val REQUEST_ADD_ASSERT = 0
         private const val REQUEST_SCAN_QR_CODE = 1
@@ -61,67 +62,25 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
         }
     }
 
-    private lateinit var mView: View
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        mView = inflater.inflate(R.layout.fragment_wallet, container, false)
-        return mView
+    override fun getLayoutResId(): Int {
+        return R.layout.fragment_wallet
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onLazyInitView(savedInstanceState: Bundle?) {
+        super.onLazyInitView(savedInstanceState)
+
         EventBus.getDefault().register(this)
         refreshAccountData()
 
         recyclerAssert.adapter = mAssertAdapter
         refreshAssert()
 
-        ivCopy.setOnClickListener {
-            launch(Dispatchers.IO) {
-                val currentAccount = mAccountManager.currentAccount()
-                withContext(Dispatchers.Main) {
-                    activity?.let { it1 -> ClipboardUtils.copy(it1, currentAccount.address) }
-                }
-            }
-        }
-        ivScan.setOnClickListener {
-            this@WalletFragment.activity?.let { it1 ->
-                ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
-            }
-        }
-        ivWalletInfo.setOnClickListener {
-            launch(Dispatchers.IO) {
-                val currentAccount = mAccountManager.currentAccount()
-                WalletManagerActivity.start(this@WalletFragment, currentAccount.id)
-            }
-        }
-
-        btnCollection.setOnClickListener {
-            launch(Dispatchers.IO) {
-                val currentAccount = mAccountManager.currentAccount()
-                activity?.let { it1 -> CollectionActivity.start(it1, currentAccount.id) }
-            }
-        }
-        btnTransfer.setOnClickListener {
-            launch(Dispatchers.IO) {
-                activity?.let { it1 ->
-                    TransferActivity.start(
-                        it1,
-                        mAccountManager.currentAccount().id
-                    )
-                }
-            }
-        }
-        vTransactionRecordLayout.setOnClickListener {
-            launch(Dispatchers.IO) {
-                val currentAccount = mAccountManager.currentAccount()
-                activity?.let { TransactionRecordActivity.start(it, currentAccount.id) }
-            }
-        }
+        ivCopy.setOnClickListener(this)
+        ivScan.setOnClickListener(this)
+        ivWalletInfo.setOnClickListener(this)
+        btnCollection.setOnClickListener(this)
+        btnTransfer.setOnClickListener(this)
+        vTransactionRecordLayout.setOnClickListener(this)
 
         if (mAccountManager.isFastIntoWallet()) {
             activity?.supportFragmentManager?.let {
@@ -180,6 +139,57 @@ class WalletFragment : Fragment(), CoroutineScope by MainScope() {
                 delay(1500)
                 withContext(Dispatchers.Main) {
                     swipeRefreshLayout.isRefreshing = false
+                }
+            }
+        }
+    }
+
+    override fun onViewClick(view: View) {
+        when (view.id) {
+            R.id.ivCopy -> {
+                launch(Dispatchers.IO) {
+                    val currentAccount = mAccountManager.currentAccount()
+                    withContext(Dispatchers.Main) {
+                        activity?.let { it1 -> ClipboardUtils.copy(it1, currentAccount.address) }
+                    }
+                }
+            }
+
+            R.id.ivScan -> {
+                activity?.let { it1 ->
+                    ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
+                }
+            }
+
+            R.id.ivWalletInfo -> {
+                launch(Dispatchers.IO) {
+                    val currentAccount = mAccountManager.currentAccount()
+                    WalletManagerActivity.start(this@WalletFragment, currentAccount.id)
+                }
+            }
+
+            R.id.btnCollection -> {
+                launch(Dispatchers.IO) {
+                    val currentAccount = mAccountManager.currentAccount()
+                    activity?.let { it1 -> CollectionActivity.start(it1, currentAccount.id) }
+                }
+            }
+
+            R.id.btnTransfer -> {
+                launch(Dispatchers.IO) {
+                    activity?.let { it1 ->
+                        TransferActivity.start(
+                            it1,
+                            mAccountManager.currentAccount().id
+                        )
+                    }
+                }
+            }
+
+            R.id.vTransactionRecordLayout -> {
+                launch(Dispatchers.IO) {
+                    val currentAccount = mAccountManager.currentAccount()
+                    activity?.let { TransactionRecordActivity.start(it, currentAccount.id) }
                 }
             }
         }
@@ -321,8 +331,10 @@ class AssertAdapter(
             convertAmountToDisplayUnit(itemData.amount, parseCoinType)
         holder.itemView.amount.text = convertAmountToDisplayUnit.first
         holder.itemView.setOnClickListener {
-            if (itemData.isToken) {
-                call.invoke(itemData)
+            if (!isFastMultiClick(it)) {
+                if (itemData.isToken) {
+                    call.invoke(itemData)
+                }
             }
         }
     }
