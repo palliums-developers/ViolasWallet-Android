@@ -15,4 +15,8 @@ class AddressBookManager {
     fun install(addressBookDo: AddressBookDo): Long {
         return DataRepository.getAddressBookStorage().insert(addressBookDo)
     }
+
+    fun remove(addressBook:AddressBookDo){
+        DataRepository.getAddressBookStorage().delete(addressBook)
+    }
 }

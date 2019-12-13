@@ -320,4 +320,6 @@
     <string name="action_please_choose">请选择</string>
     <string name="hint_please_select_address_system">请选择地址体系</string>
     <string name="hint_type">类型</string>
+    <string name="hint_delete_address_book">删除地址</string>
+    <string name="hint_confirm_delete_address_book">确定要在地址簿中删除该地址！</string>
 </resources>

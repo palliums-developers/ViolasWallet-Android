@@ -319,4 +319,6 @@
     <string name="action_please_choose">Please Choose</string>
     <string name="hint_please_select_address_system">Please select the address system</string>
     <string name="hint_type">CoinType</string>
+    <string name="hint_delete_address_book">Delete the address</string>
+    <string name="hint_confirm_delete_address_book">Be sure to delete the address from the address book！</string>
 </resources>

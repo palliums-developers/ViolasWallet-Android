@@ -99,6 +99,7 @@
     <string name="action_delete_wallet">删除钱包</string>
     <string name="hint_change_wallet_name">更换钱包名</string>
     <string name="hint_input_password">输入密码</string>
+    <string name="hint_delete_address_book">删除地址</string>
     <string name="action_cancel">取消</string>
     <string name="hint_password">密码</string>
     <string name="hint_please_input_password">请填写密码</string>
@@ -241,4 +242,5 @@
     <string name="tab_me">我的</string>
     <string name="action_please_choose">请选择</string>
     <string name="hint_please_select_address_system">请选择地址体系</string>
+    <string name="hint_confirm_delete_address_book">确定要在地址簿中删除该地址！</string>
 </resources>

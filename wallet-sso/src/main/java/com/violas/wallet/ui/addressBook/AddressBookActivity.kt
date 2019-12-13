@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -19,6 +20,7 @@ import kotlinx.android.synthetic.main.item_address_book.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.spongycastle.asn1.x500.style.RFC4519Style.title
 
 class AddressBookActivity : BaseAppActivity() {
     companion object {
@@ -54,7 +56,7 @@ class AddressBookActivity : BaseAppActivity() {
     private var mSelector = false
     private val mAddressBookList = mutableListOf<AddressBookDo>()
     private val mAdapter by lazy {
-        MyAdapter(mAddressBookList) {
+        MyAdapter(mAddressBookList, {
             if (mSelector) {
                 setResult(
                     Activity.RESULT_OK,
@@ -66,48 +68,63 @@ class AddressBookActivity : BaseAppActivity() {
             } else {
                 // todo 编辑
             }
-        }
+        }, { mAdapter, position, addressBook ->
+            DeleteAddressDialog().setConfirmListener {
+                launch(Dispatchers.IO + coroutineExceptionHandler()) {
+                    showProgress()
+                    mAddressBookManager.remove(addressBook)
+                    mAddressBookList.removeAt(position)
+                    withContext(Dispatchers.Main) {
+                        mAdapter.notifyItemRemoved(position)
+                        dismissProgress()
+                    }
+                }
+                it.dismiss()
+            }.show(supportFragmentManager, "delete")
+        })
     }
+}
 
-    override fun getLayoutResId() = R.layout.activity_address_book
+override fun getLayoutResId() = R.layout.activity_address_book
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        title = getString(R.string.title_address_book)
-        setTitleRightImageResource(R.drawable.icon_add_address)
-        mCoinType = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
-        mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)
-        recyclerView.adapter = mAdapter
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    title = getString(R.string.title_address_book)
+    setTitleRightImageResource(R.drawable.icon_add_address)
+    mCoinType = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
+    mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)
+    recyclerView.adapter = mAdapter
+    loadAddressList(mCoinType)
+}
+
+override fun onTitleRightViewClick() {
+    var coinType = mCoinType
+    AddAddressBookActivity.start(this, REQUEST_ADD_COIN, coinType)
+}
+
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+    if (requestCode == REQUEST_ADD_COIN && resultCode == Activity.RESULT_OK) {
         loadAddressList(mCoinType)
     }
+}
 
-    override fun onTitleRightViewClick() {
-        var coinType = mCoinType
-        AddAddressBookActivity.start(this, REQUEST_ADD_COIN, coinType)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_ADD_COIN && resultCode == Activity.RESULT_OK) {
-            loadAddressList(mCoinType)
+private fun loadAddressList(coinType: Int) {
+    launch(Dispatchers.IO) {
+        val list = mAddressBookManager.loadAddressBook(coinType)
+        mAddressBookList.clear()
+        mAddressBookList.addAll(list)
+        withContext(Dispatchers.Main) {
+            mAdapter.notifyDataSetChanged()
         }
     }
-
-    private fun loadAddressList(coinType: Int) {
-        launch(Dispatchers.IO) {
-            val list = mAddressBookManager.loadAddressBook(coinType)
-            mAddressBookList.clear()
-            mAddressBookList.addAll(list)
-            withContext(Dispatchers.Main) {
-                mAdapter.notifyDataSetChanged()
-            }
-        }
-    }
+}
 }
 
 class MyAdapter(
     private val mData: List<AddressBookDo>,
-    private val mCallback: (AddressBookDo) -> Unit
+    private val mCallback: (AddressBookDo) -> Unit,
+    private val mLongClickCallback: (adapter: MyAdapter, position: Int, AddressBookDo) -> Unit
 ) :
     RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -120,6 +137,14 @@ class MyAdapter(
         ).apply {
             itemView.setOnClickListener {
                 mCallback.invoke(mData[this.adapterPosition])
+            }
+            itemView.setOnLongClickListener {
+                mLongClickCallback.invoke(
+                    this@MyAdapter,
+                    this.adapterPosition,
+                    mData[this.adapterPosition]
+                )
+                true
             }
         }
     }
