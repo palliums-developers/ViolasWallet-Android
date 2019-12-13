@@ -238,4 +238,8 @@
     <string name="tips_revoke_success">撤销成功</string>
     <string name="tips_revoke_failure">撤销失败</string>
     <string name="hint_transfer_failed">转账失败</string>
+
+    <string name="tab_wallet">钱包</string>
+    <string name="tab_market">市场</string>
+    <string name="tab_me">我的</string>
 </resources>

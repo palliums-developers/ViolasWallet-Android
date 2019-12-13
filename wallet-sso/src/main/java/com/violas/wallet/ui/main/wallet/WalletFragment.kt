@@ -1,6 +1,5 @@
 package com.violas.wallet.ui.main.wallet
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -191,30 +190,21 @@ class WalletFragment : BaseFragment() {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSwitchAccountEvent(event: SwitchAccountEvent) {
-<<<<<<< HEAD
-        refreshAccountData()
-        refreshAssert()
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onRefreshBalanceEvent(event: RefreshBalanceEvent) {
         launch(Dispatchers.IO) {
             delay(event.delay * 1000L)
             withContext(Dispatchers.Main) {
-                refreshAccountData()
-                refreshAssert()
+                refreshAssert(false, switchWallet = true)
             }
         }
     }
 
-    private fun refreshAccountData() {
-=======
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSwitchAccountEvent(event: SwitchAccountEvent) {
         refreshAssert(activeRefresh = false, switchWallet = true)
     }
 
     private fun refreshAssert(activeRefresh: Boolean, switchWallet: Boolean) {
->>>>>>> a075960f77d0b3643946084fb6e6a9291bda4e24
         launch(Dispatchers.IO) {
             val currentAccount = mAccountManager.currentAccount()
             val enableTokens = mTokenManger.loadEnableToken(currentAccount)
