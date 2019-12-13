@@ -11,11 +11,11 @@ android {
     buildToolsVersion = versions.buildTools
 
     defaultConfig {
-        applicationId names.applicationId
+        applicationId names.payApplicationId
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
         versionCode rootProject.gitCommitCount
-        versionName names.name
+        versionName names.payName
         archivesBaseName = "Violas-${versionName}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
