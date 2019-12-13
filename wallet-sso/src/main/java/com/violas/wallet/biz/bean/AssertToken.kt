@@ -8,7 +8,7 @@ data class AssertToken(
     var isToken: Boolean = true,
     var id: Long = 0,
     var account_id: Long = 0,
-    var coinType: Int = CoinTypes.VToken.coinType(),
+    var coinType: Int = CoinTypes.Violas.coinType(),
     var tokenAddress: String = "",
     var name: String = "Libra",
     var enable: Boolean = false,

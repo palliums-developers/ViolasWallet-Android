@@ -63,7 +63,7 @@ class TransferManager {
                     error
                 )
             }
-            CoinTypes.VToken.coinType() -> {
+            CoinTypes.Violas.coinType() -> {
                 if (token) {
                     transferViolasToken(
                         context,
@@ -226,7 +226,7 @@ class TransferManager {
         fun checkAddress(address: String, coinNumber: Int): Boolean {
             when (coinNumber) {
                 CoinTypes.Libra.coinType(),
-                CoinTypes.VToken.coinType() -> {
+                CoinTypes.Violas.coinType() -> {
                     if (!validationLibraAddress(address)) {
                         return false
                     }

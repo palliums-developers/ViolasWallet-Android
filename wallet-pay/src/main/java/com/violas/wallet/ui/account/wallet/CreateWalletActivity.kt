@@ -44,7 +44,7 @@ class CreateWalletActivity : BaseAppActivity() {
         title = ""
 
         mCurrentCoinType =
-            CoinTypes.parseCoinType(intent.getIntExtra(EXT_COIN_TYPE, CoinTypes.VToken.coinType()))
+            CoinTypes.parseCoinType(intent.getIntExtra(EXT_COIN_TYPE, CoinTypes.Violas.coinType()))
 
         tvCreateHint.text =
             String.format(getString(R.string.hint_create_any_wallet), mCurrentCoinType.coinName())
@@ -57,7 +57,7 @@ class CreateWalletActivity : BaseAppActivity() {
                 CoinTypes.Libra -> {
                     R.drawable.icon_libra_big
                 }
-                CoinTypes.VToken -> {
+                CoinTypes.Violas -> {
                     R.drawable.icon_violas_big
                 }
                 else -> {

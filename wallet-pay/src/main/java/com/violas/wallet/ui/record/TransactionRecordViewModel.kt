@@ -54,7 +54,7 @@ class TransactionRecordViewModel(
                 coinTypes = when (it % 3) {
                     0 -> CoinTypes.Bitcoin
                     1 -> CoinTypes.Libra
-                    else -> CoinTypes.VToken
+                    else -> CoinTypes.Violas
                 },
                 transactionType = it % 2,
                 time = System.currentTimeMillis(),

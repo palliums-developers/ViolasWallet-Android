@@ -321,4 +321,7 @@
     <string name="tab_applyfor">Apply</string>
     <string name="tab_me">Me</string>
     <string name="hint_transfer_failed">Transfer failed</string>
+    <string name="action_please_choose">Please Choose</string>
+    <string name="hint_please_select_address_system">Please select the address system</string>
+    <string name="hint_type">CoinType</string>
 </resources>

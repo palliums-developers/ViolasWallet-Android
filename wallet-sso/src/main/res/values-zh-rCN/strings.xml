@@ -322,4 +322,7 @@
     <string name="tab_applyfor">申请</string>
     <string name="tab_me">我的</string>
     <string name="hint_transfer_failed">转账失败</string>
+    <string name="action_please_choose">请选择</string>
+    <string name="hint_please_select_address_system">请选择地址体系</string>
+    <string name="hint_type">类型</string>
 </resources>

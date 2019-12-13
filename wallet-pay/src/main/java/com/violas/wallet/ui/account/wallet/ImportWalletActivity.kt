@@ -48,7 +48,7 @@ class ImportWalletActivity : BaseAppActivity() {
             CoinTypes.parseCoinType(
                 intent.getIntExtra(
                     EXT_COIN_TYPE,
-                    CoinTypes.VToken.coinType()
+                    CoinTypes.Violas.coinType()
                 )
             )
 
@@ -63,7 +63,7 @@ class ImportWalletActivity : BaseAppActivity() {
                 CoinTypes.Libra -> {
                     R.drawable.icon_libra_big
                 }
-                CoinTypes.VToken -> {
+                CoinTypes.Violas -> {
                     R.drawable.icon_violas_big
                 }
                 else -> {

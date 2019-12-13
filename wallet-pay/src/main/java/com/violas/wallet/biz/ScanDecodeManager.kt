@@ -48,8 +48,8 @@ fun decodeScanQRCode(
             CoinTypes.Libra.fullName().toLowerCase(Locale.CHINA) -> {
                 CoinTypes.Libra.coinType()
             }
-            CoinTypes.VToken.fullName().toLowerCase(Locale.CHINA) -> {
-                CoinTypes.VToken.coinType()
+            CoinTypes.Violas.fullName().toLowerCase(Locale.CHINA) -> {
+                CoinTypes.Violas.coinType()
             }
             else -> {
                 scanType = ScanCodeType.Text

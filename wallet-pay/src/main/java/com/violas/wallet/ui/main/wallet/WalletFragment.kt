@@ -246,7 +246,7 @@ class WalletFragment : BaseFragment() {
                 }
             }
 
-            if (currentAccount.coinNumber == CoinTypes.VToken.coinType()) {
+            if (currentAccount.coinNumber == CoinTypes.Violas.coinType()) {
                 refreshViolasAssert(activeRefresh, currentAccount, enableTokens)
             } else {
 
@@ -316,7 +316,7 @@ class WalletFragment : BaseFragment() {
             convertAmountToDisplayUnit(currentAccount.amount, parseCoinType)
         tvAmount.text = convertAmountToDisplayUnit.first
 
-        if (coinType == CoinTypes.VToken) {
+        if (coinType == CoinTypes.Violas) {
             ivAddAssert.visibility = View.VISIBLE
         } else {
             ivAddAssert.visibility = View.GONE

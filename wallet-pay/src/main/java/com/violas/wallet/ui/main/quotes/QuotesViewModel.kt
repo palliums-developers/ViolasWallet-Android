@@ -154,7 +154,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         } catch (e: Exception) {
             null
         }
-        isEnable.postValue(mAccount?.coinNumber == CoinTypes.VToken.coinType())
+        isEnable.postValue(mAccount?.coinNumber == CoinTypes.Violas.coinType())
     }
 
     private suspend fun loadTokenList() {

@@ -163,7 +163,7 @@ class AccountManager : CoroutineScope by IOScope() {
                     password
                 )
             }
-            CoinTypes.VToken -> {
+            CoinTypes.Violas -> {
                 AccountManager().importViolasWallet(
                     context,
                     wordList,
@@ -200,7 +200,7 @@ class AccountManager : CoroutineScope by IOScope() {
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.VToken.coinType(),
+                coinNumber = CoinTypes.Violas.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "$walletName",
                 walletType = 1
@@ -311,9 +311,9 @@ class AccountManager : CoroutineScope by IOScope() {
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.VToken.coinType(),
+                coinNumber = CoinTypes.Violas.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.VToken.coinName()}-$walletName",
+                walletNickname = "${CoinTypes.Violas.coinName()}-$walletName",
                 walletType = 0
             ),
             AccountDO(
@@ -372,7 +372,7 @@ class AccountManager : CoroutineScope by IOScope() {
     fun getBalance(account: AccountDO, callback: (Long) -> Unit) {
         launch(handler) {
             when (account.coinNumber) {
-                CoinTypes.VToken.coinType() -> {
+                CoinTypes.Violas.coinType() -> {
                     DataRepository.getViolasService()
                         .getBalanceInMicroLibras(account.address) {
                             callback.invoke(it)

@@ -83,9 +83,6 @@ class AddressBookActivity : BaseAppActivity() {
 
     override fun onTitleRightViewClick() {
         var coinType = mCoinType
-        if (mCoinType == Int.MIN_VALUE) {
-            coinType = CoinTypes.Libra.coinType()
-        }
         AddAddressBookActivity.start(this, REQUEST_ADD_COIN, coinType)
     }
 
@@ -133,7 +130,7 @@ class MyAdapter(
         val item = mData[position]
         holder.itemView.tvTitle.text = item.note
         holder.itemView.tvAddress.text = item.address
-        holder.itemView.tvCoinType.text = CoinTypes.parseCoinType(item.coin_number).coinName()
+        holder.itemView.tvCoinType.text = CoinTypes.parseCoinType(item.coin_number).fullName()
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)
