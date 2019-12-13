@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
 import com.palliums.utils.isFastMultiClick
+import com.palliums.utils.isMainThread
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
@@ -70,10 +71,9 @@ class WalletFragment : BaseFragment() {
         super.onLazyInitView(savedInstanceState)
 
         EventBus.getDefault().register(this)
-        refreshAccountData()
 
         recyclerAssert.adapter = mAssertAdapter
-        refreshAssert()
+        refreshAssert(activeRefresh = false, switchWallet = false)
 
         ivCopy.setOnClickListener(this)
         ivScan.setOnClickListener(this)
@@ -134,13 +134,7 @@ class WalletFragment : BaseFragment() {
         }
 
         swipeRefreshLayout.setOnRefreshListener {
-            onSwitchAccountEvent(SwitchAccountEvent())
-            launch(Dispatchers.IO) {
-                delay(1500)
-                withContext(Dispatchers.Main) {
-                    swipeRefreshLayout.isRefreshing = false
-                }
-            }
+            refreshAssert(activeRefresh = true, switchWallet = false)
         }
     }
 
@@ -197,84 +191,99 @@ class WalletFragment : BaseFragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSwitchAccountEvent(event: SwitchAccountEvent) {
-//        mCompositeDisposable.dispose()
-        refreshAccountData()
-        refreshAssert()
+        refreshAssert(activeRefresh = false, switchWallet = true)
     }
 
-    private fun refreshAccountData() {
+    private fun refreshAssert(activeRefresh: Boolean, switchWallet: Boolean) {
         launch(Dispatchers.IO) {
             val currentAccount = mAccountManager.currentAccount()
-            withContext(Dispatchers.Main) {
-                setViewData(currentAccount)
+            val enableTokens = mTokenManger.loadEnableToken(currentAccount)
+
+            // 刷新当前钱包的信息和当前平台的资产
+            if (switchWallet) {
+                mEnableTokens.clear()
+                mEnableTokens.addAll(enableTokens)
+                recyclerAssert.post {
+                    mAssertAdapter.notifyDataSetChanged()
+                    updateWalletInfo(currentAccount)
+                }
+            }
+
+            if (currentAccount.coinNumber == CoinTypes.VToken.coinType()) {
+                refreshViolasAssert(activeRefresh, currentAccount, enableTokens)
+            } else {
+
                 mAccountManager.refreshAccountAmount(currentAccount) {
-                    try {
-                        setAmount(currentAccount)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    if (activeRefresh) {
+                        swipeRefreshLayout.isRefreshing = false
+                    }
+
+                    // 刷新当前钱包的信息
+                    updateWalletInfo(it)
+
+                    // 刷新当前平台的资产
+                    if (mEnableTokens.size >= 1) {
+                        mEnableTokens[0].amount = it.amount
+                        mAssertAdapter.notifyItemChanged(0)
                     }
                 }
             }
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun setViewData(currentAccount: AccountDO) {
+    private fun refreshViolasAssert(
+        activeRefresh: Boolean,
+        accountDO: AccountDO? = null,
+        tokens: List<AssertToken>? = null
+    ) {
+        if (isMainThread()) {
+            launch(Dispatchers.IO) {
+                refreshViolasAssert(activeRefresh, accountDO, tokens)
+            }
+            return
+        }
+
+        val currentAccount = accountDO ?: mAccountManager.currentAccount()
+        val enableTokens = tokens ?: mTokenManger.loadEnableToken(currentAccount)
+        mTokenManger.refreshBalance(
+            currentAccount.address,
+            enableTokens
+        ) { accountAmount, assertTokens ->
+            if (activeRefresh) {
+                swipeRefreshLayout.isRefreshing = false
+            }
+
+            // 刷新当前钱包的信息
+            currentAccount.amount = accountAmount
+            mAccountManager.updateAccount(currentAccount)
+            updateWalletInfo(currentAccount)
+
+            // 刷新当前平台的资产
+            mEnableTokens.clear()
+            mEnableTokens.addAll(assertTokens)
+            recyclerAssert.post {
+                mAssertAdapter.notifyDataSetChanged()
+            }
+        }
+    }
+
+    private fun updateWalletInfo(currentAccount: AccountDO) {
         tvAddress.text = currentAccount.address
+
         val coinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
         tvUnit.text = coinType.coinUnit()
-        setAmount(currentAccount)
-    }
 
-    private fun setAmount(currentAccount: AccountDO) {
-        activity?.runOnUiThread {
-            val parseCoinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
-            val convertAmountToDisplayUnit =
-                convertAmountToDisplayUnit(currentAccount.amount, parseCoinType)
-            tvAmount.text = "${convertAmountToDisplayUnit.first}"
-
-            if (mEnableTokens.size >= 1) {
-                mEnableTokens[0].amount = currentAccount.amount
-                recyclerAssert.post {
-                    mAssertAdapter.notifyItemChanged(0)
-                }
-            }
-        }
-    }
-
-    private fun refreshAssert() {
-        launch(Dispatchers.IO) {
-            mEnableTokens.clear()
-            recyclerAssert.post {
-                mAssertAdapter.notifyItemRangeRemoved(0, mAssertAdapter.itemCount)
-            }
-            val currentAccount = mAccountManager.currentAccount()
-            val loadEnableToken = mTokenManger.loadEnableToken(currentAccount)
-            if (currentAccount.coinNumber == CoinTypes.VToken.coinType()) {
-                mTokenManger.refreshBalance(
-                    currentAccount.address,
-                    loadEnableToken
-                ) {
-                    mEnableTokens.addAll(it)
-                    recyclerAssert.post {
-                        mAssertAdapter.notifyItemRangeRemoved(0, mAssertAdapter.itemCount)
-                    }
-                }
-            } else {
-                mEnableTokens.addAll(loadEnableToken)
-                recyclerAssert.post {
-                    mAssertAdapter.notifyItemRangeRemoved(0, mAssertAdapter.itemCount)
-                }
-            }
-
-        }
+        val parseCoinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
+        val convertAmountToDisplayUnit =
+            convertAmountToDisplayUnit(currentAccount.amount, parseCoinType)
+        tvAmount.text = convertAmountToDisplayUnit.first
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_ADD_ASSERT -> {
-                refreshAssert()
+                refreshViolasAssert(false)
             }
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->

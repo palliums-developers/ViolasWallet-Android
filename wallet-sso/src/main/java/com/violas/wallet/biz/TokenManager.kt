@@ -181,7 +181,7 @@ class TokenManager {
     fun refreshBalance(
         address: String,
         enableTokens: List<AssertToken>,
-        call: (List<AssertToken>) -> Unit
+        call: (Long, List<AssertToken>) -> Unit
     ): Disposable {
         val tokenAddress = arrayListOf<String>()
         enableTokens.forEach {
@@ -203,7 +203,7 @@ class TokenManager {
                         it.amount = balance
                     }
                 }
-                call.invoke(enableTokens)
+                call.invoke(balance, enableTokens)
             }
     }
 }
