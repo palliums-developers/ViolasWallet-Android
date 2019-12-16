@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentManager
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.dialog_password_input.view.*
 
-class DeleteAddressDialog : DialogFragment() {
+class PublishTokenDialog : DialogFragment() {
     private lateinit var mRootView: View
 
     private var confirmCallback: ((DialogFragment) -> Unit)? = null
@@ -34,7 +34,7 @@ class DeleteAddressDialog : DialogFragment() {
             dialog?.window?.attributes = params
             setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         }
-        mRootView = inflater.inflate(R.layout.dialog_delete_address_book, container)
+        mRootView = inflater.inflate(R.layout.dialog_publish_token, container)
         isCancelable = false
         mRootView.btnConfirm.setOnClickListener {
             confirmCallback?.invoke(this)
@@ -47,15 +47,15 @@ class DeleteAddressDialog : DialogFragment() {
     }
 
     fun show(manager: FragmentManager) {
-        show(manager, "deleteBook")
+        show(manager, "managerAssert")
     }
 
-    fun setConfirmListener(callback: (DialogFragment) -> Unit): DeleteAddressDialog {
+    fun setConfirmListener(callback: (DialogFragment) -> Unit): PublishTokenDialog {
         confirmCallback = callback
         return this
     }
 
-    fun setCancelListener(callback: () -> Unit): DeleteAddressDialog {
+    fun setCancelListener(callback: () -> Unit): PublishTokenDialog {
         cancelCallback = callback
         return this
     }

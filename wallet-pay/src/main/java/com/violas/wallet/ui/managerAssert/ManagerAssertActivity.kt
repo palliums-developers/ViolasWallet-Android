@@ -21,6 +21,7 @@ import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.widget.dialog.PasswordInputDialog
+import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.activity_manager_assert.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.coroutines.Dispatchers
@@ -78,7 +79,12 @@ class ManagerAssertActivity : BaseAppActivity() {
                 }
                 checkbox.isChecked = true
             } else {
-                showPasswordDialog(assertToken, checkbox, checked)
+                PublishTokenDialog().setConfirmListener {
+                    showPasswordDialog(assertToken, checkbox, checked)
+                    it.dismiss()
+                }.setCancelListener {
+                    checkbox.isChecked = false
+                }.show(supportFragmentManager)
             }
         }
     }

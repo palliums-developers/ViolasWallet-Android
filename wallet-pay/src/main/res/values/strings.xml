@@ -243,4 +243,6 @@
     <string name="action_please_choose">请选择</string>
     <string name="hint_please_select_address_system">请选择地址体系</string>
     <string name="hint_confirm_delete_address_book">确定要在地址簿中删除该地址！</string>
+    <string name="hint_publish_token">首次打开稳定币</string>
+    <string name="hint_publish_token_content">首次打开稳定币需要花费少量的手续费，是否继续。</string>
 </resources>
