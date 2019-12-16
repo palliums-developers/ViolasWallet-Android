@@ -17,7 +17,7 @@ class LibexplorerRepository(private val mLibexplorerApi: LibexplorerApi) {
         pageSize: Int,
         pageNumber: Int
     ): ListResponse<TransactionRecordDTO> {
-        return checkResponse {
+        return checkResponse("0") {
             mLibexplorerApi.getTransactionRecord(address, pageSize, pageNumber)
         }
     }
