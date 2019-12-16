@@ -2,7 +2,6 @@ package com.violas.wallet.repository.http.bitcoin
 
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
-import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
 
@@ -17,7 +16,8 @@ class BitmainService(private val mBitmainRepository: BitmainRepository) :
 
     override suspend fun getTransactionRecord(
         address: String,
-        tokenDO: TokenDo?,
+        tokenAddress: String?,
+        tokenName: String?,
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,

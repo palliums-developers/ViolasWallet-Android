@@ -270,15 +270,21 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
 
     override suspend fun getTransactionRecord(
         address: String,
-        tokenDO: TokenDo?,
+        tokenAddress: String?,
+        tokenName: String?,
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
-        val queryToken = tokenDO?.tokenAddress?.isEmpty() ?: false
+        val queryToken = tokenAddress?.isNotEmpty() ?: false
         val response =
-            mViolasRepository.getTransactionRecord(address, pageSize, (pageNumber - 1) * pageSize)
+            mViolasRepository.getTransactionRecord(
+                address,
+                pageSize,
+                (pageNumber - 1) * pageSize,
+                tokenAddress
+            )
 
         if (response.data.isNullOrEmpty()) {
             onSuccess.invoke(emptyList(), null)
@@ -288,7 +294,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         val list = response.data!!.mapIndexed { index, bean ->
             // 解析交易类型
             val transactionType = when {
-                bean.type == 1 ->
+                !queryToken && bean.type == 1 ->
                     TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN
 
                 bean.sender == address -> {
@@ -309,17 +315,14 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             }
 
             // 解析展示地址，收款付款均为对方地址
-            val showAddress = when {
-                bean.type == 1 || bean.sender == address ->
-                    bean.receiver
-
-                else ->
-                    bean.sender
+            val showAddress = when (bean.sender) {
+                address -> bean.receiver
+                else -> bean.sender
             }
 
             val coinName = if (TransactionRecordVO.isTokenOpt(transactionType)) {
                 // TODO 解析 if (queryToken) tokenDO!!.name else bean.module_name
-                if (queryToken) tokenDO!!.name else "Xcoin"
+                if (queryToken) tokenName else "Xcoin"
             } else {
                 CoinTypes.Violas.coinName()
             }

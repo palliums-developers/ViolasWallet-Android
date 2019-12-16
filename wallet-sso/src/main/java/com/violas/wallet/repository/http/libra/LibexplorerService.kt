@@ -1,7 +1,6 @@
 package com.violas.wallet.repository.http.libra
 
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
 
@@ -16,7 +15,8 @@ class LibexplorerService(private val mLibexplorerRepository: LibexplorerReposito
 
     override suspend fun getTransactionRecord(
         address: String,
-        tokenDO: TokenDo?,
+        tokenAddress: String?,
+        tokenName: String?,
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,

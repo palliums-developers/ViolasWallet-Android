@@ -6,14 +6,11 @@ import android.os.Bundle
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BasePagingActivity
-import com.palliums.paging.PagingViewAdapter
-import com.palliums.paging.PagingViewModel
+import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ID
-import com.violas.wallet.common.EXTRA_KEY_TOKEN
-import com.violas.wallet.repository.database.entity.TokenDo
-import com.violas.wallet.ui.web.WebCommonActivity
+import com.violas.wallet.common.EXTRA_KEY_TOKEN_ADDRESS
+import com.violas.wallet.common.EXTRA_KEY_TOKEN_NAME
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,54 +21,51 @@ import kotlinx.coroutines.withContext
  * <p>
  * desc: 交易记录页面
  */
-class TransactionRecordActivity : BasePagingActivity<TransactionRecordVO>() {
+class TransactionRecordActivity : BaseAppActivity() {
 
     companion object {
-        fun start(context: Context, accountId: Long, tokenDO: TokenDo? = null) {
+        fun start(
+            context: Context,
+            accountId: Long,
+            tokenAddress: String? = null,
+            tokenName: String? = null
+        ) {
             Intent(context, TransactionRecordActivity::class.java)
                 .apply {
                     putExtra(EXTRA_KEY_ACCOUNT_ID, accountId)
-                    if (tokenDO != null) {
-                        putExtra(EXTRA_KEY_TOKEN, tokenDO)
-                    }
+                    tokenAddress?.let { putExtra(EXTRA_KEY_TOKEN_ADDRESS, it) }
+                    tokenName?.let { putExtra(EXTRA_KEY_TOKEN_NAME, it) }
                 }
                 .start(context)
         }
     }
 
     private var mAccountId = -100L
-    private var mTokenDO: TokenDo? = null
+    private var mTokenAddress: String? = null
+    private var mTokenName: String? = null
     private lateinit var mAddress: String
     private lateinit var mCoinTypes: CoinTypes
-
-    override fun initViewModel(): PagingViewModel<TransactionRecordVO> {
-        return TransactionRecordViewModel(mAddress, mTokenDO, mCoinTypes)
-    }
-
-    override fun initViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
-        return TransactionRecordViewAdapter(
-            retryCallback = {
-                getViewModel().retry()
-            },
-            onClickQuery = {
-                if (it.url.isNullOrEmpty()) {
-                    showToast(R.string.transaction_record_not_supported_query)
-                } else {
-                    WebCommonActivity.start(this, it.url)
-                }
-            })
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.transaction_record_title)
 
+        findFragment(TransactionRecordFragment::class.java)?.pop()
+
         launch(Dispatchers.IO) {
             val result = initData(savedInstanceState)
             withContext(Dispatchers.Main) {
                 if (result) {
-                    mPagingHandler.start()
+                    loadRootFragment(
+                        R.id.flFragmentContainer,
+                        TransactionRecordFragment.newInstance(
+                            mAddress,
+                            mCoinTypes,
+                            mTokenAddress,
+                            mTokenName
+                        )
+                    )
                 } else {
                     showToast(R.string.account_tips_not_found)
                     finish()
@@ -80,27 +74,26 @@ class TransactionRecordActivity : BasePagingActivity<TransactionRecordVO>() {
         }
     }
 
+    override fun getLayoutResId(): Int {
+        return R.layout.activity_transaction_record
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putLong(EXTRA_KEY_ACCOUNT_ID, mAccountId)
-        if (mTokenDO != null) {
-            outState.putParcelable(EXTRA_KEY_TOKEN, mTokenDO)
-        }
+        mTokenAddress?.let { outState.putString(EXTRA_KEY_TOKEN_ADDRESS, it) }
+        mTokenName?.let { outState.putString(EXTRA_KEY_TOKEN_NAME, it) }
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
         if (savedInstanceState != null) {
             mAccountId = savedInstanceState.getLong(EXTRA_KEY_ACCOUNT_ID, mAccountId)
-            mTokenDO = savedInstanceState.getParcelable(EXTRA_KEY_TOKEN)
-            if (mAccountId == -100L && intent != null) {
-                mAccountId = intent.getLongExtra(EXTRA_KEY_ACCOUNT_ID, mAccountId)
-            }
-            if (mTokenDO == null && intent != null) {
-                mTokenDO = intent.getParcelableExtra(EXTRA_KEY_TOKEN)
-            }
+            mTokenAddress = savedInstanceState.getString(EXTRA_KEY_TOKEN_ADDRESS, null)
+            mTokenName = savedInstanceState.getString(EXTRA_KEY_TOKEN_NAME, null)
         } else if (intent != null) {
             mAccountId = intent.getLongExtra(EXTRA_KEY_ACCOUNT_ID, mAccountId)
-            mTokenDO = intent.getParcelableExtra(EXTRA_KEY_TOKEN)
+            mTokenAddress = intent.getStringExtra(EXTRA_KEY_TOKEN_ADDRESS)
+            mTokenName = intent.getStringExtra(EXTRA_KEY_TOKEN_NAME)
         }
 
         if (mAccountId == -100L) {

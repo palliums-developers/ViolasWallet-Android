@@ -26,12 +26,14 @@ interface ViolasApi {
      * @param address 地址
      * @param pageSize 分页大小
      * @param offset 偏移量，从0开始
+     * @param offset 稳定币地址，不为空时查询该稳定币的交易记录，为空时查询平台币的交易记录
      */
     @GET("/1.0/violas/transaction")
     suspend fun getTransactionRecord(
         @Query("addr") address: String,
         @Query("limit") pageSize: Int,
-        @Query("offset") offset: Int
+        @Query("offset") offset: Int,
+        @Query("modu") tokenAddress: String?
     ): ListResponse<TransactionRecordDTO>
 
     @GET("/1.0/violas/balance")

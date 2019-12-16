@@ -146,13 +146,22 @@
         app:layout_constraintTop_toBottomOf="@+id/layoutWalletInfo" />
 
     <View
-        android:layout_width="20dp"
+        android:id="@+id/tvHintTransactionRecordIndicator"
+        android:layout_width="@dimen/dp_12"
+        android:layout_height="@dimen/dp_3"
         android:layout_marginTop="2dp"
-        android:layout_height="4dp"
         android:background="#22126C"
-        app:layout_constraintEnd_toEndOf="@+id/tvHintTransactionRecord"
         app:layout_constraintStart_toStartOf="@+id/tvHintTransactionRecord"
         app:layout_constraintTop_toBottomOf="@+id/tvHintTransactionRecord" />
 
+    <FrameLayout
+        android:id="@+id/flFragmentContainer"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0"
+        android:layout_marginTop="@dimen/dp_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvHintTransactionRecordIndicator" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

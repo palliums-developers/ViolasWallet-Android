@@ -1,9 +1,8 @@
 package com.violas.wallet.ui.record
 
-import com.quincysx.crypto.CoinTypes
 import com.palliums.paging.PagingViewModel
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.database.entity.TokenDo
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -15,7 +14,8 @@ import kotlin.random.Random
  */
 class TransactionRecordViewModel(
     private val mAddress: String,
-    private val mTokenDO: TokenDo?,
+    private val mTokenAddress: String?,
+    private val mTokenName: String?,
     coinTypes: CoinTypes
 ) : PagingViewModel<TransactionRecordVO>() {
 
@@ -29,7 +29,7 @@ class TransactionRecordViewModel(
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
         mTransactionRepository.getTransactionRecord(
-            mAddress, mTokenDO, pageSize, pageNumber, pageKey, onSuccess
+            mAddress, mTokenAddress, mTokenName, pageSize, pageNumber, pageKey, onSuccess
         )
 
         //onSuccess.invoke(fakeData(mAddress, pageSize, pageNumber), null)
