@@ -224,7 +224,7 @@ class WalletFragment : BaseFragment() {
                 }
             }
 
-            if (currentAccount.coinNumber == CoinTypes.VToken.coinType()) {
+            if (currentAccount.coinNumber == CoinTypes.Violas.coinType()) {
                 refreshViolasAssert(currentAccount, enableTokens)
             } else {
 

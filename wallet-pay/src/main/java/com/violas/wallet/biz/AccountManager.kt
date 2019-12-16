@@ -164,7 +164,7 @@ class AccountManager : CoroutineScope by IOScope() {
                     password
                 )
             }
-            CoinTypes.VToken -> {
+            CoinTypes.Violas -> {
                 AccountManager().importViolasWallet(
                     context,
                     wordList,
@@ -201,7 +201,7 @@ class AccountManager : CoroutineScope by IOScope() {
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.VToken.coinType(),
+                coinNumber = CoinTypes.Violas.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "$walletName",
                 walletType = 1
@@ -312,9 +312,9 @@ class AccountManager : CoroutineScope by IOScope() {
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.VToken.coinType(),
+                coinNumber = CoinTypes.Violas.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.VToken.coinName()}-$walletName",
+                walletNickname = "${CoinTypes.Violas.fullName()}-$walletName",
                 walletType = 0
             ),
             AccountDO(
@@ -323,7 +323,7 @@ class AccountManager : CoroutineScope by IOScope() {
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Libra.coinName()}-$walletName",
+                walletNickname = "${CoinTypes.Libra.fullName()}-$walletName",
                 walletType = 0
             ),
             AccountDO(
@@ -336,7 +336,7 @@ class AccountManager : CoroutineScope by IOScope() {
                     CoinTypes.Bitcoin.coinType()
                 },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Bitcoin.coinName()}-$walletName",
+                walletNickname = "${CoinTypes.Bitcoin.fullName()}-$walletName",
                 walletType = 0
             )
         )
@@ -379,7 +379,7 @@ class AccountManager : CoroutineScope by IOScope() {
         }
 
         when (account.coinNumber) {
-            CoinTypes.VToken.coinType() -> {
+            CoinTypes.Violas.coinType() -> {
                 DataRepository.getViolasService()
                     .getBalanceInMicroLibras(account.address) {
                         callback.invoke(it)

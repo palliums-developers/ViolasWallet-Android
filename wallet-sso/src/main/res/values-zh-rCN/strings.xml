@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SSO Wallet</string>
+    <string name="app_name">ViolasSSO</string>
     <string name="language_follow_system">跟随系统</string>
     <string name="language_en">English</string>
     <string name="language_chinese_simplified">简体中文</string>
@@ -128,7 +128,7 @@
     <string name="setting_service_agreement">服务协议</string>
     <string name="setting_about_us">关于我们</string>
     <string name="setting_help_feedback">帮助与反馈</string>
-    <string name="setting_app_name_version">SSO %1$s</string>
+    <string name="setting_app_name_version">ViolasSSO %1$s</string>
 
     <string name="about_us_title">关于我们</string>
     <string name="about_us_website_key">官方网站</string>
@@ -317,4 +317,9 @@
     <string name="tab_applyfor">申请</string>
     <string name="tab_me">我的</string>
     <string name="hint_transfer_failed">转账失败</string>
+    <string name="action_please_choose">请选择</string>
+    <string name="hint_please_select_address_system">请选择地址体系</string>
+    <string name="hint_type">类型</string>
+    <string name="hint_delete_address_book">删除地址</string>
+    <string name="hint_confirm_delete_address_book">确定要在地址簿中删除该地址！</string>
 </resources>

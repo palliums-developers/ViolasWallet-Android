@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -14,6 +15,7 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AddressBookManager
 import com.violas.wallet.repository.database.entity.AddressBookDo
 import com.violas.wallet.ui.addressBook.add.AddAddressBookActivity
+import com.violas.wallet.widget.dialog.DeleteAddressDialog
 import kotlinx.android.synthetic.main.activity_address_book.*
 import kotlinx.android.synthetic.main.item_address_book.view.*
 import kotlinx.coroutines.Dispatchers
@@ -54,7 +56,7 @@ class AddressBookActivity : BaseAppActivity() {
     private var mSelector = false
     private val mAddressBookList = mutableListOf<AddressBookDo>()
     private val mAdapter by lazy {
-        MyAdapter(mAddressBookList) {
+        MyAdapter(mAddressBookList, {
             if (mSelector) {
                 setResult(
                     Activity.RESULT_OK,
@@ -66,7 +68,20 @@ class AddressBookActivity : BaseAppActivity() {
             } else {
                 // todo 编辑
             }
-        }
+        }, { mAdapter, position, addressBook ->
+            DeleteAddressDialog().setConfirmListener {
+                launch(Dispatchers.IO + coroutineExceptionHandler()) {
+                    showProgress()
+                    mAddressBookManager.remove(addressBook)
+                    mAddressBookList.removeAt(position)
+                    withContext(Dispatchers.Main) {
+                        mAdapter.notifyItemRemoved(position)
+                        dismissProgress()
+                    }
+                }
+                it.dismiss()
+            }.show(supportFragmentManager, "delete")
+        })
     }
 
     override fun getLayoutResId() = R.layout.activity_address_book
@@ -83,9 +98,6 @@ class AddressBookActivity : BaseAppActivity() {
 
     override fun onTitleRightViewClick() {
         var coinType = mCoinType
-        if (mCoinType == Int.MIN_VALUE) {
-            coinType = CoinTypes.Libra.coinType()
-        }
         AddAddressBookActivity.start(this, REQUEST_ADD_COIN, coinType)
     }
 
@@ -110,7 +122,8 @@ class AddressBookActivity : BaseAppActivity() {
 
 class MyAdapter(
     private val mData: List<AddressBookDo>,
-    private val mCallback: (AddressBookDo) -> Unit
+    private val mCallback: (AddressBookDo) -> Unit,
+    private val mLongClickCallback: (adapter: MyAdapter, position: Int, AddressBookDo) -> Unit
 ) :
     RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -124,6 +137,14 @@ class MyAdapter(
             itemView.setOnClickListener {
                 mCallback.invoke(mData[this.adapterPosition])
             }
+            itemView.setOnLongClickListener {
+                mLongClickCallback.invoke(
+                    this@MyAdapter,
+                    this.adapterPosition,
+                    mData[this.adapterPosition]
+                )
+                true
+            }
         }
     }
 
@@ -133,7 +154,7 @@ class MyAdapter(
         val item = mData[position]
         holder.itemView.tvTitle.text = item.note
         holder.itemView.tvAddress.text = item.address
-        holder.itemView.tvCoinType.text = CoinTypes.parseCoinType(item.coin_number).coinName()
+        holder.itemView.tvCoinType.text = CoinTypes.parseCoinType(item.coin_number).fullName()
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)

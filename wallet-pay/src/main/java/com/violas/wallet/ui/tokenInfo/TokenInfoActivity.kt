@@ -138,7 +138,7 @@ class TokenInfoActivity : BaseAppActivity() {
 
     private fun setAmount(currentAccount: Long) {
         val convertAmountToDisplayUnit =
-            convertAmountToDisplayUnit(currentAccount, CoinTypes.VToken)
+            convertAmountToDisplayUnit(currentAccount, CoinTypes.Violas)
         tvAmount.text = "${convertAmountToDisplayUnit.first}"
     }
 

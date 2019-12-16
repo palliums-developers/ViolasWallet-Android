@@ -154,7 +154,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         } catch (e: Exception) {
             null
         }
-        isEnable.postValue(mAccount?.coinNumber == CoinTypes.VToken.coinType())
+        isEnable.postValue(mAccount?.coinNumber == CoinTypes.Violas.coinType())
     }
 
     private suspend fun loadTokenList() {
@@ -256,12 +256,12 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 }
                 val divide = toPrice.divide(
                     fromPrice,
-                    2,
+                    4,
                     RoundingMode.HALF_DOWN
                 )
                 exchangeRateNumberLiveData.postValue(divide)
                 exchangeRateLiveData.postValue(
-                    "1 $toUnit = ${divide.stripTrailingZeros().toPlainString()} $fromUnit"
+                    "1 $toUnit = ${divide.setScale(2,RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString()} $fromUnit"
                 )
             } else {
                 exchangeRateNumberLiveData.postValue(BigDecimal("0"))
@@ -363,6 +363,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 if (currentExchangeCoinLiveData.value != null && get != null && get.isNotEmpty()) {
                     BigDecimal(get)
                         .multiply(exchangeRateNumberLiveData.value)
+                        .setScale(2, RoundingMode.HALF_DOWN)
                 } else {
                     BigDecimal("0")
                 }
@@ -382,7 +383,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                         .divide(
                             exchangeRateNumberLiveData.value!!,
                             2,
-                            BigDecimal.ROUND_HALF_UP
+                            BigDecimal.ROUND_HALF_DOWN
                         )
                 } else {
                     BigDecimal("0")

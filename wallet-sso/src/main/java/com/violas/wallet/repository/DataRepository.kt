@@ -92,7 +92,7 @@ object DataRepository {
 
     fun getTransactionService(coinTypes: CoinTypes): TransactionService {
         return when (coinTypes) {
-            CoinTypes.VToken -> {
+            CoinTypes.Violas -> {
                 getViolasService()
             }
 

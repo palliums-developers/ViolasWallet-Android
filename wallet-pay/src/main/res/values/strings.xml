@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ViolasWallet</string>
+    <string name="app_name">ViolasPay</string>
     <string name="language_follow_system">跟随系统</string>
     <string name="language_en">English</string>
     <string name="language_chinese_simplified">简体中文</string>
@@ -75,6 +75,7 @@
     <string name="hint_input_address">输入地址</string>
     <string name="action_add">添加</string>
     <string name="hint_select">选择</string>
+    <string name="hint_type">类型</string>
     <string name="hint_input_note">请填写备注</string>
     <string name="hint_input_address_error">输入的地址不正确</string>
     <string name="hint_address_success">添加成功</string>
@@ -98,6 +99,7 @@
     <string name="action_delete_wallet">删除钱包</string>
     <string name="hint_change_wallet_name">更换钱包名</string>
     <string name="hint_input_password">输入密码</string>
+    <string name="hint_delete_address_book">删除地址</string>
     <string name="action_cancel">取消</string>
     <string name="hint_password">密码</string>
     <string name="hint_please_input_password">请填写密码</string>
@@ -122,7 +124,7 @@
     <string name="setting_service_agreement">服务协议</string>
     <string name="setting_about_us">关于我们</string>
     <string name="setting_help_feedback">帮助与反馈</string>
-    <string name="setting_app_name_version">Violas %1$s</string>
+    <string name="setting_app_name_version">ViolasPay %1$s</string>
 
     <string name="about_us_title">关于我们</string>
     <string name="about_us_website_key">官方网站</string>
@@ -238,4 +240,9 @@
     <string name="tab_wallet">钱包</string>
     <string name="tab_market">市场</string>
     <string name="tab_me">我的</string>
+    <string name="action_please_choose">请选择</string>
+    <string name="hint_please_select_address_system">请选择地址体系</string>
+    <string name="hint_confirm_delete_address_book">确定要在地址簿中删除该地址！</string>
+    <string name="hint_publish_token">首次打开稳定币</string>
+    <string name="hint_publish_token_content">首次打开稳定币需要花费少量的手续费，是否继续。</string>
 </resources>

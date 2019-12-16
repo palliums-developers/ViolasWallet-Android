@@ -9,8 +9,8 @@ import com.quincysx.crypto.exception.CoinNotFindException;
 public enum CoinTypes {
     Bitcoin(0, "BTC", "Bitcoin", "BTC"),
     BitcoinTest(1, "BTC", "Bitcoin", "BTC"),
-    VToken(-2, "VToken", "Violas", "Vtoken"),
-    Libra(-1, "Libra", "Libra", "Lib");
+    Violas(-2, "vtoken", "Violas", "vtoken"),
+    Libra(-1, "libra", "Libra", "libra");
 
     private int coinType;
     private String coinName;

@@ -321,12 +321,12 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
                 // TODO 解析 if (queryToken) tokenDO!!.name else bean.module_name
                 if (queryToken) tokenDO!!.name else "Xcoin"
             } else {
-                CoinTypes.VToken.coinName()
+                CoinTypes.Violas.coinName()
             }
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
-                coinTypes = CoinTypes.VToken,
+                coinTypes = CoinTypes.Violas,
                 transactionType = transactionType,
                 time = bean.expiration_time * 1000,
                 amount = bean.amount,

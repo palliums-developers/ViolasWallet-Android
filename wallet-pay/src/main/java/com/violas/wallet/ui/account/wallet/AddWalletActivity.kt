@@ -127,8 +127,8 @@ class AddWalletViewModel : ListingViewModel<AddWalletVo>() {
             AddWalletVo(
                 AccountType.VIOLAS,
                 R.mipmap.ic_label_violas,
-                CoinTypes.VToken.coinName(),
-                CoinTypes.VToken.fullName()
+                CoinTypes.Violas.coinName(),
+                CoinTypes.Violas.fullName()
             ),
             AddWalletVo(
                 AccountType.BTC,

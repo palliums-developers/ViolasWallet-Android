@@ -252,7 +252,7 @@ class WalletFragment : BaseFragment() {
                 }
             }
 
-            if (currentAccount.coinNumber == CoinTypes.VToken.coinType()) {
+            if (currentAccount.coinNumber == CoinTypes.Violas.coinType()) {
                 refreshViolasAssert(currentAccount, enableTokens)
             } else {
 
@@ -317,7 +317,7 @@ class WalletFragment : BaseFragment() {
         tvAddress.text = currentAccount.address
 
         val coinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
-        tvWalletType.text = "${coinType.coinName()} Wallet"
+        tvWalletType.text = "${coinType.fullName()} Wallet"
         tvUnit.text = coinType.coinUnit()
 
         val parseCoinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
@@ -325,7 +325,7 @@ class WalletFragment : BaseFragment() {
             convertAmountToDisplayUnit(currentAccount.amount, parseCoinType)
         tvAmount.text = convertAmountToDisplayUnit.first
 
-        if (coinType == CoinTypes.VToken) {
+        if (coinType == CoinTypes.Violas) {
             ivAddAssert.visibility = View.VISIBLE
         } else {
             ivAddAssert.visibility = View.GONE

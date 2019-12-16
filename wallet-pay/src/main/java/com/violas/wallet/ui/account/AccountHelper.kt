@@ -77,10 +77,10 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
             AccountVo(
                 AccountDO(
                     id = 0,
-                    walletNickname = "${CoinTypes.VToken.coinName()}-Wallet",
+                    walletNickname = "${CoinTypes.Violas.coinName()}-Wallet",
                     walletType = 0,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                    coinNumber = CoinTypes.VToken.coinType()
+                    coinNumber = CoinTypes.Violas.coinType()
                 ),
                 selected = true
             ).apply { setGroupName(identityAccountLabel) },
@@ -108,10 +108,10 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
             AccountVo(
                 AccountDO(
                     id = 3,
-                    walletNickname = "${CoinTypes.VToken.coinName()}-Wallet 2",
+                    walletNickname = "${CoinTypes.Violas.coinName()}-Wallet 2",
                     walletType = 1,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                    coinNumber = CoinTypes.VToken.coinType()
+                    coinNumber = CoinTypes.Violas.coinType()
                 )
             ).apply { setGroupName(otherAccountLabel) },
             AccountVo(
@@ -147,7 +147,7 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = coinTypes.coinType()
                 ),
-                selected = coinTypes.coinType() == CoinTypes.VToken.coinType()
+                selected = coinTypes.coinType() == CoinTypes.Violas.coinType()
             ).apply { setGroupName(coinTypes.coinName()) },
             AccountVo(
                 AccountDO(
@@ -169,7 +169,7 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
 @AccountType
 fun transformCoinTypes(coinTypes: CoinTypes): Int {
     return when (coinTypes) {
-        CoinTypes.VToken -> {
+        CoinTypes.Violas -> {
             AccountType.VIOLAS
         }
 
@@ -186,7 +186,7 @@ fun transformCoinTypes(coinTypes: CoinTypes): Int {
 fun transformAccountType(@AccountType accountType: Int): CoinTypes {
     return when (accountType) {
         AccountType.VIOLAS -> {
-            CoinTypes.VToken
+            CoinTypes.Violas
         }
 
         AccountType.LIBRA -> {

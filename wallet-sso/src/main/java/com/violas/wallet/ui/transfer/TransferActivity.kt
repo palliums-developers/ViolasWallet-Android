@@ -161,7 +161,7 @@ abstract class TransferActivity : BaseAppActivity() {
                     decodeScanQRCode(msg) { coinType, address, amount, tokenName ->
                         launch {
                             account?.let {
-                                if (coinType == it.coinNumber || coinType == -1) {
+                                if (coinType == it.coinNumber || coinType == Int.MIN_VALUE) {
                                     onScanAddressQr(address)
                                 } else {
                                     showToast(getString(R.string.hint_address_error))

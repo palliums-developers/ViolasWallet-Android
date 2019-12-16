@@ -3,6 +3,7 @@ package com.violas.wallet.ui.addressBook.add
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import cn.bertsir.zbar.Qr.Symbol.scanType
 import com.lxj.xpopup.XPopup
 import com.palliums.utils.start
 import com.palliums.widget.popup.AttachListPopupViewSupport
@@ -13,6 +14,7 @@ import com.violas.wallet.biz.AddressBookManager
 import com.violas.wallet.biz.ScanCodeType
 import com.violas.wallet.biz.ScanTranBean
 import com.violas.wallet.biz.decodeScanQRCode
+import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.database.entity.AddressBookDo
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.validationBTCAddress
@@ -38,13 +40,20 @@ class AddAddressBookActivity : BaseAppActivity() {
         }
     }
 
-    private var mCoinTypes = CoinTypes.Bitcoin
-    private var mCoinList = mapOf(
-        Pair(CoinTypes.VToken.coinName(), CoinTypes.VToken),
-        Pair(CoinTypes.Libra.coinName(), CoinTypes.Libra),
-        Pair(CoinTypes.Bitcoin.coinName(), CoinTypes.Bitcoin),
-        Pair(CoinTypes.BitcoinTest.coinName(), CoinTypes.BitcoinTest)
-    )
+    private var mCoinTypes = Int.MIN_VALUE
+
+    private val mCoinList by lazy {
+        linkedMapOf(
+            Pair(Int.MIN_VALUE, getString(R.string.action_please_choose)),
+            Pair(CoinTypes.Violas.coinType(), CoinTypes.Violas.fullName()),
+            Pair(CoinTypes.Libra.coinType(), CoinTypes.Libra.fullName()),
+            if (Vm.TestNet) {
+                Pair(CoinTypes.BitcoinTest.coinType(), CoinTypes.BitcoinTest.fullName())
+            } else {
+                Pair(CoinTypes.Bitcoin.coinType(), CoinTypes.Bitcoin.fullName())
+            }
+        )
+    }
     private val mAddressBookManager by lazy {
         AddressBookManager()
     }
@@ -55,8 +64,7 @@ class AddAddressBookActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_add_address_book)
 
-        mCoinTypes =
-            CoinTypes.parseCoinType(intent.getIntExtra(EXT_COIN_TYPE, CoinTypes.Bitcoin.coinType()))
+        mCoinTypes = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
         refreshCoinType()
         btnScan.setOnClickListener {
             ScanActivity.start(this@AddAddressBookActivity, REQUEST_SCAN_QR_CODE)
@@ -72,13 +80,17 @@ class AddAddressBookActivity : BaseAppActivity() {
                 showToast(getString(R.string.hint_input_address))
                 return@setOnClickListener
             }
+            if (mCoinTypes == Int.MIN_VALUE) {
+                showToast(getString(R.string.hint_please_select_address_system))
+                return@setOnClickListener
+            }
             val checkAddress = when (mCoinTypes) {
-                CoinTypes.BitcoinTest,
-                CoinTypes.Bitcoin -> {
+                CoinTypes.BitcoinTest.coinType(),
+                CoinTypes.Bitcoin.coinType() -> {
                     validationBTCAddress(address)
                 }
-                CoinTypes.VToken,
-                CoinTypes.Libra -> {
+                CoinTypes.Violas.coinType(),
+                CoinTypes.Libra.coinType() -> {
                     validationLibraAddress(address)
                 }
                 else -> {
@@ -94,7 +106,7 @@ class AddAddressBookActivity : BaseAppActivity() {
                     AddressBookDo(
                         note = note,
                         address = address,
-                        coin_number = mCoinTypes.coinType()
+                        coin_number = mCoinTypes
                     )
                 )
                 showToast(getString(R.string.hint_address_success))
@@ -122,12 +134,17 @@ class AddAddressBookActivity : BaseAppActivity() {
                 .asCustom(
                     AttachListPopupViewSupport(this)
                         .apply {
-                            setStringData(mCoinList.keys.toTypedArray(), null)
+                            setStringData(
+                                mCoinList.values.toTypedArray(),
+                                null
+                            )
                             setOnSelectListener { _, text ->
-                                mCoinList[text]?.also {
-                                    mCoinTypes = it
-                                    refreshCoinType()
+                                mCoinList.forEach {
+                                    if (it.value == text) {
+                                        mCoinTypes = it.key
+                                    }
                                 }
+                                refreshCoinType()
                             }
                         }
                 )
@@ -136,7 +153,7 @@ class AddAddressBookActivity : BaseAppActivity() {
     }
 
     private fun refreshCoinType() {
-        editCoinType.text = mCoinTypes.coinName()
+        editCoinType.text = mCoinList[mCoinTypes]
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -151,7 +168,8 @@ class AddAddressBookActivity : BaseAppActivity() {
                                     scanBean as ScanTranBean
                                     try {
                                         editAddress.setText(scanBean.address)
-                                        mCoinTypes = CoinTypes.parseCoinType(scanBean.coinType)
+                                        mCoinTypes =
+                                            CoinTypes.parseCoinType(scanBean.coinType).coinType()
                                         refreshCoinType()
                                     } catch (e: Exception) {
                                     }

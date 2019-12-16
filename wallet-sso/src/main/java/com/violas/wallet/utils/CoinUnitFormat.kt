@@ -7,7 +7,7 @@ import java.math.RoundingMode
 fun getCoinDecimal(coinNumber: Int): Long {
     return when (coinNumber) {
         CoinTypes.Libra.coinType(),
-        CoinTypes.VToken.coinType() -> {
+        CoinTypes.Violas.coinType() -> {
             1000000
         }
         CoinTypes.Bitcoin.coinType(),
@@ -40,7 +40,7 @@ fun convertAmountToDisplayUnit(amount: String, coinTypes: CoinTypes): Pair<Strin
     val amountBigDecimal = BigDecimal(amount)
     val scale: Int
     val unitBigDecimal = when (coinTypes) {
-        CoinTypes.VToken,
+        CoinTypes.Violas,
         CoinTypes.Libra -> {
             scale = 6
             BigDecimal("1000000")
