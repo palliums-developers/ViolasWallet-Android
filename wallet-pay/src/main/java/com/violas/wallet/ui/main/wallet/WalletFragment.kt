@@ -49,6 +49,8 @@ class WalletFragment : BaseFragment() {
         private const val REQUEST_TOKEN_INFO = 2
     }
 
+    private var refreshAssertJob: Job? = null
+
     private val mAccountManager by lazy {
         AccountManager()
     }
@@ -74,7 +76,8 @@ class WalletFragment : BaseFragment() {
         EventBus.getDefault().register(this)
 
         recyclerAssert.adapter = mAssertAdapter
-        refreshAssert(activeRefresh = false, switchWallet = false)
+        // 初始化钱包当作是切换钱包逻辑
+        refreshAssert(true)
 
         ivAddAssert.setOnClickListener(this)
         ivCopy.setOnClickListener(this)
@@ -137,7 +140,7 @@ class WalletFragment : BaseFragment() {
         }
 
         swipeRefreshLayout.setOnRefreshListener {
-            refreshAssert(activeRefresh = true, switchWallet = false)
+            refreshAssert(false)
         }
     }
 
@@ -221,47 +224,52 @@ class WalletFragment : BaseFragment() {
         launch(Dispatchers.IO) {
             delay(event.delay * 1000L)
             withContext(Dispatchers.Main) {
-                refreshAssert(true, false)
+                refreshAssert(false)
             }
         }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSwitchAccountEvent(event: SwitchAccountEvent) {
-        refreshAssert(activeRefresh = false, switchWallet = true)
+        refreshAssert(true)
     }
 
-    private fun refreshAssert(activeRefresh: Boolean, switchWallet: Boolean) {
-        launch(Dispatchers.IO) {
+    private fun refreshAssert(switchWallet: Boolean) {
+        refreshAssertJob?.cancel()
+
+        refreshAssertJob = launch(Dispatchers.IO) {
             val currentAccount = mAccountManager.currentAccount()
             val enableTokens = mTokenManger.loadEnableToken(currentAccount)
 
             // 刷新当前钱包的信息和当前平台的资产
             if (switchWallet) {
-                mEnableTokens.clear()
-                mEnableTokens.addAll(enableTokens)
                 recyclerAssert.post {
+                    mEnableTokens.clear()
+                    mEnableTokens.addAll(enableTokens)
                     mAssertAdapter.notifyDataSetChanged()
                     updateWalletInfo(currentAccount)
                 }
             }
 
             if (currentAccount.coinNumber == CoinTypes.VToken.coinType()) {
-                refreshViolasAssert(activeRefresh, currentAccount, enableTokens)
+                refreshViolasAssert(currentAccount, enableTokens)
             } else {
 
                 mAccountManager.refreshAccountAmount(currentAccount) {
-                    if (activeRefresh) {
-                        swipeRefreshLayout.isRefreshing = false
-                    }
+                    recyclerAssert.post {
+                        if (swipeRefreshLayout.isRefreshing) {
+                            swipeRefreshLayout.isRefreshing = false
+                        }
 
-                    // 刷新当前钱包的信息
-                    updateWalletInfo(it)
+                        // 刷新当前钱包的信息
+                        updateWalletInfo(it)
 
-                    // 刷新当前平台的资产
-                    if (mEnableTokens.size >= 1) {
-                        mEnableTokens[0].amount = it.amount
-                        mAssertAdapter.notifyItemChanged(0)
+                        // 刷新当前平台的资产
+                        if (mEnableTokens.size >= 1) {
+                            mEnableTokens[0].amount = it.amount
+                            mAssertAdapter.notifyItemChanged(0)
+                        }
                     }
                 }
             }
@@ -269,13 +277,14 @@ class WalletFragment : BaseFragment() {
     }
 
     private fun refreshViolasAssert(
-        activeRefresh: Boolean,
         accountDO: AccountDO? = null,
         tokens: List<AssertToken>? = null
     ) {
         if (isMainThread()) {
-            launch(Dispatchers.IO) {
-                refreshViolasAssert(activeRefresh, accountDO, tokens)
+            refreshAssertJob?.cancel()
+
+            refreshAssertJob = launch(Dispatchers.IO) {
+                refreshViolasAssert(accountDO, tokens)
             }
             return
         }
@@ -286,19 +295,19 @@ class WalletFragment : BaseFragment() {
             currentAccount.address,
             enableTokens
         ) { accountAmount, assertTokens ->
-            if (activeRefresh) {
-                swipeRefreshLayout.isRefreshing = false
-            }
-
-            // 刷新当前钱包的信息
-            currentAccount.amount = accountAmount
-            mAccountManager.updateAccount(currentAccount)
-            updateWalletInfo(currentAccount)
-
-            // 刷新当前平台的资产
-            mEnableTokens.clear()
-            mEnableTokens.addAll(assertTokens)
             recyclerAssert.post {
+                if (swipeRefreshLayout.isRefreshing) {
+                    swipeRefreshLayout.isRefreshing = false
+                }
+
+                // 刷新当前钱包的信息
+                currentAccount.amount = accountAmount
+                mAccountManager.updateAccount(currentAccount)
+                updateWalletInfo(currentAccount)
+
+                // 刷新当前平台的资产
+                mEnableTokens.clear()
+                mEnableTokens.addAll(assertTokens)
                 mAssertAdapter.notifyDataSetChanged()
             }
         }
@@ -327,7 +336,7 @@ class WalletFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_ADD_ASSERT -> {
-                refreshViolasAssert(false)
+                refreshViolasAssert()
             }
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->

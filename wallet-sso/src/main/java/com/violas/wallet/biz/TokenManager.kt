@@ -7,8 +7,14 @@ import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.TokenDo
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
 
 class TokenManager {
+
+    private val mExecutor by lazy { Executors.newFixedThreadPool(2) }
+
+    private val mTokenStorage by lazy { DataRepository.getTokenStorage() }
+
     /**
      * 本地兼容的币种
      */
@@ -58,15 +64,15 @@ class TokenManager {
         return list
     }
 
-    fun findTokenById(tokenId: Long) = DataRepository.getTokenStorage().findById(tokenId)
+    fun findTokenById(tokenId: Long) = mTokenStorage.findById(tokenId)
     fun findTokenByName(accountId: Long, tokenName: String) =
-        DataRepository.getTokenStorage().findByName(accountId, tokenName)
+        mTokenStorage.findByName(accountId, tokenName)
 
     fun loadSupportToken(account: AccountDO): List<AssertToken> {
         val loadSupportToken = loadSupportToken()
 
         val supportTokenMap = HashMap<String, TokenDo>(loadSupportToken.size)
-        val localToken = DataRepository.getTokenStorage().findByAccountId(account.id)
+        val localToken = mTokenStorage.findByAccountId(account.id)
         localToken.map {
             supportTokenMap[it.name] = it
         }
@@ -115,7 +121,7 @@ class TokenManager {
     }
 
     fun loadEnableToken(account: AccountDO): List<AssertToken> {
-        val enableToken = DataRepository.getTokenStorage()
+        val enableToken = mTokenStorage
             .findEnableTokenByAccountId(account.id)
             .map {
                 AssertToken(
@@ -141,7 +147,7 @@ class TokenManager {
                 isToken = false,
                 name = CoinTypes.parseCoinType(account.coinNumber).coinName(),
                 fullName = "",
-                amount = 0
+                amount = account.amount
             )
         )
         mutableList.addAll(enableToken)
@@ -149,7 +155,7 @@ class TokenManager {
     }
 
     fun insert(checked: Boolean, assertToken: AssertToken) {
-        DataRepository.getTokenStorage().insert(
+        mTokenStorage.insert(
             TokenDo(
                 enable = checked,
                 account_id = assertToken.account_id,
@@ -166,7 +172,7 @@ class TokenManager {
     ): Disposable {
         val tokenAddresss = arrayListOf<String>(tokenAddress)
         return DataRepository.getViolasService()
-            .getBalance(address, tokenAddresss) { balance, tokens ->
+            .getBalance(address, tokenAddresss) { balance, tokens, result ->
                 var amount = 0L
                 tokens?.forEach {
                     if (it.address == tokenAddress) {
@@ -190,7 +196,7 @@ class TokenManager {
             }
         }
         return DataRepository.getViolasService()
-            .getBalance(address, tokenAddress) { balance, tokens ->
+            .getBalance(address, tokenAddress) { balance, tokens, result ->
                 val tokenMap = mutableMapOf<String, Long>()
                 tokens?.forEach {
                     tokenMap[it.address] = it.balance
@@ -203,6 +209,27 @@ class TokenManager {
                         it.amount = balance
                     }
                 }
+
+                // 更新本地token资产余额，钱包资产余额交由AccountManager更新
+                if (result) {
+                    mExecutor.submit {
+                        val tokens = enableTokens
+                            .filter {
+                                it.isToken
+                            }.map {
+                                TokenDo(
+                                    id = it.id,
+                                    account_id = it.account_id,
+                                    tokenAddress = it.tokenAddress,
+                                    name = it.name,
+                                    enable = it.enable,
+                                    amount = it.amount
+                                )
+                            }
+                        mTokenStorage.update(*tokens.toTypedArray())
+                    }
+                }
+
                 call.invoke(balance, enableTokens)
             }
     }

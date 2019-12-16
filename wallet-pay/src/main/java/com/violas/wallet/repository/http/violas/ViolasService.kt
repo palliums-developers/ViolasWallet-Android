@@ -71,7 +71,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
     fun getBalance(
         address: String,
         tokenAddress: List<String>,
-        call: (amount: Long, modes: List<ModuleDTO>?) -> Unit
+        call: (amount: Long, modes: List<ModuleDTO>?, result: Boolean) -> Unit
     ): Disposable {
         val joinToString = tokenAddress.joinToString(separator = ",")
         return mViolasRepository.getBalance(address, joinToString)
@@ -79,14 +79,14 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             .subscribe({
                 mHandler.post {
                     if (it.data == null) {
-                        call.invoke(0, arrayListOf())
+                        call.invoke(0, arrayListOf(), true)
                     } else {
-                        call.invoke(it.data!!.balance, it.data!!.modules)
+                        call.invoke(it.data!!.balance, it.data!!.modules, true)
                     }
                 }
             }, {
                 mHandler.post {
-                    call.invoke(0, arrayListOf())
+                    call.invoke(0, arrayListOf(), false)
                 }
             })
     }

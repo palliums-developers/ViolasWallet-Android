@@ -3,6 +3,7 @@ package com.violas.wallet.biz
 import android.content.Context
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.utils.IOScope
+import com.palliums.utils.isMainThread
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip32.ExtendedKey
 import com.quincysx.crypto.bip44.BIP44
@@ -37,7 +38,7 @@ class AccountManager : CoroutineScope by IOScope() {
         println("Caught $exception")
     }
 
-    private val mExecutor = Executors.newFixedThreadPool(2)
+    private val mExecutor by lazy { Executors.newFixedThreadPool(2) }
 
     private val mConfigSharedPreferences by lazy {
         getContext().getSharedPreferences("config", Context.MODE_PRIVATE)
@@ -55,7 +56,7 @@ class AccountManager : CoroutineScope by IOScope() {
         }
     }
 
-    fun updateAccount(account: AccountDO){
+    fun updateAccount(account: AccountDO) {
         mExecutor.submit {
             mAccountStorage.update(account)
         }
@@ -145,7 +146,7 @@ class AccountManager : CoroutineScope by IOScope() {
     /**
      * 导入钱包
      */
-    @Throws(MnemonicException::class,ArrayIndexOutOfBoundsException::class)
+    @Throws(MnemonicException::class, ArrayIndexOutOfBoundsException::class)
     fun importWallet(
         coinTypes: CoinTypes,
         context: Context,
@@ -277,10 +278,10 @@ class AccountManager : CoroutineScope by IOScope() {
 
     private fun checkMnemonicCount(wordList: List<String>) {
         if (!(wordList.size == 12 ||
-            wordList.size == 15 ||
-            wordList.size == 18 ||
-            wordList.size == 21 ||
-            wordList.size == 24)
+                    wordList.size == 15 ||
+                    wordList.size == 18 ||
+                    wordList.size == 21 ||
+                    wordList.size == 24)
         ) {
             throw MnemonicException()
         }
@@ -370,39 +371,44 @@ class AccountManager : CoroutineScope by IOScope() {
     }
 
     fun getBalance(account: AccountDO, callback: (Long) -> Unit) {
-        launch(handler) {
-            when (account.coinNumber) {
-                CoinTypes.VToken.coinType() -> {
-                    DataRepository.getViolasService()
-                        .getBalanceInMicroLibras(account.address) {
-                            callback.invoke(it)
-                        }
-                }
-                CoinTypes.Libra.coinType() -> {
-                    DataRepository.getLibraService()
-                        .getBalanceInMicroLibras(account.address) {
-                            callback.invoke(it)
-                        }
-                }
-                CoinTypes.Bitcoin.coinType(),
-                CoinTypes.BitcoinTest.coinType() -> {
-                    DataRepository.getBitcoinService().getBalance(account.address)
-                        .subscribe({
-                            try {
-                                callback.invoke(
-                                    it.toLong()
-                                )
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                        }, {
-                            callback.invoke(
-                                0
-                            )
-                        }, {
+        if (isMainThread()) {
+            launch(handler) {
+                getBalance(account, callback)
+            }
+            return
+        }
 
-                        })
-                }
+        when (account.coinNumber) {
+            CoinTypes.VToken.coinType() -> {
+                DataRepository.getViolasService()
+                    .getBalanceInMicroLibras(account.address) {
+                        callback.invoke(it)
+                    }
+            }
+            CoinTypes.Libra.coinType() -> {
+                DataRepository.getLibraService()
+                    .getBalanceInMicroLibras(account.address) {
+                        callback.invoke(it)
+                    }
+            }
+            CoinTypes.Bitcoin.coinType(),
+            CoinTypes.BitcoinTest.coinType() -> {
+                DataRepository.getBitcoinService().getBalance(account.address)
+                    .subscribe({
+                        try {
+                            callback.invoke(
+                                it.toLong()
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }, {
+                        callback.invoke(
+                            0
+                        )
+                    }, {
+
+                    })
             }
         }
     }
