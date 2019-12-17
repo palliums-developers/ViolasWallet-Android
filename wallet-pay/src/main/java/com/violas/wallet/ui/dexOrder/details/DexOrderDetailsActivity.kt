@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import com.palliums.net.LoadState
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
+import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
@@ -14,7 +15,6 @@ import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.dex.DexOrderTradeDTO
 import com.violas.wallet.ui.dexOrder.DexOrderVO
-import com.violas.wallet.ui.dexOrder.DexOrdersViewModel
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -146,6 +146,14 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
                     showToast(it)
                 }
             })
+        }
+
+        getStatusLayout()?.setTipsWithStatus(
+            IStatusLayout.Status.STATUS_EMPTY,
+            getString(R.string.tips_no_order_trades)
+        )
+        com.palliums.utils.getDrawable(R.mipmap.ic_no_transaction_record)?.let {
+            getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
         }
 
         mPagingHandler.start()

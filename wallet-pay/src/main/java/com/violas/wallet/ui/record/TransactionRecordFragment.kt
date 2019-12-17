@@ -3,6 +3,8 @@ package com.violas.wallet.ui.record
 import android.os.Bundle
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
+import com.palliums.utils.getDrawable
+import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
@@ -67,6 +69,14 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         super.onLazyInitView(savedInstanceState)
 
         if (initData()) {
+            getStatusLayout()?.setTipsWithStatus(
+                IStatusLayout.Status.STATUS_EMPTY,
+                getString(R.string.tips_no_transaction_record)
+            )
+            getDrawable(R.mipmap.ic_no_transaction_record)?.let {
+                getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
+            }
+
             mPagingHandler.start()
         } else {
             finishActivity()

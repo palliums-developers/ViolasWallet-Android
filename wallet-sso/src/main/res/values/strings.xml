@@ -321,4 +321,6 @@
     <string name="hint_type">CoinType</string>
     <string name="hint_delete_address_book">Delete the address</string>
     <string name="hint_confirm_delete_address_book">Be sure to delete the address from the address book！</string>
+
+    <string name="tips_no_transaction_record">No transaction history</string>
 </resources>

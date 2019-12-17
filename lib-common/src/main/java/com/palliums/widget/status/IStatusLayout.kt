@@ -29,32 +29,32 @@ interface IStatusLayout {
     }
 
     /**
-     * 设置不同状态下的图片icon
+     * 设置不同状态下的图片
      * @param status
-     * @param iconRes
+     * @param imageRes
      */
-    fun setImageWithStatus(@Status status: Int, @DrawableRes iconRes: Int)
+    fun setImageWithStatus(@Status status: Int, @DrawableRes imageRes: Int)
 
     /**
-     * 设置不同状态下的图片icon
+     * 设置不同状态下的图片
      * @param status
-     * @param icon
+     * @param image
      */
-    fun setImageWithStatus(@Status status: Int, icon: Drawable)
-
-    /**
-     * 设置不同状态下的提示文本
-     * @param status
-     * @param tipRes
-     */
-    fun setTipWithStatus(@Status status: Int, @StringRes tipRes: Int)
+    fun setImageWithStatus(@Status status: Int, image: Drawable)
 
     /**
      * 设置不同状态下的提示文本
      * @param status
-     * @param tip
+     * @param tipsRes
      */
-    fun setTipWithStatus(@Status status: Int, tip: String)
+    fun setTipsWithStatus(@Status status: Int, @StringRes tipsRes: Int)
+
+    /**
+     * 设置不同状态下的提示文本
+     * @param status
+     * @param tips
+     */
+    fun setTipsWithStatus(@Status status: Int, tips: String)
 
     /**
      * 显示状态

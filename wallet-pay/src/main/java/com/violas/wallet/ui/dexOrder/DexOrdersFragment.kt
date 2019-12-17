@@ -5,6 +5,9 @@ import androidx.lifecycle.Observer
 import com.palliums.net.LoadState
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
+import com.palliums.utils.getDrawable
+import com.palliums.widget.status.IStatusLayout
+import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.RevokeDexOrderEvent
@@ -133,6 +136,19 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
                     showToast(it)
                 }
             })
+        }
+
+        getStatusLayout()?.setTipsWithStatus(
+            IStatusLayout.Status.STATUS_EMPTY,
+            getString(
+                if (orderState == DexOrderState.OPEN)
+                    R.string.tips_no_uncompleted_orders
+                else
+                    R.string.tips_no_completed_orders
+            )
+        )
+        getDrawable(R.mipmap.ic_no_transaction_record)?.let {
+            getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
         }
 
         mPagingHandler.start()
