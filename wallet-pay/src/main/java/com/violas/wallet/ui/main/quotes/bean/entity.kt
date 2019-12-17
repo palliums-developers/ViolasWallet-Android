@@ -48,6 +48,7 @@ enum class IOrderStatus {
 interface IOrder {
     fun id(): String
     fun version(): Long
+    fun updateVersion(): Long
     fun userAddress(): String
     fun tokenGetSymbol(): String
     fun tokenGet(): String
@@ -65,6 +66,7 @@ class ExchangeOrder(
     private val id: String,
     private val userAddress: String,
     private val version: Long,
+    private val updateVersion: Long,
     private val tokenGetSymbol: String,
     private val tokenGet: String,
     private val tokenGiveSymbol: String,
@@ -83,12 +85,13 @@ class ExchangeOrder(
                 mOrder.add(
                     ExchangeOrder(
                         any.getString("id"),
-                        any.getString("user"),
+                        any.getString("user").replace("0x", ""),
                         any.getString("version").toLong(),
+                        any.getString("update_version").toLong(),
                         any.getString("tokenGetSymbol"),
-                        any.getString("tokenGet"),
+                        any.getString("tokenGet").replace("0x", ""),
                         any.getString("tokenGiveSymbol"),
-                        any.getString("tokenGive"),
+                        any.getString("tokenGive").replace("0x", ""),
                         type,
                         when (any.getString("state")) {
                             "OPEN" -> IOrderStatus.OPEN
@@ -96,7 +99,11 @@ class ExchangeOrder(
                             "CANCELED" -> IOrderStatus.CANCELED
                             else -> IOrderStatus.FILLED_CANCELED
                         },
-                        BigDecimal(any.getString("amountGet")).divide(BigDecimal("1000000"),2,RoundingMode.HALF_UP).stripTrailingZeros().toPlainString(),
+                        BigDecimal(any.getString("amountGet")).divide(
+                            BigDecimal("1000000"),
+                            2,
+                            RoundingMode.HALF_UP
+                        ).stripTrailingZeros().toPlainString(),
                         "",
                         Date(any.getLong("update_date") * 1000)
                     )
@@ -109,6 +116,8 @@ class ExchangeOrder(
     override fun id() = id
 
     override fun version() = version
+
+    override fun updateVersion() = updateVersion
 
     override fun userAddress() = userAddress
 
@@ -136,5 +145,9 @@ class ExchangeOrder(
 
     override fun tokenGive(): String {
         return tokenGive.replace("0x", "")
+    }
+
+    override fun toString(): String {
+        return "${id} $updateVersion"
     }
 }

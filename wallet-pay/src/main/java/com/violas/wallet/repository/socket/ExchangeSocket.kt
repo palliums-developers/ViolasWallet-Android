@@ -30,17 +30,17 @@ object ExchangeSocket {
                     LogUtil.e("==market==", depthsJsonObject.toString())
                     val buysOrder =
                         ExchangeOrder.parse(depthsJsonObject.getJSONArray("buys"), IOrderType.BUY)
-//                    val sellsOrder =
-//                        ExchangeOrder.parse(
-//                            depthsJsonObject.getJSONArray("sells"),
-//                            IOrderType.SELLS
-//                        )
+                    val sellsOrder =
+                        ExchangeOrder.parse(
+                            depthsJsonObject.getJSONArray("sells"),
+                            IOrderType.SELLS
+                        )
                     val meOrder = ExchangeOrder.parse(
                         (args[0] as JSONObject).getJSONArray("orders"),
                         IOrderType.BUY
                     )
                     mSubscriber.forEach {
-                        it.onMarkCall(meOrder, buysOrder, arrayListOf())
+                        it.onMarkCall(meOrder, buysOrder, sellsOrder)
                     }
                 }
             }
@@ -51,18 +51,20 @@ object ExchangeSocket {
                     LogUtil.e("==depths==", depthsJsonObject.toString())
                     val buysOrder =
                         ExchangeOrder.parse(depthsJsonObject.getJSONArray("buys"), IOrderType.BUY)
-//                    val sellsOrder =
-//                        ExchangeOrder.parse(
-//                            depthsJsonObject.getJSONArray("sells"),
-//                            IOrderType.SELLS
-//                        )
+                    val sellsOrder =
+                        ExchangeOrder.parse(
+                            depthsJsonObject.getJSONArray("sells"),
+                            IOrderType.SELLS
+                        )
                     mSubscriber.forEach {
-                        it.onDepthsCall(buysOrder, arrayListOf())
+                        it.onDepthsCall(buysOrder, sellsOrder)
                     }
                 }
             }
         }.on(Socket.EVENT_DISCONNECT) {
             Log.e("ExchangeSocket", "disconnect")
+        }.on(Socket.EVENT_MESSAGE) {
+            Log.e("ExchangeSocket", "event message ${it}")
         }
     }
 
@@ -86,10 +88,27 @@ object ExchangeSocket {
         }
     }
 
+    fun unSubscribe(tokenBase: String?, tokenQuote: String?) {
+        if (tokenBase?.isNotEmpty() == true && tokenQuote?.isNotEmpty() == true) {
+            Log.e(
+                "Socket.io",
+                """unsubscribe: {"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote"}"""
+            )
+            mSocket.emit(
+                "unsubscribe",
+                """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote"}"""
+            )
+        }
+    }
+
     fun getMark(tokenBase: String, tokenQuote: String, userAddress: String) {
         Log.e(
-            "===",
-            """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote" ,"user":"0x$userAddress"}"""
+            "Socket.io",
+            """getMarket: {"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote" ,"user":"0x$userAddress"}"""
+        )
+        Log.e(
+            "Socket.io",
+            """subscribe: {"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote"}"""
         )
         mSocket.emit(
             "getMarket",

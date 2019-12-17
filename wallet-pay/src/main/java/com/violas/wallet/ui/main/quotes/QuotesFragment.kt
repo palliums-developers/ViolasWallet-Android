@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.TextWatcher
 import android.transition.AutoTransition
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintSet
@@ -226,7 +227,8 @@ class QuotesFragment : BaseFragment() {
 
     private fun handleMeOrderObserve() {
         mQuotesViewModel.meOrdersLiveData.observe(viewLifecycleOwner, Observer {
-            mMeOrderAdapter.submitList(it)
+            Log.e("=======",it.toString())
+            mMeOrderAdapter.submitList(it.take(3))
             if (it == null || it.isEmpty()) {
                 viewMeOrderNull.visibility = View.VISIBLE
                 layoutMeOrder.visibility = View.GONE
