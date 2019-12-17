@@ -102,19 +102,21 @@ class TokenManager {
             }
         }
 
-        val mutableList = mutableListOf<AssertToken>()
-        mutableList.add(
-            0, AssertToken(
-                id = 0,
-                account_id = account.id,
-                enable = true,
-                isToken = false,
-                name = CoinTypes.parseCoinType(account.coinNumber).coinName(),
-                fullName = "",
-                amount = 0
+        val mutableList = mutableListOf<AssertToken>().also {
+            val coinTypes = CoinTypes.parseCoinType(account.coinNumber)
+            it.add(
+                0, AssertToken(
+                    id = 0,
+                    account_id = account.id,
+                    enable = true,
+                    isToken = false,
+                    name = coinTypes.coinName(),
+                    fullName = coinTypes.fullName(),
+                    amount = 0
+                )
             )
-        )
-        mutableList.addAll(loadSupportToken)
+            it.addAll(loadSupportToken)
+        }
 
         localToken.map {
             if (it.enable && !localSupportTokenMap.contains(it.tokenAddress)) {

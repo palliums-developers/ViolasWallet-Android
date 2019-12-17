@@ -148,6 +148,8 @@ class ManagerAssertActivity : BaseAppActivity() {
             )
         )
         recyclerView.adapter = mAdapter
+
+        showProgress()
         launch(Dispatchers.IO + handler) {
             mSupportTokens.clear()
             val currentAccountLong = intent.getLongExtra(EXT_ACCOUNT_ID, -1)
@@ -155,6 +157,7 @@ class ManagerAssertActivity : BaseAppActivity() {
             mSupportTokens.addAll(mTokenManager.loadSupportToken(mAccount))
             withContext(Dispatchers.Main) {
                 mAdapter.notifyDataSetChanged()
+                dismissProgress()
             }
         }
     }
