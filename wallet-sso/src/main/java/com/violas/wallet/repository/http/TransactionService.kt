@@ -1,6 +1,5 @@
 package com.violas.wallet.repository.http
 
-import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.record.TransactionRecordVO
 
 /**
@@ -14,7 +13,8 @@ interface TransactionService {
     /**
      * 获取交易记录
      * @param address  钱包地址
-     * @param tokenDO  token
+     * @param tokenAddress  token地址
+     * @param tokenName  token名称
      * @param pageSize 分页大小，默认为10
      * @param pageNumber 页码，从1开始
      * @param pageKey 页面键，来源上一次[onSuccess]返回的第二个数据，开始为null
@@ -22,7 +22,8 @@ interface TransactionService {
      */
     suspend fun getTransactionRecord(
         address: String,
-        tokenDO: TokenDo? = null,
+        tokenAddress: String?,
+        tokenName: String?,
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,

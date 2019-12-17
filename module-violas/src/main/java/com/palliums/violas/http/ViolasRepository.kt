@@ -19,10 +19,11 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
     suspend fun getTransactionRecord(
         address: String,
         pageSize: Int,
-        offset: Int
+        offset: Int,
+        tokenAddress: String?
     ): ListResponse<TransactionRecordDTO> {
         return checkResponse {
-            mViolasApi.getTransactionRecord(address, pageSize, offset)
+            mViolasApi.getTransactionRecord(address, pageSize, offset, tokenAddress)
         }
     }
 

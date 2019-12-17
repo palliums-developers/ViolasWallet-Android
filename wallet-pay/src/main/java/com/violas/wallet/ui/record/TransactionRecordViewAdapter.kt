@@ -55,13 +55,13 @@ class TransactionRecordViewHolder(
         itemView.vQuery.setOnClickListener(this)
     }
 
-    override fun onViewBind(itemIndex: Int, itemData: TransactionRecordVO?) {
+    override fun onViewBind(itemPosition: Int, itemData: TransactionRecordVO?) {
         itemData?.let {
             itemView.vTime.text = mSimpleDateFormat.format(it.time)
             itemView.vAddress.text = it.address
 
             val displayUnit = convertAmountToDisplayUnit(it.amount, it.coinTypes)
-            if (TransactionRecordVO.isTokenOpt(it.transactionType)) {
+            if (TransactionRecordVO.isOpenToken(it.transactionType)) {
                 itemView.vAmountLabel.setText(R.string.transaction_record_consume)
                 itemView.vAmount.text = "${displayUnit.first} ${displayUnit.second}"
                 itemView.vCoinName.text =
@@ -69,7 +69,7 @@ class TransactionRecordViewHolder(
             } else {
                 itemView.vAmountLabel.setText(R.string.transaction_record_amount)
                 itemView.vAmount.text = displayUnit.first
-                itemView.vCoinName.text = it.coinTypes.coinName()
+                itemView.vCoinName.text = it.coinName ?: ""
             }
 
             when (it.transactionType) {
@@ -92,7 +92,7 @@ class TransactionRecordViewHolder(
         }
     }
 
-    override fun onViewClick(view: View, itemIndex: Int, itemData: TransactionRecordVO?) {
+    override fun onViewClick(view: View, itemPosition: Int, itemData: TransactionRecordVO?) {
         itemData?.let {
             when (view) {
                 itemView.vQuery -> {

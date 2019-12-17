@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.net.LoadState
 import com.palliums.net.RequestException
 import com.palliums.utils.isNetworkConnected
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -23,7 +24,7 @@ abstract class ListingViewModel<VO> : ViewModel() {
 
     val loadState = MutableLiveData<LoadState>()
     val tipsMessage = MutableLiveData<String>()
-    val listData = MutableLiveData<MutableList<VO>>()
+    val listData = MutableLiveData<List<VO>>()
 
     /**
      * 执行
@@ -48,11 +49,16 @@ abstract class ListingViewModel<VO> : ViewModel() {
             loadState.postValue(LoadState.RUNNING)
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                val list = loadData(params)
+                val list = loadData(*params)
                 synchronized(lock) {
-                    loadState.postValue(LoadState.SUCCESS)
+                    loadState.postValue(
+                        if (list.isEmpty())
+                            LoadState.SUCCESS_EMPTY
+                        else
+                            LoadState.SUCCESS
+                    )
                     listData.postValue(list)
                 }
 
@@ -104,5 +110,5 @@ abstract class ListingViewModel<VO> : ViewModel() {
      * 加载数据
      */
     @WorkerThread
-    protected abstract suspend fun loadData(vararg params: Any): MutableList<VO>
+    protected abstract suspend fun loadData(vararg params: Any): List<VO>
 }

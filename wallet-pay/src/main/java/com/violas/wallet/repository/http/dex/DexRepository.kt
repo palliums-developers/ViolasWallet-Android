@@ -14,8 +14,8 @@ class DexRepository(private val dexApi: DexApi) {
     @Throws(RequestException::class)
     suspend fun getMyOrders(
         accountAddress: String,
-        pageSize: String,
-        lastVersion: String,
+        pageSize: Int,
+        lastVersion: String? = null,
         orderState: String? = null,
         giveTokenAddress: String? = null,
         getTokenAddress: String? = null
@@ -34,11 +34,24 @@ class DexRepository(private val dexApi: DexApi) {
     }
 
     @Throws(RequestException::class)
-    suspend fun getTokenPrices(): List<DexTokenPriceDTO> {
+    suspend fun getTokens(): List<DexTokenDTO> {
+
         return try {
-            dexApi.getTokenPrices()
+            dexApi.getTokens()
         } catch (e: Exception) {
             throw RequestException(e)
+        }
+    }
+
+    @Throws(RequestException::class)
+    suspend fun getOrderTrades(
+        version: String,
+        pageSize: Int,
+        pageNumber: Int
+    ): ListResponse<DexOrderTradeDTO> {
+
+        return checkResponse {
+            dexApi.getOrderTrades(version, pageSize, pageNumber)
         }
     }
 }

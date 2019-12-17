@@ -160,13 +160,13 @@ abstract class BaseWebActivity : BaseAppActivity() {
         }
         vWeb.webViewClient = object : WebViewClient() {
 
-            override fun shouldOverrideUrlLoading(
+            /*override fun shouldOverrideUrlLoading(
                 view: WebView?,
                 request: WebResourceRequest?
             ): Boolean {
                 view?.loadUrl(request?.url.toString())
                 return true
-            }
+            }*/
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)

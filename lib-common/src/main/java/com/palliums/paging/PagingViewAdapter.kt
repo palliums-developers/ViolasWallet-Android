@@ -126,7 +126,7 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
         }
     }
 
-    abstract fun onCreateViewHolderSupport(parent: ViewGroup, viewType: Int): BaseViewHolder<VO>
+    abstract fun onCreateViewHolderSupport(parent: ViewGroup, viewType: Int): BaseViewHolder<out Any>
 
     open fun getItemViewTypeSupport(position: Int): Int {
         return 0
@@ -161,7 +161,7 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
             itemView.setOnClickListener(this)
         }
 
-        override fun onViewBind(itemIndex: Int, itemData: LoadState?) {
+        override fun onViewBind(itemPosition: Int, itemData: LoadState?) {
             itemData?.let {
                 if (it.status == LoadState.Status.RUNNING) {
                     itemView.vLoadMoreProgress.visibility = View.VISIBLE
@@ -194,7 +194,7 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
             }
         }
 
-        override fun onViewClick(view: View, itemIndex: Int, itemData: LoadState?) {
+        override fun onViewClick(view: View, itemPosition: Int, itemData: LoadState?) {
             itemData?.let {
                 if (it.status == LoadState.Status.FAILURE) {
                     retryCallback()

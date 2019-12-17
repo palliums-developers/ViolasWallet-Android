@@ -12,11 +12,11 @@ import com.violas.wallet.repository.DataRepository
 object DexTokenCache {
 
     private val dexTokens by lazy {
-        mutableMapOf<String, DexTokenPriceDTO>()
+        mutableMapOf<String, DexTokenDTO>()
     }
 
     @Throws(RequestException::class)
-    suspend fun getDexTokens(dexRepository: DexRepository? = null): Map<String, DexTokenPriceDTO> {
+    suspend fun getDexTokens(dexRepository: DexRepository? = null): Map<String, DexTokenDTO> {
         synchronized(this) {
             if (dexTokens.isNotEmpty()) {
                 return dexTokens
@@ -24,7 +24,7 @@ object DexTokenCache {
         }
 
         val dexService = dexRepository ?: DataRepository.getDexService()
-        val tokens = dexService.getTokenPrices()
+        val tokens = dexService.getTokens()
 
         synchronized(this) {
             tokens.forEach {

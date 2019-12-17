@@ -2,6 +2,7 @@ package com.violas.wallet.ui.dexOrder
 
 import android.view.View
 import com.palliums.base.BaseViewHolder
+import com.palliums.utils.formatDate
 import com.palliums.utils.getColor
 import com.violas.wallet.R
 import com.violas.wallet.utils.convertViolasTokenUnit
@@ -14,7 +15,7 @@ import java.text.SimpleDateFormat
  * <p>
  * desc:
  */
-class DexOrdersViewHolder(
+class DexOrderViewHolder(
     view: View,
     private val simpleDateFormat: SimpleDateFormat,
     private val onClickItem: ((DexOrderVO) -> Unit)? = null,
@@ -26,7 +27,7 @@ class DexOrdersViewHolder(
         itemView.tvState.setOnClickListener(this)
     }
 
-    override fun onViewBind(itemIndex: Int, itemData: DexOrderVO?) {
+    override fun onViewBind(itemPosition: Int, itemData: DexOrderVO?) {
         itemData?.let {
             // 若拿A换B，A在前B在后
             itemView.tvGiveTokenName.text = "${it.giveTokenName} /"
@@ -34,8 +35,8 @@ class DexOrdersViewHolder(
 
             // 若拿A换B，价格、数量、已成交数量均为B的数据
             itemView.tvPrice.text = it.getTokenPrice.toString()
-            itemView.tvTotalAmount.text = convertViolasTokenUnit(it.dexOrderDTO.amountGet)
-            itemView.tvTradeAmount.text = convertViolasTokenUnit(it.dexOrderDTO.amountFilled)
+            itemView.tvTotalAmount.text = convertViolasTokenUnit(it.dto.amountGet)
+            itemView.tvTradeAmount.text = convertViolasTokenUnit(it.dto.amountFilled)
 
             itemView.tvFee.text = "0.00Vtoken"
 
@@ -48,7 +49,7 @@ class DexOrdersViewHolder(
                             R.string.state_completed
                     )
                     itemView.tvState.setTextColor(getColor(R.color.color_63636F, itemView.context))
-                    itemView.tvTime.text = simpleDateFormat.format(it.getUpdateDate())
+                    itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
                 }
                 it.isOpen() -> {
                     itemView.tvState.setText(
@@ -58,17 +59,17 @@ class DexOrdersViewHolder(
                             R.string.action_revoke
                     )
                     itemView.tvState.setTextColor(getColor(R.color.color_726BD9, itemView.context))
-                    itemView.tvTime.text = simpleDateFormat.format(it.getDate())
+                    itemView.tvTime.text = formatDate(it.dto.date, simpleDateFormat)
                 }
                 else -> {
                     itemView.tvState.text = ""
-                    itemView.tvTime.text = simpleDateFormat.format(it.getUpdateDate())
+                    itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
                 }
             }
         }
     }
 
-    override fun onViewClick(view: View, itemIndex: Int, itemData: DexOrderVO?) {
+    override fun onViewClick(view: View, itemPosition: Int, itemData: DexOrderVO?) {
         itemData?.let {
             when (view) {
                 itemView -> {
@@ -77,7 +78,7 @@ class DexOrdersViewHolder(
 
                 itemView.tvState -> {
                     if (it.isOpen() && !it.revokedFlag) {
-                        onClickRevokeOrder?.invoke(itemData, itemIndex)
+                        onClickRevokeOrder?.invoke(itemData, itemPosition)
                     } else {
                     }
                 }

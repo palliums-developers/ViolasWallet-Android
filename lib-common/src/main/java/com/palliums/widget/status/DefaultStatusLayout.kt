@@ -5,10 +5,12 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.AttributeSet
+import android.util.SparseArray
 import android.view.View
 import android.widget.FrameLayout
-import androidx.core.content.res.ResourcesCompat
 import com.palliums.R
+import com.palliums.utils.getDrawable
+import com.palliums.utils.getString
 import com.palliums.utils.isFastMultiClick
 import kotlinx.android.synthetic.main.widget_status_layout.view.*
 
@@ -22,8 +24,8 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
 
     private var mOnReloadListener: OnReloadListener? = null
 
-    private val mTextResMap: HashMap<Int, String> by lazy { HashMap<Int, String>(3) }
-    private val mIconResMap: HashMap<Int, Drawable> by lazy { HashMap<Int, Drawable>(3) }
+    private val mTipsArr by lazy { SparseArray<String>(3) }
+    private val mImageArr by lazy { SparseArray<Drawable>(3) }
 
     constructor(context: Context) : super(context) {
         init(context, null, 0, 0)
@@ -82,9 +84,9 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
             typedArray.recycle()
         }
 
-        setTipWithStatus(IStatusLayout.Status.STATUS_EMPTY, emptyTips)
-        setTipWithStatus(IStatusLayout.Status.STATUS_FAILURE, failureTips)
-        setTipWithStatus(IStatusLayout.Status.STATUS_NO_NETWORK, noNetWorkTips)
+        setTipsWithStatus(IStatusLayout.Status.STATUS_EMPTY, emptyTips)
+        setTipsWithStatus(IStatusLayout.Status.STATUS_FAILURE, failureTips)
+        setTipsWithStatus(IStatusLayout.Status.STATUS_NO_NETWORK, noNetWorkTips)
         showStatus(status)
     }
 
@@ -98,76 +100,70 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         }
     }
 
-    override fun setImageWithStatus(@IStatusLayout.Status status: Int, iconRes: Int) {
-        ResourcesCompat.getDrawable(resources, iconRes, null)?.let {
+    override fun setImageWithStatus(@IStatusLayout.Status status: Int, imageRes: Int) {
+        getDrawable(imageRes)?.let {
             setImageWithStatus(status, it)
         }
     }
 
-    override fun setImageWithStatus(@IStatusLayout.Status status: Int, icon: Drawable) {
-        mIconResMap[status] = icon
+    override fun setImageWithStatus(@IStatusLayout.Status status: Int, image: Drawable) {
+        mImageArr.put(status, image)
     }
 
-    override fun setTipWithStatus(@IStatusLayout.Status status: Int, tipRes: Int) {
-        setTipWithStatus(status, context.getString(tipRes))
+    override fun setTipsWithStatus(@IStatusLayout.Status status: Int, tipsRes: Int) {
+        setTipsWithStatus(status, getString(tipsRes))
     }
 
-    override fun setTipWithStatus(@IStatusLayout.Status status: Int, tip: String) {
-        mTextResMap[status] = tip
+    override fun setTipsWithStatus(@IStatusLayout.Status status: Int, tips: String) {
+        mTipsArr.put(status, tips)
     }
 
     override fun showStatus(@IStatusLayout.Status status: Int, errorMsg: String?) {
         when (status) {
             IStatusLayout.Status.STATUS_NONE -> {
-                visibility = View.GONE
+                visibility = GONE
             }
 
             IStatusLayout.Status.STATUS_EMPTY -> {
-                visibility = View.VISIBLE
+                visibility = VISIBLE
 
-                val tip: String? = mTextResMap[IStatusLayout.Status.STATUS_EMPTY]
-                val icon: Drawable? = mIconResMap[IStatusLayout.Status.STATUS_EMPTY]
-
-                tip?.let { vStatusTip.text = it }
-                if(icon == null){
-                    vStatusIcon.visibility = View.GONE
-                }else{
-                    vStatusIcon.visibility = View.VISIBLE
-                    vStatusIcon.setImageDrawable(icon)
-                }
+                val tips: String? = mTipsArr[IStatusLayout.Status.STATUS_EMPTY]
+                val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_EMPTY]
+                setStatusData(tips, image)
             }
 
             IStatusLayout.Status.STATUS_FAILURE -> {
                 visibility = View.VISIBLE
 
-                val tip: String? = mTextResMap[IStatusLayout.Status.STATUS_FAILURE]
-                val icon: Drawable? = mIconResMap[IStatusLayout.Status.STATUS_FAILURE]
-                    ?: mIconResMap[IStatusLayout.Status.STATUS_EMPTY]
-
-                tip?.let { vStatusTip.text = it }
-                if(icon == null){
-                    vStatusIcon.visibility = View.GONE
-                }else{
-                    vStatusIcon.visibility = View.VISIBLE
-                    vStatusIcon.setImageDrawable(icon)
-                }
+                val tips: String? = mTipsArr[IStatusLayout.Status.STATUS_FAILURE]
+                val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_FAILURE]
+                    ?: mImageArr[IStatusLayout.Status.STATUS_EMPTY]
+                setStatusData(tips, image)
             }
 
             IStatusLayout.Status.STATUS_NO_NETWORK -> {
                 visibility = View.VISIBLE
 
-                val tip: String? = mTextResMap[IStatusLayout.Status.STATUS_NO_NETWORK]
-                val icon: Drawable? = mIconResMap[IStatusLayout.Status.STATUS_NO_NETWORK]
-                    ?: mIconResMap[IStatusLayout.Status.STATUS_EMPTY]
-
-                tip?.let { vStatusTip.text = it }
-                if(icon == null){
-                    vStatusIcon.visibility = View.GONE
-                }else{
-                    vStatusIcon.visibility = View.VISIBLE
-                    vStatusIcon.setImageDrawable(icon)
-                }
+                val tips: String? = mTipsArr[IStatusLayout.Status.STATUS_NO_NETWORK]
+                val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_NO_NETWORK]
+                    ?: mImageArr[IStatusLayout.Status.STATUS_EMPTY]
+                setStatusData(tips, image)
             }
+        }
+    }
+
+    private fun setStatusData(tips: String?, image: Drawable?) {
+        if (image == null) {
+            vStatusIcon.visibility = GONE
+            vStatusTips.visibility = GONE
+            vStatusTipsNoImage.visibility = View.VISIBLE
+            tips?.let { vStatusTipsNoImage.text = it }
+        } else {
+            vStatusIcon.visibility = VISIBLE
+            vStatusTips.visibility = VISIBLE
+            vStatusTipsNoImage.visibility = View.GONE
+            tips?.let { vStatusTips.text = it }
+            vStatusIcon.setImageDrawable(image)
         }
     }
 

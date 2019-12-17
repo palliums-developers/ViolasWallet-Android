@@ -90,7 +90,7 @@ class LibraTransferActivity : TransferActivity() {
         account?.let {
             if (isToken) {
                 mTokenDo?.apply {
-                    mTokenManager.getTokenBalance(it.address, tokenAddress) { balance ->
+                    mTokenManager.getTokenBalance(it.address, this) { balance, result ->
                         launch {
                             val balanceStr = BigDecimal(balance.toString()).divide(
                                 BigDecimal("1000000"),

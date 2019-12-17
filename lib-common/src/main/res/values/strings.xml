@@ -30,7 +30,7 @@
     <string name="common_refresh_header_pulling">Sliding down to refresh</string>
     <string name="common_refresh_header_refreshing">Refreshing…</string>
     <string name="common_refresh_header_release">Release refreshing</string>
-    <string name="common_refresh_header_update">Last refreshed at M-d HH:mm</string>
+    <string name="common_refresh_header_update">\'Last refreshed at\' M-d HH:mm</string>
 
     <string name="common_dialog_loading">Refreshing…</string>
     <string name="title_select_mail_app">Please select the mail application</string>

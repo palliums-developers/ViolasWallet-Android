@@ -13,9 +13,8 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexTokenCache
-import com.violas.wallet.repository.http.dex.DexTokenPriceDTO
+import com.violas.wallet.repository.http.dex.DexTokenDTO
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.palliums.violascore.wallet.Account
@@ -27,17 +26,17 @@ import org.palliums.violascore.wallet.KeyPair
  * <p>
  * desc:
  */
-class DexOrderViewModel(
+class DexOrdersViewModel(
     private val accountAddress: String,
-    @DexOrdersState
+    @DexOrderState
     private val orderState: String?,
     private val giveTokenAddress: String?,
     private val getTokenAddress: String?
 ) : PagingViewModel<DexOrderVO>() {
 
-    private val lock: Any = Any()
-    val loadState = MutableLiveData<LoadState>()
-    val tipsMessage = MutableLiveData<String>()
+    private val lock by lazy { Any() }
+    val loadState by lazy { MutableLiveData<LoadState>() }
+    val tipsMessage by lazy { MutableLiveData<String>() }
 
     private val dexService by lazy {
         DataRepository.getDexService()
@@ -77,8 +76,8 @@ class DexOrderViewModel(
                 val account = Account(KeyPair.fromSecretKey(decryptPrivateKey!!))
                 val result = exchangeManager.undoExchangeToken(
                     account,
-                    dexOrderVO.dexOrderDTO.tokenGive,
-                    dexOrderVO.dexOrderDTO.version
+                    dexOrderVO.dto.tokenGive,
+                    dexOrderVO.dto.version.toLong()
                 )
 
                 if (result) {
@@ -138,8 +137,8 @@ class DexOrderViewModel(
 
         val response = dexService.getMyOrders(
             accountAddress = accountAddress,
-            pageSize = pageSize.toString(),
-            lastVersion = if (pageKey == null) "" else pageKey as String,
+            pageSize = pageSize,
+            lastVersion = if (pageKey == null) null else pageKey as String,
             orderState = orderState,
             giveTokenAddress = giveTokenAddress,
             getTokenAddress = getTokenAddress
@@ -156,7 +155,7 @@ class DexOrderViewModel(
             val tokenGet = dexTokens[it.tokenGet] ?: error("get token not found")
 
             DexOrderVO(
-                dexOrderDTO = it,
+                dto = it,
                 giveTokenName = tokenGive.name,
                 giveTokenPrice = tokenGive.price,
                 getTokenName = tokenGet.name,
@@ -164,55 +163,55 @@ class DexOrderViewModel(
             )
         }
 
-        onSuccess.invoke(dexOrders, dexOrders.last().dexOrderDTO.version)
+        onSuccess.invoke(dexOrders, dexOrders.last().dto.version)
     }
 
-    private fun fakeTokensData(): Map<String, DexTokenPriceDTO> {
-        val list = mutableListOf<DexTokenPriceDTO>()
+    private fun fakeTokensData(): Map<String, DexTokenDTO> {
+        val list = mutableListOf<DexTokenDTO>()
         list.add(
-            DexTokenPriceDTO(
+            DexTokenDTO(
                 address = "0x0000000000000000000000000000000000000000000000000000000000000000",
                 name = "VToken",
                 price = 100.toDouble()
             )
         )
         list.add(
-            DexTokenPriceDTO(
+            DexTokenDTO(
                 address = "0x05599ef248e215849cc599f563b4883fc8aff31f1e43dff1e3ebe4de1370e054",
                 name = "Xcoin",
                 price = 100.toDouble()
             )
         )
         list.add(
-            DexTokenPriceDTO(
+            DexTokenDTO(
                 address = "0xb9e3266ca9f28103ca7c9bb9e5eb6d0d8c1a9d774a11b384798a3c4784d5411e",
                 name = "ABCUSD",
                 price = 1.toDouble()
             )
         )
         list.add(
-            DexTokenPriceDTO(
+            DexTokenDTO(
                 address = "0xf013ea4acf944fa6edafe01fae10713d13928ca5dff9e809dbcce8b12c2c45f1",
                 name = "XYZUSD",
                 price = 1.toDouble()
             )
         )
         list.add(
-            DexTokenPriceDTO(
+            DexTokenDTO(
                 address = "0xe90e4f077bef23b32a6694a18a1fa34244532400869e4e8c87ce66d0b6c004bd",
                 name = "DEFHKD",
                 price = 0.1277
             )
         )
         list.add(
-            DexTokenPriceDTO(
+            DexTokenDTO(
                 address = "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
                 name = "DEFCNY",
                 price = 10.toDouble()
             )
         )
 
-        val map = mutableMapOf<String, DexTokenPriceDTO>()
+        val map = mutableMapOf<String, DexTokenDTO>()
         list.forEach {
             map[it.address] = it
         }
@@ -234,8 +233,8 @@ class DexOrderViewModel(
                     ?: "0xb9e3266ca9f28103ca7c9bb9e5eb6d0d8c1a9d774a11b384798a3c4784d5411e",
                 amountGet = "100",
                 amountFilled = "1",
-                version = 1,
-                updateVersion = 1,
+                version = "1",
+                updateVersion = "1",
                 date = System.currentTimeMillis(),
                 updateDate = System.currentTimeMillis()
             )
@@ -252,8 +251,8 @@ class DexOrderViewModel(
                     ?: "0xe90e4f077bef23b32a6694a18a1fa34244532400869e4e8c87ce66d0b6c004bd",
                 amountGet = "1277",
                 amountFilled = "1",
-                version = 2,
-                updateVersion = 2,
+                version = "2",
+                updateVersion = "2",
                 date = System.currentTimeMillis(),
                 updateDate = System.currentTimeMillis()
             )
@@ -270,8 +269,8 @@ class DexOrderViewModel(
                     ?: "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
                 amountGet = "0.1",
                 amountFilled = "1",
-                version = 3,
-                updateVersion = 3,
+                version = "3",
+                updateVersion = "3",
                 date = System.currentTimeMillis(),
                 updateDate = System.currentTimeMillis()
             )
@@ -281,10 +280,10 @@ class DexOrderViewModel(
 
     private fun getState(index: Int): String {
         return when (orderState) {
-            DexOrdersState.OPEN -> "OPEN"
-            DexOrdersState.CANCELED -> "CANCELED"
-            DexOrdersState.FILLED -> "FILLED"
-            DexOrdersState.FINISHED -> {
+            DexOrderState.OPEN -> "OPEN"
+            DexOrderState.CANCELED -> "CANCELED"
+            DexOrderState.FILLED -> "FILLED"
+            DexOrderState.FINISHED -> {
                 when (index / 2) {
                     0 -> "CANCELED"
                     else -> "FILLED"

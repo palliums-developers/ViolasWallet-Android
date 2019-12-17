@@ -13,33 +13,35 @@ import com.palliums.utils.isFastMultiClick
 abstract class BaseViewHolder<VO>(view: View) :
     RecyclerView.ViewHolder(view), View.OnClickListener {
 
-    private var itemIndex: Int = -1
-    private var itemData: VO? = null
+    protected var itemData: VO? = null
 
     /**
      * 防重点击处理，子类复写[onViewClick]来响应事件
      */
     final override fun onClick(view: View) {
         if (!isFastMultiClick(view, 200)) {
-            onViewClick(view, itemIndex, itemData)
+            var itemPosition = adapterPosition
+            if (itemPosition == RecyclerView.NO_POSITION) {
+                itemPosition = layoutPosition
+            }
+            onViewClick(view, itemPosition, itemData)
         }
     }
 
-    fun bind(itemIndex: Int, itemData: VO?) {
-        this.itemIndex = itemIndex
+    fun bind(itemPosition: Int, itemData: VO?) {
         this.itemData = itemData
-        onViewBind(itemIndex, itemData)
+        onViewBind(itemPosition, itemData)
     }
 
-    abstract fun onViewBind(itemIndex: Int, itemData: VO?)
+    abstract fun onViewBind(itemPosition: Int, itemData: VO?)
 
     /**
      * View点击回调，已防重点击处理
      * @param view
-     * @param itemIndex
+     * @param itemPosition
      * @param itemData
      */
-    open fun onViewClick(view: View, itemIndex: Int, itemData: VO?) {
+    open fun onViewClick(view: View, itemPosition: Int, itemData: VO?) {
 
     }
 }

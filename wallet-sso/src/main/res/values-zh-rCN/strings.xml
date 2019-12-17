@@ -322,4 +322,7 @@
     <string name="hint_type">类型</string>
     <string name="hint_delete_address_book">删除地址</string>
     <string name="hint_confirm_delete_address_book">确定要在地址簿中删除该地址！</string>
+
+    <string name="tips_no_address">暂时没有地址</string>
+    <string name="tips_no_transaction_record">暂无交易记录</string>
 </resources>

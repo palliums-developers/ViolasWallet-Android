@@ -36,7 +36,7 @@ class WordViewHolder(
         }
     }
 
-    override fun onViewBind(itemIndex: Int, itemData: WordVO?) {
+    override fun onViewBind(itemPosition: Int, itemData: WordVO?) {
         itemData?.let {
             itemView.vWord.text = it.word
             when {
@@ -59,9 +59,9 @@ class WordViewHolder(
         }
     }
 
-    override fun onViewClick(view: View, itemIndex: Int, itemData: WordVO?) {
+    override fun onViewClick(view: View, itemPosition: Int, itemData: WordVO?) {
         itemData?.let {
-            onItemClick?.invoke(itemIndex, it)
+            onItemClick?.invoke(itemPosition, it)
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.dexOrder
+package com.violas.wallet.ui.dexOrder.details
 
 import android.content.Context
 import android.content.Intent
@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.palliums.net.LoadState
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
+import com.palliums.utils.formatDate
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
@@ -16,6 +17,8 @@ import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.dex.DexOrderTradeDTO
+import com.violas.wallet.ui.dexOrder.DexOrderVO
 import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_dex_order_details.*
@@ -24,8 +27,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * Created by elephant on 2019-12-09 11:34.
@@ -33,7 +34,7 @@ import java.util.*
  * <p>
  * desc: 交易中心订单详情页面
  */
-class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
+class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
 
     companion object {
         private const val EXTRA_KEY_DEX_ORDER = "EXTRA_KEY_DEX_ORDER"
@@ -47,7 +48,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
         }
     }
 
-    private var dexOrderDO: DexOrderVO? = null
+    private var dexOrderVO: DexOrderVO? = null
     private lateinit var currentAccount: AccountDO
 
     override fun getLayoutResId(): Int {
@@ -66,19 +67,17 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
         return slStatusLayout
     }
 
-    override fun initViewModel(): PagingViewModel<DexOrderVO> {
-        return DexOrderViewModel(
-            accountAddress = dexOrderDO!!.dexOrderDTO.user,
-            orderState = null,
-            giveTokenAddress = dexOrderDO!!.dexOrderDTO.tokenGive,
-            getTokenAddress = dexOrderDO!!.dexOrderDTO.tokenGet
+    override fun initViewModel(): PagingViewModel<DexOrderTradeDTO> {
+        return DexOrderDetailsViewModel(
+            dexOrderVO!!.dto.version
         )
     }
 
-    override fun initViewAdapter(): PagingViewAdapter<DexOrderVO> {
-        return DexOrderViewAdapter(
+    override fun initViewAdapter(): PagingViewAdapter<DexOrderTradeDTO> {
+        return DexOrderDetailsViewAdapter(
             retryCallback = { getViewModel().retry() },
-            showOrderDetails = true,
+            addHeader = false,
+            dexOrderVO = dexOrderVO!!,
             onOpenBrowserView = {
                 // TODO violas浏览器暂未实现
                 //showToast(R.string.transaction_record_not_supported_query)
@@ -104,12 +103,12 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
     private fun initData(savedInstanceState: Bundle?): Boolean {
 
         if (savedInstanceState != null) {
-            dexOrderDO = savedInstanceState.getParcelable(EXTRA_KEY_DEX_ORDER)
+            dexOrderVO = savedInstanceState.getParcelable(EXTRA_KEY_DEX_ORDER)
         } else if (intent != null) {
-            dexOrderDO = intent.getParcelableExtra(EXTRA_KEY_DEX_ORDER)
+            dexOrderVO = intent.getParcelableExtra(EXTRA_KEY_DEX_ORDER)
         }
 
-        if (dexOrderDO == null) {
+        if (dexOrderVO == null) {
             return false
         }
 
@@ -125,26 +124,36 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
     private fun initView() {
         setTitle(R.string.title_order_details)
 
-        (getViewModel() as DexOrderViewModel).loadState.observe(this, Observer {
-            when (it.status) {
-                LoadState.Status.RUNNING -> {
-                    showProgress()
-                }
+        if (dexOrderVO!!.isOpen() && !dexOrderVO!!.revokedFlag) {
+            (getViewModel() as DexOrderDetailsViewModel).loadState.observe(this, Observer {
+                when (it.status) {
+                    LoadState.Status.RUNNING -> {
+                        showProgress()
+                    }
 
-                else -> {
-                    dismissProgress()
+                    else -> {
+                        dismissProgress()
+                    }
                 }
-            }
-        })
+            })
 
-        (getViewModel() as DexOrderViewModel).tipsMessage.observe(this, Observer {
-            if (it.isNotEmpty()) {
-                showToast(it)
-            }
-        })
+            (getViewModel() as DexOrderDetailsViewModel).tipsMessage.observe(this, Observer {
+                if (it.isNotEmpty()) {
+                    showToast(it)
+                }
+            })
+        }
+
+        getStatusLayout()?.setTipsWithStatus(
+            IStatusLayout.Status.STATUS_EMPTY,
+            getString(R.string.tips_no_order_trades)
+        )
+        getDrawable(R.mipmap.ic_no_transaction_record)?.let {
+            getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
+        }
 
         mPagingHandler.start()
-        initHeaderView(dexOrderDO!!)
+        initHeaderView(dexOrderVO!!)
     }
 
     private fun initHeaderView(it: DexOrderVO) {
@@ -154,12 +163,11 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
 
         // 若拿A换B，价格、数量、已成交数量均为B的数据
         tvPrice.text = it.getTokenPrice.toString()
-        tvTotalAmount.text = convertViolasTokenUnit(it.dexOrderDTO.amountGet)
-        tvTradeAmount.text = convertViolasTokenUnit(it.dexOrderDTO.amountFilled)
+        tvTotalAmount.text = convertViolasTokenUnit(it.dto.amountGet)
+        tvTradeAmount.text = convertViolasTokenUnit(it.dto.amountFilled)
 
         tvFee.text = "0.00Vtoken"
 
-        val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
         when {
             it.isFinished() -> {
                 tvState.setText(
@@ -168,7 +176,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
                     else
                         R.string.state_completed
                 )
-                tvTime.text = simpleDateFormat.format(it.getUpdateDate())
+                tvTime.text = formatDate(it.dto.updateDate)
             }
             it.isOpen() -> {
                 tvState.setText(
@@ -177,11 +185,11 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
                     else
                         R.string.action_revoke
                 )
-                tvTime.text = simpleDateFormat.format(it.getDate())
+                tvTime.text = formatDate(it.dto.date)
             }
             else -> {
                 tvState.text = ""
-                tvTime.text = simpleDateFormat.format(it.getUpdateDate())
+                tvTime.text = formatDate(it.dto.updateDate)
             }
         }
 
@@ -192,32 +200,29 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
         when (view.id) {
             R.id.tvState -> {
 
-                dexOrderDO?.let { dexOrder ->
-                    if (dexOrder.isOpen() && !dexOrder.revokedFlag) {
+                dexOrderVO?.let { order ->
+                    if (order.isOpen() && !order.revokedFlag) {
 
                         PasswordInputDialog().setConfirmListener { password, dialog ->
 
-                            if (!(getViewModel() as DexOrderViewModel).revokeOrder(
+                            if (!(getViewModel() as DexOrderDetailsViewModel).revokeOrder(
                                     currentAccount,
                                     password,
-                                    dexOrder,
+                                    order,
                                     onCheckPassword = {
                                         if (it) {
                                             dialog.dismiss()
                                         }
                                     }
                                 ) {
-                                    dexOrder.revokedFlag = true
-                                    dexOrder.dexOrderDTO.date = System.currentTimeMillis()
+                                    order.revokedFlag = true
+                                    order.dto.date = System.currentTimeMillis()
 
                                     tvState.setText(R.string.state_revoked)
-                                    tvTime.text = SimpleDateFormat(
-                                        "MM.dd HH:mm:ss",
-                                        Locale.ENGLISH
-                                    ).format(dexOrder.getDate())
+                                    tvTime.text = formatDate(order.dto.date)
 
                                     EventBus.getDefault()
-                                        .post(RevokeDexOrderEvent(dexOrder.dexOrderDTO.id))
+                                        .post(RevokeDexOrderEvent(order.dto.id))
                                 }
                             ) {
                                 dialog.dismiss()
@@ -232,8 +237,8 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderVO>() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        dexOrderDO?.let {
-            outState.putParcelable(EXTRA_KEY_DEX_ORDER, dexOrderDO)
+        dexOrderVO?.let {
+            outState.putParcelable(EXTRA_KEY_DEX_ORDER, it)
         }
     }
 }
