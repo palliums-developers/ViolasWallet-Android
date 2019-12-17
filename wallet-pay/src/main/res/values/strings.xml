@@ -246,6 +246,7 @@
     <string name="hint_publish_token">首次打开稳定币</string>
     <string name="hint_publish_token_content">首次打开稳定币需要花费少量的手续费，是否继续。</string>
 
+    <string name="tips_no_address">暂时没有地址</string>
     <string name="tips_no_transaction_record">暂无交易记录</string>
     <string name="tips_no_uncompleted_orders">暂无未完成的订单</string>
     <string name="tips_no_completed_orders">暂无已完成的订单</string>

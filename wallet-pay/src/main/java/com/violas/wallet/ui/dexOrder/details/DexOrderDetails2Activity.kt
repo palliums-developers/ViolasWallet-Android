@@ -148,7 +148,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
             IStatusLayout.Status.STATUS_EMPTY,
             getString(R.string.tips_no_order_trades)
         )
-        com.palliums.utils.getDrawable(R.mipmap.ic_no_transaction_record)?.let {
+        getDrawable(R.mipmap.ic_no_transaction_record)?.let {
             getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
         }
 

@@ -27,7 +27,7 @@ class DexOrderDetailsHeaderViewHolder(
         itemView.tvBrowserQuery.setOnClickListener(this)
     }
 
-    override fun onViewBind(itemIndex: Int, itemData: DexOrderVO?) {
+    override fun onViewBind(itemPosition: Int, itemData: DexOrderVO?) {
         itemData?.let {
             // 若拿A换B，A在前B在后
             itemView.tvGiveTokenName.text = "${it.giveTokenName} /"
@@ -67,12 +67,12 @@ class DexOrderDetailsHeaderViewHolder(
         }
     }
 
-    override fun onViewClick(view: View, itemIndex: Int, itemData: DexOrderVO?) {
+    override fun onViewClick(view: View, itemPosition: Int, itemData: DexOrderVO?) {
         itemData?.let {
             when (view) {
                 itemView.tvState -> {
                     if (it.isOpen() && !it.revokedFlag) {
-                        onClickRevokeOrder?.invoke(itemData, itemIndex)
+                        onClickRevokeOrder?.invoke(itemData, itemPosition)
                     } else {
                     }
                 }

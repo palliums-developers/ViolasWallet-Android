@@ -22,13 +22,13 @@ abstract class ListingViewAdapter<VO>(dataList: MutableList<VO> = ArrayList()) :
         holder.bind(position, mDataList[position])
     }
 
-    fun setDataList(dataList: MutableList<VO>, notify: Boolean = true) {
+    fun setDataList(dataList: List<VO>, notify: Boolean = true) {
         if (this.mDataList.isEmpty() && dataList.isEmpty()) {
-            this.mDataList = dataList
             return
         }
 
-        this.mDataList = dataList
+        this.mDataList.clear()
+        this.mDataList.addAll(dataList)
 
         if (notify) {
             notifyDataSetChanged()

@@ -34,7 +34,8 @@ class ListingHandler<VO>(
                     }
                 }
 
-                LoadState.Status.SUCCESS -> {
+                LoadState.Status.SUCCESS,
+                LoadState.Status.SUCCESS_NO_MORE -> {
                     if (mListingController.loadingUseDialog()) {
                         mViewController.dismissProgress()
                     } else {
@@ -43,6 +44,18 @@ class ListingHandler<VO>(
 
                     mListingController.getStatusLayout()?.showStatus(
                         IStatusLayout.Status.STATUS_NONE
+                    )
+                }
+
+                LoadState.Status.SUCCESS_EMPTY -> {
+                    if (mListingController.loadingUseDialog()) {
+                        mViewController.dismissProgress()
+                    } else {
+                        mListingController.getRefreshLayout()?.finishRefresh(true)
+                    }
+
+                    mListingController.getStatusLayout()?.showStatus(
+                        IStatusLayout.Status.STATUS_EMPTY
                     )
                 }
 
@@ -88,6 +101,10 @@ class ListingHandler<VO>(
             it.setEnableOverScrollDrag(true)
             if (mListingController.loadingUseDialog()) {
                 it.setEnableRefresh(false)
+            } else {
+                it.setOnRefreshListener {
+
+                }
             }
         }
 

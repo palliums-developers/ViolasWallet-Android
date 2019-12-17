@@ -55,7 +55,7 @@ class TransactionRecordViewHolder(
         itemView.vQuery.setOnClickListener(this)
     }
 
-    override fun onViewBind(itemIndex: Int, itemData: TransactionRecordVO?) {
+    override fun onViewBind(itemPosition: Int, itemData: TransactionRecordVO?) {
         itemData?.let {
             itemView.vTime.text = mSimpleDateFormat.format(it.time)
             itemView.vAddress.text = it.address
@@ -92,7 +92,7 @@ class TransactionRecordViewHolder(
         }
     }
 
-    override fun onViewClick(view: View, itemIndex: Int, itemData: TransactionRecordVO?) {
+    override fun onViewClick(view: View, itemPosition: Int, itemData: TransactionRecordVO?) {
         itemData?.let {
             when (view) {
                 itemView.vQuery -> {

@@ -26,7 +26,7 @@ class DexOrderTradeViewHolder(
         itemView.tvBrowserQuery.setOnClickListener(this)
     }
 
-    override fun onViewBind(itemIndex: Int, itemData: DexOrderTradeDTO?) {
+    override fun onViewBind(itemPosition: Int, itemData: DexOrderTradeDTO?) {
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
             itemView.tvPrice.text = dexOrderVO.getTokenPrice.toString()
@@ -34,7 +34,7 @@ class DexOrderTradeViewHolder(
         }
     }
 
-    override fun onViewClick(view: View, itemIndex: Int, itemData: DexOrderTradeDTO?) {
+    override fun onViewClick(view: View, itemPosition: Int, itemData: DexOrderTradeDTO?) {
         itemData?.let {
             when (view) {
                 itemView.tvBrowserQuery -> {

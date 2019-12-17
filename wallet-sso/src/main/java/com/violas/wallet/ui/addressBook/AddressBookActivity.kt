@@ -6,27 +6,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.annotation.WorkerThread
+import com.palliums.base.BaseViewHolder
+import com.palliums.listing.ListingViewAdapter
+import com.palliums.listing.ListingViewModel
 import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.start
+import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.base.BaseListingActivity
 import com.violas.wallet.biz.AddressBookManager
 import com.violas.wallet.repository.database.entity.AddressBookDo
 import com.violas.wallet.ui.addressBook.add.AddAddressBookActivity
 import com.violas.wallet.widget.dialog.DeleteAddressDialog
-import kotlinx.android.synthetic.main.activity_address_book.*
 import kotlinx.android.synthetic.main.item_address_book.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AddressBookActivity : BaseAppActivity() {
+class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
     companion object {
         private const val EXT_COIN_TYPE = "a1"
         private const val EXT_IS_SELECTOR = "a2"
-        public const val RESULT_SELECT_ADDRESS = "a3"
+        const val RESULT_SELECT_ADDRESS = "a3"
         private const val REQUEST_ADD_COIN = 1
         fun start(
             context: Activity,
@@ -48,52 +51,64 @@ class AddressBookActivity : BaseAppActivity() {
         }
     }
 
-    private val mAddressBookManager by lazy {
-        AddressBookManager()
-    }
-
     private var mCoinType = Int.MIN_VALUE
     private var mSelector = false
-    private val mAddressBookList = mutableListOf<AddressBookDo>()
-    private val mAdapter by lazy {
-        MyAdapter(mAddressBookList, {
-            if (mSelector) {
-                setResult(
-                    Activity.RESULT_OK,
-                    Intent().apply {
-                        putExtra(RESULT_SELECT_ADDRESS, it.address)
-                    }
-                )
-                finish()
-            } else {
-                // todo 编辑
-            }
-        }, { mAdapter, position, addressBook ->
-            DeleteAddressDialog().setConfirmListener {
-                launch(Dispatchers.IO + coroutineExceptionHandler()) {
-                    showProgress()
-                    mAddressBookManager.remove(addressBook)
-                    mAddressBookList.removeAt(position)
-                    withContext(Dispatchers.Main) {
-                        mAdapter.notifyItemRemoved(position)
-                        dismissProgress()
-                    }
-                }
-                it.dismiss()
-            }.show(supportFragmentManager, "delete")
-        })
+
+    override fun initViewModel(): ListingViewModel<AddressBookDo> {
+        return AddressBookViewModel()
     }
 
-    override fun getLayoutResId() = R.layout.activity_address_book
+    override fun initViewAdapter(): ListingViewAdapter<AddressBookDo> {
+        return MyAdapter(
+            mCallback = {
+                if (mSelector) {
+                    setResult(
+                        Activity.RESULT_OK,
+                        Intent().apply {
+                            putExtra(RESULT_SELECT_ADDRESS, it.address)
+                        }
+                    )
+                    finish()
+                } else {
+                    // todo 编辑
+                }
+            },
+            mLongClickCallback = { position, addressBook ->
+                DeleteAddressDialog().setConfirmListener {
+                    it.dismiss()
+
+                    showProgress()
+                    launch(Dispatchers.IO + coroutineExceptionHandler()) {
+                        (getViewModel() as AddressBookViewModel).removeAddress(addressBook)
+                        withContext(Dispatchers.Main) {
+                            getViewModel().execute(mCoinType)
+                            dismissProgress()
+                        }
+                    }
+
+                }.show(supportFragmentManager, "delete")
+            }
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         title = getString(R.string.title_address_book)
         setTitleRightImageResource(R.drawable.icon_add_address)
+
         mCoinType = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
         mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)
-        recyclerView.adapter = mAdapter
-        loadAddressList(mCoinType)
+
+        getStatusLayout()?.setTipsWithStatus(
+            IStatusLayout.Status.STATUS_EMPTY,
+            getString(R.string.tips_no_address)
+        )
+        getDrawable(R.mipmap.ic_no_address)?.let {
+            getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
+        }
+
+        getViewModel().execute(mCoinType)
     }
 
     override fun onTitleRightViewClick() {
@@ -104,58 +119,79 @@ class AddressBookActivity : BaseAppActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_ADD_COIN && resultCode == Activity.RESULT_OK) {
-            loadAddressList(mCoinType)
-        }
-    }
-
-    private fun loadAddressList(coinType: Int) {
-        launch(Dispatchers.IO) {
-            val list = mAddressBookManager.loadAddressBook(coinType)
-            mAddressBookList.clear()
-            mAddressBookList.addAll(list)
-            withContext(Dispatchers.Main) {
-                mAdapter.notifyDataSetChanged()
-            }
+            getViewModel().execute(mCoinType)
         }
     }
 }
 
+class AddressBookViewModel : ListingViewModel<AddressBookDo>() {
+
+    private val mAddressBookManager by lazy {
+        AddressBookManager()
+    }
+
+    @WorkerThread
+    fun removeAddress(addressBook: AddressBookDo) {
+        mAddressBookManager.remove(addressBook)
+    }
+
+    override suspend fun loadData(vararg params: Any): List<AddressBookDo> {
+        return mAddressBookManager.loadAddressBook(params[0] as Int)
+    }
+
+    override fun checkNetworkBeforeExecute(): Boolean {
+        return false
+    }
+}
+
 class MyAdapter(
-    private val mData: List<AddressBookDo>,
     private val mCallback: (AddressBookDo) -> Unit,
-    private val mLongClickCallback: (adapter: MyAdapter, position: Int, AddressBookDo) -> Unit
-) :
-    RecyclerView.Adapter<MyAdapter.ViewHolder>() {
+    private val mLongClickCallback: (position: Int, AddressBookDo) -> Unit
+) : ListingViewAdapter<AddressBookDo>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.item_address_book,
                 parent,
                 false
-            )
-        ).apply {
-            itemView.setOnClickListener {
-                mCallback.invoke(mData[this.adapterPosition])
-            }
+            ),
+            mCallback,
+            mLongClickCallback
+        )
+    }
+
+    class ViewHolder(
+        item: View,
+        private val mCallback: (AddressBookDo) -> Unit,
+        private val mLongClickCallback: (position: Int, AddressBookDo) -> Unit
+    ) : BaseViewHolder<AddressBookDo>(item) {
+
+        init {
+            itemView.setOnClickListener(this)
             itemView.setOnLongClickListener {
-                mLongClickCallback.invoke(
-                    this@MyAdapter,
-                    this.adapterPosition,
-                    mData[this.adapterPosition]
-                )
+                itemData?.let {
+                    mLongClickCallback.invoke(adapterPosition, it)
+                }
+
                 true
             }
         }
+
+        override fun onViewBind(itemPosition: Int, itemData: AddressBookDo?) {
+            itemData?.let {
+                itemView.tvTitle.text = it.note
+                itemView.tvAddress.text = it.address
+                itemView.tvCoinType.text = CoinTypes.parseCoinType(it.coin_number).fullName()
+            }
+        }
+
+        override fun onViewClick(view: View, itemPosition: Int, itemData: AddressBookDo?) {
+            when (view) {
+                itemView -> {
+                    itemData?.let { mCallback.invoke(it) }
+                }
+            }
+        }
     }
-
-    override fun getItemCount() = mData.size
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = mData[position]
-        holder.itemView.tvTitle.text = item.note
-        holder.itemView.tvAddress.text = item.address
-        holder.itemView.tvCoinType.text = CoinTypes.parseCoinType(item.coin_number).fullName()
-    }
-
-    class ViewHolder(item: View) : RecyclerView.ViewHolder(item)
 }
