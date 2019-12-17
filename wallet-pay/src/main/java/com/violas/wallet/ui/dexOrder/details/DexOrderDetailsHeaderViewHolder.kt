@@ -1,29 +1,30 @@
-package com.violas.wallet.ui.dexOrder
+package com.violas.wallet.ui.dexOrder.details
 
 import android.view.View
 import com.palliums.base.BaseViewHolder
-import com.palliums.utils.getColor
+import com.palliums.utils.formatDate
 import com.violas.wallet.R
+import com.violas.wallet.ui.dexOrder.DexOrderVO
 import com.violas.wallet.utils.convertViolasTokenUnit
-import kotlinx.android.synthetic.main.item_dex_order.view.*
+import kotlinx.android.synthetic.main.item_dex_order_details_header.view.*
 import java.text.SimpleDateFormat
 
 /**
- * Created by elephant on 2019-12-09 16:53.
+ * Created by elephant on 2019-12-10 15:45.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
  * desc:
  */
-class DexOrdersViewHolder(
+class DexOrderDetailsHeaderViewHolder(
     view: View,
     private val simpleDateFormat: SimpleDateFormat,
-    private val onClickItem: ((DexOrderVO) -> Unit)? = null,
-    private val onClickRevokeOrder: ((DexOrderVO, Int) -> Unit)? = null
+    private val onClickBrowserQuery: ((url: String?) -> Unit)? = null,
+    private val onClickRevokeOrder: ((order: DexOrderVO, position: Int) -> Unit)? = null
 ) : BaseViewHolder<DexOrderVO>(view) {
 
     init {
-        itemView.setOnClickListener(this)
         itemView.tvState.setOnClickListener(this)
+        itemView.tvBrowserQuery.setOnClickListener(this)
     }
 
     override fun onViewBind(itemIndex: Int, itemData: DexOrderVO?) {
@@ -34,8 +35,8 @@ class DexOrdersViewHolder(
 
             // 若拿A换B，价格、数量、已成交数量均为B的数据
             itemView.tvPrice.text = it.getTokenPrice.toString()
-            itemView.tvTotalAmount.text = convertViolasTokenUnit(it.dexOrderDTO.amountGet)
-            itemView.tvTradeAmount.text = convertViolasTokenUnit(it.dexOrderDTO.amountFilled)
+            itemView.tvTotalAmount.text = convertViolasTokenUnit(it.dto.amountGet)
+            itemView.tvTradeAmount.text = convertViolasTokenUnit(it.dto.amountFilled)
 
             itemView.tvFee.text = "0.00Vtoken"
 
@@ -47,8 +48,7 @@ class DexOrdersViewHolder(
                         else
                             R.string.state_completed
                     )
-                    itemView.tvState.setTextColor(getColor(R.color.color_63636F, itemView.context))
-                    itemView.tvTime.text = simpleDateFormat.format(it.getUpdateDate())
+                    itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
                 }
                 it.isOpen() -> {
                     itemView.tvState.setText(
@@ -57,12 +57,11 @@ class DexOrdersViewHolder(
                         else
                             R.string.action_revoke
                     )
-                    itemView.tvState.setTextColor(getColor(R.color.color_726BD9, itemView.context))
-                    itemView.tvTime.text = simpleDateFormat.format(it.getDate())
+                    itemView.tvTime.text = formatDate(it.dto.date, simpleDateFormat)
                 }
                 else -> {
                     itemView.tvState.text = ""
-                    itemView.tvTime.text = simpleDateFormat.format(it.getUpdateDate())
+                    itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
                 }
             }
         }
@@ -71,15 +70,15 @@ class DexOrdersViewHolder(
     override fun onViewClick(view: View, itemIndex: Int, itemData: DexOrderVO?) {
         itemData?.let {
             when (view) {
-                itemView -> {
-                    onClickItem?.invoke(it)
-                }
-
                 itemView.tvState -> {
                     if (it.isOpen() && !it.revokedFlag) {
                         onClickRevokeOrder?.invoke(itemData, itemIndex)
                     } else {
                     }
+                }
+
+                itemView.tvBrowserQuery -> {
+                    onClickBrowserQuery?.invoke(null)
                 }
 
                 else -> {

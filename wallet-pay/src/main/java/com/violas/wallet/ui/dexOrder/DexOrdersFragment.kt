@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.dexOrder
 
 import android.os.Bundle
-import androidx.annotation.StringDef
 import androidx.lifecycle.Observer
 import com.palliums.net.LoadState
 import com.palliums.paging.PagingViewAdapter
@@ -10,12 +9,14 @@ import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.ui.dexOrder.details.DexOrderDetails2Activity
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Created by elephant on 2019-12-06 12:02.
@@ -23,21 +24,6 @@ import org.greenrobot.eventbus.Subscribe
  * <p>
  * desc: 交易中心订单
  */
-
-@StringDef(
-    DexOrdersState.OPEN,
-    DexOrdersState.FILLED,
-    DexOrdersState.CANCELED,
-    DexOrdersState.FINISHED
-)
-annotation class DexOrdersState {
-    companion object {
-        const val OPEN = "0"        // open
-        const val FILLED = "1"      // filled
-        const val CANCELED = "2"    // canceled
-        const val FINISHED = "3"    // finished（filled and canceled）
-    }
-}
 
 class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
 
@@ -48,7 +34,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
          * @param orderState 订单状态，若为null则查询所有
          */
         fun newInstance(
-            @DexOrdersState
+            @DexOrderState
             orderState: String?
         ): DexOrdersFragment {
             val bundle = Bundle().apply {
@@ -61,12 +47,12 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
         }
     }
 
-    @DexOrdersState
+    @DexOrderState
     private var orderState: String? = null
     private lateinit var currentAccount: AccountDO
 
     override fun initViewModel(): PagingViewModel<DexOrderVO> {
-        return DexOrderViewModel(
+        return DexOrdersViewModel(
             accountAddress = currentAccount.address,
             //accountAddress = "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
             orderState = orderState,
@@ -76,21 +62,17 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
     }
 
     override fun initViewAdapter(): PagingViewAdapter<DexOrderVO> {
-        return DexOrderViewAdapter(
+        return DexOrdersViewAdapter(
             retryCallback = { getViewModel().retry() },
             onOpenOrderDetails = {
                 //DexOrderDetailsActivity.start(requireContext(), it)
                 DexOrderDetails2Activity.start(requireContext(), it)
             },
-            onOpenBrowserView = {
-                // TODO violas浏览器暂未实现
-                //showToast(R.string.transaction_record_not_supported_query)
-            },
             onClickRevokeOrder = { dexOrder, position ->
 
                 PasswordInputDialog().setConfirmListener { password, dialog ->
 
-                    if (!(getViewModel() as DexOrderViewModel).revokeOrder(
+                    if (!(getViewModel() as DexOrdersViewModel).revokeOrder(
                             currentAccount,
                             password,
                             dexOrder,
@@ -102,7 +84,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
                         ) {
 
                             dexOrder.revokedFlag = true
-                            dexOrder.dexOrderDTO.date = System.currentTimeMillis()
+                            dexOrder.dto.date = System.currentTimeMillis()
 
                             getViewAdapter().notifyItemChanged(position)
                         }
@@ -131,27 +113,27 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
     }
 
     private fun initView() {
-        if (orderState.isNullOrEmpty() || orderState == DexOrdersState.OPEN) {
+        if (orderState.isNullOrEmpty() || orderState == DexOrderState.OPEN) {
             EventBus.getDefault().register(this)
+
+            (getViewModel() as DexOrdersViewModel).loadState.observe(this, Observer {
+                when (it.status) {
+                    LoadState.Status.RUNNING -> {
+                        showProgress()
+                    }
+
+                    else -> {
+                        dismissProgress()
+                    }
+                }
+            })
+
+            (getViewModel() as DexOrdersViewModel).tipsMessage.observe(this, Observer {
+                if (it.isNotEmpty()) {
+                    showToast(it)
+                }
+            })
         }
-
-        (getViewModel() as DexOrderViewModel).loadState.observe(this, Observer {
-            when (it.status) {
-                LoadState.Status.RUNNING -> {
-                    showProgress()
-                }
-
-                else -> {
-                    dismissProgress()
-                }
-            }
-        })
-
-        (getViewModel() as DexOrderViewModel).tipsMessage.observe(this, Observer {
-            if (it.isNotEmpty()) {
-                showToast(it)
-            }
-        })
 
         mPagingHandler.start()
     }
@@ -185,7 +167,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
         super.onDestroyView()
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onRevokeDexOrderEvent(event: RevokeDexOrderEvent) {
         if (event.orderId.isEmpty()) {
             return
@@ -193,9 +175,9 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
 
         getViewAdapter().currentList?.let {
             it.forEachIndexed { index, dexOrderVO ->
-                if (dexOrderVO.dexOrderDTO.id == event.orderId) {
+                if (dexOrderVO.dto.id == event.orderId) {
                     dexOrderVO.revokedFlag = true
-                    dexOrderVO.dexOrderDTO.date = System.currentTimeMillis()
+                    dexOrderVO.dto.date = System.currentTimeMillis()
 
                     getViewAdapter().notifyItemChanged(index)
                 }

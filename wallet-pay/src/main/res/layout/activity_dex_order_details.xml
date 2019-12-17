@@ -39,7 +39,7 @@
                     android:layout_height="match_parent"
                     android:overScrollMode="never"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/item_dex_order_details" />
+                    tools:listitem="@layout/item_dex_order_trade" />
 
                 <com.palliums.widget.status.DefaultStatusLayout
                     android:id="@+id/slStatusLayout"

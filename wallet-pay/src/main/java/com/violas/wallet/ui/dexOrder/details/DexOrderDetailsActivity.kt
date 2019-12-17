@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.dexOrder
+package com.violas.wallet.ui.dexOrder.details
 
 import android.content.Context
 import android.content.Intent
@@ -12,6 +12,9 @@ import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.dex.DexOrderTradeDTO
+import com.violas.wallet.ui.dexOrder.DexOrderVO
+import com.violas.wallet.ui.dexOrder.DexOrdersViewModel
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +27,7 @@ import org.greenrobot.eventbus.EventBus
  * <p>
  * desc: 交易中心订单详情页面
  */
-class DexOrderDetailsActivity : BasePagingActivity<DexOrderVO>() {
+class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
 
     companion object {
         private const val EXTRA_KEY_DEX_ORDER = "EXTRA_KEY_DEX_ORDER"
@@ -38,47 +41,44 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderVO>() {
         }
     }
 
-    private var dexOrderDO: DexOrderVO? = null
+    private var dexOrderVO: DexOrderVO? = null
     private lateinit var currentAccount: AccountDO
 
-    override fun initViewModel(): PagingViewModel<DexOrderVO> {
-        return DexOrderViewModel(
-            accountAddress = dexOrderDO!!.dexOrderDTO.user,
-            orderState = null,
-            giveTokenAddress = dexOrderDO!!.dexOrderDTO.tokenGive,
-            getTokenAddress = dexOrderDO!!.dexOrderDTO.tokenGet
+    override fun initViewModel(): PagingViewModel<DexOrderTradeDTO> {
+        return DexOrderDetailsViewModel(
+            dexOrderVO!!.dto.version
         )
     }
 
-    override fun initViewAdapter(): PagingViewAdapter<DexOrderVO> {
-        return DexOrderViewAdapter(
+    override fun initViewAdapter(): PagingViewAdapter<DexOrderTradeDTO> {
+        return DexOrderDetailsViewAdapter(
             retryCallback = { getViewModel().retry() },
-            showOrderDetails = true,
             addHeader = true,
+            dexOrderVO = dexOrderVO!!,
             onOpenBrowserView = {
                 // TODO violas浏览器暂未实现
                 //showToast(R.string.transaction_record_not_supported_query)
             },
-            onClickRevokeOrder = { dexOrder, position ->
+            onClickRevokeOrder = { order, position ->
 
                 PasswordInputDialog().setConfirmListener { password, dialog ->
 
-                    if (!(getViewModel() as DexOrderViewModel).revokeOrder(
+                    if (!(getViewModel() as DexOrderDetailsViewModel).revokeOrder(
                             currentAccount,
                             password,
-                            dexOrder,
+                            order,
                             onCheckPassword = {
                                 if (it) {
                                     dialog.dismiss()
                                 }
                             }
                         ) {
-                            dexOrder.revokedFlag = true
-                            dexOrder.dexOrderDTO.date = System.currentTimeMillis()
+                            order.revokedFlag = true
+                            order.dto.date = System.currentTimeMillis()
 
                             getViewAdapter().notifyItemChanged(position)
 
-                            EventBus.getDefault().post(RevokeDexOrderEvent(dexOrder.dexOrderDTO.id))
+                            EventBus.getDefault().post(RevokeDexOrderEvent(order.dto.id))
                         }
                     ) {
                         dialog.dismiss()
@@ -86,7 +86,7 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderVO>() {
 
                 }.show(this@DexOrderDetailsActivity.supportFragmentManager)
             }
-        ).apply { headerData = dexOrderDO }
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,12 +107,12 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderVO>() {
     private fun initData(savedInstanceState: Bundle?): Boolean {
 
         if (savedInstanceState != null) {
-            dexOrderDO = savedInstanceState.getParcelable(EXTRA_KEY_DEX_ORDER)
+            dexOrderVO = savedInstanceState.getParcelable(EXTRA_KEY_DEX_ORDER)
         } else if (intent != null) {
-            dexOrderDO = intent.getParcelableExtra(EXTRA_KEY_DEX_ORDER)
+            dexOrderVO = intent.getParcelableExtra(EXTRA_KEY_DEX_ORDER)
         }
 
-        if (dexOrderDO == null) {
+        if (dexOrderVO == null) {
             return false
         }
 
@@ -128,31 +128,33 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderVO>() {
     private fun initView() {
         setTitle(R.string.title_order_details)
 
-        (getViewModel() as DexOrderViewModel).loadState.observe(this, Observer {
-            when (it.status) {
-                LoadState.Status.RUNNING -> {
-                    showProgress()
-                }
+        if (dexOrderVO!!.isOpen() && !dexOrderVO!!.revokedFlag) {
+            (getViewModel() as DexOrderDetailsViewModel).loadState.observe(this, Observer {
+                when (it.status) {
+                    LoadState.Status.RUNNING -> {
+                        showProgress()
+                    }
 
-                else -> {
-                    dismissProgress()
+                    else -> {
+                        dismissProgress()
+                    }
                 }
-            }
-        })
+            })
 
-        (getViewModel() as DexOrderViewModel).tipsMessage.observe(this, Observer {
-            if (it.isNotEmpty()) {
-                showToast(it)
-            }
-        })
+            (getViewModel() as DexOrderDetailsViewModel).tipsMessage.observe(this, Observer {
+                if (it.isNotEmpty()) {
+                    showToast(it)
+                }
+            })
+        }
 
         mPagingHandler.start()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        dexOrderDO?.let {
-            outState.putParcelable(EXTRA_KEY_DEX_ORDER, dexOrderDO)
+        dexOrderVO?.let {
+            outState.putParcelable(EXTRA_KEY_DEX_ORDER, it)
         }
     }
 }

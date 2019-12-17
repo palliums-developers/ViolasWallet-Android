@@ -162,7 +162,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             mAccount?.let {
                 val tokenPrices =
                     viewModelScope.async(Dispatchers.IO) {
-                        DataRepository.getDexService().getTokenPrices()
+                        DataRepository.getDexService().getTokens()
                     }
 
                 val localEnableToken =

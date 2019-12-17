@@ -11,7 +11,7 @@ import com.violas.wallet.repository.http.dex.DexOrderDTO
  * desc:
  */
 data class DexOrderVO(
-    val dexOrderDTO: DexOrderDTO,
+    val dto: DexOrderDTO,
     val giveTokenName: String,
     val giveTokenPrice: Double,
     val getTokenName: String,
@@ -19,29 +19,15 @@ data class DexOrderVO(
     var revokedFlag: Boolean = false
 ) : Parcelable {
     fun isFinished(): Boolean {
-        return dexOrderDTO.state == "FILLED" || dexOrderDTO.state == "CANCELED"
+        return dto.state == "FILLED" || dto.state == "CANCELED"
     }
 
     fun isCanceled(): Boolean {
-        return dexOrderDTO.state == "CANCELED"
+        return dto.state == "CANCELED"
     }
 
     fun isOpen(): Boolean {
-        return dexOrderDTO.state == "OPEN"
-    }
-
-    fun getDate(): Long {
-        return if (dexOrderDTO.date.toString().length == 10)
-            dexOrderDTO.date * 1000
-        else
-            dexOrderDTO.date
-    }
-
-    fun getUpdateDate(): Long {
-        return if (dexOrderDTO.updateDate.toString().length == 10)
-            dexOrderDTO.updateDate * 1000
-        else
-            dexOrderDTO.updateDate
+        return dto.state == "OPEN"
     }
 
     constructor(source: Parcel) : this(
@@ -56,7 +42,7 @@ data class DexOrderVO(
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeParcelable(dexOrderDTO, 0)
+        writeParcelable(dto, 0)
         writeString(giveTokenName)
         writeDouble(giveTokenPrice)
         writeString(getTokenName)

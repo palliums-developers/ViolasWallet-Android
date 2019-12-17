@@ -23,7 +23,7 @@ open class Response<T> : ApiResponse {
     @SerializedName(value = "error")
     var errorMsg: String? = null
 
-    @SerializedName(value = "data", alternate = ["orders"])
+    @SerializedName(value = "data", alternate = ["orders", "trades"])
     var data: T? = null
 
     override fun getSuccessCode(): Any {
@@ -50,9 +50,9 @@ data class DexOrderDTO(
     val tokenGet: String,
     val amountGet: String,
     val amountFilled: String,
-    val version: Long,
+    val version: String,
     @SerializedName(value = "update_version")
-    val updateVersion: Long,
+    val updateVersion: String,
     var date: Long,
     @SerializedName(value = "update_date")
     val updateDate: Long
@@ -67,8 +67,8 @@ data class DexOrderDTO(
         source.readString()!!,
         source.readString()!!,
         source.readString()!!,
-        source.readLong(),
-        source.readLong(),
+        source.readString()!!,
+        source.readString()!!,
         source.readLong(),
         source.readLong()
     )
@@ -84,8 +84,8 @@ data class DexOrderDTO(
         writeString(tokenGet)
         writeString(amountGet)
         writeString(amountFilled)
-        writeLong(version)
-        writeLong(updateVersion)
+        writeString(version)
+        writeString(updateVersion)
         writeLong(date)
         writeLong(updateDate)
     }
@@ -96,9 +96,16 @@ data class DexOrderDTO(
     }
 }
 
-data class DexTokenPriceDTO(
+data class DexTokenDTO(
     @SerializedName(value = "addr")
     val address: String,
     val name: String,
     val price: Double
 )
+
+data class DexOrderTradeDTO(
+    val version: String,
+    val amount: String,
+    val date: Long
+)
+

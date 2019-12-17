@@ -126,7 +126,7 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
         }
     }
 
-    abstract fun onCreateViewHolderSupport(parent: ViewGroup, viewType: Int): BaseViewHolder<VO>
+    abstract fun onCreateViewHolderSupport(parent: ViewGroup, viewType: Int): BaseViewHolder<out Any>
 
     open fun getItemViewTypeSupport(position: Int): Int {
         return 0
