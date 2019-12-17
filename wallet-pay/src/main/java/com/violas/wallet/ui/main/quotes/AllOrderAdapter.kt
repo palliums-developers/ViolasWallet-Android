@@ -47,12 +47,20 @@ class AllOrderAdapter :
 
 val diffUtil = object : DiffUtil.ItemCallback<IOrder>() {
     override fun areContentsTheSame(oldItem: IOrder, newItem: IOrder): Boolean {
-        return oldItem.version() > newItem.version()
+        return oldItem.id() == newItem.id() &&
+                oldItem.updateVersion() == newItem.updateVersion() &&
+                oldItem.tokenGetSymbol() == newItem.tokenGetSymbol() &&
+                oldItem.tokenGet() == newItem.tokenGet() &&
+                oldItem.tokenGiveSymbol() == newItem.tokenGiveSymbol() &&
+                oldItem.tokenGive() == newItem.tokenGive() &&
+                oldItem.state() == newItem.state() &&
+                oldItem.amount() == newItem.amount() &&
+                oldItem.price() == newItem.price()
     }
 
     override fun areItemsTheSame(oldItem: IOrder, newItem: IOrder): Boolean {
         // TODO 添加状态
-        return oldItem.version() == newItem.version()
+        return oldItem.id() == newItem.id()
     }
 
 }

@@ -7,7 +7,6 @@ import com.palliums.violas.http.ModuleDTO
 import com.palliums.violas.http.SupportCurrencyDTO
 import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
 import io.reactivex.disposables.Disposable
@@ -133,7 +132,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
                 AccountAddress(HexUtils.fromHex(senderAddress)),
                 sequenceNumber,
                 program,
-                140000,
+                280000,
                 0,
                 (Date().time / 1000) + 1000
             )
@@ -282,7 +281,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             AccountAddress(HexUtils.fromHex(senderAddress)),
             sequenceNumber,
             program,
-            140000,
+            280000,
             0,
             (Date().time / 1000) + 1000
         )

@@ -62,6 +62,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     // Token 列表
     private val mTokenList = ArrayList<IToken>()
 
+    private var oldBaseToken: String? = null
+    private var oldTokenQuote: String? = null
+
     private val mTokenManager by lazy {
         TokenManager()
     }
@@ -136,6 +139,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 baseToken = currentToCoinLiveData.value!!.tokenAddress()
                 tokenQuote = currentFormCoinLiveData.value!!.tokenAddress()
             }
+            ExchangeSocket.unSubscribe(oldBaseToken, oldTokenQuote)
+            oldBaseToken = baseToken
+            oldTokenQuote = tokenQuote
             ExchangeSocket.getMark(baseToken, tokenQuote, mAccount!!.address)
         }
     }
@@ -261,7 +267,10 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 )
                 exchangeRateNumberLiveData.postValue(divide)
                 exchangeRateLiveData.postValue(
-                    "1 $toUnit = ${divide.setScale(2,RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString()} $fromUnit"
+                    "1 $toUnit = ${divide.setScale(
+                        2,
+                        RoundingMode.HALF_DOWN
+                    ).stripTrailingZeros().toPlainString()} $fromUnit"
                 )
             } else {
                 exchangeRateNumberLiveData.postValue(BigDecimal("0"))
@@ -286,14 +295,28 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         isPositiveChangeLiveData.value = !isPositiveChangeLiveData.value!!
     }
 
+    private fun orderFilter(order: IOrder): Boolean {
+        return if (isPositiveChangeLiveData.value == false) {
+            order.tokenGet() == currentToCoinLiveData.value?.tokenAddress() &&
+                    order.tokenGive() == currentFormCoinLiveData.value?.tokenAddress()
+        } else {
+            order.tokenGet() == currentFormCoinLiveData.value?.tokenAddress() &&
+                    order.tokenGive() == currentToCoinLiveData.value?.tokenAddress()
+        }
+    }
+
     override fun onMarkCall(
         myOrder: List<IOrder>,
         buyOrder: List<IOrder>,
         sellOrder: List<IOrder>
     ) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
-            meOrdersLiveData.postValue(myOrder.map(setOrderPrice()))
+            meOrdersLiveData.postValue(
+                myOrder.map(setOrderPrice())
+                    .sortedByDescending { it.updateVersion() }
+            )
             val allOrderList = buyOrder.plus(sellOrder)
+                .filter { orderFilter(it) }
             allOrdersLiveData.postValue(allOrderList.map(setOrderPrice()))
         }
     }
@@ -304,6 +327,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     ) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             val allOrderList = buyOrder.plus(sellOrder)
+                .filter { orderFilter(it) }
+
             val meOrderList = allOrderList
                 .filter {
                     mAccount?.address == it.userAddress()
@@ -311,7 +336,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 .toList()
             if (meOrderList.isNotEmpty()) {
                 val newMeOrderList =
-                    meOrdersLiveData.value?.toMutableMap { it.id() } ?: mutableMapOf()
+                    (meOrdersLiveData.value?.toMutableMap { it.id() } ?: mutableMapOf())
+
                 meOrderList.forEach {
                     when (it.state()) {
                         IOrderStatus.OPEN -> newMeOrderList[it.id()] = it
@@ -321,16 +347,22 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     }
                 }
                 meOrdersLiveData.postValue(
-                    newMeOrderList.values.toList()
-                        .sortedBy { it.version() }
+                    newMeOrderList.values
                         .map(setOrderPrice())
-                        .take(3)
+                        .sortedByDescending { it.updateVersion() }
                 )
             }
             val newAllOrderList =
                 allOrdersLiveData.value?.toMutableMap { it.id() } ?: mutableMapOf()
-            allOrderList.forEach {
-                newAllOrderList[it.id()] = it
+            allOrderList.filter {
+                it.userAddress() != mAccount?.address
+            }.forEach {
+                when (it.state()) {
+                    IOrderStatus.OPEN -> newAllOrderList[it.id()] = it
+                    IOrderStatus.FILLED,
+                    IOrderStatus.CANCELED,
+                    IOrderStatus.FILLED_CANCELED -> newAllOrderList.remove(it.id())
+                }
             }
             allOrdersLiveData.postValue(newAllOrderList.values.toList().map(setOrderPrice()))
         }

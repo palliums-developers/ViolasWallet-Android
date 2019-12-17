@@ -159,7 +159,7 @@ class ExchangeManager {
         account: Account,
         payload: TransactionPayload,
         sequenceNumber: Long,
-        maxGasAmount: Long = 140_000,
+        maxGasAmount: Long = 280_000,
         gasUnitPrice: Long = 0,
         expiration: Long = 1000
     ): RawTransaction {
