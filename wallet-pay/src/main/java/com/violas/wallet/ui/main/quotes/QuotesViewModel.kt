@@ -17,6 +17,7 @@ import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
+import com.violas.wallet.event.TokenPublishEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.socket.ExchangeSocket
@@ -151,6 +152,13 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         handleAccountEvent()
     }
 
+    @Subscribe
+    fun onTokenPublishEvent(event: TokenPublishEvent) {
+        viewModelScope.launch {
+            loadTokenList()
+        }
+    }
+
     /**
      * 检查当前账户
      */
@@ -232,7 +240,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     private fun handleDisplayOrder() {
-        val take = allOrdersLiveData.value?.sortedBy { it.version() }?.take(
+        val take = allOrdersLiveData.value?.take(
             if (isShowMoreAllOrderLiveData.value == true) {
                 mShowMoreAllOrderMaxCount
             } else {
@@ -315,9 +323,12 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 myOrder.map(setOrderPrice())
                     .sortedByDescending { it.updateVersion() }
             )
-            val allOrderList = buyOrder.plus(sellOrder)
+            val allOrderList = buyOrder//.plus(sellOrder)
                 .filter { orderFilter(it) }
-            allOrdersLiveData.postValue(allOrderList.map(setOrderPrice()))
+            allOrdersLiveData.postValue(
+                allOrderList.map(setOrderPrice())
+                    .sortedByDescending { it.updateVersion() }
+            )
         }
     }
 
@@ -326,7 +337,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         sellOrder: List<IOrder>
     ) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
-            val allOrderList = buyOrder.plus(sellOrder)
+            val allOrderList = buyOrder//.plus(sellOrder)
                 .filter { orderFilter(it) }
 
             val meOrderList = allOrderList
@@ -364,7 +375,12 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     IOrderStatus.FILLED_CANCELED -> newAllOrderList.remove(it.id())
                 }
             }
-            allOrdersLiveData.postValue(newAllOrderList.values.toList().map(setOrderPrice()))
+            allOrdersLiveData.postValue(
+                newAllOrderList.values.toList()
+                    .sortedByDescending { it.updateVersion() }
+                    .take(20)
+                    .map(setOrderPrice())
+            )
         }
     }
 

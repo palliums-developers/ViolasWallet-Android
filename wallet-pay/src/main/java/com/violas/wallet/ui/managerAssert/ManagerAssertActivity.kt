@@ -18,6 +18,7 @@ import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
+import com.violas.wallet.event.TokenPublishEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.widget.dialog.PasswordInputDialog
@@ -123,6 +124,7 @@ class ManagerAssertActivity : BaseAppActivity() {
                                 }
                                 showToast(getString(R.string.hint_assert_open_error))
                             } else {
+                                EventBus.getDefault().post(TokenPublishEvent())
                                 EventBus.getDefault().post(RefreshBalanceEvent())
                                 mTokenManager.insert(checked, assertToken)
                             }
