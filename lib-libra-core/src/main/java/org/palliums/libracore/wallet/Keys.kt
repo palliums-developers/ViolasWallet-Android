@@ -1,7 +1,12 @@
 package org.palliums.libracore.wallet
 
 import com.google.common.primitives.Bytes
-import org.palliums.libracore.crypto.ED25519
+import net.i2p.crypto.eddsa.EdDSAEngine
+import net.i2p.crypto.eddsa.EdDSAPrivateKey
+import net.i2p.crypto.eddsa.EdDSAPublicKey
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable
+import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec
+import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec
 import org.palliums.libracore.mnemonic.English
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.serialization.LCS
@@ -14,8 +19,10 @@ import org.spongycastle.crypto.params.KeyParameter
 import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.jce.provider.BouncyCastleProvider
 import org.spongycastle.util.Strings
+import java.security.MessageDigest
 import java.security.Security
 import java.text.Normalizer
+
 
 /**
  * Created by elephant on 2019-09-20 14:29.
@@ -97,6 +104,11 @@ class KeyFactory {
 class KeyPair(
     private val secretKey: ByteArray
 ) {
+    private val mDsaNamedCurveSpec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519)
+    private val mEdDSAPrivateKey =
+        EdDSAPrivateKey(EdDSAPrivateKeySpec(secretKey, mDsaNamedCurveSpec))
+    private val mEdDSAPublicKey =
+        EdDSAPublicKey(EdDSAPublicKeySpec(mEdDSAPrivateKey.a, mEdDSAPrivateKey.params))
 
     companion object {
         fun fromSecretKey(secretKey: ByteArray): KeyPair {
@@ -108,20 +120,22 @@ class KeyPair(
         }
     }
 
-    private val publicKey: ByteArray = ED25519.publickey(secretKey)
-
     fun getPrivateKey(): ByteArray {
         return secretKey
     }
 
     fun getPublicKey(): ByteArray {
-        return publicKey
+        return mEdDSAPublicKey.abyte
     }
 
     fun sign(message: ByteArray): ByteArray {
         val sha3256 = SHA3.Digest256()
         sha3256.update(SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()))
         sha3256.update(message)
-        return ED25519.signature(sha3256.digest(), secretKey, publicKey)
+
+        val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
+        edDSAEngine.initSign(mEdDSAPrivateKey)
+        edDSAEngine.update(sha3256.digest())
+        return edDSAEngine.sign()
     }
 }

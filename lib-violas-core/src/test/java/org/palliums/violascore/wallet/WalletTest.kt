@@ -2,6 +2,7 @@ package org.palliums.violascore.wallet
 
 import org.junit.Assert
 import org.junit.Test
+import org.palliums.libracore.wallet.KeyFactory
 import org.spongycastle.util.encoders.Hex
 
 /**

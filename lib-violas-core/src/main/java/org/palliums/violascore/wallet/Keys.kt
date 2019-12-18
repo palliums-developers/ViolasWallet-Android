@@ -1,7 +1,12 @@
 package org.palliums.violascore.wallet
 
 import com.google.common.primitives.Bytes
-import org.palliums.violascore.crypto.ED25519
+import net.i2p.crypto.eddsa.EdDSAEngine
+import net.i2p.crypto.eddsa.EdDSAPrivateKey
+import net.i2p.crypto.eddsa.EdDSAPublicKey
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable
+import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec
+import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec
 import org.palliums.violascore.mnemonic.English
 import org.palliums.violascore.mnemonic.Mnemonic
 import org.palliums.violascore.serialization.LCS
@@ -14,8 +19,10 @@ import org.spongycastle.crypto.params.KeyParameter
 import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.jce.provider.BouncyCastleProvider
 import org.spongycastle.util.Strings
+import java.security.MessageDigest
 import java.security.Security
 import java.text.Normalizer
+
 
 /**
  * Created by elephant on 2019-09-20 14:29.
@@ -27,7 +34,7 @@ import java.text.Normalizer
 class Seed {
 
     companion object {
-        fun fromMnemonic(mnemonic: List<String>, salt: String = MNEMONIC_SALT_DEFAULT): Seed {
+        fun fromMnemonic(mnemonic: List<String>, salt: String = MNEMONIC_SALT_DEFAULT): org.palliums.libracore.wallet.Seed {
             require(mnemonic.isNotEmpty() && mnemonic.size % 6 == 0) {
                 "Mnemonic must have a word count divisible with 6"
             }
@@ -48,7 +55,7 @@ class Seed {
 
             val keyParameter: KeyParameter =
                 generator.generateDerivedMacParameters(256) as KeyParameter
-            return Seed(keyParameter.key)
+            return org.palliums.libracore.wallet.Seed(keyParameter.key)
         }
     }
 
@@ -69,10 +76,10 @@ class KeyFactory {
         }
     }
 
-    private val seed: Seed
+    private val seed: org.palliums.libracore.wallet.Seed
     val masterPrk: ByteArray // master private key
 
-    constructor(seed: Seed) {
+    constructor(seed: org.palliums.libracore.wallet.Seed) {
         this.seed = seed
 
         val hMac = HMac(SHA3Digest(256))
@@ -82,7 +89,7 @@ class KeyFactory {
         hMac.doFinal(this.masterPrk, 0)
     }
 
-    fun generateKey(childDepth: Long): KeyPair {
+    fun generateKey(childDepth: Long): org.palliums.libracore.wallet.KeyPair {
         val info: ByteArray = Bytes.concat(DERIVED_KEY.toByteArray(), LCS.encodeLong(childDepth))
 
         val hkdfBytesGenerator = HKDFBytesGenerator(SHA3Digest(256))
@@ -97,31 +104,38 @@ class KeyFactory {
 class KeyPair(
     private val secretKey: ByteArray
 ) {
+    private val mDsaNamedCurveSpec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519)
+    private val mEdDSAPrivateKey =
+        EdDSAPrivateKey(EdDSAPrivateKeySpec(secretKey, mDsaNamedCurveSpec))
+    private val mEdDSAPublicKey =
+        EdDSAPublicKey(EdDSAPublicKeySpec(mEdDSAPrivateKey.a, mEdDSAPrivateKey.params))
 
     companion object {
-        fun fromSecretKey(secretKey: ByteArray): KeyPair {
-            return KeyPair(secretKey)
+        fun fromSecretKey(secretKey: ByteArray): org.palliums.libracore.wallet.KeyPair {
+            return org.palliums.libracore.wallet.KeyPair(secretKey)
         }
 
-        fun fromMnemonic(mnemonics: List<String>): KeyPair {
+        fun fromMnemonic(mnemonics: List<String>): org.palliums.libracore.wallet.KeyPair {
             return fromSecretKey(Seed.fromMnemonic(mnemonics).data)
         }
     }
-
-    private val publicKey: ByteArray = ED25519.publickey(secretKey)
 
     fun getPrivateKey(): ByteArray {
         return secretKey
     }
 
     fun getPublicKey(): ByteArray {
-        return publicKey
+        return mEdDSAPublicKey.abyte
     }
 
     fun sign(message: ByteArray): ByteArray {
         val sha3256 = SHA3.Digest256()
         sha3256.update(SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()))
         sha3256.update(message)
-        return ED25519.signature(sha3256.digest(), secretKey, publicKey)
+
+        val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
+        edDSAEngine.initSign(mEdDSAPrivateKey)
+        edDSAEngine.update(sha3256.digest())
+        return edDSAEngine.sign()
     }
 }

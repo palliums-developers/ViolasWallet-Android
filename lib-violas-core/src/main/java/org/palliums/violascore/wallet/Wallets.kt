@@ -1,5 +1,7 @@
 package org.palliums.violascore.wallet
 
+import org.palliums.libracore.wallet.KeyFactory
+import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.mnemonic.English
 import org.palliums.violascore.mnemonic.Mnemonic
 import org.palliums.violascore.mnemonic.WordCount
@@ -40,7 +42,7 @@ class LibraWallet {
         val salt: String = this.config.salt ?: MNEMONIC_SALT_DEFAULT
         this.config.salt = salt
 
-        val seed: Seed = Seed.fromMnemonic(mnemonic, salt)
+        val seed: org.palliums.libracore.wallet.Seed = Seed.fromMnemonic(mnemonic, salt)
         this.keyFactory = KeyFactory(seed)
     }
 
