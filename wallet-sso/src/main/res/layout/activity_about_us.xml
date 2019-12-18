@@ -70,7 +70,7 @@
             style="@style/MenuItemView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mivTwitter"
+            app:layout_constraintTop_toBottomOf="@+id/mivWeChat"
             app:mivEndDescText="@string/about_us_telegram_value"
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_telegram_key" />

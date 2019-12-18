@@ -39,6 +39,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvAppNameVersion"
+            app:mivEndDescText="@string/about_us_website_value"
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_website_key" />
 
@@ -48,6 +49,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mivWebsite"
+            app:mivEndDescText="@string/about_us_email_value"
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_email_key" />
 
@@ -57,6 +59,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mivEmail"
+            app:mivEndDescText="@string/about_us_wechat_value"
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_wechat_key" />
 
@@ -66,6 +69,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mivWeChat"
+            app:mivEndDescText="@string/about_us_telegram_value"
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_telegram_key" />
 
@@ -75,6 +79,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mivTelegram"
+            app:mivEndDescText="@string/about_us_twitter_value"
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_twitter_key" />
 
@@ -86,6 +91,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mivTwitter"
+            app:mivEndDescText="@string/about_us_facebook_value"
             app:mivShowEndArrow="false"
             app:mivStartTitleText="@string/about_us_facebook_key" />
 

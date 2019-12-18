@@ -2,10 +2,13 @@ package com.violas.wallet.ui.setting
 
 import android.os.Bundle
 import android.view.View
+import com.palliums.utils.sendEmail
+import com.palliums.widget.MenuItemView
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.ui.web.WebCommonActivity
+import com.violas.wallet.utils.ClipboardUtils
 import kotlinx.android.synthetic.main.activity_about_us.*
 
 /**
@@ -14,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_about_us.*
  * <p>
  * desc: 关于我们页面
  */
-class AboutUsActivity : BaseAppActivity() {
+class AboutUsActivity : BaseAppActivity(), View.OnLongClickListener {
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_about_us
@@ -29,25 +32,45 @@ class AboutUsActivity : BaseAppActivity() {
             BuildConfig.VERSION_NAME
         )
 
-        mivWebsite.setEndDescText("violas.io")
-
         mivWebsite.setOnClickListener(this)
         mivEmail.setOnClickListener(this)
         mivWeChat.setOnClickListener(this)
         mivTelegram.setOnClickListener(this)
         mivTwitter.setOnClickListener(this)
         mivFacebook.setOnClickListener(this)
+
+        mivWebsite.setOnLongClickListener(this)
+        mivEmail.setOnLongClickListener(this)
+        mivWeChat.setOnLongClickListener(this)
+        mivTelegram.setOnLongClickListener(this)
+        mivTwitter.setOnLongClickListener(this)
+        mivFacebook.setOnLongClickListener(this)
+
+        mivWeChat.visibility = View.GONE
+        mivTelegram.visibility = View.GONE
+        mivTwitter.visibility = View.GONE
+        mivFacebook.visibility = View.GONE
     }
 
     override fun onViewClick(view: View) {
         // TODO 跳转
         when (view.id) {
             R.id.mivWebsite -> {
-                WebCommonActivity.start(this, getString(R.string.about_us_website_value))
+                WebCommonActivity.start(this, mivWebsite.endDescText.trim())
             }
 
             R.id.mivEmail -> {
-
+                try {
+                    sendEmail(
+                        this,
+                        mivEmail.endDescText.trim(),
+                        "",
+                        "",
+                        false
+                    )
+                } catch (e: Exception) {
+                    ClipboardUtils.copy(this, getString(R.string.about_us_email_value))
+                }
             }
 
             R.id.mivWeChat -> {
@@ -66,5 +89,13 @@ class AboutUsActivity : BaseAppActivity() {
 
             }
         }
+    }
+
+    override fun onLongClick(view: View): Boolean {
+        if (view is MenuItemView) {
+            ClipboardUtils.copy(this, view.endDescText.trim())
+        }
+
+        return true
     }
 }
