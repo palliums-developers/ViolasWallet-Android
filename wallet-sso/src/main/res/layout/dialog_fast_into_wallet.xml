@@ -15,16 +15,40 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/tvTitle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_41"
+        android:text="@string/title_welcome_1"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintStart_toStartOf="@id/ivBg"
+        app:layout_constraintTop_toTopOf="@id/ivBg" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_3"
+        android:text="@string/wallet_name"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_24.5"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/tvTitle1"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle1" />
+
     <Button
         android:id="@+id/btnConfirm"
         android:layout_width="274dp"
-        android:layout_height="40dp"
-        android:background="@drawable/selector_btn_bg_primary"
+        android:layout_height="@dimen/dp_40"
+        android:background="@drawable/selector_btn_bg_welcome"
         android:text="@string/action_immediately_into"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="@dimen/sp_16"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/ivBg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
