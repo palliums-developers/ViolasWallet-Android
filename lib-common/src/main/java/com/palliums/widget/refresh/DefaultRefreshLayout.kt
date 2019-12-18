@@ -24,9 +24,10 @@ class DefaultRefreshLayout : SmartRefreshLayout, IRefreshLayout {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
 
     /**
-     * [autoRefresh]首次加载数据后，再手动触发下拉刷新，会出现[mState]一直为[RefreshState.Refreshing]，
-     * OnRefreshListener不回调，因此在下拉后覆写[overSpinner]方法进行处理，当[mState]or[mViceState]
-     * 处于[RefreshState.ReleaseToRefresh]时就进行mKernel.setState(RefreshState.Refreshing)操作
+     * [autoRefresh] 首次加载数据后，再手动触发下拉刷新，会出现 [mState] 一直为 [RefreshState.Refreshing]，
+     * OnRefreshListener 不回调，因此覆写 [overSpinner] 方法进行处理，在下拉后当 [mState] or [mViceState]
+     * 处于 [RefreshState.ReleaseToRefresh] 且 [mEnableRefresh] 为 true 时就进行
+     * mKernel.setState(RefreshState.Refreshing)操作
      */
     override fun overSpinner() {
         if (BuildConfig.DEBUG) {
@@ -56,7 +57,7 @@ class DefaultRefreshLayout : SmartRefreshLayout, IRefreshLayout {
                 mKernel.animSpinner(0)
             }
         } else if (mState == RefreshState.ReleaseToRefresh
-            || mViceState == RefreshState.ReleaseToRefresh
+            || (mViceState == RefreshState.ReleaseToRefresh && mEnableRefresh)
         ) {
             mKernel.setState(RefreshState.Refreshing)
         } else if (mState == RefreshState.Refreshing) {
