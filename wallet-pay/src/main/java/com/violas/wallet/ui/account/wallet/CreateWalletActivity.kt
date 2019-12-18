@@ -3,7 +3,7 @@ package com.violas.wallet.ui.account.wallet
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.palliums.utils.start
+import com.palliums.utils.*
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -68,34 +68,40 @@ class CreateWalletActivity : BaseAppActivity() {
 
         btnConfirm.setOnClickListener {
             val walletName = editName.text.toString().trim()
-            val password = editPassword.text.toString().trim().toByteArray()
-            val passwordConfirm = editConfirmPassword.text.toString().trim().toByteArray()
+            val password = editPassword.text.toString().trim()
+            val passwordConfirm = editConfirmPassword.text.toString().trim()
 
             if (walletName.isEmpty()) {
                 showToast(getString(R.string.hint_nickname_empty))
                 return@setOnClickListener
             }
-            if (editPassword.text.toString().length < 6) {
-                showToast(getString(R.string.hint_input_password_short))
-                return@setOnClickListener
-            }
-            if (!password.contentEquals(passwordConfirm)) {
-                showToast(getString(R.string.hint_confirm_password_fault))
-                return@setOnClickListener
-            }
+            try {
+                PasswordCheckUtil.check(password)
+                if (!password.contentEquals(passwordConfirm)) {
+                    showToast(getString(R.string.hint_confirm_password_fault))
+                    return@setOnClickListener
+                }
+                showProgress()
+                launch(Dispatchers.IO) {
+                    mGenerateWalletMnemonic = mAccountManager.generateWalletMnemonic()
 
-            showProgress()
-            launch(Dispatchers.IO) {
-                mGenerateWalletMnemonic = mAccountManager.generateWalletMnemonic()
+                    dismissProgress()
 
-                dismissProgress()
-
-                BackupPromptActivity.start(
-                    this@CreateWalletActivity,
-                    mGenerateWalletMnemonic,
-                    BackupMnemonicFrom.OTHER_WALLET,
-                    REQUEST_BACK_MNEMONIC
-                )
+                    BackupPromptActivity.start(
+                        this@CreateWalletActivity,
+                        mGenerateWalletMnemonic,
+                        BackupMnemonicFrom.OTHER_WALLET,
+                        REQUEST_BACK_MNEMONIC
+                    )
+                }
+            } catch (e: PasswordLengthShortException) {
+                showToast(getString(R.string.hint_please_minimum_password_length))
+            } catch (e: PasswordLengthLongException) {
+                showToast(getString(R.string.hint_please_maxmum_password_length))
+            } catch (e: PasswordSpecialFailsException) {
+                showToast(getString(R.string.hint_please_cannot_contain_special_characters))
+            } catch (e: PasswordValidationFailsException) {
+                showToast(getString(R.string.hint_please_password_rules_are_wrong))
             }
         }
     }

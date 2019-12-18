@@ -43,6 +43,7 @@
 
     <EditText
         android:id="@+id/editPassword"
+        style="@style/PasswordRules"
         android:layout_width="match_parent"
         android:layout_height="51dp"
         android:layout_marginStart="32dp"
@@ -57,6 +58,7 @@
 
     <EditText
         android:id="@+id/editConfirmPassword"
+        style="@style/PasswordRules"
         android:layout_width="match_parent"
         android:layout_height="51dp"
         android:layout_marginStart="32dp"

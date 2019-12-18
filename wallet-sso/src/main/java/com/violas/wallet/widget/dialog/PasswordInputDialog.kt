@@ -8,6 +8,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import com.palliums.utils.*
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.dialog_password_input.view.*
 
@@ -38,22 +39,37 @@ class PasswordInputDialog : DialogFragment() {
         mRootView = inflater.inflate(R.layout.dialog_password_input, container)
         isCancelable = false
         mRootView.btnConfirm.setOnClickListener {
-            val trim = mRootView.editPassword.text.toString().trim().toByteArray()
+            val trim = mRootView.editPassword.text.toString().trim()
             if (trim.isEmpty()) {
-                Toast.makeText(
-                    context,
-                    getString(R.string.hint_please_input_password),
-                    Toast.LENGTH_SHORT
-                ).show()
+                showToast(getString(R.string.hint_please_input_password))
                 return@setOnClickListener
             }
-            confirmCallback?.invoke(trim, this)
+            try {
+                PasswordCheckUtil.check(trim)
+                confirmCallback?.invoke(trim.toByteArray(), this)
+            } catch (e: PasswordLengthShortException) {
+                showToast(getString(R.string.hint_please_minimum_password_length))
+            } catch (e: PasswordLengthLongException) {
+                showToast(getString(R.string.hint_please_maxmum_password_length))
+            } catch (e: PasswordSpecialFailsException) {
+                showToast(getString(R.string.hint_please_cannot_contain_special_characters))
+            } catch (e: PasswordValidationFailsException) {
+                showToast(getString(R.string.hint_please_password_rules_are_wrong))
+            }
         }
         mRootView.btnCancel.setOnClickListener {
             dismiss()
             cancelCallback?.invoke()
         }
         return mRootView
+    }
+
+    private fun showToast(msg: String) {
+        Toast.makeText(
+            context,
+            msg,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     fun show(manager: FragmentManager) {
