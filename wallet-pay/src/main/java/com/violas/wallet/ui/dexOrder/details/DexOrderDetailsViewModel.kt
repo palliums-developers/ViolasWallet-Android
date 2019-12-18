@@ -17,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.palliums.violascore.wallet.Account
-import org.palliums.violascore.wallet.KeyPair
+import org.palliums.libracore.wallet.KeyPair
 
 /**
  * Created by elephant on 2019-12-17 10:20.

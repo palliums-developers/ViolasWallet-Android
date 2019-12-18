@@ -100,7 +100,7 @@ class TransferManager {
                 context,
                 token.tokenAddress,
                 Account(
-                    org.palliums.violascore.wallet.KeyPair(decryptPrivateKey)
+                    KeyPair(decryptPrivateKey)
                 ),
                 address,
                 (amount * 1000000L).toLong()
@@ -151,7 +151,7 @@ class TransferManager {
         DataRepository.getViolasService().sendCoin(
             context,
             Account(
-                org.palliums.violascore.wallet.KeyPair(decryptPrivateKey)
+                KeyPair(decryptPrivateKey)
             ),
             address,
             (amount * 1000000L).toLong()

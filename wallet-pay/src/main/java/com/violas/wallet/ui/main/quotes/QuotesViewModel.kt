@@ -31,7 +31,7 @@ import kotlinx.coroutines.channels.Channel
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.palliums.violascore.wallet.Account
-import org.palliums.violascore.wallet.KeyPair
+import org.palliums.libracore.wallet.KeyPair
 import java.math.BigDecimal
 import java.math.RoundingMode
 

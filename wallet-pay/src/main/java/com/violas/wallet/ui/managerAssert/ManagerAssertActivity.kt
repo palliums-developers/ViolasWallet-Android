@@ -29,8 +29,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
+import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
-import org.palliums.violascore.wallet.KeyPair
 import java.util.*
 
 class ManagerAssertActivity : BaseAppActivity() {
