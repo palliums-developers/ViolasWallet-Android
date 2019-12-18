@@ -240,7 +240,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     private fun handleDisplayOrder() {
-        val take = allOrdersLiveData.value?.sortedBy { it.version() }?.take(
+        val take = allOrdersLiveData.value?.take(
             if (isShowMoreAllOrderLiveData.value == true) {
                 mShowMoreAllOrderMaxCount
             } else {
@@ -325,7 +325,10 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             )
             val allOrderList = buyOrder//.plus(sellOrder)
                 .filter { orderFilter(it) }
-            allOrdersLiveData.postValue(allOrderList.map(setOrderPrice()))
+            allOrdersLiveData.postValue(
+                allOrderList.map(setOrderPrice())
+                    .sortedByDescending { it.updateVersion() }
+            )
         }
     }
 
@@ -372,7 +375,12 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     IOrderStatus.FILLED_CANCELED -> newAllOrderList.remove(it.id())
                 }
             }
-            allOrdersLiveData.postValue(newAllOrderList.values.toList().map(setOrderPrice()))
+            allOrdersLiveData.postValue(
+                newAllOrderList.values.toList()
+                    .sortedByDescending { it.updateVersion() }
+                    .take(20)
+                    .map(setOrderPrice())
+            )
         }
     }
 
