@@ -323,7 +323,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 myOrder.map(setOrderPrice())
                     .sortedByDescending { it.updateVersion() }
             )
-            val allOrderList = buyOrder.plus(sellOrder)
+            val allOrderList = buyOrder//.plus(sellOrder)
                 .filter { orderFilter(it) }
             allOrdersLiveData.postValue(allOrderList.map(setOrderPrice()))
         }
@@ -334,7 +334,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         sellOrder: List<IOrder>
     ) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
-            val allOrderList = buyOrder.plus(sellOrder)
+            val allOrderList = buyOrder//.plus(sellOrder)
                 .filter { orderFilter(it) }
 
             val meOrderList = allOrderList
