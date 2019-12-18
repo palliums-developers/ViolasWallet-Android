@@ -340,6 +340,14 @@ public class MenuItemView extends FrameLayout {
     }
 
     /**
+     * 获取头部描述的文本
+     * @return
+     */
+    public String getStartDescText(){
+        return mStartDesc.getText().toString();
+    }
+
+    /**
      * 设置尾部描述的文本，如果为0则隐藏，不能与头部描述、尾部图标、尾部开关同时使用
      *
      * @param resId
@@ -427,6 +435,14 @@ public class MenuItemView extends FrameLayout {
         if (drawablePadding > 0) {
             mEndDesc.setCompoundDrawablePadding(drawablePadding);
         }
+    }
+
+    /**
+     * 获取尾部描述的文本
+     * @return
+     */
+    public String getEndDescText(){
+        return mEndDesc.getText().toString();
     }
 
     /**

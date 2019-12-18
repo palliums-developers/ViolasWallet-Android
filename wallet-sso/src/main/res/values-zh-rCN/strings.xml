@@ -125,9 +125,9 @@
 
     <string name="about_us_title">关于我们</string>
     <string name="about_us_website_key">官方网站</string>
-    <string name="about_us_website_value">www.violassso.io</string>
+    <string name="about_us_website_value">https://violas.io</string>
     <string name="about_us_email_key">邮箱</string>
-    <string name="about_us_email_value">kf@violassso.io</string>
+    <string name="about_us_email_value">violas_blockchain@violas.io</string>
     <string name="about_us_wechat_key">微信</string>
     <string name="about_us_wechat_value">xxxxx</string>
     <string name="about_us_telegram_key">Telegram</string>
@@ -143,7 +143,10 @@
     <string name="web_user_agent">%1$s/SSO Wallet Android Client %2$s.%3$d</string>
 
     <string name="service_agreement_title">服务协议</string>
-    <string name="service_agreement_url">https://www.baidu.com/</string>
+    <string name="service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service.html</string>
+    <string name="title_privacy_policy">隐私条例</string>
+    <string name="url_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy.html</string>
+    <string name="subject_feedback">ViolasSSO 问题反馈</string>
     <string name="help_feedback_title">帮助与反馈</string>
     <string name="help_feedback_menu">问题反馈</string>
     <string name="help_feedback_url">https://www.baidu.com/</string>
@@ -281,7 +284,6 @@
     <string name="hint_mint_condition_error">申请铸币失败</string>
     <string name="hint_retry">重试</string>
 
-    <string name="subject_feedback">SSO Wallet 问题反馈</string>
     <string name="hint_back_up_mnemonic_words">您的身份助记词未备份，请务必备份助记词</string>
     <string name="hint_back_up_mnemonic_words_content">助记词可用于恢复身份下钱包资产，防止忘记密码、应用删除、手机丢失等情况导致资产损失</string>
     <string name="tab_wallet">钱包</string>

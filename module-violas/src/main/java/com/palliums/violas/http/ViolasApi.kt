@@ -36,8 +36,16 @@ interface ViolasApi {
         @Query("modu") tokenAddress: String?
     ): ListResponse<TransactionRecordDTO>
 
+    /**
+     * 获取余额
+     * @param address 账号地址
+     * @param tokenAddressArr 稳定币地址，多个稳定币地址以逗号分开，为空时只返回平台币的余额
+     */
     @GET("/1.0/violas/balance")
-    fun getBalance(@Query("addr") address: String): Single<Response<BalanceDTO>>
+    fun getBalance(
+        @Query("addr") address: String,
+        @Query("modu") tokenAddressArr: String?
+    ): Single<Response<BalanceDTO>>
 
     @GET("/1.0/violas/seqnum")
     fun getSequenceNumber(@Query("addr") address: String): Single<Response<Long>>

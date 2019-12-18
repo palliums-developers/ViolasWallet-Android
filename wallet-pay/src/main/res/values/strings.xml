@@ -130,9 +130,9 @@
 
     <string name="about_us_title">About Us</string>
     <string name="about_us_website_key">Official Website</string>
-    <string name="about_us_website_value">https://violas.io/</string>
+    <string name="about_us_website_value">https://violas.io</string>
     <string name="about_us_email_key">Email</string>
-    <string name="about_us_email_value">kf@violas.io</string>
+    <string name="about_us_email_value">violas_blockchain@violas.io</string>
     <string name="about_us_wechat_key">wechat</string>
     <string name="about_us_wechat_value">xxxxx</string>
     <string name="about_us_telegram_key">Telegram</string>
@@ -148,7 +148,10 @@
     <string name="web_user_agent">%1$s/Violas Wallet Android Client %2$s.%3$d</string>
 
     <string name="service_agreement_title">Service Agreement</string>
-    <string name="service_agreement_url">https://violas.io/violas_service_html/service_agreement_cn.html</string>
+    <string name="service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service.html</string>
+    <string name="title_privacy_policy">Privacy Policy</string>
+    <string name="url_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy.html</string>
+    <string name="subject_feedback">ViolasPay Feedback</string>
     <string name="help_feedback_title">Help &amp; Feedback</string>
     <string name="help_feedback_menu">Question Feedback</string>
     <string name="help_feedback_url">https://www.baidu.com/</string>
@@ -204,9 +207,6 @@
     <string name="state_revoked">Revoked</string>
     <string name="state_completed">Completed</string>
 
-    <string name="subject_feedback">Violas Wallet Feedback</string>
-    <string name="title_privacy_policy">Privacy Policy</string>
-    <string name="url_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy.html</string>
     <string name="hint_exchange_successful">Exchange Successful</string>
     <string name="hint_exchange_error">Exchange Error</string>
     <string name="hint_unable_change">Unable to Exchange</string>
