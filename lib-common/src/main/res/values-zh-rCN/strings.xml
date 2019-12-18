@@ -36,4 +36,8 @@
     <string name="title_select_mail_app">请选择邮件应用</string>
     <string name="tips_open_email_failure">无法打开邮件应用</string>
 
+    <string name="hint_please_minimum_password_length">密码长度最少 8 位</string>
+    <string name="hint_please_maxmum_password_length">密码长度最长 20 位</string>
+    <string name="hint_please_cannot_contain_special_characters">密码只能包含大小写字母和数字</string>
+    <string name="hint_please_password_rules_are_wrong">密码必须包含大小写字母和数字</string>
 </resources>

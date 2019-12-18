@@ -3,7 +3,7 @@ package com.violas.wallet.ui.account.wallet
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.palliums.utils.start
+import com.palliums.utils.*
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -75,47 +75,54 @@ class ImportWalletActivity : BaseAppActivity() {
         btnConfirm.setOnClickListener {
             val mnemonic = editMnemonicWord.text.toString().trim()
             val walletName = editName.text.toString().trim()
-            val password = editPassword.text.toString().trim().toByteArray()
-            val passwordConfirm = editConfirmPassword.text.toString().trim().toByteArray()
+            val password = editPassword.text.toString().trim()
+            val passwordConfirm = editConfirmPassword.text.toString().trim()
 
             if (walletName.isEmpty()) {
                 showToast(getString(R.string.hint_nickname_empty))
                 return@setOnClickListener
             }
-            if (editPassword.text.toString().length < 6) {
-                showToast(getString(R.string.hint_input_password_short))
-                return@setOnClickListener
-            }
-            if (!password.contentEquals(passwordConfirm)) {
-                showToast(getString(R.string.hint_confirm_password_fault))
-                return@setOnClickListener
-            }
-            showProgress()
-            launch(Dispatchers.IO) {
-                try {
-                    val wordList = mnemonic.trim().split(" ")
-                        .map { it.trim() }
-                        .toList()
-                    val newWallet = mAccountManager.importWallet(
-                        mCurrentCoinType,
-                        this@ImportWalletActivity,
-                        wordList,
-                        walletName,
-                        password
-                    )
-                    mAccountManager.switchCurrentAccount(newWallet)
-                    withContext(Dispatchers.Main) {
-                        dismissProgress()
-                        EventBus.getDefault().post(SwitchAccountEvent())
-                        EventBus.getDefault().post(WalletChangeEvent())
-                        setResult(Activity.RESULT_OK)
-                        finish()
-                    }
-                } catch (e: Exception) {
-                    dismissProgress()
-                    showToast(getString(R.string.hint_mnemonic_error))
-                    e.printStackTrace()
+            try {
+                PasswordCheckUtil.check(password)
+                if (!password.contentEquals(passwordConfirm)) {
+                    showToast(getString(R.string.hint_confirm_password_fault))
+                    return@setOnClickListener
                 }
+                showProgress()
+                launch(Dispatchers.IO) {
+                    try {
+                        val wordList = mnemonic.trim().split(" ")
+                            .map { it.trim() }
+                            .toList()
+                        val newWallet = mAccountManager.importWallet(
+                            mCurrentCoinType,
+                            this@ImportWalletActivity,
+                            wordList,
+                            walletName,
+                            password.toByteArray()
+                        )
+                        mAccountManager.switchCurrentAccount(newWallet)
+                        withContext(Dispatchers.Main) {
+                            dismissProgress()
+                            EventBus.getDefault().post(SwitchAccountEvent())
+                            EventBus.getDefault().post(WalletChangeEvent())
+                            setResult(Activity.RESULT_OK)
+                            finish()
+                        }
+                    } catch (e: Exception) {
+                        dismissProgress()
+                        showToast(getString(R.string.hint_mnemonic_error))
+                        e.printStackTrace()
+                    }
+                }
+            } catch (e: PasswordLengthShortException) {
+                showToast(getString(R.string.hint_please_minimum_password_length))
+            } catch (e: PasswordLengthLongException) {
+                showToast(getString(R.string.hint_please_maxmum_password_length))
+            } catch (e: PasswordSpecialFailsException) {
+                showToast(getString(R.string.hint_please_cannot_contain_special_characters))
+            } catch (e: PasswordValidationFailsException) {
+                showToast(getString(R.string.hint_please_password_rules_are_wrong))
             }
         }
     }

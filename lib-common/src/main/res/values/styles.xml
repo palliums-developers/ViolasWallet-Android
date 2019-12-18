@@ -20,9 +20,13 @@
         <item name="android:windowEnterAnimation">@anim/dialog_bottom_in</item>
         <item name="android:windowExitAnimation">@anim/dialog_bottom_out</item>
     </style>
+
     <style name="AnimationDefaultCenterDialog" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/dialog_zoom_in</item>
         <item name="android:windowExitAnimation">@anim/dialog_zoom_out</item>
     </style>
 
+    <style name="PasswordRules">
+        <item name="android:maxLength">20</item>
+    </style>
 </resources>
