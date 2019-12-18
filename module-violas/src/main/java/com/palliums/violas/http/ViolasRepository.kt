@@ -27,12 +27,8 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         }
     }
 
-    fun getBalance(address: String, module: String = "") =
-        if (module.isEmpty()) {
-            mViolasApi.getBalance(address)
-        } else {
-            mViolasApi.getBalance(address, module)
-        }
+    fun getBalance(address: String) =
+        mViolasApi.getBalance(address)
 
     fun getSequenceNumber(address: String) =
         mViolasApi.getSequenceNumber(address)

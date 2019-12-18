@@ -185,24 +185,22 @@ class TokenManager {
     fun getTokenBalance(
         address: String,
         tokenDo: TokenDo,
-        call: (Long, Boolean) -> Unit
+        call: (tokenBalance: Long, result: Boolean) -> Unit
     ): Disposable {
-        val tokenAddresss = arrayListOf<String>(tokenDo.tokenAddress)
         return DataRepository.getViolasService()
-            .getBalance(address, tokenAddresss) { balance, tokens, result ->
+            .getBalance(address) { accountBalance, tokens, result ->
                 var amount = 0L
                 tokens?.forEach {
                     if (it.address == tokenDo.tokenAddress) {
                         amount = it.balance
-
-                        if (result) {
-                            mExecutor.submit {
-                                tokenDo.amount = amount
-                                mTokenStorage.update(tokenDo)
-                            }
-                        }
-
                         return@forEach
+                    }
+                }
+
+                if (result) {
+                    mExecutor.submit {
+                        tokenDo.amount = amount
+                        mTokenStorage.update(tokenDo)
                     }
                 }
 
@@ -213,26 +211,22 @@ class TokenManager {
     fun refreshBalance(
         address: String,
         enableTokens: List<AssertToken>,
-        call: (Long, List<AssertToken>) -> Unit
+        call: (accountBalance: Long, assertTokens: List<AssertToken>) -> Unit
     ): Disposable {
-        val tokenAddress = arrayListOf<String>()
-        enableTokens.forEach {
-            if (it.isToken) {
-                tokenAddress.add(it.tokenAddress)
-            }
-        }
         return DataRepository.getViolasService()
-            .getBalance(address, tokenAddress) { balance, tokens, result ->
+            .getBalance(address) { accountBalance, tokens, result ->
                 val tokenMap = mutableMapOf<String, Long>()
                 tokens?.forEach {
                     tokenMap[it.address] = it.balance
                 }
+
                 enableTokens.forEach {
-                    if (tokenMap.contains(it.tokenAddress)) {
-                        it.amount = tokenMap[it.tokenAddress]!!
-                    }
                     if (!it.isToken) {
-                        it.amount = balance
+                        it.amount = accountBalance
+                    } else if (tokenMap.contains(it.tokenAddress)) {
+                        it.amount = tokenMap[it.tokenAddress]!!
+                    } else {
+                        it.amount = 0
                     }
                 }
 
@@ -256,7 +250,7 @@ class TokenManager {
                     }
                 }
 
-                call.invoke(balance, enableTokens)
+                call.invoke(accountBalance, enableTokens)
             }
     }
 }

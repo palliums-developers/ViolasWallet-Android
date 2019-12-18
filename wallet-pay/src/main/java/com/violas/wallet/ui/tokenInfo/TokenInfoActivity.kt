@@ -181,9 +181,9 @@ class TokenInfoActivity : BaseAppActivity() {
             mTokenManager.getTokenBalance(
                 mAccountDO.address,
                 mTokenDo
-            ) { amount, result ->
+            ) { tokenBalance, result ->
                 if (result) {
-                    setAmount(amount)
+                    setAmount(tokenBalance)
                 }
             }
         }
