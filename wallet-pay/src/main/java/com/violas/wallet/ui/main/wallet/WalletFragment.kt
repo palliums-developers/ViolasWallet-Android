@@ -294,14 +294,14 @@ class WalletFragment : BaseFragment() {
         mTokenManger.refreshBalance(
             currentAccount.address,
             enableTokens
-        ) { accountAmount, assertTokens ->
+        ) { accountBalance, assertTokens ->
             recyclerAssert.post {
                 if (swipeRefreshLayout.isRefreshing) {
                     swipeRefreshLayout.isRefreshing = false
                 }
 
                 // 刷新当前钱包的信息
-                currentAccount.amount = accountAmount
+                currentAccount.amount = accountBalance
                 mAccountManager.updateAccount(currentAccount)
                 updateWalletInfo(currentAccount)
 

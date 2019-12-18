@@ -44,11 +44,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
 
     fun getBalance(
         address: String,
-        tokenAddress: List<String>,
-        call: (amount: Long, modes: List<ModuleDTO>?, result: Boolean) -> Unit
+        call: (accountBalance: Long, tokens: List<ModuleDTO>?, result: Boolean) -> Unit
     ): Disposable {
-        val joinToString = tokenAddress.joinToString(separator = ",")
-        return mViolasRepository.getBalance(address, joinToString)
+        return mViolasRepository.getBalance(address)
             .subscribeOn(Schedulers.io())
             .subscribe({
                 mHandler.post {

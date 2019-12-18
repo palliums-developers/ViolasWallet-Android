@@ -90,13 +90,14 @@ class LibraTransferActivity : TransferActivity() {
         account?.let {
             if (isToken) {
                 mTokenDo?.apply {
-                    mTokenManager.getTokenBalance(it.address, this) { balance, result ->
+                    mTokenManager.getTokenBalance(it.address, this) { tokenBalance, result ->
                         launch {
-                            val balanceStr = BigDecimal(balance.toString()).divide(
-                                BigDecimal("1000000"),
-                                6,
-                                RoundingMode.HALF_UP
-                            ).stripTrailingZeros().toPlainString()
+                            val balanceStr = BigDecimal(tokenBalance.toString())
+                                .divide(
+                                    BigDecimal("1000000"),
+                                    6,
+                                    RoundingMode.HALF_UP
+                                ).stripTrailingZeros().toPlainString()
                             tvCoinAmount.text = String.format(
                                 getString(R.string.hint_transfer_amount),
                                 balanceStr,

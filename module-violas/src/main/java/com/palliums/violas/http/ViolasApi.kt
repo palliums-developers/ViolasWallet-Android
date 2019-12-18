@@ -37,12 +37,6 @@ interface ViolasApi {
     ): ListResponse<TransactionRecordDTO>
 
     @GET("/1.0/violas/balance")
-    fun getBalance(
-        @Query("addr") address: String,
-        @Query("modu") module: String
-    ): Single<Response<BalanceDTO>>
-
-    @GET("/1.0/violas/balance")
     fun getBalance(@Query("addr") address: String): Single<Response<BalanceDTO>>
 
     @GET("/1.0/violas/seqnum")
