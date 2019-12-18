@@ -17,6 +17,7 @@ import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
+import com.violas.wallet.event.TokenPublishEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.socket.ExchangeSocket
@@ -149,6 +150,13 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     @Subscribe
     fun onSwitchAccountEvent(event: SwitchAccountEvent) {
         handleAccountEvent()
+    }
+
+    @Subscribe
+    fun onTokenPublishEvent(event: TokenPublishEvent) {
+        viewModelScope.launch {
+            loadTokenList()
+        }
     }
 
     /**
