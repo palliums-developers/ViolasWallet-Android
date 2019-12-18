@@ -170,8 +170,9 @@ class TokenManager {
         tokenDo: TokenDo,
         call: (tokenBalance: Long, Boolean) -> Unit
     ): Disposable {
+        val tokenAddressList = arrayListOf(tokenDo.tokenAddress)
         return DataRepository.getViolasService()
-            .getBalance(address) { accountBalance, tokens, result ->
+            .getBalance(address, tokenAddressList) { accountBalance, tokens, result ->
                 var amount = 0L
                 tokens?.forEach {
                     if (it.address == tokenDo.tokenAddress) {
@@ -196,8 +197,14 @@ class TokenManager {
         enableTokens: List<AssertToken>,
         call: (accountBalance: Long, assertTokens: List<AssertToken>) -> Unit
     ): Disposable {
+        val tokenAddressList = arrayListOf<String>()
+        enableTokens.forEach {
+            if (it.isToken) {
+                tokenAddressList.add(it.tokenAddress)
+            }
+        }
         return DataRepository.getViolasService()
-            .getBalance(address) { accountBalance, tokens, result ->
+            .getBalance(address, tokenAddressList) { accountBalance, tokens, result ->
                 val tokenMap = mutableMapOf<String, Long>()
                 tokens?.forEach {
                     tokenMap[it.address] = it.balance

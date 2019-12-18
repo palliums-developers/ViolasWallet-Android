@@ -27,8 +27,13 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         }
     }
 
-    fun getBalance(address: String) =
-        mViolasApi.getBalance(address)
+    fun getBalance(
+        address: String,
+        tokenAddressList: List<String>? = null
+    ): Single<Response<BalanceDTO>> {
+        val tokenAddressArr: String? = tokenAddressList?.joinToString(",")
+        return mViolasApi.getBalance(address, tokenAddressArr)
+    }
 
     fun getSequenceNumber(address: String) =
         mViolasApi.getSequenceNumber(address)
