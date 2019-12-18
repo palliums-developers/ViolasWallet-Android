@@ -1,21 +1,23 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">ViolasPay</string>
-    <string name="language_follow_system">Default to System Settings</string>
-    <string name="language_en">English</string>
-    <string name="language_chinese_simplified">Simplified Chinese</string>
-    <string name="language_chinese_traditional">Traditional Chinese</string>
-    <string name="language_follow_system_more">Default to System Settings</string>
-    <string name="language_en_more">English</string>
-    <string name="language_chinese_simplified_more">Simplified Chinese</string>
-    <string name="language_chinese_traditional_more">Traditional Chinese</string>
+
+    <string name="language_follow_system" tools:ignore="MissingTranslation">Default to System Settings</string>
+    <string name="language_follow_system_more" tools:ignore="MissingTranslation">Default to System Settings</string>
+    <string name="language_en" tools:ignore="MissingTranslation">English</string>
+    <string name="language_en_more" tools:ignore="MissingTranslation">English</string>
+    <string name="language_chinese_simplified" tools:ignore="MissingTranslation">简体中文</string>
+    <string name="language_chinese_simplified_more" tools:ignore="MissingTranslation">简体中文</string>
+    <string name="language_chinese_traditional" tools:ignore="MissingTranslation">繁體中文</string>
+    <string name="language_chinese_traditional_more" tools:ignore="MissingTranslation">繁體中文</string>
+
     <string name="backup_mnemonic_prompt_title">Backup Mnemonic Words Hint</string>
     <string name="backup_mnemonic_prompt_menu">Backup Mnemonic Words Later</string>
     <string name="backup_mnemonic_prompt_btn">Start Backup Mnemonic Words</string>
     <string name="backup_mnemonic_prompt_content_01">Get Mnemonic Words</string>
     <string name="backup_mnemonic_prompt_content_02">Backup Mnemonic Words</string>
-    <string name="backup_mnemonic_prompt_content_03">Write down mnemonic words on paper\nIf you have lost or demaged your phone，mnemonic words will be used to recover your funds in the wallet</string>
+    <string name="backup_mnemonic_prompt_content_03">Write down mnemonic words on paper\nIf you have lost or damaged your phone，mnemonic words will be used to recover your funds in the wallet</string>
     <string name="backup_mnemonic_prompt_content_04">Keep Offline</string>
-    <string name="backup_mnemonic_prompt_content_05">lease keep mnemonic words offline and in a safe place\nNever share, store mnemonic wordson internet such as email, texting, social network, etc.</string>
+    <string name="backup_mnemonic_prompt_content_05">lease keep mnemonic words offline and in a safe place\nNever share, store mnemonic words on internet such as email, texting, social network, etc.</string>
     <string name="backup_mnemonic_prompt_content_06">Equal to own all funds in the wallet</string>
     <string name="backup_mnemonic_warn_title">Safety Warning</string>
     <string name="backup_mnemonic_warn_btn">Backup Now</string>
@@ -27,7 +29,7 @@
     <string name="backup_mnemonic_show_title">Showing Backup Mnemonic Words</string>
     <string name="confirm_mnemonic_title">Confirm Mnemonic Words</string>
     <string name="confirm_mnemonic_content_01">Please click on the order of mnemonic words to confirm your backup</string>
-    <string name="confirm_mnemonic_tips_01">Invalid order of the nemonic words. Please correct it</string>
+    <string name="confirm_mnemonic_tips_01">Invalid order of the mnemonic words. Please correct it</string>
     <string name="confirm_mnemonic_tips_02">Please click in the order of the mnemonic words</string>
 
     <string name="account_label_identity">Identity Wallet</string>
@@ -43,7 +45,7 @@
     <string name="transfer">Transfer</string>
     <string name="collection">Receive</string>
     <string name="copy_success">Copy Success</string>
-    <string name="hint_insufficient_or_trading_fees_are_confirmed">Insuffient balance or transactions not confirmed</string>
+    <string name="hint_insufficient_or_trading_fees_are_confirmed">Insufficient balance or transactions not confirmed</string>
     <string name="title_colletction">Receive</string>
     <string name="title_import_the_wallet">Import Identity</string>
     <string name="title_create_the_wallet">Create Identity</string>
@@ -157,28 +159,6 @@
 
     <string name="http_user_agent">ViolasWallet Android Client</string>
 
-    <string name="data_load_status_empty">No data found</string>
-    <string name="data_load_status_failed">Page load failed. Touch screen sliding down to reload again</string>
-    <string name="data_load_status_no_network">No network connection. Try again after connected to network</string>
-
-    <string name="refresh_footer_no_network">No network connection. Try again after connected to network</string>
-    <string name="refresh_footer_failed">No network connection. Click again after connected to network</string>
-    <string name="refresh_footer_finish">Refresh Complete</string>
-    <string name="refresh_footer_loading">Refreshing…</string>
-    <string name="refresh_footer_no_more">No more data</string>
-    <string name="refresh_footer_pulling">Slide up to refresh more</string>
-    <string name="refresh_footer_refreshing">Wait refreshing to complete…</string>
-    <string name="refresh_footer_release">Release Refreshing</string>
-    <string name="refresh_header_failed">Refreshing Failed</string>
-    <string name="refresh_header_finish">Refreshing Complete</string>
-    <string name="refresh_header_loading">Wait refreshing to complete…</string>
-    <string name="refresh_header_pulling">Sliding down to refresh</string>
-    <string name="refresh_header_refreshing">Now Refreshing…</string>
-    <string name="refresh_header_release">Release Refreshing</string>
-    <string name="refresh_header_update">Last refreshed at M-d HH:mm</string>
-
-    <string name="click_to_reload">Click to refresh</string>
-    <string name="tips_transfer_record_empty">No Transaction History</string>
     <string name="title_market">Market</string>
     <string name="hint_transfer_number">Transfer Amount</string>
     <string name="hint_receipt_number">Receiving Amount</string>

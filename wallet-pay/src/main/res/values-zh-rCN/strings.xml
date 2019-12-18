@@ -1,13 +1,6 @@
 <resources>
     <string name="app_name">ViolasPay</string>
-    <string name="language_follow_system">跟随系统</string>
-    <string name="language_en">English</string>
-    <string name="language_chinese_simplified">简体中文</string>
-    <string name="language_chinese_traditional">繁體中文</string>
-    <string name="language_follow_system_more">跟随系统</string>
-    <string name="language_en_more">英文</string>
-    <string name="language_chinese_simplified_more">简体中文</string>
-    <string name="language_chinese_traditional_more">繁体中文</string>
+
     <string name="backup_mnemonic_prompt_title">备份提示</string>
     <string name="backup_mnemonic_prompt_menu">稍后备份</string>
     <string name="backup_mnemonic_prompt_btn">开始备份</string>
@@ -157,28 +150,6 @@
 
     <string name="http_user_agent">ViolasWallet Android Client</string>
 
-    <string name="data_load_status_empty">没有查询到对应的数据</string>
-    <string name="data_load_status_failed">加载失败, 下拉重新加载</string>
-    <string name="data_load_status_no_network">没有网络, 请联网后下拉重试</string>
-
-    <string name="refresh_footer_no_network">没有网络, 请联网后点击重试</string>
-    <string name="refresh_footer_failed">加载失败, 点击重新加载</string>
-    <string name="refresh_footer_finish">加载完成</string>
-    <string name="refresh_footer_loading">正在加载…</string>
-    <string name="refresh_footer_no_more">没有更多数据了</string>
-    <string name="refresh_footer_pulling">上拉加载更多</string>
-    <string name="refresh_footer_refreshing">等待头部刷新完成…</string>
-    <string name="refresh_footer_release">释放立即加载</string>
-    <string name="refresh_header_failed">刷新失败</string>
-    <string name="refresh_header_finish">刷新完成</string>
-    <string name="refresh_header_loading">等待底部加载完成…</string>
-    <string name="refresh_header_pulling">下拉可以刷新</string>
-    <string name="refresh_header_refreshing">正在刷新…</string>
-    <string name="refresh_header_release">释放立即刷新</string>
-    <string name="refresh_header_update">上次更新 M-d HH:mm</string>
-
-    <string name="click_to_reload">点击重新加载</string>
-    <string name="tips_transfer_record_empty">暂无交易记录</string>
     <string name="title_market">市场</string>
     <string name="hint_transfer_number">转出数量</string>
     <string name="hint_receipt_number">收到数量</string>
