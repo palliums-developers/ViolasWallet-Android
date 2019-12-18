@@ -307,4 +307,6 @@
 
     <string name="tips_no_address">No address</string>
     <string name="tips_no_transaction_record">No transaction history</string>
+
+    <string name="wallet_name">SSO Wallet</string>
 </resources>

@@ -224,4 +224,6 @@
     <string name="tips_no_uncompleted_orders">暂无未完成的订单</string>
     <string name="tips_no_completed_orders">暂无已完成的订单</string>
     <string name="tips_no_order_trades">暂无成交记录</string>
+
+    <string name="format_wallet_name">%1$s钱包</string>
 </resources>

@@ -233,4 +233,6 @@
     <string name="tips_no_uncompleted_orders">There are no outstanding orders</string>
     <string name="tips_no_completed_orders">No orders have been completed</string>
     <string name="tips_no_order_trades">No transaction records</string>
+
+    <string name="format_wallet_name">%1$s Wallet</string>
 </resources>
