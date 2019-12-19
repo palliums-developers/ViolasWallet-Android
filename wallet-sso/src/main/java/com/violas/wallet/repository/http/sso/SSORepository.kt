@@ -91,6 +91,7 @@ class SSORepository(private val ssoApi: SSOApi) {
                 ssoApi.selectApplyForStatus(address)
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             null
         }
     }

@@ -8,9 +8,15 @@ import androidx.fragment.app.Fragment
 import com.palliums.base.BaseFragment
 import com.palliums.utils.start
 import com.violas.wallet.R
+import com.violas.wallet.event.RefreshPageEvent
 import com.violas.wallet.ui.applyForMint.ApplyForMintActivity
 import com.violas.wallet.ui.mintSuccess.MintSuccessActivity
 import kotlinx.android.synthetic.main.fragment_apply_status.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 
 class ApplyStatusFragment : BaseFragment() {
     companion object {
@@ -75,6 +81,15 @@ class ApplyStatusFragment : BaseFragment() {
                     }
                 }
 
+            }
+        }
+        swipeRefresh.setOnRefreshListener {
+            launch(Dispatchers.IO) {
+                EventBus.getDefault().post(RefreshPageEvent())
+                delay(800)
+                withContext(Dispatchers.Main) {
+                    swipeRefresh.isRefreshing = false
+                }
             }
         }
     }

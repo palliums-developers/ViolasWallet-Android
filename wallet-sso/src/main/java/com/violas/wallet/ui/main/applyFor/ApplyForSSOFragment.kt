@@ -40,10 +40,10 @@ class ApplyForSSOFragment : BaseFragment() {
             Log.e("====", "====监听状态==${it}")
             val fragment = when (it) {
                 CODE_NETWORK_LOADING -> {
-                    NetworkStatusFragment()
+                    NetworkLoadingFragment()
                 }
                 CODE_NETWORK_ERROR -> {
-                    NetworkLoadingFragment()
+                    NetworkStatusFragment()
                 }
                 CODE_APPLY_SSO -> {
                     ApplySubmitFragment()

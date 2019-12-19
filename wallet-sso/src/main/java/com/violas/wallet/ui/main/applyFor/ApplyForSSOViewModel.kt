@@ -8,7 +8,6 @@ import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.main.UserViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -46,9 +45,6 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
     private val mNetWorkApplyStatus = MutableLiveData<Int>()
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            mAccount = mAccountManager.currentAccount()
-        }
         EventBus.getDefault().register(this)
         mApplyStatus.value = CODE_NETWORK_LOADING
         mApplyStatus.addSource(mNetWorkApplyStatus, Observer {
@@ -63,8 +59,11 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                 mApplyStatus.value = CODE_VERIFICATION_ACCOUNT
             }
         })
-        userViewModel.init()
-        refreshApplyStatus()
+        viewModelScope.launch(Dispatchers.IO) {
+            mAccount = mAccountManager.currentAccount()
+            userViewModel.init()
+            refreshApplyStatus()
+        }
     }
 
     fun getApplyStatusLiveData() = mApplyStatus
@@ -85,27 +84,25 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
     private suspend fun refreshApplyStatusByNetwork() {
         mAccount?.let {
             mApplyStatus.postValue(CODE_NETWORK_LOADING)
-            withContext(Dispatchers.IO) {
-                val changePublishStatus = mApplyManager.getApplyStatus(it.address)
-                if (changePublishStatus != null) {
-                    when {
-                        changePublishStatus.errorCode == 2006 -> when {
-                            userViewModel.getAllReadyLiveData().value == null -> mApplyStatus.postValue(
-                                CODE_NETWORK_ERROR
-                            )
-                            userViewModel.getAllReadyLiveData().value == true -> mApplyStatus.postValue(
-                                CODE_APPLY_SSO
-                            )
-                            else -> mApplyStatus.postValue(CODE_VERIFICATION_ACCOUNT)
-                        }
-                        changePublishStatus.errorCode == 2000 -> mApplyStatus.postValue(
-                            changePublishStatus.data?.approval_status
+            val changePublishStatus = mApplyManager.getApplyStatus(it.address)
+            if (changePublishStatus != null) {
+                when {
+                    changePublishStatus.errorCode == 2006 -> when {
+                        userViewModel.getAllReadyLiveData().value == null -> mApplyStatus.postValue(
+                            CODE_NETWORK_ERROR
                         )
-                        else -> mApplyStatus.postValue(CODE_NETWORK_ERROR)
+                        userViewModel.getAllReadyLiveData().value == true -> mApplyStatus.postValue(
+                            CODE_APPLY_SSO
+                        )
+                        else -> mApplyStatus.postValue(CODE_VERIFICATION_ACCOUNT)
                     }
-                } else {
-                    mApplyStatus.postValue(CODE_NETWORK_ERROR)
+                    changePublishStatus.errorCode == 2000 -> mApplyStatus.postValue(
+                        changePublishStatus.data?.approval_status
+                    )
+                    else -> mApplyStatus.postValue(CODE_NETWORK_ERROR)
                 }
+            } else {
+                mApplyStatus.postValue(CODE_NETWORK_ERROR)
             }
         }
     }
