@@ -11,6 +11,7 @@ import com.violas.wallet.R;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -129,7 +130,24 @@ public class MultiLanguageUtility {
      * @return
      */
     public int getSaveLanguageType() {
-        return LanguageShared.getInstance(mContext).getInt(MultiLanguageUtility.SAVE_LANGUAGE, LanguageType.LANGUAGE_EN);
+        int saveLocaleTag = LanguageShared.getInstance(mContext).getInt(MultiLanguageUtility.SAVE_LANGUAGE, LanguageType.LANGUAGE_FOLLOW_SYSTEM);
+        if (saveLocaleTag == LanguageType.LANGUAGE_FOLLOW_SYSTEM) {
+            Locale sysLocale = getSysLocale();
+            Iterator<Integer> iterator = mLocaleLanguageMap.keySet().iterator();
+            boolean isExists = false;
+            while (iterator.hasNext()) {
+                Integer next = iterator.next();
+                if (mLocaleLanguageMap.get(next).getLocale().toLanguageTag().equals(sysLocale.toLanguageTag())) {
+                    saveLocaleTag = next;
+                    isExists = true;
+                    break;
+                }
+            }
+            if (!isExists) {
+                saveLocaleTag = LanguageType.LANGUAGE_EN;
+            }
+        }
+        return saveLocaleTag;
     }
 
     public static Context attachBaseContext(Context context) {

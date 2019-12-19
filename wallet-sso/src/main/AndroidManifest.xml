@@ -55,9 +55,6 @@
             android:name=".ui.transfer.LibraTransferActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.transfer.BTCTransferActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".ui.collection.CollectionActivity"
             android:screenOrientation="portrait" />
         <activity
