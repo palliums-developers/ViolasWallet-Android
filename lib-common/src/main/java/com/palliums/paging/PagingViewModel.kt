@@ -203,12 +203,11 @@ abstract class PagingViewModel<VO> : ViewModel() {
                 } catch (e: Exception) {
                     e.printStackTrace()
 
-                    val exception = if (e is RequestException) e else RequestException(e)
                     synchronized(lock) {
                         retry = { loadInitial(params, callback) }
 
-                        refreshState.postValue(LoadState.failure(exception))
-                        tipsMessage.postValue(exception.message)
+                        refreshState.postValue(LoadState.failure(e))
+                        tipsMessage.postValue(e.message)
                     }
                 }
             }
@@ -270,12 +269,11 @@ abstract class PagingViewModel<VO> : ViewModel() {
                 } catch (e: Exception) {
                     e.printStackTrace()
 
-                    val exception = if (e is RequestException) e else RequestException(e)
                     synchronized(lock) {
                         retry = { loadAfter(params, callback) }
 
-                        loadMoreState.postValue(LoadState.failure(exception))
-                        tipsMessage.postValue(exception.message)
+                        loadMoreState.postValue(LoadState.failure(e))
+                        tipsMessage.postValue(e.message)
                     }
                 }
             }
