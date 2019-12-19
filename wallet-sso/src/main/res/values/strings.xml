@@ -62,6 +62,7 @@
     <string name="hint_mnemonic_error">Mnemonic Words Error</string>
     <string name="action_start_import">Start Import</string>
     <string name="action_immediately_into">Enter Now</string>
+    <string name="title_welcome_1">Welcome To</string>
     <string name="hint_security_setting">Security Settings</string>
     <string name="hint_backup_now">Backup Now</string>
     <string name="label_current_assets">Current Funds</string>
@@ -307,4 +308,6 @@
 
     <string name="tips_no_address">No address</string>
     <string name="tips_no_transaction_record">No transaction history</string>
+
+    <string name="wallet_name">SSO Wallet</string>
 </resources>
