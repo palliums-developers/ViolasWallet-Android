@@ -1,12 +1,18 @@
 package com.violas.wallet.biz
 
 import androidx.collection.ArrayMap
+import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.TokenDo
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 
@@ -207,6 +213,30 @@ class TokenManager {
 
                 call.invoke(amount, result)
             }
+    }
+
+    suspend fun getTokenBalance(
+        address: String,
+        tokenAddress: String
+    ): Long {
+        val channel = Channel<Long>()
+        withContext(Dispatchers.IO + coroutineExceptionHandler()) {
+            val tokenAddressList = arrayListOf(tokenAddress)
+            DataRepository.getViolasService()
+                .getBalance(address, tokenAddressList) { accountBalance, tokens, result ->
+                    var amount = 0L
+                    tokens?.forEach {
+                        if (it.address == tokenAddress) {
+                            amount = it.balance
+                            return@forEach
+                        }
+                    }
+                    GlobalScope.launch {
+                        channel.send(amount)
+                    }
+                }
+        }
+        return channel.receive()
     }
 
     fun refreshBalance(

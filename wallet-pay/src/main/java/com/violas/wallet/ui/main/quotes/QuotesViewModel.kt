@@ -10,10 +10,7 @@ import com.palliums.content.ContextProvider
 import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.toMutableMap
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.ExchangeManager
-import com.violas.wallet.biz.TokenManager
-import com.violas.wallet.biz.WrongPasswordException
+import com.violas.wallet.biz.*
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
@@ -30,8 +27,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import org.palliums.violascore.wallet.Account
 import org.palliums.libracore.wallet.KeyPair
+import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -455,7 +452,12 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         return notEnable
     }
 
-    @Throws(ExchangeCoinEqualException::class, WrongPasswordException::class)
+    @Throws(
+        ExchangeCoinEqualException::class,
+        WrongPasswordException::class,
+        LackOfBalanceException::class,
+        TransferUnknownException::class
+    )
     suspend fun handleExchange(
         password: ByteArray,
         fromCoinAmount: BigDecimal,
@@ -479,6 +481,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 val publishToken = publishToken(account, it.tokenAddress())
                 if (publishToken) {
                     it.setNetEnable(true)
+                } else {
+                    throw TransferUnknownException()
                 }
                 publishToken
             })
@@ -498,6 +502,13 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         } else {
             fromCoin = currentToCoinLiveData.value!!
             toCoin = currentFormCoinLiveData.value!!
+        }
+
+        val tokenBalance =
+            mTokenManager.getTokenBalance(mAccount!!.address, fromCoin.tokenAddress())
+
+        if (fromCoinAmount.multiply(BigDecimal("1000000")).toLong() > tokenBalance) {
+            throw LackOfBalanceException()
         }
 
         Log.e("==exchange==", "${fromCoin.tokenName()}   ${toCoin.tokenName()}")
@@ -525,7 +536,6 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 }
             }
         return channel.receive()
-        return true
     }
 }
 

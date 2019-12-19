@@ -19,6 +19,8 @@ import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.stripTrailingZeros
 import com.palliums.utils.toBigDecimal
 import com.violas.wallet.R
+import com.violas.wallet.biz.LackOfBalanceException
+import com.violas.wallet.biz.TransferUnknownException
 import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.ui.dexOrder.DexOrdersActivity
 import com.violas.wallet.ui.main.quotes.tokenList.TokenBottomSheetDialogFragment
@@ -120,7 +122,7 @@ class QuotesFragment : BaseFragment() {
     private fun handleBtnExchangeClick() {
         val fromBigDecimal = editFromCoin.text.toString().toBigDecimal()
         val toBigDecimal = editToCoin.text.toString().toBigDecimal()
-        if(fromBigDecimal== BigDecimal("0") || toBigDecimal== BigDecimal("0") ){
+        if (fromBigDecimal == BigDecimal("0") || toBigDecimal == BigDecimal("0")) {
             showToast(getString(R.string.hint_change_number_not_zero))
             return
         }
@@ -136,15 +138,21 @@ class QuotesFragment : BaseFragment() {
                         } else {
                             showToast(getString(R.string.hint_exchange_error))
                         }
-                    } catch (e: ExchangeCoinEqualException) {
-                        showToast("${tvFromCoin.text}${getString(R.string.hint_unable_change)}${tvToCoin.text}")
-                        e.printStackTrace()
-                    } catch (e: WrongPasswordException) {
-                        showToast(getString(R.string.hint_password_error))
-                        e.printStackTrace()
                     } catch (e: Throwable) {
                         e.printStackTrace()
-                        showToast(getString(R.string.hint_unknown_error))
+                        when (e) {
+                            is ExchangeCoinEqualException -> {
+                                showToast("${tvFromCoin.text}${getString(R.string.hint_unable_change)}${tvToCoin.text}")
+                            }
+                            is WrongPasswordException,
+                            is LackOfBalanceException,
+                            is TransferUnknownException -> {
+                                e.message?.let { showToast(it) }
+                            }
+                            else -> {
+                                showToast(getString(R.string.hint_unknown_error))
+                            }
+                        }
                     }
                     dismissProgress()
                 }
@@ -227,7 +235,7 @@ class QuotesFragment : BaseFragment() {
 
     private fun handleMeOrderObserve() {
         mQuotesViewModel.meOrdersLiveData.observe(viewLifecycleOwner, Observer {
-            Log.e("=======",it.toString())
+            Log.e("=======", it.toString())
             mMeOrderAdapter.submitList(it.take(3))
             if (it == null || it.isEmpty()) {
                 viewMeOrderNull.visibility = View.VISIBLE
