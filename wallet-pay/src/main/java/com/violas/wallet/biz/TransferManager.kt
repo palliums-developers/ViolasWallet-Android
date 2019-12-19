@@ -17,7 +17,6 @@ import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
-import java.lang.Exception
 
 class WrongPasswordException : RuntimeException(getString(R.string.hint_password_error))
 class AddressFaultException : RuntimeException(getString(R.string.hint_address_error))

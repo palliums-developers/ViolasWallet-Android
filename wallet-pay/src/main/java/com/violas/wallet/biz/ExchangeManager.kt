@@ -8,17 +8,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import org.palliums.violascore.move.Move
-import org.palliums.violascore.serialization.hexToBytes
-import org.palliums.violascore.transaction.AccountAddress
-import org.palliums.violascore.transaction.RawTransaction
-import org.palliums.violascore.transaction.TransactionArgument
-import org.palliums.violascore.transaction.TransactionPayload
-import org.palliums.violascore.utils.HexUtils
+import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
-import java.util.*
 
 class ExchangeManager {
     private val mViolasService by lazy {
@@ -33,7 +25,8 @@ class ExchangeManager {
         version: Long
     ): Boolean {
         val sequenceNumber = GlobalScope.async { getSequenceNumber(account.getAddress().toHex()) }
-        val optionExchangePayload = optionUndoExchangePayload(
+        val optionExchangePayload = TransactionPayload.optionUndoExchangePayload(
+            ContextProvider.getContext(),
             receiveAddress,
             if (giveTokenAddress.startsWith("0x"))
                 giveTokenAddress.replace("0x", "")
@@ -43,7 +36,11 @@ class ExchangeManager {
         )
 
         val rawTransaction =
-            optionTransaction(account, optionExchangePayload, sequenceNumber.await())
+            RawTransaction.optionTransaction(
+                account.getAddress().toHex(),
+                optionExchangePayload,
+                sequenceNumber.await()
+            )
 
         val channel = Channel<Boolean>()
         mViolasService.sendTransaction(
@@ -68,7 +65,7 @@ class ExchangeManager {
         toCoinAmount: BigDecimal
     ): Boolean {
         val sequenceNumber = GlobalScope.async { getSequenceNumber(account.getAddress().toHex()) }
-        val optionExchangePayload = optionExchangePayload(
+        val optionExchangePayload = TransactionPayload.optionExchangePayload(
             context,
             receiveAddress,
             fromCoin.tokenAddress(),
@@ -78,7 +75,11 @@ class ExchangeManager {
         )
 
         val rawTransaction =
-            optionTransaction(account, optionExchangePayload, sequenceNumber.await())
+            RawTransaction.optionTransaction(
+                account.getAddress().toHex(),
+                optionExchangePayload,
+                sequenceNumber.await()
+            )
 
         val channel = Channel<Boolean>()
         mViolasService.sendTransaction(
@@ -92,89 +93,6 @@ class ExchangeManager {
             }
         }
         return channel.receive()
-    }
-
-    private fun optionUndoExchangePayload(
-        receiveAddress: String,
-        sendTokenAddress: String,
-        version: Long
-    ): TransactionPayload {
-        val subExchangeDate = JSONObject()
-        subExchangeDate.put("type", "wd_ex")
-        subExchangeDate.put("ver", version)
-
-        val addressArgument = TransactionArgument.newAddress(receiveAddress)
-        val amountArgument = TransactionArgument.newU64(0)
-        val dateArgument =
-            TransactionArgument.newByteArray(subExchangeDate.toString().toByteArray())
-
-        val moveEncode = Move.violasTokenEncode(
-            ContextProvider.getContext().assets.open("move/transfer_with_data.json"),
-            sendTokenAddress.hexToBytes()
-        )
-
-        return TransactionPayload(
-            TransactionPayload.Script(
-                moveEncode,
-                arrayListOf(addressArgument, amountArgument, dateArgument)
-            )
-        )
-    }
-
-    private fun optionExchangePayload(
-        context: Context,
-        receiveAddress: String,
-        sendTokenAddress: String,
-        exchangeTokenAddress: String,
-        exchangeSendAmount: Long,
-        exchangeReceiveAmount: Long
-    ): TransactionPayload {
-
-        val subExchangeDate = JSONObject()
-        subExchangeDate.put("type", "sub_ex")
-        subExchangeDate.put("addr", exchangeTokenAddress)
-        subExchangeDate.put("amount", exchangeReceiveAmount)
-        subExchangeDate.put("fee", 0)
-        subExchangeDate.put("exp", 1000)
-
-        val addressArgument = TransactionArgument.newAddress(receiveAddress)
-        val amountArgument = TransactionArgument.newU64(exchangeSendAmount)
-        val dateArgument =
-            TransactionArgument.newByteArray(subExchangeDate.toString().toByteArray())
-
-        val moveEncode = Move.violasTokenEncode(
-            context.assets.open("move/transfer_with_data.json"),
-            sendTokenAddress.hexToBytes()
-        )
-
-        return TransactionPayload(
-            TransactionPayload.Script(
-                moveEncode,
-                arrayListOf(addressArgument, amountArgument, dateArgument)
-            )
-        )
-    }
-
-    private fun optionTransaction(
-        account: Account,
-        payload: TransactionPayload,
-        sequenceNumber: Long,
-        maxGasAmount: Long = 280_000,
-        gasUnitPrice: Long = 0,
-        expiration: Long = 1000
-    ): RawTransaction {
-        val senderAddress = account.getAddress().toHex()
-        val rawTransaction = RawTransaction(
-            AccountAddress(HexUtils.fromHex(senderAddress)),
-            sequenceNumber,
-            payload,
-            maxGasAmount,
-            gasUnitPrice,
-            (Date().time / 1000) + expiration
-        )
-
-        println("rawTransaction ${HexUtils.toHex(rawTransaction.toByteArray())}")
-        return rawTransaction
     }
 
     private suspend fun getSequenceNumber(address: String): Long {

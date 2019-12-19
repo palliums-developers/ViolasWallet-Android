@@ -9,7 +9,6 @@ import android.util.Log
 import com.google.protobuf.ByteString
 import com.smallraw.libardemo.grpcResponse.DecodeResponse
 import io.grpc.Channel
-import org.palliums.libracore.move.Move
 import org.palliums.libracore.transaction.*
 import org.palliums.libracore.utils.HexUtils
 import org.palliums.libracore.wallet.Account
@@ -17,7 +16,6 @@ import types.GetWithProof
 import types.TransactionOuterClass
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.*
 import java.util.concurrent.Executors
 
 class LibraAdmissionControl(private val mChannel: Channel) {
@@ -119,15 +117,17 @@ class LibraAdmissionControl(private val mChannel: Channel) {
         call: (success: Boolean) -> Unit
     ) {
         val senderAddress = account.getAddress().toHex()
-        getSequenceNumber(senderAddress, {
-            val rawTransaction =
-                generateSendCoinRawTransaction(
-                    address,
-                    senderAddress,
-                    amount,
-                    it,
-                    Move.decode(context.assets.open("move/peer_to_peer_transfer.json"))
-                )
+        getSequenceNumber(senderAddress, {sequenceNumber->
+
+            val publishTokenPayload = TransactionPayload.optionTransactionPayload(
+                context, address, amount
+            )
+
+            val rawTransaction = RawTransaction.optionTransaction(
+                senderAddress,
+                publishTokenPayload,
+                sequenceNumber
+            )
 
             sendTransaction(
                 rawTransaction,
@@ -190,38 +190,5 @@ class LibraAdmissionControl(private val mChannel: Channel) {
                 error.invoke(e)
             }
         }
-    }
-
-    private fun generateSendCoinRawTransaction(
-        address: String,
-        senderAddress: String,
-        amount: Long,
-        sequenceNumber: Long,
-        moveCode: ByteArray
-    ): RawTransaction {
-
-        val addressArgument = TransactionArgument.newAddress(address)
-        val amountArgument = TransactionArgument.newU64(amount)
-
-        val program = TransactionPayload(
-            TransactionPayload.Script(
-                moveCode,
-                arrayListOf(addressArgument, amountArgument)
-            )
-        )
-
-        val rawTransaction = RawTransaction(
-            AccountAddress(HexUtils.fromHex(senderAddress)),
-            sequenceNumber,
-            program,
-            140000,
-            0,
-            (Date().time / 1000) + 1000
-        )
-
-        val toByteString = rawTransaction.toByteArray()
-        println("rawTransaction ${HexUtils.toHex(toByteString)}")
-
-        return rawTransaction
     }
 }
