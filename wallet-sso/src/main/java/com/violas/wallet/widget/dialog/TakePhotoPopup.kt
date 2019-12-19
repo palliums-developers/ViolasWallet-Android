@@ -2,7 +2,6 @@ package com.violas.wallet.widget.dialog
 
 import android.content.Context
 import com.lxj.xpopup.core.BottomPopupView
-import com.lxj.xpopup.util.XPopupUtils
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.custom_bottom_take_photo_popup.view.*
 
@@ -36,8 +35,8 @@ class TakePhotoPopup(
         }
     }
 
-    // 最大高度为Window的0.85
-    override fun getMaxHeight(): Int {
-        return XPopupUtils.dp2px(context, 185F)
-    }
+//    // 最大高度为Window的0.85
+//    override fun getMaxHeight(): Int {
+//        return XPopupUtils.dp2px(context, 185F)
+//    }
 }

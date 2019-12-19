@@ -1,31 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#c7c7c7"
+    android:background="#70000000"
+    android:id="@+id/rootView"
     android:orientation="vertical"
     android:padding="10dp">
 
     <Button
         android:id="@+id/btnAlbum"
-        style="@style/BaseButtonPrimary"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:text="@string/hint_album" />
+        android:background="@drawable/shape_take_photo_popup_top"
+        android:text="@string/hint_album"
+        android:textColor="#226cc0"
+        app:layout_constraintBottom_toTopOf="@+id/viewDivision" />
+
+    <View
+        android:id="@+id/viewDivision"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#e3e3e3"
+        app:layout_constraintEnd_toEndOf="@+id/btnTakePhoto"
+        app:layout_constraintStart_toStartOf="@+id/btnTakePhoto"
+        app:layout_constraintBottom_toTopOf="@+id/btnTakePhoto" />
 
     <Button
         android:id="@+id/btnTakePhoto"
-        style="@style/BaseButtonPrimary"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_marginTop="10dp"
-        android:text="@string/hint_take_photo" />
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/shape_take_photo_popup_bottom"
+        android:text="@string/hint_take_photo"
+        android:textColor="#226cc0"
+        app:layout_constraintBottom_toTopOf="@+id/btnCancel" />
+
 
     <Button
         android:id="@+id/btnCancel"
-        style="@style/BaseButtonDeputy"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_marginTop="10dp"
-        android:text="@string/cancel" />
-</LinearLayout>
+        android:background="@drawable/shape_take_photo_popup_alone"
+        android:text="@string/cancel"
+        android:textColor="#C02222"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
