@@ -475,6 +475,25 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         val account = Account(KeyPair.fromSecretKey(decryptPrivateKey))
         val currentUnPublishToken = getCurrentUnPublishToken()
 
+        // exchange
+        val fromCoin: IToken
+        val toCoin: IToken
+
+        if (isPositiveChangeLiveData.value == false) {
+            fromCoin = currentFormCoinLiveData.value!!
+            toCoin = currentToCoinLiveData.value!!
+        } else {
+            fromCoin = currentToCoinLiveData.value!!
+            toCoin = currentFormCoinLiveData.value!!
+        }
+
+        val tokenBalance =
+            mTokenManager.getTokenBalance(mAccount!!.address, fromCoin.tokenAddress())
+
+        if (fromCoinAmount.multiply(BigDecimal("1000000")).toLong() > tokenBalance) {
+            throw LackOfBalanceException()
+        }
+
         // publish
         val list = arrayListOf<Deferred<*>>()
         currentUnPublishToken.forEach {
@@ -502,25 +521,6 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             it.await()
         }
         EventBus.getDefault().post(RefreshBalanceEvent())
-
-        // exchange
-        val fromCoin: IToken
-        val toCoin: IToken
-
-        if (isPositiveChangeLiveData.value == false) {
-            fromCoin = currentFormCoinLiveData.value!!
-            toCoin = currentToCoinLiveData.value!!
-        } else {
-            fromCoin = currentToCoinLiveData.value!!
-            toCoin = currentFormCoinLiveData.value!!
-        }
-
-        val tokenBalance =
-            mTokenManager.getTokenBalance(mAccount!!.address, fromCoin.tokenAddress())
-
-        if (fromCoinAmount.multiply(BigDecimal("1000000")).toLong() > tokenBalance) {
-            throw LackOfBalanceException()
-        }
 
         Log.e("==exchange==", "${fromCoin.tokenName()}   ${toCoin.tokenName()}")
         mExchangeManager.exchangeToken(
