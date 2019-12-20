@@ -108,28 +108,30 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                         mApplyStatus.postValue(
                             changePublishStatus.data?.approval_status
                         )
-                        GlobalScope.launch {
-                            changePublishStatus.data?.let { token ->
-                                token.token_address?.let { tokenAddress ->
-                                    val findTokenByTokenAddress =
-                                        mTokenManager.findTokenByTokenAddress(
-                                            it.id,
-                                            tokenAddress
-                                        )
-                                    if (findTokenByTokenAddress == null) {
-                                        mTokenManager.insert(
-                                            true, AssertToken(
-                                                account_id = it.id,
-                                                tokenAddress = tokenAddress,
-                                                name = token.token_name,
-                                                fullName = token.token_name,
-                                                enable = true
+                        if(changePublishStatus.data?.approval_status == 4){
+                            GlobalScope.launch {
+                                changePublishStatus.data?.let { token ->
+                                    token.token_address?.let { tokenAddress ->
+                                        val findTokenByTokenAddress =
+                                            mTokenManager.findTokenByTokenAddress(
+                                                it.id,
+                                                tokenAddress
                                             )
-                                        )
-                                        EventBus.getDefault().post(RefreshBalanceEvent())
+                                        if (findTokenByTokenAddress == null) {
+                                            mTokenManager.insert(
+                                                true, AssertToken(
+                                                    account_id = it.id,
+                                                    tokenAddress = tokenAddress,
+                                                    name = token.token_name,
+                                                    fullName = token.token_name,
+                                                    enable = true
+                                                )
+                                            )
+                                            EventBus.getDefault().post(RefreshBalanceEvent())
+                                        }
                                     }
-                                }
 
+                                }
                             }
                         }
                     }
