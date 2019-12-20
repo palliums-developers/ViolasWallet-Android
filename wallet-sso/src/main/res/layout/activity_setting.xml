@@ -54,8 +54,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivMultiLanguage"
-        app:mivShowBottomLine="false"
         app:mivStartTitleText="@string/setting_service_agreement" />
+
+    <com.palliums.widget.MenuItemView
+        android:id="@+id/mivPrivacyPolicy"
+        style="@style/MenuItemView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mivServiceAgreement"
+        app:mivShowBottomLine="false"
+        app:mivStartTitleText="@string/title_privacy_policy" />
 
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivAboutUs"
@@ -63,7 +71,7 @@
         android:layout_marginTop="@dimen/item_spacing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mivServiceAgreement"
+        app:layout_constraintTop_toBottomOf="@+id/mivPrivacyPolicy"
         app:mivShowBottomLine="false"
         app:mivStartTitleText="@string/setting_about_us" />
 
