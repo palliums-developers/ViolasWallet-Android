@@ -32,7 +32,7 @@
     <string name="common_refresh_header_release">Release refreshing</string>
     <string name="common_refresh_header_update">\'Last refreshed at\' M-d HH:mm</string>
 
-    <string name="common_dialog_loading">Refreshing…</string>
+    <string name="common_dialog_loading">Loading…</string>
     <string name="title_select_mail_app">Please select the mail application</string>
     <string name="tips_open_email_failure">Unable to open mail app</string>
 

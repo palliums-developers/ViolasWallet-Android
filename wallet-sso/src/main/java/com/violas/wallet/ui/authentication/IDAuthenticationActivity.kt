@@ -124,6 +124,8 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
                 }, 2000)
             }
         })
+
+        etIDName.requestFocus()
     }
 
     override fun onResume() {

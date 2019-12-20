@@ -65,7 +65,7 @@ dependencies {
     // jetPack paging see https://developer.android.com/jetpack/docs/getting-started?hl=zh-CN
     api "androidx.paging:paging-runtime:$versions.androidx_paging"
     api "androidx.paging:paging-runtime-ktx:$versions.androidx_paging"
-    testApi "androidx.paging:paging-common:$versions.androidx_paging"
+    testImplementation "androidx.paging:paging-common:$versions.androidx_paging"
 
     // see https://github.com/square/
     implementation "com.squareup.okhttp3:okhttp:$versions.okhttp3"

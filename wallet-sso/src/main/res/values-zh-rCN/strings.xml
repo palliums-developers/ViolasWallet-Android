@@ -301,4 +301,6 @@
     <string name="tips_no_transaction_record">暂无交易记录</string>
 
     <string name="wallet_name">SSO钱包</string>
+
+    <string name="united_states">美国</string>
 </resources>

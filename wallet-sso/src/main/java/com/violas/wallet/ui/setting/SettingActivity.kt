@@ -38,6 +38,7 @@ class SettingActivity : BaseAppActivity() {
 
         mivMultiLanguage.setOnClickListener(this)
         mivServiceAgreement.setOnClickListener(this)
+        mivPrivacyPolicy.setOnClickListener(this)
         mivAboutUs.setOnClickListener(this)
         mivHelpFeedback.setOnClickListener(this)
     }
@@ -49,11 +50,18 @@ class SettingActivity : BaseAppActivity() {
             }
 
             R.id.mivServiceAgreement -> {
-                // TODO 替换服务协议url
                 WebCommonActivity.start(
                     this,
                     getString(R.string.service_agreement_url),
                     getString(R.string.service_agreement_title)
+                )
+            }
+
+            R.id.mivPrivacyPolicy -> {
+                WebCommonActivity.start(
+                    this,
+                    getString(R.string.url_privacy_policy),
+                    getString(R.string.title_privacy_policy)
                 )
             }
 

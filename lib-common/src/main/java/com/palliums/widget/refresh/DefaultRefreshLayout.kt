@@ -57,7 +57,9 @@ class DefaultRefreshLayout : SmartRefreshLayout, IRefreshLayout {
                 mKernel.animSpinner(0)
             }
         } else if (mState == RefreshState.ReleaseToRefresh
-            || (mViceState == RefreshState.ReleaseToRefresh && mEnableRefresh)
+            || (mViceState == RefreshState.ReleaseToRefresh
+                    && mState != RefreshState.Refreshing
+                    && mEnableRefresh)
         ) {
             mKernel.setState(RefreshState.Refreshing)
         } else if (mState == RefreshState.Refreshing) {
