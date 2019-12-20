@@ -2,6 +2,8 @@ package com.violas.wallet.ui.selectCountryArea
 
 import android.text.TextUtils
 import com.palliums.content.ContextProvider
+import com.palliums.utils.getString
+import com.violas.wallet.R
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.utils.hanzi2Pinyin
 import org.json.JSONArray
@@ -64,38 +66,40 @@ fun getGroupedCountryAreas(): LinkedHashMap<String, List<CountryAreaVO>> {
     return data
 }
 
-fun getCountryArea(defaultCountryCode: String? = null): CountryAreaVO {
+fun getCountryArea(queryCountryCode: String? = null): CountryAreaVO {
+    val systemCountryCode = MultiLanguageUtility.getSysLocale().country
+
+    var queryCountryArea: CountryAreaVO? = null
+    var systemCountryArea: CountryAreaVO? = null
+
+    var jsonObject: JSONObject
+    var areaCode: String
+    var countryName: String
+    var countryCode: String
+
     val countryAreaJsonData = getCountryAreaJsonData()
-
-    val locale = MultiLanguageUtility.getInstance().languageLocale
-    val localCountryCode = locale.country
-
     for (i in 0 until countryAreaJsonData.length()) {
 
-        val jsonObject = countryAreaJsonData.optJSONObject(i)
+        jsonObject = countryAreaJsonData.optJSONObject(i)
+        areaCode = jsonObject.optString("areaCode")
+        countryName = jsonObject.optString("countryName")
+        countryCode = jsonObject.optString("countryCode")
 
-        if (jsonObject != null) {
-
-            val areaCode = jsonObject.optString("areaCode")
-            val countryName = jsonObject.optString("countryName")
-            val countryCode = jsonObject.optString("countryCode")
-
-            if (defaultCountryCode.equals(countryCode, ignoreCase = true)
-                || localCountryCode.equals(countryCode, ignoreCase = true)
-            ) {
-                return CountryAreaVO(areaCode, countryName, countryCode)
+        if (queryCountryCode.equals(countryCode, ignoreCase = true)) {
+            queryCountryArea = CountryAreaVO(areaCode, countryName, countryCode)
+            break
+        } else if (systemCountryCode.equals(countryCode, ignoreCase = true)) {
+            systemCountryArea = CountryAreaVO(areaCode, countryName, countryCode)
+            if (queryCountryCode.isNullOrEmpty()) {
+                break
             }
         }
     }
 
-    return CountryAreaVO(
-        areaCode = "65",
-        countryName = if (locale.language == "zh") {
-            "新加坡"
-        } else {
-            "Singapore"
-        },
-        countryCode = "SG"
+    return queryCountryArea ?: systemCountryArea ?: CountryAreaVO(
+        areaCode = "1",
+        countryName = getString(R.string.united_states),
+        countryCode = "US"
     )
 }
 
@@ -129,11 +133,11 @@ fun getCountryAreaJsonData(
 }
 
 fun getCountryAreaAssetsFileName(): String {
-    val locale = MultiLanguageUtility.getInstance().languageLocale
-    val localeLanguage = if (locale.language == "zh") {
+    val languageLocale = MultiLanguageUtility.getInstance().languageLocale
+    val language = if (languageLocale.language == "zh") {
         "zh"
     } else {
         "en"
     }
-    return "country_$localeLanguage.json"
+    return "country_$language.json"
 }

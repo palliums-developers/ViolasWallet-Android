@@ -13,6 +13,7 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.local.user.IDInfo
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
+import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import com.violas.wallet.ui.selectCountryArea.isChinaMainland
 import com.violas.wallet.utils.validationIDCar18
 import kotlinx.coroutines.Dispatchers
@@ -48,8 +49,8 @@ class IDAuthenticationViewModel : BaseViewModel() {
     init {
         viewModelScope.launch(Dispatchers.IO) {
             // 加载默认的国家地区
-            /*val countryArea = getCountryArea()
-            countryAreaVO.postValue(countryArea)*/
+            val countryArea = getCountryArea()
+            countryAreaVO.postValue(countryArea)
 
             currentAccount = AccountManager().currentAccount()
         }
