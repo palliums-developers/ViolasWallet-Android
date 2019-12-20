@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.quotes.tokenList
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,12 +8,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.palliums.utils.CommonViewHolder
 import com.violas.wallet.R
 import com.violas.wallet.ui.main.quotes.bean.IToken
-import kotlinx.android.synthetic.main.fragment_token_sheet_sheet.*
+import kotlinx.android.synthetic.main.fragment_token_sheet_sheet.view.*
 import kotlinx.android.synthetic.main.item_token_sheet_quotes.view.*
+
 
 class TokenBottomSheetDialogFragment : BottomSheetDialogFragment() {
     companion object {
@@ -27,17 +31,18 @@ class TokenBottomSheetDialogFragment : BottomSheetDialogFragment() {
         MyAdapter()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_token_sheet_sheet, container, false)
-    }
+    private var mBehavior: BottomSheetBehavior<View>? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        recyclerView.adapter = mMyAdapter
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog =
+            super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        val view =
+            View.inflate(context, R.layout.fragment_token_sheet_sheet, null)
+        dialog.setContentView(view)
+        mBehavior =
+            BottomSheetBehavior.from(view.parent as View)
+        view.recyclerView.adapter = mMyAdapter
+        return dialog
     }
 
     fun show(
@@ -45,6 +50,7 @@ class TokenBottomSheetDialogFragment : BottomSheetDialogFragment() {
         tokenList: List<IToken>,
         callback: (IToken) -> Unit
     ) {
+        mBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
         if (tokenList.isNotEmpty()) {
             mCallback = callback
             show(childFragmentManager, "sheet")

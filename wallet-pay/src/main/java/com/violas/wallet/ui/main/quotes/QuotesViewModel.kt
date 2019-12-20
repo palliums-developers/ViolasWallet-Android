@@ -11,6 +11,7 @@ import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.toMutableMap
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.*
+import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
@@ -474,24 +475,6 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         val account = Account(KeyPair.fromSecretKey(decryptPrivateKey))
         val currentUnPublishToken = getCurrentUnPublishToken()
 
-        // publish
-        val list = arrayListOf<Deferred<*>>()
-        currentUnPublishToken.forEach {
-            list.add(async {
-                val publishToken = publishToken(account, it.tokenAddress())
-                if (publishToken) {
-                    it.setNetEnable(true)
-                } else {
-                    throw TransferUnknownException()
-                }
-                publishToken
-            })
-        }
-        list.forEach {
-            it.await()
-        }
-        EventBus.getDefault().post(RefreshBalanceEvent())
-
         // exchange
         val fromCoin: IToken
         val toCoin: IToken
@@ -510,6 +493,34 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         if (fromCoinAmount.multiply(BigDecimal("1000000")).toLong() > tokenBalance) {
             throw LackOfBalanceException()
         }
+
+        // publish
+        val list = arrayListOf<Deferred<*>>()
+        currentUnPublishToken.forEach {
+            list.add(async {
+                val publishToken = publishToken(account, it.tokenAddress())
+                if (publishToken) {
+                    it.setNetEnable(true)
+                    mTokenManager.insert(
+                        true, AssertToken(
+                            tokenAddress = it.tokenAddress(),
+                            fullName = it.tokenName(),
+                            account_id = mAccount!!.id,
+                            name = it.tokenName(),
+                            enable = true,
+                            netEnable = true
+                        )
+                    )
+                } else {
+                    throw TransferUnknownException()
+                }
+                publishToken
+            })
+        }
+        list.forEach {
+            it.await()
+        }
+        EventBus.getDefault().post(RefreshBalanceEvent())
 
         Log.e("==exchange==", "${fromCoin.tokenName()}   ${toCoin.tokenName()}")
         mExchangeManager.exchangeToken(
