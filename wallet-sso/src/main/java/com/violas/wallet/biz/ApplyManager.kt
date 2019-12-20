@@ -14,7 +14,8 @@ class ApplyManager {
         return mSSOService.selectApplyForStatus(address)
     }
 
-    suspend fun uploadImage(file: File) = mSSOService.uploadImage(file)
+    suspend fun uploadImage(file: File) =
+        mSSOService.uploadImage(file)
 
     suspend fun changePublishStatus(address: String) = mSSOService.changePublishStatus(address)
 

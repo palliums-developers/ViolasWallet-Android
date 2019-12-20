@@ -129,29 +129,34 @@ class ApplySubmitFragment : BaseFragment() {
 
     private fun submitData(phone: String, email: String) {
         launch(Dispatchers.IO) {
-            val applyForIssuing = mApplyManager.applyForIssuing(
-                mAccount!!.address,
-                mCurrencyBean!!.indicator,
-                itemCoinNumber.getContent()!!.toString().toLong(),
-                mCurrencyBean!!.exchange,
-                itemName.getContent()!!.toString(),
-                reservesImage!!,
-                accountPositiveImage!!,
-                accountReverseImage!!,
-                phone,
-                email
-            )
-            if (applyForIssuing != null) {
-                when {
-                    applyForIssuing.errorCode == 2000 -> {
-                        EventBus.getDefault().post(RefreshPageEvent())
-                        showToast(getString(R.string.hint_mint_condition_success))
+            try {
+                val applyForIssuing = mApplyManager.applyForIssuing(
+                    mAccount!!.address,
+                    mCurrencyBean!!.indicator,
+                    itemCoinNumber.getContent()!!.toString().toLong(),
+                    mCurrencyBean!!.exchange,
+                    itemName.getContent()!!.toString(),
+                    reservesImage!!,
+                    accountPositiveImage!!,
+                    accountReverseImage!!,
+                    phone,
+                    email
+                )
+                if (applyForIssuing != null) {
+                    when {
+                        applyForIssuing.errorCode == 2000 -> {
+                            EventBus.getDefault().post(RefreshPageEvent())
+                            showToast(getString(R.string.hint_mint_condition_success))
+                        }
+                        applyForIssuing.errorCode == 2003 -> showToast(getString(R.string.hint_net_work_error))
+                        else -> showToast(getString(R.string.hint_emila_phone_verification_error))
                     }
-                    applyForIssuing.errorCode == 2003 -> showToast(getString(R.string.hint_net_work_error))
-                    else -> showToast(getString(R.string.hint_emila_phone_verification_error))
+                } else {
+                    showToast(getString(R.string.hint_net_work_error))
                 }
-            } else {
+            }catch (e:Exception){
                 showToast(getString(R.string.hint_net_work_error))
+                e.printStackTrace()
             }
         }
     }
@@ -208,9 +213,9 @@ class ApplySubmitFragment : BaseFragment() {
                             if (context?.contentResolver != null) {
                                 val filePathFromContentUri =
                                     getFilePathFromContentUri(it, context?.contentResolver!!)
-                                val uploadImage =
-                                    mApplyManager.uploadImage(File(filePathFromContentUri))
-                                if (uploadImage != null) {
+                                try {
+                                    val uploadImage =
+                                        mApplyManager.uploadImage(File(filePathFromContentUri))
                                     withContext(Dispatchers.Main) {
                                         uploadImageView.endLoadingImage()
                                     }
@@ -226,7 +231,7 @@ class ApplySubmitFragment : BaseFragment() {
                                         }
 
                                     }
-                                } else {
+                                } catch (e: Exception) {
                                     withContext(Dispatchers.Main) {
                                         showToast(getString(R.string.hint_upload_failure))
                                         uploadImageView.closeContentImage()

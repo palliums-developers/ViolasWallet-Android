@@ -68,7 +68,7 @@ class IDAuthenticationViewModel : BaseViewModel() {
 
             throw IOException(getString(R.string.hint_id_photo_front_unavailable))
         }
-        val idPhotoFrontUrl = ssoService.uploadImage2(idPhotoFrontFile).data!!
+        val idPhotoFrontUrl = ssoService.uploadImage(idPhotoFrontFile).data!!
 
         // 上传证件背面图片
         val idPhotoBackFilePath = getFilePathByUri(idPhotoBack.value!!)
@@ -82,7 +82,7 @@ class IDAuthenticationViewModel : BaseViewModel() {
 
             throw IOException(getString(R.string.hint_id_photo_back_unavailable))
         }
-        val idPhotoBackUrl = ssoService.uploadImage2(idPhotoBackFile).data!!
+        val idPhotoBackUrl = ssoService.uploadImage(idPhotoBackFile).data!!
 
         // 绑定身份信息
         val walletAddress = currentAccount.address
