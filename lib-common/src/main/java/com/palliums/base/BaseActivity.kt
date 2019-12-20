@@ -301,6 +301,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
         try {
             launch {
                 mLoadingDialog?.dismiss()
+                mLoadingDialog = null
             }
         } catch (e: Throwable) {
             e.printStackTrace()
