@@ -11,6 +11,7 @@ import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.toMutableMap
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.*
+import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
@@ -481,6 +482,16 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 val publishToken = publishToken(account, it.tokenAddress())
                 if (publishToken) {
                     it.setNetEnable(true)
+                    mTokenManager.insert(
+                        true, AssertToken(
+                            tokenAddress = it.tokenAddress(),
+                            fullName = it.tokenName(),
+                            account_id = mAccount!!.id,
+                            name = it.tokenName(),
+                            enable = true,
+                            netEnable = true
+                        )
+                    )
                 } else {
                     throw TransferUnknownException()
                 }
