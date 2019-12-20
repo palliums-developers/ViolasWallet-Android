@@ -3,10 +3,14 @@ package com.violas.wallet.ui.main.applyFor
 import androidx.lifecycle.*
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ApplyManager
+import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.bean.AssertToken
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.RefreshPageEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.main.UserViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -37,6 +41,10 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
 
     private val mAccountManager by lazy {
         AccountManager()
+    }
+
+    private val mTokenManager by lazy {
+        TokenManager()
     }
 
     private var mAccount: AccountDO? = null
@@ -96,9 +104,35 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                         )
                         else -> mApplyStatus.postValue(CODE_VERIFICATION_ACCOUNT)
                     }
-                    changePublishStatus.errorCode == 2000 -> mApplyStatus.postValue(
-                        changePublishStatus.data?.approval_status
-                    )
+                    changePublishStatus.errorCode == 2000 -> {
+                        mApplyStatus.postValue(
+                            changePublishStatus.data?.approval_status
+                        )
+                        GlobalScope.launch {
+                            changePublishStatus.data?.let { token ->
+                                token.token_address?.let { tokenAddress ->
+                                    val findTokenByTokenAddress =
+                                        mTokenManager.findTokenByTokenAddress(
+                                            it.id,
+                                            tokenAddress
+                                        )
+                                    if (findTokenByTokenAddress == null) {
+                                        mTokenManager.insert(
+                                            true, AssertToken(
+                                                account_id = it.id,
+                                                tokenAddress = tokenAddress,
+                                                name = token.token_name,
+                                                fullName = token.token_name,
+                                                enable = true
+                                            )
+                                        )
+                                        EventBus.getDefault().post(RefreshBalanceEvent())
+                                    }
+                                }
+
+                            }
+                        }
+                    }
                     else -> mApplyStatus.postValue(CODE_NETWORK_ERROR)
                 }
             } else {
