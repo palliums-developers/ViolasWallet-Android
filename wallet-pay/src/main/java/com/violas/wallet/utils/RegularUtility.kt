@@ -41,6 +41,7 @@ fun validationLibraAddress(address: String): Boolean {
     try {
         address.hexToBytes()
     } catch (e: Exception) {
+        return false
     }
     if (address.length == 64) {
         return true
