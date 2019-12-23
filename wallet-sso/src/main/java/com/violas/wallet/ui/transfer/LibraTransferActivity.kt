@@ -123,7 +123,12 @@ class LibraTransferActivity : TransferActivity() {
     }
 
     private fun send() {
-        val amount = editAmountInput.text.toString().trim().toDouble()
+        val amount = try {
+            editAmountInput.text.toString().trim().toDouble()
+        } catch (e: Exception) {
+            showToast(getString(R.string.hint_please_input_amount))
+            return
+        }
         val address = editAddressInput.text.toString().trim()
         if (amount <= 0) {
             showToast(getString(R.string.hint_please_input_amount))

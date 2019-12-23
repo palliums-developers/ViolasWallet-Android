@@ -6,11 +6,11 @@ import android.widget.SeekBar
 import androidx.core.widget.addTextChangedListener
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_transfer_btc.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -140,7 +140,12 @@ class BTCTransferActivity : TransferActivity() {
     }
 
     private fun send() {
-        val amount = editAmountInput.text.toString().trim().toDouble()
+        val amount = try {
+            editAmountInput.text.toString().trim().toDouble()
+        } catch (e: Exception) {
+            showToast(getString(R.string.hint_please_input_amount))
+            return
+        }
         val address = editAddressInput.text.toString().trim()
         if (amount <= 0) {
             showToast(getString(R.string.hint_please_input_amount))
