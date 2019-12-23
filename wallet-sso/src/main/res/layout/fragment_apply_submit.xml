@@ -18,6 +18,55 @@
             android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/tvGovernorTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="54dp"
+                android:gravity="start|center"
+                android:text="@string/label_types_issuing"
+                android:textColor="#3C3848"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvGovernorContent"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_marginEnd="6dp"
+                android:background="@null"
+                android:gravity="end|center"
+                android:text="@string/hint_select_governor"
+                android:textColor="#3C3848"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvGovernorTitle"
+                app:layout_constraintEnd_toStartOf="@+id/ivGovernorCoinArrow"
+                app:layout_constraintStart_toEndOf="@+id/tvGovernorTitle"
+                app:layout_constraintTop_toTopOf="@+id/tvGovernorTitle" />
+
+            <ImageView
+                android:id="@+id/ivGovernorCoinArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_right_arrow_gray"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0.5dp"
+                android:background="#E5E5E5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvGovernorTitle" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="54dp"

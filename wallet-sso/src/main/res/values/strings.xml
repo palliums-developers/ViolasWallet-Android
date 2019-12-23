@@ -242,6 +242,8 @@
     <string name="hint_immediately_to">GoTo</string>
     <string name="title_apply_issue_sso">Apply SSO Application</string>
     <string name="label_types_issuing">Type of Fiat Currency</string>
+    <string name="label_governor_issuing">Select the governor</string>
+    <string name="hint_select_governor">Select the governor</string>
     <string name="hint_select_types_issuing">Select Type of Fiat Currency</string>
     <string name="hint_fill_number_types_issuing">Issuing Amount of Digital Currency</string>
     <string name="label_number_types_issuing">Issuing Amount</string>
@@ -267,6 +269,7 @@
     <string name="action_upload">Upload Document</string>
     <string name="action_confirm_submit">Confirm Submit</string>
     <string name="title_select_currency">Select Type of Fiat Currency</string>
+    <string name="title_select_governor">Choose to issue money to the governor</string>
     <string name="hint_album">Album</string>
     <string name="hint_take_photo">Take Picture</string>
     <string name="hint_image_load_error">Image Reload Failed</string>
@@ -276,6 +279,7 @@
     <string name="hint_mint_success">Issuing Success\nPlease check the homepage of wallet</string>
     <string name="hint_upload_failure">Upload Failed</string>
     <string name="hint_select_issuing_type">Select Type of Fiat Currency</string>
+    <string name="hint_select_governor_issuing">Select the Governor</string>
     <string name="hint_issuing_number">Input Issuing Amount</string>
     <string name="hint_fill_token_name">Input Name of Digital Currency</string>
     <string name="hint_upload_reserves">Upload the proof of reserve document</string>

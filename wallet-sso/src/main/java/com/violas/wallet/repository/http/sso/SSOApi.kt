@@ -1,5 +1,6 @@
 package com.violas.wallet.repository.http.sso
 
+import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -30,4 +31,7 @@ interface SSOApi {
 
     @POST("/1.0/violas/sso/user")
     suspend fun bindIdNumber(@Body body: RequestBody): Response<Any>
+
+    @GET("/1.0/violas/governor")
+    suspend fun getGovernorList(@Query("offset") offset: Int, @Query("limit") limit: Int): ListResponse<GovernorDTO>
 }

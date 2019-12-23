@@ -16,8 +16,10 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ApplyManager
 import com.violas.wallet.event.RefreshPageEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.sso.GovernorDTO
 import com.violas.wallet.ui.selectCurrency.SelectCurrencyActivity
 import com.violas.wallet.ui.selectCurrency.bean.CurrencyBean
+import com.violas.wallet.ui.selectGovernor.GovernorListActivity
 import com.violas.wallet.utils.getFilePathFromContentUri
 import com.violas.wallet.widget.dialog.EmailPhoneValidationDialog
 import com.violas.wallet.widget.dialog.TakePhotoPopup
@@ -30,6 +32,7 @@ import org.greenrobot.eventbus.EventBus
 class ApplySubmitFragment : BaseFragment() {
     companion object {
         private const val REQUEST_CURRENCY_CODE = 0
+        private const val REQUEST_GOVERNOR_CODE = 4
         private const val REQUEST_PHOTO_RESERVES = 1
         private const val REQUEST_PHOTO_ACCOUNT_POSITIVE = 2
         private const val REQUEST_PHOTO_ACCOUNT_REVERSE = 3
@@ -40,6 +43,7 @@ class ApplySubmitFragment : BaseFragment() {
     private var accountReverseImage: String? = null
     private var mAccount: AccountDO? = null
     private var mCurrencyBean: CurrencyBean? = null
+    private var mCurrencyGovernorBean: GovernorDTO? = null
 
     private val mApplyManager by lazy {
         ApplyManager()
@@ -69,6 +73,9 @@ class ApplySubmitFragment : BaseFragment() {
         tvContent.setOnClickListener {
             SelectCurrencyActivity.start(this@ApplySubmitFragment, REQUEST_CURRENCY_CODE)
         }
+        tvGovernorContent.setOnClickListener {
+            GovernorListActivity.start(this@ApplySubmitFragment, REQUEST_GOVERNOR_CODE)
+        }
 
         upLoadViewReserves.setOnClickListener {
             showTakePhotoPopup(REQUEST_PHOTO_RESERVES)
@@ -89,6 +96,10 @@ class ApplySubmitFragment : BaseFragment() {
             accountReverseImage = null
         }
         btnSubmit.setOnClickListener {
+            if (mCurrencyGovernorBean == null) {
+                showToast(getString(R.string.hint_select_governor_issuing))
+                return@setOnClickListener
+            }
             if (mCurrencyBean == null) {
                 showToast(getString(R.string.hint_select_issuing_type))
                 return@setOnClickListener
@@ -138,6 +149,7 @@ class ApplySubmitFragment : BaseFragment() {
                     reservesImage!!,
                     accountPositiveImage!!,
                     accountReverseImage!!,
+                    mCurrencyGovernorBean!!.walletAddress,
                     phone,
                     email
                 )
@@ -260,14 +272,20 @@ class ApplySubmitFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            REQUEST_CURRENCY_CODE -> {
-                if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_CURRENCY_CODE -> {
                     val parcelable =
                         data?.getParcelableExtra<CurrencyBean>(SelectCurrencyActivity.EXT_CURRENCY_ITEM)
                     mCurrencyBean = parcelable
                     tvContent.text = parcelable?.currency
                     tvStableCurrencyValue.setContent("${parcelable?.exchange}")
+                }
+                REQUEST_GOVERNOR_CODE -> {
+                    val parcelable =
+                        data?.getParcelableExtra<GovernorDTO>(GovernorListActivity.EXT_GOVERNOR_ITEM)
+                    mCurrencyGovernorBean = parcelable
+                    tvGovernorContent.text = parcelable?.name
                 }
             }
         }

@@ -28,6 +28,7 @@ class ApplyManager {
         reservePhotoUrl: String,
         accountInfoPhotoPositiveUrl: String,
         accountInfoPhotoBackUrl: String,
+        governorAddress: String,
         phoneVerifyCode: String,
         emailVerifyCode: String
     ) = mSSOService.applyForIssuing(
@@ -39,6 +40,7 @@ class ApplyManager {
         reservePhotoUrl,
         accountInfoPhotoPositiveUrl,
         accountInfoPhotoBackUrl,
+        governorAddress,
         phoneVerifyCode,
         emailVerifyCode
     )

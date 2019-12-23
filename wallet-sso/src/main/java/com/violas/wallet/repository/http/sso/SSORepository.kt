@@ -63,6 +63,7 @@ class SSORepository(private val ssoApi: SSOApi) {
         reservePhotoUrl: String,
         accountInfoPhotoPositiveUrl: String,
         accountInfoPhotoBackUrl: String,
+        governorAddress: String,
         phoneVerifyCode: String,
         emailVerifyCode: String
     ): Response<Any>? {
@@ -76,7 +77,8 @@ class SSORepository(private val ssoApi: SSOApi) {
     "account_info_photo_positive_url":"$accountInfoPhotoPositiveUrl",
     "account_info_photo_back_url":"$accountInfoPhotoBackUrl",
     "phone_verify_code":$phoneVerifyCode,
-    "email_verify_code":$emailVerifyCode
+    "email_verify_code":$emailVerifyCode,
+    "governor_address":$governorAddress
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
         return try {
@@ -213,6 +215,15 @@ class SSORepository(private val ssoApi: SSOApi) {
 
         return checkResponse {
             ssoApi.bind(toRequestBody)
+        }
+    }
+
+    /**
+     * 获取州长列表
+     */
+    suspend fun getGovernorList(offset: Int = 0, limit: Int = 100) = withContext(Dispatchers.IO) {
+        checkResponse {
+            ssoApi.getGovernorList(offset, limit)
         }
     }
 }
