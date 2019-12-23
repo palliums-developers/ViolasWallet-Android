@@ -12,7 +12,7 @@ suspend fun getFilePathFromContentUri(
     inputUri: Uri,
     context: Context
 ): File = withContext(Dispatchers.IO) {
-    val file = File("${context.externalCacheDir}/${inputUri.path}")
+    val file = File("${context.externalCacheDir?.absoluteFile}${File.separator}${inputUri.path}")
     val dir = file.parentFile
     if (dir?.exists() == false) {
         dir.mkdirs()

@@ -60,7 +60,7 @@ class ApplyForSSOFragment : BaseFragment() {
             }
 
             childFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView, ApplySubmitFragment())
+                .replace(R.id.fragmentContainerView, fragment)
                 .commit()
         })
     }

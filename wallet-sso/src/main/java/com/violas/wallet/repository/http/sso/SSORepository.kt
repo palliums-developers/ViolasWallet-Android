@@ -4,6 +4,8 @@ import com.palliums.content.ContextProvider
 import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
 import com.palliums.violas.http.Response
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -120,9 +122,9 @@ class SSORepository(private val ssoApi: SSOApi) {
     /**
      * 上传图片
      */
-    suspend fun uploadImage(nativeFile: File): Response<String> {
+    suspend fun uploadImage(nativeFile: File): Response<String> = withContext(Dispatchers.IO) {
         val fileList =
-            Luban.with(ContextProvider.getContext()).load(nativeFile).ignoreBy(4096).get()
+            Luban.with(ContextProvider.getContext()).load(nativeFile).ignoreBy(4 * 1024).get()
         val file = if (fileList.size >= 1) {
             fileList[0]
         } else {
@@ -132,7 +134,7 @@ class SSORepository(private val ssoApi: SSOApi) {
         val createFormData =
             MultipartBody.Part.createFormData("photo", file.name, asRequestBody)
 
-        return checkResponse {
+        checkResponse {
             ssoApi.uploadImage(createFormData).also {
                 if (it.data.isNullOrEmpty()) {
                     throw RequestException.responseDataException()
