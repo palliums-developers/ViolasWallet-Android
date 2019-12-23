@@ -6,7 +6,7 @@
     <string name="common_http_certificate_invalid">Invalid Server Certification</string>
     <string name="common_http_unknown_host">Cannot connect to server. Please check network</string>
     <string name="common_http_not_network">No Connection. Please Check Network</string>
-    <string name="common_http_connect_exception">Connection to server failed</string>
+    <string name="common_http_connect_exception">Connection to server failed. Please Check Network</string>
     <string name="common_http_data_exception">Invalid Data</string>
     <string name="common_http_network_unavailable">No Connection. Please Check Network</string>
     <string name="common_http_unknown_error">Error</string>

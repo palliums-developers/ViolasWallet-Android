@@ -13,4 +13,6 @@ interface ApiResponse {
     fun getErrorCode(): Any
 
     fun getErrorMsg(): Any?
+
+    fun getResponseData(): Any?
 }

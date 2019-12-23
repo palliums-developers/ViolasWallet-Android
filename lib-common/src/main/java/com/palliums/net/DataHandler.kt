@@ -10,6 +10,7 @@ package com.palliums.net
 @Throws(RequestException::class)
 suspend inline fun <T, R> T.checkResponse(
     vararg specialStatusCodes: Any,
+    dataNullableOnSuccess: Boolean = true,
     crossinline func: suspend T.() -> R
 ): R {
     try {
@@ -28,6 +29,8 @@ suspend inline fun <T, R> T.checkResponse(
 
         if (func1.getErrorCode() != func1.getSuccessCode()) {
             throw RequestException(func1)
+        } else if (!dataNullableOnSuccess && func1.getResponseData() == null) {
+            throw RequestException.responseDataException()
         }
 
         return func1

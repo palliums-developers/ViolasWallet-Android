@@ -9,6 +9,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.BindPhoneEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.local.user.AccountBindingStatus
 import com.violas.wallet.repository.local.user.PhoneInfo
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
@@ -71,7 +72,7 @@ class PhoneVerificationViewModel : BaseViewModel() {
         val verificationCode = params[1] as String
         ssoService.bindPhone(walletAddress, phoneNumber, areaCode, verificationCode)
 
-        val phoneInfo = PhoneInfo(areaCode, phoneNumber)
+        val phoneInfo = PhoneInfo(areaCode, phoneNumber, AccountBindingStatus.BOUND)
         localUserService.setPhoneInfo(phoneInfo)
         EventBus.getDefault().post(BindPhoneEvent(phoneInfo))
 

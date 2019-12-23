@@ -31,6 +31,10 @@ open class Response<T> : ApiResponse {
     override fun getErrorCode(): Any {
         return errorCode
     }
+
+    override fun getResponseData(): Any? {
+        return data
+    }
 }
 
 class ListResponse<T> : Response<ListResponse.Data<T>>() {

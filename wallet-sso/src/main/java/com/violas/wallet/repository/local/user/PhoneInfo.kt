@@ -11,7 +11,7 @@ data class PhoneInfo(
     var phoneNumber: String,
 
     @AccountBindingStatus
-    var accountBindingStatus: Int = AccountBindingStatus.BOUND
+    var accountBindingStatus: Int
 ) {
 
     fun isBoundPhone(): Boolean {

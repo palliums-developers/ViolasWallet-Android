@@ -10,8 +10,8 @@ data class EmailInfo(
     var emailAddress: String,
 
     @AccountBindingStatus
-    var accountBindingStatus: Int = AccountBindingStatus.BOUND
-){
+    var accountBindingStatus: Int
+) {
 
     fun isBoundEmail(): Boolean {
         return accountBindingStatus == AccountBindingStatus.BOUND
