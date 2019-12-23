@@ -1,13 +1,19 @@
 package com.violas.wallet.repository.http.sso
 
+import com.palliums.content.ContextProvider
 import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
 import com.palliums.violas.http.Response
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import top.zibin.luban.Luban
 import java.io.File
+
+class ImageCompressionFailedException : RuntimeException()
 
 class SSORepository(private val ssoApi: SSOApi) {
 
@@ -116,30 +122,19 @@ class SSORepository(private val ssoApi: SSOApi) {
     /**
      * 上传图片
      */
-    suspend fun uploadImage(file: File): Response<String>? {
-        val asRequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val createFormData =
-            MultipartBody.Part.createFormData("photo", file.name, asRequestBody)
-
-        return try {
-            checkResponse {
-                ssoApi.uploadImage(createFormData)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+    suspend fun uploadImage(nativeFile: File): Response<String> = withContext(Dispatchers.IO) {
+        val fileList =
+            Luban.with(ContextProvider.getContext()).load(nativeFile).ignoreBy(4 * 1024).get()
+        val file = if (fileList.size >= 1) {
+            fileList[0]
+        } else {
+            throw ImageCompressionFailedException()
         }
-    }
-
-    /**
-     * 上传图片
-     */
-    suspend fun uploadImage2(file: File): Response<String> {
         val asRequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
         val createFormData =
             MultipartBody.Part.createFormData("photo", file.name, asRequestBody)
 
-        return checkResponse {
+        checkResponse {
             ssoApi.uploadImage(createFormData).also {
                 if (it.data.isNullOrEmpty()) {
                     throw RequestException.responseDataException()

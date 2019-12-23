@@ -58,6 +58,7 @@ class ApplyForSSOFragment : BaseFragment() {
                     CheckVerifyFragment()
                 }
             }
+
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainerView, fragment)
                 .commit()

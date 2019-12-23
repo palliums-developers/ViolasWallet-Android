@@ -1,33 +1,42 @@
 package com.violas.wallet.utils
 
-import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
-import android.provider.MediaStore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 
-fun getFilePathFromContentUri(
-    selectedVideoUri: Uri,
-    contentResolver: ContentResolver
-): String {
-    var filePath = ""
-    val filePathColumn = arrayOf(MediaStore.MediaColumns.DATA)
-
-    val cursor = contentResolver.query(selectedVideoUri, filePathColumn, null, null, null)
-    // 也可用下面的方法拿到cursor
-    // Cursor cursor = this.context.managedQuery(selectedVideoUri,
-    // filePathColumn, null, null, null);
-
-    //        cursor.moveToFirst();
-    //
-    //        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-    //        filePath = cursor.getString(columnIndex);
-    if (cursor != null) {
-        if (cursor.moveToFirst()) {
-            val id = cursor.getColumnIndex(filePathColumn[0])
-            if (id > -1)
-                filePath = cursor.getString(id)
-        }
-        cursor.close()
+suspend fun getFilePathFromContentUri(
+    inputUri: Uri,
+    context: Context
+): File = withContext(Dispatchers.IO) {
+    val file = File("${context.externalCacheDir?.absoluteFile}${File.separator}${inputUri.path}")
+    val dir = file.parentFile
+    if (dir?.exists() == false) {
+        dir.mkdirs()
     }
+    if (!file.exists()) {
+        file.createNewFile()
+    }
+    val outputStream = file.outputStream()
+    copyStream(context.contentResolver.openInputStream(inputUri)!!, outputStream)
+    file
+}
 
-    return filePath
+fun copyStream(`in`: InputStream, output: OutputStream) {
+    try {
+        val buff = ByteArray(4 * 1024)
+        var read: Int
+        `in`.use { input ->
+            output.use { output ->
+                while ({ read = input.read(buff);read }() != -1) {
+                    output.write(buff)
+                }
+            }
+        }
+    } catch (t: Throwable) {
+        t.printStackTrace()
+    }
 }

@@ -26,7 +26,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
-import java.io.File
 
 class ApplySubmitFragment : BaseFragment() {
     companion object {
@@ -129,29 +128,34 @@ class ApplySubmitFragment : BaseFragment() {
 
     private fun submitData(phone: String, email: String) {
         launch(Dispatchers.IO) {
-            val applyForIssuing = mApplyManager.applyForIssuing(
-                mAccount!!.address,
-                mCurrencyBean!!.indicator,
-                itemCoinNumber.getContent()!!.toString().toLong(),
-                mCurrencyBean!!.exchange,
-                itemName.getContent()!!.toString(),
-                reservesImage!!,
-                accountPositiveImage!!,
-                accountReverseImage!!,
-                phone,
-                email
-            )
-            if (applyForIssuing != null) {
-                when {
-                    applyForIssuing.errorCode == 2000 -> {
-                        EventBus.getDefault().post(RefreshPageEvent())
-                        showToast(getString(R.string.hint_mint_condition_success))
+            try {
+                val applyForIssuing = mApplyManager.applyForIssuing(
+                    mAccount!!.address,
+                    mCurrencyBean!!.indicator,
+                    itemCoinNumber.getContent()!!.toString().toLong(),
+                    mCurrencyBean!!.exchange,
+                    itemName.getContent()!!.toString(),
+                    reservesImage!!,
+                    accountPositiveImage!!,
+                    accountReverseImage!!,
+                    phone,
+                    email
+                )
+                if (applyForIssuing != null) {
+                    when {
+                        applyForIssuing.errorCode == 2000 -> {
+                            EventBus.getDefault().post(RefreshPageEvent())
+                            showToast(getString(R.string.hint_mint_condition_success))
+                        }
+                        applyForIssuing.errorCode == 2003 -> showToast(getString(R.string.hint_net_work_error))
+                        else -> showToast(getString(R.string.hint_emila_phone_verification_error))
                     }
-                    applyForIssuing.errorCode == 2003 -> showToast(getString(R.string.hint_net_work_error))
-                    else -> showToast(getString(R.string.hint_emila_phone_verification_error))
+                } else {
+                    showToast(getString(R.string.hint_net_work_error))
                 }
-            } else {
+            } catch (e: Exception) {
                 showToast(getString(R.string.hint_net_work_error))
+                e.printStackTrace()
             }
         }
     }
@@ -178,14 +182,11 @@ class ApplySubmitFragment : BaseFragment() {
                 .openAlbum()
         }.build(object : ITakePhotoResult {
             override fun takeSuccess(uriList: List<Uri?>?) {
-                launch(Dispatchers.IO) {
+                launch(Dispatchers.IO + coroutineContext) {
                     if (null == uriList || uriList.isEmpty()) {
                         return@launch
                     }
                     uriList[0]?.let {
-                        val openInputStream = context?.contentResolver?.openInputStream(it)
-                        val createFromStream =
-                            Drawable.createFromStream(openInputStream, it.toString())
                         val uploadImageView = when (type) {
                             REQUEST_PHOTO_RESERVES -> {
                                 upLoadViewReserves
@@ -200,43 +201,48 @@ class ApplySubmitFragment : BaseFragment() {
                                 upLoadViewAccountReverse
                             }
                         }
-                        withContext(Dispatchers.Main) {
-                            uploadImageView.setContentImage(createFromStream)
-                            uploadImageView.startLoadingImage()
-                        }
-                        withContext(Dispatchers.IO) {
-                            if (context?.contentResolver != null) {
-                                val filePathFromContentUri =
-                                    getFilePathFromContentUri(it, context?.contentResolver!!)
-                                val uploadImage =
-                                    mApplyManager.uploadImage(File(filePathFromContentUri))
-                                if (uploadImage != null) {
-                                    withContext(Dispatchers.Main) {
-                                        uploadImageView.endLoadingImage()
-                                    }
-                                    when (type) {
-                                        REQUEST_PHOTO_RESERVES -> {
-                                            reservesImage = uploadImage.data
-                                        }
-                                        REQUEST_PHOTO_ACCOUNT_POSITIVE -> {
-                                            accountPositiveImage = uploadImage.data
-                                        }
-                                        REQUEST_PHOTO_ACCOUNT_REVERSE -> {
-                                            accountReverseImage = uploadImage.data
-                                        }
 
-                                    }
-                                } else {
-                                    withContext(Dispatchers.Main) {
-                                        showToast(getString(R.string.hint_upload_failure))
-                                        uploadImageView.closeContentImage()
-                                    }
+                        if (context != null) {
+                            try {
+                                val filePathFromContentUri =
+                                    getFilePathFromContentUri(it, context!!)
+                                val createFromStream =
+                                    Drawable.createFromStream(
+                                        filePathFromContentUri.inputStream(),
+                                        it.toString()
+                                    )
+                                withContext(Dispatchers.Main) {
+                                    uploadImageView.setContentImage(createFromStream)
+                                    uploadImageView.startLoadingImage()
                                 }
-                            } else {
+
+                                val uploadImage =
+                                    mApplyManager.uploadImage(filePathFromContentUri)
+                                withContext(Dispatchers.Main) {
+                                    uploadImageView.endLoadingImage()
+                                }
+                                when (type) {
+                                    REQUEST_PHOTO_RESERVES -> {
+                                        reservesImage = uploadImage.data
+                                    }
+                                    REQUEST_PHOTO_ACCOUNT_POSITIVE -> {
+                                        accountPositiveImage = uploadImage.data
+                                    }
+                                    REQUEST_PHOTO_ACCOUNT_REVERSE -> {
+                                        accountReverseImage = uploadImage.data
+                                    }
+
+                                }
+                            } catch (e: Exception) {
                                 withContext(Dispatchers.Main) {
                                     showToast(getString(R.string.hint_upload_failure))
                                     uploadImageView.closeContentImage()
                                 }
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                showToast(getString(R.string.hint_upload_failure))
+                                uploadImageView.closeContentImage()
                             }
                         }
                     }

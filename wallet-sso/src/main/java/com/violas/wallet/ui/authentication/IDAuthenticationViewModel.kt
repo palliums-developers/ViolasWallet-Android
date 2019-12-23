@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
-import com.palliums.utils.getFilePathByUri
+import com.palliums.content.ContextProvider
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
@@ -15,13 +15,15 @@ import com.violas.wallet.repository.local.user.IDInfo
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import com.violas.wallet.ui.selectCountryArea.isChinaMainland
+import com.violas.wallet.utils.getFilePathFromContentUri
 import com.violas.wallet.utils.validationIDCar18
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 
 /**
  * Created by elephant on 2019-11-28 15:20.
@@ -58,32 +60,34 @@ class IDAuthenticationViewModel : BaseViewModel() {
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
         // 上传证件正面图片
-        val idPhotoFrontFilePath = getFilePathByUri(idPhotoFront.value!!)
-        if (idPhotoFrontFilePath.isNullOrEmpty()) {
+        if (idPhotoFront.value == null) {
             throw FileNotFoundException(getString(R.string.hint_id_photo_front_not_found))
         }
         val idPhotoFrontFile = try {
-            File(idPhotoFrontFilePath)
+            val context = ContextProvider.getContext()
+            val inputUri = idPhotoBack.value!!
+            getFilePathFromContentUri(inputUri, context)
         } catch (e: Exception) {
             e.printStackTrace()
 
             throw IOException(getString(R.string.hint_id_photo_front_unavailable))
         }
-        val idPhotoFrontUrl = ssoService.uploadImage2(idPhotoFrontFile).data!!
+        val idPhotoFrontUrl = ssoService.uploadImage(idPhotoFrontFile).data!!
 
         // 上传证件背面图片
-        val idPhotoBackFilePath = getFilePathByUri(idPhotoBack.value!!)
-        if (idPhotoBackFilePath.isNullOrEmpty()) {
+        if (idPhotoBack.value == null) {
             throw FileNotFoundException(getString(R.string.hint_id_photo_back_not_found))
         }
         val idPhotoBackFile = try {
-            File(idPhotoBackFilePath)
+            val context = ContextProvider.getContext()
+            val inputUri = idPhotoBack.value!!
+            getFilePathFromContentUri(inputUri, context)
         } catch (e: Exception) {
             e.printStackTrace()
 
             throw IOException(getString(R.string.hint_id_photo_back_unavailable))
         }
-        val idPhotoBackUrl = ssoService.uploadImage2(idPhotoBackFile).data!!
+        val idPhotoBackUrl = ssoService.uploadImage(idPhotoBackFile).data!!
 
         // 绑定身份信息
         val walletAddress = currentAccount.address
@@ -174,5 +178,21 @@ class IDAuthenticationViewModel : BaseViewModel() {
         }
 
         return true
+    }
+
+
+    fun someFunc(`in`: InputStream, output: OutputStream) {
+        try {
+            var read: Int = -1
+            `in`.use { input ->
+                output.use {
+                    while (input.read().also { read = it } != -1) {
+                        it.write(read)
+                    }
+                }
+            }
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        }
     }
 }
