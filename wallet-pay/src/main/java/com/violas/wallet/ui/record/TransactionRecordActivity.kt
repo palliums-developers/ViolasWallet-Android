@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.palliums.utils.start
+import com.palliums.violas.http.SupportTokenCache
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
@@ -74,6 +76,11 @@ class TransactionRecordActivity : BaseAppActivity() {
         }
     }
 
+    override fun onDestroy() {
+        SupportTokenCache.release()
+        super.onDestroy()
+    }
+
     override fun getLayoutResId(): Int {
         return R.layout.activity_transaction_record
     }
@@ -105,13 +112,20 @@ class TransactionRecordActivity : BaseAppActivity() {
             mCoinTypes = CoinTypes.parseCoinType(accountDO.coinNumber)
             mAddress = accountDO.address
 
-            // code for test
-            /*if (mCoinTypes == CoinTypes.Violas) {
-
-            } else if (mCoinTypes == CoinTypes.Libra) {
-                mAddress = "000000000000000000000000000000000000000000000000000000000a550c18"
-            } else {
-                mAddress = "15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew"
+            // code for test, test address
+            /*if (BuildConfig.DEBUG) {
+                when (mCoinTypes) {
+                    CoinTypes.Bitcoin -> {
+                        mAddress = "3MzUcaPHN2sTGQMkuW2sSfrWTbLHTeofnz"
+                    }
+                    CoinTypes.BitcoinTest -> {
+                        mAddress = "n1QvA4WTJfosuKoWeHE5Xdggf5j9P5gBtg"
+                    }
+                    CoinTypes.Libra -> {
+                        mAddress =
+                            "000000000000000000000000000000000000000000000000000000000a550c18"
+                    }
+                }
             }*/
 
             true

@@ -60,33 +60,46 @@ class TransactionRecordViewHolder(
             itemView.vTime.text = mSimpleDateFormat.format(it.time)
             itemView.vAddress.text = it.address
 
-            val displayUnit = convertAmountToDisplayUnit(it.amount, it.coinTypes)
             if (TransactionRecordVO.isOpenToken(it.transactionType)) {
+                val amountInfo = convertAmountToDisplayUnit(it.gas, it.coinTypes)
+
                 itemView.vAmountLabel.setText(R.string.transaction_record_consume)
-                itemView.vAmount.text = "${displayUnit.first} ${displayUnit.second}"
+                itemView.vAmount.text = "${amountInfo.first} ${amountInfo.second}"
+
+                itemView.vType.setText(R.string.transaction_record_open)
+                itemView.vType.setTextColor(getColor(R.color.color_FB8F0B))
                 itemView.vCoinName.text =
                     it.coinName ?: getString(R.string.transaction_record_new_coin)
             } else {
+                val amountInfo = convertAmountToDisplayUnit(it.amount, it.coinTypes)
+
                 itemView.vAmountLabel.setText(R.string.transaction_record_amount)
-                itemView.vAmount.text = displayUnit.first
-                itemView.vCoinName.text = it.coinName ?: ""
-            }
+                itemView.vAmount.text = amountInfo.first
 
-            when (it.transactionType) {
-                TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN -> {
-                    itemView.vType.setText(R.string.transaction_record_open)
-                    itemView.vType.setTextColor(getColor(R.color.color_FB8F0B))
-                }
+                when (it.transactionType) {
+                    TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT -> {
+                        itemView.vType.setText(R.string.transaction_record_receipt)
+                        itemView.vType.setTextColor(getColor(R.color.color_13B788))
+                        itemView.vCoinName.text = it.coinName ?: ""
+                    }
 
-                TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT,
-                TransactionRecordVO.TRANSACTION_TYPE_RECEIPT -> {
-                    itemView.vType.setText(R.string.transaction_record_receipt)
-                    itemView.vType.setTextColor(getColor(R.color.color_13B788))
-                }
+                    TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER -> {
+                        itemView.vType.setText(R.string.transaction_record_transfer)
+                        itemView.vType.setTextColor(getColor(R.color.color_E54040))
+                        itemView.vCoinName.text = it.coinName ?: ""
+                    }
 
-                else -> {
-                    itemView.vType.setText(R.string.transaction_record_transfer)
-                    itemView.vType.setTextColor(getColor(R.color.color_E54040))
+                    TransactionRecordVO.TRANSACTION_TYPE_RECEIPT -> {
+                        itemView.vType.setText(R.string.transaction_record_receipt)
+                        itemView.vType.setTextColor(getColor(R.color.color_13B788))
+                        itemView.vCoinName.text = it.coinTypes.coinName()
+                    }
+
+                    else -> {
+                        itemView.vType.setText(R.string.transaction_record_transfer)
+                        itemView.vType.setTextColor(getColor(R.color.color_E54040))
+                        itemView.vCoinName.text = it.coinTypes.coinName()
+                    }
                 }
             }
         }

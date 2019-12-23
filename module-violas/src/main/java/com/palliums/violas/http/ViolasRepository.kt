@@ -27,6 +27,11 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         }
     }
 
+    suspend fun getSupportToken() =
+        checkResponse {
+            mViolasApi.getSupportToken()
+        }
+
     fun getBalance(
         address: String,
         tokenAddressList: List<String>? = null

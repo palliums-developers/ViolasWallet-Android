@@ -3,10 +3,9 @@ package com.violas.wallet.repository.http.violas
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import com.palliums.violas.http.ModuleDTO
-import com.palliums.violas.http.SupportCurrencyDTO
-import com.palliums.violas.http.ViolasRepository
+import com.palliums.violas.http.*
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
 import io.reactivex.disposables.Disposable
@@ -22,7 +21,9 @@ import org.palliums.violascore.wallet.Account
  * desc: Violas service
  */
 class ViolasService(private val mViolasRepository: ViolasRepository) : TransactionService {
-    private var mMainHandler = Handler(Looper.getMainLooper())
+    private val mMainHandler by lazy { Handler(Looper.getMainLooper()) }
+
+    private val mTokenStorage by lazy { DataRepository.getTokenStorage() }
 
     fun checkTokenRegister(address: String, call: (list: List<String>) -> Unit) {
         val subscribe = mViolasRepository.getRegisterToken(address)
@@ -249,7 +250,6 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         pageKey: Any?,
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
-        val queryToken = tokenAddress?.isNotEmpty() ?: false
         val response =
             mViolasRepository.getTransactionRecord(
                 address,
@@ -265,23 +265,22 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
 
         val list = response.data!!.mapIndexed { index, bean ->
             // 解析交易类型
-            val transactionType = when {
-                !queryToken && bean.type == 1 ->
-                    TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN
+            val transactionType = when (bean.type) {
+                1 -> TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN
 
-                bean.sender == address -> {
-                    if (queryToken) {
-                        TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
-                    } else {
+                0 -> {
+                    if (bean.sender == address) {
                         TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
+                    } else {
+                        TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
                     }
                 }
 
                 else -> {
-                    if (queryToken) {
-                        TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT
+                    if (bean.sender == address) {
+                        TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
                     } else {
-                        TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
+                        TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT
                     }
                 }
             }
@@ -292,11 +291,11 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
                 else -> bean.sender
             }
 
+            // 解析币名称
             val coinName = if (TransactionRecordVO.isTokenOpt(transactionType)) {
-                // TODO 解析 if (queryToken) tokenDO!!.name else bean.module_name
-                if (queryToken) tokenName else "Xcoin"
+                tokenName ?: getTokenName(bean.sender_module)
             } else {
-                CoinTypes.Violas.coinName()
+                null
             }
 
             TransactionRecordVO(
@@ -305,10 +304,24 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
                 transactionType = transactionType,
                 time = bean.expiration_time * 1000,
                 amount = bean.amount,
+                gas = bean.gas,
                 address = showAddress,
+                url = null,
                 coinName = coinName
             )
         }
         onSuccess.invoke(list, null)
+    }
+
+    private suspend fun getTokenName(tokenAddress: String): String? {
+        return try {
+            SupportTokenCache.getSupportTokens(mViolasRepository)[tokenAddress]?.name
+        } catch (e: Exception) {
+            null
+        } ?: try {
+            mTokenStorage.findByTokenAddress(tokenAddress)?.name
+        } catch (e: Exception) {
+            null
+        }
     }
 }

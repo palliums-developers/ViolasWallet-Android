@@ -17,7 +17,8 @@ class BitmainRepository(private val mBitmainApi: BitmainApi) {
         pageSize: Int,
         pageNumber: Int
     ): ListResponse<TransactionRecordDTO> {
-        return checkResponse {
+        // {"data":null,"err_no":1,"err_msg":"Resource Not Found"}
+        return checkResponse(1) {
             mBitmainApi.getTransactionRecord(address, pageSize, pageNumber)
         }
     }

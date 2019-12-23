@@ -14,6 +14,7 @@ data class TransactionRecordVO(
     val transactionType: Int,
     val time: Long,
     val amount: String,
+    val gas:String,
     val address: String,
     val url: String? = null,
     val coinName: String? = null
