@@ -3,6 +3,7 @@ package com.violas.wallet.repository.http.bitcoin
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.http.TransactionService
+import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.ui.record.TransactionRecordVO
 
 /**
@@ -23,15 +24,15 @@ class BitmainService(private val mBitmainRepository: BitmainRepository) :
         pageKey: Any?,
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
-        val it =
+        val response =
             mBitmainRepository.getTransactionRecord(address, pageSize, pageNumber)
 
-        if (it.data == null || it.data!!.list.isNullOrEmpty()) {
+        if (response.data == null || response.data!!.list.isNullOrEmpty()) {
             onSuccess.invoke(emptyList(), null)
             return
         }
 
-        val list = it.data!!.list!!.mapIndexed { index, bean ->
+        val list = response.data!!.list!!.mapIndexed { index, bean ->
 
             // 解析交易类型，暂时只分收款和付款
             var transactionType = TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
@@ -62,7 +63,7 @@ class BitmainService(private val mBitmainRepository: BitmainRepository) :
                 }
             }
 
-            // 解析展示金额，收款为自己接收的金额，付款为自己交付的金额减去自己接收的金额（系统找零）
+            // 解析展示金额，收款:自己接收的金额, 付款:自己交付的金额 - 自己接收的金额（系统找零）- 手续费
             var showAmount = 0L
             if (TransactionRecordVO.isReceipt(transactionType)) {
                 bean.outputs.forEach { outputInfo ->
@@ -106,7 +107,10 @@ class BitmainService(private val mBitmainRepository: BitmainRepository) :
                     }
                 }
 
-                showAmount = inputAmount - outputAmount
+                showAmount = inputAmount - outputAmount - bean.fee
+            }
+            if (showAmount < 0) {
+                showAmount = 0
             }
 
             TransactionRecordVO(
@@ -115,8 +119,9 @@ class BitmainService(private val mBitmainRepository: BitmainRepository) :
                 transactionType = transactionType,
                 time = bean.block_time * 1000L,
                 amount = showAmount.toString(),
+                gas = bean.fee.toString(),
                 address = showAddress,
-                url = "https://btc.com/${bean.hash}"
+                url = BaseUrlInterceptor.getBitcoinBrowserUrl(bean.hash)
             )
         }
         onSuccess.invoke(list, null)

@@ -44,7 +44,7 @@ data class TransactionRecordDTO(
     val sender_module: String,
     val expiration_time: Long,
     val sequence_number: Int,
-    val type: Int,  // 1:publish transaction(开启稳定币); 2:p2p transaction(转账)
+    val type: Int,  // 0:vtoken p2p transaction; 1:module publish transaction(开启稳定币); 2:module p2p transaction(转账)
     val version: Int
 )
 

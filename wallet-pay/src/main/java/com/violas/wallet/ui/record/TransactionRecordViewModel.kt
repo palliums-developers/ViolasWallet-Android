@@ -59,6 +59,7 @@ class TransactionRecordViewModel(
                 transactionType = it % 2,
                 time = System.currentTimeMillis(),
                 amount = Random.nextLong(100000).toString(),
+                gas = "0",
                 address = "${address}00$id",
                 url = "https://www.baidu.com/"
             )

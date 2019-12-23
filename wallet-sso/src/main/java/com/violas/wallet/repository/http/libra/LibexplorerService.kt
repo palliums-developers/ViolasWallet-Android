@@ -2,6 +2,7 @@ package com.violas.wallet.repository.http.libra
 
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.http.TransactionService
+import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.ui.record.TransactionRecordVO
 
 /**
@@ -52,8 +53,9 @@ class LibexplorerService(private val mLibexplorerRepository: LibexplorerReposito
                 transactionType = transactionType,
                 time = bean.expirationTime * 1000,
                 amount = bean.value,
+                gas = bean.gasUsed.toString(),
                 address = showAddress,
-                url = "https://libexplorer.com/version/${bean.version}"
+                url = BaseUrlInterceptor.getLibraBrowserUrl(bean.version)
             )
         }
         onSuccess.invoke(list, null)

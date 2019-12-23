@@ -20,4 +20,7 @@ interface TokenDao : BaseDao<TokenDo> {
 
     @Query("SELECT * FROM token WHERE account_id = :accountId AND tokenAddress = :tokenAddress COLLATE NOCASE LIMIT 1")
     fun findByTokenAddress(accountId: Long, tokenAddress: String): TokenDo?
+
+    @Query("SELECT * FROM token WHERE tokenAddress = :tokenAddress LIMIT 1")
+    fun findByTokenAddress(tokenAddress: String): TokenDo?
 }

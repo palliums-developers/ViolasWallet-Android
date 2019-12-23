@@ -78,7 +78,7 @@
             android:textSize="@dimen/sp_12"
             app:layout_constraintBaseline_toBaselineOf="@id/vTimeLabel"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="2"
+            app:layout_constraintHorizontal_weight="2.5"
             app:layout_constraintStart_toEndOf="@id/vAmountLabel"
             tools:text="@string/transaction_record_transfer"
             tools:textColor="@color/color_E54040" />

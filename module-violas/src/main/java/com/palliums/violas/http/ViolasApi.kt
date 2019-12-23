@@ -36,6 +36,9 @@ interface ViolasApi {
         @Query("modu") tokenAddress: String?
     ): ListResponse<TransactionRecordDTO>
 
+    @GET("/1.0/violas/currency")
+    suspend fun getSupportToken(): ListResponse<SupportCurrencyDTO>
+
     /**
      * 获取余额
      * @param address 账号地址
