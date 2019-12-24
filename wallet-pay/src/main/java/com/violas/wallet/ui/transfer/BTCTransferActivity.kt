@@ -140,21 +140,23 @@ class BTCTransferActivity : TransferActivity() {
     }
 
     private fun send() {
-        val amount = try {
-            editAmountInput.text.toString().trim().toDouble()
+        val amount = editAmountInput.text.toString()
+        val address = editAddressInput.text.toString()
+
+        if (account == null) {
+            return
+        }
+        try {
+            mTransferManager.checkTransferParam(amount, address, account!!)
+
+            showPasswordSend(amount, address)
         } catch (e: Exception) {
-            showToast(getString(R.string.hint_please_input_amount))
-            return
+            e.message?.let { it1 -> showToast(it1) }
+            e.printStackTrace()
         }
-        val address = editAddressInput.text.toString().trim()
-        if (amount <= 0) {
-            showToast(getString(R.string.hint_please_input_amount))
-            return
-        }
-        if (address.isEmpty()) {
-            showToast(getString(R.string.hint_please_input_address))
-            return
-        }
+    }
+
+    private fun showPasswordSend(amount: String, address: String) {
         PasswordInputDialog()
             .setConfirmListener { bytes, dialogFragment ->
                 dialogFragment.dismiss()
@@ -163,8 +165,8 @@ class BTCTransferActivity : TransferActivity() {
                     launch(Dispatchers.IO) {
                         mTransferManager.transferBtc(
                             mTransactionManager,
-                            address,
-                            amount,
+                            address.trim(),
+                            amount.trim().toDouble(),
                             bytes,
                             account!!,
                             sbQuota.progress,
