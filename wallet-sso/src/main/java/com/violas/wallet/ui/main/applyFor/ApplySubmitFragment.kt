@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import com.lxj.xpopup.XPopup
 import com.palliums.base.BaseFragment
@@ -70,6 +72,22 @@ class ApplySubmitFragment : BaseFragment() {
             }
         }
 
+        tvCoinNameContent.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                tvCoinNameContent.removeTextChangedListener(this)
+                val text = s?.toString()?.toUpperCase() ?: ""
+                tvCoinNameContent.setText(text)
+                tvCoinNameContent.setSelection(text.length)
+                tvCoinNameContent.addTextChangedListener(this)
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
+
         tvContent.setOnClickListener {
             SelectCurrencyActivity.start(this@ApplySubmitFragment, REQUEST_CURRENCY_CODE)
         }
@@ -108,7 +126,7 @@ class ApplySubmitFragment : BaseFragment() {
                 showToast(getString(R.string.hint_issuing_number))
                 return@setOnClickListener
             }
-            if (itemName.getContent()?.toString()?.isEmpty() == true) {
+            if (tvCoinNameContent.text?.toString()?.isEmpty() == true) {
                 showToast(getString(R.string.hint_fill_token_name))
                 return@setOnClickListener
             }
@@ -145,7 +163,7 @@ class ApplySubmitFragment : BaseFragment() {
                     mCurrencyBean!!.indicator,
                     itemCoinNumber.getContent()!!.toString().toBigDecimal(),
                     mCurrencyBean!!.exchange,
-                    itemName.getContent()!!.toString(),
+                    tvCoinNameContent.text.toString(),
                     reservesImage!!,
                     accountPositiveImage!!,
                     accountReverseImage!!,
