@@ -93,14 +93,22 @@ class SSORepository(private val ssoApi: SSOApi) {
     /**
      * 查询审批状态
      */
-    suspend fun selectApplyForStatus(address: String): Response<ApplyForStatusDTO>? {
+    suspend fun selectApplyForStatus(
+        address: String,
+        handleException: Boolean = true
+    ): Response<ApplyForStatusDTO>? {
         return try {
             checkResponse(2006) {
                 ssoApi.selectApplyForStatus(address)
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            null
+
+            if (handleException) {
+                null
+            } else {
+                throw e
+            }
         }
     }
 
