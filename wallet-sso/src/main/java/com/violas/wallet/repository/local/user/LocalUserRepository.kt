@@ -110,28 +110,14 @@ class LocalUserRepository(private val sharedPreferences: SharedPreferences) {
         val idInformationJson = sharedPreferences.getString(KEY_ID_INFO, null)
 
         return if (idInformationJson.isNullOrEmpty()) {
-            IDInfo(
-                "",
-                "",
-                "",
-                "",
-                "",
-                idAuthenticationStatus = status
-            )
+            IDInfo.newEmptyInstance(status)
         } else {
             try {
                 Gson().fromJson(idInformationJson, IDInfo::class.java).apply {
                     idAuthenticationStatus = status
                 }
             } catch (e: Exception) {
-                IDInfo(
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    idAuthenticationStatus = status
-                )
+                IDInfo.newEmptyInstance(status)
             }
         }
     }

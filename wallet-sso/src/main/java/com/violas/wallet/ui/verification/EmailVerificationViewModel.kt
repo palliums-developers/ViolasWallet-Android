@@ -9,6 +9,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.BindEmailEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.local.user.AccountBindingStatus
 import com.violas.wallet.repository.local.user.EmailInfo
 import com.violas.wallet.utils.validationEmailAddress
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +68,7 @@ class EmailVerificationViewModel : BaseViewModel() {
         tipsMessage.postValue(getString(R.string.hint_email_bind_success))
         bindEmailResult.postValue(true)
 
-        val emailInfo = EmailInfo(emailAddress)
+        val emailInfo = EmailInfo(emailAddress, AccountBindingStatus.BOUND)
         localUserService.setEmailInfo(emailInfo)
         EventBus.getDefault().post(BindEmailEvent(emailInfo))
     }

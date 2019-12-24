@@ -219,10 +219,10 @@
     <string name="hint_photograph_id_card_back_china">请点击拍摄/上传二代身份证国徽面</string>
     <string name="hint_photograph_id_card_back_other">请点击拍摄/上传证件背面</string>
     <string name="hint_id_authentication_success">身份认证成功</string>
-    <string name="hint_id_photo_front_not_found">证件正面图片找不到</string>
     <string name="hint_id_photo_front_unavailable">证件正面图片不可用</string>
-    <string name="hint_id_photo_back_not_found">证件背面图片找不到</string>
+    <string name="tips_id_photo_front_upload_failure">上传证件正面图片失败</string>
     <string name="hint_id_photo_back_unavailable">证件背面图片不可用</string>
+    <string name="tips_id_photo_back_upload_failure">上传证件背面图片失败</string>
     <string name="action_submit">提交</string>
 
     <string name="title_select_phone_area_code">选择电话区号</string>

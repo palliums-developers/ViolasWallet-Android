@@ -2,6 +2,7 @@ package com.violas.wallet.utils
 
 import android.content.Context
 import android.net.Uri
+import com.palliums.content.ContextProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -10,7 +11,7 @@ import java.io.OutputStream
 
 suspend fun getFilePathFromContentUri(
     inputUri: Uri,
-    context: Context
+    context: Context = ContextProvider.getContext()
 ): File = withContext(Dispatchers.IO) {
     val file = File("${context.externalCacheDir?.absoluteFile}${File.separator}${inputUri.path}")
     val dir = file.parentFile

@@ -17,8 +17,24 @@ data class IDInfo(
 
     @IDAuthenticationStatus
     @Expose(serialize = false, deserialize = false)
-    var idAuthenticationStatus: Int = IDAuthenticationStatus.AUTHENTICATED
+    var idAuthenticationStatus: Int
 ) {
+
+    companion object {
+        fun newEmptyInstance(
+            @IDAuthenticationStatus
+            status: Int = IDAuthenticationStatus.UNKNOWN
+        ): IDInfo {
+            return IDInfo(
+                "",
+                "",
+                "",
+                "",
+                "",
+                status
+            )
+        }
+    }
 
     fun isAuthenticatedID(): Boolean {
         return idAuthenticationStatus == IDAuthenticationStatus.AUTHENTICATED

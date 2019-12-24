@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import com.palliums.base.BaseFragment
 import com.palliums.net.LoadState
 import com.palliums.utils.getColor
+import com.palliums.widget.MenuItemView
 import com.violas.wallet.R
 import com.violas.wallet.repository.local.user.AccountBindingStatus
 import com.violas.wallet.repository.local.user.IDAuthenticationStatus
@@ -70,7 +71,7 @@ class MeFragment : BaseFragment() {
                     mivIDAuthentication.setEndDescText(R.string.desc_unauthorized)
                     mivIDAuthentication.setEndDescTextColor(getColor(R.color.def_text_warn))
 
-                    handLoadState(pbIDAuthenticationLoading, it.second)
+                    handLoadState(pbIDAuthenticationLoading, it.second, mivIDAuthentication)
                 }
             }
         })
@@ -99,7 +100,7 @@ class MeFragment : BaseFragment() {
                     mivPhoneVerification.setEndDescText(R.string.desc_unbound)
                     mivPhoneVerification.setEndDescTextColor(getColor(R.color.def_text_warn))
 
-                    handLoadState(pbPhoneVerificationLoading, it.second)
+                    handLoadState(pbPhoneVerificationLoading, it.second, mivPhoneVerification)
                 }
             }
         })
@@ -128,7 +129,7 @@ class MeFragment : BaseFragment() {
                     mivEmailVerification.setEndDescText(R.string.desc_unbound)
                     mivEmailVerification.setEndDescTextColor(getColor(R.color.def_text_warn))
 
-                    handLoadState(pbEmailVerificationLoading, it.second)
+                    handLoadState(pbEmailVerificationLoading, it.second, mivEmailVerification)
                 }
             }
         })
@@ -136,7 +137,11 @@ class MeFragment : BaseFragment() {
         mViewModel.init()
     }
 
-    private fun handLoadState(progressBar: ProgressBar, loadState: LoadState) {
+    private fun handLoadState(
+        progressBar: ProgressBar,
+        loadState: LoadState,
+        menuItemView: MenuItemView? = null
+    ) {
         when (loadState.status) {
             LoadState.Status.IDLE -> {
                 // ignore
@@ -144,6 +149,10 @@ class MeFragment : BaseFragment() {
 
             LoadState.Status.RUNNING -> {
                 progressBar.visibility = View.VISIBLE
+                menuItemView?.let {
+                    it.showEndArrow(false)
+                    it.setEndDescText("")
+                }
             }
 
             else -> {
@@ -165,7 +174,7 @@ class MeFragment : BaseFragment() {
                         startActivity(
                             Intent(
                                 requireActivity(),
-                                IDInformationActivity::class.java
+                                IDAuthenticationActivity::class.java
                             )
                         )
                     }

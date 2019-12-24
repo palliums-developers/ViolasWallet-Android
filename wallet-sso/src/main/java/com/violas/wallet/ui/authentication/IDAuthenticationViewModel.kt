@@ -4,13 +4,14 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
-import com.palliums.content.ContextProvider
+import com.palliums.net.RequestException
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.AuthenticationIDEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.local.user.IDAuthenticationStatus
 import com.violas.wallet.repository.local.user.IDInfo
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
@@ -20,10 +21,7 @@ import com.violas.wallet.utils.validationIDCar18
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import java.io.FileNotFoundException
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 
 /**
  * Created by elephant on 2019-11-28 15:20.
@@ -60,34 +58,42 @@ class IDAuthenticationViewModel : BaseViewModel() {
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
         // 上传证件正面图片
-        if (idPhotoFront.value == null) {
-            throw FileNotFoundException(getString(R.string.hint_id_photo_front_not_found))
-        }
         val idPhotoFrontFile = try {
-            val context = ContextProvider.getContext()
-            val inputUri = idPhotoBack.value!!
-            getFilePathFromContentUri(inputUri, context)
+            getFilePathFromContentUri(idPhotoFront.value!!)
         } catch (e: Exception) {
             e.printStackTrace()
 
             throw IOException(getString(R.string.hint_id_photo_front_unavailable))
         }
-        val idPhotoFrontUrl = ssoService.uploadImage(idPhotoFrontFile).data!!
+        val idPhotoFrontUrl = try {
+            ssoService.uploadImage(idPhotoFrontFile).data!!
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            throw if (e is RequestException)
+                e
+            else
+                IOException(getString(R.string.tips_id_photo_front_upload_failure))
+        }
 
         // 上传证件背面图片
-        if (idPhotoBack.value == null) {
-            throw FileNotFoundException(getString(R.string.hint_id_photo_back_not_found))
-        }
         val idPhotoBackFile = try {
-            val context = ContextProvider.getContext()
-            val inputUri = idPhotoBack.value!!
-            getFilePathFromContentUri(inputUri, context)
+            getFilePathFromContentUri(idPhotoBack.value!!)
         } catch (e: Exception) {
             e.printStackTrace()
 
             throw IOException(getString(R.string.hint_id_photo_back_unavailable))
         }
-        val idPhotoBackUrl = ssoService.uploadImage(idPhotoBackFile).data!!
+        val idPhotoBackUrl = try {
+            ssoService.uploadImage(idPhotoBackFile).data!!
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            throw if (e is RequestException)
+                e
+            else
+                IOException(getString(R.string.tips_id_photo_back_upload_failure))
+        }
 
         // 绑定身份信息
         val walletAddress = currentAccount.address
@@ -108,11 +114,12 @@ class IDAuthenticationViewModel : BaseViewModel() {
             idNumber = idNumber,
             idPhotoFrontUrl = idPhotoFrontUrl,
             idPhotoBackUrl = idPhotoBackUrl,
-            idCountryCode = countryCode
+            idCountryCode = countryCode,
+            idAuthenticationStatus = IDAuthenticationStatus.AUTHENTICATED
         )
 
         // 上传图片时返回的图片url不是全路径，所以这里不存储身份信息，通过发送事件让我的页面刷新用户身份信息
-        //localUserService.setIDInfo(idInfo)
+        // localUserService.setIDInfo(idInfo)
         EventBus.getDefault().post(AuthenticationIDEvent(idInfo))
 
         tipsMessage.postValue(getString(R.string.hint_id_authentication_success))
@@ -178,21 +185,5 @@ class IDAuthenticationViewModel : BaseViewModel() {
         }
 
         return true
-    }
-
-
-    fun someFunc(`in`: InputStream, output: OutputStream) {
-        try {
-            var read: Int = -1
-            `in`.use { input ->
-                output.use {
-                    while (input.read().also { read = it } != -1) {
-                        it.write(read)
-                    }
-                }
-            }
-        } catch (t: Throwable) {
-            t.printStackTrace()
-        }
     }
 }

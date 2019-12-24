@@ -5,6 +5,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.*
 import com.palliums.base.BaseViewModel
 import com.palliums.net.LoadState
+import com.violas.wallet.BuildConfig
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.AuthenticationIDEvent
 import com.violas.wallet.event.BindEmailEvent
@@ -41,6 +42,7 @@ class UserViewModel : BaseViewModel() {
 
     companion object {
         private const val ACTION_INIT = 0x123
+        private const val ACTION_SYNC_ID_INFO = 0x124
     }
 
     private lateinit var currentAccount: AccountDO
@@ -130,7 +132,11 @@ class UserViewModel : BaseViewModel() {
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onAuthenticationIDEvent(event: AuthenticationIDEvent) {
         // 上传图片时返回的图片url不是全路径，所以接收到认证事件后，从服务器获取用户的身份信息
-        execute()
+        synchronized(lock) {
+            val idInfo = idInfo() ?: IDInfo.newEmptyInstance()
+            idInfoLiveData.postValue(Pair(idInfo, LoadState.RUNNING))
+        }
+        execute(action = ACTION_SYNC_ID_INFO)
 
         /*synchronized(lock) {
             idInfoLiveData.postValue(Pair(event.idInfo, LoadState.IDLE))
@@ -187,11 +193,12 @@ class UserViewModel : BaseViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             synchronized(lock) {
+                // debug模式下，后台数据库优化会删除数据，从服务器获取用户信息
                 var allReady = true
 
                 val idInfo = localUserService.getIDInfo()
                 var infoLoadState = LoadState.IDLE
-                if (!idInfo.isAuthenticatedID()) {
+                if (BuildConfig.DEBUG || !idInfo.isAuthenticatedID()) {
                     // 身份认证状态不为已认证先当作未知状态
                     idInfo.idAuthenticationStatus = IDAuthenticationStatus.UNKNOWN
                     allReady = false
@@ -201,7 +208,7 @@ class UserViewModel : BaseViewModel() {
 
                 val emailInfo = localUserService.getEmailInfo()
                 infoLoadState = LoadState.IDLE
-                if (!emailInfo.isBoundEmail()) {
+                if (BuildConfig.DEBUG || !emailInfo.isBoundEmail()) {
                     // 邮箱绑定状态不为已绑定先当作未知状态
                     emailInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
                     allReady = false
@@ -211,7 +218,7 @@ class UserViewModel : BaseViewModel() {
 
                 val phoneInfo = localUserService.getPhoneInfo()
                 infoLoadState = LoadState.IDLE
-                if (!phoneInfo.isBoundPhone()) {
+                if (BuildConfig.DEBUG || !phoneInfo.isBoundPhone()) {
                     // 手机绑定状态不为已绑定先当作未知状态
                     phoneInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
                     allReady = false
@@ -231,13 +238,14 @@ class UserViewModel : BaseViewModel() {
             // 为了loading的连贯性，此处没有调用execute，而是直接调用的realExecute
             // 注意execute内部处理了异常，这里需要处理异常情况
             try {
-
-                realExecute(ACTION_INIT)
+                realExecute(action = ACTION_INIT)
 
                 synchronized(lock) {
                     loadState.postValue(LoadState.SUCCESS)
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
+
                 synchronized(lock) {
                     tipsMessage.postValue(e.message)
 
@@ -249,7 +257,7 @@ class UserViewModel : BaseViewModel() {
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
 
-        if (action != ACTION_INIT) {
+        if (action != ACTION_INIT && action != ACTION_SYNC_ID_INFO) {
             postStateIfNotReady(LoadState.RUNNING)
         }
 

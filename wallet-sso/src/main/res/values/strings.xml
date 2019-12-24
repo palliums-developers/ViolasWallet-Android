@@ -228,10 +228,10 @@
     <string name="hint_photograph_id_card_back_china">Click to take a picture/Upload back of 2nd generation identity card</string>
     <string name="hint_photograph_id_card_back_other">Click to take a picture/Upload back of ID Card</string>
     <string name="hint_id_authentication_success">Identity Authentication Success</string>
-    <string name="hint_id_photo_front_not_found">No picture in the front of ID Card</string>
     <string name="hint_id_photo_front_unavailable">Invalid picture in the front of ID Card</string>
-    <string name="hint_id_photo_back_not_found">No picture in the back of ID Card</string>
+    <string name="tips_id_photo_front_upload_failure">Failed to upload picture in the front of ID Card</string>
     <string name="hint_id_photo_back_unavailable">Invalid picture in the back of ID Card</string>
+    <string name="tips_id_photo_back_upload_failure">Failed to upload picture in the back of ID Card</string>
     <string name="action_submit">Submit</string>
 
     <string name="title_select_phone_area_code">Select Area Code</string>

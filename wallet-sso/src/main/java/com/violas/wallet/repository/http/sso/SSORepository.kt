@@ -1,8 +1,8 @@
 package com.violas.wallet.repository.http.sso
 
 import com.palliums.content.ContextProvider
-import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
+import com.palliums.utils.getImageName
 import com.palliums.violas.http.Response
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -132,16 +132,15 @@ class SSORepository(private val ssoApi: SSOApi) {
         } else {
             throw ImageCompressionFailedException()
         }
+
+        val imageName = file.getImageName() ?: "${file.name}.jpg"
+
         val asRequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
         val createFormData =
-            MultipartBody.Part.createFormData("photo", file.name, asRequestBody)
+            MultipartBody.Part.createFormData("photo", imageName, asRequestBody)
 
-        checkResponse {
-            ssoApi.uploadImage(createFormData).also {
-                if (it.data.isNullOrEmpty()) {
-                    throw RequestException.responseDataException()
-                }
-            }
+        checkResponse(dataNullableOnSuccess = false) {
+            ssoApi.uploadImage(createFormData)
         }
     }
 
