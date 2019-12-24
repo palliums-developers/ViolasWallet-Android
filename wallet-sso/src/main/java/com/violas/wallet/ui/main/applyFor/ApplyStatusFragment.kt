@@ -73,6 +73,12 @@ class ApplyStatusFragment : BaseFragment() {
                             ApplyForMintActivity::class.java
                         ).start(it1)
                     }
+                    2 -> {
+                        Intent(
+                            this.activity,
+                            ApplyFotSsoSubmitActivity::class.java
+                        ).start(it1)
+                    }
                     4 -> {
                         Intent(
                             this.activity,
