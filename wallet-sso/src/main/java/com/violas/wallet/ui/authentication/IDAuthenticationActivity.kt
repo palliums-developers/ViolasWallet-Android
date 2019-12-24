@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.lxj.xpopup.XPopup
 import com.palliums.base.BaseViewModel
+import com.palliums.utils.DensityUtility
 import com.sl.utakephoto.exception.TakeException
 import com.sl.utakephoto.manager.ITakePhotoResult
 import com.sl.utakephoto.manager.UTakePhoto
@@ -126,6 +127,20 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
         })
 
         etIDName.requestFocus()
+
+        // 动态设置EditText的左右padding
+        etIDName.post {
+            var paddingRight = ivSelectCountryArea.width
+            var paddingLeft =
+                tvCountryAreaLabel.width + DensityUtility.dp2px(this, 15)
+            tvCountryArea.setPadding(paddingLeft, 0, paddingRight, 0)
+
+            paddingLeft = tvLabelIDName.width + DensityUtility.dp2px(this, 15)
+            etIDName.setPadding(paddingLeft, 0, 0, 0)
+
+            paddingLeft = tvIdNumberLabel.width + DensityUtility.dp2px(this, 15)
+            etIdNumber.setPadding(paddingLeft, 0, 0, 0)
+        }
     }
 
     override fun onResume() {

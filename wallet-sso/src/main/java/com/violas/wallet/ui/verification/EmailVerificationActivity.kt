@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewModel
+import com.palliums.utils.DensityUtility
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
 import com.violas.wallet.ui.verification.EmailVerificationViewModel.Companion.ACTION_BING_EMAIL
@@ -70,6 +71,17 @@ class EmailVerificationActivity : BaseViewModelActivity() {
         })
 
         etEmailAddress.requestFocus()
+
+        // 动态设置EditText的左右padding
+        etEmailAddress.post {
+            val paddingLeft =
+                tvLabelEmail.width - DensityUtility.dp2px(this, 5)
+            etEmailAddress.setPadding(paddingLeft, 0, 0, 0)
+
+            val paddingRight =
+                tvGetVerificationCode.width + DensityUtility.dp2px(this, 15)
+            etVerificationCode.setPadding(0, 0, paddingRight, 0)
+        }
     }
 
     override fun onResume() {

@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewModel
+import com.palliums.utils.DensityUtility
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
 import com.violas.wallet.common.EXTRA_KEY_COUNTRY_AREA
@@ -80,9 +81,23 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
         })
         mViewModel.countryAreaVO.observe(this, Observer {
             tvAreaCode.text = "+${it.areaCode}"
+
+            // 动态设置EditText的左右padding
+            tvAreaCode.post {
+                val paddingLeft =
+                    tvAreaCode.width + ivSelectAreaCode.width - DensityUtility.dp2px(this, 5)
+                etPhoneNumber.setPadding(paddingLeft, 0, 0, 0)
+            }
         })
 
         etPhoneNumber.requestFocus()
+
+        // 动态设置EditText的左右padding
+        etPhoneNumber.post {
+            val paddingRight =
+                tvGetVerificationCode.width + DensityUtility.dp2px(this, 15)
+            etVerificationCode.setPadding(0, 0, paddingRight, 0)
+        }
     }
 
     override fun onResume() {
