@@ -2,6 +2,7 @@ package com.violas.wallet.ui.main.applyFor
 
 import androidx.lifecycle.*
 import com.palliums.net.LoadState
+import com.palliums.utils.isNetworkConnected
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ApplyManager
 import com.violas.wallet.biz.TokenManager
@@ -58,6 +59,22 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
     init {
         EventBus.getDefault().register(this)
         mApplyStatus.value = CODE_NETWORK_LOADING
+
+        /*
+         * 因为申请发行首页与我的首页共用UserViewModel，当先进入我的首页时，用户信息会开始同步，当
+         * 再切换进入申请发行首页时，若用户信息已同步结束，此时先添加对UserViewModel的LiveData观
+         * 察时，会立即返回相应结果，若用户信息同步失败会立即更新申请页面。此时应该判断UserViewModel
+         * 是否已初始化，若已初始化则判断是否重新同步用户信息
+         */
+        if (!userViewModel.init()) {
+            val loadState = userViewModel.loadState.value
+            if (loadState != null
+                && loadState.status == LoadState.Status.FAILURE
+                && isNetworkConnected()
+            ) {
+                userViewModel.execute()
+            }
+        }
 
         // 监听SSO发币申请的状态
         mApplyStatus.addSource(mNetWorkApplyStatus) {
@@ -149,7 +166,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
 
         viewModelScope.launch(Dispatchers.IO) {
             mAccount = mAccountManager.currentAccount()
-            userViewModel.init()
+
             refreshApplyStatusByNetwork(mAccount!!)
         }
     }

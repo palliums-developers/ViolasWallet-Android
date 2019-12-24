@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import com.palliums.base.BaseFragment
 import com.palliums.net.LoadState
 import com.palliums.utils.getColor
+import com.palliums.utils.isNetworkConnected
 import com.palliums.widget.MenuItemView
 import com.violas.wallet.R
 import com.violas.wallet.repository.local.user.AccountBindingStatus
@@ -43,11 +44,29 @@ class MeFragment : BaseFragment() {
         mivAddressBook.setOnClickListener(this)
         mivSettings.setOnClickListener(this)
 
-        mViewModel.tipsMessage.observe(this, Observer {
-            if (it.isNotEmpty()) {
-                showToast(it)
+        if (!mViewModel.tipsMessage.hasObservers()) {
+            mViewModel.tipsMessage.observe(this, Observer {
+                if (it.isNotEmpty()) {
+                    showToast(it)
+                }
+            })
+        }
+
+        /*
+         * 因为申请发行首页与我的首页共用UserViewModel，当先进入申请发行首页时，用户信息会开始同步，
+         * 当再切换进入我的首页时，若用户信息已同步结束，此时先添加对UserViewModel的LiveData观察
+         * 时，会立即返回相应结果，若用户信息同步失败会立即更新我的页面。此时应该判断UserViewModel
+         * 是否已初始化，若已初始化则判断是否重新同步用户信息
+         */
+        if (!mViewModel.init()) {
+            val loadState = mViewModel.loadState.value
+            if (loadState != null
+                && loadState.status == LoadState.Status.FAILURE
+                && isNetworkConnected()
+            ) {
+                mViewModel.execute()
             }
-        })
+        }
 
         mViewModel.getIdInfoLiveData().observe(this, Observer {
             when (it.first.idAuthenticationStatus) {
@@ -133,8 +152,6 @@ class MeFragment : BaseFragment() {
                 }
             }
         })
-
-        mViewModel.init()
     }
 
     private fun handLoadState(
