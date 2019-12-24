@@ -143,7 +143,7 @@ class ApplySubmitFragment : BaseFragment() {
                 val applyForIssuing = mApplyManager.applyForIssuing(
                     mAccount!!.address,
                     mCurrencyBean!!.indicator,
-                    itemCoinNumber.getContent()!!.toString().toLong(),
+                    itemCoinNumber.getContent()!!.toString().toBigDecimal(),
                     mCurrencyBean!!.exchange,
                     itemName.getContent()!!.toString(),
                     reservesImage!!,

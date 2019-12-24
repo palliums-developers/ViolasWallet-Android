@@ -5,7 +5,7 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 
 data class ApplyForStatusDTO(
-    val amount: Int,
+    val amount: Long,
     val approval_status: Int,
     val token_name: String,
     @SerializedName("module_address")

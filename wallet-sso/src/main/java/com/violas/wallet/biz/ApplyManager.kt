@@ -4,6 +4,7 @@ import com.palliums.violas.http.Response
 import com.violas.wallet.repository.DataRepository.getSSOService
 import com.violas.wallet.repository.http.sso.ApplyForStatusDTO
 import java.io.File
+import java.math.BigDecimal
 
 class ApplyManager {
     private val mSSOService by lazy {
@@ -22,7 +23,7 @@ class ApplyManager {
     suspend fun applyForIssuing(
         walletAddress: String,
         tokenType: String,
-        amount: Long,
+        amount: BigDecimal,
         tokenValue: Float,
         tokenName: String,
         reservePhotoUrl: String,
@@ -34,7 +35,7 @@ class ApplyManager {
     ) = mSSOService.applyForIssuing(
         walletAddress,
         tokenType,
-        amount,
+        amount.multiply(BigDecimal("1000000")).toLong(),
         tokenValue,
         tokenName,
         reservePhotoUrl,
