@@ -128,15 +128,48 @@
             app:item_hint="@string/hint_fill_stable_currency_value"
             app:item_title="@string/label_stable_currency_value" />
 
-        <com.violas.wallet.widget.ApplySubmitEditItemView
-            android:id="@+id/itemName"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            android:inputType="text"
-            android:maxLength="3"
-            app:item_hint="@string/hint_three_capital_letters"
-            app:item_title="@string/label_stable_currency_name" />
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvCoinNameTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="54dp"
+                android:gravity="start|center"
+                android:text="@string/label_stable_currency_name"
+                android:textColor="#3C3848"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/tvCoinNameContent"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:background="@null"
+                android:gravity="end|center"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                android:inputType="textAutoComplete"
+                android:maxLength="3"
+                android:hint="@string/hint_three_capital_letters"
+                android:textColor="#3C3848"
+                android:textColorHint="#C4C3C8"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCoinNameTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvCoinNameTitle"
+                app:layout_constraintTop_toTopOf="@+id/tvCoinNameTitle" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0.5dp"
+                android:background="#E5E5E5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvCoinNameTitle" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.violas.wallet.widget.ApplySubmitItemView
             android:id="@+id/itemWalletAddress"
