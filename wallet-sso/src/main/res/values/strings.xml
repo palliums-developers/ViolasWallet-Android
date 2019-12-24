@@ -239,7 +239,9 @@
     <string name="title_id_information">Identity Info</string>
 
     <string name="hint_kyc_content">*SSO Application requires Identity Authentication and Phone &amp; Email Verification</string>
+    <string name="hint_kyc_content_success">Congratulations on your certification.</string>
     <string name="hint_immediately_to">GoTo</string>
+    <string name="hint_immediately_to_issuing">Go Issuing</string>
     <string name="title_apply_issue_sso">Apply SSO Application</string>
     <string name="label_types_issuing">Type of Fiat Currency</string>
     <string name="label_governor_issuing">Select the governor</string>

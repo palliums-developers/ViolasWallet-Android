@@ -158,6 +158,9 @@ class ApplySubmitFragment : BaseFragment() {
                         applyForIssuing.errorCode == 2000 -> {
                             EventBus.getDefault().post(RefreshPageEvent())
                             showToast(getString(R.string.hint_mint_condition_success))
+                            activity?.let {
+                                it.finish()
+                            }
                         }
                         applyForIssuing.errorCode == 2003 -> showToast(getString(R.string.hint_net_work_error))
                         else -> showToast(getString(R.string.hint_emila_phone_verification_error))

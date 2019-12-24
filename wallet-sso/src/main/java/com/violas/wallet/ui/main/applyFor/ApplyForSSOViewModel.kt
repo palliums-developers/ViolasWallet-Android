@@ -31,7 +31,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
     companion object {
         const val CODE_NETWORK_ERROR = -1
         const val CODE_VERIFICATION_ACCOUNT = -2
-        const val CODE_APPLY_SSO = -3
+        const val CODE_VERIFICATION_SUCCESS = -3
         const val CODE_NETWORK_LOADING = -4
     }
 
@@ -60,7 +60,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
         })
         mApplyStatus.addSource(userViewModel.getAllReadyLiveData(), Observer {
             if (it && mApplyStatus.value ?: CODE_NETWORK_ERROR < 0) {
-                mApplyStatus.value = CODE_APPLY_SSO
+                mApplyStatus.value = CODE_VERIFICATION_SUCCESS
             } else if (it) {
                 refreshApplyStatus()
             } else {
@@ -100,7 +100,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                             CODE_NETWORK_ERROR
                         )
                         userViewModel.getAllReadyLiveData().value == true -> mApplyStatus.postValue(
-                            CODE_APPLY_SSO
+                            CODE_VERIFICATION_SUCCESS
                         )
                         else -> mApplyStatus.postValue(CODE_VERIFICATION_ACCOUNT)
                     }

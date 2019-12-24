@@ -8,10 +8,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseFragment
 import com.violas.wallet.R
 import com.violas.wallet.event.ApplyPageRefreshEvent
-import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_APPLY_SSO
 import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_NETWORK_ERROR
 import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_NETWORK_LOADING
 import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_VERIFICATION_ACCOUNT
+import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_VERIFICATION_SUCCESS
 import com.violas.wallet.ui.main.provideUserViewModel
 import kotlinx.android.synthetic.main.fragment_apply_for_sso.*
 import org.greenrobot.eventbus.EventBus
@@ -45,8 +45,8 @@ class ApplyForSSOFragment : BaseFragment() {
                 CODE_NETWORK_ERROR -> {
                     NetworkStatusFragment()
                 }
-                CODE_APPLY_SSO -> {
-                    ApplySubmitFragment()
+                CODE_VERIFICATION_SUCCESS -> {
+                    VerifySuccessFragment()
                 }
                 0, 1, 2, 3, 4 -> {
                     ApplyStatusFragment.getInstance(it)

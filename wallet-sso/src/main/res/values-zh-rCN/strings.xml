@@ -230,7 +230,9 @@
     <string name="title_id_information">身份信息</string>
 
     <string name="hint_kyc_content">*申请发行SSO必须先进行身份认证及手机、邮箱验证</string>
-    <string name="hint_immediately_to">立即前往</string>
+    <string name="hint_kyc_content_success">恭喜你认证成功</string>
+    <string name="hint_immediately_to">立即认证</string>
+    <string name="hint_immediately_to_issuing">立即发币</string>
     <string name="title_apply_issue_sso">申请发行 SSO</string>
     <string name="label_types_issuing">发币种类</string>
     <string name="label_governor_issuing">发币州长</string>
