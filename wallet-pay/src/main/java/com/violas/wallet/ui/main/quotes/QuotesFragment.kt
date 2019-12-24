@@ -126,6 +126,34 @@ class QuotesFragment : BaseFragment() {
             showToast(getString(R.string.hint_change_number_not_zero))
             return
         }
+        launch(coroutineExceptionHandler()) {
+            try {
+                showProgress()
+                mQuotesViewModel.handleCheckParam(fromBigDecimal, toBigDecimal)
+                dismissProgress()
+                showPasswordSend(fromBigDecimal, toBigDecimal)
+            } catch (e: java.lang.Exception) {
+                when (e) {
+                    is ExchangeCoinEqualException -> {
+                        showToast("${tvFromCoin.text}${getString(R.string.hint_unable_change)}${tvToCoin.text}")
+                    }
+                    is WrongPasswordException,
+                    is LackOfBalanceException,
+                    is TransferUnknownException -> {
+                        e.message?.let { showToast(it) }
+                    }
+                    else -> {
+                        showToast(getString(R.string.hint_unknown_error))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showPasswordSend(
+        fromBigDecimal: BigDecimal,
+        toBigDecimal: BigDecimal
+    ) {
         PasswordInputDialog()
             .setConfirmListener { password, dialogFragment ->
                 launch(coroutineExceptionHandler()) {

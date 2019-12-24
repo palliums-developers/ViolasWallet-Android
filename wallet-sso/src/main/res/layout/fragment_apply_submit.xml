@@ -116,7 +116,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:maxLength="19"
+            android:maxLength="12"
             app:item_hint="@string/hint_fill_number_types_issuing"
             app:item_title="@string/label_number_types_issuing" />
 

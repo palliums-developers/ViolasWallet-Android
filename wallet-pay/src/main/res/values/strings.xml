@@ -209,8 +209,8 @@
     <string name="state_revoked">Revoked</string>
     <string name="state_completed">Completed</string>
 
-    <string name="hint_exchange_successful">Exchange Successful</string>
-    <string name="hint_exchange_error">Exchange Error</string>
+    <string name="hint_exchange_successful">Exchange Application Successful</string>
+    <string name="hint_exchange_error">Exchange Application Error</string>
     <string name="hint_unable_change">Unable to Exchange</string>
     <string name="hint_unknown_error">Error</string>
     <string name="hint_change_number_not_zero">Amount of exchange cannot be zero</string>

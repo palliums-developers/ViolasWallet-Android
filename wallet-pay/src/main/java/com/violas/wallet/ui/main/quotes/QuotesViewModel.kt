@@ -323,6 +323,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             )
             val allOrderList = buyOrder//.plus(sellOrder)
                 .filter { orderFilter(it) }
+                .filter { it.userAddress() != mAccount?.address }
             allOrdersLiveData.postValue(
                 allOrderList.map(setOrderPrice())
                     .sortedByDescending { it.updateVersion() }
@@ -453,6 +454,33 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         return notEnable
     }
 
+    suspend fun handleCheckParam(
+        fromCoinAmount: BigDecimal,
+        toCoinAmount: BigDecimal
+    ) = withContext(Dispatchers.IO) {
+        if (currentFormCoinLiveData.value != null && currentFormCoinLiveData.value == currentToCoinLiveData.value) {
+            throw ExchangeCoinEqualException()
+        }
+
+        val fromCoin: IToken
+        val toCoin: IToken
+
+        if (isPositiveChangeLiveData.value == false) {
+            fromCoin = currentFormCoinLiveData.value!!
+            toCoin = currentToCoinLiveData.value!!
+        } else {
+            fromCoin = currentToCoinLiveData.value!!
+            toCoin = currentFormCoinLiveData.value!!
+        }
+
+        val tokenBalance =
+            mTokenManager.getTokenBalance(mAccount!!.address, fromCoin.tokenAddress())
+
+        if (fromCoinAmount.multiply(BigDecimal("1000000")).toLong() > tokenBalance) {
+            throw LackOfBalanceException()
+        }
+    }
+
     @Throws(
         ExchangeCoinEqualException::class,
         WrongPasswordException::class,
@@ -464,10 +492,6 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         fromCoinAmount: BigDecimal,
         toCoinAmount: BigDecimal
     ) = withContext(Dispatchers.IO) {
-        if (currentFormCoinLiveData.value != null && currentFormCoinLiveData.value == currentToCoinLiveData.value) {
-            throw ExchangeCoinEqualException()
-        }
-
         val decryptPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
             .decrypt(password, mAccount?.privateKey)
             ?: throw WrongPasswordException()
@@ -485,13 +509,6 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         } else {
             fromCoin = currentToCoinLiveData.value!!
             toCoin = currentFormCoinLiveData.value!!
-        }
-
-        val tokenBalance =
-            mTokenManager.getTokenBalance(mAccount!!.address, fromCoin.tokenAddress())
-
-        if (fromCoinAmount.multiply(BigDecimal("1000000")).toLong() > tokenBalance) {
-            throw LackOfBalanceException()
         }
 
         // publish

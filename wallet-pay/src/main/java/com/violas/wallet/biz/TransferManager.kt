@@ -25,11 +25,35 @@ class LackOfBalanceException :
     RuntimeException(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
 
 class TransferManager {
+    @Throws(AddressFaultException::class, RuntimeException::class)
+    fun checkTransferParam(
+        amountStr: String,
+        address: String,
+        account: AccountDO
+    ) {
+        if (address.isEmpty()) {
+            throw RuntimeException(getString(R.string.hint_please_input_address))
+        }
+
+        if (!checkAddress(address, account.coinNumber)) {
+            throw AddressFaultException()
+        }
+
+        val amount = try {
+            amountStr.trim().toDouble()
+        } catch (e: Exception) {
+            throw RuntimeException(getString(R.string.hint_please_input_amount))
+        }
+        if (amount <= 0) {
+            throw RuntimeException(getString(R.string.hint_please_input_amount))
+        }
+    }
+
     @Throws(AddressFaultException::class, WrongPasswordException::class)
     fun transfer(
         context: Context,
         address: String,
-        amount: Double,
+        amountStr: String,
         password: ByteArray,
         account: AccountDO,
         progress: Int,
@@ -38,10 +62,7 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        if (!checkAddress(address, account.coinNumber)) {
-            error.invoke(AddressFaultException())
-            return
-        }
+        val amount = amountStr.trim().toDouble()
 
         val decryptPrivateKey = SimpleSecurity.instance(getContext())
             .decrypt(password, account.privateKey)
@@ -106,10 +127,7 @@ class TransferManager {
             error.invoke(WrongPasswordException())
             return
         }
-        if (!checkAddress(address, account.coinNumber)) {
-            error.invoke(AddressFaultException())
-            return
-        }
+
         transactionManager.checkBalance(amount, 1, progress)
             .flatMap {
                 if (it) {

@@ -78,7 +78,7 @@ class SSORepository(private val ssoApi: SSOApi) {
     "account_info_photo_back_url":"$accountInfoPhotoBackUrl",
     "phone_verify_code":$phoneVerifyCode,
     "email_verify_code":$emailVerifyCode,
-    "governor_address":$governorAddress
+    "governor_address":"$governorAddress"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
         return try {

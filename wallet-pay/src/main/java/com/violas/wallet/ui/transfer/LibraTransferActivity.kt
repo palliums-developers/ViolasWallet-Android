@@ -122,32 +122,41 @@ class LibraTransferActivity : TransferActivity() {
         }
     }
 
-    private fun send() {
-        val amount = try {
-            editAmountInput.text.toString().trim().toDouble()
-        } catch (e: Exception) {
-            showToast(getString(R.string.hint_please_input_amount))
-            return
-        }
-        val address = editAddressInput.text.toString().trim()
-        if (amount <= 0) {
-            showToast(getString(R.string.hint_please_input_amount))
-            return
-        }
-        if (address.isEmpty()) {
-            showToast(getString(R.string.hint_please_input_address))
-            return
-        }
+    private fun checkBalance(): Boolean {
         when (account?.coinNumber) {
             CoinTypes.Libra.coinType(),
             CoinTypes.Violas.coinType() -> {
                 if (BigDecimal(editAmountInput.text.toString().trim()) >= mBalance) {
                     LackOfBalanceException().message?.let { showToast(it) }
-                    return
+                    return false
                 }
             }
         }
+        return true
+    }
 
+    private fun send() {
+        val amount = editAmountInput.text.toString()
+        val address = editAddressInput.text.toString()
+
+        if (account == null) {
+            return
+        }
+        try {
+            mTransferManager.checkTransferParam(amount, address, account!!)
+
+            if (!checkBalance()) {
+                return
+            }
+
+            showPasswordSend(amount, address)
+        } catch (e: Exception) {
+            e.message?.let { it1 -> showToast(it1) }
+            e.printStackTrace()
+        }
+    }
+
+    private fun showPasswordSend(amount: String, address: String) {
         PasswordInputDialog()
             .setConfirmListener { bytes, dialogFragment ->
                 dialogFragment.dismiss()
@@ -156,8 +165,8 @@ class LibraTransferActivity : TransferActivity() {
                     launch(Dispatchers.IO) {
                         mTransferManager.transfer(
                             this@LibraTransferActivity,
-                            address,
-                            amount,
+                            address.trim(),
+                            amount.trim(),
                             bytes,
                             account!!,
                             sbQuota.progress,
