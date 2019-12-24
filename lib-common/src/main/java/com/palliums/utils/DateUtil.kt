@@ -15,7 +15,7 @@ import java.util.*
  */
 fun correctDateLength(dateStr: String): String {
     return if (dateStr.length == 10)
-        "${dateStr}1000"
+        "${dateStr}000"
     else
         dateStr
 }

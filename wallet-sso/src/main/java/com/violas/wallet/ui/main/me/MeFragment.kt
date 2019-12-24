@@ -174,7 +174,7 @@ class MeFragment : BaseFragment() {
                         startActivity(
                             Intent(
                                 requireActivity(),
-                                IDAuthenticationActivity::class.java
+                                IDInformationActivity::class.java
                             )
                         )
                     }
