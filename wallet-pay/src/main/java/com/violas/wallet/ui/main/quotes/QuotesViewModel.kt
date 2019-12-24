@@ -323,6 +323,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             )
             val allOrderList = buyOrder//.plus(sellOrder)
                 .filter { orderFilter(it) }
+                .filter { it.userAddress() != mAccount?.address }
             allOrdersLiveData.postValue(
                 allOrderList.map(setOrderPrice())
                     .sortedByDescending { it.updateVersion() }
