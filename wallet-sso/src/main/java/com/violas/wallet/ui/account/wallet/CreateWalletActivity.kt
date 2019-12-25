@@ -93,7 +93,7 @@ class CreateWalletActivity : BaseAppActivity() {
                 BackupPromptActivity.start(
                     this@CreateWalletActivity,
                     mGenerateWalletMnemonic,
-                    BackupMnemonicFrom.OTHER_WALLET,
+                    BackupMnemonicFrom.CREATE_OTHER_WALLET,
                     REQUEST_BACK_MNEMONIC
                 )
             }

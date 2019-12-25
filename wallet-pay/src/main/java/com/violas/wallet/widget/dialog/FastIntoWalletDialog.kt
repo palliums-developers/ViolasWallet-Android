@@ -16,6 +16,7 @@ class FastIntoWalletDialog : DialogFragment() {
     private lateinit var mRootView: View
 
     private var message: String? = null
+    private var confirmCallback: (() -> Unit)? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,7 +40,13 @@ class FastIntoWalletDialog : DialogFragment() {
         isCancelable = false
         mRootView.btnConfirm.setOnClickListener {
             dismiss()
+            confirmCallback?.invoke()
         }
         return mRootView
+    }
+
+    fun setConfirmCallback(callback: () -> Unit): FastIntoWalletDialog {
+        confirmCallback = callback
+        return this
     }
 }

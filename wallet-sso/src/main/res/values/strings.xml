@@ -11,8 +11,8 @@
     <string name="language_chinese_traditional_more" tools:ignore="MissingTranslation">繁體中文</string>
 
     <string name="backup_mnemonic_prompt_title">Backup Mnemonic Words Hint</string>
-    <string name="backup_mnemonic_prompt_menu">Backup Mnemonic Words Later</string>
-    <string name="backup_mnemonic_prompt_btn">Start Backup Mnemonic Words</string>
+    <string name="backup_mnemonic_prompt_btn_later">Backup Mnemonic Words Later</string>
+    <string name="backup_mnemonic_prompt_btn_start">Start Backup Mnemonic Words</string>
     <string name="backup_mnemonic_prompt_content_01">Get Mnemonic Words</string>
     <string name="backup_mnemonic_prompt_content_02">Backup Mnemonic Words</string>
     <string name="backup_mnemonic_prompt_content_03">Write down mnemonic words on paper\nIf you have lost or damaged your phone，mnemonic words will be used to recover your funds in the wallet</string>

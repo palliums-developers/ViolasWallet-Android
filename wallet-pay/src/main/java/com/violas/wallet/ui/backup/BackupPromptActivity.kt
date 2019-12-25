@@ -52,22 +52,21 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.backup_mnemonic_prompt_title)
-        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY) {
-            // 如果是创建身份后进入该页面，则不支持后退
-            setTitleRightText(R.string.backup_mnemonic_prompt_menu)
+        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY_WALLET) {
+            // 如果是创建身份钱包后进入该页面，则不支持后退
             setTitleLeftViewVisibility(View.GONE)
+            tvBackupLater.visibility = View.VISIBLE
+        } else {
+            tvBackupLater.visibility = View.GONE
         }
-        tv_backup_prompt_next_step.setOnClickListener(this)
-    }
 
-    override fun onTitleRightViewClick() {
-        MainActivity.start(this)
-        finish()
+        tv_backup_prompt_next_step.setOnClickListener(this)
+        tvBackupLater.setOnClickListener(this)
     }
 
     override fun onBackPressedSupport() {
-        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY) {
-            // 如果是创建身份后进入该页面，则不支持后退
+        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY_WALLET) {
+            // 如果是创建身份钱包后进入该页面，则不支持后退
             return
         }
 
@@ -79,6 +78,11 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
             tv_backup_prompt_next_step -> {
                 getBackupIntent(ShowMnemonicActivity::class.java)
                     .start(this, BACKUP_REQUEST_CODE)
+            }
+
+            tvBackupLater -> {
+                MainActivity.start(this)
+                finish()
             }
         }
     }

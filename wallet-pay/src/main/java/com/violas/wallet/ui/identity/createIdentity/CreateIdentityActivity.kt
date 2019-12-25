@@ -60,7 +60,7 @@ class CreateIdentityActivity : BaseAppActivity() {
                         BackupPromptActivity.start(
                             this@CreateIdentityActivity,
                             mnemonicWords as ArrayList<String>,
-                            BackupMnemonicFrom.CREATE_IDENTITY
+                            BackupMnemonicFrom.CREATE_IDENTITY_WALLET
                         )
 
                         App.finishAllActivity()

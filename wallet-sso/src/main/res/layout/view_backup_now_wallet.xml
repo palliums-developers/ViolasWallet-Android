@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="@string/hint_security_setting"
+            android:text="@string/backup_mnemonic_warn_title"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />

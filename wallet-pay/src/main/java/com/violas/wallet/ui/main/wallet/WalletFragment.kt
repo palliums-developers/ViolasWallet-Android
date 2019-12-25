@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
 import com.palliums.utils.isFastMultiClick
@@ -15,6 +14,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertToken
+import com.violas.wallet.event.BackupIdentityMnemonicEvent
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -89,54 +89,17 @@ class WalletFragment : BaseFragment() {
         vTransactionRecordLayout.setOnClickListener(this)
 
         if (mAccountManager.isFastIntoWallet()) {
-            activity?.supportFragmentManager?.let {
-                FastIntoWalletDialog()
-                    .show(it, "fast")
-            }
-        } else {
-            if (!mAccountManager.isIdentityMnemonicBackup()) {
-                layoutBackupNow.visibility = View.VISIBLE
-                btnConfirm.setOnClickListener {
-                    layoutBackupNow?.visibility = View.GONE
-
-                    activity?.supportFragmentManager?.let {
-                        PasswordInputDialog()
-                            .setConfirmListener { bytes, dialogFragment ->
-                                launch(Dispatchers.IO) {
-                                    activity?.applicationContext?.let { it1 ->
-                                        try {
-                                            val currentAccount =
-                                                mAccountManager.getIdentityWalletMnemonic(
-                                                    it1,
-                                                    bytes
-                                                )
-                                                    ?.toMutableList()
-                                            if (currentAccount != null) {
-                                                dialogFragment.dismiss()
-                                                BackupPromptActivity.start(
-                                                    activity!!,
-                                                    currentAccount as ArrayList<String>,
-                                                    BackupMnemonicFrom.IDENTITY_WALLET
-                                                )
-                                            } else {
-                                                withContext(Dispatchers.Main) {
-                                                    Toast.makeText(
-                                                        it1,
-                                                        R.string.hint_password_error,
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                }
-                                            }
-                                        } catch (e: Exception) {
-                                            e.printStackTrace()
-                                        }
-                                    }
-                                }
-                            }
-                            .show(it)
+            FastIntoWalletDialog()
+                .setConfirmCallback {
+                    if (!mAccountManager.isIdentityMnemonicBackup()) {
+                        layoutBackupNow.visibility = View.VISIBLE
+                        btnConfirm.setOnClickListener(this)
                     }
                 }
-            }
+                .show(requireActivity().supportFragmentManager, "fast")
+        } else if (!mAccountManager.isIdentityMnemonicBackup()) {
+            layoutBackupNow.visibility = View.VISIBLE
+            btnConfirm.setOnClickListener(this)
         }
 
         swipeRefreshLayout.setOnRefreshListener {
@@ -216,6 +179,37 @@ class WalletFragment : BaseFragment() {
                     activity?.let { TransactionRecordActivity.start(it, currentAccount.id) }
                 }
             }
+
+            R.id.btnConfirm -> {
+                layoutBackupNow.visibility = View.GONE
+                PasswordInputDialog()
+                    .setConfirmListener { bytes, dialogFragment ->
+                        launch(Dispatchers.IO) {
+                            activity?.applicationContext?.let {
+                                try {
+                                    val currentAccount =
+                                        mAccountManager.getIdentityWalletMnemonic(it, bytes)
+
+                                    withContext(Dispatchers.Main) {
+                                        if (currentAccount != null) {
+                                            dialogFragment.dismiss()
+                                            BackupPromptActivity.start(
+                                                requireActivity(),
+                                                currentAccount,
+                                                BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
+                                            )
+                                        } else {
+                                            showToast(R.string.hint_password_error)
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        }
+                    }
+                    .show(requireActivity().supportFragmentManager)
+            }
         }
     }
 
@@ -227,12 +221,16 @@ class WalletFragment : BaseFragment() {
                 refreshAssert(false)
             }
         }
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSwitchAccountEvent(event: SwitchAccountEvent) {
         refreshAssert(true)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onBackupIdentityMnemonicEvent(event: BackupIdentityMnemonicEvent) {
+        layoutBackupNow.visibility = View.GONE
     }
 
     private fun refreshAssert(switchWallet: Boolean) {

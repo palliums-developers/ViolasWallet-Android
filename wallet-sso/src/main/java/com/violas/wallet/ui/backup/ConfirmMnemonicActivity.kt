@@ -8,8 +8,10 @@ import com.palliums.content.App
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.event.BackupIdentityMnemonicEvent
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_confirm_mnemonic.*
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 2019-10-21 15:18.
@@ -43,7 +45,7 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
         val wordsSource: ArrayList<WordVO> = arrayListOf()
         val wordsConfirmed: ArrayList<WordVO> = arrayListOf()
         mnemonicWords!!.forEachIndexed { index, word ->
-            wordsSource.add(WordVO(word, index, true))
+            wordsSource.add(WordVO(word, index))
         }
 
         if (BuildConfig.SHUFFLE_MNEMONIC) {
@@ -83,22 +85,27 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
             vComplete -> {
                 // 验证助记词顺序
                 if (checkMnemonic()) {
-                    if (mnemonicFrom != BackupMnemonicFrom.OTHER_WALLET) {
-                        // 如果是备份身份钱包的助记词，需要存储备份结果到本地
+                    if (mnemonicFrom != BackupMnemonicFrom.CREATE_OTHER_WALLET) {
+                        // 如果是身份钱包，需要存储备份结果到本地
                         val accountManager = AccountManager()
                         if (!accountManager.isIdentityMnemonicBackup()) {
                             accountManager.setIdentityMnemonicBackup()
+
+                            // 如果是来自备份身份钱包的助记词，需要通知钱包首页关闭安全设置视图
+                            if (mnemonicFrom == BackupMnemonicFrom.BACKUP_IDENTITY_WALLET) {
+                                EventBus.getDefault().post(BackupIdentityMnemonicEvent())
+                            }
                         }
 
-                        // 如果是来自创建身份，完成后需要跳转到App首页
-                        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY) {
+                        // 如果是来自创建身份钱包，完成后需要跳转到App首页
+                        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY_WALLET) {
                             MainActivity.start(this)
                             App.finishAllActivity()
                             return
                         }
                     }
 
-                    // 如果是来自备份身份钱包和创建钱包，完成后需要返回成功结果
+                    // 如果是来自备份身份钱包或创建非身份钱包，完成后需要返回成功结果
                     setResult(Activity.RESULT_OK)
                     finish()
                 }

@@ -23,13 +23,12 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
         fun start(
             context: Activity,
             mnemonic: ArrayList<String>,
-            justShow: Boolean = false,
             requestCode: Int = -1
         ) {
             Intent(context, ShowMnemonicActivity::class.java).apply {
                 putStringArrayListExtra(INTENT_KET_MNEMONIC_WORDS, mnemonic)
-                putExtra(INTENT_KET_MNEMONIC_FROM, BackupMnemonicFrom.CREATE_IDENTITY)
-                putExtra(INTENT_KET_JUST_SHOW, justShow)
+                putExtra(INTENT_KET_MNEMONIC_FROM, BackupMnemonicFrom.CREATE_IDENTITY_WALLET)
+                putExtra(INTENT_KET_JUST_SHOW, true)
             }.start(context, requestCode)
         }
     }
@@ -58,7 +57,7 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
     private fun init() {
         val words: ArrayList<WordVO> = arrayListOf()
         mnemonicWords!!.forEachIndexed { index, word ->
-            words.add(WordVO(word, index, false))
+            words.add(WordVO(word, index))
         }
 
         vSourceWords.layoutManager = GridLayoutManager(this, 3)

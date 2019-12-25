@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import com.violas.wallet.BuildConfig
 import com.violas.wallet.base.BaseAppActivity
 
 /**
@@ -38,7 +39,12 @@ abstract class BaseBackupMnemonicActivity : BaseAppActivity() {
             return
         }
 
-        Log.e(this.javaClass.simpleName, "mnemonic words => ${mnemonicWords!!.joinToString(" ")}")
+        if (BuildConfig.DEBUG) {
+            Log.e(
+                this.javaClass.simpleName,
+                "mnemonic words => ${mnemonicWords!!.joinToString(" ")}"
+            )
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
