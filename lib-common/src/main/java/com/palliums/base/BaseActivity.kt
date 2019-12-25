@@ -71,12 +71,22 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
 
     protected open fun getLayoutView(): View? = null
 
+    private fun adjustTitlePaddingHorizontal() {
+        vTitleMiddleText.post {
+            val paddingHorizontal = vTitleLeftImageBtn.width.coerceAtLeast(
+                vTitleRightImageBtn.width.coerceAtLeast(vTitleRightTextBtn.width)
+            )
+            vTitleMiddleText.setPadding(paddingHorizontal, 0, paddingHorizontal, 0)
+        }
+    }
+
     /**
      * 设置标题
      */
     override fun setTitle(@StringRes strId: Int) {
         if (strId != 0) {
             vTitleMiddleText.setText(strId)
+            adjustTitlePaddingHorizontal()
         }
     }
 
@@ -86,6 +96,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
     override fun setTitle(title: CharSequence?) {
         if (!title.isNullOrEmpty()) {
             vTitleMiddleText.text = title
+            adjustTitlePaddingHorizontal()
         }
     }
 
@@ -109,6 +120,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
         } else {
             vTitleLeftImageBtn.visibility = View.GONE
         }
+        adjustTitlePaddingHorizontal()
     }
 
     /**
@@ -124,6 +136,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
         } else {
             vTitleRightTextBtn.visibility = View.GONE
         }
+        adjustTitlePaddingHorizontal()
     }
 
     /**
@@ -148,6 +161,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
         } else {
             vTitleRightImageBtn.visibility = View.GONE
         }
+        adjustTitlePaddingHorizontal()
     }
 
     /**
@@ -225,6 +239,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
      */
     fun setTitleLeftViewVisibility(visibility: Int) {
         vTitleLeftImageBtn.visibility = visibility
+        adjustTitlePaddingHorizontal()
     }
 
     /**
