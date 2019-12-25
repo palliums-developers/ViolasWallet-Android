@@ -52,25 +52,25 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
     public interface Api {
 
         @GET("address/{address}/unspent")
-        Observable<UnSpentBean> getUTXO(@Path("address") String address);
+        Observable<UnSpentDTO> getUTXO(@Path("address") String address);
 
         @GET("address/{address}")
-        Observable<BalanceBean> getBalance(@Path("address") String address);
+        Observable<BalanceDTO> getBalance(@Path("address") String address);
 
         @GET("tx/{txhash}?verbose=3")
-        Observable<TranceBean> getTx(@Path("txhash") String txhash);
+        Observable<TranceDTO> getTx(@Path("txhash") String txhash);
 
         @POST("tools/tx-publish")
-        Observable<PushTxBean> pushTx(@Body RequestBody tx);
+        Observable<PushTxDTO> pushTx(@Body RequestBody tx);
 
     }
 
     @Override
     public Observable<List<UTXO>> getUtxo(String address) {
         return getRequest().getUTXO(address)
-                .map(new Function<UnSpentBean, List<UTXO>>() {
+                .map(new Function<UnSpentDTO, List<UTXO>>() {
                     @Override
-                    public List<UTXO> apply(UnSpentBean unSpent) throws Exception {
+                    public List<UTXO> apply(UnSpentDTO unSpent) throws Exception {
                         if (unSpent.data == null) {
                             return new ArrayList<>(0);
                         }
@@ -83,9 +83,9 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
     @Override
     public Observable<BigDecimal> getBalance(String address) {
         return getRequest().getBalance(address)
-                .map(new Function<BalanceBean, BigDecimal>() {
+                .map(new Function<BalanceDTO, BigDecimal>() {
                     @Override
-                    public BigDecimal apply(BalanceBean balanceBlockCypher) throws Exception {
+                    public BigDecimal apply(BalanceDTO balanceBlockCypher) throws Exception {
                         if (balanceBlockCypher.data == null) return new BigDecimal(0);
                         Log.e("==amount==", balanceBlockCypher.data.balance + "");
                         return new BigDecimal(balanceBlockCypher.data.balance + "");
@@ -95,11 +95,11 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
 
     @Override
     public Observable<String> pushTx(String tx) {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(new TxBean(tx)));
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(new TxDTO(tx)));
         return getRequest().pushTx(requestBody)
-                .map(new Function<PushTxBean, String>() {
+                .map(new Function<PushTxDTO, String>() {
                     @Override
-                    public String apply(PushTxBean txrefs) throws Exception {
+                    public String apply(PushTxDTO txrefs) throws Exception {
                         if (txrefs.data == null || txrefs.err_no != 0) {
                             throw new RuntimeException();
                         }
@@ -125,22 +125,22 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
     @Override
     public Observable<TransactionBean> getTranscation(String TXHash) {
         return getRequest().getTx(TXHash)
-                .map(new Function<TranceBean, TransactionBean>() {
+                .map(new Function<TranceDTO, TransactionBean>() {
                     @Override
-                    public TransactionBean apply(TranceBean btTrance) throws Exception {
+                    public TransactionBean apply(TranceDTO btTrance) throws Exception {
                         return parse(btTrance);
                     }
                 });
     }
 
-    private TransactionBean parse(TranceBean btTrance) {
+    private TransactionBean parse(TranceDTO btTrance) {
         return new TransactionBean(btTrance.data);
     }
 
-    private List<UTXO> parse(UnSpentBean unSpent, String address) {
+    private List<UTXO> parse(UnSpentDTO unSpent, String address) {
         List<UTXO> utxos = new ArrayList<>(unSpent.data.list.size());
 
-        for (UnSpentBean.DataBean.ListBean list : unSpent.data.list) {
+        for (UnSpentDTO.DataBean.ListBean list : unSpent.data.list) {
             try {
                 utxos.add(parse(list, address));
             } catch (Exception e) {
@@ -151,7 +151,7 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
         return utxos;
     }
 
-    private UTXO parse(UnSpentBean.DataBean.ListBean bean, String address) {
+    private UTXO parse(UnSpentDTO.DataBean.ListBean bean, String address) {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         final TransactionBean[] transaction = new TransactionBean[1];
         BitcoinChainApi.INSTANCE.get().getTranscation(bean.tx_hash)
@@ -191,15 +191,15 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
 
     }
 
-    static class TxBean {
-        TxBean(String rawhex) {
+    static class TxDTO {
+        TxDTO(String rawhex) {
             this.rawhex = rawhex;
         }
 
         String rawhex;
     }
 
-    static class PushTxBean {
+    static class PushTxDTO {
 
         /**
          * err_no : 0
@@ -210,7 +210,7 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
         public String data;
     }
 
-    public static class TranceBean {
+    public static class TranceDTO {
 
         /**
          * err_no : 0
@@ -317,7 +317,7 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
         }
     }
 
-    private static class UnSpentBean {
+    private static class UnSpentDTO {
 
         /**
          * data : {"total_count":84,"page":1,"pagesize":50,"list":[{"tx_hash":"8e1ea39ee073bef438ee63d630d36433dec6ce57666af38d7337d7bb6d1b3f48","tx_output_n":0,"tx_output_n2":0,"value":95827,"confirmations":180},{"tx_hash":"e0485a9772ae47aa5707bf1cd3f5c7e3d9d96e4672b3392ffa94b11e08777b80","tx_output_n":0,"tx_output_n2":0,"value":100000,"confirmations":179},{"tx_hash":"e0485a9772ae47aa5707bf1cd3f5c7e3d9d96e4672b3392ffa94b11e08777b80","tx_output_n":1,"tx_output_n2":0,"value":16654218,"confirmations":179},{"tx_hash":"b0df43b18db5548f3e63a0d2f433ef8e42de63a2dd4246b0f0cb170aba75503b","tx_output_n":1,"tx_output_n2":0,"value":82606,"confirmations":157},{"tx_hash":"8dab01f40b058ce5dfca490e5cc53961c7a83a3e6651dce737785e6a9e970ecd","tx_output_n":1,"tx_output_n2":0,"value":21543328,"confirmations":37}]}
@@ -360,7 +360,7 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
         }
     }
 
-    private static class BalanceBean {
+    private static class BalanceDTO {
 
         /**
          * err_no : 0

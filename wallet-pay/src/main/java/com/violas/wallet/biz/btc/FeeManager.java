@@ -11,8 +11,8 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
 public class FeeManager {
-    private Integer minFee;
-    private Integer maxFee;
+    private Long minFee;
+    private Long maxFee;
 
     public BigDecimal calculateFee(List<UTXO> utxoList, int toAddressSize) {
         return calculateFee(utxoList, toAddressSize, 60);
@@ -61,8 +61,8 @@ public class FeeManager {
 
     private void checkLoadFee() {
         if (minFee == null || maxFee == null) {
-            minFee = 10;
-            maxFee = 20;
+            minFee = 10L;
+            maxFee = 20L;
         }
     }
 

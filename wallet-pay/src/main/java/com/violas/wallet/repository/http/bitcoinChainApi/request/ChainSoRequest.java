@@ -32,23 +32,23 @@ public class ChainSoRequest extends BaseRequest<ChainSoRequest.Api> implements B
 
     public interface Api {
         @GET("get_address_balance/BTCTEST/{address}")
-        Observable<BalanceBean> getBalance(@Path("address") String address);
+        Observable<BalanceDTO> getBalance(@Path("address") String address);
 
         @GET("get_tx_unspent/BTCTEST/{address}")
-        Observable<UTXORequestBean> getUTXO(@Path("address") String address);
+        Observable<UTXORequestDTO> getUTXO(@Path("address") String address);
 
         @GET("get_tx/BTCTEST/{txhash}")
-        Observable<TxRequestBean> getTx(@Path("txhash") String txhash);
+        Observable<TxRequestDTO> getTx(@Path("txhash") String txhash);
 
         @POST("send_tx/BTCTEST")
-        Observable<PushTxBean> pushTx(@Body RequestBody tx);
+        Observable<PushTxDTO> pushTx(@Body RequestBody tx);
     }
 
     public Observable<List<UTXO>> getUtxo(String address) {
         return getRequest().getUTXO(address)
-                .map(new Function<UTXORequestBean, List<UTXO>>() {
+                .map(new Function<UTXORequestDTO, List<UTXO>>() {
                     @Override
-                    public List<UTXO> apply(UTXORequestBean txrefs) throws Exception {
+                    public List<UTXO> apply(UTXORequestDTO txrefs) throws Exception {
                         return parse(txrefs.data.txs, txrefs.data.address);
                     }
                 });
@@ -57,9 +57,9 @@ public class ChainSoRequest extends BaseRequest<ChainSoRequest.Api> implements B
     @Override
     public Observable<BigDecimal> getBalance(String address) {
         return getRequest().getBalance(address)
-                .map(new Function<BalanceBean, BigDecimal>() {
+                .map(new Function<BalanceDTO, BigDecimal>() {
                     @Override
-                    public BigDecimal apply(BalanceBean balanceBean) throws Exception {
+                    public BigDecimal apply(BalanceDTO balanceBean) throws Exception {
                         return new BigDecimal(balanceBean.data.confirmed_balance);
                     }
                 });
@@ -68,9 +68,9 @@ public class ChainSoRequest extends BaseRequest<ChainSoRequest.Api> implements B
     @Override
     public Observable<String> pushTx(String tx) {
         return pushTX(tx)
-                .map(new Function<PushTxBean, String>() {
+                .map(new Function<PushTxDTO, String>() {
                     @Override
-                    public String apply(PushTxBean pushTx) throws Exception {
+                    public String apply(PushTxDTO pushTx) throws Exception {
                         return pushTx.data.txid;
                     }
                 });
@@ -79,15 +79,15 @@ public class ChainSoRequest extends BaseRequest<ChainSoRequest.Api> implements B
     @Override
     public Observable<TransactionBean> getTranscation(String TXHash) {
         return getRequest().getTx(TXHash)
-                .map(new Function<TxRequestBean, TransactionBean>() {
+                .map(new Function<TxRequestDTO, TransactionBean>() {
                     @Override
-                    public TransactionBean apply(TxRequestBean txRequest) throws Exception {
+                    public TransactionBean apply(TxRequestDTO txRequest) throws Exception {
                         return parse(txRequest);
                     }
                 });
     }
 
-    private static class PushTxBean {
+    private static class PushTxDTO {
 
         /**
          * status : fail
@@ -109,26 +109,26 @@ public class ChainSoRequest extends BaseRequest<ChainSoRequest.Api> implements B
         }
     }
 
-    private Observable<PushTxBean> pushTX(String tx) {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(new TxBean(tx)));
+    private Observable<PushTxDTO> pushTX(String tx) {
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(new TxDTO(tx)));
         return getRequest().pushTx(requestBody);
     }
 
-    private TransactionBean parse(TxRequestBean txRequest) {
+    private TransactionBean parse(TxRequestDTO txRequest) {
         // String blockhash, long blocktime, int confirmations, String hash, String hex, long locktime, int version
-        TxRequestBean.DataBean btTrance = txRequest.data;
+        TxRequestDTO.DataBean btTrance = txRequest.data;
         return new TransactionBean(btTrance.blockhash, btTrance.time, btTrance.confirmations, btTrance.txid, btTrance.tx_hex, btTrance.locktime, btTrance.version);
     }
 
-    private static class TxBean {
-        public TxBean(String tx_hex) {
+    private static class TxDTO {
+        public TxDTO(String tx_hex) {
             this.tx_hex = tx_hex;
         }
 
         public String tx_hex;
     }
 
-    public static class BalanceBean {
+    public static class BalanceDTO {
 
         /**
          * status : success
@@ -153,7 +153,7 @@ public class ChainSoRequest extends BaseRequest<ChainSoRequest.Api> implements B
         }
     }
 
-    public static class UTXORequestBean {
+    public static class UTXORequestDTO {
 
         /**
          * status : success
@@ -196,7 +196,7 @@ public class ChainSoRequest extends BaseRequest<ChainSoRequest.Api> implements B
         }
     }
 
-    public static class TxRequestBean {
+    public static class TxRequestDTO {
 
         /**
          * status : success
@@ -281,17 +281,17 @@ public class ChainSoRequest extends BaseRequest<ChainSoRequest.Api> implements B
         }
     }
 
-    private static List<UTXO> parse(List<UTXORequestBean.DataBean.TxsBean> beans, String address) {
+    private static List<UTXO> parse(List<UTXORequestDTO.DataBean.TxsBean> beans, String address) {
         List<UTXO> utxos = new ArrayList<>(beans.size());
 
-        for (UTXORequestBean.DataBean.TxsBean bean : beans) {
+        for (UTXORequestDTO.DataBean.TxsBean bean : beans) {
             utxos.add(parse(bean, address));
         }
         return utxos;
     }
 
 
-    private static UTXO parse(UTXORequestBean.DataBean.TxsBean bean, String address) {
+    private static UTXO parse(UTXORequestDTO.DataBean.TxsBean bean, String address) {
         // TODO: 2019/1/22 未来改进
         return new UTXO(address, bean.txid, bean.output_no, bean.script_hex, Double.valueOf(bean.value), 0, bean.confirmations);
     }

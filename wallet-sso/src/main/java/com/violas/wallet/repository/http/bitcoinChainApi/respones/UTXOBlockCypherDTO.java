@@ -1,11 +1,9 @@
 package com.violas.wallet.repository.http.bitcoinChainApi.respones;
 
 
-import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXOBlockCypher;
-
 import java.util.List;
 
-public class UTXOBlockCypherResponse {
+public class UTXOBlockCypherDTO {
 
     /**
      * address : mp5C7DdXwXfEaAYhncnoxgKPaka3rGG4yq
@@ -28,5 +26,5 @@ public class UTXOBlockCypherResponse {
     public int n_tx;
     public int unconfirmed_n_tx;
     public int final_n_tx;
-    public List<UTXOBlockCypher> txrefs;
+    public List<com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXOBlockCypherDTO> txrefs;
 }

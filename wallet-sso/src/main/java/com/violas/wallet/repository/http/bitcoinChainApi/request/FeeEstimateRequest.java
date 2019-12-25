@@ -10,15 +10,19 @@ public class FeeEstimateRequest {
     }
 
     public static class FeesBean {
+        public FeesBean(long fastestFee, long halfHourFee, long hourFee) {
+            this.fastestFee = fastestFee;
+            this.halfHourFee = halfHourFee;
+            this.hourFee = hourFee;
+        }
 
         /**
          * fastestFee : 12
          * halfHourFee : 10
          * hourFee : 2
          */
-
-        public int fastestFee;
-        public int halfHourFee;
-        public int hourFee;
+        public long fastestFee;
+        public long halfHourFee;
+        public long hourFee;
     }
 }

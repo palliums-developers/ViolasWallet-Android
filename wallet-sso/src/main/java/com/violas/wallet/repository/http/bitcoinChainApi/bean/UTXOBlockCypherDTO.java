@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.bitcoinChainApi.bean;
 
-public class UTXOBlockCypher {
+public class UTXOBlockCypherDTO {
 
     /**
      * tx_hash : 1723394ed6083206dbe4bb0967b98d39b93c27d3c1697b69400cf0a8bf471507

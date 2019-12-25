@@ -2,7 +2,7 @@ package com.violas.wallet.repository.http.bitcoinChainApi.respones;
 
 import java.util.List;
 
-public class PushTxBlockCypherResponse {
+public class PushTxBlockCypherDTO {
 
 
     public TxBean tx;
