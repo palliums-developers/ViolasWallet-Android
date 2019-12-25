@@ -13,13 +13,14 @@
         android:hint="@string/hint_enter_email_address"
         android:imeOptions="actionNext"
         android:inputType="textEmailAddress"
-        android:paddingStart="@dimen/dp_150"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:paddingStart="@dimen/dp_150"
         tools:text="123456789123456789123456789123456789123456789123456789" />
 
     <TextView
+        android:id="@+id/tvLabelEmail"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_0"
         android:layout_marginStart="@dimen/dp_10"
@@ -38,10 +39,10 @@
         style="@style/EditText.Code"
         android:hint="@string/hint_enter_verification_code"
         android:imeOptions="actionDone"
-        android:paddingEnd="@dimen/dp_200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etEmailAddress"
+        tools:paddingEnd="@dimen/dp_200"
         tools:text="234562 234562234562234562234562234562234562" />
 
     <TextView

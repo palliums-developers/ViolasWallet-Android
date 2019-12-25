@@ -2,7 +2,6 @@ package com.violas.wallet.ui.main.applyFor
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseFragment
@@ -36,6 +35,14 @@ class ApplyForSSOFragment : BaseFragment() {
 
         vTitleMiddleText.text = getString(R.string.title_apply_issue_sso)
         EventBus.getDefault().register(this)
+
+        if (!mUserViewModel.tipsMessage.hasObservers()) {
+            mUserViewModel.tipsMessage.observe(this, Observer {
+                if (it.isNotEmpty()) {
+                    showToast(it)
+                }
+            })
+        }
 
         mApplyForSSOViewModel.getApplyStatusLiveData().observe(viewLifecycleOwner, Observer {
             Log.e("====", "====监听状态==${it}")

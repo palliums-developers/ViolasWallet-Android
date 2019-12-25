@@ -13,10 +13,10 @@
         android:hint="@string/hint_enter_phone_number"
         android:imeOptions="actionNext"
         android:inputType="number"
-        android:paddingStart="@dimen/dp_150"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:paddingStart="@dimen/dp_150"
         tools:text="123456789123456789123456789123456789123456789123456789" />
 
     <TextView
@@ -54,10 +54,10 @@
         style="@style/EditText.Code"
         android:hint="@string/hint_enter_verification_code"
         android:imeOptions="actionDone"
-        android:paddingEnd="@dimen/dp_200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etPhoneNumber"
+        tools:paddingEnd="@dimen/dp_200"
         tools:text="234562234562234562234562234562234562234562" />
 
     <TextView

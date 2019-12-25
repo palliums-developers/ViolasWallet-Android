@@ -181,9 +181,13 @@ class UserViewModel : BaseViewModel() {
         }
     }
 
-    fun init() {
+    /**
+     * 初始化
+     * @return false表示已初始化过
+     */
+    fun init(): Boolean {
         if (initFlag.get()) {
-            return
+            return false
         }
 
         initFlag.set(true)
@@ -253,6 +257,8 @@ class UserViewModel : BaseViewModel() {
                 }
             }
         }
+
+        return true
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
