@@ -235,8 +235,8 @@
     <string name="hint_immediately_to_issuing">立即发币</string>
     <string name="title_apply_issue_sso">申请发行 SSO</string>
     <string name="label_types_issuing">发币种类</string>
-    <string name="label_governor_issuing">发币州长</string>
-    <string name="hint_select_governor">选择发币州长</string>
+    <string name="label_governor_issuing">发行方</string>
+    <string name="hint_select_governor">选择发行方</string>
     <string name="hint_select_types_issuing">选择发币种类</string>
     <string name="hint_fill_number_types_issuing">填写发币数量</string>
     <string name="label_number_types_issuing">铸币数量</string>
@@ -272,7 +272,7 @@
     <string name="hint_mint_success">恭喜铸币成功\n请在钱包首页查看</string>
     <string name="hint_upload_failure">上传失败</string>
     <string name="hint_select_issuing_type">请选择发币种类</string>
-    <string name="hint_select_governor_issuing">请选择发币州长</string>
+    <string name="hint_select_governor_issuing">请选择发行方</string>
     <string name="hint_issuing_number">请填写发币数量</string>
     <string name="hint_fill_token_name">请填写稳定币名称</string>
     <string name="hint_upload_reserves">上传储备金文件证明</string>
