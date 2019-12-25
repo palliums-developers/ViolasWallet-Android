@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Date;
 
 
-public class TXBeanCypher {
+public class TXBeanCypherDTO {
 
     private String block_hash;
     private long block_height;

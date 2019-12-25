@@ -18,10 +18,27 @@ public class Fee21Request extends BaseRequest<Fee21Request.Api> {
 
     public interface Api {
         @GET("fees/recommended")
-        Observable<FeeEstimateRequest.FeesBean> getFees(@Query("v") String str);
+        Observable<FeesDTO> getFees(@Query("v") String str);
+    }
+
+    public static class FeesDTO {
+
+        /**
+         * fastestFee : 12
+         * halfHourFee : 10
+         * hourFee : 2
+         */
+        public long fastestFee;
+        public long halfHourFee;
+        public long hourFee;
     }
 
     public Observable<FeeEstimateRequest.FeesBean> getFee() {
-        return getRequest().getFees("1");
+        return getRequest().getFees("1")
+                .map(feesDTO -> new FeeEstimateRequest.FeesBean(
+                        feesDTO.fastestFee,
+                        feesDTO.halfHourFee,
+                        feesDTO.hourFee
+                ));
     }
 }

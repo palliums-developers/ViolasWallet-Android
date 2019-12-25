@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="54dp"
                 android:gravity="start|center"
-                android:text="@string/label_types_issuing"
+                android:text="@string/label_governor_issuing"
                 android:textColor="#3C3848"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"

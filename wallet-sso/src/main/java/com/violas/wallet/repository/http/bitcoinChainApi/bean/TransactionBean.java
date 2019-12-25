@@ -47,8 +47,8 @@ public class TransactionBean {
 
     }
 
-    public TransactionBean(BTrusteeRequest.BtTranceBean btTranceBean) {
-        BTrusteeRequest.BtTranceBean.ResultBean btTrance = btTranceBean.result;
+    public TransactionBean(BTrusteeRequest.BtTranceDTO btTranceBean) {
+        BTrusteeRequest.BtTranceDTO.ResultBean btTrance = btTranceBean.result;
         this.blockhash = btTrance.blockhash;
         this.blocktime = btTrance.blocktime;
         this.confirmations = btTrance.confirmations;
@@ -57,11 +57,11 @@ public class TransactionBean {
         this.locktime = btTrance.locktime;
         this.version = btTrance.version;
 
-        List<BTrusteeRequest.BtTranceBean.ResultBean.VoutBean> list = btTrance.vout;
+        List<BTrusteeRequest.BtTranceDTO.ResultBean.VoutBean> list = btTrance.vout;
 
         List<VoutBean> data = new LinkedList<>();
         VoutBean bean;
-        for (BTrusteeRequest.BtTranceBean.ResultBean.VoutBean voutBean : list) {
+        for (BTrusteeRequest.BtTranceDTO.ResultBean.VoutBean voutBean : list) {
             bean = new VoutBean();
             bean.setN(voutBean.n);
             bean.setValue(voutBean.value);
@@ -87,7 +87,7 @@ public class TransactionBean {
         this.version = version;
     }
 
-    public TransactionBean(BTCRequest.TranceBean.DataBean btTrance) {
+    public TransactionBean(BTCRequest.TranceDTO.DataBean btTrance) {
         this.blockhash = btTrance.block_hash;
         this.blocktime = btTrance.block_time;
         this.confirmations = btTrance.confirmations;
@@ -96,12 +96,12 @@ public class TransactionBean {
         this.locktime = btTrance.lock_time;
         this.version = btTrance.version;
 
-        List<BTCRequest.TranceBean.DataBean.OutputsBean> list = btTrance.outputs;
+        List<BTCRequest.TranceDTO.DataBean.OutputsBean> list = btTrance.outputs;
 
         List<VoutBean> data = new LinkedList<>();
         VoutBean bean;
         int i = 0;
-        for (BTCRequest.TranceBean.DataBean.OutputsBean voutBean : list) {
+        for (BTCRequest.TranceDTO.DataBean.OutputsBean voutBean : list) {
             bean = new VoutBean();
             bean.setN(i);
             bean.setValue(new BigDecimal(voutBean.value + "").divide(new BigDecimal("100000000"), 8, BigDecimal.ROUND_HALF_UP).doubleValue());

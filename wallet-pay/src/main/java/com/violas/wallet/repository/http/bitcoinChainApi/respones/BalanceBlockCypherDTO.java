@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.bitcoinChainApi.respones;
 
-public class BalanceBlockCypherResponse {
+public class BalanceBlockCypherDTO {
 
     /**
      * address : mp5C7DdXwXfEaAYhncnoxgKPaka3rGG4yq

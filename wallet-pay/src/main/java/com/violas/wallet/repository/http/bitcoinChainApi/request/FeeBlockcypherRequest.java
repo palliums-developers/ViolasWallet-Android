@@ -20,10 +20,10 @@ public class FeeBlockcypherRequest extends BaseRequest<FeeBlockcypherRequest.Api
 
     public interface Api {
         @GET("v1/btc/{network}")
-        Observable<FeesBean> getFees(@Path("network") String str);
+        Observable<FeesDTO> getFees(@Path("network") String str);
     }
 
-    public static class FeesBean {
+    public static class FeesDTO {
 
         /**
          * name : BTC.test3
@@ -51,9 +51,9 @@ public class FeeBlockcypherRequest extends BaseRequest<FeeBlockcypherRequest.Api
         public String previous_url;
         public long peer_count;
         public long unconfirmed_count;
-        public int high_fee_per_kb;
-        public int medium_fee_per_kb;
-        public int low_fee_per_kb;
+        public long high_fee_per_kb;
+        public long medium_fee_per_kb;
+        public long low_fee_per_kb;
         public int last_fork_height;
         public String last_fork_hash;
     }
@@ -66,13 +66,14 @@ public class FeeBlockcypherRequest extends BaseRequest<FeeBlockcypherRequest.Api
             network = "main";
         }
         return getRequest().getFees(network)
-                .map(new Function<FeesBean, FeeEstimateRequest.FeesBean>() {
+                .map(new Function<FeesDTO, FeeEstimateRequest.FeesBean>() {
                     @Override
-                    public FeeEstimateRequest.FeesBean apply(FeesBean feesBean) throws Exception {
-                        FeeEstimateRequest.FeesBean bean = new FeeEstimateRequest.FeesBean();
-                        bean.fastestFee = feesBean.high_fee_per_kb / 1000;
-                        bean.halfHourFee = feesBean.medium_fee_per_kb / 1000;
-                        bean.hourFee = feesBean.low_fee_per_kb / 1000;
+                    public FeeEstimateRequest.FeesBean apply(FeesDTO feesBean) throws Exception {
+                        FeeEstimateRequest.FeesBean bean = new FeeEstimateRequest.FeesBean(
+                                feesBean.high_fee_per_kb / 1000,
+                                feesBean.medium_fee_per_kb / 1000,
+                                feesBean.low_fee_per_kb / 1000
+                        );
                         return bean;
                     }
                 });

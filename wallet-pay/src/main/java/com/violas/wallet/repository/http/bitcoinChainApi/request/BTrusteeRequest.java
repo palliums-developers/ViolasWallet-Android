@@ -39,23 +39,23 @@ public class BTrusteeRequest extends BaseRequest<BTrusteeRequest.Api> implements
 
     public interface Api {
         @GET("utxo/{address}")
-        Observable<List<BtUtxoBean>> getUTXO(@Path("address") String address);
+        Observable<List<BtUtxoDTO>> getUTXO(@Path("address") String address);
 
         @GET("balance/{address}")
-        Observable<BtBalanceBean> getBalance(@Path("address") String address);
+        Observable<BtBalanceDTO> getBalance(@Path("address") String address);
 
         @GET("gettransaction/{txhash}")
-        Observable<BtTranceBean> getTx(@Path("txhash") String txhash);
+        Observable<BtTranceDTO> getTx(@Path("txhash") String txhash);
 
         @GET("sendrawtransaction/{tx}")
-        Observable<PushTxBean> pushTx(@Path("tx") String tx);
+        Observable<PushTxDTO> pushTx(@Path("tx") String tx);
     }
 
     public Observable<List<UTXO>> getUtxo(final String address) {
         return getRequest().getUTXO(address)
-                .map(new Function<List<BtUtxoBean>, List<UTXO>>() {
+                .map(new Function<List<BtUtxoDTO>, List<UTXO>>() {
                     @Override
-                    public List<UTXO> apply(List<BtUtxoBean> btUtxos) throws Exception {
+                    public List<UTXO> apply(List<BtUtxoDTO> btUtxos) throws Exception {
                         return parse(btUtxos, address);
                     }
                 });
@@ -63,9 +63,9 @@ public class BTrusteeRequest extends BaseRequest<BTrusteeRequest.Api> implements
 
     public Observable<BigDecimal> getBalance(final String address) {
         return getRequest().getBalance(address)
-                .map(new Function<BtBalanceBean, BigDecimal>() {
+                .map(new Function<BtBalanceDTO, BigDecimal>() {
                     @Override
-                    public BigDecimal apply(BtBalanceBean balanceBlockCypher) throws Exception {
+                    public BigDecimal apply(BtBalanceDTO balanceBlockCypher) throws Exception {
                         return new BigDecimal(balanceBlockCypher.total + "");
                     }
                 });
@@ -74,9 +74,9 @@ public class BTrusteeRequest extends BaseRequest<BTrusteeRequest.Api> implements
     @Override
     public Observable<String> pushTx(String tx) {
         return getRequest().pushTx(tx)
-                .map(new Function<PushTxBean, String>() {
+                .map(new Function<PushTxDTO, String>() {
                     @Override
-                    public String apply(PushTxBean txrefs) throws Exception {
+                    public String apply(PushTxDTO txrefs) throws Exception {
                         if (txrefs.result == null) {
                             throw new RuntimeException();
                         }
@@ -87,37 +87,37 @@ public class BTrusteeRequest extends BaseRequest<BTrusteeRequest.Api> implements
 
     public Observable<TransactionBean> getTranscation(final String TXHash) {
         return getRequest().getTx(TXHash)
-                .map(new Function<BtTranceBean, TransactionBean>() {
+                .map(new Function<BtTranceDTO, TransactionBean>() {
                     @Override
-                    public TransactionBean apply(BtTranceBean btTrance) throws Exception {
+                    public TransactionBean apply(BtTranceDTO btTrance) throws Exception {
                         return parse(btTrance);
                     }
                 });
     }
 
-    static List<UTXO> parse(List<BtUtxoBean> beans, String address) {
+    static List<UTXO> parse(List<BtUtxoDTO> beans, String address) {
         List<UTXO> utxos = new ArrayList<>(beans.size());
 
-        for (BtUtxoBean bean : beans) {
+        for (BtUtxoDTO bean : beans) {
             utxos.add(parse(bean, address));
         }
         return utxos;
     }
 
 
-    static UTXO parse(BtUtxoBean bean, String address) {
+    static UTXO parse(BtUtxoDTO bean, String address) {
         //String address, String txid, int vout, String scriptPubKey, double amount, int height, int confirmations
         BigDecimal divide = new BigDecimal(bean.value + "").divide(new BigDecimal("100000000"), 8, BigDecimal.ROUND_HALF_UP);
         return new UTXO(address, bean.tx_hash, bean.tx_output_n, bean.hex, divide.doubleValue(), 0, bean.confirmations);
     }
 
-    static TransactionBean parse(BtTranceBean btTrance) {
+    static TransactionBean parse(BtTranceDTO btTrance) {
         // String blockhash, long blocktime, int confirmations, String hash, String hex, long locktime, long time, int version
         //return new TransactionBean(btTrance.blockhash, btTrance.blocktime, btTrance.confirmations, btTrance.hash, btTrance.hex, btTrance.locktime, btTrance.version);
         return new TransactionBean(btTrance);
     }
 
-    static class BtBalanceBean {
+    static class BtBalanceDTO {
         /**
          * address : mfmqkQYFeDuEzuaFjmB8UKRN15ook5NhcY
          * confimed : 160187058
@@ -134,7 +134,7 @@ public class BTrusteeRequest extends BaseRequest<BTrusteeRequest.Api> implements
         public int unconfrimed;
     }
 
-    static class BtUtxoBean {
+    static class BtUtxoDTO {
         /**
          * asm : OP_DUP OP_HASH160 02d0c6807fd78027b7a0278e904425c699342fdd OP_EQUALVERIFY OP_CHECKSIG
          * confirmations : 94637
@@ -156,7 +156,7 @@ public class BTrusteeRequest extends BaseRequest<BTrusteeRequest.Api> implements
         public int value;
     }
 
-    public static class PushTxBean {
+    public static class PushTxDTO {
         /**
          * result : a5c3e500bbadebb3bc368eae64148f92564404c339fb12b944f11198aa135266
          * error : null
@@ -168,7 +168,7 @@ public class BTrusteeRequest extends BaseRequest<BTrusteeRequest.Api> implements
         public String id;
     }
 
-    public static class BtTranceBean {
+    public static class BtTranceDTO {
 
         /**
          * error : null
