@@ -24,14 +24,21 @@ class AmountInputFilter(private val integerDigits: Int, private val decimalDigit
                 0
             }
             val integerExcess = integerLength >= integerDigits
-            val existsDot = it.indexOf(dot) == -1
+            val decimalExcess = decimalLength >= decimalDigits
+            val existsDot = it.contains(dot)
             val inputIsDot = source == dot.toString()
 
-            if (integerExcess && existsDot && !inputIsDot) {
+            if ((integerExcess && existsDot) || (integerExcess && inputIsDot)) {
+                if (decimalExcess) {
+                    return ""
+                }
+                return null
+            } else if (integerExcess) {
                 return ""
-            }
-            if (decimalLength >= decimalDigits) {
+            } else if (decimalExcess) {
                 return ""
+            } else {
+                return null
             }
         }
         return null
