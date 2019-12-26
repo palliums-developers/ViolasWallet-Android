@@ -40,7 +40,7 @@ class AllOrderAdapter :
                 null
             )
         )
-        holder.itemView.tvCoinNumber.text = item.amount()
+        holder.itemView.tvCoinNumber.text = item.balance()
         holder.itemView.tvCoinPrice.text = item.price()
     }
 }
