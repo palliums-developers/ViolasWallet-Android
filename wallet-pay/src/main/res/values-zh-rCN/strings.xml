@@ -233,4 +233,5 @@
     <string name="hint_note_select_exchange_coin">未选择要兑换的币种</string>
     <string name="hint_note_sellect_coin_more">没有其他稳定币可以选择了</string>
     <string name="hint_not_none_coin_or_net_error">没有足够的 %1$s 或网络异常，请稍后再试。</string>
+    <string name="hint_exchange_amount_too_large">兑换金额过大</string>
 </resources>

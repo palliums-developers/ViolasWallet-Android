@@ -138,12 +138,16 @@ class QuotesFragment : BaseFragment() {
                 dismissProgress()
                 showPasswordSend(fromBigDecimal, toBigDecimal)
             } catch (e: java.lang.Exception) {
+                dismissProgress()
                 when (e) {
                     is ExchangeCoinEqualException -> {
                         showToast("${tvFromCoin.text}${getString(R.string.hint_unable_change)}${tvToCoin.text}")
                     }
-                    is ExchangeNotSelectqualException -> {
+                    is ExchangeNotSelectCoinException -> {
                         showToast(getString(R.string.hint_note_select_exchange_coin))
+                    }
+                    is ExchangeAmountLargeException->{
+                        showToast(getString(R.string.hint_exchange_amount_too_large))
                     }
                     is WrongPasswordException,
                     is LackOfBalanceException,

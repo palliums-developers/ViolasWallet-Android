@@ -501,11 +501,17 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         if (currentFormCoinLiveData.value == mDefToken
             || currentToCoinLiveData.value == mDefToken
         ) {
-            throw ExchangeNotSelectqualException()
+            throw ExchangeNotSelectCoinException()
         }
 
         if (currentFormCoinLiveData.value != null && currentFormCoinLiveData.value == currentToCoinLiveData.value) {
             throw ExchangeCoinEqualException()
+        }
+
+        if (fromCoinAmount > BigDecimal("999999999999.9999")
+            || toCoinAmount > BigDecimal("999999999999.9999")
+        ) {
+            throw ExchangeAmountLargeException()
         }
 
         val fromCoin: IToken
@@ -613,5 +619,6 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 }
 
+class ExchangeAmountLargeException : RuntimeException()
 class ExchangeCoinEqualException : RuntimeException()
-class ExchangeNotSelectqualException : RuntimeException()
+class ExchangeNotSelectCoinException : RuntimeException()
