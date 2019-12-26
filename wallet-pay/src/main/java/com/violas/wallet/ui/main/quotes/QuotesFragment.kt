@@ -120,8 +120,8 @@ class QuotesFragment : BaseFragment() {
         btnExchange.setOnClickListener {
             handleBtnExchangeClick()
         }
-        editFromCoin.filters = arrayOf(AmountInputFilter(12, 2))
-        editToCoin.filters = arrayOf(AmountInputFilter(12, 2))
+        editFromCoin.filters = arrayOf(AmountInputFilter(12, 4))
+        editToCoin.filters = arrayOf(AmountInputFilter(12, 4))
     }
 
     private fun handleBtnExchangeClick() {

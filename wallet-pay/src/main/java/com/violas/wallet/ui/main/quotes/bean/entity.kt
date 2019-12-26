@@ -104,14 +104,14 @@ class ExchangeOrder(
                         },
                         any.getString("amountGet").toBigDecimal().divide(
                             BigDecimal("1000000"),
-                            2,
+                            4,
                             RoundingMode.HALF_UP
                         ).stripTrailingZeros().toPlainString(),
                         any.getString("amountGet").toBigDecimal()
                             .subtract(any.getString("amountFilled").toBigDecimal())
                             .divide(
                                 BigDecimal("1000000"),
-                                2,
+                                4,
                                 RoundingMode.HALF_UP
                             ).stripTrailingZeros().toPlainString(),
                         "",
