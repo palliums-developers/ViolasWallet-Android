@@ -11,13 +11,13 @@
     <string name="language_chinese_traditional_more" tools:ignore="MissingTranslation">繁體中文</string>
 
     <string name="backup_mnemonic_prompt_title">Backup Mnemonic Words Hint</string>
-    <string name="backup_mnemonic_prompt_menu">Backup Mnemonic Words Later</string>
-    <string name="backup_mnemonic_prompt_btn">Start Backup Mnemonic Words</string>
+    <string name="backup_mnemonic_prompt_btn_later">Backup Mnemonic Words Later</string>
+    <string name="backup_mnemonic_prompt_btn_start">Start Backup Mnemonic Words</string>
     <string name="backup_mnemonic_prompt_content_01">Get Mnemonic Words</string>
     <string name="backup_mnemonic_prompt_content_02">Backup Mnemonic Words</string>
     <string name="backup_mnemonic_prompt_content_03">Write down mnemonic words on paper\nIf you have lost or damaged your phone，mnemonic words will be used to recover your funds in the wallet</string>
     <string name="backup_mnemonic_prompt_content_04">Keep Offline</string>
-    <string name="backup_mnemonic_prompt_content_05">lease keep mnemonic words offline and in a safe place\nNever share, store mnemonic words on internet such as email, texting, social network, etc.</string>
+    <string name="backup_mnemonic_prompt_content_05">Please keep mnemonic words offline and in a safe place\nNever share, store mnemonic words on internet such as email, texting, social network, etc.</string>
     <string name="backup_mnemonic_prompt_content_06">Equal to own all funds in the wallet</string>
     <string name="backup_mnemonic_warn_title">Safety Warning</string>
     <string name="backup_mnemonic_warn_btn">Backup Now</string>
@@ -219,6 +219,8 @@
     <string name="tips_revoke_failure">Revoke Failed</string>
     <string name="hint_transfer_failed">Transfer Failed</string>
 
+    <string name="hint_back_up_mnemonic_words">Your identity mnemonic is not backed up. Be sure to back up the mnemonic</string>
+    <string name="hint_back_up_mnemonic_words_content">Mnemonic words can be used to recover the wallet assets under the identity, to prevent the asset loss caused by forgotten password, application deletion, mobile phone loss, etc</string>
     <string name="tab_wallet">Wallet</string>
     <string name="tab_market">Market</string>
     <string name="tab_me">My Profile</string>

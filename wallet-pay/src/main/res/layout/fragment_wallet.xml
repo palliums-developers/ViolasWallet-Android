@@ -61,9 +61,9 @@
                     android:gravity="center"
                     android:padding="8dp"
                     android:src="@drawable/icon_scan_white"
-                    app:layout_constraintBottom_toBottomOf="@+id/layoutWalletType"
+                    app:layout_constraintBottom_toBottomOf="@id/layoutWalletType"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/layoutWalletType" />
+                    app:layout_constraintTop_toTopOf="@id/layoutWalletType" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -17,6 +17,8 @@ import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.event.WalletChangeEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.AccountInfoActivity
+import com.violas.wallet.ui.backup.BackupMnemonicFrom
+import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.backup.ShowMnemonicActivity
 import kotlinx.android.synthetic.main.activity_wallet_manager.*
 import kotlinx.coroutines.Dispatchers
@@ -116,7 +118,16 @@ class WalletManagerActivity : BaseAppActivity() {
                     .split(",")
                     .map { it.trim() }
                     .toMutableList() as ArrayList
-                ShowMnemonicActivity.start(this@WalletManagerActivity, mnemonic, true)
+
+                if (account.walletType == 0 && !mAccountManager.isIdentityMnemonicBackup()) {
+                    BackupPromptActivity.start(
+                        this@WalletManagerActivity,
+                        mnemonic,
+                        BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
+                    )
+                } else {
+                    ShowMnemonicActivity.start(this@WalletManagerActivity, mnemonic)
+                }
             }catch (e:Exception){
                 e.printStackTrace()
             }
