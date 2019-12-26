@@ -3,11 +3,15 @@ package com.violas.wallet.biz
 import android.content.Context
 import com.palliums.content.ContextProvider
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.dex.DexRepository
+import com.violas.wallet.ui.dexOrder.DexOrderVO
 import com.violas.wallet.ui.main.quotes.bean.IToken
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import org.palliums.libracore.wallet.KeyPair
+import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
@@ -18,6 +22,55 @@ class ExchangeManager {
     }
 
     private val receiveAddress = "07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095"
+
+    @Throws(Exception::class)
+    suspend fun revokeOrder(
+        privateKey: ByteArray,
+        dexOrder: DexOrderVO,
+        dexService: DexRepository
+    ): Boolean {
+        // 1.获取撤销兑换token数据的签名字符
+        val account = Account(KeyPair.fromSecretKey(privateKey))
+
+        val sequenceNumber = GlobalScope.async {
+            getSequenceNumber(account.getAddress().toHex())
+        }
+        val optionExchangePayload = TransactionPayload.optionUndoExchangePayload(
+            ContextProvider.getContext(),
+            receiveAddress,
+            if (dexOrder.dto.tokenGive.startsWith("0x"))
+                dexOrder.dto.tokenGive.replace("0x", "")
+            else
+                dexOrder.dto.tokenGive,
+            dexOrder.dto.version.toLong()
+        )
+
+        val rawTransaction = RawTransaction.optionTransaction(
+            account.getAddress().toHex(),
+            optionExchangePayload,
+            sequenceNumber.await()
+        )
+
+        val signedTransaction = SignedTransaction(
+            rawTransaction,
+            account.keyPair.getPublicKey(),
+            account.keyPair.sign(rawTransaction.toByteArray())
+        )
+        val signedtxn = signedTransaction.toByteArray().toHex()
+
+        // 2.通知交易中心撤销订单，交易中心此时只会标记需要撤销订单的状态为CANCELLING并停止兑换，失败会抛异常
+        dexService.revokeOrder(dexOrder.dto.version, signedtxn)
+
+        // 3.撤销兑换token数据上链，只有上链后，交易中心扫区块扫到解析撤销订单才会更改订单状态为CANCELED
+        val channel = Channel<Boolean>()
+        mViolasService.sendTransaction(signedtxn) {
+            GlobalScope.launch {
+                channel.send(it)
+                channel.close()
+            }
+        }
+        return channel.receive()
+    }
 
     suspend fun undoExchangeToken(
         account: Account,

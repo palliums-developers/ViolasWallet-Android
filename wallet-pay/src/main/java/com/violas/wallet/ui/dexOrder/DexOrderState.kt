@@ -11,14 +11,18 @@ import androidx.annotation.StringDef
 @StringDef(
     DexOrderState.OPEN,
     DexOrderState.FILLED,
+    DexOrderState.CANCELLING,
     DexOrderState.CANCELED,
-    DexOrderState.FINISHED
+    DexOrderState.FINISHED,
+    DexOrderState.UNFINISHED
 )
 annotation class DexOrderState {
     companion object {
         const val OPEN = "0"        // open
         const val FILLED = "1"      // filled
-        const val CANCELED = "2"    // canceled
-        const val FINISHED = "3"    // finished（filled and canceled）
+        const val CANCELLING = "2"  // cancelling
+        const val CANCELED = "3"    // canceled
+        const val FINISHED = "4"    // finished（filled and canceled）
+        const val UNFINISHED = "5"  // unfinished（open and cancelling）
     }
 }

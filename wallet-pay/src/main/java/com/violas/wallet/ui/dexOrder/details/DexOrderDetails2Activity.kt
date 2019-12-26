@@ -12,6 +12,7 @@ import com.palliums.paging.PagingViewModel
 import com.palliums.utils.formatDate
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
@@ -39,16 +40,16 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
     companion object {
         private const val EXTRA_KEY_DEX_ORDER = "EXTRA_KEY_DEX_ORDER"
 
-        fun start(context: Context, dexOrderVO: DexOrderVO) {
+        fun start(context: Context, dexOrder: DexOrderVO) {
             val intent = Intent(context, DexOrderDetails2Activity::class.java)
                 .apply {
-                    putExtra(EXTRA_KEY_DEX_ORDER, dexOrderVO)
+                    putExtra(EXTRA_KEY_DEX_ORDER, dexOrder)
                 }
             context.startActivity(intent)
         }
     }
 
-    private var dexOrderVO: DexOrderVO? = null
+    private var dexOrder: DexOrderVO? = null
     private lateinit var currentAccount: AccountDO
 
     override fun getLayoutResId(): Int {
@@ -69,7 +70,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
 
     override fun initViewModel(): PagingViewModel<DexOrderTradeDTO> {
         return DexOrderDetailsViewModel(
-            dexOrderVO!!.dto.version
+            dexOrder!!.dto.version
         )
     }
 
@@ -77,7 +78,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
         return DexOrderDetailsViewAdapter(
             retryCallback = { getViewModel().retry() },
             addHeader = false,
-            dexOrderVO = dexOrderVO!!,
+            dexOrder = dexOrder!!,
             onOpenBrowserView = {
                 // TODO violas浏览器暂未实现
                 //showToast(R.string.transaction_record_not_supported_query)
@@ -103,12 +104,12 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
     private fun initData(savedInstanceState: Bundle?): Boolean {
 
         if (savedInstanceState != null) {
-            dexOrderVO = savedInstanceState.getParcelable(EXTRA_KEY_DEX_ORDER)
+            dexOrder = savedInstanceState.getParcelable(EXTRA_KEY_DEX_ORDER)
         } else if (intent != null) {
-            dexOrderVO = intent.getParcelableExtra(EXTRA_KEY_DEX_ORDER)
+            dexOrder = intent.getParcelableExtra(EXTRA_KEY_DEX_ORDER)
         }
 
-        if (dexOrderVO == null) {
+        if (dexOrder == null) {
             return false
         }
 
@@ -124,7 +125,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
     private fun initView() {
         setTitle(R.string.title_order_details)
 
-        if (dexOrderVO!!.isOpen() && !dexOrderVO!!.revokedFlag) {
+        if (dexOrder!!.isOpen()) {
             (getViewModel() as DexOrderDetailsViewModel).loadState.observe(this, Observer {
                 when (it.status) {
                     LoadState.Status.RUNNING -> {
@@ -153,7 +154,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
         }
 
         mPagingHandler.start()
-        initHeaderView(dexOrderVO!!)
+        initHeaderView(dexOrder!!)
     }
 
     private fun initHeaderView(it: DexOrderVO) {
@@ -166,7 +167,8 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
         tvTotalAmount.text = convertViolasTokenUnit(it.dto.amountGet)
         tvTradeAmount.text = convertViolasTokenUnit(it.dto.amountFilled)
 
-        tvFee.text = "0.00Vtoken"
+        tvFee.text = "0.00${CoinTypes.Violas.coinUnit()}"
+        tvTime.text = formatDate(it.dto.updateDate)
 
         when {
             it.isFinished() -> {
@@ -176,20 +178,17 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
                     else
                         R.string.state_completed
                 )
-                tvTime.text = formatDate(it.dto.updateDate)
             }
-            it.isOpen() -> {
+            it.isUnfinished() -> {
                 tvState.setText(
-                    if (it.revokedFlag)
-                        R.string.state_revoked
-                    else
+                    if (it.isOpen())
                         R.string.action_revoke
+                    else
+                        R.string.state_revoking
                 )
-                tvTime.text = formatDate(it.dto.date)
             }
             else -> {
                 tvState.text = ""
-                tvTime.text = formatDate(it.dto.updateDate)
             }
         }
 
@@ -200,29 +199,30 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
         when (view.id) {
             R.id.tvState -> {
 
-                dexOrderVO?.let { order ->
-                    if (order.isOpen() && !order.revokedFlag) {
+                dexOrder?.let { dexOrder ->
+                    if (dexOrder.isOpen()) {
 
                         PasswordInputDialog().setConfirmListener { password, dialog ->
 
                             if (!(getViewModel() as DexOrderDetailsViewModel).revokeOrder(
                                     currentAccount,
                                     password,
-                                    order,
+                                    dexOrder,
                                     onCheckPassword = {
                                         if (it) {
                                             dialog.dismiss()
                                         }
                                     }
                                 ) {
-                                    order.revokedFlag = true
-                                    order.dto.date = System.currentTimeMillis()
+                                    dexOrder.updateStateToRevoking()
+                                    initHeaderView(dexOrder)
 
-                                    tvState.setText(R.string.state_revoked)
-                                    tvTime.text = formatDate(order.dto.date)
-
-                                    EventBus.getDefault()
-                                        .post(RevokeDexOrderEvent(order.dto.id))
+                                    EventBus.getDefault().post(
+                                        RevokeDexOrderEvent(
+                                            dexOrder.dto.id,
+                                            dexOrder.dto.updateDate
+                                        )
+                                    )
                                 }
                             ) {
                                 dialog.dismiss()
@@ -237,7 +237,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        dexOrderVO?.let {
+        dexOrder?.let {
             outState.putParcelable(EXTRA_KEY_DEX_ORDER, it)
         }
     }

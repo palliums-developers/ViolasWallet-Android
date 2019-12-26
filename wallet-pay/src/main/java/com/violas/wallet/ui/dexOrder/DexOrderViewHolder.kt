@@ -4,6 +4,7 @@ import android.view.View
 import com.palliums.base.BaseViewHolder
 import com.palliums.utils.formatDate
 import com.palliums.utils.getColor
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.item_dex_order.view.*
@@ -38,7 +39,8 @@ class DexOrderViewHolder(
             itemView.tvTotalAmount.text = convertViolasTokenUnit(it.dto.amountGet)
             itemView.tvTradeAmount.text = convertViolasTokenUnit(it.dto.amountFilled)
 
-            itemView.tvFee.text = "0.00Vtoken"
+            itemView.tvFee.text = "0.00${CoinTypes.Violas.coinUnit()}"
+            itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
 
             when {
                 it.isFinished() -> {
@@ -49,21 +51,18 @@ class DexOrderViewHolder(
                             R.string.state_completed
                     )
                     itemView.tvState.setTextColor(getColor(R.color.color_63636F, itemView.context))
-                    itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
                 }
-                it.isOpen() -> {
+                it.isUnfinished() -> {
                     itemView.tvState.setText(
-                        if (it.revokedFlag)
-                            R.string.state_revoked
-                        else
+                        if (it.isOpen())
                             R.string.action_revoke
+                        else
+                            R.string.state_revoking
                     )
                     itemView.tvState.setTextColor(getColor(R.color.color_726BD9, itemView.context))
-                    itemView.tvTime.text = formatDate(it.dto.date, simpleDateFormat)
                 }
                 else -> {
                     itemView.tvState.text = ""
-                    itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
                 }
             }
         }
@@ -77,7 +76,7 @@ class DexOrderViewHolder(
                 }
 
                 itemView.tvState -> {
-                    if (it.isOpen() && !it.revokedFlag) {
+                    if (it.isOpen()) {
                         onClickRevokeOrder?.invoke(itemData, itemPosition)
                     } else {
                     }

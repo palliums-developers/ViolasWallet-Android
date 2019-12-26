@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat
  */
 class DexOrderTradeViewHolder(
     view: View,
-    private val dexOrderVO: DexOrderVO,
+    private val dexOrder: DexOrderVO,
     private val simpleDateFormat: SimpleDateFormat,
     private val onClickBrowserQuery: ((url: String?) -> Unit)? = null
 ) : BaseViewHolder<DexOrderTradeDTO>(view) {
@@ -29,7 +29,7 @@ class DexOrderTradeViewHolder(
     override fun onViewBind(itemPosition: Int, itemData: DexOrderTradeDTO?) {
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
-            itemView.tvPrice.text = dexOrderVO.getTokenPrice.toString()
+            itemView.tvPrice.text = dexOrder.getTokenPrice.toString()
             itemView.tvTotalAmount.text = convertViolasTokenUnit(it.amount)
         }
     }

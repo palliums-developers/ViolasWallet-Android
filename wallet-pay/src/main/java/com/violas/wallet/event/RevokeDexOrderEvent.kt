@@ -6,4 +6,4 @@ package com.violas.wallet.event
  * <p>
  * desc: 撤销交易订单事件，该事件只在订单详情中发出，在未完成订单页面中订阅处理
  */
-class RevokeDexOrderEvent(val orderId: String)
+class RevokeDexOrderEvent(val orderId: String, val updateDate: Long)

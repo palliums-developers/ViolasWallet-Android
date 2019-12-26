@@ -20,9 +20,9 @@ import java.util.*
 class DexOrderDetailsViewAdapter(
     retryCallback: () -> Unit,
     private val addHeader: Boolean = false,
-    private val dexOrderVO: DexOrderVO,
+    private val dexOrder: DexOrderVO,
     private val onOpenBrowserView: ((url: String?) -> Unit)? = null,
-    private val onClickRevokeOrder: ((order: DexOrderVO, position: Int) -> Unit)? = null
+    private val onClickRevokeOrder: ((dexOrder: DexOrderVO, position: Int) -> Unit)? = null
 ) : PagingViewAdapter<DexOrderTradeDTO>(retryCallback, DexOrdersDiffCallback()) {
 
     private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
@@ -52,7 +52,7 @@ class DexOrderDetailsViewAdapter(
                         parent,
                         false
                     ),
-                    dexOrderVO,
+                    dexOrder,
                     simpleDateFormat,
                     onOpenBrowserView
                 )
@@ -74,7 +74,7 @@ class DexOrderDetailsViewAdapter(
 
     override fun getHeaderItem(position: Int, viewType: Int): Any? {
         return if (viewType == R.layout.item_dex_order_details_header) {
-            dexOrderVO
+            dexOrder
         } else {
             null
         }

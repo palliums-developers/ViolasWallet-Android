@@ -2,9 +2,8 @@ package com.violas.wallet.repository.http.dex
 
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URLNAME
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_DEX
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.Query
+import okhttp3.RequestBody
+import retrofit2.http.*
 
 /**
  * Created by elephant on 2019-12-05 17:36.
@@ -52,4 +51,11 @@ interface DexApi {
         @Query("pagesize") pageSize: Int,
         @Query("pagenum") pageNumber: Int
     ): ListResponse<DexOrderTradeDTO>
+
+    /**
+     * 撤销订单
+     */
+    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_DEX}"])
+    @POST("/v1/cancelOrder")
+    suspend fun revokeOrder(@Body requestBody: RequestBody): Response<String>
 }

@@ -15,11 +15,14 @@ data class DexOrderVO(
     val giveTokenName: String,
     val giveTokenPrice: Double,
     val getTokenName: String,
-    val getTokenPrice: Double,
-    var revokedFlag: Boolean = false
+    val getTokenPrice: Double
 ) : Parcelable {
     fun isFinished(): Boolean {
         return dto.state == "FILLED" || dto.state == "CANCELED"
+    }
+
+    fun isUnfinished(): Boolean {
+        return dto.state == "OPEN" || dto.state == "CANCELLING"
     }
 
     fun isCanceled(): Boolean {
@@ -30,13 +33,17 @@ data class DexOrderVO(
         return dto.state == "OPEN"
     }
 
+    fun updateStateToRevoking(updateDate: Long = System.currentTimeMillis()) {
+        dto.state = "CANCELLING"
+        dto.updateDate = updateDate
+    }
+
     constructor(source: Parcel) : this(
         source.readParcelable<DexOrderDTO>(DexOrderDTO::class.java.classLoader)!!,
         source.readString()!!,
         source.readDouble(),
         source.readString()!!,
-        source.readDouble(),
-        1 == source.readInt()
+        source.readDouble()
     )
 
     override fun describeContents() = 0
@@ -47,7 +54,6 @@ data class DexOrderVO(
         writeDouble(giveTokenPrice)
         writeString(getTokenName)
         writeDouble(getTokenPrice)
-        writeInt((if (revokedFlag) 1 else 0))
     }
 
     companion object CREATOR : Parcelable.Creator<DexOrderVO> {

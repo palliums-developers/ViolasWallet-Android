@@ -199,6 +199,7 @@
     <string name="label_time">时间</string>
     <string name="state_revoked">已撤销</string>
     <string name="state_completed">已完成</string>
+    <string name="state_revoking">撤销中</string>
 
     <string name="hint_exchange_successful">兑换申请成功</string>
     <string name="hint_exchange_error">兑换申请失败</string>

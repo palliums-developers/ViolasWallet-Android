@@ -160,6 +160,20 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
                 })
     }
 
+    fun sendTransaction(signedtxn: String, call: (success: Boolean) -> Unit) {
+        val subscribe = mViolasRepository.pushTx(signedtxn)
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                if (it.errorCode == it.getSuccessCode()) {
+                    call.invoke(true)
+                } else {
+                    call.invoke(false)
+                }
+            }, {
+                call.invoke(false)
+            })
+    }
+
     fun sendViolasToken(
         context: Context,
         tokenAddress: String,

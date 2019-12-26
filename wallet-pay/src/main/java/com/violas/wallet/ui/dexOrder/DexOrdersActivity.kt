@@ -34,7 +34,7 @@ class DexOrdersActivity : BaseAppActivity() {
         }
 
         vpFragments.adapter = FragmentPagerAdapterSupport(supportFragmentManager).apply {
-            addFragment(DexOrdersFragment.newInstance(DexOrderState.OPEN))
+            addFragment(DexOrdersFragment.newInstance(DexOrderState.UNFINISHED))
             addFragment(DexOrdersFragment.newInstance(DexOrderState.FINISHED))
         }
     }
