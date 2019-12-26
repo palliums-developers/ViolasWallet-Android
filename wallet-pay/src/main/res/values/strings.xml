@@ -208,6 +208,7 @@
     <string name="label_time">Time</string>
     <string name="state_revoked">Revoked</string>
     <string name="state_completed">Completed</string>
+    <string name="state_revoking">Revoking</string>
 
     <string name="hint_exchange_successful">Exchange Application Successful</string>
     <string name="hint_exchange_error">Exchange Application Error</string>

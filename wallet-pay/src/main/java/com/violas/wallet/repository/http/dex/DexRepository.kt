@@ -2,6 +2,8 @@ package com.violas.wallet.repository.http.dex
 
 import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 
 /**
  * Created by elephant on 2019-12-06 10:33.
@@ -52,6 +54,17 @@ class DexRepository(private val dexApi: DexApi) {
 
         return checkResponse {
             dexApi.getOrderTrades(version, pageSize, pageNumber)
+        }
+    }
+
+    @Throws(RequestException::class)
+    suspend fun revokeOrder(version: String, signedtxn: String): Response<String> {
+        val requestBody =
+            """{"version":"$version","signedtxn":"$signedtxn"}"""
+                .toRequestBody("application/json".toMediaTypeOrNull())
+
+        return checkResponse {
+            dexApi.revokeOrder(requestBody)
         }
     }
 }

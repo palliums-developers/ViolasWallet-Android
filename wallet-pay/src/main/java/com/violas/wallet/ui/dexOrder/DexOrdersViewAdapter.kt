@@ -17,7 +17,7 @@ import java.util.*
  */
 class DexOrdersViewAdapter(
     retryCallback: () -> Unit,
-    private val onOpenOrderDetails: ((DexOrderVO) -> Unit)? = null,
+    private val onClickItem: ((DexOrderVO) -> Unit)? = null,
     private val onClickRevokeOrder: ((DexOrderVO, Int) -> Unit)? = null
 ) : PagingViewAdapter<DexOrderVO>(retryCallback, DexOrdersDiffCallback()) {
 
@@ -34,7 +34,7 @@ class DexOrdersViewAdapter(
                 false
             ),
             simpleDateFormat,
-            onOpenOrderDetails,
+            onClickItem,
             onClickRevokeOrder
         )
     }

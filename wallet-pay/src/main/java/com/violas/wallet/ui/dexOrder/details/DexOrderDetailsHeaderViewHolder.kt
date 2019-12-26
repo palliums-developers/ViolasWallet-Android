@@ -3,6 +3,7 @@ package com.violas.wallet.ui.dexOrder.details
 import android.view.View
 import com.palliums.base.BaseViewHolder
 import com.palliums.utils.formatDate
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.ui.dexOrder.DexOrderVO
 import com.violas.wallet.utils.convertViolasTokenUnit
@@ -38,7 +39,8 @@ class DexOrderDetailsHeaderViewHolder(
             itemView.tvTotalAmount.text = convertViolasTokenUnit(it.dto.amountGet)
             itemView.tvTradeAmount.text = convertViolasTokenUnit(it.dto.amountFilled)
 
-            itemView.tvFee.text = "0.00Vtoken"
+            itemView.tvFee.text = "0.00${CoinTypes.Violas.coinUnit()}"
+            itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
 
             when {
                 it.isFinished() -> {
@@ -48,20 +50,17 @@ class DexOrderDetailsHeaderViewHolder(
                         else
                             R.string.state_completed
                     )
-                    itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
                 }
-                it.isOpen() -> {
+                it.isUnfinished() -> {
                     itemView.tvState.setText(
-                        if (it.revokedFlag)
-                            R.string.state_revoked
-                        else
+                        if (it.isOpen())
                             R.string.action_revoke
+                        else
+                            R.string.state_revoking
                     )
-                    itemView.tvTime.text = formatDate(it.dto.date, simpleDateFormat)
                 }
                 else -> {
                     itemView.tvState.text = ""
-                    itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
                 }
             }
         }
@@ -71,8 +70,8 @@ class DexOrderDetailsHeaderViewHolder(
         itemData?.let {
             when (view) {
                 itemView.tvState -> {
-                    if (it.isOpen() && !it.revokedFlag) {
-                        onClickRevokeOrder?.invoke(itemData, itemPosition)
+                    if (it.isOpen()) {
+                        onClickRevokeOrder?.invoke(it, itemPosition)
                     } else {
                     }
                 }

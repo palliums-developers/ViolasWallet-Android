@@ -16,8 +16,6 @@ import com.violas.wallet.ui.dexOrder.DexOrderVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.palliums.violascore.wallet.Account
-import org.palliums.libracore.wallet.KeyPair
 
 /**
  * Created by elephant on 2019-12-17 10:20.
@@ -55,24 +53,25 @@ class DexOrderDetailsViewModel(
     }
 
     fun revokeOrder(
-        account: AccountDO,
+        walletAccount: AccountDO,
         password: ByteArray,
-        dexOrderVO: DexOrderVO,
+        dexOrder: DexOrderVO,
         onCheckPassword: (Boolean) -> Unit,
         onRevokeSuccess: () -> Unit
     ): Boolean {
         synchronized(lock) {
             if (loadState.value?.status == LoadState.Status.RUNNING) {
                 return false
-            } else if (!dexOrderVO.isOpen()) {
+            } else if (!dexOrder.isOpen()) {
                 return false
             }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val decryptPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
-                    .decrypt(password, account.privateKey)
+                val decryptPrivateKey =
+                    SimpleSecurity.instance(ContextProvider.getContext())
+                        .decrypt(password, walletAccount.privateKey)
                 if (decryptPrivateKey == null) {
                     tipsMessage.postValue(getString(R.string.hint_password_error))
                     onCheckPassword.invoke(false)
@@ -82,13 +81,7 @@ class DexOrderDetailsViewModel(
                 onCheckPassword.invoke(true)
                 loadState.postValue(LoadState.RUNNING)
 
-                val account = Account(KeyPair.fromSecretKey(decryptPrivateKey!!))
-                val result = exchangeManager.undoExchangeToken(
-                    account,
-                    dexOrderVO.dto.tokenGive,
-                    dexOrderVO.dto.version.toLong()
-                )
-
+                val result = exchangeManager.revokeOrder(decryptPrivateKey, dexOrder, dexService)
                 if (result) {
                     withContext(Dispatchers.Main) {
                         onRevokeSuccess.invoke()
@@ -97,14 +90,9 @@ class DexOrderDetailsViewModel(
 
                 synchronized(lock) {
                     loadState.postValue(LoadState.SUCCESS)
-                    tipsMessage.postValue(
-                        getString(
-                            if (result)
-                                R.string.tips_revoke_success
-                            else
-                                R.string.tips_revoke_failure
-                        )
-                    )
+                    if (!result) {
+                        tipsMessage.postValue(getString(R.string.tips_revoke_failure))
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

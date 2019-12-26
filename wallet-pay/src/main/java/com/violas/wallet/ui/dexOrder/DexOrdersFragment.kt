@@ -67,7 +67,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
     override fun initViewAdapter(): PagingViewAdapter<DexOrderVO> {
         return DexOrdersViewAdapter(
             retryCallback = { getViewModel().retry() },
-            onOpenOrderDetails = {
+            onClickItem = {
                 //DexOrderDetailsActivity.start(requireContext(), it)
                 DexOrderDetails2Activity.start(requireContext(), it)
             },
@@ -85,10 +85,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
                                 }
                             }
                         ) {
-
-                            dexOrder.revokedFlag = true
-                            dexOrder.dto.date = System.currentTimeMillis()
-
+                            dexOrder.updateStateToRevoking()
                             getViewAdapter().notifyItemChanged(position)
                         }
 
@@ -116,7 +113,10 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
     }
 
     private fun initView() {
-        if (orderState.isNullOrEmpty() || orderState == DexOrderState.OPEN) {
+        if (orderState.isNullOrEmpty()
+            || orderState == DexOrderState.OPEN
+            || orderState == DexOrderState.UNFINISHED
+        ) {
             EventBus.getDefault().register(this)
 
             (getViewModel() as DexOrdersViewModel).loadState.observe(this, Observer {
@@ -190,12 +190,11 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
         }
 
         getViewAdapter().currentList?.let {
-            it.forEachIndexed { index, dexOrderVO ->
-                if (dexOrderVO.dto.id == event.orderId) {
-                    dexOrderVO.revokedFlag = true
-                    dexOrderVO.dto.date = System.currentTimeMillis()
-
+            it.forEachIndexed { index, dexOrder ->
+                if (dexOrder.dto.id == event.orderId) {
+                    dexOrder.updateStateToRevoking(event.updateDate)
                     getViewAdapter().notifyItemChanged(index)
+                    return
                 }
             }
         }

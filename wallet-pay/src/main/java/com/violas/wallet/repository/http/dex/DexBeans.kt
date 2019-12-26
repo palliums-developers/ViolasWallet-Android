@@ -17,17 +17,17 @@ open class Response<T> : ApiResponse {
     @SerializedName(value = "code")
     var errorCode: Int = 0
         get() {
-            return if (errorMsg.isNullOrEmpty()) 200 else field
+            return if (errorMsg.isNullOrEmpty()) 2000 else field
         }
 
     @SerializedName(value = "error")
     var errorMsg: String? = null
 
-    @SerializedName(value = "data", alternate = ["orders", "trades"])
+    @SerializedName(value = "data", alternate = ["orders", "trades", "message"])
     var data: T? = null
 
     override fun getSuccessCode(): Any {
-        return 200
+        return 2000
     }
 
     override fun getErrorMsg(): Any? {
@@ -48,7 +48,7 @@ class ListResponse<T> : Response<List<T>>()
 data class DexOrderDTO(
     val id: String,
     val user: String,
-    val state: String,
+    var state: String,
     val tokenGive: String,
     val amountGive: String,
     val tokenGet: String,
@@ -57,9 +57,9 @@ data class DexOrderDTO(
     val version: String,
     @SerializedName(value = "update_version")
     val updateVersion: String,
-    var date: Long,
+    val date: Long,
     @SerializedName(value = "update_date")
-    val updateDate: Long
+    var updateDate: Long
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
