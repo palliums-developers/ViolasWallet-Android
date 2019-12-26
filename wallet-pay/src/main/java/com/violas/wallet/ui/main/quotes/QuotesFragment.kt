@@ -4,7 +4,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.text.DecimalInputFilter
+import android.text.AmountInputFilter
 import android.text.TextWatcher
 import android.transition.AutoTransition
 import android.transition.TransitionManager
@@ -120,8 +120,8 @@ class QuotesFragment : BaseFragment() {
         btnExchange.setOnClickListener {
             handleBtnExchangeClick()
         }
-        editFromCoin.filters = arrayOf(DecimalInputFilter(2))
-        editToCoin.filters = arrayOf(DecimalInputFilter(2))
+        editFromCoin.filters = arrayOf(AmountInputFilter(12, 2))
+        editToCoin.filters = arrayOf(AmountInputFilter(12, 2))
     }
 
     private fun handleBtnExchangeClick() {

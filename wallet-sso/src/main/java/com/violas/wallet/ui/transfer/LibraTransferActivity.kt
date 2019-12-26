@@ -2,6 +2,7 @@ package com.violas.wallet.ui.transfer
 
 import android.accounts.AccountsException
 import android.os.Bundle
+import android.text.AmountInputFilter
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
@@ -66,7 +67,7 @@ class LibraTransferActivity : TransferActivity() {
             }
         }
         initViewData()
-
+        editAmountInput.filters = arrayOf(AmountInputFilter(12, 6))
         ivScan.setOnClickListener {
             ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
         }
