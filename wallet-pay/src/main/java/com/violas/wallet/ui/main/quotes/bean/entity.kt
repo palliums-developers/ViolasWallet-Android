@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.quotes.bean
 
+import com.palliums.utils.toBigDecimal
 import org.json.JSONArray
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -57,6 +58,7 @@ interface IOrder {
     fun type(): IOrderType
     fun state(): IOrderStatus
     fun amount(): String
+    fun balance(): String
     fun price(): String
     fun setPrice(price: String)
     fun date(): Date
@@ -74,6 +76,7 @@ class ExchangeOrder(
     private var type: IOrderType,
     private var state: IOrderStatus,
     private var amount: String = "0",
+    private var balance: String = "0",
     private var price: String = "0",
     private var date: Date = Date(System.currentTimeMillis())
 ) : IOrder {
@@ -99,11 +102,18 @@ class ExchangeOrder(
                             "CANCELED" -> IOrderStatus.CANCELED
                             else -> IOrderStatus.FILLED_CANCELED
                         },
-                        BigDecimal(any.getString("amountGet")).divide(
+                        any.getString("amountGet").toBigDecimal().divide(
                             BigDecimal("1000000"),
-                            2,
+                            4,
                             RoundingMode.HALF_UP
                         ).stripTrailingZeros().toPlainString(),
+                        any.getString("amountGet").toBigDecimal()
+                            .subtract(any.getString("amountFilled").toBigDecimal())
+                            .divide(
+                                BigDecimal("1000000"),
+                                4,
+                                RoundingMode.HALF_UP
+                            ).stripTrailingZeros().toPlainString(),
                         "",
                         Date(any.getLong("update_date") * 1000)
                     )
@@ -130,6 +140,8 @@ class ExchangeOrder(
     override fun state() = state
 
     override fun amount() = amount
+
+    override fun balance() = balance
 
     override fun price() = price
 

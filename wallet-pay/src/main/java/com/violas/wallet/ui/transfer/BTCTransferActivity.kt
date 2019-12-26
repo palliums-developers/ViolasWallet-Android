@@ -2,6 +2,7 @@ package com.violas.wallet.ui.transfer
 
 import android.accounts.AccountsException
 import android.os.Bundle
+import android.text.AmountInputFilter
 import android.widget.SeekBar
 import androidx.core.widget.addTextChangedListener
 import com.quincysx.crypto.CoinTypes
@@ -86,6 +87,7 @@ class BTCTransferActivity : TransferActivity() {
                 )
             }
         }
+        editAmountInput.filters = arrayOf(AmountInputFilter(9, 8))
         sbQuota.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
 

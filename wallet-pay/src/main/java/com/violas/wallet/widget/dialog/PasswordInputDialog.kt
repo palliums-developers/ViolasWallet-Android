@@ -61,6 +61,8 @@ class PasswordInputDialog : DialogFragment() {
                 showToast(getString(R.string.hint_please_cannot_contain_special_characters))
             } catch (e: PasswordValidationFailsException) {
                 showToast(getString(R.string.hint_please_password_rules_are_wrong))
+            } catch (e: PasswordEmptyException) {
+                showToast(getString(R.string.hint_please_password_not_empty))
             }
         }
         mRootView.btnCancel.setOnClickListener {

@@ -36,8 +36,9 @@
     <string name="title_select_mail_app">Please select the mail application</string>
     <string name="tips_open_email_failure">Unable to open mail app</string>
 
-    <string name="hint_please_minimum_password_length">Minimum password length of 8 bits</string>
-    <string name="hint_please_maxmum_password_length">Passwords are up to 20 digits long</string>
-    <string name="hint_please_cannot_contain_special_characters">Passwords can only contain upper and lower case letters and Numbers</string>
-    <string name="hint_please_password_rules_are_wrong">Passwords must contain upper and lower case letters and Numbers</string>
+    <string name="hint_please_minimum_password_length">Passwords are 8-20 digits long and must contain upper and lower case letters and Numbers.</string>
+    <string name="hint_please_maxmum_password_length">@string/hint_please_minimum_password_length</string>
+    <string name="hint_please_cannot_contain_special_characters">@string/hint_please_minimum_password_length</string>
+    <string name="hint_please_password_rules_are_wrong">@string/hint_please_minimum_password_length</string>
+    <string name="hint_please_password_not_empty">The password cannot be empty</string>
 </resources>

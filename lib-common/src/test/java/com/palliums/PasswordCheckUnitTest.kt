@@ -10,6 +10,11 @@ class PasswordCheckUnitTest {
         val check = PasswordCheckUtil.check("12345678")
     }
 
+    @Test(expected = PasswordEmptyException::class)
+    fun testEmpty() {
+        val check = PasswordCheckUtil.check("")
+    }
+
     @Test(expected = PasswordValidationFailsException::class)
     fun testLowercase() {
         val check = PasswordCheckUtil.check("asdcvbnasdasd")
@@ -63,9 +68,15 @@ class PasswordCheckUnitTest {
         Assert.assertEquals(check, true)
     }
 
-    @Test(expected = PasswordSpecialFailsException::class)
+    @Test
     fun testSpecialCharacters() {
         val check = PasswordCheckUtil.check("asdASD123!@")
+        Assert.assertEquals(check, true)
+    }
+
+    @Test(expected = PasswordSpecialFailsException::class)
+    fun testFalseSpecialCharacters() {
+        val check = PasswordCheckUtil.check("asdASD123!@",false)
         Assert.assertEquals(check, true)
     }
 }
