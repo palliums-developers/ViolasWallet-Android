@@ -1,5 +1,8 @@
 package com.palliums.utils
 
+
+class PasswordEmptyException : RuntimeException()
+
 // 密码太短
 class PasswordLengthShortException : RuntimeException()
 
@@ -13,39 +16,45 @@ open class PasswordValidationFailsException : RuntimeException()
 class PasswordSpecialFailsException : PasswordValidationFailsException()
 
 object PasswordCheckUtil {
+    /**
+     * @param text 需要检测的文本
+     * @param specialFails 是否允许特殊字符
+     */
     @Throws(
         PasswordLengthShortException::class,
         PasswordLengthLongException::class,
         PasswordSpecialFailsException::class,
         PasswordValidationFailsException::class
     )
-    fun check(text: String?): Boolean {
-        val password = text?.trim() ?: ""
-        if (password?.trim()?.length ?: 0 < 8) {
+    fun check(password: String?, specialFails: Boolean = true): Boolean {
+        if(password.isNullOrEmpty()){
+           throw PasswordEmptyException()
+        }
+        if (password.trim().length < 8) {
             throw PasswordLengthShortException()
         }
-        if (password?.length ?: 0 > 20) {
+        if (password.length > 20) {
             throw PasswordLengthLongException()
         }
         var existsUppercase = false
         var existsLowercase = false
         var existsNumber = false
         var existsIllegal = false
-        password?.forEach {
+        password.forEach {
             when {
                 it.isUpperCase() -> existsUppercase = true
                 it.isLowerCase() -> existsLowercase = true
                 it.isDigit() -> existsNumber = true
                 else -> existsIllegal = true
             }
-            if (existsIllegal) {
+            if (!specialFails && existsIllegal) {
                 return@forEach
             }
             if (existsUppercase && existsLowercase && existsNumber) {
                 return@forEach
             }
         }
-        if (existsIllegal) {
+        if (!specialFails && existsIllegal) {
             throw PasswordSpecialFailsException()
         }
         if (existsUppercase && existsLowercase && existsNumber) {
