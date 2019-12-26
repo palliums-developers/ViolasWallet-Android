@@ -61,10 +61,7 @@ android {
             buildConfigField "boolean", "SHUFFLE_MNEMONIC", "true"
         }
         debug {
-            minifyEnabled true
-            zipAlignEnabled true
-            pseudoLocalesEnabled true
-            proguardFiles '../proguard-android-optimize-wallet.txt', 'proguard-rules.pro'
+            minifyEnabled false
             ext.alwaysUpdateBuildId = false
             signingConfig signingConfigs.debug
             buildConfigField "String", "TESTNET", '"testnet"'
