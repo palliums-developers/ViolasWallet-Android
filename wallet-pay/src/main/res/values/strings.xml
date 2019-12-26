@@ -240,4 +240,5 @@
     <string name="hinet_token_select">Please Select</string>
     <string name="hint_note_select_exchange_coin">No currency to be exchanged</string>
     <string name="hint_note_sellect_coin_more">There is no other stable currency to choose from</string>
+    <string name="hint_not_none_coin_or_net_error">There are not enough %1$s or network exceptions, please try again later.</string>
 </resources>

@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.utils.DensityUtility
 import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.quincysx.crypto.CoinTypes
 import com.smallraw.support.switchcompat.SwitchButton
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -121,8 +123,13 @@ class ManagerAssertActivity : BaseAppActivity() {
                             if (!it) {
                                 this@ManagerAssertActivity.runOnUiThread {
                                     checkbox.isChecked = false
+                                    Toast.makeText(
+                                        this@ManagerAssertActivity, String.format(
+                                            getString(R.string.hint_not_none_coin_or_net_error),
+                                            CoinTypes.Violas.coinName()
+                                        ), Toast.LENGTH_LONG
+                                    ).show()
                                 }
-                                showToast(getString(R.string.hint_assert_open_error))
                             } else {
                                 EventBus.getDefault().post(TokenPublishEvent())
                                 EventBus.getDefault().post(RefreshBalanceEvent())
