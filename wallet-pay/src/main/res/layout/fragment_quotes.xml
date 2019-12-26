@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <include
+        android:id="@+id/layoutQuotesContent"
+        layout="@layout/fragment_quotes_content" />
 
-        <include
-            android:id="@+id/layoutQuotesContent"
-            layout="@layout/fragment_quotes_content" />
-
-        <ViewStub
-            android:id="@+id/layoutNotOpen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout="@layout/fragment_quotes_did_not_open" />
-    </FrameLayout>
-</androidx.core.widget.NestedScrollView>
+    <ViewStub
+        android:id="@+id/layoutNotOpen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout="@layout/fragment_quotes_did_not_open" />
+</FrameLayout>
