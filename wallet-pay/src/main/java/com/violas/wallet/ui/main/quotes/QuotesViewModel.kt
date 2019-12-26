@@ -8,8 +8,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.ContextProvider
 import com.palliums.utils.coroutineExceptionHandler
+import com.palliums.utils.getString
 import com.palliums.utils.toMutableMap
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.SimpleSecurity
@@ -78,6 +80,28 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
 
     private var mAccount: AccountDO? = null
 
+    private var mDefToken = object : IToken {
+        override fun setNetEnable(enable: Boolean) {
+
+        }
+
+        override fun isNetEnable(): Boolean {
+            return true
+        }
+
+        override fun tokenAddress(): String {
+            return ""
+        }
+
+        override fun tokenName(): String {
+            return getString(R.string.hinet_token_select)
+        }
+
+        override fun tokenPrice(): BigDecimal {
+            return BigDecimal("1")
+        }
+    }
+
     init {
         EventBus.getDefault().register(this)
         ExchangeSocket.addSubscriber(this)
@@ -108,8 +132,16 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         }
     }
 
-    fun getTokenList(): List<IToken> {
-        return mTokenList.subList(0, mTokenList.size)
+    suspend fun getTokenList(fromCoin: Boolean) = withContext(Dispatchers.IO) {
+        val selectCoin = if (fromCoin) {
+            currentToCoinLiveData.value
+        } else {
+            currentFormCoinLiveData.value
+        }
+
+        mTokenList.subList(0, mTokenList.size).filter {
+            it.tokenAddress() != selectCoin?.tokenAddress()
+        }
     }
 
     fun clickShowMoreAllOrder() {
@@ -131,7 +163,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         ) {
             val baseToken: String
             val tokenQuote: String
-            if (isPositiveChangeLiveData.value == false) {
+            if (isPositiveChangeLiveData.value == true) {
                 baseToken = currentFormCoinLiveData.value!!.tokenAddress()
                 tokenQuote = currentToCoinLiveData.value!!.tokenAddress()
             } else {
@@ -205,11 +237,19 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 }
                 if (mTokenList.size > 0) {
                     currentFormCoinLiveData.postValue(mTokenList[0])
-                    currentToCoinLiveData.postValue(mTokenList[0])
+                } else {
+                    currentFormCoinLiveData.postValue(mDefToken)
+                }
+                if (mTokenList.size > 1) {
+                    currentToCoinLiveData.postValue(mTokenList[1])
+                } else {
+                    currentToCoinLiveData.postValue(mDefToken)
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            currentFormCoinLiveData.postValue(mDefToken)
+            currentToCoinLiveData.postValue(mDefToken)
         }
     }
 
@@ -255,7 +295,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 val fromPrice: BigDecimal
                 val toUnit: String
                 val toPrice: BigDecimal
-                if (isPositiveChangeLiveData.value == true) {
+                if (isPositiveChangeLiveData.value == false) {
                     fromUnit = currentFormCoinLiveData.value!!.tokenUnit()
                     fromPrice = currentFormCoinLiveData.value!!.tokenPrice()
                     toUnit = currentToCoinLiveData.value!!.tokenUnit()
@@ -302,7 +342,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     private fun orderFilter(order: IOrder): Boolean {
-        return if (isPositiveChangeLiveData.value == false) {
+        return if (isPositiveChangeLiveData.value == true) {
             order.tokenGet() == currentToCoinLiveData.value?.tokenAddress() &&
                     order.tokenGive() == currentFormCoinLiveData.value?.tokenAddress()
         } else {
@@ -458,6 +498,12 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         fromCoinAmount: BigDecimal,
         toCoinAmount: BigDecimal
     ) = withContext(Dispatchers.IO) {
+        if (currentFormCoinLiveData.value == mDefToken
+            || currentToCoinLiveData.value == mDefToken
+        ) {
+            throw ExchangeNotSelectqualException()
+        }
+
         if (currentFormCoinLiveData.value != null && currentFormCoinLiveData.value == currentToCoinLiveData.value) {
             throw ExchangeCoinEqualException()
         }
@@ -465,7 +511,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         val fromCoin: IToken
         val toCoin: IToken
 
-        if (isPositiveChangeLiveData.value == false) {
+        if (isPositiveChangeLiveData.value == true) {
             fromCoin = currentFormCoinLiveData.value!!
             toCoin = currentToCoinLiveData.value!!
         } else {
@@ -503,7 +549,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         val fromCoin: IToken
         val toCoin: IToken
 
-        if (isPositiveChangeLiveData.value == false) {
+        if (isPositiveChangeLiveData.value == true) {
             fromCoin = currentFormCoinLiveData.value!!
             toCoin = currentToCoinLiveData.value!!
         } else {
@@ -568,3 +614,4 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
 }
 
 class ExchangeCoinEqualException : RuntimeException()
+class ExchangeNotSelectqualException : RuntimeException()

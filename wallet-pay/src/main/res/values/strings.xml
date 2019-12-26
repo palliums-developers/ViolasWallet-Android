@@ -237,4 +237,7 @@
     <string name="tips_no_order_trades">No transaction records</string>
 
     <string name="format_wallet_name">%1$s Wallet</string>
+    <string name="hinet_token_select">Please Select</string>
+    <string name="hint_note_select_exchange_coin">No currency to be exchanged</string>
+    <string name="hint_note_sellect_coin_more">There is no other stable currency to choose from</string>
 </resources>

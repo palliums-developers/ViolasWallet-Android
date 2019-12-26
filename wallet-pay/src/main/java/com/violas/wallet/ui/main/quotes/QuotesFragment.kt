@@ -28,7 +28,9 @@ import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.fragment_quotes.*
 import kotlinx.android.synthetic.main.fragment_quotes_content.*
 import kotlinx.android.synthetic.main.fragment_quotes_did_not_open.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 
 
@@ -106,8 +108,8 @@ class QuotesFragment : BaseFragment() {
         ivConversion.setOnClickListener { mQuotesViewModel.clickPositiveChange() }
         recyclerViewMeOrder.adapter = mMeOrderAdapter
         recyclerViewAllOrder.adapter = mAllOrderAdapter
-        layoutFromCoin.setOnClickListener { showTokenFragment(it) }
-        layoutToCoin.setOnClickListener { showTokenFragment(it) }
+        layoutFromCoin.setOnClickListener { showTokenFragment(it, true) }
+        layoutToCoin.setOnClickListener { showTokenFragment(it, false) }
         layoutEntrustOthers.setOnClickListener { mQuotesViewModel.clickShowMoreAllOrder() }
         editFromCoin.addTextChangedListener(mFromAmountTextWatcher)
         editToCoin.addTextChangedListener(mToAmountTextWatcher)
@@ -136,6 +138,9 @@ class QuotesFragment : BaseFragment() {
                 when (e) {
                     is ExchangeCoinEqualException -> {
                         showToast("${tvFromCoin.text}${getString(R.string.hint_unable_change)}${tvToCoin.text}")
+                    }
+                    is ExchangeNotSelectqualException -> {
+                        showToast(getString(R.string.hint_note_select_exchange_coin))
                     }
                     is WrongPasswordException,
                     is LackOfBalanceException,
@@ -189,16 +194,23 @@ class QuotesFragment : BaseFragment() {
             .show(childFragmentManager)
     }
 
-    private fun showTokenFragment(view: View?) {
+    private fun showTokenFragment(view: View?, fromCoin: Boolean) = launch(Dispatchers.IO) {
+        val tokenList = mQuotesViewModel.getTokenList(fromCoin)
         val sheetDialogFragment = TokenBottomSheetDialogFragment.newInstance()
-        sheetDialogFragment.show(childFragmentManager, mQuotesViewModel.getTokenList()) {
-            sheetDialogFragment.dismiss()
-            when (view?.id) {
-                R.id.layoutFromCoin -> {
-                    mQuotesViewModel.currentFormCoinLiveData.postValue(it)
-                }
-                R.id.layoutToCoin -> {
-                    mQuotesViewModel.currentToCoinLiveData.postValue(it)
+        withContext(Dispatchers.Main) {
+            if (tokenList.isEmpty()) {
+                showToast(getString(R.string.hint_note_sellect_coin_more))
+                return@withContext
+            }
+            sheetDialogFragment.show(childFragmentManager, tokenList) {
+                sheetDialogFragment.dismiss()
+                when (view?.id) {
+                    R.id.layoutFromCoin -> {
+                        mQuotesViewModel.currentFormCoinLiveData.postValue(it)
+                    }
+                    R.id.layoutToCoin -> {
+                        mQuotesViewModel.currentToCoinLiveData.postValue(it)
+                    }
                 }
             }
         }
@@ -248,9 +260,9 @@ class QuotesFragment : BaseFragment() {
             transition.duration = 500
             TransitionManager.beginDelayedTransition(layoutCoinConversion, transition)
             if (it) {
-                mConstraintSet2.applyTo(layoutCoinConversion)
-            } else {
                 mConstraintSet.applyTo(layoutCoinConversion)
+            } else {
+                mConstraintSet2.applyTo(layoutCoinConversion)
             }
         })
     }
