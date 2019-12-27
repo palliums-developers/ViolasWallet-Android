@@ -224,7 +224,7 @@
     <string name="hint_back_up_mnemonic_words_content">Mnemonic words can be used to recover the wallet assets under the identity, to prevent the asset loss caused by forgotten password, application deletion, mobile phone loss, etc</string>
     <string name="tab_wallet">Wallet</string>
     <string name="tab_market">Market</string>
-    <string name="tab_me">My Profile</string>
+    <string name="tab_me">Me</string>
     <string name="action_please_choose">Select</string>
     <string name="hint_please_select_address_system">Select Address System</string>
     <string name="hint_confirm_delete_address_book">Confirm to remove this address from the Address Book！</string>

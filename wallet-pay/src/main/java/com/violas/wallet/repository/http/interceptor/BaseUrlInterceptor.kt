@@ -46,6 +46,11 @@ class BaseUrlInterceptor : Interceptor {
         private const val LIBRA_BROWSER_BASE_URL_LIBEXPLORER_TEST_NET =
             "https://libexplorer.com"
 
+        private const val VIOLAS_BROWSER_BASE_URL_MAIN_NET =
+            "http://47.52.66.26:30000/app/Violas_version/707816"
+        private const val VIOLAS_BROWSER_BASE_URL_TEST_NET =
+            "http://47.52.66.26:30000/app/Violas_version/707816"
+
         fun getDexBaseUrl(): String {
             return if (Vm.TestNet)
                 DEX_BASE_URL_TEST_NET
@@ -86,6 +91,13 @@ class BaseUrlInterceptor : Interceptor {
                 LIBRA_BROWSER_BASE_URL_LIBEXPLORER_TEST_NET
             else
                 LIBRA_BROWSER_BASE_URL_LIBEXPLORER_MAIN_NET}/version/$version"
+        }
+
+        fun getViolasBrowserUrl(version: String): String {
+            return "${if (Vm.TestNet)
+                VIOLAS_BROWSER_BASE_URL_TEST_NET
+            else
+                VIOLAS_BROWSER_BASE_URL_MAIN_NET}/app/Violas_version/$version"
         }
     }
 
