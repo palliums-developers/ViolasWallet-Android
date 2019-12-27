@@ -359,14 +359,14 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             meOrdersLiveData.postValue(
                 myOrder.map(setOrderPrice())
-                    .sortedByDescending { it.updateVersion() }
+                    .sortedByDescending { it.version() }
             )
             val allOrderList = buyOrder//.plus(sellOrder)
                 .filter { orderFilter(it) }
                 .filter { it.userAddress() != mAccount?.address }
             allOrdersLiveData.postValue(
                 allOrderList.map(setOrderPrice())
-                    .sortedByDescending { it.updateVersion() }
+                    .sortedByDescending { it.version() }
             )
         }
     }
@@ -399,7 +399,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 meOrdersLiveData.postValue(
                     newMeOrderList.values
                         .map(setOrderPrice())
-                        .sortedByDescending { it.updateVersion() }
+                        .sortedByDescending { it.version() }
                 )
             }
             val newAllOrderList =
@@ -416,7 +416,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             }
             allOrdersLiveData.postValue(
                 newAllOrderList.values.toList()
-                    .sortedByDescending { it.updateVersion() }
+                    .sortedByDescending { it.version() }
                     .take(20)
                     .map(setOrderPrice())
             )
@@ -583,7 +583,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         }
 
         Log.e("==exchange==", "${fromCoin.tokenName()}   ${toCoin.tokenName()}")
-        mExchangeManager.exchangeToken(
+        val exchangeToken = mExchangeManager.exchangeToken(
             getApplication(),
             account,
             fromCoin,
@@ -593,6 +593,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         )
 
         EventBus.getDefault().post(RefreshBalanceEvent())
+        exchangeToken
     }
 
     private suspend fun publishToken(mAccount: Account, tokenAddress: String): Boolean {
