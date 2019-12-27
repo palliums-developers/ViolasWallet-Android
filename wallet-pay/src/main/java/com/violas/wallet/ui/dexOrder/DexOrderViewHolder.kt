@@ -39,7 +39,7 @@ class DexOrderViewHolder(
             itemView.tvTotalAmount.text = convertViolasTokenUnit(it.dto.amountGet)
             itemView.tvTradeAmount.text = convertViolasTokenUnit(it.dto.amountFilled)
 
-            itemView.tvFee.text = "0.00${CoinTypes.Violas.coinUnit()}"
+            itemView.tvFee.text = "0.0000${CoinTypes.Violas.coinUnit()}"
             itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
 
             when {

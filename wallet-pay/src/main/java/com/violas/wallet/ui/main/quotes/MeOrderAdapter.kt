@@ -56,7 +56,7 @@ class MeOrderAdapter :
         )
         holder.itemView.tvFromCoin.text = "${item.tokenGiveSymbol()}/"
         holder.itemView.tvToCoin.text = item.tokenGetSymbol()
-        holder.itemView.tvCoinNumber.text = item.amount()
+        holder.itemView.tvCoinNumber.text = item.balance()
         holder.itemView.tvCoinPrice.text = item.price()
         holder.itemView.tvYear.text = mYearSimpleDateFormat.format(item.date())
         holder.itemView.tvTime.text = mTimeSimpleDateFormat.format(item.date())

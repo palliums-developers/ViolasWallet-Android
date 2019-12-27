@@ -24,11 +24,11 @@ fun convertViolasTokenUnit(amount: String): String {
     val amountBigDecimal = BigDecimal(amount)
     return if (amountBigDecimal > BigDecimal("0")) {
         amountBigDecimal
-            .divide(BigDecimal(1000000), 2, RoundingMode.HALF_UP)
+            .divide(BigDecimal(1000000), 4, RoundingMode.DOWN)
             .stripTrailingZeros()
             .toPlainString()
     } else {
-        "0.00"
+        "0.0000"
     }
 }
 

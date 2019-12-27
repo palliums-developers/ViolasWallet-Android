@@ -167,7 +167,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
         tvTotalAmount.text = convertViolasTokenUnit(it.dto.amountGet)
         tvTradeAmount.text = convertViolasTokenUnit(it.dto.amountFilled)
 
-        tvFee.text = "0.00${CoinTypes.Violas.coinUnit()}"
+        tvFee.text = "0.0000${CoinTypes.Violas.coinUnit()}"
         tvTime.text = formatDate(it.dto.updateDate)
 
         when {
