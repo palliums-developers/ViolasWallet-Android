@@ -581,7 +581,6 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         list.forEach {
             it.await()
         }
-        EventBus.getDefault().post(RefreshBalanceEvent())
 
         Log.e("==exchange==", "${fromCoin.tokenName()}   ${toCoin.tokenName()}")
         mExchangeManager.exchangeToken(
@@ -592,6 +591,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             toCoin,
             toCoinAmount
         )
+
+        EventBus.getDefault().post(RefreshBalanceEvent())
     }
 
     private suspend fun publishToken(mAccount: Account, tokenAddress: String): Boolean {
