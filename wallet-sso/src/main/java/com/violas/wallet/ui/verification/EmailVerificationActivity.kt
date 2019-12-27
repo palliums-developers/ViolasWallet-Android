@@ -64,9 +64,7 @@ class EmailVerificationActivity : BaseViewModelActivity() {
         mViewModel.bindEmailResult.observe(this, Observer {
             if (it) {
                 setResult(Activity.RESULT_OK)
-                btnBind.postDelayed({
-                    close()
-                }, 2000)
+                close()
             }
         })
 

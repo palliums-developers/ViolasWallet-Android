@@ -120,9 +120,7 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
         mViewModel.authenticationResult.observe(this, Observer {
             if (it) {
                 setResult(Activity.RESULT_OK)
-                btnSubmit.postDelayed({
-                    close()
-                }, 2000)
+                close()
             }
         })
 
@@ -130,7 +128,7 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
 
         // 动态设置EditText的左右padding
         etIDName.post {
-            var paddingRight = ivSelectCountryArea.width
+            val paddingRight = ivSelectCountryArea.width
             var paddingLeft =
                 tvCountryAreaLabel.width + DensityUtility.dp2px(this, 15)
             tvCountryArea.setPadding(paddingLeft, 0, paddingRight, 0)

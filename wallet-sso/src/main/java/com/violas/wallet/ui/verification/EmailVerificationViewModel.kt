@@ -65,12 +65,11 @@ class EmailVerificationViewModel : BaseViewModel() {
         val verificationCode = params[1] as String
         ssoService.bindEmail(walletAddress, emailAddress, verificationCode)
 
-        tipsMessage.postValue(getString(R.string.hint_email_bind_success))
-        bindEmailResult.postValue(true)
-
         val emailInfo = EmailInfo(emailAddress, AccountBindingStatus.BOUND)
         localUserService.setEmailInfo(emailInfo)
         EventBus.getDefault().post(BindEmailEvent(emailInfo))
+
+        bindEmailResult.postValue(true)
     }
 
     override fun checkParams(action: Int, vararg params: Any): Boolean {
