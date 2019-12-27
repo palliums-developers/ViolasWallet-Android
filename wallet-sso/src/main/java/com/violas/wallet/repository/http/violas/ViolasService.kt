@@ -10,6 +10,7 @@ import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.TransactionService
+import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.ui.record.TransactionRecordVO
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -284,7 +285,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
                 amount = bean.amount,
                 gas = bean.gas,
                 address = showAddress,
-                url = null,
+                url = BaseUrlInterceptor.getViolasBrowserUrl(bean.version.toString()),
                 coinName = coinName
             )
         }

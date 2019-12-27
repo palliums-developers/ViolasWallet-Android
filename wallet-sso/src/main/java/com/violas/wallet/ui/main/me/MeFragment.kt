@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.me
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -26,6 +27,12 @@ import kotlinx.android.synthetic.main.fragment_me.*
  * 我的页面
  */
 class MeFragment : BaseFragment() {
+
+    companion object {
+        private const val REQUEST_CODE_BIND_PHONE = 0x11
+        private const val REQUEST_CODE_BIND_EMAIL = 0x22
+        private const val REQUEST_CODE_AUTHENTICATION_ID = 0x33
+    }
 
     private val mViewModel by lazy {
         requireActivity().provideUserViewModel()
@@ -73,26 +80,22 @@ class MeFragment : BaseFragment() {
                 IDAuthenticationStatus.UNKNOWN -> {
                     mivIDAuthentication.showEndArrow(false)
                     mivIDAuthentication.setEndDescText("")
-
-                    handLoadState(pbIDAuthenticationLoading, it.second)
                 }
 
                 IDAuthenticationStatus.AUTHENTICATED -> {
                     mivIDAuthentication.showEndArrow(true)
                     mivIDAuthentication.setEndDescText(R.string.desc_authenticated)
                     mivIDAuthentication.setEndDescTextColor(getColor(R.color.def_text_title))
-
-                    handLoadState(pbIDAuthenticationLoading, it.second)
                 }
 
                 else -> {
                     mivIDAuthentication.showEndArrow(true)
                     mivIDAuthentication.setEndDescText(R.string.desc_unauthorized)
                     mivIDAuthentication.setEndDescTextColor(getColor(R.color.def_text_warn))
-
-                    handLoadState(pbIDAuthenticationLoading, it.second, mivIDAuthentication)
                 }
             }
+
+            handleLoadState(pbIDAuthenticationLoading, it.second, mivIDAuthentication)
         })
 
         mViewModel.getPhoneInfoLiveData().observe(this, Observer {
@@ -100,28 +103,22 @@ class MeFragment : BaseFragment() {
                 AccountBindingStatus.UNKNOWN -> {
                     mivPhoneVerification.showEndArrow(false)
                     mivPhoneVerification.setEndDescText("")
-
-                    handLoadState(pbPhoneVerificationLoading, it.second)
                 }
 
                 AccountBindingStatus.BOUND -> {
                     mivPhoneVerification.showEndArrow(false)
                     mivPhoneVerification.setEndDescText(it.first.phoneNumber)
                     mivPhoneVerification.setEndDescTextColor(getColor(R.color.def_text_title))
-                    mivPhoneVerification.setOnClickListener(null)
-                    mivPhoneVerification.setBackgroundColor(getColor(R.color.white))
-
-                    handLoadState(pbPhoneVerificationLoading, it.second)
                 }
 
                 else -> {
                     mivPhoneVerification.showEndArrow(true)
                     mivPhoneVerification.setEndDescText(R.string.desc_unbound)
                     mivPhoneVerification.setEndDescTextColor(getColor(R.color.def_text_warn))
-
-                    handLoadState(pbPhoneVerificationLoading, it.second, mivPhoneVerification)
                 }
             }
+
+            handleLoadState(pbPhoneVerificationLoading, it.second, mivPhoneVerification)
         })
 
         mViewModel.getEmailInfoLiveData().observe(this, Observer {
@@ -129,32 +126,26 @@ class MeFragment : BaseFragment() {
                 AccountBindingStatus.UNKNOWN -> {
                     mivEmailVerification.showEndArrow(false)
                     mivEmailVerification.setEndDescText("")
-
-                    handLoadState(pbEmailVerificationLoading, it.second)
                 }
 
                 AccountBindingStatus.BOUND -> {
                     mivEmailVerification.showEndArrow(false)
                     mivEmailVerification.setEndDescText(it.first.emailAddress)
                     mivEmailVerification.setEndDescTextColor(getColor(R.color.def_text_title))
-                    mivEmailVerification.setOnClickListener(null)
-                    mivEmailVerification.setBackgroundColor(getColor(R.color.white))
-
-                    handLoadState(pbEmailVerificationLoading, it.second)
                 }
 
                 else -> {
                     mivEmailVerification.showEndArrow(true)
                     mivEmailVerification.setEndDescText(R.string.desc_unbound)
                     mivEmailVerification.setEndDescTextColor(getColor(R.color.def_text_warn))
-
-                    handLoadState(pbEmailVerificationLoading, it.second, mivEmailVerification)
                 }
             }
+
+            handleLoadState(pbEmailVerificationLoading, it.second, mivEmailVerification)
         })
     }
 
-    private fun handLoadState(
+    private fun handleLoadState(
         progressBar: ProgressBar,
         loadState: LoadState,
         menuItemView: MenuItemView? = null
@@ -197,11 +188,12 @@ class MeFragment : BaseFragment() {
                     }
 
                     else -> {
-                        startActivity(
+                        startActivityForResult(
                             Intent(
                                 requireActivity(),
                                 IDAuthenticationActivity::class.java
-                            )
+                            ),
+                            REQUEST_CODE_AUTHENTICATION_ID
                         )
                     }
                 }
@@ -215,11 +207,12 @@ class MeFragment : BaseFragment() {
                     }
 
                     AccountBindingStatus.UNBOUND -> {
-                        startActivity(
+                        startActivityForResult(
                             Intent(
                                 requireActivity(),
                                 PhoneVerificationActivity::class.java
-                            )
+                            ),
+                            REQUEST_CODE_BIND_PHONE
                         )
                     }
                 }
@@ -233,11 +226,12 @@ class MeFragment : BaseFragment() {
                     }
 
                     AccountBindingStatus.UNBOUND -> {
-                        startActivity(
+                        startActivityForResult(
                             Intent(
                                 requireActivity(),
                                 EmailVerificationActivity::class.java
-                            )
+                            ),
+                            REQUEST_CODE_BIND_EMAIL
                         )
                     }
                 }
@@ -249,6 +243,29 @@ class MeFragment : BaseFragment() {
 
             R.id.mivSettings -> {
                 startActivity(Intent(requireActivity(), SettingActivity::class.java))
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_CODE_BIND_PHONE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    showToast(R.string.hint_phone_number_bind_success)
+                }
+            }
+
+            REQUEST_CODE_BIND_EMAIL -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    showToast(R.string.hint_email_bind_success)
+                }
+            }
+
+            REQUEST_CODE_AUTHENTICATION_ID -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    showToast(R.string.hint_id_authentication_success)
+                }
             }
         }
     }

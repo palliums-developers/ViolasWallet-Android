@@ -19,8 +19,8 @@ class CountDownTimerUtils(
         mTextView.isClickable = false //设置不可点击
         mTextView.isEnabled = false
 
-        val resend = getString(R.string.resend)
-        val time = "(" + (millisUntilFinished / 1000).toString() + "s)"
+        val resend = getString(R.string.format_resend, millisUntilFinished / 1000)
+        /*val time = "(" + (millisUntilFinished / 1000).toString() + "s)"
         val spannableString = SpannableString(resend + time).also {
             it.setSpan(
                 ForegroundColorSpan(Color.RED),
@@ -28,9 +28,9 @@ class CountDownTimerUtils(
                 it.length,
                 Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             )
-        }
+        }*/
 
-        mTextView.text = spannableString //设置倒计时时间
+        mTextView.text = resend //设置倒计时时间
     }
 
     override fun onFinish() {

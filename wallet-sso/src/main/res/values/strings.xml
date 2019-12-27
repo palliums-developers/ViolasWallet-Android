@@ -197,7 +197,7 @@
     <string name="hint_enter_verification_code">Input Verification Code</string>
     <string name="get_verification_code">Get Verification Code</string>
     <string name="btn_bind">Verify</string>
-    <string name="resend">Resend</string>
+    <string name="format_resend">%1$ds Resend</string>
     <string name="hint_phone_number_format_incorrect">Invalid Phone Number Format</string>
     <string name="hint_phone_number_bind_success">Phone Number Verified</string>
     <string name="hint_verification_code_get_success">Send Verification Code. Please check it</string>
@@ -274,7 +274,7 @@
     <string name="title_select_governor">Choose to issue money to the governor</string>
     <string name="hint_album">Album</string>
     <string name="hint_take_photo">Take Picture</string>
-    <string name="hint_image_load_error">Image Reload Failed</string>
+    <string name="hint_image_load_error">Image load Failed</string>
     <string name="hint_apply_for_mint">Apply to issue</string>
     <string name="action_mint">Issuing</string>
     <string name="title_mint_success">Issuing Success</string>

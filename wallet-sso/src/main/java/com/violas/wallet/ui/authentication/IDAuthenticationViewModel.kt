@@ -109,20 +109,30 @@ class IDAuthenticationViewModel : BaseViewModel() {
             idPhotoBackUrl = idPhotoBackUrl
         )
 
+        // 上传图片时返回的图片url不是全路径，所以这里从服务器获取用户身份信息
+        val userInfoDTO = ssoService.loadUserInfo(walletAddress).data
+        if (userInfoDTO == null
+            || userInfoDTO.idName.isNullOrEmpty()
+            || userInfoDTO.idNumber.isNullOrEmpty()
+            || userInfoDTO.idPhotoFrontUrl.isNullOrEmpty()
+            || userInfoDTO.idPhotoBackUrl.isNullOrEmpty()
+            || userInfoDTO.countryCode.isNullOrEmpty()
+        ) {
+            throw RequestException.responseDataException()
+        }
+
         val idInfo = IDInfo(
-            idName = idName,
-            idNumber = idNumber,
-            idPhotoFrontUrl = idPhotoFrontUrl,
-            idPhotoBackUrl = idPhotoBackUrl,
-            idCountryCode = countryCode,
+            idName = userInfoDTO.idName,
+            idNumber = userInfoDTO.idNumber,
+            idPhotoFrontUrl = userInfoDTO.idPhotoFrontUrl,
+            idPhotoBackUrl = userInfoDTO.idPhotoBackUrl,
+            idCountryCode = userInfoDTO.countryCode,
             idAuthenticationStatus = IDAuthenticationStatus.AUTHENTICATED
         )
 
-        // 上传图片时返回的图片url不是全路径，所以这里不存储身份信息，通过发送事件让我的页面刷新用户身份信息
-        // localUserService.setIDInfo(idInfo)
+        localUserService.setIDInfo(idInfo)
         EventBus.getDefault().post(AuthenticationIDEvent(idInfo))
 
-        tipsMessage.postValue(getString(R.string.hint_id_authentication_success))
         authenticationResult.postValue(true)
     }
 

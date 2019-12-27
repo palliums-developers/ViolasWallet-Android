@@ -76,7 +76,6 @@ class PhoneVerificationViewModel : BaseViewModel() {
         localUserService.setPhoneInfo(phoneInfo)
         EventBus.getDefault().post(BindPhoneEvent(phoneInfo))
 
-        tipsMessage.postValue(getString(R.string.hint_phone_number_bind_success))
         bindPhoneNumberResult.postValue(true)
     }
 

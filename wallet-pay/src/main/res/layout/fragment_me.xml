@@ -20,13 +20,13 @@
         android:layout_width="@dimen/dp_75"
         android:layout_height="@dimen/dp_75"
         android:layout_marginTop="@dimen/dp_64"
-        android:src="@mipmap/ic_launcher_round"
-        app:border_color="@color/white"
-        app:border_width="@dimen/dp_2"
-        app:is_circle="true"
+        android:src="@drawable/ic_avatar_logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <!--app:is_circle="true"
+    app:border_color="@color/white"
+    app:border_width="@dimen/dp_2"-->
 
     <TextView
         android:id="@+id/tvNickname"

@@ -41,7 +41,7 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
     }
 
     private val mCountDownTimerUtils by lazy {
-        CountDownTimerUtils(tvGetVerificationCode, 1000 * 60 * 3, 1000)
+        CountDownTimerUtils(tvGetVerificationCode, 1000 * 60 * 2, 1000)
     }
 
     override fun getLayoutResId(): Int {
@@ -74,9 +74,7 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
         mViewModel.bindPhoneNumberResult.observe(this, Observer {
             if (it) {
                 setResult(Activity.RESULT_OK)
-                btnBind.postDelayed({
-                    close()
-                }, 2000)
+                close()
             }
         })
         mViewModel.countryAreaVO.observe(this, Observer {
@@ -138,8 +136,7 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.tvAreaCode,
-            R.id.ivSelectAreaCode
-            -> {
+            R.id.ivSelectAreaCode -> {
                 SelectCountryAreaActivity.start(
                     this, REQUEST_CODE_SELECT_COUNTRY_AREA, true
                 )

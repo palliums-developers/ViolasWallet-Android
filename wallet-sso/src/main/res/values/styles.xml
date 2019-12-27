@@ -102,4 +102,18 @@
         </item>
     </style>
 
+    <style name="VerificationCode" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/selector_get_verification_code</item>
+        <item name="android:textSize">@dimen/sp_12</item>
+        <item name="android:text">@string/get_verification_code</item>
+        <item name="android:background">@drawable/selector_btn_get_verification_code</item>
+        <item name="android:layout_marginEnd">@dimen/dp_20</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:paddingTop">@dimen/dp_9</item>
+        <item name="android:paddingBottom">@dimen/dp_9</item>
+        <item name="android:paddingStart">@dimen/dp_11</item>
+        <item name="android:paddingEnd">@dimen/dp_11</item>
+        <item name="android:minWidth">@dimen/dp_76</item>
+    </style>
+
 </resources>

@@ -42,7 +42,6 @@ class UserViewModel : BaseViewModel() {
 
     companion object {
         private const val ACTION_INIT = 0x123
-        private const val ACTION_SYNC_ID_INFO = 0x124
     }
 
     private lateinit var currentAccount: AccountDO
@@ -131,14 +130,7 @@ class UserViewModel : BaseViewModel() {
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onAuthenticationIDEvent(event: AuthenticationIDEvent) {
-        // 上传图片时返回的图片url不是全路径，所以接收到认证事件后，从服务器获取用户的身份信息
         synchronized(lock) {
-            val idInfo = idInfo() ?: IDInfo.newEmptyInstance()
-            idInfoLiveData.postValue(Pair(idInfo, LoadState.RUNNING))
-        }
-        execute(action = ACTION_SYNC_ID_INFO)
-
-        /*synchronized(lock) {
             idInfoLiveData.postValue(Pair(event.idInfo, LoadState.IDLE))
 
             val emailInfo = emailInfo()
@@ -148,7 +140,7 @@ class UserViewModel : BaseViewModel() {
             ) {
                 allReadyLiveData.postValue(true)
             }
-        }*/
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
@@ -263,7 +255,7 @@ class UserViewModel : BaseViewModel() {
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
 
-        if (action != ACTION_INIT && action != ACTION_SYNC_ID_INFO) {
+        if (action != ACTION_INIT) {
             postStateIfNotReady(LoadState.RUNNING)
         }
 
