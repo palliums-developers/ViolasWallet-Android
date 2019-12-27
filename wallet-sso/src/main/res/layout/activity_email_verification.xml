@@ -47,16 +47,9 @@
 
     <TextView
         android:id="@+id/tvGetVerificationCode"
+        style="@style/VerificationCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/dp_20"
-        android:background="@drawable/selector_btn_get_verification_code"
-        android:gravity="center"
-        android:minWidth="@dimen/dp_76"
-        android:padding="@dimen/dp_8"
-        android:text="@string/get_verification_code"
-        android:textColor="@color/selector_get_verification_code"
-        android:textSize="@dimen/sp_12"
         app:layout_constraintBottom_toBottomOf="@id/etVerificationCode"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/etVerificationCode" />

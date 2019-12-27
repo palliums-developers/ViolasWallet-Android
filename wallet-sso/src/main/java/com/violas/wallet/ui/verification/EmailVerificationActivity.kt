@@ -33,7 +33,7 @@ class EmailVerificationActivity : BaseViewModelActivity() {
     }
 
     private val mCountDownTimerUtils by lazy {
-        CountDownTimerUtils(tvGetVerificationCode, 1000 * 60 * 3, 1000)
+        CountDownTimerUtils(tvGetVerificationCode, 1000 * 60 * 2, 1000)
     }
 
     override fun getLayoutResId(): Int {

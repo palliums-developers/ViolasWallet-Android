@@ -22,10 +22,10 @@ class EmailPhoneValidationDialog : DialogFragment(), CoroutineScope by CustomMai
     private var confirmCallback: ((String, String, DialogFragment) -> Unit)? = null
     private var cancelCallback: (() -> Unit)? = null
     private val mPhoneCountDownTimerUtils by lazy {
-        CountDownTimerUtils(mRootView.tvPhoneGetVerificationCode, 1000 * 60 * 3, 1000)
+        CountDownTimerUtils(mRootView.tvPhoneGetVerificationCode, 1000 * 60 * 2, 1000)
     }
     private val mEmailCountDownTimerUtils by lazy {
-        CountDownTimerUtils(mRootView.tvEmailGetVerificationCode, 1000 * 60 * 3, 1000)
+        CountDownTimerUtils(mRootView.tvEmailGetVerificationCode, 1000 * 60 * 2, 1000)
     }
 
     private val localUserService by lazy {

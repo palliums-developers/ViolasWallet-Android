@@ -109,7 +109,6 @@ class MeFragment : BaseFragment() {
                     mivPhoneVerification.showEndArrow(false)
                     mivPhoneVerification.setEndDescText(it.first.phoneNumber)
                     mivPhoneVerification.setEndDescTextColor(getColor(R.color.def_text_title))
-                    mivPhoneVerification.setOnClickListener(null)
                 }
 
                 else -> {
@@ -133,7 +132,6 @@ class MeFragment : BaseFragment() {
                     mivEmailVerification.showEndArrow(false)
                     mivEmailVerification.setEndDescText(it.first.emailAddress)
                     mivEmailVerification.setEndDescTextColor(getColor(R.color.def_text_title))
-                    mivEmailVerification.setOnClickListener(null)
                 }
 
                 else -> {
