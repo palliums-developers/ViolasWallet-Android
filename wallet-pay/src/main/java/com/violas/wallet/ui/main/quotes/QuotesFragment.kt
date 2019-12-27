@@ -33,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 
 class QuotesFragment : BaseFragment() {
@@ -146,7 +147,7 @@ class QuotesFragment : BaseFragment() {
                     is ExchangeNotSelectCoinException -> {
                         showToast(getString(R.string.hint_note_select_exchange_coin))
                     }
-                    is ExchangeAmountLargeException->{
+                    is ExchangeAmountLargeException -> {
                         showToast(getString(R.string.hint_exchange_amount_too_large))
                     }
                     is WrongPasswordException,
@@ -254,10 +255,28 @@ class QuotesFragment : BaseFragment() {
         })
 
         mQuotesViewModel.mFromCoinAmountLiveData.observe(viewLifecycleOwner, Observer {
-            editFromCoin.setText(it)
+            if(it == BigDecimal("0")){
+                editToCoin.setText("")
+                return@Observer
+            }
+            editFromCoin.setText(
+                it.setScale(
+                    4,
+                    RoundingMode.DOWN
+                ).stripTrailingZeros().toPlainString()
+            )
         })
         mQuotesViewModel.mToCoinAmountLiveData.observe(viewLifecycleOwner, Observer {
-            editToCoin.setText(it)
+            if(it == BigDecimal("0")){
+                editToCoin.setText("")
+                return@Observer
+            }
+            editToCoin.setText(
+                it.setScale(
+                    4,
+                    RoundingMode.DOWN
+                ).stripTrailingZeros().toPlainString()
+            )
         })
     }
 

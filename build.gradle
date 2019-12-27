@@ -33,9 +33,9 @@ buildscript {
 
     ext.names = [
             'payApplicationId': 'com.violas.wallet',
-            'payName'         : '0.1.2',
+            'payName'         : '0.1.3',
             'ssoApplicationId': 'com.violas.wallet.sso',
-            'ssoName'         : '0.1.2'
+            'ssoName'         : '0.1.3'
     ]
 
     repositories {
