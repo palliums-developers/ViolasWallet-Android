@@ -21,6 +21,7 @@ class RequestHeaderInterceptor : Interceptor {
         val originalRequest = chain.request()
 
         val newRequest = originalRequest.newBuilder()
+            .header("Connection", "close")
             .header("user-agent", getString(R.string.http_user_agent))
             .header("app-ver-name", BuildConfig.VERSION_NAME)
             .header("app-ver-code", BuildConfig.VERSION_CODE.toString())
