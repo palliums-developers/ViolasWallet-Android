@@ -58,8 +58,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     private val mShowMoreAllOrderMaxCount = 20
     private val mShowMoreAllOrderMinCount = 5
     // 兑换数量
-    val mFromCoinAmountLiveData = MutableLiveData<String>()
-    val mToCoinAmountLiveData = MutableLiveData<String>()
+    val mFromCoinAmountLiveData = MutableLiveData<BigDecimal>()
+    val mToCoinAmountLiveData = MutableLiveData<BigDecimal>()
     // Token 列表
     private val mTokenList = ArrayList<IToken>()
 
@@ -308,19 +308,19 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 }
                 val divide = toPrice.divide(
                     fromPrice,
-                    4,
-                    RoundingMode.HALF_DOWN
+                    20,
+                    RoundingMode.DOWN
                 )
                 exchangeRateNumberLiveData.postValue(divide)
                 exchangeRateLiveData.postValue(
-                    "1 $toUnit = ${divide.setScale(
+                    "1 $toUnit ≈ ${divide.setScale(
                         4,
-                        RoundingMode.HALF_DOWN
+                        RoundingMode.DOWN
                     ).stripTrailingZeros().toPlainString()} $fromUnit"
                 )
             } else {
                 exchangeRateNumberLiveData.postValue(BigDecimal("0"))
-                exchangeRateLiveData.postValue("... = ...")
+                exchangeRateLiveData.postValue("... ≈ ...")
             }
         }
     }
@@ -450,15 +450,11 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 if (currentExchangeCoinLiveData.value != null && get != null && get.isNotEmpty()) {
                     BigDecimal(get)
                         .multiply(exchangeRateNumberLiveData.value)
-                        .setScale(4, RoundingMode.HALF_DOWN)
+                        .setScale(4, RoundingMode.DOWN)
                 } else {
                     BigDecimal("0")
                 }
-            if (amount == BigDecimal("0")) {
-                mToCoinAmountLiveData.postValue("")
-            } else {
-                mToCoinAmountLiveData.postValue(amount.stripTrailingZeros().toPlainString())
-            }
+            mToCoinAmountLiveData.postValue(amount)
         }
     }
 
@@ -469,17 +465,13 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     BigDecimal(get)
                         .divide(
                             exchangeRateNumberLiveData.value!!,
-                            4,
-                            BigDecimal.ROUND_HALF_DOWN
+                            10,
+                            RoundingMode.DOWN
                         )
                 } else {
                     BigDecimal("0")
                 }
-            if (amount == BigDecimal("0")) {
-                mFromCoinAmountLiveData.postValue("")
-            } else {
-                mFromCoinAmountLiveData.postValue(amount.stripTrailingZeros().toPlainString())
-            }
+            mFromCoinAmountLiveData.postValue(amount)
         }
     }
 
