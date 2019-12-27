@@ -161,6 +161,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             && currentToCoinLiveData.value != null
             && isPositiveChangeLiveData.value != null
         ) {
+            allDisplayOrdersLiveData.postValue(listOf())
+            allOrdersLiveData.postValue(listOf())
+
             val baseToken: String
             val tokenQuote: String
             if (isPositiveChangeLiveData.value == true) {
