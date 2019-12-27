@@ -161,6 +161,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             && currentToCoinLiveData.value != null
             && isPositiveChangeLiveData.value != null
         ) {
+            allDisplayOrdersLiveData.postValue(listOf())
+            allOrdersLiveData.postValue(listOf())
+
             val baseToken: String
             val tokenQuote: String
             if (isPositiveChangeLiveData.value == true) {
@@ -359,14 +362,14 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             meOrdersLiveData.postValue(
                 myOrder.map(setOrderPrice())
-                    .sortedByDescending { it.updateVersion() }
+                    .sortedByDescending { it.version() }
             )
             val allOrderList = buyOrder//.plus(sellOrder)
                 .filter { orderFilter(it) }
                 .filter { it.userAddress() != mAccount?.address }
             allOrdersLiveData.postValue(
                 allOrderList.map(setOrderPrice())
-                    .sortedByDescending { it.updateVersion() }
+                    .sortedByDescending { it.version() }
             )
         }
     }
@@ -399,7 +402,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 meOrdersLiveData.postValue(
                     newMeOrderList.values
                         .map(setOrderPrice())
-                        .sortedByDescending { it.updateVersion() }
+                        .sortedByDescending { it.version() }
                 )
             }
             val newAllOrderList =
@@ -416,7 +419,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             }
             allOrdersLiveData.postValue(
                 newAllOrderList.values.toList()
-                    .sortedByDescending { it.updateVersion() }
+                    .sortedByDescending { it.version() }
                     .take(20)
                     .map(setOrderPrice())
             )
@@ -581,10 +584,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         list.forEach {
             it.await()
         }
-        EventBus.getDefault().post(RefreshBalanceEvent())
 
         Log.e("==exchange==", "${fromCoin.tokenName()}   ${toCoin.tokenName()}")
-        mExchangeManager.exchangeToken(
+        val exchangeToken = mExchangeManager.exchangeToken(
             getApplication(),
             account,
             fromCoin,
@@ -592,6 +594,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             toCoin,
             toCoinAmount
         )
+
+        EventBus.getDefault().post(RefreshBalanceEvent())
+        exchangeToken
     }
 
     private suspend fun publishToken(mAccount: Account, tokenAddress: String): Boolean {

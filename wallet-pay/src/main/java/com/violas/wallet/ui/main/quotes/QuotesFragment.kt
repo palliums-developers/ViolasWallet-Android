@@ -176,6 +176,8 @@ class QuotesFragment : BaseFragment() {
                             mQuotesViewModel.handleExchange(password, fromBigDecimal, toBigDecimal)
                         if (handleExchange) {
                             showToast(getString(R.string.hint_exchange_successful))
+                            mQuotesViewModel.mFromCoinAmountLiveData.postValue(BigDecimal("0"))
+                            mQuotesViewModel.mToCoinAmountLiveData.postValue(BigDecimal("0"))
                         } else {
                             showToast(getString(R.string.hint_exchange_error))
                         }
@@ -255,8 +257,8 @@ class QuotesFragment : BaseFragment() {
         })
 
         mQuotesViewModel.mFromCoinAmountLiveData.observe(viewLifecycleOwner, Observer {
-            if(it == BigDecimal("0")){
-                editToCoin.setText("")
+            if (it == BigDecimal("0")) {
+                editFromCoin.setText("")
                 return@Observer
             }
             editFromCoin.setText(
@@ -267,7 +269,7 @@ class QuotesFragment : BaseFragment() {
             )
         })
         mQuotesViewModel.mToCoinAmountLiveData.observe(viewLifecycleOwner, Observer {
-            if(it == BigDecimal("0")){
+            if (it == BigDecimal("0")) {
                 editToCoin.setText("")
                 return@Observer
             }
