@@ -193,6 +193,7 @@
     <string name="hint_quotes_not_open">Switch to Violas Wallet in order to use Exchange</string>
     <string name="action_revoke">Revoke</string>
     <string name="label_total_amount">Amount</string>
+    <string name="label_entrust_total_amount">Entrust Number</string>
     <string name="label_traded_amount">Amount Traded</string>
     <string name="label_fee">Transaction Fee</string>
     <string name="label_market">Market</string>

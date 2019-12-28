@@ -97,7 +97,7 @@
             android:id="@+id/tvLabelTotalAmount"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
-            android:text="@string/label_total_amount"
+            android:text="@string/label_entrust_total_amount"
             android:textColor="@color/white_60"
             android:textSize="@dimen/sp_12"
             app:layout_constraintBaseline_toBaselineOf="@id/tvLabelPrice"
