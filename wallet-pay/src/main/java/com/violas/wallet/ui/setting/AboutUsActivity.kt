@@ -2,6 +2,7 @@ package com.violas.wallet.ui.setting
 
 import android.os.Bundle
 import android.view.View
+import com.palliums.utils.openBrowser
 import com.palliums.utils.sendEmail
 import com.palliums.widget.MenuItemView
 import com.violas.wallet.BuildConfig
@@ -56,7 +57,9 @@ class AboutUsActivity : BaseAppActivity(), View.OnLongClickListener {
         // TODO 跳转
         when (view.id) {
             R.id.mivWebsite -> {
-                WebCommonActivity.start(this, mivWebsite.endDescText.trim())
+                if (!openBrowser(this, mivWebsite.endDescText.trim())) {
+                    WebCommonActivity.start(this, mivWebsite.endDescText.trim())
+                }
             }
 
             R.id.mivEmail -> {
