@@ -127,7 +127,7 @@ class LibraTransferActivity : TransferActivity() {
         when (account?.coinNumber) {
             CoinTypes.Libra.coinType(),
             CoinTypes.Violas.coinType() -> {
-                if (BigDecimal(editAmountInput.text.toString().trim()) >= mBalance) {
+                if (BigDecimal(editAmountInput.text.toString().trim()) > mBalance) {
                     LackOfBalanceException().message?.let { showToast(it) }
                     return false
                 }
