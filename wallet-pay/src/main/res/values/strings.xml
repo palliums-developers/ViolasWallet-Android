@@ -227,7 +227,7 @@
     <string name="tab_market">Market</string>
     <string name="tab_me">Me</string>
     <string name="action_please_choose">Select</string>
-    <string name="hint_please_select_address_system">Select Address System</string>
+    <string name="hint_please_select_address_system">Please select the wallet type</string>
     <string name="hint_confirm_delete_address_book">Confirm to remove this address from the Address Book！</string>
     <string name="hint_publish_token">Open the stability coin for the first time</string>
     <string name="hint_publish_token_content">The first time to open the stable coin requires a small fee, whether to continue.</string>

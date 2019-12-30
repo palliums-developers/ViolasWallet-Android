@@ -69,7 +69,7 @@
     <string name="action_add">添加</string>
     <string name="hint_select">选择</string>
     <string name="hint_input_note">请填写备注</string>
-    <string name="hint_input_address_error">输入的地址不正确</string>
+    <string name="hint_input_address_error">输入的地址不符合规范</string>
     <string name="hint_address_success">添加成功</string>
     <string name="hint_create_any_wallet">创建%1$s钱包</string>
     <string name="hint_import_any_wallet">导入%1$s钱包</string>
@@ -298,7 +298,7 @@
     <string name="tab_me">我的</string>
     <string name="hint_transfer_failed">转账失败</string>
     <string name="action_please_choose">请选择</string>
-    <string name="hint_please_select_address_system">请选择地址体系</string>
+    <string name="hint_please_select_address_system">请选择钱包类型</string>
     <string name="hint_type">类型</string>
     <string name="hint_delete_address_book">删除地址</string>
     <string name="hint_confirm_delete_address_book">确定要在地址簿中删除该地址！</string>

@@ -117,43 +117,39 @@ class AddAddressBookActivity : BaseAppActivity() {
             }
         }
 
-        editCoinType.setOnClickListener {
-            XPopup.Builder(this)
-                .hasShadowBg(false)
-                .atView(editCoinType)  // 依附于所点击的View，内部会自动判断在上方或者下方显示
-                .setPopupCallback(object : AttachListPopupViewSupport.PopupCallbackSupport() {
-
-                    override fun onShowBefore() {
-                        editCoinType.isSelected = !editCoinType.isSelected
+        coinTypeGroup.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.coinTypeLibra -> {
+                    mCoinTypes = CoinTypes.Libra.coinType()
+                }
+                R.id.coinTypeViolas -> {
+                    mCoinTypes = CoinTypes.Violas.coinType()
+                }
+                R.id.coinTypeBitcoin -> {
+                    mCoinTypes = if (Vm.TestNet) {
+                        CoinTypes.BitcoinTest.coinType()
+                    } else {
+                        CoinTypes.Bitcoin.coinType()
                     }
-
-                    override fun onDismissBefore() {
-                        editCoinType.isSelected = !editCoinType.isSelected
-                    }
-                })
-                .asCustom(
-                    AttachListPopupViewSupport(this)
-                        .apply {
-                            setStringData(
-                                mCoinList.values.toTypedArray(),
-                                null
-                            )
-                            setOnSelectListener { _, text ->
-                                mCoinList.forEach {
-                                    if (it.value == text) {
-                                        mCoinTypes = it.key
-                                    }
-                                }
-                                refreshCoinType()
-                            }
-                        }
-                )
-                .show()
+                }
+            }
         }
     }
 
     private fun refreshCoinType() {
-        editCoinType.text = mCoinList[mCoinTypes]
+        coinTypeGroup
+        when (mCoinTypes) {
+            CoinTypes.Violas.coinType() -> {
+                coinTypeViolas.isChecked = true
+            }
+            CoinTypes.Libra.coinType() -> {
+                coinTypeLibra.isChecked = true
+            }
+            CoinTypes.BitcoinTest.coinType(),
+            CoinTypes.Bitcoin.coinType() -> {
+                coinTypeBitcoin.isChecked = true
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
