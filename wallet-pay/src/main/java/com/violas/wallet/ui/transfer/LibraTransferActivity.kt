@@ -174,6 +174,7 @@ class LibraTransferActivity : TransferActivity() {
                             isToken,
                             tokenId,
                             {
+                                showToast(getString(R.string.hint_transfer_broadcast_success))
                                 EventBus.getDefault().post(RefreshBalanceEvent())
                                 dismissProgress()
                                 print(it)
