@@ -38,6 +38,10 @@ abstract class BaseWebActivity : BaseAppActivity() {
         startLoad()
     }
 
+    override fun onTitleLeftViewClick() {
+        close()
+    }
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         stopLoad()

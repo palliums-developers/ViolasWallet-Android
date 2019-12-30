@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getDrawable
+import com.palliums.utils.openBrowser
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -60,7 +61,9 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
                 if (it.url.isNullOrEmpty()) {
                     showToast(R.string.transaction_record_not_supported_query)
                 } else {
-                    WebCommonActivity.start(requireActivity(), it.url)
+                    if (!openBrowser(requireActivity(), it.url)) {
+                        WebCommonActivity.start(requireActivity(), it.url)
+                    }
                 }
             })
     }

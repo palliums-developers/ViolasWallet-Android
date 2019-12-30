@@ -55,3 +55,14 @@ fun sendEmail(
         }
     }
 }
+
+fun openBrowser(activity: Activity, url: String): Boolean {
+    return try {
+        val uri = Uri.parse(url)
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        activity.startActivity(intent)
+        true
+    } catch (e: Exception) {
+        false
+    }
+}
