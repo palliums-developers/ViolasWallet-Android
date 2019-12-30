@@ -19,6 +19,7 @@ import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.event.BackupIdentityMnemonicEvent
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
+import com.violas.wallet.event.TokenBalanceUpdateEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
@@ -189,7 +190,10 @@ class WalletFragment : BaseFragment() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onRefreshBalanceEvent(event: RefreshBalanceEvent) {
         launch(Dispatchers.IO) {
-            delay(event.delay * 1000L)
+            if (event.delay >= 1) {
+                delay(event.delay * 1000L)
+            }
+
             withContext(Dispatchers.Main) {
                 refreshAssert(false)
             }
@@ -204,6 +208,26 @@ class WalletFragment : BaseFragment() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onBackupIdentityMnemonicEvent(event: BackupIdentityMnemonicEvent) {
         layoutBackupNow.visibility = View.GONE
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onTokenBalanceUpdateEvent(event: TokenBalanceUpdateEvent) {
+        launch(Dispatchers.IO) {
+            val currentAccount = mAccountManager.currentAccount()
+            if (currentAccount.address != event.accountAddress) {
+                return@launch
+            }
+
+            mEnableTokens.forEachIndexed { index, assertToken ->
+                if (assertToken.tokenAddress == event.tokenAddress) {
+                    withContext(Dispatchers.Main) {
+                        assertToken.amount = event.tokenBalance
+                        mAssertAdapter.notifyItemChanged(index)
+                    }
+                    return@launch
+                }
+            }
+        }
     }
 
     private fun refreshAssert(switchWallet: Boolean) {
