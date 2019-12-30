@@ -17,8 +17,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
-import org.palliums.violascore.wallet.Account
 import org.palliums.libracore.wallet.KeyPair
+import org.palliums.violascore.wallet.Account
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 
 class ApplyForMintActivity
@@ -48,7 +50,13 @@ class ApplyForMintActivity
                 applyStatus?.data?.let { status ->
                     itemWalletAddress.setContent(mAccount.address)
                     itemTokenName.setContent(status.token_name)
-                    itemTokenAmount.setContent("${status.amount}")
+                    itemTokenAmount.setContent(
+                        BigDecimal(status.amount).divide(
+                            BigDecimal("1000000"),
+                            0,
+                            RoundingMode.DOWN
+                        ).stripTrailingZeros().toPlainString()
+                    )
 
                     status.token_address?.let {
                         val assertToken = AssertToken(
