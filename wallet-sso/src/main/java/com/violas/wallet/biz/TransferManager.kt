@@ -13,6 +13,7 @@ import com.violas.wallet.utils.validationLibraAddress
 import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 
+class ToTheirException : RuntimeException(getString(R.string.hint_to_their_error))
 class WrongPasswordException : RuntimeException(getString(R.string.hint_password_error))
 class AddressFaultException : RuntimeException(getString(R.string.hint_address_error))
 class TransferUnknownException : RuntimeException(getString(R.string.hint_transfer_failed))
@@ -32,6 +33,10 @@ class TransferManager {
 
         if (!checkAddress(address, account.coinNumber)) {
             throw AddressFaultException()
+        }
+
+        if (account.address == address) {
+            throw ToTheirException()
         }
 
         val amount = try {

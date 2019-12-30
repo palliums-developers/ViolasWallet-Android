@@ -309,4 +309,5 @@
     <string name="wallet_name">SSO钱包</string>
 
     <string name="united_states">美国</string>
+    <string name="hint_to_their_error">不能转账给自己</string>
 </resources>
