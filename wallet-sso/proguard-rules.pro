@@ -22,6 +22,9 @@
 -keepclassmembers,includecode class **DTO{<fields>;}
 -keepclassmembers,includecode class **DTO$**{<fields>;}
 
+-dontwarn com.tencent.bugly.**
+-keep public class com.tencent.bugly.**{*;}
+
 # Scan
 -keep class cn.bertsir.zbar.Qr.**{*;}
 

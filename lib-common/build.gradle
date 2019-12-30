@@ -86,4 +86,8 @@ dependencies {
 
     // see https://github.com/li-xiaojun/XPopup
     api 'com.lxj:xpopup:1.8.8-x'
+
+    // see https://bugly.qq.com/docs/user-guide/instruction-manual-android/?v=20180709165613#_2
+    // api 'com.tencent.bugly:crashreport:3.1.0'
+    api 'com.tencent.bugly:crashreport_upgrade:1.4.2'
 }
