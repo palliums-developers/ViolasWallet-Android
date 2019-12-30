@@ -8,7 +8,7 @@
     <ImageView
         android:id="@+id/ivBg"
         android:layout_width="320dp"
-        android:layout_height="0dp"
+        android:layout_height="182dp"
         android:src="@drawable/bg_welcome_violas"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,6 +40,7 @@
 
     <Button
         android:id="@+id/btnConfirm"
+        style="@style/BaseButtonPrimary"
         android:layout_width="@dimen/dp_0"
         android:layout_height="@dimen/dp_46"
         android:background="@drawable/selector_btn_bg_welcome"
