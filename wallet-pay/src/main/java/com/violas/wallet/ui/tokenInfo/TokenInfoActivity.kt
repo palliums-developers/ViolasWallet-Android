@@ -10,6 +10,7 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.event.RefreshBalanceEvent
+import com.violas.wallet.event.TokenBalanceUpdateEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.collection.CollectionActivity
@@ -110,7 +111,6 @@ class TokenInfoActivity : BaseAppActivity() {
         tvUnit.text = mTokenDo.name
         tvAddress.text = mAccountDO.address
         setAmount(mTokenDo.amount)
-        refreshTokenBalance()
 
         ivCopy.setOnClickListener(this)
         btnTransfer.setOnClickListener(this)
@@ -164,10 +164,20 @@ class TokenInfoActivity : BaseAppActivity() {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.POSTING, priority = 100)
     fun onRefreshBalanceEvent(event: RefreshBalanceEvent) {
+        try {
+            // 币种信息页面和钱包首页都注册了该事件，只需要一处请求服务器刷新，在通知另一处更新UI
+            EventBus.getDefault().cancelEventDelivery(event)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         launch(Dispatchers.IO) {
-            delay(event.delay * 1000L)
+            if (event.delay >= 1) {
+                delay(event.delay * 1000L)
+            }
+
             withContext(Dispatchers.Main) {
                 refreshTokenBalance()
             }
@@ -184,6 +194,15 @@ class TokenInfoActivity : BaseAppActivity() {
             ) { tokenBalance, result ->
                 if (result) {
                     setAmount(tokenBalance)
+
+                    // 通知钱包首页更新当前币种余额UI
+                    EventBus.getDefault().post(
+                        TokenBalanceUpdateEvent(
+                            mAccountDO.address,
+                            mTokenDo.tokenAddress,
+                            tokenBalance
+                        )
+                    )
                 }
             }
         }

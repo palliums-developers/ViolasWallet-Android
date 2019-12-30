@@ -2,8 +2,10 @@ package com.violas.wallet.ui.record
 
 import com.palliums.paging.PagingViewModel
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.DataRepository
 import kotlinx.coroutines.delay
+import org.greenrobot.eventbus.EventBus
 import kotlin.random.Random
 
 /**
@@ -28,6 +30,11 @@ class TransactionRecordViewModel(
         pageKey: Any?,
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
+        if (pageNumber == 1 && !mTokenAddress.isNullOrEmpty()) {
+            // 在币种信息页面刷新时，通知Activity刷新余额
+            EventBus.getDefault().post(RefreshBalanceEvent(0))
+        }
+
         mTransactionRepository.getTransactionRecord(
             mAddress, mTokenAddress, mTokenName, pageSize, pageNumber, pageKey, onSuccess
         )
