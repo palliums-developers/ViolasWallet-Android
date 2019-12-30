@@ -56,6 +56,7 @@ android {
             zipAlignEnabled true
             pseudoLocalesEnabled true
             proguardFiles '../proguard-android-optimize-wallet.txt', 'proguard-rules.pro'
+            multiDexKeepProguard file('../multidexKeep.pro')
             signingConfig signingConfigs.release
             buildConfigField "String", "TESTNET", '"testnet"'
             buildConfigField "boolean", "SHUFFLE_MNEMONIC", "true"
@@ -63,6 +64,7 @@ android {
         debug {
             minifyEnabled false
             ext.alwaysUpdateBuildId = false
+            multiDexKeepProguard file('../multidexKeep.pro')
             signingConfig signingConfigs.debug
             buildConfigField "String", "TESTNET", '"testnet"'
             buildConfigField "boolean", "SHUFFLE_MNEMONIC", "true"
