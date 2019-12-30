@@ -310,4 +310,5 @@
 
     <string name="united_states">美国</string>
     <string name="hint_to_their_error">不能转账给自己</string>
+    <string name="hint_transfer_broadcast_success">转账交易广播成功</string>
 </resources>

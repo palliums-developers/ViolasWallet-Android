@@ -245,4 +245,5 @@
     <string name="hint_not_none_coin_or_net_error">There are not enough %1$s or network exceptions, please try again later.</string>
     <string name="hint_exchange_amount_too_large">Excessive exchange amount</string>
     <string name="hint_to_their_error">You can\'t transfer money to yourself</string>
+    <string name="hint_transfer_broadcast_success">Transfer transaction broadcast successful</string>
 </resources>

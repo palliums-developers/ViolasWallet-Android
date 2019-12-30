@@ -173,6 +173,7 @@ class BTCTransferActivity : TransferActivity() {
                             account!!,
                             sbQuota.progress,
                             {
+                                showToast(getString(R.string.hint_transfer_broadcast_success))
                                 dismissProgress()
                                 print(it)
                                 finish()

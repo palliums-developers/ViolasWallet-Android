@@ -2,6 +2,7 @@ package com.violas.wallet.ui.main.applyFor
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseFragment
@@ -30,8 +31,8 @@ class ApplyForSSOFragment : BaseFragment() {
         return R.layout.fragment_apply_for_sso
     }
 
-    override fun onLazyInitView(savedInstanceState: Bundle?) {
-        super.onLazyInitView(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         vTitleMiddleText.text = getString(R.string.title_apply_issue_sso)
         EventBus.getDefault().register(this)
