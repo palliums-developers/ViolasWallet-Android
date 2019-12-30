@@ -47,9 +47,9 @@ class BaseUrlInterceptor : Interceptor {
             "https://libexplorer.com"
 
         private const val VIOLAS_BROWSER_BASE_URL_MAIN_NET =
-            "http://47.52.66.26:30000/app/Violas_version/707816"
+            "http://47.52.66.26:30000"
         private const val VIOLAS_BROWSER_BASE_URL_TEST_NET =
-            "http://47.52.66.26:30000/app/Violas_version/707816"
+            "http://47.52.66.26:30000"
 
         fun getDexBaseUrl(): String {
             return if (Vm.TestNet)
