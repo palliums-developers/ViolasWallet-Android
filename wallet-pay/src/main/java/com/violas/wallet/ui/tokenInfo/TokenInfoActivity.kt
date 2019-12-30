@@ -43,7 +43,7 @@ class TokenInfoActivity : BaseAppActivity() {
     }
 
     override fun getTitleStyle(): Int {
-        return TITLE_STYLE_GREY_BACKGROUND
+        return PAGE_STYLE_DARK_TITLE_PLIGHT_CONTENT
     }
 
     private var mTokenId: Long = -100

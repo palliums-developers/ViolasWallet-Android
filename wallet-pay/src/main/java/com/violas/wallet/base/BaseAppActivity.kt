@@ -19,6 +19,7 @@ abstract class BaseAppActivity : BaseActivity() {
         const val TITLE_STYLE_GREY_BACKGROUND = 1
         const val TITLE_STYLE_MAIN_COLOR = 2
         const val TITLE_STYLE_NOT_TITLE = 3
+        const val PAGE_STYLE_DARK_TITLE_PLIGHT_CONTENT = 4
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +37,11 @@ abstract class BaseAppActivity : BaseActivity() {
         TITLE_STYLE_DEFAULT,
         TITLE_STYLE_GREY_BACKGROUND,
         TITLE_STYLE_MAIN_COLOR,
-        TITLE_STYLE_NOT_TITLE
+        TITLE_STYLE_NOT_TITLE,
+        /**
+         * 深色title 主浅色content
+         */
+        PAGE_STYLE_DARK_TITLE_PLIGHT_CONTENT
     )
     annotation class TitleStyle
 
@@ -66,6 +71,15 @@ abstract class BaseAppActivity : BaseActivity() {
                 setRootBackgroundColor(R.color.def_activity_bg)
 
                 setTitleBarVisibility(View.GONE)
+            }
+
+            PAGE_STYLE_DARK_TITLE_PLIGHT_CONTENT -> {
+                setTopBackgroundResource(R.drawable.bg_wallet_main)
+                setContentBackgroundColor(R.color.def_activity_bg)
+
+                setTitleLeftImageResource(R.drawable.ic_back_light)
+                setTitleRightTextColor(R.color.white)
+                titleColor = R.color.white
             }
 
             else -> {
