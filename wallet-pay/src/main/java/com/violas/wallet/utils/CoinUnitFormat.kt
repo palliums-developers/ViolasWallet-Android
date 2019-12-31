@@ -24,12 +24,16 @@ fun convertViolasTokenUnit(amount: String): String {
     val amountBigDecimal = BigDecimal(amount)
     return if (amountBigDecimal > BigDecimal("0")) {
         amountBigDecimal
-            .divide(BigDecimal(1000000), 4, RoundingMode.DOWN)
+            .divide(BigDecimal(1000000), 6, RoundingMode.HALF_UP)
             .stripTrailingZeros()
             .toPlainString()
     } else {
-        "0.0000"
+        "0"
     }
+}
+
+fun convertViolasTokenPrice(price: String): String {
+    return BigDecimal(price).stripTrailingZeros().toPlainString()
 }
 
 fun convertDisplayUnitToAmount(amount: String, coinTypes: CoinTypes): Long {
@@ -69,11 +73,11 @@ fun convertAmountToDisplayUnit(amount: String, coinTypes: CoinTypes): Pair<Strin
     }
     val amountStr = if (amountBigDecimal > BigDecimal("0")) {
         amountBigDecimal
-            .divide(unitBigDecimal, scale, RoundingMode.HALF_DOWN)
+            .divide(unitBigDecimal, scale, RoundingMode.HALF_UP)
             .stripTrailingZeros()
             .toPlainString()
     } else {
-        "0.00"
+        "0"
     }
     return Pair(amountStr, coinTypes.coinUnit())
 }

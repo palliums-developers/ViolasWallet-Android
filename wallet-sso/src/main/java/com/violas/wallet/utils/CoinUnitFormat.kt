@@ -57,11 +57,11 @@ fun convertAmountToDisplayUnit(amount: String, coinTypes: CoinTypes): Pair<Strin
     }
     val amountStr = if (amountBigDecimal > BigDecimal("0")) {
         amountBigDecimal
-            .divide(unitBigDecimal, scale, RoundingMode.HALF_DOWN)
+            .divide(unitBigDecimal, scale, RoundingMode.HALF_UP)
             .stripTrailingZeros()
             .toPlainString()
     } else {
-        "0.00"
+        "0"
     }
     return Pair(amountStr, coinTypes.coinUnit())
 }

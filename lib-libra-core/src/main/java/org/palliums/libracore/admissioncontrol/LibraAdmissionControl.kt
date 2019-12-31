@@ -29,7 +29,7 @@ class LibraAdmissionControl(private val mChannel: Channel) {
                     .divide(
                         BigDecimal("1000000"),
                         6,
-                        RoundingMode.HALF_DOWN
+                        RoundingMode.HALF_UP
                     )
                     .stripTrailingZeros()
                     .toPlainString()

@@ -6,6 +6,7 @@ import com.palliums.utils.formatDate
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.ui.dexOrder.DexOrderVO
+import com.violas.wallet.utils.convertViolasTokenPrice
 import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.item_dex_order_details_header.view.*
 import java.text.SimpleDateFormat
@@ -35,11 +36,11 @@ class DexOrderDetailsHeaderViewHolder(
             itemView.tvGetTokenName.text = it.getTokenName
 
             // 若拿A换B，价格、数量、已成交数量均为B的数据
-            itemView.tvPrice.text = it.getTokenPrice.toString()
+            itemView.tvPrice.text = convertViolasTokenPrice(it.getTokenPrice.toString())
             itemView.tvTotalAmount.text = convertViolasTokenUnit(it.dto.amountGet)
             itemView.tvTradeAmount.text = convertViolasTokenUnit(it.dto.amountFilled)
 
-            itemView.tvFee.text = "0.00${CoinTypes.Violas.coinUnit()}"
+            itemView.tvFee.text = "0 ${CoinTypes.Violas.coinUnit()}"
             itemView.tvTime.text = formatDate(it.dto.updateDate, simpleDateFormat)
 
             when {

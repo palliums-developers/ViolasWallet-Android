@@ -20,6 +20,7 @@ import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.dex.DexOrderTradeDTO
 import com.violas.wallet.ui.dexOrder.DexOrderVO
+import com.violas.wallet.utils.convertViolasTokenPrice
 import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_dex_order_details.*
@@ -163,11 +164,11 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
         tvGetTokenName.text = it.getTokenName
 
         // 若拿A换B，价格、数量、已成交数量均为B的数据
-        tvPrice.text = it.getTokenPrice.toString()
+        tvPrice.text = convertViolasTokenPrice(it.getTokenPrice.toString())
         tvTotalAmount.text = convertViolasTokenUnit(it.dto.amountGet)
         tvTradeAmount.text = convertViolasTokenUnit(it.dto.amountFilled)
 
-        tvFee.text = "0.0000${CoinTypes.Violas.coinUnit()}"
+        tvFee.text = "0 ${CoinTypes.Violas.coinUnit()}"
         tvTime.text = formatDate(it.dto.updateDate)
 
         when {
