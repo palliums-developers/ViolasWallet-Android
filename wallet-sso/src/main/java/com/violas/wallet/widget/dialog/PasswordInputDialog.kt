@@ -44,6 +44,9 @@ class PasswordInputDialog : DialogFragment() {
                 showToast(getString(R.string.hint_please_input_password))
                 return@setOnClickListener
             }
+
+            hideSoftInput(mRootView)
+
             try {
                 PasswordCheckUtil.check(trim)
                 confirmCallback?.invoke(trim.toByteArray(), this)

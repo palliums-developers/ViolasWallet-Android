@@ -11,7 +11,6 @@ import androidx.fragment.app.FragmentManager
 import com.palliums.utils.*
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.dialog_password_input.view.*
-import me.yokeyword.fragmentation.SupportHelper
 
 class PasswordInputDialog : DialogFragment() {
     private lateinit var mRootView: View
@@ -49,7 +48,9 @@ class PasswordInputDialog : DialogFragment() {
                 ).show()
                 return@setOnClickListener
             }
-            SupportHelper.hideSoftInput(mRootView.editPassword)
+
+            hideSoftInput(mRootView)
+
             try {
                 PasswordCheckUtil.check(trim)
                 confirmCallback?.invoke(trim.toByteArray(), this)

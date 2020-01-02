@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.DensityUtility
+import com.palliums.utils.hideSoftInput
+import com.palliums.utils.showSoftInput
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
 import com.violas.wallet.ui.verification.EmailVerificationViewModel.Companion.ACTION_BING_EMAIL
@@ -97,7 +99,7 @@ class EmailVerificationActivity : BaseViewModelActivity() {
 
     override fun onPause() {
         super.onPause()
-        hideSoftInput()
+        hideSoftInput(etEmailAddress)
     }
 
     override fun onDestroy() {
@@ -125,7 +127,7 @@ class EmailVerificationActivity : BaseViewModelActivity() {
                         action = ACTION_BING_EMAIL
                     )
                 ) {
-                    hideSoftInput()
+                    hideSoftInput(etEmailAddress)
                 }
             }
         }

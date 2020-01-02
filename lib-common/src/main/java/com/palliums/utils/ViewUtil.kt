@@ -1,11 +1,13 @@
 package com.palliums.utils
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.TypedValue
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import com.google.android.material.tabs.TabLayout
 import com.palliums.R
@@ -19,18 +21,6 @@ import java.lang.reflect.Field
  * desc:
  */
 
-private const val VIEW_CLICK_INTERVAL_TIME = 800
-
-/**
- * 判断当前的点击事件是否是快速多次点击(连续多点击），该方法用来防止多次连击。
- *
- * @param view 被点击view，如果前后是同一个view，则进行双击校验
- * @return 认为是重复点击时返回 true，当连续点击时，如果距上一次有效点击时间超过了 INTERVAL_TIME 则返回 false
- */
-fun isFastMultiClick(view: View?): Boolean {
-    return isFastMultiClick(view, VIEW_CLICK_INTERVAL_TIME.toLong())
-}
-
 /**
  * 判断当前的点击事件是否是快速多次点击(连续多点击），该方法用来防止多次连击。
  *
@@ -38,7 +28,7 @@ fun isFastMultiClick(view: View?): Boolean {
  * @param duration 两次点击的最小间隔（单位：毫秒），必须大于 0 否则将返回 false。
  * @return 认为是重复点击时返回 true，当连续点击时，如果距上一次有效点击时间超过了 duration 则返回 false
  */
-fun isFastMultiClick(view: View?, duration: Long): Boolean {
+fun isFastMultiClick(view: View?, duration: Long = 800): Boolean {
     if (view == null || duration < 1) {
         return false
     }
@@ -52,6 +42,21 @@ fun isFastMultiClick(view: View?, duration: Long): Boolean {
     view.setTag(R.id.view_click_time, System.currentTimeMillis())
 
     return false
+}
+
+fun showSoftInput(view: View, delayMillis: Long = 200) {
+    val inputMethodManager =
+        view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    view.postDelayed({
+        view.requestFocus()
+        inputMethodManager.showSoftInput(view, 0)
+    }, delayMillis)
+}
+
+fun hideSoftInput(view: View) {
+    val inputMethodManager =
+        view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
 fun drawTextInRect(

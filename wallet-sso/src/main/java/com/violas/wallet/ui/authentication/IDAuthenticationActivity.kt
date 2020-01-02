@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.lxj.xpopup.XPopup
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.DensityUtility
+import com.palliums.utils.hideSoftInput
+import com.palliums.utils.showSoftInput
 import com.sl.utakephoto.exception.TakeException
 import com.sl.utakephoto.manager.ITakePhotoResult
 import com.sl.utakephoto.manager.UTakePhoto
@@ -156,7 +158,7 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
 
     override fun onPause() {
         super.onPause()
-        hideSoftInput()
+        hideSoftInput(etIDName)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -193,7 +195,7 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
     }
 
     private fun showTakePhotoPopup(front: Boolean) {
-        hideSoftInput()
+        hideSoftInput(etIDName)
         XPopup.Builder(this)
             .hasStatusBarShadow(true)
             .asCustom(TakePhotoPopup(this, {

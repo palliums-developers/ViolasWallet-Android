@@ -19,7 +19,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import me.yokeyword.fragmentation.SupportActivity
-import me.yokeyword.fragmentation.SupportHelper
 import qiu.niorgai.StatusBarCompat
 
 abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewController,
@@ -51,14 +50,6 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
         }
         cancel()
         super.onDestroy()
-    }
-
-    fun showSoftInput(view: View) {
-        SupportHelper.showSoftInput(view)
-    }
-
-    fun hideSoftInput() {
-        SupportHelper.hideSoftInput(this.window.decorView)
     }
 
     fun close() {

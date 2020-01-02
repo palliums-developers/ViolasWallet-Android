@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.DensityUtility
+import com.palliums.utils.hideSoftInput
+import com.palliums.utils.showSoftInput
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
 import com.violas.wallet.common.EXTRA_KEY_COUNTRY_AREA
@@ -113,7 +115,7 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
 
     override fun onPause() {
         super.onPause()
-        hideSoftInput()
+        hideSoftInput(etPhoneNumber)
     }
 
     override fun onDestroy() {
@@ -159,7 +161,7 @@ class PhoneVerificationActivity : BaseViewModelActivity() {
                         action = ACTION_BING_PHONE_NUMBER
                     )
                 ) {
-                    hideSoftInput()
+                    hideSoftInput(etPhoneNumber)
                 }
             }
         }
