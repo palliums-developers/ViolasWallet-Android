@@ -56,7 +56,7 @@ class EmailVerificationViewModel : BaseViewModel() {
         if (action == ACTION_GET_VERIFICATION_CODE) {
             ssoService.sendEmailVerifyCode(walletAddress, emailAddress)
 
-            tipsMessage.postValue(getString(R.string.hint_verification_code_get_success))
+            tipsMessage.postValueSupport(getString(R.string.hint_verification_code_get_success))
             getVerificationCodeResult.postValue(true)
             return
         }
@@ -79,17 +79,17 @@ class EmailVerificationViewModel : BaseViewModel() {
 
         val emailAddress = params[0] as String
         if (emailAddress.isEmpty()) {
-            tipsMessage.postValue(getString(R.string.hint_enter_email_address))
+            tipsMessage.postValueSupport(getString(R.string.hint_enter_email_address))
             return false
         }
 
         if (!validationEmailAddress(emailAddress)) {
-            tipsMessage.postValue(getString(R.string.hint_email_format_incorrect))
+            tipsMessage.postValueSupport(getString(R.string.hint_email_format_incorrect))
             return false
         }
 
         if (action == ACTION_BING_EMAIL && (params[1] as String).isEmpty()) {
-            tipsMessage.postValue(getString(R.string.hint_enter_verification_code))
+            tipsMessage.postValueSupport(getString(R.string.hint_enter_verification_code))
             return false
         }
 

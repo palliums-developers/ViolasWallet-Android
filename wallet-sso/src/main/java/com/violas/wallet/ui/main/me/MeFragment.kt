@@ -51,14 +51,6 @@ class MeFragment : BaseFragment() {
         mivAddressBook.setOnClickListener(this)
         mivSettings.setOnClickListener(this)
 
-        if (!mViewModel.tipsMessage.hasObservers()) {
-            mViewModel.tipsMessage.observe(this, Observer {
-                if (it.isNotEmpty()) {
-                    showToast(it)
-                }
-            })
-        }
-
         /*
          * 因为申请发行首页与我的首页共用UserViewModel，当先进入申请发行首页时，用户信息会开始同步，
          * 当再切换进入我的首页时，若用户信息已同步结束，此时先添加对UserViewModel的LiveData观察
@@ -66,7 +58,7 @@ class MeFragment : BaseFragment() {
          * 是否已初始化，若已初始化则判断是否重新同步用户信息
          */
         if (!mViewModel.init()) {
-            val loadState = mViewModel.loadState.value
+            val loadState = mViewModel.loadState.value?.peekData()
             if (loadState != null
                 && loadState.status == LoadState.Status.FAILURE
                 && isNetworkConnected()
@@ -74,6 +66,14 @@ class MeFragment : BaseFragment() {
                 mViewModel.execute()
             }
         }
+
+        mViewModel.tipsMessage.observe(this, Observer { wrapper ->
+            wrapper.getDataIfNotHandled()?.let {
+                if (it.isNotEmpty()) {
+                    showToast(it)
+                }
+            }
+        })
 
         mViewModel.getIdInfoLiveData().observe(this, Observer {
             when (it.first.idAuthenticationStatus) {

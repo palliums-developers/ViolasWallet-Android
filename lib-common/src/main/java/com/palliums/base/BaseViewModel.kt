@@ -2,7 +2,7 @@ package com.palliums.base
 
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palliums.net.LoadState
@@ -22,8 +22,8 @@ abstract class BaseViewModel : ViewModel() {
     protected val lock: Any = Any()
     private var retry: (() -> Any)? = null
 
-    val loadState = MutableLiveData<LoadState>()
-    val tipsMessage = MutableLiveData<String>()
+    val loadState = EnhancedMutableLiveData<LoadState>()
+    val tipsMessage = EnhancedMutableLiveData<String>()
 
     /**
      * 执行
@@ -32,7 +32,7 @@ abstract class BaseViewModel : ViewModel() {
     @MainThread
     fun execute(vararg params: Any, action: Int = -1, needCheckParam: Boolean = true): Boolean {
         synchronized(lock) {
-            if (loadState.value?.status == LoadState.Status.RUNNING) {
+            if (loadState.value?.peekData()?.status == LoadState.Status.RUNNING) {
                 return false
             } else if (needCheckParam && !checkParams(action, *params)) {
                 return false
@@ -40,12 +40,12 @@ abstract class BaseViewModel : ViewModel() {
                 retry = { execute(*params, action = action, needCheckParam = needCheckParam) }
 
                 val exception = RequestException.networkUnavailable()
-                loadState.value = LoadState.failure(exception)
-                tipsMessage.value = exception.message
+                loadState.postValueSupport(LoadState.failure(exception))
+                exception.message?.let { tipsMessage.postValueSupport(it) }
                 return false
             }
 
-            loadState.postValue(LoadState.RUNNING)
+            loadState.postValueSupport(LoadState.RUNNING)
         }
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -56,7 +56,7 @@ abstract class BaseViewModel : ViewModel() {
                 synchronized(lock) {
                     retry = null
 
-                    loadState.postValue(LoadState.SUCCESS)
+                    loadState.postValueSupport(LoadState.SUCCESS)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -64,8 +64,8 @@ abstract class BaseViewModel : ViewModel() {
                 synchronized(lock) {
                     retry = { execute(*params, action = action, needCheckParam = needCheckParam) }
 
-                    loadState.postValue(LoadState.failure(e))
-                    tipsMessage.postValue(e.message)
+                    loadState.postValueSupport(LoadState.failure(e))
+                    e.message?.let { tipsMessage.postValueSupport(it) }
                 }
             }
         }

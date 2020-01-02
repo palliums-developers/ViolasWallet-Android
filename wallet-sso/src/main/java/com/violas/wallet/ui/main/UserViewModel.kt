@@ -61,7 +61,7 @@ class UserViewModel : BaseViewModel() {
     /**
      * 表示身份已认证，邮箱已绑定，手机已绑定
      */
-    private val allReadyLiveData = MutableLiveData<Boolean>()
+    private val allReadyLiveData = EnhancedMutableLiveData<Boolean>()
 
     private val initFlag = AtomicBoolean(false)
 
@@ -122,7 +122,7 @@ class UserViewModel : BaseViewModel() {
         }
     }
 
-    fun getAllReadyLiveData(): LiveData<Boolean> {
+    fun getAllReadyLiveData(): LiveData<DataWrapper<Boolean>> {
         synchronized(lock) {
             return allReadyLiveData
         }
@@ -138,7 +138,7 @@ class UserViewModel : BaseViewModel() {
             if (emailInfo != null && emailInfo.isBoundEmail()
                 && phoneInfo != null && phoneInfo.isBoundPhone()
             ) {
-                allReadyLiveData.postValue(true)
+                allReadyLiveData.postValueSupport(true)
             }
         }
     }
@@ -153,7 +153,7 @@ class UserViewModel : BaseViewModel() {
             if (idInfo != null && idInfo.isAuthenticatedID()
                 && phoneInfo != null && phoneInfo.isBoundPhone()
             ) {
-                allReadyLiveData.postValue(true)
+                allReadyLiveData.postValueSupport(true)
             }
         }
     }
@@ -168,7 +168,7 @@ class UserViewModel : BaseViewModel() {
             if (idInfo != null && idInfo.isAuthenticatedID()
                 && emailInfo != null && emailInfo.isBoundEmail()
             ) {
-                allReadyLiveData.postValue(true)
+                allReadyLiveData.postValueSupport(true)
             }
         }
     }
@@ -185,7 +185,7 @@ class UserViewModel : BaseViewModel() {
         initFlag.set(true)
 
         // 通知开始加载，此时外部获取用户信息为空
-        loadState.postValue(LoadState.RUNNING)
+        loadState.postValueSupport(LoadState.RUNNING)
 
         viewModelScope.launch(Dispatchers.IO) {
             synchronized(lock) {
@@ -225,8 +225,8 @@ class UserViewModel : BaseViewModel() {
                 currentAccount = AccountManager().currentAccount()
 
                 if (allReady) {
-                    allReadyLiveData.postValue(true)
-                    loadState.postValue(LoadState.SUCCESS)
+                    allReadyLiveData.postValueSupport(true)
+                    loadState.postValueSupport(LoadState.SUCCESS)
                     return@launch
                 }
             }
@@ -237,15 +237,14 @@ class UserViewModel : BaseViewModel() {
                 realExecute(action = ACTION_INIT)
 
                 synchronized(lock) {
-                    loadState.postValue(LoadState.SUCCESS)
+                    loadState.postValueSupport(LoadState.SUCCESS)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
 
                 synchronized(lock) {
-                    tipsMessage.postValue(e.message)
-
-                    loadState.postValue(LoadState.failure(e))
+                    loadState.postValueSupport(LoadState.failure(e))
+                    e.message?.let { tipsMessage.postValueSupport(it) }
                 }
             }
         }
@@ -336,7 +335,7 @@ class UserViewModel : BaseViewModel() {
             phoneInfoLiveData.postValue(Pair(phoneInfo, LoadState.SUCCESS))
 
             // 分发申请发行准备进度
-            allReadyLiveData.postValue(
+            allReadyLiveData.postValueSupport(
                 idInfo.isAuthenticatedID()
                         && emailInfo.isBoundEmail()
                         && phoneInfo.isBoundPhone()

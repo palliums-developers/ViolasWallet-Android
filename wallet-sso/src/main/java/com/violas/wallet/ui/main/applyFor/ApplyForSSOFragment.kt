@@ -37,13 +37,13 @@ class ApplyForSSOFragment : BaseFragment() {
         vTitleMiddleText.text = getString(R.string.title_apply_issue_sso)
         EventBus.getDefault().register(this)
 
-        if (!mUserViewModel.tipsMessage.hasObservers()) {
-            mUserViewModel.tipsMessage.observe(this, Observer {
+        mUserViewModel.tipsMessage.observe(viewLifecycleOwner, Observer { wrapper ->
+            wrapper.getDataIfNotHandled()?.let {
                 if (it.isNotEmpty()) {
                     showToast(it)
                 }
-            })
-        }
+            }
+        })
 
         mApplyForSSOViewModel.getApplyStatusLiveData().observe(viewLifecycleOwner, Observer {
             Log.e("====", "====监听状态==${it}")

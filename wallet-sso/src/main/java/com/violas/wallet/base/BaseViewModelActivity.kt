@@ -17,7 +17,7 @@ abstract class BaseViewModelActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
 
         getViewModel().loadState.observe(this, Observer {
-            when (it.status) {
+            when (it.peekData().status) {
                 LoadState.Status.RUNNING -> {
                     showProgress()
                 }
@@ -28,9 +28,11 @@ abstract class BaseViewModelActivity : BaseAppActivity() {
             }
         })
 
-        getViewModel().tipsMessage.observe(this, Observer {
-            if (it.isNotEmpty()) {
-                showToast(it)
+        getViewModel().tipsMessage.observe(this, Observer { wrapper ->
+            wrapper.getDataIfNotHandled()?.let {
+                if (it.isNotEmpty()) {
+                    showToast(it)
+                }
             }
         })
     }

@@ -52,8 +52,8 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
     private var mAccount: AccountDO? = null
     // 0 1 2 3 4 业务状态
     private val mApplyStatus = MediatorLiveData<Int>()
-    private val mNetWorkApplyStatus = MutableLiveData<Int>()
-    private val mApplyStatusLoadState = MutableLiveData<LoadState>()
+    private val mNetWorkApplyStatus = EnhancedMutableLiveData<Int>()
+    private val mApplyStatusLoadState = EnhancedMutableLiveData<LoadState>()
     private val mLock: Any = Any()
 
     init {
@@ -67,7 +67,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
          * 是否已初始化，若已初始化则判断是否重新同步用户信息
          */
         if (!userViewModel.init()) {
-            val loadState = userViewModel.loadState.value
+            val loadState = userViewModel.loadState.value?.peekData()
             if (loadState != null
                 && loadState.status == LoadState.Status.FAILURE
                 && isNetworkConnected()
@@ -79,17 +79,19 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
         // 监听SSO发币申请的状态
         mApplyStatus.addSource(mNetWorkApplyStatus) {
             synchronized(mLock) {
-                val userInfoAllReady = userViewModel.getAllReadyLiveData().value
+                val userInfoAllReady =
+                    userViewModel.getAllReadyLiveData().value?.getDataIfNotHandled()
                 if (userInfoAllReady != null) {
                     if (userInfoAllReady) {
-                        mApplyStatus.value = it
+                        mApplyStatus.value = it.peekData()
                     } else {
                         mApplyStatus.value = CODE_VERIFICATION_ACCOUNT
                     }
                     return@addSource
                 }
 
-                val userInfoLoadState = userViewModel.loadState.value
+                val userInfoLoadState =
+                    userViewModel.loadState.value?.getDataIfNotHandled()
                 if (userInfoLoadState != null) {
                     if (userInfoLoadState.status == LoadState.Status.FAILURE) {
                         mApplyStatus.value = CODE_NETWORK_ERROR
@@ -101,17 +103,19 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
         // 监听查询SSO发币申请信息的进度
         mApplyStatus.addSource(mApplyStatusLoadState) {
             synchronized(mLock) {
-                if (it.status != LoadState.Status.FAILURE) {
+                if (it.peekData().status != LoadState.Status.FAILURE) {
                     return@addSource
                 }
 
-                val userInfoAllReady = userViewModel.getAllReadyLiveData().value
+                val userInfoAllReady =
+                    userViewModel.getAllReadyLiveData().value?.getDataIfNotHandled()
                 if (userInfoAllReady != null) {
                     mApplyStatus.value = CODE_NETWORK_ERROR
                     return@addSource
                 }
 
-                val userInfoLoadState = userViewModel.loadState.value
+                val userInfoLoadState =
+                    userViewModel.loadState.value?.getDataIfNotHandled()
                 if (userInfoLoadState != null) {
                     if (userInfoLoadState.status == LoadState.Status.FAILURE) {
                         mApplyStatus.value = CODE_NETWORK_ERROR
@@ -123,9 +127,10 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
         // 监听用户信息allReady的状态
         mApplyStatus.addSource(userViewModel.getAllReadyLiveData()) {
             synchronized(mLock) {
-                val netWorkApplyStatus = mNetWorkApplyStatus.value
+                val netWorkApplyStatus =
+                    mNetWorkApplyStatus.value?.getDataIfNotHandled()
                 if (netWorkApplyStatus != null) {
-                    if (it) {
+                    if (it.peekData()) {
                         mApplyStatus.value = netWorkApplyStatus
                     } else {
                         mApplyStatus.value = CODE_VERIFICATION_ACCOUNT
@@ -133,7 +138,8 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                     return@addSource
                 }
 
-                val applyStatusLoadState = mApplyStatusLoadState.value
+                val applyStatusLoadState =
+                    mApplyStatusLoadState.value?.getDataIfNotHandled()
                 if (applyStatusLoadState != null) {
                     if (applyStatusLoadState.status == LoadState.Status.FAILURE) {
                         mApplyStatus.value = CODE_NETWORK_ERROR
@@ -145,17 +151,19 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
         // 监听查询用户信息的进度
         mApplyStatus.addSource(userViewModel.loadState) {
             synchronized(mLock) {
-                if (it.status != LoadState.Status.FAILURE) {
+                if (it.peekData().status != LoadState.Status.FAILURE) {
                     return@addSource
                 }
 
-                val netWorkApplyStatus = mNetWorkApplyStatus.value
+                val netWorkApplyStatus =
+                    mNetWorkApplyStatus.value?.getDataIfNotHandled()
                 if (netWorkApplyStatus != null) {
                     mApplyStatus.value = CODE_NETWORK_ERROR
                     return@addSource
                 }
 
-                val applyStatusLoadState = mApplyStatusLoadState.value
+                val applyStatusLoadState =
+                    mApplyStatusLoadState.value?.getDataIfNotHandled()
                 if (applyStatusLoadState != null) {
                     if (applyStatusLoadState.status == LoadState.Status.FAILURE) {
                         mApplyStatus.value = CODE_NETWORK_ERROR
@@ -193,7 +201,11 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            userViewModel.execute()
+            val allReady =
+                userViewModel.getAllReadyLiveData().value?.peekData()
+            if (allReady == null || !allReady) {
+                userViewModel.execute()
+            }
             refreshApplyStatusByNetwork(mAccount!!)
         }
     }
@@ -201,7 +213,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
     private suspend fun refreshApplyStatusByNetwork(account: AccountDO) {
         try {
             synchronized(mLock) {
-                mApplyStatusLoadState.postValue(LoadState.RUNNING)
+                mApplyStatusLoadState.postValueSupport(LoadState.RUNNING)
             }
 
             val response =
@@ -209,26 +221,26 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
 
             synchronized(mLock) {
                 if (response == null) {
-                    mApplyStatusLoadState.postValue(LoadState.failure(""))
+                    mApplyStatusLoadState.postValueSupport(LoadState.failure(""))
                     return
                 }
 
                 if (response.errorCode == 2006 || response.data == null) {
-                    mNetWorkApplyStatus.postValue(CODE_VERIFICATION_SUCCESS)
+                    mNetWorkApplyStatus.postValueSupport(CODE_VERIFICATION_SUCCESS)
                 } else {
                     val approvalStatus = response.data!!.approval_status
-                    mNetWorkApplyStatus.postValue(approvalStatus)
+                    mNetWorkApplyStatus.postValueSupport(approvalStatus)
 
                     if (approvalStatus == 4) {
                         refreshAssert(account, response.data!!)
                     }
                 }
 
-                mApplyStatusLoadState.postValue(LoadState.SUCCESS)
+                mApplyStatusLoadState.postValueSupport(LoadState.SUCCESS)
             }
         } catch (e: Exception) {
             synchronized(mLock) {
-                mApplyStatusLoadState.postValue(LoadState.failure(e))
+                mApplyStatusLoadState.postValueSupport(LoadState.failure(e))
             }
         }
     }

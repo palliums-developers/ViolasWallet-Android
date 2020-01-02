@@ -143,19 +143,19 @@ class IDAuthenticationViewModel : BaseViewModel() {
 
         val countryAreaVO = countryAreaVO.value
         if (countryAreaVO == null) {
-            tipsMessage.postValue(getString(R.string.hint_select_country_area))
+            tipsMessage.postValueSupport(getString(R.string.hint_select_country_area))
             return false
         }
 
         val idName = params[0] as String
         if (idName.isEmpty()) {
-            tipsMessage.postValue(getString(R.string.hint_enter_name))
+            tipsMessage.postValueSupport(getString(R.string.hint_enter_name))
             return false
         }
 
         val idNumber = params[1] as String
         if (idNumber.isEmpty()) {
-            tipsMessage.postValue(
+            tipsMessage.postValueSupport(
                 getString(
                     if (isChinaMainland(countryAreaVO)) {
                         R.string.hint_enter_id_number_china
@@ -166,12 +166,12 @@ class IDAuthenticationViewModel : BaseViewModel() {
             )
             return false
         } else if (isChinaMainland(countryAreaVO) && !validationIDCar18(idNumber)) {
-            tipsMessage.postValue(getString(R.string.hint_id_number_format_incorrect_china))
+            tipsMessage.postValueSupport(getString(R.string.hint_id_number_format_incorrect_china))
             return false
         }
 
         if (idPhotoFront.value == null) {
-            tipsMessage.postValue(
+            tipsMessage.postValueSupport(
                 getString(
                     if (isChinaMainland(countryAreaVO)) {
                         R.string.hint_photograph_id_card_front_china
@@ -182,7 +182,7 @@ class IDAuthenticationViewModel : BaseViewModel() {
             )
             return false
         } else if (idPhotoBack.value == null) {
-            tipsMessage.postValue(
+            tipsMessage.postValueSupport(
                 getString(
                     if (isChinaMainland(countryAreaVO)) {
                         R.string.hint_photograph_id_card_back_china
