@@ -128,7 +128,7 @@ class QuotesFragment : BaseFragment() {
     private fun handleBtnExchangeClick() {
         val fromBigDecimal = editFromCoin.text.toString().toBigDecimal()
         val toBigDecimal = editToCoin.text.toString().toBigDecimal()
-        if (fromBigDecimal == BigDecimal("0") || toBigDecimal == BigDecimal("0")) {
+        if (fromBigDecimal <= BigDecimal("0") || toBigDecimal <= BigDecimal("0")) {
             showToast(getString(R.string.hint_change_number_not_zero))
             return
         }
