@@ -1,6 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 // 正式发包，需要在根目录下创建 sign.properties 文件，指定签名文件的位置和密码，参数参考 testSign.properties
-buildscript { 
+buildscript {
     ext.versions = [
             'compileSdk'               : 29,
             'minSdk'                   : 21,
@@ -33,9 +33,9 @@ buildscript {
 
     ext.names = [
             'payApplicationId': 'com.violas.wallet',
-            'payName'         : '0.1.5',
+            'payName'         : '0.1.6',
             'ssoApplicationId': 'com.violas.wallet.sso',
-            'ssoName'         : '0.1.5'
+            'ssoName'         : '0.1.6'
     ]
 
     repositories {

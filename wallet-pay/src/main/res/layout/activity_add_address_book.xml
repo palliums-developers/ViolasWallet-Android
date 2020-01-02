@@ -28,7 +28,8 @@
             android:layout_marginEnd="23dp"
             android:background="@drawable/selector_edit_bg_line"
             android:hint="@string/label_address_book_note"
-            android:maxLength="20" />
+            android:maxLength="20"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,6 +61,7 @@
             android:paddingTop="12dp"
             android:paddingEnd="30dp"
             android:paddingBottom="12dp"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvHintAddress"
             app:layout_constraintTop_toTopOf="parent" />
