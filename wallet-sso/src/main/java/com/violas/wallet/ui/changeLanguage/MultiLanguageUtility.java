@@ -132,9 +132,17 @@ public class MultiLanguageUtility {
     public int getSaveLanguageType() {
         int saveLocaleTag = LanguageShared.getInstance(mContext).getInt(MultiLanguageUtility.SAVE_LANGUAGE, LanguageType.LANGUAGE_FOLLOW_SYSTEM);
         if (saveLocaleTag == LanguageType.LANGUAGE_FOLLOW_SYSTEM) {
+
             Locale sysLocale = getSysLocale();
-            Iterator<Integer> iterator = mLocaleLanguageMap.keySet().iterator();
-            boolean isExists = false;
+            if (sysLocale.getLanguage().equals("zh") && (sysLocale.getScript().equals("Hans")
+                    || (sysLocale.getScript().isEmpty() && sysLocale.getCountry().equals("CN")))) {
+                saveLocaleTag = LanguageType.LANGUAGE_CHINESE_SIMPLIFIED;
+            } else {
+                saveLocaleTag = LanguageType.LANGUAGE_EN;
+            }
+
+            /*Iterator<Integer> iterator = mLocaleLanguageMap.keySet().iterator();
+            boolean           isExists = false;
             while (iterator.hasNext()) {
                 Integer next = iterator.next();
                 if (mLocaleLanguageMap.get(next).getLocale().toLanguageTag().equals(sysLocale.toLanguageTag())) {
@@ -145,7 +153,7 @@ public class MultiLanguageUtility {
             }
             if (!isExists) {
                 saveLocaleTag = LanguageType.LANGUAGE_EN;
-            }
+            }*/
         }
         return saveLocaleTag;
     }

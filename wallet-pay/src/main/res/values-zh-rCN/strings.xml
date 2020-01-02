@@ -1,6 +1,15 @@
 <resources>
     <string name="app_name">ViolasPay</string>
 
+    <string name="language_follow_system">跟随系统</string>
+    <string name="language_follow_system_more">跟随系统</string>
+    <string name="language_en">English</string>
+    <string name="language_en_more">英文</string>
+    <string name="language_chinese_simplified">简体中文</string>
+    <string name="language_chinese_simplified_more">简体中文</string>
+    <string name="language_chinese_traditional">繁體中文</string>
+    <string name="language_chinese_traditional_more">繁体中文</string>
+
     <string name="backup_mnemonic_prompt_title">备份提示</string>
     <string name="backup_mnemonic_prompt_btn_later">稍后备份</string>
     <string name="backup_mnemonic_prompt_btn_start">开始备份</string>

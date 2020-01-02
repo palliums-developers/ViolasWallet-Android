@@ -1,14 +1,14 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">ViolasSSO</string>
 
-    <string name="language_follow_system" tools:ignore="MissingTranslation">Default to System Settings</string>
-    <string name="language_follow_system_more" tools:ignore="MissingTranslation">Default to System Settings</string>
-    <string name="language_en" tools:ignore="MissingTranslation">English</string>
-    <string name="language_en_more" tools:ignore="MissingTranslation">English</string>
-    <string name="language_chinese_simplified" tools:ignore="MissingTranslation">简体中文</string>
-    <string name="language_chinese_simplified_more" tools:ignore="MissingTranslation">简体中文</string>
-    <string name="language_chinese_traditional" tools:ignore="MissingTranslation">繁體中文</string>
-    <string name="language_chinese_traditional_more" tools:ignore="MissingTranslation">繁體中文</string>
+    <string name="language_follow_system">Default to System Settings</string>
+    <string name="language_follow_system_more">Default to System Settings</string>
+    <string name="language_en">English</string>
+    <string name="language_en_more">English</string>
+    <string name="language_chinese_simplified">简体中文</string>
+    <string name="language_chinese_simplified_more">Simplified Chinese</string>
+    <string name="language_chinese_traditional">繁體中文</string>
+    <string name="language_chinese_traditional_more">Traditional Chinese</string>
 
     <string name="backup_mnemonic_prompt_title">Backup Mnemonic Words Hint</string>
     <string name="backup_mnemonic_prompt_btn_later">Backup Mnemonic Words Later</string>
