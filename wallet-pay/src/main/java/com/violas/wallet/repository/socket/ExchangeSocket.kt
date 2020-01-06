@@ -13,6 +13,7 @@ import java.util.concurrent.Executors
 interface Subscriber {
     fun onMarkCall(myOrder: List<IOrder>, buyOrder: List<IOrder>, sellOrder: List<IOrder>) {}
     fun onDepthsCall(buyOrder: List<IOrder>, sellOrder: List<IOrder>) {}
+    fun onReconnect() {}
 }
 
 object ExchangeSocket {
@@ -21,6 +22,25 @@ object ExchangeSocket {
     private val mExecutor = Executors.newSingleThreadExecutor()
 
     init {
+        /*
+         * socket.io 从开始连接，到异常断开连接，再到重新连接的事件流，所以可以在收到reconnect事件时重新订阅事件
+         * ===> Socket.connect()
+         *  connecting
+         *  connected
+         * ===> 异常断开连接
+         *  error
+         *  disconnect
+         * ===> 重新连接失败
+         *  reconnect_attempt
+         *  reconnecting
+         *  connect_error
+         *  reconnect_error
+         * ===> 重新连接成功
+         *  reconnect_attempt
+         *  reconnecting
+         *  reconnect
+         *  connected
+         */
         mSocket.on(Socket.EVENT_CONNECT) {
             Log.e("ExchangeSocket", "connected")
         }.on("market") { args ->
@@ -65,6 +85,12 @@ object ExchangeSocket {
             Log.e("ExchangeSocket", "disconnect")
         }.on(Socket.EVENT_MESSAGE) {
             Log.e("ExchangeSocket", "event message ${it}")
+        }.on(Socket.EVENT_RECONNECT) {
+            Log.e("ExchangeSocket", Socket.EVENT_RECONNECT)
+            // 重新连接后，需要重新订阅事件
+            mSubscriber.forEach {
+                it.onReconnect()
+            }
         }
     }
 

@@ -152,7 +152,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             checkIsEnable()
             loadTokenList()
-            resetMarkSocket()
+            viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler()) {
+                resetMarkSocket()
+            }
         }
 
     private fun resetMarkSocket() {
@@ -423,6 +425,29 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     .take(20)
                     .map(setOrderPrice())
             )
+        }
+    }
+
+    override fun onReconnect() {
+        viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler()) {
+            if (mAccount != null
+                && currentFormCoinLiveData.value != null
+                && currentToCoinLiveData.value != null
+                && isPositiveChangeLiveData.value != null
+            ) {
+                val baseToken: String
+                val tokenQuote: String
+                if (isPositiveChangeLiveData.value == true) {
+                    baseToken = currentFormCoinLiveData.value!!.tokenAddress()
+                    tokenQuote = currentToCoinLiveData.value!!.tokenAddress()
+                } else {
+                    baseToken = currentToCoinLiveData.value!!.tokenAddress()
+                    tokenQuote = currentFormCoinLiveData.value!!.tokenAddress()
+                }
+                oldBaseToken = baseToken
+                oldTokenQuote = tokenQuote
+                ExchangeSocket.getMark(baseToken, tokenQuote, mAccount!!.address)
+            }
         }
     }
 
