@@ -67,10 +67,10 @@ class MeFragment : BaseFragment() {
             }
         }
 
-        mViewModel.tipsMessage.observe(this, Observer { wrapper ->
-            wrapper.getDataIfNotHandled()?.let {
-                if (it.isNotEmpty()) {
-                    showToast(it)
+        mViewModel.tipsMessage.observe(this, Observer {
+            it.getDataIfNotHandled()?.let { msg ->
+                if (msg.isNotEmpty()) {
+                    showToast(msg)
                 }
             }
         })

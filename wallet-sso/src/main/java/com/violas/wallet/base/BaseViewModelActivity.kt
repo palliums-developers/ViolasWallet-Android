@@ -28,10 +28,10 @@ abstract class BaseViewModelActivity : BaseAppActivity() {
             }
         })
 
-        getViewModel().tipsMessage.observe(this, Observer { wrapper ->
-            wrapper.getDataIfNotHandled()?.let {
-                if (it.isNotEmpty()) {
-                    showToast(it)
+        getViewModel().tipsMessage.observe(this, Observer {
+            it.getDataIfNotHandled()?.let { msg ->
+                if (msg.isNotEmpty()) {
+                    showToast(msg)
                 }
             }
         })

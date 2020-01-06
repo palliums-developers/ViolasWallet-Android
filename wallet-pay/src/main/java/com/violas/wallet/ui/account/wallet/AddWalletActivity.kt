@@ -7,15 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
+import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewHolder
+import com.palliums.listing.ListingViewAdapter
+import com.palliums.listing.ListingViewModel
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.start
+import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseListingActivity
-import com.palliums.listing.ListingViewAdapter
-import com.palliums.listing.ListingViewModel
-import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.account.AccountType
 import kotlinx.android.synthetic.main.item_add_wallet.view.*
@@ -36,14 +37,22 @@ class AddWalletActivity : BaseListingActivity<AddWalletVo>() {
         }
     }
 
-    override fun initViewModel(): ListingViewModel<AddWalletVo> {
-        return AddWalletViewModel()
+    private val mViewModel by lazy {
+        ViewModelProvider(this).get(AddWalletViewModel::class.java)
     }
 
-    override fun initViewAdapter(): ListingViewAdapter<AddWalletVo> {
-        return AddWalletAdapter(onItemClick = { accountType ->
+    private val mViewAdapter by lazy {
+        AddWalletAdapter(onItemClick = { accountType ->
             AddWalletDialog.newInstance(accountType).show()
         })
+    }
+
+    override fun getViewModel(): ListingViewModel<AddWalletVo> {
+        return mViewModel
+    }
+
+    override fun getViewAdapter(): ListingViewAdapter<AddWalletVo> {
+        return mViewAdapter
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +69,7 @@ class AddWalletActivity : BaseListingActivity<AddWalletVo>() {
             )
         )
 
-        getViewModel().execute()
+        mViewModel.execute()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

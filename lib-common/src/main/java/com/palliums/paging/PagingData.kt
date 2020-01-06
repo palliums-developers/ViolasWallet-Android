@@ -1,5 +1,6 @@
 package com.palliums.paging
 
+import androidx.lifecycle.DataWrapper
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
 import com.palliums.net.LoadState
@@ -19,13 +20,13 @@ data class PagingData<VO>(
 
     // represents the refresh status to show to the user.
     // Separate from loadMoreState, this value is importtantly only when refresh is requested.
-    val refreshState: LiveData<LoadState>,
+    val refreshState: LiveData<DataWrapper<LoadState>>,
 
     // represents the load more status to show to the user.
-    val loadMoreState: LiveData<LoadState>,
+    val loadMoreState: LiveData<DataWrapper<LoadState>>,
 
     // tips message
-    val tipsMessage: LiveData<String>,
+    val tipsMessage: LiveData<DataWrapper<String>>,
 
     // refreshes the whole data and it from scratch.
     val refresh: () -> Unit,

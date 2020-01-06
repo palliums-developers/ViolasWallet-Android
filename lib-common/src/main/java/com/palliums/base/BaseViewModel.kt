@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palliums.net.LoadState
 import com.palliums.net.RequestException
+import com.palliums.net.postTipsMessage
 import com.palliums.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,8 +23,8 @@ abstract class BaseViewModel : ViewModel() {
     protected val lock: Any = Any()
     private var retry: (() -> Any)? = null
 
-    val loadState = EnhancedMutableLiveData<LoadState>()
-    val tipsMessage = EnhancedMutableLiveData<String>()
+    val loadState by lazy { EnhancedMutableLiveData<LoadState>() }
+    val tipsMessage by lazy { EnhancedMutableLiveData<String>() }
 
     /**
      * 执行
@@ -41,7 +42,7 @@ abstract class BaseViewModel : ViewModel() {
 
                 val exception = RequestException.networkUnavailable()
                 loadState.postValueSupport(LoadState.failure(exception))
-                exception.message?.let { tipsMessage.postValueSupport(it) }
+                postTipsMessage(tipsMessage, exception)
                 return false
             }
 
@@ -65,7 +66,7 @@ abstract class BaseViewModel : ViewModel() {
                     retry = { execute(*params, action = action, needCheckParam = needCheckParam) }
 
                     loadState.postValueSupport(LoadState.failure(e))
-                    e.message?.let { tipsMessage.postValueSupport(it) }
+                    postTipsMessage(tipsMessage, e)
                 }
             }
         }

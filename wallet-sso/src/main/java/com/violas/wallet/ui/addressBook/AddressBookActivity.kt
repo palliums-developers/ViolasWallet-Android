@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.listing.ListingViewModel
@@ -54,12 +55,12 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
     private var mCoinType = Int.MIN_VALUE
     private var mSelector = false
 
-    override fun initViewModel(): ListingViewModel<AddressBookDo> {
-        return AddressBookViewModel()
+    private val mViewModel by lazy {
+        ViewModelProvider(this).get(AddressBookViewModel::class.java)
     }
 
-    override fun initViewAdapter(): ListingViewAdapter<AddressBookDo> {
-        return MyAdapter(
+    private val mViewAdapter by lazy {
+        MyAdapter(
             mCallback = {
                 if (mSelector) {
                     setResult(
@@ -79,9 +80,9 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
 
                     showProgress()
                     launch(Dispatchers.IO + coroutineExceptionHandler()) {
-                        (getViewModel() as AddressBookViewModel).removeAddress(addressBook)
+                        mViewModel.removeAddress(addressBook)
                         withContext(Dispatchers.Main) {
-                            getViewModel().execute(mCoinType)
+                            mViewModel.execute(mCoinType)
                             dismissProgress()
                         }
                     }
@@ -89,6 +90,14 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
                 }.show(supportFragmentManager, "delete")
             }
         )
+    }
+
+    override fun getViewModel(): ListingViewModel<AddressBookDo> {
+        return mViewModel
+    }
+
+    override fun getViewAdapter(): ListingViewAdapter<AddressBookDo> {
+        return mViewAdapter
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,7 +117,7 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
             getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
         }
 
-        getViewModel().execute(mCoinType)
+        mViewModel.execute(mCoinType)
     }
 
     override fun onTitleRightViewClick() {
@@ -119,7 +128,7 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_ADD_COIN && resultCode == Activity.RESULT_OK) {
-            getViewModel().execute(mCoinType)
+            mViewModel.execute(mCoinType)
         }
     }
 }

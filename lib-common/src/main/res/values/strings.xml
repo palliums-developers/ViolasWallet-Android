@@ -1,15 +1,17 @@
 <resources>
     <string name="common_http_error_code">Error Code</string>
-    <string name="common_http_request_fail">Request Failed</string>
     <string name="common_http_connect_timeout">Request Timeout. Please Check Network</string>
     <string name="common_http_socket_timeout">Connection Timeout. Please Check Network</string>
     <string name="common_http_certificate_invalid">Invalid Server Certification</string>
     <string name="common_http_unknown_host">Cannot connect to server. Please check network</string>
     <string name="common_http_not_network">No Connection. Please Check Network</string>
     <string name="common_http_connect_exception">Connection to server failed. Please Check Network</string>
-    <string name="common_http_data_exception">Invalid Data</string>
     <string name="common_http_network_unavailable">No Connection. Please Check Network</string>
-    <string name="common_http_unknown_error">Error</string>
+    <string name="common_http_unknown_error">Unknown Error\n%1$s</string>
+    <string name="common_http_data_exception">Invalid Data\n%1$s</string>
+    <string name="common_http_server_error">Server Error. Please try again later(%1$s)</string>
+    <string name="common_http_request_fail">Request Failed. Please try again later(%1$s)</string>
+    <string name="common_load_fail">Load Failed. Please try again later</string>
 
     <string name="common_status_click_reload">Click to reload</string>
     <string name="common_status_empty">No Data</string>

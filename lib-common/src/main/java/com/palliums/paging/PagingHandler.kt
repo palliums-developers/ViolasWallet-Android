@@ -42,7 +42,7 @@ class PagingHandler<VO>(
         })
 
         mPagingController.getViewModel().refreshState.observe(mLifecycleOwner, Observer {
-            when (it.status) {
+            when (it.peekData().status) {
                 LoadState.Status.RUNNING -> {
                     //mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_NONE)
                 }
@@ -77,14 +77,14 @@ class PagingHandler<VO>(
                                 IStatusLayout.Status.STATUS_NONE
                             )
 
-                        it.isNoNetwork() ->
+                        it.peekData().isNoNetwork() ->
                             mPagingController.getStatusLayout()?.showStatus(
-                                IStatusLayout.Status.STATUS_NO_NETWORK, it.getErrorMsg()
+                                IStatusLayout.Status.STATUS_NO_NETWORK, it.peekData().getErrorMsg()
                             )
 
                         else ->
                             mPagingController.getStatusLayout()?.showStatus(
-                                IStatusLayout.Status.STATUS_FAILURE, it.getErrorMsg()
+                                IStatusLayout.Status.STATUS_FAILURE, it.peekData().getErrorMsg()
                             )
                     }
                 }
@@ -92,12 +92,14 @@ class PagingHandler<VO>(
         })
 
         mPagingController.getViewModel().loadMoreState.observe(mLifecycleOwner, Observer {
-            mPagingController.getViewAdapter().setLoadMoreState(it)
+            mPagingController.getViewAdapter().setLoadMoreState(it.peekData())
         })
 
         mPagingController.getViewModel().pagingTipsMessage.observe(mLifecycleOwner, Observer {
-            if (it.isNotEmpty()) {
-                mViewController.showToast(it)
+            it.getDataIfNotHandled()?.let { msg ->
+                if (msg.isNotEmpty()) {
+                    mViewController.showToast(msg)
+                }
             }
         })
 

@@ -1,6 +1,7 @@
 package com.palliums.net
 
 import com.google.gson.JsonParseException
+import com.palliums.BuildConfig
 import com.palliums.R
 import com.palliums.utils.getString
 import com.palliums.utils.isNetworkConnected
@@ -9,7 +10,6 @@ import org.json.JSONException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import java.util.*
 import javax.net.ssl.SSLPeerUnverifiedException
 
 /**
@@ -22,21 +22,21 @@ class RequestException : RuntimeException {
 
     companion object {
         /** 连接超时 */
-        private const val ERROR_CODE_CONNECT_TIMEOUT = -101
+        private const val ERROR_CODE_CONNECT_TIMEOUT = "L101"
         /** Socket超时 */
-        private const val ERROR_CODE_SOCKET_TIMEOUT = -102
+        private const val ERROR_CODE_SOCKET_TIMEOUT = "L102"
         /** 服务器证书无效 */
-        private const val ERROR_CODE_CERTIFICATE_INVALID = -103
+        private const val ERROR_CODE_CERTIFICATE_INVALID = "L103"
         /** 未知主机（可能是因为无网络） */
-        private const val ERROR_CODE_UNKNOWN_HOST = -104
+        private const val ERROR_CODE_UNKNOWN_HOST = "L104"
         /** 连接异常（可能是主机拒绝了连接） */
-        private const val ERROR_CODE_CONNECT_EXCEPTION = -105
+        private const val ERROR_CODE_CONNECT_EXCEPTION = "L105"
         /** 数据异常 */
-        private const val ERROR_CODE_DATA_EXCEPTION = -106
+        private const val ERROR_CODE_DATA_EXCEPTION = "L106"
         /** 没有网络 */
-        const val ERROR_CODE_NO_NETWORK = -107
+        const val ERROR_CODE_NO_NETWORK = "L107"
         /** 未知错误 */
-        const val ERROR_CODE_UNKNOWN_ERROR = -100
+        const val ERROR_CODE_UNKNOWN_ERROR = "L100"
 
         fun networkUnavailable(): RequestException {
             return RequestException(
@@ -45,12 +45,14 @@ class RequestException : RuntimeException {
             )
         }
 
-        fun responseDataException(
-            errorMsg: String = getString(R.string.common_http_data_exception)
-        ): RequestException {
+        fun responseDataException(errorDesc: String): RequestException {
+            val errorCode = ERROR_CODE_DATA_EXCEPTION
             return RequestException(
-                ERROR_CODE_DATA_EXCEPTION,
-                errorMsg
+                errorCode,
+                if (BuildConfig.DEBUG)
+                    getString(R.string.common_http_data_exception, errorDesc)
+                else
+                    getString(R.string.common_http_request_fail, errorCode)
             )
         }
     }
@@ -72,13 +74,11 @@ class RequestException : RuntimeException {
 
         when (exception) {
             is retrofit2.HttpException -> {
-                errorCode = exception.code()
-                errorMsg = String.format(
-                    Locale.ENGLISH,
-                    "HTTP %s %s",
-                    exception.code(),
-                    exception.message()
-                )
+                errorCode = "H${exception.code()}"
+                errorMsg = if (BuildConfig.DEBUG)
+                    "HTTP ${exception.code()} ${exception.message()}"
+                else
+                    getString(R.string.common_http_server_error, errorCode)
             }
             is ConnectTimeoutException -> {
                 // 连接超时，此时并未发送数据
@@ -105,33 +105,35 @@ class RequestException : RuntimeException {
             }
             is JSONException, is JsonParseException -> {
                 errorCode = ERROR_CODE_DATA_EXCEPTION
-                errorMsg = getString(R.string.common_http_data_exception)
+                errorMsg = if (BuildConfig.DEBUG)
+                    getString(R.string.common_http_data_exception, exception.toString())
+                else
+                    getString(R.string.common_http_request_fail, errorCode)
             }
             else -> {
                 // 未知错误
                 errorCode = ERROR_CODE_UNKNOWN_ERROR
-                errorMsg = String.format(
-                    Locale.ENGLISH, "%s, %s",
-                    getString(R.string.common_http_unknown_error),
-                    exception.message
-                )
+                errorMsg = if (BuildConfig.DEBUG)
+                    getString(R.string.common_http_unknown_error, exception.toString())
+                else
+                    getString(R.string.common_http_request_fail, errorCode)
             }
         }
     }
 
     constructor(response: ApiResponse) : super() {
-
-        val msg: String = if (response.getErrorMsg() == null) {
-            getString(R.string.common_http_request_fail)
-        } else {
-            response.getErrorMsg().toString()
-        }
-
         errorCode = response.getErrorCode()
-        errorMsg = String.format(Locale.ENGLISH, "%s", msg)
+
+        val realErrorMsg = response.getErrorMsg()
+        errorMsg =
+            if (realErrorMsg == null || (realErrorMsg is String && realErrorMsg.isEmpty())) {
+                getString(R.string.common_http_request_fail, errorCode)
+            } else {
+                realErrorMsg.toString()
+            }
     }
 
-    private constructor(errorCode: Int, errorMsg: String) {
+    private constructor(errorCode: Any, errorMsg: String) {
         this.errorCode = errorCode
         this.errorMsg = errorMsg
     }

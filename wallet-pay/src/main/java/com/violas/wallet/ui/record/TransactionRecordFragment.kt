@@ -48,14 +48,14 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         }
     }
 
-    override fun initViewModel(): PagingViewModel<TransactionRecordVO> {
-        return TransactionRecordViewModel(mAccountAddress, mTokenAddress, mTokenName, mCoinTypes)
+    private val mViewModel by lazy {
+        TransactionRecordViewModel(mAccountAddress, mTokenAddress, mTokenName, mCoinTypes)
     }
 
-    override fun initViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
-        return TransactionRecordViewAdapter(
+    private val mViewAdapter by lazy {
+        TransactionRecordViewAdapter(
             retryCallback = {
-                getViewModel().retry()
+                mViewModel.retry()
             },
             onClickQuery = {
                 if (it.url.isNullOrEmpty()) {
@@ -66,6 +66,14 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
                     }
                 }
             })
+    }
+
+    override fun getViewModel(): PagingViewModel<TransactionRecordVO> {
+        return mViewModel
+    }
+
+    override fun getViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
+        return mViewAdapter
     }
 
     override fun onLazyInitView(savedInstanceState: Bundle?) {

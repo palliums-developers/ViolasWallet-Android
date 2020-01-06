@@ -1,16 +1,13 @@
 package com.palliums.paging
 
 import androidx.arch.core.executor.ArchTaskExecutor
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.Config
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.toLiveData
 import com.palliums.net.LoadState
-import com.palliums.net.RequestException
+import com.palliums.net.postTipsMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
@@ -111,7 +108,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
         private val pageSize: Int
     ) : PageKeyedDataSource<Int, VO>() {
 
-        private val lock: Any = Any()
+        private val lock by lazy { Any() }
 
         // keep a function reference for the retry event
         private var retry: (() -> Any)? = null
@@ -119,9 +116,9 @@ abstract class PagingViewModel<VO> : ViewModel() {
         private var pageNumber = 1
         private var nextPageKey: Any? = null
 
-        val refreshState = MutableLiveData<LoadState>()
-        val loadMoreState = MutableLiveData<LoadState>()
-        val tipsMessage = MutableLiveData<String>()
+        val refreshState by lazy { EnhancedMutableLiveData<LoadState>() }
+        val loadMoreState by lazy { EnhancedMutableLiveData<LoadState>() }
+        val tipsMessage by lazy { EnhancedMutableLiveData<String>() }
 
         fun refresh() {
             synchronized(lock) {
@@ -146,7 +143,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
             callback: LoadInitialCallback<Int, VO>
         ) {
             synchronized(lock) {
-                val currentRefreshState = refreshState.value
+                val currentRefreshState = refreshState.value?.peekData()
                 if (currentRefreshState != null
                     && currentRefreshState.status == LoadState.Status.RUNNING
                 ) {
@@ -154,7 +151,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                     return
                 }
 
-                val currentLoadMoreState = loadMoreState.value
+                val currentLoadMoreState = loadMoreState.value?.peekData()
                 if (currentLoadMoreState != null
                     && currentLoadMoreState.status == LoadState.Status.RUNNING
                 ) {
@@ -162,7 +159,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                     return
                 }
 
-                refreshState.postValue(LoadState.RUNNING)
+                refreshState.postValueSupport(LoadState.RUNNING)
             }
 
             this@PagingViewModel.viewModelScope.launch(Dispatchers.IO) {
@@ -182,19 +179,19 @@ abstract class PagingViewModel<VO> : ViewModel() {
 
                                 when {
                                     listData.isEmpty() -> {
-                                        refreshState.postValue(LoadState.SUCCESS_EMPTY)
-                                        loadMoreState.postValue(LoadState.IDLE)
+                                        refreshState.postValueSupport(LoadState.SUCCESS_EMPTY)
+                                        loadMoreState.postValueSupport(LoadState.IDLE)
                                     }
 
                                     listData.size < params.requestedLoadSize -> {
-                                        refreshState.postValue(LoadState.SUCCESS_NO_MORE)
+                                        refreshState.postValueSupport(LoadState.SUCCESS_NO_MORE)
                                         // 为了底部显示没有更多一行
-                                        loadMoreState.postValue(LoadState.SUCCESS_NO_MORE)
+                                        loadMoreState.postValueSupport(LoadState.SUCCESS_NO_MORE)
                                     }
 
                                     else -> {
-                                        refreshState.postValue(LoadState.SUCCESS)
-                                        loadMoreState.postValue(LoadState.IDLE)
+                                        refreshState.postValueSupport(LoadState.SUCCESS)
+                                        loadMoreState.postValueSupport(LoadState.IDLE)
                                     }
                                 }
                             }
@@ -206,8 +203,8 @@ abstract class PagingViewModel<VO> : ViewModel() {
                     synchronized(lock) {
                         retry = { loadInitial(params, callback) }
 
-                        refreshState.postValue(LoadState.failure(e))
-                        tipsMessage.postValue(e.message)
+                        refreshState.postValueSupport(LoadState.failure(e))
+                        postTipsMessage(tipsMessage, e)
                     }
                 }
             }
@@ -218,7 +215,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
             callback: LoadCallback<Int, VO>
         ) {
             synchronized(lock) {
-                val currentRefreshState = refreshState.value
+                val currentRefreshState = refreshState.value?.peekData()
                 if (currentRefreshState != null
                     && currentRefreshState.status != LoadState.Status.IDLE
                     && currentRefreshState.status != LoadState.Status.SUCCESS
@@ -227,7 +224,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                     return
                 }
 
-                val currentLoadMoreState = loadMoreState.value
+                val currentLoadMoreState = loadMoreState.value?.peekData()
                 if (currentLoadMoreState != null
                     && (currentLoadMoreState.status == LoadState.Status.RUNNING
                             || currentLoadMoreState.status == LoadState.Status.SUCCESS_NO_MORE)
@@ -236,7 +233,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                     return
                 }
 
-                loadMoreState.postValue(LoadState.RUNNING)
+                loadMoreState.postValueSupport(LoadState.RUNNING)
             }
 
             this@PagingViewModel.viewModelScope.launch(Dispatchers.IO) {
@@ -254,7 +251,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
 
                                 callback.onResult(listData, pageNumber)
 
-                                loadMoreState.postValue(
+                                loadMoreState.postValueSupport(
                                     when {
                                         listData.size < params.requestedLoadSize ->
                                             LoadState.SUCCESS_NO_MORE
@@ -272,8 +269,8 @@ abstract class PagingViewModel<VO> : ViewModel() {
                     synchronized(lock) {
                         retry = { loadAfter(params, callback) }
 
-                        loadMoreState.postValue(LoadState.failure(e))
-                        tipsMessage.postValue(e.message)
+                        loadMoreState.postValueSupport(LoadState.failure(e))
+                        postTipsMessage(tipsMessage, e)
                     }
                 }
             }

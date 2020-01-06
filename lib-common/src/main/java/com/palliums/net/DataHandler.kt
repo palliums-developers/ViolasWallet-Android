@@ -1,11 +1,37 @@
 package com.palliums.net
 
+import androidx.lifecycle.EnhancedMutableLiveData
+import com.palliums.BuildConfig
+import com.palliums.R
+import com.palliums.utils.getString
+import java.util.*
+
 /**
  * Created by elephant on 2019-11-07 18:33.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
  * desc:
  */
+
+fun postTipsMessage(liveData: EnhancedMutableLiveData<String>, exception: Throwable) {
+    val tipsMsg = when {
+        exception is RequestException -> {
+            exception.errorMsg
+        }
+        BuildConfig.DEBUG -> {
+            String.format(
+                Locale.ENGLISH,
+                "%s\n%s",
+                getString(R.string.common_load_fail),
+                exception.toString()
+            )
+        }
+        else -> {
+            getString(R.string.common_load_fail)
+        }
+    }
+    liveData.postValueSupport(tipsMsg)
+}
 
 @Throws(RequestException::class)
 suspend inline fun <T, R> T.checkResponse(
@@ -16,7 +42,7 @@ suspend inline fun <T, R> T.checkResponse(
     try {
         val func1 = func()
         if (func1 !is ApiResponse) {
-            throw RequestException.responseDataException()
+            throw RequestException.responseDataException("response is not ApiResponse")
         }
 
         if (specialStatusCodes.isNotEmpty()) {
@@ -30,7 +56,7 @@ suspend inline fun <T, R> T.checkResponse(
         if (func1.getErrorCode() != func1.getSuccessCode()) {
             throw RequestException(func1)
         } else if (!dataNullableOnSuccess && func1.getResponseData() == null) {
-            throw RequestException.responseDataException()
+            throw RequestException.responseDataException("data is null")
         }
 
         return func1
@@ -51,7 +77,7 @@ suspend inline fun <T, R> T.checkResponseWithResult(
                 Result.failure(RequestException(func1))
             }
         } else {
-            Result.failure(RequestException.responseDataException())
+            Result.failure(RequestException.responseDataException("response is not ApiResponse"))
         }
     } catch (e: Throwable) {
         Result.failure(RequestException(e))

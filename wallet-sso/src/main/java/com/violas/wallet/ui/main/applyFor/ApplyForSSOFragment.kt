@@ -37,10 +37,10 @@ class ApplyForSSOFragment : BaseFragment() {
         vTitleMiddleText.text = getString(R.string.title_apply_issue_sso)
         EventBus.getDefault().register(this)
 
-        mUserViewModel.tipsMessage.observe(viewLifecycleOwner, Observer { wrapper ->
-            wrapper.getDataIfNotHandled()?.let {
-                if (it.isNotEmpty()) {
-                    showToast(it)
+        mUserViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
+            it.getDataIfNotHandled()?.let { msg ->
+                if (msg.isNotEmpty()) {
+                    showToast(msg)
                 }
             }
         })

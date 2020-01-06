@@ -3,7 +3,10 @@ package com.violas.wallet.repository.http.violas
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import com.palliums.violas.http.*
+import com.palliums.violas.http.ModuleDTO
+import com.palliums.violas.http.SupportCurrencyDTO
+import com.palliums.violas.http.SupportTokenCache
+import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.TransactionService

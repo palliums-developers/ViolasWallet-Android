@@ -3,7 +3,10 @@ package com.violas.wallet.ui.dexOrder.details
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.palliums.net.LoadState
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
@@ -44,15 +47,19 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
     private var dexOrder: DexOrderVO? = null
     private lateinit var currentAccount: AccountDO
 
-    override fun initViewModel(): PagingViewModel<DexOrderTradeDTO> {
-        return DexOrderDetailsViewModel(
-            dexOrder!!.dto.version
-        )
+    private val mViewModel by viewModels<DexOrderDetailsViewModel> {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return DexOrderDetailsViewModel(
+                    dexOrder!!.dto.version
+                ) as T
+            }
+        }
     }
 
-    override fun initViewAdapter(): PagingViewAdapter<DexOrderTradeDTO> {
-        return DexOrderDetailsViewAdapter(
-            retryCallback = { getViewModel().retry() },
+    private val mViewAdapter by lazy {
+        DexOrderDetailsViewAdapter(
+            retryCallback = { mViewModel.retry() },
             addHeader = true,
             dexOrder = dexOrder!!,
             onOpenBrowserView = {
@@ -63,7 +70,7 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
 
                 PasswordInputDialog().setConfirmListener { password, dialog ->
 
-                    if (!(getViewModel() as DexOrderDetailsViewModel).revokeOrder(
+                    if (!mViewModel.revokeOrder(
                             currentAccount,
                             password,
                             dexOrder,
@@ -90,6 +97,14 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
                 }.show(this@DexOrderDetailsActivity.supportFragmentManager)
             }
         )
+    }
+
+    override fun getViewModel(): PagingViewModel<DexOrderTradeDTO> {
+        return mViewModel
+    }
+
+    override fun getViewAdapter(): PagingViewAdapter<DexOrderTradeDTO> {
+        return mViewAdapter
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -132,8 +147,8 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
         setTitle(R.string.title_order_details)
 
         if (dexOrder!!.isOpen()) {
-            (getViewModel() as DexOrderDetailsViewModel).loadState.observe(this, Observer {
-                when (it.status) {
+            mViewModel.loadState.observe(this, Observer {
+                when (it.peekData().status) {
                     LoadState.Status.RUNNING -> {
                         showProgress()
                     }
@@ -144,9 +159,11 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
                 }
             })
 
-            (getViewModel() as DexOrderDetailsViewModel).tipsMessage.observe(this, Observer {
-                if (it.isNotEmpty()) {
-                    showToast(it)
+            mViewModel.tipsMessage.observe(this, Observer {
+                it.getDataIfNotHandled()?.let { msg ->
+                    if (msg.isNotEmpty()) {
+                        showToast(msg)
+                    }
                 }
             })
         }

@@ -5,6 +5,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.*
 import com.palliums.base.BaseViewModel
 import com.palliums.net.LoadState
+import com.palliums.net.postTipsMessage
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.AuthenticationIDEvent
@@ -244,7 +245,7 @@ class UserViewModel : BaseViewModel() {
 
                 synchronized(lock) {
                     loadState.postValueSupport(LoadState.failure(e))
-                    e.message?.let { tipsMessage.postValueSupport(it) }
+                    postTipsMessage(tipsMessage, e)
                 }
             }
         }

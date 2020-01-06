@@ -33,16 +33,6 @@ interface ListingController<VO> {
     fun getStatusLayout(): IStatusLayout?
 
     /**
-     * 初始化ViewModel
-     */
-    fun initViewModel(): ListingViewModel<VO>
-
-    /**
-     * 初始化ViewAdapter
-     */
-    fun initViewAdapter(): ListingViewAdapter<VO>
-
-    /**
      * 获取ViewModel
      */
     fun getViewModel(): ListingViewModel<VO>

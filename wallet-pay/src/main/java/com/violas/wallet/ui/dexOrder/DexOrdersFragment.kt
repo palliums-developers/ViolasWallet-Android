@@ -54,8 +54,8 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
     private var orderState: String? = null
     private lateinit var currentAccount: AccountDO
 
-    override fun initViewModel(): PagingViewModel<DexOrderVO> {
-        return DexOrdersViewModel(
+    private val mViewModel by lazy {
+        DexOrdersViewModel(
             accountAddress = currentAccount.address,
             //accountAddress = "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
             orderState = orderState,
@@ -64,9 +64,9 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
         )
     }
 
-    override fun initViewAdapter(): PagingViewAdapter<DexOrderVO> {
-        return DexOrdersViewAdapter(
-            retryCallback = { getViewModel().retry() },
+    private val mViewAdapter by lazy {
+        DexOrdersViewAdapter(
+            retryCallback = { mViewModel.retry() },
             onClickItem = {
                 //DexOrderDetailsActivity.start(requireContext(), it)
                 DexOrderDetails2Activity.start(requireContext(), it)
@@ -75,7 +75,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
 
                 PasswordInputDialog().setConfirmListener { password, dialog ->
 
-                    if (!(getViewModel() as DexOrdersViewModel).revokeOrder(
+                    if (!mViewModel.revokeOrder(
                             currentAccount,
                             password,
                             dexOrder,
@@ -95,6 +95,14 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
 
                 }.show(this@DexOrdersFragment.childFragmentManager)
             })
+    }
+
+    override fun getViewModel(): PagingViewModel<DexOrderVO> {
+        return mViewModel
+    }
+
+    override fun getViewAdapter(): PagingViewAdapter<DexOrderVO> {
+        return mViewAdapter
     }
 
     override fun onLazyInitView(savedInstanceState: Bundle?) {
@@ -119,8 +127,8 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
         ) {
             EventBus.getDefault().register(this)
 
-            (getViewModel() as DexOrdersViewModel).loadState.observe(this, Observer {
-                when (it.status) {
+            mViewModel.loadState.observe(this, Observer {
+                when (it.peekData().status) {
                     LoadState.Status.RUNNING -> {
                         showProgress()
                     }
@@ -131,9 +139,11 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
                 }
             })
 
-            (getViewModel() as DexOrdersViewModel).tipsMessage.observe(this, Observer {
-                if (it.isNotEmpty()) {
-                    showToast(it)
+            mViewModel.tipsMessage.observe(this, Observer {
+                it.getDataIfNotHandled()?.let { msg ->
+                    if (msg.isNotEmpty()) {
+                        showToast(msg)
+                    }
                 }
             })
         }
@@ -189,11 +199,11 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
             return
         }
 
-        getViewAdapter().currentList?.let {
+        mViewAdapter.currentList?.let {
             it.forEachIndexed { index, dexOrder ->
                 if (dexOrder.dto.id == event.orderId) {
                     dexOrder.updateStateToRevoking(event.updateDate)
-                    getViewAdapter().notifyItemChanged(index)
+                    mViewAdapter.notifyItemChanged(index)
                     return
                 }
             }

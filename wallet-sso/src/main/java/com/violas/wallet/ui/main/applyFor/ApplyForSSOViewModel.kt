@@ -80,7 +80,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
         mApplyStatus.addSource(mNetWorkApplyStatus) {
             synchronized(mLock) {
                 val userInfoAllReady =
-                    userViewModel.getAllReadyLiveData().value?.getDataIfNotHandled()
+                    userViewModel.getAllReadyLiveData().value?.peekData()
                 if (userInfoAllReady != null) {
                     if (userInfoAllReady) {
                         mApplyStatus.value = it.peekData()
@@ -108,7 +108,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                 }
 
                 val userInfoAllReady =
-                    userViewModel.getAllReadyLiveData().value?.getDataIfNotHandled()
+                    userViewModel.getAllReadyLiveData().value?.peekData()
                 if (userInfoAllReady != null) {
                     mApplyStatus.value = CODE_NETWORK_ERROR
                     return@addSource
@@ -201,9 +201,10 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val allReady =
-                userViewModel.getAllReadyLiveData().value?.peekData()
-            if (allReady == null || !allReady) {
+            val loadState = userViewModel.loadState.value?.peekData()
+            if (loadState != null
+                && loadState.status == LoadState.Status.FAILURE
+            ) {
                 userViewModel.execute()
             }
             refreshApplyStatusByNetwork(mAccount!!)

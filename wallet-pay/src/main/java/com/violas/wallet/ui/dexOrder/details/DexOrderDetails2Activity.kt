@@ -4,7 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.net.LoadState
 import com.palliums.paging.PagingViewAdapter
@@ -53,6 +56,36 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
     private var dexOrder: DexOrderVO? = null
     private lateinit var currentAccount: AccountDO
 
+    private val mViewModel by viewModels<DexOrderDetailsViewModel> {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return DexOrderDetailsViewModel(
+                    dexOrder!!.dto.version
+                ) as T
+            }
+        }
+    }
+
+    private val mViewAdapter by lazy {
+        DexOrderDetailsViewAdapter(
+            retryCallback = { mViewModel.retry() },
+            addHeader = false,
+            dexOrder = dexOrder!!,
+            onOpenBrowserView = {
+                // TODO violas浏览器暂未实现
+                //showToast(R.string.transaction_record_not_supported_query)
+            }
+        )
+    }
+
+    override fun getViewModel(): PagingViewModel<DexOrderTradeDTO> {
+        return mViewModel
+    }
+
+    override fun getViewAdapter(): PagingViewAdapter<DexOrderTradeDTO> {
+        return mViewAdapter
+    }
+
     override fun getLayoutResId(): Int {
         return R.layout.activity_dex_order_details
     }
@@ -67,24 +100,6 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
 
     override fun getStatusLayout(): IStatusLayout? {
         return slStatusLayout
-    }
-
-    override fun initViewModel(): PagingViewModel<DexOrderTradeDTO> {
-        return DexOrderDetailsViewModel(
-            dexOrder!!.dto.version
-        )
-    }
-
-    override fun initViewAdapter(): PagingViewAdapter<DexOrderTradeDTO> {
-        return DexOrderDetailsViewAdapter(
-            retryCallback = { getViewModel().retry() },
-            addHeader = false,
-            dexOrder = dexOrder!!,
-            onOpenBrowserView = {
-                // TODO violas浏览器暂未实现
-                //showToast(R.string.transaction_record_not_supported_query)
-            }
-        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,8 +142,8 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
         setTitle(R.string.title_order_details)
 
         if (dexOrder!!.isOpen()) {
-            (getViewModel() as DexOrderDetailsViewModel).loadState.observe(this, Observer {
-                when (it.status) {
+            mViewModel.loadState.observe(this, Observer {
+                when (it.peekData().status) {
                     LoadState.Status.RUNNING -> {
                         showProgress()
                     }
@@ -139,9 +154,11 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
                 }
             })
 
-            (getViewModel() as DexOrderDetailsViewModel).tipsMessage.observe(this, Observer {
-                if (it.isNotEmpty()) {
-                    showToast(it)
+            mViewModel.tipsMessage.observe(this, Observer {
+                it.getDataIfNotHandled()?.let { msg ->
+                    if (msg.isNotEmpty()) {
+                        showToast(msg)
+                    }
                 }
             })
         }
@@ -205,7 +222,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
 
                         PasswordInputDialog().setConfirmListener { password, dialog ->
 
-                            if (!(getViewModel() as DexOrderDetailsViewModel).revokeOrder(
+                            if (!mViewModel.revokeOrder(
                                     currentAccount,
                                     password,
                                     dexOrder,

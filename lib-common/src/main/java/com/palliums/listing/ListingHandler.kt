@@ -25,7 +25,7 @@ class ListingHandler<VO>(
         })
 
         mListingController.getViewModel().loadState.observe(mLifecycleOwner, Observer {
-            when (it.status) {
+            when (it.peekData().status) {
                 LoadState.Status.RUNNING -> {
                     if (mListingController.loadingUseDialog()) {
                         mViewController.showProgress()
@@ -73,15 +73,15 @@ class ListingHandler<VO>(
                             )
                         }
 
-                        it.isNoNetwork() -> {
+                        it.peekData().isNoNetwork() -> {
                             mListingController.getStatusLayout()?.showStatus(
-                                IStatusLayout.Status.STATUS_NO_NETWORK, it.getErrorMsg()
+                                IStatusLayout.Status.STATUS_NO_NETWORK, it.peekData().getErrorMsg()
                             )
                         }
 
                         else -> {
                             mListingController.getStatusLayout()?.showStatus(
-                                IStatusLayout.Status.STATUS_FAILURE, it.getErrorMsg()
+                                IStatusLayout.Status.STATUS_FAILURE, it.peekData().getErrorMsg()
                             )
                         }
                     }
@@ -90,8 +90,10 @@ class ListingHandler<VO>(
         })
 
         mListingController.getViewModel().tipsMessage.observe(mLifecycleOwner, Observer {
-            if (it.isNotEmpty()) {
-                mViewController.showToast(it)
+            it.getDataIfNotHandled()?.let { msg ->
+                if (msg.isNotEmpty()) {
+                    mViewController.showToast(msg)
+                }
             }
         })
 

@@ -2,11 +2,13 @@ package com.palliums.listing
 
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palliums.net.LoadState
 import com.palliums.net.RequestException
+import com.palliums.net.postTipsMessage
 import com.palliums.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,12 +21,12 @@ import kotlinx.coroutines.launch
  */
 abstract class ListingViewModel<VO> : ViewModel() {
 
-    private val lock: Any = Any()
+    private val lock by lazy { Any() }
     private var retry: (() -> Any)? = null
 
-    val loadState = MutableLiveData<LoadState>()
-    val tipsMessage = MutableLiveData<String>()
-    val listData = MutableLiveData<List<VO>>()
+    val loadState by lazy { EnhancedMutableLiveData<LoadState>() }
+    val tipsMessage by lazy { EnhancedMutableLiveData<String>() }
+    val listData by lazy { MutableLiveData<List<VO>>() }
 
     /**
      * 执行
@@ -33,7 +35,7 @@ abstract class ListingViewModel<VO> : ViewModel() {
     @MainThread
     fun execute(vararg params: Any): Boolean {
         synchronized(lock) {
-            if (loadState.value?.status == LoadState.Status.RUNNING) {
+            if (loadState.value?.peekData()?.status == LoadState.Status.RUNNING) {
                 return false
             } else if (!checkParams(*params)) {
                 return false
@@ -41,19 +43,19 @@ abstract class ListingViewModel<VO> : ViewModel() {
                 retry = { execute(*params) }
 
                 val exception = RequestException.networkUnavailable()
-                loadState.value = LoadState.failure(exception)
-                tipsMessage.value = exception.message
+                loadState.postValueSupport(LoadState.failure(exception))
+                postTipsMessage(tipsMessage, exception)
                 return false
             }
 
-            loadState.postValue(LoadState.RUNNING)
+            loadState.postValueSupport(LoadState.RUNNING)
         }
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val list = loadData(*params)
                 synchronized(lock) {
-                    loadState.postValue(
+                    loadState.postValueSupport(
                         if (list.isEmpty())
                             LoadState.SUCCESS_EMPTY
                         else
@@ -68,8 +70,8 @@ abstract class ListingViewModel<VO> : ViewModel() {
                 synchronized(lock) {
                     retry = { execute(*params) }
 
-                    loadState.postValue(LoadState.failure(e))
-                    tipsMessage.postValue(e.message)
+                    loadState.postValueSupport(LoadState.failure(e))
+                    postTipsMessage(tipsMessage, e)
                 }
             }
         }

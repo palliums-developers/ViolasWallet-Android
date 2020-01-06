@@ -1,14 +1,9 @@
 package com.violas.wallet.base
 
 import android.os.Bundle
-import androidx.activity.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.listing.ListingController
 import com.palliums.listing.ListingHandler
-import com.palliums.listing.ListingViewAdapter
-import com.palliums.listing.ListingViewModel
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
@@ -22,19 +17,7 @@ import kotlinx.android.synthetic.main.activity_base_list.*
  */
 abstract class BaseListingActivity<VO> : BaseAppActivity(), ListingController<VO> {
 
-    private val mViewModel by viewModels<ListingViewModel<VO>> {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return initViewModel() as T
-            }
-        }
-    }
-
-    private val mViewAdapter by lazy {
-        initViewAdapter()
-    }
-
-    private val mListingHandler by lazy {
+    protected val mListingHandler by lazy {
         ListingHandler(this, this, this)
     }
 
@@ -70,13 +53,5 @@ abstract class BaseListingActivity<VO> : BaseAppActivity(), ListingController<VO
      */
     override fun getStatusLayout(): IStatusLayout? {
         return vStatusLayout
-    }
-
-    final override fun getViewAdapter(): ListingViewAdapter<VO> {
-        return mViewAdapter
-    }
-
-    final override fun getViewModel(): ListingViewModel<VO> {
-        return mViewModel
     }
 }
