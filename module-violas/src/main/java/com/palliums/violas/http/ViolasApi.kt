@@ -16,11 +16,6 @@ import retrofit2.http.Query
  */
 interface ViolasApi {
 
-    companion object {
-        const val BASE_URL_MAIN_NET = "http://52.27.228.84:4000"
-        const val BASE_URL_TEST_NET = "http://52.27.228.84:4000"
-    }
-
     /**
      * 获取指定地址的交易记录，分页查询
      * @param address 地址

@@ -5,20 +5,20 @@ import com.palliums.violas.http.ViolasApi
 import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.BaseBizUrl.getDefaultBaseUrl
 import com.violas.wallet.repository.database.AppDatabase
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.repository.http.bitcoin.BitmainApi
-import com.violas.wallet.repository.http.bitcoin.BitmainService
 import com.violas.wallet.repository.http.bitcoin.BitmainRepository
+import com.violas.wallet.repository.http.bitcoin.BitmainService
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.repository.http.dex.DexApi
 import com.violas.wallet.repository.http.dex.DexRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.repository.http.libra.LibexplorerApi
-import com.violas.wallet.repository.http.libra.LibexplorerService
 import com.violas.wallet.repository.http.libra.LibexplorerRepository
+import com.violas.wallet.repository.http.libra.LibexplorerService
 import com.violas.wallet.repository.http.violas.ViolasService
 import io.grpc.ManagedChannelBuilder
 import okhttp3.OkHttpClient
@@ -36,12 +36,6 @@ object DataRepository {
 
     private val mChannel by lazy {
         ManagedChannelBuilder.forAddress("ac.testnet.libra.org", 8000)
-            .usePlaintext()
-            .build()
-    }
-
-    private val mViolasChannel by lazy {
-        ManagedChannelBuilder.forAddress("47.106.208.207", 4000)
             .usePlaintext()
             .build()
     }
@@ -69,10 +63,6 @@ object DataRepository {
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
-    }
-
-    fun getDefaultBaseUrl(): String {
-        return if (Vm.TestNet) ViolasApi.BASE_URL_TEST_NET else ViolasApi.BASE_URL_MAIN_NET
     }
 
     fun getAccountStorage() = appDatabase.accountDao()

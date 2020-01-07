@@ -1,9 +1,9 @@
 package com.violas.wallet.repository.http.bitcoin
 
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.http.TransactionService
-import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.ui.record.TransactionRecordVO
 
 /**
@@ -121,7 +121,7 @@ class BitmainService(private val mBitmainRepository: BitmainRepository) :
                 amount = showAmount.toString(),
                 gas = bean.fee.toString(),
                 address = showAddress,
-                url = BaseUrlInterceptor.getBitcoinBrowserUrl(bean.hash)
+                url = BaseBrowserUrl.getBitcoinBrowserUrl(bean.hash)
             )
         }
         onSuccess.invoke(list, null)

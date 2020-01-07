@@ -5,7 +5,7 @@ import com.palliums.violas.http.ViolasApi
 import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.BaseBizUrl.getDefaultBaseUrl
 import com.violas.wallet.repository.database.AppDatabase
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.repository.http.bitcoin.BitmainApi
@@ -41,12 +41,6 @@ object DataRepository {
             .build()
     }
 
-    private val mViolasChannel by lazy {
-        ManagedChannelBuilder.forAddress("47.106.208.207", 4000)
-            .usePlaintext()
-            .build()
-    }
-
     private val okHttpClient by lazy {
         OkHttpClient.Builder()
             .addInterceptor(BaseUrlInterceptor())
@@ -70,10 +64,6 @@ object DataRepository {
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
-    }
-
-    fun getDefaultBaseUrl(): String {
-        return if (Vm.TestNet) ViolasApi.BASE_URL_TEST_NET else ViolasApi.BASE_URL_MAIN_NET
     }
 
     fun getAccountStorage() = appDatabase.accountDao()

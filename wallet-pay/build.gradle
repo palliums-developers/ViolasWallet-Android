@@ -58,7 +58,6 @@ android {
             proguardFiles '../proguard-android-optimize-wallet.txt', 'proguard-rules.pro'
             multiDexKeepProguard file('../multidexKeep.pro')
             signingConfig signingConfigs.release
-            buildConfigField "String", "TESTNET", '"testnet"'
             buildConfigField "boolean", "SHUFFLE_MNEMONIC", "true"
         }
         debug {
@@ -66,7 +65,6 @@ android {
             ext.alwaysUpdateBuildId = false
             multiDexKeepProguard file('../multidexKeep.pro')
             signingConfig signingConfigs.debug
-            buildConfigField "String", "TESTNET", '"testnet"'
             buildConfigField "boolean", "SHUFFLE_MNEMONIC", "true"
         }
     }
@@ -86,6 +84,36 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs = ["-Xallow-result-return-type"]
+    }
+
+    flavorDimensions "typeNetwork","local"
+
+    productFlavors {
+        demo{
+            dimension "local"
+        }
+
+        googlePlay{
+            dimension "local"
+        }
+
+        tNet {
+            dimension "typeNetwork"
+            buildConfigField "String", "TESTNET", '"testnet"'
+        }
+
+        mainNet {
+            dimension "typeNetwork"
+            buildConfigField "String", "TESTNET", '"main"'
+        }
+    }
+
+    variantFilter { variant ->
+        def names = variant.flavors*.name
+        println(names)
+        if (names.contains("mainNet") && names.contains("demo")) {
+            setIgnore(true)
+        }
     }
 }
 
