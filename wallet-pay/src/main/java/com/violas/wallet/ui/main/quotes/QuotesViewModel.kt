@@ -117,7 +117,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
 
     private fun initCurrentExchangeCoinLiveDataLiveData() {
         val change = {
-            val token = if (isPositiveChangeLiveData.value == true) {
+            val token = if (isPositiveChangeLiveData.value == false) {
                 currentFormCoinLiveData.value
             } else {
                 currentToCoinLiveData.value
@@ -495,17 +495,14 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     private fun setOrderPrice(): (IOrder) -> IOrder = {
-        currentToCoinLiveData.value?.let { token ->
-            it.setPrice(
-                token.tokenPrice()
-//                    .divide(
-//                        BigDecimal("100"),
-//                        2,
-//                        RoundingMode.HALF_DOWN
-//                    )
-                    .stripTrailingZeros().toPlainString()
-            )
-        }
+        it.setPrice(
+            it.tokenGetPrice()
+                .setScale(
+                    2,
+                    RoundingMode.DOWN
+                )
+                .stripTrailingZeros().toPlainString()
+        )
         it
     }
 
