@@ -18,7 +18,7 @@ android {
         targetSdkVersion versions.targetSdk
         versionCode rootProject.gitCommitCount
         versionName names.payName
-        archivesBaseName = "Violas-${versionName}"
+        archivesBaseName = "ViolasPay-${versionName}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
