@@ -35,7 +35,7 @@ interface DexApi {
     ): ListResponse<DexOrderDTO>
 
     @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_DEX}"])
-    @GET("/v1/prices")
+    @GET("/v1/tokens")
     suspend fun getTokens(): List<DexTokenDTO>
 
     /**

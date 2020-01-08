@@ -8,10 +8,18 @@ import com.violas.wallet.ui.main.quotes.bean.IOrderType
 import io.socket.client.IO
 import io.socket.client.Socket
 import org.json.JSONObject
+import java.math.BigDecimal
 import java.util.concurrent.Executors
 
 interface Subscriber {
-    fun onMarkCall(myOrder: List<IOrder>, buyOrder: List<IOrder>, sellOrder: List<IOrder>) {}
+    fun onMarkCall(
+        myOrder: List<IOrder>,
+        buyOrder: List<IOrder>,
+        sellOrder: List<IOrder>,
+        rate: BigDecimal
+    ) {
+    }
+
     fun onDepthsCall(buyOrder: List<IOrder>, sellOrder: List<IOrder>) {}
     fun onReconnect() {}
 }
@@ -47,7 +55,7 @@ object ExchangeSocket {
             mExecutor.submit {
                 if (args.isNotEmpty()) {
                     val depthsJsonObject = (args[0] as JSONObject).getJSONObject("depths")
-                    LogUtil.e("==market==", depthsJsonObject.toString())
+                    LogUtil.e("==market==", (args[0] as JSONObject).toString())
                     val buysOrder =
                         ExchangeOrder.parse(depthsJsonObject.getJSONArray("buys"), IOrderType.BUY)
                     val sellsOrder =
@@ -59,8 +67,9 @@ object ExchangeSocket {
                         (args[0] as JSONObject).getJSONArray("orders"),
                         IOrderType.BUY
                     )
+                    val rate = BigDecimal((args[0] as JSONObject).getDouble("price").toString())
                     mSubscriber.forEach {
-                        it.onMarkCall(meOrder, buysOrder, sellsOrder)
+                        it.onMarkCall(meOrder, buysOrder, sellsOrder, rate)
                     }
                 }
             }

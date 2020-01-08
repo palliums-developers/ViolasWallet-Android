@@ -63,6 +63,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     // Token 列表
     private val mTokenList = ArrayList<IToken>()
 
+    // 加载进度条状态
+    val mLoadingLiveData = MutableLiveData<Boolean>(true)
+
     private var oldBaseToken: String? = null
     private var oldTokenQuote: String? = null
 
@@ -163,6 +166,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             && currentToCoinLiveData.value != null
             && isPositiveChangeLiveData.value != null
         ) {
+            exchangeRateNumberLiveData.postValue(BigDecimal("0"))
+            mLoadingLiveData.postValue(true)
             allDisplayOrdersLiveData.postValue(listOf())
             allOrdersLiveData.postValue(listOf())
 
@@ -234,7 +239,6 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                         ExchangeToken(
                             address,
                             it.name,
-                            BigDecimal(it.price.toString()),
                             localEnable,
                             remoteEnable
                         )
@@ -259,16 +263,19 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     private fun initExchangeRateLiveData() {
-        exchangeRateLiveData.addSource(exchangeRate) {
-            handleExchangeRateLiveData()
-        }
-        exchangeRateLiveData.addSource(isPositiveChangeLiveData) {
-            handleExchangeRateLiveData()
-        }
-        exchangeRateLiveData.addSource(currentFormCoinLiveData) {
-            handleExchangeRateLiveData()
-        }
-        exchangeRateLiveData.addSource(currentToCoinLiveData) {
+//        exchangeRateLiveData.addSource(exchangeRate) {
+//            handleExchangeRateLiveData()
+//        }
+//        exchangeRateLiveData.addSource(isPositiveChangeLiveData) {
+//            handleExchangeRateLiveData()
+//        }
+//        exchangeRateLiveData.addSource(currentFormCoinLiveData) {
+//            handleExchangeRateLiveData()
+//        }
+//        exchangeRateLiveData.addSource(currentToCoinLiveData) {
+//            handleExchangeRateLiveData()
+//        }
+        exchangeRateLiveData.addSource(exchangeRateNumberLiveData) {
             handleExchangeRateLiveData()
         }
     }
@@ -295,31 +302,24 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
 
     private fun handleExchangeRateLiveData() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
-            if (currentFormCoinLiveData.value != null && currentToCoinLiveData.value != null && isPositiveChangeLiveData.value != null) {
+            if (currentFormCoinLiveData.value != null
+                && currentToCoinLiveData.value != null
+                && isPositiveChangeLiveData.value != null
+                && exchangeRateNumberLiveData.value != null
+                && exchangeRateNumberLiveData.value != BigDecimal("0")
+            ) {
                 val fromUnit: String
-                val fromPrice: BigDecimal
                 val toUnit: String
-                val toPrice: BigDecimal
                 if (isPositiveChangeLiveData.value == false) {
                     fromUnit = currentFormCoinLiveData.value!!.tokenUnit()
-                    fromPrice = currentFormCoinLiveData.value!!.tokenPrice()
                     toUnit = currentToCoinLiveData.value!!.tokenUnit()
-                    toPrice = currentToCoinLiveData.value!!.tokenPrice()
                 } else {
                     fromUnit = currentToCoinLiveData.value!!.tokenUnit()
-                    fromPrice = currentToCoinLiveData.value!!.tokenPrice()
                     toUnit = currentFormCoinLiveData.value!!.tokenUnit()
-                    toPrice = currentFormCoinLiveData.value!!.tokenPrice()
                 }
-                val divide = toPrice.divide(
-                    fromPrice,
-                    20,
-                    RoundingMode.DOWN
-                )
-                exchangeRateNumberLiveData.postValue(divide)
                 exchangeRateLiveData.postValue(
-                    "1 $toUnit ≈ ${divide.setScale(
-                        4,
+                    "1 $toUnit ≈ ${exchangeRateNumberLiveData.value!!.setScale(
+                        2,
                         RoundingMode.DOWN
                     ).stripTrailingZeros().toPlainString()} $fromUnit"
                 )
@@ -328,6 +328,40 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 exchangeRateLiveData.postValue("... ≈ ...")
             }
         }
+//        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
+//            if (currentFormCoinLiveData.value != null && currentToCoinLiveData.value != null && isPositiveChangeLiveData.value != null) {
+//                val fromUnit: String
+//                val fromPrice: BigDecimal
+//                val toUnit: String
+//                val toPrice: BigDecimal
+//                if (isPositiveChangeLiveData.value == false) {
+//                    fromUnit = currentFormCoinLiveData.value!!.tokenUnit()
+//                    fromPrice = currentFormCoinLiveData.value!!.tokenPrice()
+//                    toUnit = currentToCoinLiveData.value!!.tokenUnit()
+//                    toPrice = currentToCoinLiveData.value!!.tokenPrice()
+//                } else {
+//                    fromUnit = currentToCoinLiveData.value!!.tokenUnit()
+//                    fromPrice = currentToCoinLiveData.value!!.tokenPrice()
+//                    toUnit = currentFormCoinLiveData.value!!.tokenUnit()
+//                    toPrice = currentFormCoinLiveData.value!!.tokenPrice()
+//                }
+//                val divide = toPrice.divide(
+//                    fromPrice,
+//                    20,
+//                    RoundingMode.DOWN
+//                )
+//                exchangeRateNumberLiveData.postValue(divide)
+//                exchangeRateLiveData.postValue(
+//                    "1 $toUnit ≈ ${divide.setScale(
+//                        4,
+//                        RoundingMode.DOWN
+//                    ).stripTrailingZeros().toPlainString()} $fromUnit"
+//                )
+//            } else {
+//                exchangeRateNumberLiveData.postValue(BigDecimal("0"))
+//                exchangeRateLiveData.postValue("... ≈ ...")
+//            }
+//        }
     }
 
     private fun handleMarkSocket() {
@@ -359,8 +393,10 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     override fun onMarkCall(
         myOrder: List<IOrder>,
         buyOrder: List<IOrder>,
-        sellOrder: List<IOrder>
+        sellOrder: List<IOrder>,
+        rate: BigDecimal
     ) {
+        mLoadingLiveData.postValue(false)
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             meOrdersLiveData.postValue(
                 myOrder.map(setOrderPrice())
@@ -373,6 +409,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 allOrderList.map(setOrderPrice())
                     .sortedByDescending { it.version() }
             )
+            exchangeRateNumberLiveData.postValue(rate)
         }
     }
 
@@ -478,7 +515,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 if (currentExchangeCoinLiveData.value != null && get != null && get.isNotEmpty()) {
                     BigDecimal(get)
                         .multiply(exchangeRateNumberLiveData.value)
-                        .setScale(4, RoundingMode.DOWN)
+                        .setScale(2, RoundingMode.DOWN)
                 } else {
                     BigDecimal("0")
                 }
@@ -493,8 +530,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     BigDecimal(get)
                         .divide(
                             exchangeRateNumberLiveData.value!!,
-                            10,
-                            RoundingMode.DOWN
+                            2,
+                            RoundingMode.UP
                         )
                 } else {
                     BigDecimal("0")
@@ -528,8 +565,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             throw ExchangeCoinEqualException()
         }
 
-        if (fromCoinAmount > BigDecimal("999999999999.9999")
-            || toCoinAmount > BigDecimal("999999999999.9999")
+        if (fromCoinAmount > BigDecimal("999999999999.99")
+            || toCoinAmount > BigDecimal("999999999999.99")
         ) {
             throw ExchangeAmountLargeException()
         }

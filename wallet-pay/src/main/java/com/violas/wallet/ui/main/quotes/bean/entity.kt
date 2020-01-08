@@ -19,7 +19,6 @@ interface IToken {
 class ExchangeToken(
     private val address: String,
     private val name: String,
-    private val price: BigDecimal,
     private var localEnable: Boolean = false,
     private var remoteEnable: Boolean = false
 ) : IToken {
@@ -27,7 +26,7 @@ class ExchangeToken(
 
     override fun tokenName() = name
 
-    override fun tokenPrice() = price
+    override fun tokenPrice() = BigDecimal("0")
 
     override fun isNetEnable() = remoteEnable
 
@@ -53,8 +52,10 @@ interface IOrder {
     fun userAddress(): String
     fun tokenGetSymbol(): String
     fun tokenGet(): String
+    fun tokenGetPrice(): BigDecimal
     fun tokenGiveSymbol(): String
     fun tokenGive(): String
+    fun tokenGivePrice(): BigDecimal
     fun type(): IOrderType
     fun state(): IOrderStatus
     fun amount(): String
@@ -71,8 +72,10 @@ class ExchangeOrder(
     private val updateVersion: Long,
     private val tokenGetSymbol: String,
     private val tokenGet: String,
+    private val tokenGetPrice: BigDecimal,
     private val tokenGiveSymbol: String,
     private val tokenGive: String,
+    private val tokenGivePrice: BigDecimal,
     private var type: IOrderType,
     private var state: IOrderStatus,
     private var amount: String = "0",
@@ -93,8 +96,10 @@ class ExchangeOrder(
                         any.getString("update_version").toLong(),
                         any.getString("tokenGetSymbol"),
                         any.getString("tokenGet").replace("0x", ""),
+                        BigDecimal(any.getDouble("tokenGetPrice").toString()),
                         any.getString("tokenGiveSymbol"),
                         any.getString("tokenGive").replace("0x", ""),
+                        BigDecimal(any.getDouble("tokenGivePrice").toString()),
                         type,
                         when (any.getString("state")) {
                             "OPEN" -> IOrderStatus.OPEN
@@ -149,6 +154,14 @@ class ExchangeOrder(
 
     override fun tokenGet(): String {
         return tokenGet.replace("0x", "")
+    }
+
+    override fun tokenGetPrice(): BigDecimal {
+        return tokenGetPrice
+    }
+
+    override fun tokenGivePrice(): BigDecimal {
+        return tokenGivePrice
     }
 
     override fun setPrice(price: String) {
