@@ -61,6 +61,7 @@ class QuotesFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initAnim()
         initViewEvent()
+        initLoadingView()
         handleIsEnableObserve()
         handleExchangeCoinObserve()
         handlePositiveChangeObserve()
@@ -70,6 +71,16 @@ class QuotesFragment : BaseFragment() {
         handleIvEntrustOthersAnimObserve()
         handleCurrentExchangeCoinObserve()
         handleEditExchangeCoinObserve()
+    }
+
+    private fun initLoadingView() {
+        mQuotesViewModel.mLoadingLiveData.observe(viewLifecycleOwner, Observer {
+            viewLoading.visibility = if (it) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+        })
     }
 
     private fun handleIvEntrustOthersAnimObserve() {
@@ -121,8 +132,8 @@ class QuotesFragment : BaseFragment() {
         btnExchange.setOnClickListener {
             handleBtnExchangeClick()
         }
-        editFromCoin.filters = arrayOf(AmountInputFilter(12, 4))
-        editToCoin.filters = arrayOf(AmountInputFilter(12, 4))
+        editFromCoin.filters = arrayOf(AmountInputFilter(12, 2))
+        editToCoin.filters = arrayOf(AmountInputFilter(12, 2))
     }
 
     private fun handleBtnExchangeClick() {

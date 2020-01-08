@@ -50,8 +50,10 @@ data class DexOrderDTO(
     val user: String,
     var state: String,
     val tokenGive: String,
+    val tokenGivePrice: Double,
     val amountGive: String,
     val tokenGet: String,
+    val tokenGetPrice: Double,
     val amountGet: String,
     val amountFilled: String,
     val version: String,
@@ -67,8 +69,10 @@ data class DexOrderDTO(
         source.readString()!!,
         source.readString()!!,
         source.readString()!!,
+        source.readDouble(),
         source.readString()!!,
         source.readString()!!,
+        source.readDouble(),
         source.readString()!!,
         source.readString()!!,
         source.readString()!!,
@@ -103,8 +107,7 @@ data class DexOrderDTO(
 data class DexTokenDTO(
     @SerializedName(value = "addr")
     val address: String,
-    val name: String,
-    val price: Double
+    val name: String
 )
 
 data class DexOrderTradeDTO(

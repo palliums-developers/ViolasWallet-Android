@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.dexOrder
 
 import androidx.lifecycle.EnhancedMutableLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.ContextProvider
 import com.palliums.net.LoadState
@@ -147,9 +146,9 @@ class DexOrdersViewModel(
             DexOrderVO(
                 dto = it,
                 giveTokenName = tokenGive.name,
-                giveTokenPrice = tokenGive.price,
+                giveTokenPrice = it.tokenGivePrice,
                 getTokenName = tokenGet.name,
-                getTokenPrice = tokenGet.price
+                getTokenPrice = it.tokenGetPrice
             )
         }
 
@@ -161,43 +160,37 @@ class DexOrdersViewModel(
         list.add(
             DexTokenDTO(
                 address = "0x0000000000000000000000000000000000000000000000000000000000000000",
-                name = "VToken",
-                price = 100.toDouble()
+                name = "VToken"
             )
         )
         list.add(
             DexTokenDTO(
                 address = "0x05599ef248e215849cc599f563b4883fc8aff31f1e43dff1e3ebe4de1370e054",
-                name = "Xcoin",
-                price = 100.toDouble()
+                name = "Xcoin"
             )
         )
         list.add(
             DexTokenDTO(
                 address = "0xb9e3266ca9f28103ca7c9bb9e5eb6d0d8c1a9d774a11b384798a3c4784d5411e",
-                name = "ABCUSD",
-                price = 1.toDouble()
+                name = "ABCUSD"
             )
         )
         list.add(
             DexTokenDTO(
                 address = "0xf013ea4acf944fa6edafe01fae10713d13928ca5dff9e809dbcce8b12c2c45f1",
-                name = "XYZUSD",
-                price = 1.toDouble()
+                name = "XYZUSD"
             )
         )
         list.add(
             DexTokenDTO(
                 address = "0xe90e4f077bef23b32a6694a18a1fa34244532400869e4e8c87ce66d0b6c004bd",
-                name = "DEFHKD",
-                price = 0.1277
+                name = "DEFHKD"
             )
         )
         list.add(
             DexTokenDTO(
                 address = "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
-                name = "DEFCNY",
-                price = 10.toDouble()
+                name = "DEFCNY"
             )
         )
 
@@ -218,6 +211,8 @@ class DexOrdersViewModel(
                 state = getState(1),
                 tokenGive = giveTokenAddress
                     ?: "0x05599ef248e215849cc599f563b4883fc8aff31f1e43dff1e3ebe4de1370e054",
+                tokenGivePrice = 1.0,
+                tokenGetPrice = 1.0,
                 amountGive = "1",
                 tokenGet = getTokenAddress
                     ?: "0xb9e3266ca9f28103ca7c9bb9e5eb6d0d8c1a9d774a11b384798a3c4784d5411e",
@@ -234,6 +229,8 @@ class DexOrdersViewModel(
                 id = "0xed652301d8cf1826ebf329520870fc3b6a39fdfc843500ddf9b9e21412323aad_1",
                 user = accountAddress,
                 state = getState(2),
+                tokenGivePrice = 1.0,
+                tokenGetPrice = 1.0,
                 tokenGive = giveTokenAddress
                     ?: "0xb9e3266ca9f28103ca7c9bb9e5eb6d0d8c1a9d774a11b384798a3c4784d5411e",
                 amountGive = "1",
@@ -252,6 +249,8 @@ class DexOrdersViewModel(
                 id = "0xed652301d8cf1826ebf329520870fc3b6a39fdfc843500ddf9b9e21412323aad_2",
                 user = accountAddress,
                 state = getState(3),
+                tokenGivePrice = 1.0,
+                tokenGetPrice = 1.0,
                 tokenGive = giveTokenAddress
                     ?: "0xf013ea4acf944fa6edafe01fae10713d13928ca5dff9e809dbcce8b12c2c45f1",
                 amountGive = "1",
