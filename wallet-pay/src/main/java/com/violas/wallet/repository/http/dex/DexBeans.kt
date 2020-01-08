@@ -1,9 +1,9 @@
 package com.violas.wallet.repository.http.dex
 
-import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by elephant on 2019-12-05 18:29.
@@ -45,16 +45,21 @@ open class Response<T> : ApiResponse {
 
 class ListResponse<T> : Response<List<T>>()
 
+@Parcelize
 data class DexOrderDTO(
     val id: String,
     val user: String,
     var state: String,
-    val tokenGive: String,
-    val tokenGivePrice: Double,
     val amountGive: String,
-    val tokenGet: String,
-    val tokenGetPrice: Double,
+    @SerializedName(value = "tokenGive")
+    val tokenGiveAddress: String,
+    val tokenGiveSymbol: String,
+    val tokenGivePrice: Double,
     val amountGet: String,
+    @SerializedName(value = "tokenGet")
+    val tokenGetAddress: String,
+    val tokenGetSymbol: String,
+    val tokenGetPrice: Double,
     val amountFilled: String,
     val version: String,
     @SerializedName(value = "update_version")
@@ -64,43 +69,25 @@ data class DexOrderDTO(
     var updateDate: Long
 ) : Parcelable {
 
-    constructor(source: Parcel) : this(
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readDouble(),
-        source.readString()!!,
-        source.readString()!!,
-        source.readDouble(),
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readLong(),
-        source.readLong()
-    )
-
-    override fun describeContents() = 0
-
-    override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeString(id)
-        writeString(user)
-        writeString(state)
-        writeString(tokenGive)
-        writeString(amountGive)
-        writeString(tokenGet)
-        writeString(amountGet)
-        writeString(amountFilled)
-        writeString(version)
-        writeString(updateVersion)
-        writeLong(date)
-        writeLong(updateDate)
+    fun isFinished(): Boolean {
+        return state == "FILLED" || state == "CANCELED"
     }
 
-    companion object CREATOR : Parcelable.Creator<DexOrderDTO> {
-        override fun createFromParcel(source: Parcel): DexOrderDTO = DexOrderDTO(source)
-        override fun newArray(size: Int): Array<DexOrderDTO?> = arrayOfNulls(size)
+    fun isUnfinished(): Boolean {
+        return state == "OPEN" || state == "CANCELLING"
+    }
+
+    fun isCanceled(): Boolean {
+        return state == "CANCELED"
+    }
+
+    fun isOpen(): Boolean {
+        return state == "OPEN"
+    }
+
+    fun updateStateToRevoking(time: Long = System.currentTimeMillis()) {
+        this.state = "CANCELLING"
+        this.updateDate = time
     }
 }
 
@@ -113,6 +100,7 @@ data class DexTokenDTO(
 data class DexOrderTradeDTO(
     val version: String,
     val amount: String,
+    val price: Double,
     val date: Long
 )
 

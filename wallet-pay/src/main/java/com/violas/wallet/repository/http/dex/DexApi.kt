@@ -20,8 +20,8 @@ interface DexApi {
      * @param pageSize 分页大小
      * @param lastVersion 最后一个item的区块高度，初始值可以为空
      * @param orderState 订单状态: 0=OPEN, 1=FILLED, 2=CANCELED, 3=FILLED and CANCELED
-     * @param giveTokenAddress 提供的代币地址（若拿A换B，则A为此参数）
-     * @param getTokenAddress 换取的代币地址（若拿A换B，则B为此参数）
+     * @param tokenGiveAddress 提供的代币地址（若拿A换B，则A为此参数）
+     * @param tokenGetAddress 换取的代币地址（若拿A换B，则B为此参数）
      */
     @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_DEX}"])
     @GET("/v1/orders")
@@ -30,8 +30,8 @@ interface DexApi {
         @Query("limit") pageSize: Int,
         @Query("version") lastVersion: String? = null,
         @Query("state") orderState: String? = null,
-        @Query("give") giveTokenAddress: String? = null,
-        @Query("get") getTokenAddress: String? = null
+        @Query("give") tokenGiveAddress: String? = null,
+        @Query("get") tokenGetAddress: String? = null
     ): ListResponse<DexOrderDTO>
 
     @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_DEX}"])

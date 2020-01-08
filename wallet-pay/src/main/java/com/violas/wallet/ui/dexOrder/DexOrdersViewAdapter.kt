@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
 import com.violas.wallet.R
+import com.violas.wallet.repository.http.dex.DexOrderDTO
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -17,16 +18,16 @@ import java.util.*
  */
 class DexOrdersViewAdapter(
     retryCallback: () -> Unit,
-    private val onClickItem: ((DexOrderVO) -> Unit)? = null,
-    private val onClickRevokeOrder: ((DexOrderVO, Int) -> Unit)? = null
-) : PagingViewAdapter<DexOrderVO>(retryCallback, DexOrdersDiffCallback()) {
+    private val onClickItem: ((DexOrderDTO) -> Unit)? = null,
+    private val onClickRevokeOrder: ((DexOrderDTO, Int) -> Unit)? = null
+) : PagingViewAdapter<DexOrderDTO>(retryCallback, DexOrdersDiffCallback()) {
 
     private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
 
     override fun onCreateViewHolderSupport(
         parent: ViewGroup,
         viewType: Int
-    ): BaseViewHolder<DexOrderVO> {
+    ): BaseViewHolder<DexOrderDTO> {
         return DexOrderViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.item_dex_order,
@@ -40,17 +41,17 @@ class DexOrdersViewAdapter(
     }
 }
 
-class DexOrdersDiffCallback : DiffUtil.ItemCallback<DexOrderVO>() {
+class DexOrdersDiffCallback : DiffUtil.ItemCallback<DexOrderDTO>() {
     override fun areItemsTheSame(
-        oldItem: DexOrderVO,
-        newItem: DexOrderVO
+        oldItem: DexOrderDTO,
+        newItem: DexOrderDTO
     ): Boolean {
-        return oldItem.dto.id == newItem.dto.id
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(
-        oldItem: DexOrderVO,
-        newItem: DexOrderVO
+        oldItem: DexOrderDTO,
+        newItem: DexOrderDTO
     ): Boolean {
         return oldItem == newItem
     }

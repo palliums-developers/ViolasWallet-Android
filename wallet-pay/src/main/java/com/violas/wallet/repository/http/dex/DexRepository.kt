@@ -19,8 +19,8 @@ class DexRepository(private val dexApi: DexApi) {
         pageSize: Int,
         lastVersion: String? = null,
         orderState: String? = null,
-        giveTokenAddress: String? = null,
-        getTokenAddress: String? = null
+        tokenGiveAddress: String? = null,
+        tokenGetAddress: String? = null
     ): ListResponse<DexOrderDTO> {
 
         return checkResponse {
@@ -29,8 +29,8 @@ class DexRepository(private val dexApi: DexApi) {
                 pageSize,
                 lastVersion,
                 orderState,
-                giveTokenAddress,
-                getTokenAddress
+                tokenGiveAddress,
+                tokenGetAddress
             )
         }
     }

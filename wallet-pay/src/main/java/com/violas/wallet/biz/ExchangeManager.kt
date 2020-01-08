@@ -3,8 +3,8 @@ package com.violas.wallet.biz
 import android.content.Context
 import com.palliums.content.ContextProvider
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexRepository
-import com.violas.wallet.ui.dexOrder.DexOrderVO
 import com.violas.wallet.ui.main.quotes.bean.IToken
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -26,7 +26,7 @@ class ExchangeManager {
     @Throws(Exception::class)
     suspend fun revokeOrder(
         privateKey: ByteArray,
-        dexOrder: DexOrderVO,
+        dexOrder: DexOrderDTO,
         dexService: DexRepository
     ): Boolean {
         // 1.获取撤销兑换token数据的签名字符
@@ -38,11 +38,11 @@ class ExchangeManager {
         val optionExchangePayload = TransactionPayload.optionUndoExchangePayload(
             ContextProvider.getContext(),
             receiveAddress,
-            if (dexOrder.dto.tokenGive.startsWith("0x"))
-                dexOrder.dto.tokenGive.replace("0x", "")
+            if (dexOrder.tokenGiveAddress.startsWith("0x"))
+                dexOrder.tokenGiveAddress.replace("0x", "")
             else
-                dexOrder.dto.tokenGive,
-            dexOrder.dto.version.toLong()
+                dexOrder.tokenGiveAddress,
+            dexOrder.version.toLong()
         )
 
         val rawTransaction = RawTransaction.optionTransaction(
@@ -59,7 +59,7 @@ class ExchangeManager {
         val signedtxn = signedTransaction.toByteArray().toHex()
 
         // 2.通知交易中心撤销订单，交易中心此时只会标记需要撤销订单的状态为CANCELLING并停止兑换，失败会抛异常
-        dexService.revokeOrder(dexOrder.dto.version, signedtxn)
+        dexService.revokeOrder(dexOrder.version, signedtxn)
 
         // 3.撤销兑换token数据上链，只有上链后，交易中心扫区块扫到解析撤销订单才会更改订单状态为CANCELED
         val channel = Channel<Boolean>()
