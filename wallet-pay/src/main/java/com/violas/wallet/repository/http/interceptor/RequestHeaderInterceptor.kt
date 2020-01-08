@@ -13,20 +13,23 @@ import okhttp3.Response
  * <p>
  * desc: 请求头拦截器
  */
-class RequestHeaderInterceptor : Interceptor {
+class RequestHeaderInterceptor(private val closeConnection: Boolean = true) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
         val newRequest = originalRequest.newBuilder()
-            .header("Connection", "close")
             .header("User-Agent", getHttpUserAgent())
             .header("bundleId", BuildConfig.APPLICATION_ID)
             .header("versionName", BuildConfig.VERSION_NAME)
             .header("versionCode", BuildConfig.VERSION_CODE.toString())
             .header("location", MultiLanguageUtility.getInstance().localTag)
             .header("timestamp", System.currentTimeMillis().toString())
-            .header("deviceId", getUniquePseudoID())
+            .header("deviceId", getUniquePseudoID()).apply {
+                if (closeConnection) {
+                    header("Connection", "close")
+                }
+            }
             .build()
 
         return chain.proceed(newRequest)

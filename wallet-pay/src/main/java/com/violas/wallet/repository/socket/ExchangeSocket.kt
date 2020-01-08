@@ -1,12 +1,16 @@
 package com.violas.wallet.repository.socket
 
 import android.util.Log
+import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.BaseBizUrl
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.ui.main.quotes.bean.ExchangeOrder
 import com.violas.wallet.ui.main.quotes.bean.IOrder
 import com.violas.wallet.ui.main.quotes.bean.IOrderType
 import io.socket.client.IO
 import io.socket.client.Socket
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 import java.math.BigDecimal
 import java.util.concurrent.Executors
@@ -26,8 +30,23 @@ interface Subscriber {
 
 object ExchangeSocket {
     private val mSubscriber = mutableListOf<Subscriber>()
-    private val mSocket = IO.socket(BaseBizUrl.getDexSocketBaseUrl())
     private val mExecutor = Executors.newSingleThreadExecutor()
+    private val mSocket by lazy {
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(RequestHeaderInterceptor(false))
+            .addInterceptor(HttpLoggingInterceptor().also {
+                it.level = if (BuildConfig.DEBUG)
+                    HttpLoggingInterceptor.Level.BODY
+                else
+                    HttpLoggingInterceptor.Level.NONE
+            })
+            .build()
+
+        IO.setDefaultOkHttpWebSocketFactory(okHttpClient)
+        IO.setDefaultOkHttpCallFactory(okHttpClient)
+
+        IO.socket(BaseBizUrl.getDexSocketBaseUrl())
+    }
 
     init {
         /*
