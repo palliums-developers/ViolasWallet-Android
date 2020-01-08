@@ -46,22 +46,35 @@ android {
         }
     }
 
+    bundle {
+        // 是否分割多语言包
+        language {
+            enableSplit = false
+        }
+        // 是否分割资源
+        density {
+            enableSplit = true
+        }
+        // 是否分割二进制 so 包资源
+        abi {
+            enableSplit = true
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             zipAlignEnabled true
             pseudoLocalesEnabled true
             proguardFiles '../proguard-android-optimize-wallet.txt', 'proguard-rules.pro'
             multiDexKeepProguard file('../multidexKeep.pro')
             signingConfig signingConfigs.release
-            buildConfigField "String", "TESTNET", '"testnet"'
             buildConfigField "boolean", "SHUFFLE_MNEMONIC", "true"
         }
         debug {
             ext.alwaysUpdateBuildId = false
             multiDexKeepProguard file('../multidexKeep.pro')
             signingConfig signingConfigs.debug
-            buildConfigField "String", "TESTNET", '"testnet"'
             buildConfigField "boolean", "SHUFFLE_MNEMONIC", "true"
         }
     }

@@ -33,7 +33,7 @@ android {
     signingConfigs {
         release {
             Properties properties = new Properties()
-            File configFile = project.rootProject.file('sign.properties')
+            File configFile = project.rootProject.file('paySign.properties')
             if (!configFile.exists()) {
                 configFile = project.rootProject.file('testSign.properties')
             }
@@ -50,9 +50,24 @@ android {
         }
     }
 
+    bundle {
+        // 是否分割多语言包
+        language {
+            enableSplit = false
+        }
+        // 是否分割资源
+        density {
+            enableSplit = true
+        }
+        // 是否分割二进制 so 包资源
+        abi {
+            enableSplit = true
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             zipAlignEnabled true
             pseudoLocalesEnabled true
             proguardFiles '../proguard-android-optimize-wallet.txt', 'proguard-rules.pro'
