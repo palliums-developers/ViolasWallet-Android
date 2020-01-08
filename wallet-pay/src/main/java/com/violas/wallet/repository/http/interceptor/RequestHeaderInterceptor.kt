@@ -1,10 +1,8 @@
 package com.violas.wallet.repository.http.interceptor
 
-import android.os.Build
-import com.palliums.utils.getString
+import com.palliums.utils.getHttpUserAgent
 import com.palliums.utils.getUniquePseudoID
 import com.violas.wallet.BuildConfig
-import com.violas.wallet.R
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -22,13 +20,13 @@ class RequestHeaderInterceptor : Interceptor {
 
         val newRequest = originalRequest.newBuilder()
             .header("Connection", "close")
-            .header("user-agent", getString(R.string.http_user_agent))
-            .header("app-ver-name", BuildConfig.VERSION_NAME)
-            .header("app-ver-code", BuildConfig.VERSION_CODE.toString())
-            .header("sys-ver-code", Build.VERSION.SDK_INT.toString())
+            .header("User-Agent", getHttpUserAgent())
+            .header("bundleId", BuildConfig.APPLICATION_ID)
+            .header("versionName", BuildConfig.VERSION_NAME)
+            .header("versionCode", BuildConfig.VERSION_CODE.toString())
             .header("location", MultiLanguageUtility.getInstance().localTag)
             .header("timestamp", System.currentTimeMillis().toString())
-            .header("device-id", getUniquePseudoID())
+            .header("deviceId", getUniquePseudoID())
             .build()
 
         return chain.proceed(newRequest)

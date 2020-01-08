@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import androidx.annotation.RequiresApi
-import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.activity_base_web.*
 
@@ -118,13 +117,6 @@ abstract class BaseWebActivity : BaseAppActivity() {
 
     private fun initWebView() {
         val settings = vWeb.settings
-
-        settings.userAgentString = getString(
-            R.string.web_user_agent,
-            settings.userAgentString,
-            BuildConfig.VERSION_NAME,
-            BuildConfig.VERSION_CODE
-        )
 
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true

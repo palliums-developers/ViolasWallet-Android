@@ -147,7 +147,6 @@
 
     <string name="web_load_failed_tips">Cannot Open the Page</string>
     <string name="web_load_failed_retry">Touch the screen to reload</string>
-    <string name="web_user_agent">%1$s/Violas Wallet Android Client %2$s.%3$d</string>
 
     <string name="service_agreement_title">Service Agreement</string>
     <string name="service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service.html</string>
@@ -161,8 +160,6 @@
     <string name="feedback_hint_input_content">Input Feedback</string>
     <string name="feedback_hint_input_contact">Input your contact info</string>
     <string name="feedback_content_count">%1$d/%2$d</string>
-
-    <string name="http_user_agent">ViolasWallet Android Client</string>
 
     <string name="title_market">Market</string>
     <string name="hint_transfer_number">Transfer Amount</string>

@@ -150,7 +150,6 @@
 
     <string name="web_load_failed_tips">无法打开页面</string>
     <string name="web_load_failed_retry">轻触屏幕重新加载</string>
-    <string name="web_user_agent">%1$s/SSO Wallet Android Client %2$s.%3$d</string>
 
     <string name="service_agreement_title">服务协议</string>
     <string name="service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service.html</string>
@@ -164,8 +163,6 @@
     <string name="feedback_hint_input_content">请输入内容</string>
     <string name="feedback_hint_input_contact">请输入您的联系方式</string>
     <string name="feedback_content_count">%1$d/%2$d</string>
-
-    <string name="http_user_agent">SSO Wallet Android Client</string>
 
     <string name="title_market">市场</string>
     <string name="hint_transfer_number">转出数量</string>
