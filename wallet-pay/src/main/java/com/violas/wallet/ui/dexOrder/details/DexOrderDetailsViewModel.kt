@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.dexOrder.details
 
 import androidx.lifecycle.EnhancedMutableLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.ContextProvider
 import com.palliums.net.LoadState
@@ -13,8 +12,8 @@ import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexOrderTradeDTO
-import com.violas.wallet.ui.dexOrder.DexOrderVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,7 +56,7 @@ class DexOrderDetailsViewModel(
     fun revokeOrder(
         walletAccount: AccountDO,
         password: ByteArray,
-        dexOrder: DexOrderVO,
+        dexOrder: DexOrderDTO,
         onCheckPassword: (Boolean) -> Unit,
         onRevokeSuccess: () -> Unit
     ): Boolean {

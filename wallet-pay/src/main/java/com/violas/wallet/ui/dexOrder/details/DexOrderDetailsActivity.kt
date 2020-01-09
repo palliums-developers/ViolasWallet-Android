@@ -16,8 +16,8 @@ import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexOrderTradeDTO
-import com.violas.wallet.ui.dexOrder.DexOrderVO
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,7 +35,7 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
     companion object {
         private const val EXTRA_KEY_DEX_ORDER = "EXTRA_KEY_DEX_ORDER"
 
-        fun start(context: Context, dexOrder: DexOrderVO) {
+        fun start(context: Context, dexOrder: DexOrderDTO) {
             val intent = Intent(context, DexOrderDetailsActivity::class.java)
                 .apply {
                     putExtra(EXTRA_KEY_DEX_ORDER, dexOrder)
@@ -44,14 +44,14 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
         }
     }
 
-    private var dexOrder: DexOrderVO? = null
+    private var dexOrder: DexOrderDTO? = null
     private lateinit var currentAccount: AccountDO
 
     private val mViewModel by viewModels<DexOrderDetailsViewModel> {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return DexOrderDetailsViewModel(
-                    dexOrder!!.dto.version
+                    dexOrder!!.version
                 ) as T
             }
         }
@@ -85,8 +85,8 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
 
                             EventBus.getDefault().post(
                                 RevokeDexOrderEvent(
-                                    dexOrder.dto.id,
-                                    dexOrder.dto.updateDate
+                                    dexOrder.id,
+                                    dexOrder.updateDate
                                 )
                             )
                         }

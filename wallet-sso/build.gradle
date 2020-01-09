@@ -14,7 +14,7 @@ android {
         targetSdkVersion versions.targetSdk
         versionCode rootProject.gitCommitCount
         versionName names.ssoName
-        archivesBaseName = "Violas-SSO-${versionName}"
+        archivesBaseName = "ViolasSSO-${versionName}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {

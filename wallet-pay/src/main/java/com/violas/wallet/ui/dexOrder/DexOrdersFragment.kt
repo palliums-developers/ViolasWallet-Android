@@ -12,6 +12,7 @@ import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.ui.dexOrder.details.DexOrderDetails2Activity
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,7 @@ import org.greenrobot.eventbus.ThreadMode
  * desc: 交易中心订单
  */
 
-class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
+class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
 
     companion object {
         private const val EXTRA_KEY_ORDER_STATE = "EXTRA_KEY_ORDER_STATE"
@@ -58,9 +59,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
         DexOrdersViewModel(
             accountAddress = currentAccount.address,
             //accountAddress = "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
-            orderState = orderState,
-            giveTokenAddress = null,
-            getTokenAddress = null
+            orderState = orderState
         )
     }
 
@@ -97,11 +96,11 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
             })
     }
 
-    override fun getViewModel(): PagingViewModel<DexOrderVO> {
+    override fun getViewModel(): PagingViewModel<DexOrderDTO> {
         return mViewModel
     }
 
-    override fun getViewAdapter(): PagingViewAdapter<DexOrderVO> {
+    override fun getViewAdapter(): PagingViewAdapter<DexOrderDTO> {
         return mViewAdapter
     }
 
@@ -201,7 +200,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderVO>() {
 
         mViewAdapter.currentList?.let {
             it.forEachIndexed { index, dexOrder ->
-                if (dexOrder.dto.id == event.orderId) {
+                if (dexOrder.id == event.orderId) {
                     dexOrder.updateStateToRevoking(event.updateDate)
                     mViewAdapter.notifyItemChanged(index)
                     return

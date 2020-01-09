@@ -6,8 +6,8 @@ import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
 import com.violas.wallet.R
+import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexOrderTradeDTO
-import com.violas.wallet.ui.dexOrder.DexOrderVO
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -20,9 +20,9 @@ import java.util.*
 class DexOrderDetailsViewAdapter(
     retryCallback: () -> Unit,
     private val addHeader: Boolean = false,
-    private val dexOrder: DexOrderVO,
+    private val dexOrder: DexOrderDTO,
     private val onOpenBrowserView: ((url: String?) -> Unit)? = null,
-    private val onClickRevokeOrder: ((dexOrder: DexOrderVO, position: Int) -> Unit)? = null
+    private val onClickRevokeOrder: ((dexOrder: DexOrderDTO, position: Int) -> Unit)? = null
 ) : PagingViewAdapter<DexOrderTradeDTO>(retryCallback, DexOrdersDiffCallback()) {
 
     private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
@@ -52,7 +52,6 @@ class DexOrderDetailsViewAdapter(
                         parent,
                         false
                     ),
-                    dexOrder,
                     simpleDateFormat,
                     onOpenBrowserView
                 )

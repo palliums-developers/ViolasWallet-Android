@@ -4,7 +4,6 @@ import android.view.View
 import com.palliums.base.BaseViewHolder
 import com.palliums.utils.formatDate
 import com.violas.wallet.repository.http.dex.DexOrderTradeDTO
-import com.violas.wallet.ui.dexOrder.DexOrderVO
 import com.violas.wallet.utils.convertViolasTokenPrice
 import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.item_dex_order_trade.view.*
@@ -18,7 +17,6 @@ import java.text.SimpleDateFormat
  */
 class DexOrderTradeViewHolder(
     view: View,
-    private val dexOrder: DexOrderVO,
     private val simpleDateFormat: SimpleDateFormat,
     private val onClickBrowserQuery: ((url: String?) -> Unit)? = null
 ) : BaseViewHolder<DexOrderTradeDTO>(view) {
@@ -30,7 +28,7 @@ class DexOrderTradeViewHolder(
     override fun onViewBind(itemPosition: Int, itemData: DexOrderTradeDTO?) {
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
-            itemView.tvPrice.text = convertViolasTokenPrice(dexOrder.getTokenPrice.toString())
+            itemView.tvPrice.text = convertViolasTokenPrice(it.price.toString())
             itemView.tvTotalAmount.text = convertViolasTokenUnit(it.amount)
         }
     }

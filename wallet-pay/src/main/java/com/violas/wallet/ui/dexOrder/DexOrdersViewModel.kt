@@ -13,8 +13,6 @@ import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.dex.DexOrderDTO
-import com.violas.wallet.repository.http.dex.DexTokenCache
-import com.violas.wallet.repository.http.dex.DexTokenDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,9 +27,9 @@ class DexOrdersViewModel(
     private val accountAddress: String,
     @DexOrderState
     private val orderState: String?,
-    private val giveTokenAddress: String?,
-    private val getTokenAddress: String?
-) : PagingViewModel<DexOrderVO>() {
+    private val tokenGiveAddress: String? = null,
+    private val tokenGetAddress: String? = null
+) : PagingViewModel<DexOrderDTO>() {
 
     private val lock by lazy { Any() }
     val loadState by lazy { EnhancedMutableLiveData<LoadState>() }
@@ -47,7 +45,7 @@ class DexOrdersViewModel(
     fun revokeOrder(
         walletAccount: AccountDO,
         password: ByteArray,
-        dexOrder: DexOrderVO,
+        dexOrder: DexOrderDTO,
         onCheckPassword: (Boolean) -> Unit,
         onRevokeSuccess: () -> Unit
     ): Boolean {
@@ -102,35 +100,20 @@ class DexOrdersViewModel(
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<DexOrderVO>, Any?) -> Unit
+        onSuccess: (List<DexOrderDTO>, Any?) -> Unit
     ) {
 
         /*delay(1000)
         val fakeOrdersData = fakeOrdersData()
-        val fakeTokensData = fakeTokensData()
-
-        val fakeOrders = fakeOrdersData.map {
-            val tokenGive = fakeTokensData[it.tokenGive] ?: error("give token not found")
-            val tokenGet = fakeTokensData[it.tokenGet] ?: error("get token not found")
-
-            DexOrderVO(
-                dexOrderDTO = it,
-                giveTokenName = tokenGive.name,
-                giveTokenPrice = tokenGive.price,
-                getTokenName = tokenGet.name,
-                getTokenPrice = tokenGet.price
-            )
-        }
-
-        onSuccess.invoke(fakeOrders, fakeOrders.last().dexOrderDTO.version)*/
+        onSuccess.invoke(fakeOrdersData, fakeOrdersData.last().version)*/
 
         val response = dexService.getMyOrders(
             accountAddress = accountAddress,
             pageSize = pageSize,
             lastVersion = if (pageKey == null) null else pageKey as String,
             orderState = orderState,
-            giveTokenAddress = giveTokenAddress,
-            getTokenAddress = getTokenAddress
+            tokenGiveAddress = tokenGiveAddress,
+            tokenGetAddress = tokenGetAddress
         )
 
         if (response.data.isNullOrEmpty()) {
@@ -138,68 +121,7 @@ class DexOrdersViewModel(
             return
         }
 
-        val dexTokens = DexTokenCache.getDexTokens(dexService)
-        val dexOrders = response.data!!.map {
-            val tokenGive = dexTokens[it.tokenGive] ?: error("give token not found")
-            val tokenGet = dexTokens[it.tokenGet] ?: error("get token not found")
-
-            DexOrderVO(
-                dto = it,
-                giveTokenName = tokenGive.name,
-                giveTokenPrice = it.tokenGivePrice,
-                getTokenName = tokenGet.name,
-                getTokenPrice = it.tokenGetPrice
-            )
-        }
-
-        onSuccess.invoke(dexOrders, dexOrders.last().dto.version)
-    }
-
-    private fun fakeTokensData(): Map<String, DexTokenDTO> {
-        val list = mutableListOf<DexTokenDTO>()
-        list.add(
-            DexTokenDTO(
-                address = "0x0000000000000000000000000000000000000000000000000000000000000000",
-                name = "VToken"
-            )
-        )
-        list.add(
-            DexTokenDTO(
-                address = "0x05599ef248e215849cc599f563b4883fc8aff31f1e43dff1e3ebe4de1370e054",
-                name = "Xcoin"
-            )
-        )
-        list.add(
-            DexTokenDTO(
-                address = "0xb9e3266ca9f28103ca7c9bb9e5eb6d0d8c1a9d774a11b384798a3c4784d5411e",
-                name = "ABCUSD"
-            )
-        )
-        list.add(
-            DexTokenDTO(
-                address = "0xf013ea4acf944fa6edafe01fae10713d13928ca5dff9e809dbcce8b12c2c45f1",
-                name = "XYZUSD"
-            )
-        )
-        list.add(
-            DexTokenDTO(
-                address = "0xe90e4f077bef23b32a6694a18a1fa34244532400869e4e8c87ce66d0b6c004bd",
-                name = "DEFHKD"
-            )
-        )
-        list.add(
-            DexTokenDTO(
-                address = "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
-                name = "DEFCNY"
-            )
-        )
-
-        val map = mutableMapOf<String, DexTokenDTO>()
-        list.forEach {
-            map[it.address] = it
-        }
-
-        return map
+        onSuccess.invoke(response.data!!, response.data!!.last().version)
     }
 
     private fun fakeOrdersData(): List<DexOrderDTO> {
@@ -209,14 +131,16 @@ class DexOrdersViewModel(
                 id = "0xed652301d8cf1826ebf329520870fc3b6a39fdfc843500ddf9b9e21412323aad_0",
                 user = accountAddress,
                 state = getState(1),
-                tokenGive = giveTokenAddress
-                    ?: "0x05599ef248e215849cc599f563b4883fc8aff31f1e43dff1e3ebe4de1370e054",
-                tokenGivePrice = 1.0,
-                tokenGetPrice = 1.0,
                 amountGive = "1",
-                tokenGet = getTokenAddress
-                    ?: "0xb9e3266ca9f28103ca7c9bb9e5eb6d0d8c1a9d774a11b384798a3c4784d5411e",
+                tokenGiveAddress = tokenGiveAddress
+                    ?: "0x05599ef248e215849cc599f563b4883fc8aff31f1e43dff1e3ebe4de1370e054",
+                tokenGiveSymbol = "ABCUSD",
+                tokenGivePrice = 1.0,
                 amountGet = "100",
+                tokenGetAddress = tokenGetAddress
+                    ?: "0xb9e3266ca9f28103ca7c9bb9e5eb6d0d8c1a9d774a11b384798a3c4784d5411e",
+                tokenGetSymbol = "HIJUSD",
+                tokenGetPrice = 1.0,
                 amountFilled = "1",
                 version = "1",
                 updateVersion = "1",
@@ -229,14 +153,16 @@ class DexOrdersViewModel(
                 id = "0xed652301d8cf1826ebf329520870fc3b6a39fdfc843500ddf9b9e21412323aad_1",
                 user = accountAddress,
                 state = getState(2),
-                tokenGivePrice = 1.0,
-                tokenGetPrice = 1.0,
-                tokenGive = giveTokenAddress
-                    ?: "0xb9e3266ca9f28103ca7c9bb9e5eb6d0d8c1a9d774a11b384798a3c4784d5411e",
                 amountGive = "1",
-                tokenGet = getTokenAddress
-                    ?: "0xe90e4f077bef23b32a6694a18a1fa34244532400869e4e8c87ce66d0b6c004bd",
+                tokenGiveAddress = tokenGiveAddress
+                    ?: "0xb9e3266ca9f28103ca7c9bb9e5eb6d0d8c1a9d774a11b384798a3c4784d5411e",
+                tokenGiveSymbol = "HIJUSD",
+                tokenGivePrice = 1.0,
                 amountGet = "1277",
+                tokenGetAddress = tokenGetAddress
+                    ?: "0xe90e4f077bef23b32a6694a18a1fa34244532400869e4e8c87ce66d0b6c004bd",
+                tokenGetSymbol = "BCDCAD",
+                tokenGetPrice = 1.0,
                 amountFilled = "1",
                 version = "2",
                 updateVersion = "2",
@@ -249,14 +175,16 @@ class DexOrdersViewModel(
                 id = "0xed652301d8cf1826ebf329520870fc3b6a39fdfc843500ddf9b9e21412323aad_2",
                 user = accountAddress,
                 state = getState(3),
-                tokenGivePrice = 1.0,
-                tokenGetPrice = 1.0,
-                tokenGive = giveTokenAddress
-                    ?: "0xf013ea4acf944fa6edafe01fae10713d13928ca5dff9e809dbcce8b12c2c45f1",
                 amountGive = "1",
-                tokenGet = getTokenAddress
+                tokenGiveAddress = tokenGiveAddress
+                    ?: "0xf013ea4acf944fa6edafe01fae10713d13928ca5dff9e809dbcce8b12c2c45f1",
+                tokenGiveSymbol = "CIYHKD",
+                tokenGivePrice = 1.0,
+                amountGet = "1",
+                tokenGetAddress = tokenGetAddress
                     ?: "0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095",
-                amountGet = "0.1",
+                tokenGetSymbol = "XYASGD",
+                tokenGetPrice = 1.0,
                 amountFilled = "1",
                 version = "3",
                 updateVersion = "3",

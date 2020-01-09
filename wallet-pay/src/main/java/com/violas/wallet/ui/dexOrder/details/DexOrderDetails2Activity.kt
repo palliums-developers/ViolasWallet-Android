@@ -21,8 +21,8 @@ import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexOrderTradeDTO
-import com.violas.wallet.ui.dexOrder.DexOrderVO
 import com.violas.wallet.utils.convertViolasTokenPrice
 import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.widget.dialog.PasswordInputDialog
@@ -44,7 +44,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
     companion object {
         private const val EXTRA_KEY_DEX_ORDER = "EXTRA_KEY_DEX_ORDER"
 
-        fun start(context: Context, dexOrder: DexOrderVO) {
+        fun start(context: Context, dexOrder: DexOrderDTO) {
             val intent = Intent(context, DexOrderDetails2Activity::class.java)
                 .apply {
                     putExtra(EXTRA_KEY_DEX_ORDER, dexOrder)
@@ -53,14 +53,14 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
         }
     }
 
-    private var dexOrder: DexOrderVO? = null
+    private var dexOrder: DexOrderDTO? = null
     private lateinit var currentAccount: AccountDO
 
     private val mViewModel by viewModels<DexOrderDetailsViewModel> {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return DexOrderDetailsViewModel(
-                    dexOrder!!.dto.version
+                    dexOrder!!.version
                 ) as T
             }
         }
@@ -175,18 +175,18 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
         initHeaderView(dexOrder!!)
     }
 
-    private fun initHeaderView(it: DexOrderVO) {
+    private fun initHeaderView(it: DexOrderDTO) {
         // 若拿A换B，A在前B在后
-        tvGiveTokenName.text = "${it.giveTokenName} /"
-        tvGetTokenName.text = it.getTokenName
+        tvGiveTokenName.text = "${it.tokenGiveSymbol} /"
+        tvGetTokenName.text = it.tokenGetSymbol
 
         // 若拿A换B，价格、数量、已成交数量均为B的数据
-        tvPrice.text = convertViolasTokenPrice(it.getTokenPrice.toString())
-        tvTotalAmount.text = convertViolasTokenUnit(it.dto.amountGet)
-        tvTradeAmount.text = convertViolasTokenUnit(it.dto.amountFilled)
+        tvPrice.text = convertViolasTokenPrice(it.tokenGetPrice.toString())
+        tvTotalAmount.text = convertViolasTokenUnit(it.amountGet)
+        tvTradeAmount.text = convertViolasTokenUnit(it.amountFilled)
 
         tvFee.text = "0 ${CoinTypes.Violas.coinUnit()}"
-        tvTime.text = formatDate(it.dto.updateDate)
+        tvTime.text = formatDate(it.updateDate)
 
         when {
             it.isFinished() -> {
@@ -237,8 +237,8 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
 
                                     EventBus.getDefault().post(
                                         RevokeDexOrderEvent(
-                                            dexOrder.dto.id,
-                                            dexOrder.dto.updateDate
+                                            dexOrder.id,
+                                            dexOrder.updateDate
                                         )
                                     )
                                 }
