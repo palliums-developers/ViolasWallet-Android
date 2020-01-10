@@ -106,10 +106,14 @@ android {
     productFlavors {
         demo{
             dimension "local"
+            applicationIdSuffix ".beta"
+            versionNameSuffix "-demo"
+            resValue "string", "app_name", "ViolasPay Demo"
         }
 
         googlePlay{
             dimension "local"
+            resValue "string", "app_name", "ViolasPay"
         }
 
         tNet {

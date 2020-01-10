@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">ViolasSSO</string>
-
     <string name="language_follow_system">Default to System Settings</string>
     <string name="language_follow_system_more">Default to System Settings</string>
     <string name="language_en">English</string>

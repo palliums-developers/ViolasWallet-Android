@@ -1,5 +1,4 @@
 <resources >
-    <string name="app_name">ViolasPay</string>
 
     <string name="language_follow_system">Default to System Settings</string>
     <string name="language_follow_system_more">Default to System Settings</string>
