@@ -34,7 +34,7 @@ class GovernorAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (_, _,name, _, _) = contactLists[position]
+        val (name, _) = contactLists[position]
         holder.itemView.tvName.text = name
     }
 
