@@ -28,10 +28,7 @@ class AboutUsActivity : BaseAppActivity(), View.OnLongClickListener {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.about_us_title)
-        tvAppNameVersion.text = getString(
-            R.string.setting_app_name_version,
-            BuildConfig.VERSION_NAME
-        )
+        tvAppNameVersion.text = "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}"
 
         mivWebsite.setOnClickListener(this)
         mivEmail.setOnClickListener(this)

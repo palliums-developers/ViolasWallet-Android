@@ -31,10 +31,7 @@ class SettingActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.setting_title)
-        tvAppNameVersion.text = getString(
-            R.string.setting_app_name_version,
-            BuildConfig.VERSION_NAME
-        )
+        tvAppNameVersion.text = "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}"
 
         mivMultiLanguage.setOnClickListener(this)
         mivServiceAgreement.setOnClickListener(this)
