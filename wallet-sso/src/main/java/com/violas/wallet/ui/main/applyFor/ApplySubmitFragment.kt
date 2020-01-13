@@ -180,7 +180,9 @@ class ApplySubmitFragment : BaseFragment() {
                                 it.finish()
                             }
                         }
-                        applyForIssuing.errorCode == 2003 -> showToast(getString(R.string.hint_net_work_error))
+                        applyForIssuing.errorCode == 2003 -> applyForIssuing.errorMsg?.let {
+                            showToast(it)
+                        }
                         else -> showToast(getString(R.string.hint_emila_phone_verification_error))
                     }
                 } else {
