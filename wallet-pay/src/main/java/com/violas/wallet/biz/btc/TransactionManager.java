@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -137,9 +139,10 @@ public class TransactionManager {
      * @param charge        金额是否足够
      * @param toAddress     目标地址
      * @param changeAddress 找零地址
-     * @return
+     * @param changeAddress 找零地址
+     * @param omniScript    omni 脚本
      */
-    public Observable<Transaction> obtainTransaction(byte[] privateKey, byte[] publicKey,boolean charge, String toAddress, String changeAddress) {
+    public Observable<Transaction> obtainTransaction(byte[] privateKey, byte[] publicKey, boolean charge, String toAddress, String changeAddress, Script omniScript) {
         mToAddress = toAddress;
 
         List<Pair<String, Long>> toAddressList = new ArrayList<>();
@@ -148,7 +151,11 @@ public class TransactionManager {
         return Observable.create(new ObservableOnSubscribe<Transaction>() {
             @Override
             public void subscribe(ObservableEmitter<Transaction> emitter) throws Exception {
-                BigDecimal fee = mFeeManager.calculateFee(mUTXOListManager.getUTXOList(), mToAddressCount, mProgress);
+                int outputCount = mToAddressCount;
+                if (omniScript != null) {
+                    outputCount = mToAddressCount + 1;
+                }
+                BigDecimal fee = mFeeManager.calculateFee(mUTXOListManager.getUTXOList(), outputCount, mProgress);
                 BigDecimal subtract = mUTXOListManager.getUseAmount().subtract(fee).subtract(new BigDecimal(mAmount + ""));
 
                 toAddressList.add(new Pair<>(changeAddress, subtract.multiply(new BigDecimal("100000000")).longValue()));
@@ -159,10 +166,22 @@ public class TransactionManager {
                     emitter.onError(new Exception(ContextProvider.INSTANCE.getContext().getResources().getString(R.string.hint_insufficient_or_trading_fees_are_confirmed)));
                     emitter.onComplete();
                 } else {
-                    emitter.onNext(TransactionManager.generateTransaction(privateKey,publicKey,mUTXOListManager, toAddressList));
+                    emitter.onNext(TransactionManager.generateTransaction(privateKey, publicKey, mUTXOListManager, toAddressList, omniScript));
                 }
             }
         });
+    }
+
+    /**
+     * 构建交易
+     *
+     * @param charge        金额是否足够
+     * @param toAddress     目标地址
+     * @param changeAddress 找零地址
+     * @return
+     */
+    public Observable<Transaction> obtainTransaction(byte[] privateKey, byte[] publicKey, boolean charge, String toAddress, String changeAddress) {
+        return obtainTransaction(privateKey, publicKey, charge, toAddress, changeAddress, null);
     }
 
     public static Transaction sign(byte[] privateKey, byte[] publicKey, BTCTransaction btcTransaction, UTXOListManager utxoListManager) {
@@ -196,19 +215,23 @@ public class TransactionManager {
         }
     }
 
-    public static Transaction generateTransaction(byte[] privateKey, byte[] publicKey,UTXOListManager utxoListManager, List<Pair<String, Long>> toAddressList) throws BitcoinException {
+    public static Transaction generateTransaction(byte[] privateKey, byte[] publicKey, UTXOListManager utxoListManager, List<Pair<String, Long>> toAddressList, Script omniScript) throws BitcoinException {
         List<UTXO> utxoList = utxoListManager.getUTXOList();
         BTCTransaction.Input[] inputs = generateTransactionInput(utxoList);
-        BTCTransaction.Output[] outputs = generateTransactionOutput(toAddressList);
+        BTCTransaction.Output[] outputs = generateTransactionOutput(toAddressList, omniScript);
 
         BTCTransaction btcTransaction = new BTCTransaction(inputs, outputs, 0);
-        Transaction sign = TransactionManager.sign(privateKey,publicKey,btcTransaction, utxoListManager);
+        Transaction sign = TransactionManager.sign(privateKey, publicKey, btcTransaction, utxoListManager);
         Log.e("====", "sign " + HexUtils.toHex(sign.getSignBytes()));
         return sign;
     }
 
-    public static BTCTransaction.Output[] generateTransactionOutput(List<Pair<String, Long>> toAddress) throws BitcoinException {
-        List<BTCTransaction.Output> outputs = new ArrayList<>(toAddress.size());
+    public static BTCTransaction.Output[] generateTransactionOutput(List<Pair<String, Long>> toAddress, @Nullable Script omniScript) throws BitcoinException {
+        int outputCount = toAddress.size();
+        if (omniScript != null) {
+            outputCount += 1;
+        }
+        List<BTCTransaction.Output> outputs = new ArrayList<>(outputCount);
 
         for (Pair<String, Long> address : toAddress) {
             BTCTransaction.Output input = new BTCTransaction.Output(
@@ -216,6 +239,12 @@ public class TransactionManager {
                     OutputScriptFactory.buildOutput(address.first)
             );
             outputs.add(input);
+        }
+        if (omniScript != null) {
+            outputs.add(new BTCTransaction.Output(
+                    0,
+                    omniScript
+            ));
         }
         return outputs.toArray(new BTCTransaction.Output[0]);
     }
