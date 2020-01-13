@@ -33,12 +33,16 @@ class ViolasOutputScript {
     }
 
     fun cancelExchange(address: ByteArray, sequence: Long = System.currentTimeMillis()): Script {
-        val buf = BitcoinOutputStream()
-        buf.write(Script.OP_RETURN.toInt())
-        buf.writeInt16(OP_VER)
-        buf.write(TYPE_CANCEL)
-        buf.write(address)
-        buf.writeInt64(sequence)
-        return Script(buf.toByteArray())
+        val dataStream = BitcoinOutputStream()
+        dataStream.write("violas".toByteArray())
+        dataStream.writeInt16(OP_VER)
+        dataStream.write(TYPE_CANCEL)
+        dataStream.write(address)
+        dataStream.write(ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(sequence).array())
+
+        val scriptStream = BitcoinOutputStream()
+        scriptStream.write(Script.OP_RETURN.toInt())
+        Script.writeBytes(dataStream.toByteArray(), scriptStream)
+        return Script(scriptStream.toByteArray())
     }
 }
