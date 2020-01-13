@@ -1,7 +1,11 @@
 package com.palliums.utils
 
+import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.os.Build
+import com.palliums.content.ContextProvider
 import java.util.*
+
 
 /**
  * Created by elephant on 2020-01-08 13:38.
@@ -9,6 +13,19 @@ import java.util.*
  * <p>
  * desc:
  */
+
+fun isSystemApp(
+    packageName: String,
+    context: Context = ContextProvider.getContext()
+): Boolean {
+    return try {
+        val packageInfo = context.packageManager.getPackageInfo(packageName, 0)
+        (packageInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 1
+                || (packageInfo.applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 1
+    } catch (ignore: Exception) {
+        false
+    }
+}
 
 fun getHttpUserAgent(): String {
     val userAgent = try {

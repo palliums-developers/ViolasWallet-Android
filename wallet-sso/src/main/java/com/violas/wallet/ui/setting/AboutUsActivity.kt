@@ -3,7 +3,7 @@ package com.violas.wallet.ui.setting
 import android.os.Bundle
 import android.view.View
 import com.palliums.utils.openBrowser
-import com.palliums.utils.sendEmail
+import com.palliums.utils.openEmailClient
 import com.palliums.widget.MenuItemView
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
@@ -61,7 +61,7 @@ class AboutUsActivity : BaseAppActivity(), View.OnLongClickListener {
 
             R.id.mivEmail -> {
                 try {
-                    sendEmail(
+                    openEmailClient(
                         this,
                         mivEmail.endDescText.trim(),
                         "",

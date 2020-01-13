@@ -35,8 +35,10 @@
     <string name="common_refresh_header_update">上次更新 M-d HH:mm</string>
 
     <string name="common_dialog_loading">正在加载…</string>
-    <string name="title_select_mail_app">请选择邮件应用</string>
-    <string name="tips_open_email_failure">无法打开邮件应用</string>
+    <string name="title_select_mail_client">请选择邮件客户端</string>
+    <string name="tips_open_email_client_failure">无法打开邮件客户端</string>
+    <string name="tips_email_client_not_found">没有找到可用的邮件客户端</string>
+    <string name="title_select_browser">请选择浏览器</string>
 
     <string name="hint_please_minimum_password_length">密码长度 8-20 位，必须包含大小写字母和数字。</string>
     <string name="hint_please_maxmum_password_length">@string/hint_please_minimum_password_length</string>

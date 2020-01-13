@@ -3,7 +3,7 @@ package com.violas.wallet.utils
 import android.app.Activity
 import android.os.Build
 import com.palliums.utils.getString
-import com.palliums.utils.sendEmail
+import com.palliums.utils.openEmailClient
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 
@@ -29,7 +29,7 @@ fun feedbackByEmail(activity: Activity) {
     stringBuilder.append("\n")
         .append("Android OS version: ${Build.VERSION.RELEASE}")
 
-    sendEmail(
+    openEmailClient(
         activity,
         FEEDBACK_EMAIL_ADDRESS,
         "${getString(R.string.app_name)} ${getString(R.string.feedback)}",
