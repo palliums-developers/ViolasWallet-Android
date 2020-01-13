@@ -28,9 +28,10 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.appcompat:appcompat:$versions.androidx_appcompat"
 
-    testImplementation "junit:junit:$versions.test_junit"
-    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
+    testImplementation libraries.test_junit
+    androidTestImplementation libraries.androidTest_junit
+    androidTestImplementation libraries.androidTest_espresso
+
+    implementation libraries.androidx_appcompat
 }

@@ -96,14 +96,14 @@ android {
         freeCompilerArgs = ["-Xallow-result-return-type"]
     }
 
-    flavorDimensions "typeNetwork","local"
+    flavorDimensions "typeNetwork", "local"
 
     productFlavors {
-        demo{
+        demo {
             dimension "local"
         }
 
-        googlePlay{
+        googlePlay {
             dimension "local"
         }
 
@@ -139,43 +139,26 @@ dependencies {
     implementation project(':lib-btc-core')
     implementation project(':module-violas')
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    testImplementation "junit:junit:$versions.test_junit"
-    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
+    testImplementation libraries.test_junit
+    androidTestImplementation libraries.androidTest_junit
+    androidTestImplementation libraries.androidTest_espresso
 
-    kapt "androidx.room:room-compiler:$versions.androidx_room"
-    implementation "androidx.room:room-runtime:$versions.androidx_room"
-    implementation "androidx.room:room-ktx:$versions.androidx_room"
+    kapt libraries.androidx_room_compiler
+    implementation libraries.androidx_room_ktx
+    implementation libraries.androidx_room_runtime
 
-    // see https://github.com/googlesamples/easypermissions
-    implementation 'pub.devrel:easypermissions:3.0.0'
+    implementation libraries.easypermissions
+    implementation libraries.autosize
+    implementation libraries.BottomNavigationViewEx
+    implementation libraries.uTakePhoto
+    implementation libraries.glide
+    implementation libraries.glide_okhttp3_integration
+    kapt libraries.glide_compiler
 
-    // EventBus see https://github.com/greenrobot/EventBus
-    implementation 'org.greenrobot:eventbus:3.1.1'
-
-    //头条适配方案 see https://github.com/JessYanCoding/AndroidAutoSize
-    implementation "me.jessyan:autosize:1.1.2"
-
-    // see https://github.com/ittianyu/BottomNavigationViewEx
-    implementation 'com.github.ittianyu:BottomNavigationViewEx:2.0.4'
-
-    debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
-    releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
-
-    // see https://github.com/songlongGithub/uTakePhoto
-    implementation 'com.sl.utakephoto:uTakePhoto:1.0.6'
-
-    //汉字转拼音
-    implementation 'com.github.SilenceDut:jpinyin:v1.0'
-
-    implementation 'com.github.bumptech.glide:glide:4.9.0'
-    implementation 'com.github.bumptech.glide:okhttp3-integration:4.9.0'
-    kapt 'com.github.bumptech.glide:compiler:4.9.0'
-
-    // see https://github.com/google/libphonenumber
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.11.0'
-
-    implementation 'top.zibin:Luban:1.1.8'
+    debugImplementation libraries.sqlscout_server
+    releaseImplementation libraries.sqlscout_server_noop
+    implementation libraries.eventbus
+    implementation libraries.jpinyin
+    implementation libraries.libphonenumber
+    implementation libraries.Luban
 }

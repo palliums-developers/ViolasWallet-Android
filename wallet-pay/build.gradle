@@ -101,14 +101,14 @@ android {
         freeCompilerArgs = ["-Xallow-result-return-type"]
     }
 
-    flavorDimensions "typeNetwork","local"
+    flavorDimensions "typeNetwork", "local"
 
     productFlavors {
-        demo{
+        demo {
             dimension "local"
         }
 
-        googlePlay{
+        googlePlay {
             dimension "local"
         }
 
@@ -144,27 +144,20 @@ dependencies {
     implementation project(':lib-btc-core')
     implementation project(':module-violas')
 
-    testImplementation "junit:junit:$versions.test_junit"
-    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
+    testImplementation libraries.test_junit
+    androidTestImplementation libraries.androidTest_junit
+    androidTestImplementation libraries.androidTest_espresso
 
-    kapt "androidx.room:room-compiler:$versions.androidx_room"
-    implementation "androidx.room:room-runtime:$versions.androidx_room"
-    implementation "androidx.room:room-ktx:$versions.androidx_room"
+    kapt libraries.androidx_room_compiler
+    implementation libraries.androidx_room_ktx
+    implementation libraries.androidx_room_runtime
 
-    // see https://github.com/googlesamples/easypermissions
-    implementation 'pub.devrel:easypermissions:3.0.0'
+    implementation libraries.easypermissions
+    implementation libraries.autosize
+    implementation libraries.BottomNavigationViewEx
 
-    // EventBus see https://github.com/greenrobot/EventBus
-    implementation 'org.greenrobot:eventbus:3.1.1'
-
-    //头条适配方案 see https://github.com/JessYanCoding/AndroidAutoSize
-    implementation "me.jessyan:autosize:1.1.2"
-
-    // see https://github.com/ittianyu/BottomNavigationViewEx
-    implementation 'com.github.ittianyu:BottomNavigationViewEx:2.0.4'
-
-    implementation ('io.socket:socket.io-client:1.0.0') {
+    implementation libraries.eventbus
+    implementation (libraries.socketio_client) {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
     }

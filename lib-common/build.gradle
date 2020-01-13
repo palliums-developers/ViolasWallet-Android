@@ -45,49 +45,38 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    testImplementation "junit:junit:$versions.test_junit"
-    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
+    testImplementation libraries.test_junit
+    androidTestImplementation libraries.androidTest_junit
+    androidTestImplementation libraries.androidTest_espresso
 
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin_stdlib"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlin_coroutines"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlin_coroutines"
+    api libraries.kotlin_stdlib_jdk8
+    api libraries.kotlinx_coroutines_core
+    api libraries.kotlinx_coroutines_android
 
-    api "androidx.core:core-ktx:$versions.androidx_core"
-    api "androidx.appcompat:appcompat:$versions.androidx_appcompat"
-    api "androidx.recyclerview:recyclerview:$versions.androidx_recyclerview"
-    api "androidx.constraintlayout:constraintlayout:$versions.androidx_constraintlayout"
-    api "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle"
-    api "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.androidx_lifecycle"
-    api "androidx.activity:activity-ktx:$versions.androidx_activityKtx"
-    api "com.google.android.material:material:1.0.0"
+    api libraries.androidx_activity_ktx
+    api libraries.androidx_appcompat
+    api libraries.androidx_core_ktx
+    api libraries.androidx_constraintlayout
+    api libraries.androidx_lifecycle_extensions
+    api libraries.androidx_lifecycle_viewmodel_ktx
+    api libraries.androidx_paging_runtime
+    api libraries.androidx_paging_runtime_ktx
+    testImplementation libraries.androidx_paging_common
+    api libraries.androidx_recyclerview
 
-    // jetPack paging see https://developer.android.com/jetpack/docs/getting-started?hl=zh-CN
-    api "androidx.paging:paging-runtime:$versions.androidx_paging"
-    api "androidx.paging:paging-runtime-ktx:$versions.androidx_paging"
-    testImplementation "androidx.paging:paging-common:$versions.androidx_paging"
+    implementation libraries.okhttp3
+    implementation libraries.retrofit2_converter_gson
 
-    // see https://github.com/square/
-    implementation "com.squareup.okhttp3:okhttp:$versions.okhttp3"
-    implementation "com.squareup.retrofit2:converter-gson:$versions.retrofit2"
+    api libraries.material
+    api (libraries.StatusBarCompat) {
+        exclude group: 'androidx.appcompat', module: 'appcompat'
+        exclude group: 'com.google.android.material', module: 'material'
+    }
+    api libraries.fragmentationx
+    api libraries.SmartRefreshLayout
+    api libraries.SmartRefreshHeader
+    api libraries.xpopup
 
-    // see https://github.com/niorgai/StatusBarCompat
-    api('com.github.niorgai:StatusBarCompat:2.3.3', {
-        exclude group: 'androidx.appcompat:appcompat'
-        exclude group: 'com.google.android.material:material'
-    })
-
-    // see https://github.com/YoKeyword/Fragmentation
-    api 'me.yokeyword:fragmentationx:1.0.1'
-
-    // see https://github.com/scwang90/SmartRefreshLayout
-    api "com.scwang.smartrefresh:SmartRefreshLayout:1.1.0"
-    api "com.scwang.smartrefresh:SmartRefreshHeader:1.1.0"
-
-    // see https://github.com/li-xiaojun/XPopup
-    api 'com.lxj:xpopup:1.8.8-x'
-
-    // see https://bugly.qq.com/docs/user-guide/instruction-manual-android/?v=20180709165613#_2
-    // api 'com.tencent.bugly:crashreport:3.1.0'
-    api 'com.tencent.bugly:crashreport_upgrade:1.4.2'
+    //api libraries.crashreport
+    api libraries.crashreport_upgrade
 }

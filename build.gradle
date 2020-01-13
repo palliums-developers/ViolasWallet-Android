@@ -1,55 +1,22 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 // 正式发包，需要在根目录下创建 sign.properties 文件，指定签名文件的位置和密码，参数参考 testSign.properties
+apply from: "config.gradle"
+
 buildscript {
-    ext.versions = [
-            'compileSdk'               : 29,
-            'minSdk'                   : 21,
-            'targetSdk'                : 29,
-            'buildTools'               : '29.0.2',
-
-            'gradle_android'           : '3.5.3',
-            'gradle_kotlin'            : '1.3.61',
-            'gradle_protobuf'          : '0.8.10',
-
-            'test_junit'               : '4.12',
-            'androidTest_junit'        : '1.1.1',
-            'androidTest_runner'       : '1.2.0',
-            'androidTest_espresso'     : '3.2.0',
-
-            'kotlin_stdlib'            : '1.3.50',
-            'kotlin_coroutines'        : '1.3.0',
-            'androidx_core'            : '1.1.0',
-            'androidx_appcompat'       : '1.1.0',
-            'androidx_constraintlayout': '1.1.3',
-            'androidx_room'            : '2.2.3',
-            'androidx_recyclerview'    : '1.1.0',
-            'androidx_paging'          : '2.1.0',
-            'androidx_lifecycle'       : '2.2.0-rc02',
-            'androidx_activityKtx'     : '1.1.0-rc02',
-            'retrofit2'                : '2.6.2',
-            'rxjava2'                  : '2.2.13',
-            'okhttp3'                  : '4.2.1',
-    ]
-
-    ext.names = [
-            'payApplicationId': 'com.violas.wallet',
-            'payName'         : '0.1.7',
-            'ssoApplicationId': 'com.violas.wallet.sso',
-            'ssoName'         : '0.1.7'
-    ]
 
     repositories {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
     }
-    dependencies {
-        classpath "com.android.tools.build:gradle:$versions.gradle_android"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.gradle_kotlin"
 
-        classpath "com.google.protobuf:protobuf-gradle-plugin:$versions.gradle_protobuf"
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61'
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
         classpath 'com.tencent.mm:AndResGuard-gradle-plugin:1.2.17'
     }
 }
@@ -74,4 +41,127 @@ ext {
     // query git for the commit count to automate versioning.
     gitCommitCount = 100 +
             Integer.parseInt('git rev-list --count HEAD master'.execute([], project.rootDir).text.trim())
+}
+
+subprojects {
+
+    project.configurations.all {
+        resolutionStrategy.eachDependency(new Action<DependencyResolveDetails>() {
+            @Override
+            void execute(DependencyResolveDetails details) {
+                String group = details.requested.group
+                String name = details.requested.name
+
+                if (group == 'androidx.activity') {
+                    details.useVersion(versions.androidx_activity)
+                }
+                else if (group == 'androidx.annotation') {
+                    details.useVersion(versions.androidx_annotation)
+                }
+                else if (group == 'androidx.appcompat') {
+                    details.useVersion(versions.androidx_appcompat)
+                }
+                else if (group == 'androidx.arch.core') {
+                    details.useVersion(versions.androidx_arch)
+                }
+                else if (group == 'androidx.asynclayoutinflater') {
+                    details.useVersion(versions.androidx_asynclayoutinflater)
+                }
+                else if (group == 'androidx.cardview') {
+                    details.useVersion(versions.androidx_cardview)
+                }
+                else if (group == 'androidx.collection') {
+                    details.useVersion(versions.androidx_collection)
+                }
+                else if (group == 'androidx.constraintlayout') {
+                    details.useVersion(versions.androidx_constraintlayout)
+                }
+                else if (group == 'androidx.coordinatorlayout') {
+                    details.useVersion(versions.androidx_coordinatorlayout)
+                }
+                else if (group == 'androidx.core') {
+                    details.useVersion(versions.androidx_core)
+                }
+                else if (group == 'androidx.cursoradapter') {
+                    details.useVersion(versions.androidx_cursoradapter)
+                }
+                else if (group == 'androidx.customview') {
+                    details.useVersion(versions.androidx_customview)
+                }
+                else if (group == 'androidx.databinding') {
+                    details.useVersion(versions.androidx_databinding)
+                }
+                else if (group == 'androidx.documentfile') {
+                    details.useVersion(versions.androidx_documentfile)
+                }
+                else if (group == 'androidx.drawerlayout') {
+                    details.useVersion(versions.androidx_drawerlayout)
+                }
+                else if (group == 'androidx.fragment') {
+                    details.useVersion(versions.androidx_fragment)
+                }
+                else if (group == 'androidx.interpolator') {
+                    details.useVersion(versions.androidx_interpolator)
+                }
+                else if (group == 'androidx.legacy') {
+                    details.useVersion(versions.androidx_legacy)
+                }
+                else if (group == 'androidx.lifecycle') {
+                    if (name == "lifecycle-viewmodel-savedstate") {
+                        details.useVersion(versions.androidx_lifecycle_viewmodel_savedstate)
+                    } else {
+                        details.useVersion(versions.androidx_lifecycle)
+                    }
+                }
+                else if (group == 'androidx.loader') {
+                    details.useVersion(versions.androidx_loader)
+                }
+                else if (group == 'androidx.localbroadcastmanager') {
+                    details.useVersion(versions.androidx_localbroadcastmanager)
+                }
+                else if (group == 'androidx.paging') {
+                    details.useVersion(versions.androidx_paging)
+                }
+                else if (group == 'androidx.print') {
+                    details.useVersion(versions.androidx_print)
+                }
+                else if (group == 'androidx.recyclerview') {
+                    details.useVersion(versions.androidx_recyclerview)
+                }
+                else if (group == 'androidx.room') {
+                    details.useVersion(versions.androidx_room)
+                }
+                else if (group == 'androidx.savedstate') {
+                    details.useVersion(versions.androidx_savedstate)
+                }
+                else if (group == 'androidx.slidingpanelayout') {
+                    details.useVersion(versions.androidx_slidingpanelayout)
+                }
+                else if (group == 'androidx.sqlite') {
+                    details.useVersion(versions.androidx_sqlite)
+                }
+                else if (group == 'androidx.swiperefreshlayout') {
+                    details.useVersion(versions.androidx_swiperefreshlayout)
+                }
+                else if (group == 'androidx.transition') {
+                    details.useVersion(versions.androidx_transition)
+                }
+                else if (group == 'androidx.vectordrawable') {
+                    details.useVersion(versions.androidx_vectordrawable)
+                }
+                else if (group == 'androidx.versionedparcelable') {
+                    details.useVersion(versions.androidx_versionedparcelable)
+                }
+                else if (group == 'androidx.viewpager') {
+                    details.useVersion(versions.androidx_viewpager)
+                }
+                else if (group == 'com.google.code.findbugs') {
+                    details.useVersion(versions.findbugs)
+                }
+                else if (group == 'com.google.code.gson') {
+                    details.useVersion(versions.gson)
+                }
+            }
+        })
+    }
 }

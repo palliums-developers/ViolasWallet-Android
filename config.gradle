@@ -1,0 +1,208 @@
+ext {
+    names = [
+            payApplicationId: 'com.violas.wallet',
+            payVersionName  : '0.1.8',
+            ssoApplicationId: 'com.violas.wallet.sso',
+            ssoVersionName  : '0.1.8',
+    ]
+
+    versions = [
+            compileSdk                             : 29,
+            minSdk                                 : 21,
+            targetSdk                              : 29,
+            buildTools                             : '29.0.2',
+
+            /************************* Test *************************/
+            test_junit                             : '4.12',
+            androidTest_junit                      : '1.1.1',
+            androidTest_runner                     : '1.2.0',
+            androidTest_espresso                   : '3.2.0',
+
+            /************************* Kotlin *************************/
+            kotlin_stdlib                          : '1.3.50',
+            kotlin_coroutines                      : '1.3.0',
+
+            /************************* Android *************************/
+            androidx_activity                      : '1.1.0-rc02',
+            androidx_annotation                    : '1.1.0',
+            androidx_appcompat                     : '1.1.0',
+            androidx_arch                          : '2.1.0',
+            androidx_asynclayoutinflater           : '1.0.0',
+            androidx_cardview                      : '1.0.0',
+            androidx_collection                    : '1.1.0',
+            androidx_constraintlayout              : '1.1.3',
+            androidx_coordinatorlayout             : '1.0.0',
+            androidx_core                          : '1.1.0',
+            androidx_cursoradapter                 : '1.0.0',
+            androidx_customview                    : '1.0.0',
+            androidx_databinding                   : '3.5.3',
+            androidx_documentfile                  : '1.0.0',
+            androidx_drawerlayout                  : '1.0.0',
+            androidx_fragment                      : '1.2.0-rc01',
+            androidx_interpolator                  : '1.0.0',
+            androidx_legacy                        : '1.0.0',
+            androidx_lifecycle                     : '2.2.0-rc02',
+            androidx_lifecycle_viewmodel_savedstate: '1.0.0-rc02',
+            androidx_loader                        : '1.1.0',
+            androidx_localbroadcastmanager         : '1.0.0',
+            androidx_paging                        : '2.1.1',
+            androidx_print                         : '1.0.0',
+            androidx_recyclerview                  : '1.1.0',
+            androidx_room                          : '2.2.3',
+            androidx_savedstate                    : '1.0.0',
+            androidx_slidingpanelayout             : '1.0.0',
+            androidx_sqlite                        : '2.0.1',
+            androidx_swiperefreshlayout            : '1.0.0',
+            androidx_transition                    : '1.1.0',
+            androidx_vectordrawable                : '1.1.0',
+            androidx_versionedparcelable           : '1.1.0',
+            androidx_viewpager                     : '1.0.0',
+
+            /************************* Java *************************/
+            javax_annotation                       : '1.3.2',
+
+            /************************* Google *************************/
+            material                               : '1.0.0',
+            findbugs                               : '3.0.2',
+            gson                                   : '2.8.6',
+            protobuf                               : '3.9.1',
+            protobuf_protoc_gen_java               : '3.0.0',
+            zxing                                  : '3.3.2',
+            libphonenumber                         : '8.11.0',
+
+            /************************* Network *************************/
+            okhttp3                                : '4.2.1',
+            retrofit2                              : '2.6.2',
+            grpc                                   : '1.23.0',
+            socketio                               : '1.0.0',
+
+            /************************* UI *************************/
+            StatusBarCompat                        : '2.3.3',
+            fragmentationx                         : '1.0.1',
+            smartrefresh                           : '1.1.0',
+            xpopup                                 : '1.8.8-x',
+            android_crop                           : '1.0.1@aar',
+            easypermissions                        : '3.0.0',
+            autosize                               : '1.1.2',
+            BottomNavigationViewEx                 : '2.0.4',
+            uTakePhoto                             : '1.0.6',
+            glide                                  : '4.9.0',
+
+            /************************* Data *************************/
+            rxjava2                                : '2.2.13',
+            rxandroid2                             : '2.1.1',
+            cedarsoftware_util                     : '1.8.0',
+            jackson                                : '2.8.5',
+            spongycastle                           : '1.58.0.0',
+            crypto_eddsa                           : '0.3.0',
+            novacrypto_BIP39                       : '2019.01.27',
+            eventbus                               : '3.1.1',
+            Luban                                  : '1.1.8',
+            sqlscout_server                        : '4.1',
+            jpinyin                                : 'v1.0',
+            crashreport                            : '3.1.0',
+            crashreport_upgrade                    : '1.4.2',
+    ]
+
+    libraries = [
+            /************************* Test *************************/
+            test_junit                      : "junit:junit:$versions.test_junit",
+            androidTest_junit               : "androidx.test.ext:junit:$versions.androidTest_junit",
+            androidTest_runner              : "androidx.test:runner:$versions.androidTest_runner",
+            androidTest_espresso            : "androidx.test.espresso:espresso-core:$versions.androidTest_espresso",
+
+            /************************* Kotlin *************************/
+            kotlin_stdlib_jdk8              : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin_stdlib",
+            kotlinx_coroutines_core         : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlin_coroutines",
+            kotlinx_coroutines_android      : "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlin_coroutines",
+
+            /************************* Android *************************/
+            // see https://developer.android.com/jetpack/docs/getting-started?hl=zh-CN
+            androidx_activity_ktx           : "androidx.activity:activity-ktx:$versions.androidx_activity",
+            androidx_appcompat              : "androidx.appcompat:appcompat:$versions.androidx_appcompat",
+            androidx_core_ktx               : "androidx.core:core-ktx:$versions.androidx_core",
+            androidx_constraintlayout       : "androidx.constraintlayout:constraintlayout:$versions.androidx_constraintlayout",
+            androidx_lifecycle_extensions   : "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle",
+            androidx_lifecycle_viewmodel_ktx: "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.androidx_lifecycle",
+            androidx_paging_runtime         : "androidx.paging:paging-runtime:$versions.androidx_paging",
+            androidx_paging_runtime_ktx     : "androidx.paging:paging-runtime-ktx:$versions.androidx_paging",
+            androidx_paging_common          : "androidx.paging:paging-common:$versions.androidx_paging",
+            androidx_recyclerview           : "androidx.recyclerview:recyclerview:$versions.androidx_recyclerview",
+            androidx_room_ktx               : "androidx.room:room-ktx:$versions.androidx_room",
+            androidx_room_runtime           : "androidx.room:room-runtime:$versions.androidx_room",
+            androidx_room_compiler          : "androidx.room:room-compiler:$versions.androidx_room",
+
+            /************************* Java *************************/
+            javax_annotation                : "javax.annotation:javax.annotation-api:$versions.javax_annotation",
+
+            /************************* Google *************************/
+            // see https://github.com/material-components/material-components-android
+            material                        : "com.google.android.material:material:$versions.material",
+            // see https://github.com/protocolbuffers/protobuf
+            protobuf_java                   : "com.google.protobuf:protobuf-java:$versions.protobuf",
+            protobuf_protoc                 : "com.google.protobuf:protoc:$versions.protobuf",
+            protobuf_protoc_gen_java        : "com.google.protobuf:protoc-gen-java:$versions.protobuf_protoc_gen_java",
+            zxing_core                      : "com.google.zxing:core:$versions.zxing",
+            // see https://github.com/google/libphonenumber
+            libphonenumber                  : "com.googlecode.libphonenumber:libphonenumber:$versions.libphonenumber",
+
+            /************************* Network *************************/
+            // see https://github.com/square/okhttp
+            okhttp3                         : "com.squareup.okhttp3:okhttp:$versions.okhttp3",
+            okhttp3_logging_interceptor     : "com.squareup.okhttp3:logging-interceptor:$versions.okhttp3",
+            // see https://github.com/square/retrofit
+            retrofit2                       : "com.squareup.retrofit2:retrofit:$versions.retrofit2",
+            retrofit2_adapter_rxjava2       : "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit2",
+            retrofit2_converter_gson        : "com.squareup.retrofit2:converter-gson:$versions.retrofit2",
+            grpc_okhttp                     : "io.grpc:grpc-okhttp:$versions.grpc",
+            grpc_protobuf                   : "io.grpc:grpc-protobuf:$versions.grpc",
+            grpc_stub                       : "io.grpc:grpc-stub:$versions.grpc",
+            grpc_protoc_gen_grpc_java       : "io.grpc:protoc-gen-grpc-java:$versions.grpc",
+            socketio_client                 : "io.socket:socket.io-client:$versions.socketio",
+
+            /************************* UI *************************/
+            // see https://github.com/niorgai/StatusBarCompat
+            StatusBarCompat                 : "com.github.niorgai:StatusBarCompat:$versions.StatusBarCompat",
+            // see https://github.com/YoKeyword/Fragmentation
+            fragmentationx                  : "me.yokeyword:fragmentationx:$versions.fragmentationx",
+            // see https://github.com/scwang90/SmartRefreshLayout
+            SmartRefreshLayout              : "com.scwang.smartrefresh:SmartRefreshLayout:$versions.smartrefresh",
+            SmartRefreshHeader              : "com.scwang.smartrefresh:SmartRefreshHeader:$versions.smartrefresh",
+            // see https://github.com/li-xiaojun/XPopup
+            xpopup                          : "com.lxj:xpopup:$versions.xpopup",
+            android_crop                    : "com.soundcloud.android:android-crop:$versions.android_crop",
+            // see https://github.com/googlesamples/easypermissions
+            easypermissions                 : "pub.devrel:easypermissions:$versions.easypermissions",
+            // see https://github.com/JessYanCoding/AndroidAutoSize
+            autosize                        : "me.jessyan:autosize:$versions.autosize",
+            // see https://github.com/ittianyu/BottomNavigationViewEx
+            BottomNavigationViewEx          : "com.github.ittianyu:BottomNavigationViewEx:$versions.BottomNavigationViewEx",
+            // see https://github.com/songlongGithub/uTakePhoto
+            uTakePhoto                      : "com.sl.utakephoto:uTakePhoto:$versions.uTakePhoto",
+            glide                           : "com.github.bumptech.glide:glide:$versions.glide",
+            glide_okhttp3_integration       : "com.github.bumptech.glide:okhttp3-integration:$versions.glide",
+            glide_compiler                  : "com.github.bumptech.glide:compiler:$versions.glide",
+
+            /************************* Data *************************/
+            // see https://github.com/ReactiveX/RxJava
+            rxjava2                         : "io.reactivex.rxjava2:rxjava:$versions.rxjava2",
+            // see https://github.com/ReactiveX/RxAndroid
+            rxandroid2                      : "io.reactivex.rxjava2:rxandroid:$versions.rxandroid2",
+            cedarsoftware_util              : "com.cedarsoftware:java-util:$versions.cedarsoftware_util",
+            jackson_databind                : "com.fasterxml.jackson.core:jackson-databind:$versions.jackson",
+            spongycastle_core               : "com.madgag.spongycastle:core:$versions.spongycastle",
+            spongycastle_prov               : "com.madgag.spongycastle:prov:$versions.spongycastle",
+            crypto_eddsa                    : "net.i2p.crypto:eddsa:$versions.crypto_eddsa",
+            novacrypto_BIP39                : "io.github.novacrypto:BIP39:$versions.novacrypto_BIP39",
+            // see https://github.com/greenrobot/EventBus
+            eventbus                        : "org.greenrobot:eventbus:$versions.eventbus",
+            sqlscout_server                 : "com.idescout.sql:sqlscout-server:$versions.sqlscout_server",
+            sqlscout_server_noop            : "com.idescout.sql:sqlscout-server-noop:$versions.sqlscout_server",
+            // 汉字转拼音
+            jpinyin                         : "com.github.SilenceDut:jpinyin:$versions.jpinyin",
+            Luban                           : "top.zibin:Luban:$versions.Luban",
+            // see https://bugly.qq.com/docs/user-guide/instruction-manual-android/?v=20180709165613#_2
+            crashreport                     : "com.tencent.bugly:crashreport:$versions.crashreport",
+            crashreport_upgrade             : "com.tencent.bugly:crashreport_upgrade:$versions.crashreport_upgrade",
+    ]
+}

@@ -28,39 +28,41 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin_stdlib"
-    implementation "androidx.core:core-ktx:$versions.androidx_core"
-    implementation "androidx.appcompat:appcompat:$versions.androidx_appcompat"
 
-    testImplementation "junit:junit:$versions.kotlin_stdlib"
-    androidTestImplementation "androidx.test:runner:$versions.androidTest_runner"
-    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
+    testImplementation libraries.test_junit
+    androidTestImplementation libraries.androidTest_junit
+    androidTestImplementation libraries.androidTest_runner
+    androidTestImplementation libraries.androidTest_espresso
 
-    api 'com.madgag.spongycastle:core:1.58.0.0'
-    api 'com.madgag.spongycastle:prov:1.58.0.0'
+    implementation libraries.kotlin_stdlib_jdk8
 
-    api 'com.google.protobuf:protobuf-java:3.9.1'
-    api 'io.grpc:grpc-okhttp:1.23.0' // CURRENT_GRPC_VERSION
-    api 'io.grpc:grpc-protobuf:1.23.0' // CURRENT_GRPC_VERSION
-    api 'io.grpc:grpc-stub:1.23.0' // CURRENT_GRPC_VERSION
-    api 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation libraries.androidx_appcompat
+    implementation libraries.androidx_core_ktx
 
-    implementation 'net.i2p.crypto:eddsa:0.3.0'
-    //implementation 'io.github.novacrypto:BIP39:2019.01.27'
+    api libraries.spongycastle_core
+    api libraries.spongycastle_prov
+
+    api libraries.protobuf_java
+    api libraries.grpc_okhttp
+    api libraries.grpc_protobuf
+    api libraries.grpc_stub
+    api libraries.javax_annotation
+
+    implementation libraries.crypto_eddsa
+    //implementation libraries.novacrypto_BIP39
 }
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.9.1'
+        artifact = libraries.protobuf_protoc
     }
 
     plugins {
         javalite {
-            artifact = 'com.google.protobuf:protoc-gen-java:3.0.0'
+            artifact = libraries.protobuf_protoc_gen_java
         }
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.23.0' // CURRENT_GRPC_VERSION
+            artifact = libraries.grpc_protoc_gen_grpc_java
         }
     }
 

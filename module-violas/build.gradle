@@ -44,22 +44,17 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    testImplementation libraries.test_junit
+    androidTestImplementation libraries.androidTest_junit
+    androidTestImplementation libraries.androidTest_espresso
+
     implementation project(':lib-common')
 
-    testImplementation "junit:junit:$versions.test_junit"
-    androidTestImplementation "androidx.test.ext:junit:$versions.androidTest_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidTest_espresso"
-
-    // see https://github.com/square/retrofit
-    api "com.squareup.retrofit2:retrofit:$versions.retrofit2"
-    api "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit2"
-    api "com.squareup.retrofit2:converter-gson:$versions.retrofit2"
-
-    // see https://github.com/square/okhttp
-    api "com.squareup.okhttp3:logging-interceptor:$versions.okhttp3"
-    api "com.squareup.okhttp3:okhttp:$versions.okhttp3"
-
-    // see https://github.com/ReactiveX/RxJava
-    api "io.reactivex.rxjava2:rxjava:$versions.rxjava2"
-    api 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    api libraries.okhttp3
+    api libraries.okhttp3_logging_interceptor
+    api libraries.retrofit2
+    api libraries.retrofit2_adapter_rxjava2
+    api libraries.retrofit2_converter_gson
+    api libraries.rxjava2
+    api libraries.rxandroid2
 }
