@@ -128,7 +128,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
         mApplyStatus.addSource(userViewModel.getAllReadyLiveData()) {
             synchronized(mLock) {
                 val netWorkApplyStatus =
-                    mNetWorkApplyStatus.value?.getDataIfNotHandled()
+                    mNetWorkApplyStatus.value?.peekData()
                 if (netWorkApplyStatus != null) {
                     if (it.peekData()) {
                         mApplyStatus.value = netWorkApplyStatus
@@ -156,7 +156,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                 }
 
                 val netWorkApplyStatus =
-                    mNetWorkApplyStatus.value?.getDataIfNotHandled()
+                    mNetWorkApplyStatus.value?.peekData()
                 if (netWorkApplyStatus != null) {
                     mApplyStatus.value = CODE_NETWORK_ERROR
                     return@addSource
