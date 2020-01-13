@@ -127,7 +127,6 @@
     <string name="setting_service_agreement">Service Agreement</string>
     <string name="setting_about_us">About Us</string>
     <string name="setting_help_feedback">Help &amp; Feedback</string>
-    <string name="setting_app_name_version">ViolasPay %1$s</string>
 
     <string name="about_us_title">About Us</string>
     <string name="about_us_website_key">Official Website</string>
@@ -151,7 +150,7 @@
     <string name="service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service.html</string>
     <string name="title_privacy_policy">Privacy Policy</string>
     <string name="url_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy.html</string>
-    <string name="subject_feedback">ViolasPay Feedback</string>
+    <string name="feedback">Feedback</string>
     <string name="help_feedback_title">Help &amp; Feedback</string>
     <string name="help_feedback_menu">Question Feedback</string>
     <string name="help_feedback_url">https://www.baidu.com/</string>

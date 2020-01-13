@@ -17,7 +17,7 @@ android {
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
         versionCode rootProject.gitCommitCount
-        versionName names.payName
+        versionName names.payVersionName
         archivesBaseName = "ViolasPay-${versionName}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -107,7 +107,6 @@ android {
         demo {
             dimension "local"
             applicationIdSuffix ".beta"
-            versionNameSuffix "-demo"
             resValue "string", "app_name", "ViolasPay Demo"
         }
 

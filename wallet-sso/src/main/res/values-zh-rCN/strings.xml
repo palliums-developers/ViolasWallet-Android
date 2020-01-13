@@ -129,7 +129,6 @@
     <string name="setting_service_agreement">服务协议</string>
     <string name="setting_about_us">关于我们</string>
     <string name="setting_help_feedback">帮助与反馈</string>
-    <string name="setting_app_name_version">ViolasSSO %1$s</string>
 
     <string name="about_us_title">关于我们</string>
     <string name="about_us_website_key">官方网站</string>
@@ -153,7 +152,7 @@
     <string name="service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service.html</string>
     <string name="title_privacy_policy">隐私条例</string>
     <string name="url_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy.html</string>
-    <string name="subject_feedback">ViolasSSO 问题反馈</string>
+    <string name="feedback">问题反馈</string>
     <string name="help_feedback_title">帮助与反馈</string>
     <string name="help_feedback_menu">问题反馈</string>
     <string name="help_feedback_url">https://www.baidu.com/</string>
