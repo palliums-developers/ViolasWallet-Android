@@ -32,18 +32,8 @@ data class UserInfoDTO(
 )
 
 data class GovernorDTO(
-    @SerializedName("is_chairman")
-    val isChairman: Boolean,
-    @SerializedName("multisig_address")
-    val multisigAddress: String,
     @SerializedName("name")
     val name: String,
-    @SerializedName("public_key")
-    val publicKey: String,
-    @SerializedName("toxid")
-    val toxid: String,
-    @SerializedName("vstake_address")
-    val vstakeAddress: String,
     @SerializedName("wallet_address")
     val walletAddress: String
 ) : Parcelable {
@@ -55,28 +45,14 @@ data class GovernorDTO(
     }
 
     constructor(source: Parcel) : this(
-        source.readInt() != 0,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!
+        source.readString() ?: "",
+        source.readString() ?: ""
     )
 
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        if (isChairman) {
-            writeInt(0)
-        } else {
-            writeInt(1)
-        }
-        writeString(multisigAddress)
         writeString(name)
-        writeString(publicKey)
-        writeString(toxid)
-        writeString(vstakeAddress)
         writeString(walletAddress)
     }
 
