@@ -6,8 +6,8 @@ object BaseBizUrl {
     private const val DEX_BASE_URL_TEST_NET = "https://dex.violas.io"
 
     // Violas base url
-    private const val BASE_URL_MAIN_NET = "https://api.violas.io:4000"
-    private const val BASE_URL_TEST_NET = "https://api.violas.io:4000"
+    private const val BASE_URL_MAIN_NET = "https://api.violas.io"
+    private const val BASE_URL_TEST_NET = "https://api.violas.io"
 
     fun getDefaultBaseUrl(): String {
         return if (Vm.TestNet) BASE_URL_TEST_NET else BASE_URL_MAIN_NET
