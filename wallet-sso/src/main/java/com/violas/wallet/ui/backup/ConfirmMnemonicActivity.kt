@@ -115,13 +115,14 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
 
     private fun checkMnemonic(): Boolean {
         val wordsConfirmed = adapterConfirmed.getDataList()
-        if (wordsConfirmed.size != adapterSource.getDataList().size) {
+        val wordsSource = adapterSource.getDataList()
+        if (wordsConfirmed.size != wordsSource.size) {
             showToast(R.string.confirm_mnemonic_tips_02)
             return false
         }
 
-        wordsConfirmed.forEachIndexed { index, word ->
-            if (index != word.index) {
+        wordsConfirmed.forEachIndexed { index, vo ->
+            if (vo.word != wordsSource[index].word) {
                 showToast(R.string.confirm_mnemonic_tips_01)
                 vTips.visibility = View.VISIBLE
                 return false
