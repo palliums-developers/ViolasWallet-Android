@@ -23,9 +23,9 @@ object BaseBrowserUrl {
         "https://libexplorer.com"
 
     private const val VIOLAS_BROWSER_BASE_URL_MAIN_NET =
-        "http://47.52.66.26:10081"
+        "https://testnet.violas.io"
     private const val VIOLAS_BROWSER_BASE_URL_TEST_NET =
-        "http://47.52.66.26:10081"
+        "https://testnet.violas.io"
 
 
     fun getBitmainOpenBaseUrl(): String {
