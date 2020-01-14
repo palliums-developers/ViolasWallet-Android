@@ -46,9 +46,26 @@ data class TransactionRecordDTO(
     val receiver_module: String,
     val sender: String,
     val sender_module: String,
+    val module_name: String,
     val expiration_time: Long,
     val sequence_number: Int,
-    val type: Int,  // 0:vtoken p2p transaction; 1:module publish transaction(开启稳定币); 2:module p2p transaction(转账)
+    /*
+     * 0: write_set
+     * 1: mint（平台币铸币）
+     * 2: peer_to_peer_transfer（平台币转账）
+     * 3: create_account
+     * 4: rotate_authentication_key
+     * 5: violas_withdrawal
+     * 6: violas_order
+     * 7: violas_mint（稳定币铸币）
+     * 8: violas_owner_init
+     * 9: violas_init（publish稳定币）
+     * 10: violas_pick
+     * 11: violas_module
+     * 12: violas_peer_to_peer_transfer（普通稳定币转账）
+     * 13: violas_peer_to_peer_transfer_with_data （交易所稳定币转账）
+     */
+    val type: Int,
     val version: Int
 )
 

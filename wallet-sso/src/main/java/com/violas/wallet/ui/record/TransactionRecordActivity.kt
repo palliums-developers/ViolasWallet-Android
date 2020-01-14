@@ -4,9 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.palliums.utils.start
-import com.palliums.violas.http.SupportTokenCache
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
@@ -74,11 +72,6 @@ class TransactionRecordActivity : BaseAppActivity() {
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        SupportTokenCache.release()
-        super.onDestroy()
     }
 
     override fun getLayoutResId(): Int {

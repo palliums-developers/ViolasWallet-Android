@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import com.palliums.violas.http.ModuleDTO
 import com.palliums.violas.http.SupportCurrencyDTO
-import com.palliums.violas.http.SupportTokenCache
 import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.BaseBrowserUrl
@@ -284,9 +283,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         val list = response.data!!.mapIndexed { index, bean ->
             // 解析交易类型
             val transactionType = when (bean.type) {
-                1 -> TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN
+                9 -> TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN
 
-                0 -> {
+                1, 2 -> {
                     if (bean.sender == address) {
                         TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
                     } else {
@@ -294,11 +293,30 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
                     }
                 }
 
-                else -> {
+                7, 12, 13 -> {
                     if (bean.sender == address) {
                         TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
                     } else {
                         TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT
+                    }
+                }
+
+                else -> {
+                    if ((bean.module_name.isNotEmpty()
+                                && !bean.module_name.equals(CoinTypes.Violas.coinName(), true))
+                        || !tokenName.isNullOrEmpty()
+                    ) {
+                        if (bean.sender == address) {
+                            TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
+                        } else {
+                            TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT
+                        }
+                    } else {
+                        if (bean.sender == address) {
+                            TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
+                        } else {
+                            TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
+                        }
                     }
                 }
             }
@@ -311,7 +329,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
 
             // 解析币名称
             val coinName = if (TransactionRecordVO.isTokenOpt(transactionType)) {
-                tokenName ?: getTokenName(bean.sender_module)
+                tokenName ?: bean.module_name
             } else {
                 null
             }
@@ -329,17 +347,5 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             )
         }
         onSuccess.invoke(list, null)
-    }
-
-    private suspend fun getTokenName(tokenAddress: String): String? {
-        return try {
-            SupportTokenCache.getSupportTokens(mViolasRepository)[tokenAddress]?.name
-        } catch (e: Exception) {
-            null
-        } ?: try {
-            mTokenStorage.findByTokenAddress(tokenAddress)?.name
-        } catch (e: Exception) {
-            null
-        }
     }
 }
