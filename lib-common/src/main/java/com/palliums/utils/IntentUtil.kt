@@ -48,7 +48,7 @@ fun openEmailClient(
             throw Resources.NotFoundException()
         }
 
-        if (resolveInfos.size == 1) {
+        /*if (resolveInfos.size == 1) {
             activity.startActivity(intent)
         } else {
             activity.startActivity(
@@ -57,7 +57,9 @@ fun openEmailClient(
                     getString(R.string.title_select_mail_client)
                 )
             )
-        }
+        }*/
+
+        activity.startActivity(intent)
     } catch (e: Exception) {
         if (handleError) {
             if (activity is BaseActivity) {
@@ -81,9 +83,9 @@ fun openBrowser(activity: Activity, url: String): Boolean {
         val uri = Uri.parse(url)
         val intent = Intent(Intent.ACTION_VIEW, uri)
 
-        /*val resolveInfos =
+        val resolveInfos =
             activity.packageManager.queryIntentActivities(intent, 0)
-        val browserIntentMap = mutableMapOf<String, Intent>()
+        /*val browserIntentMap = mutableMapOf<String, Intent>()
         var packageName: String
         resolveInfos.forEach {
             packageName = it.activityInfo.packageName
@@ -126,13 +128,11 @@ fun openBrowser(activity: Activity, url: String): Boolean {
             activity.startActivity(chooserIntent)
         }*/
 
-        val resolveInfos =
-            activity.packageManager.queryIntentActivities(intent, 0)
         if (resolveInfos.isEmpty()) {
             throw Resources.NotFoundException()
         }
 
-        if (resolveInfos.size == 1) {
+        /*if (resolveInfos.size == 1) {
             activity.startActivity(intent)
         } else {
             activity.startActivity(
@@ -141,7 +141,9 @@ fun openBrowser(activity: Activity, url: String): Boolean {
                     getString(R.string.title_select_browser)
                 )
             )
-        }
+        }*/
+
+        activity.startActivity(intent)
 
         true
     } catch (ignore: Exception) {
