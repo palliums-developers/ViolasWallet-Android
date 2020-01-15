@@ -62,11 +62,9 @@ class AboutUsActivity : BaseAppActivity(), View.OnLongClickListener {
             R.id.mivEmail -> {
                 try {
                     openEmailClient(
-                        this,
-                        mivEmail.endDescText.trim(),
-                        "",
-                        "",
-                        false
+                        activity = this,
+                        receiver = mivEmail.endDescText.trim(),
+                        handleError = false
                     )
                 } catch (e: Exception) {
                     ClipboardUtils.copy(this, getString(R.string.about_us_email_value))

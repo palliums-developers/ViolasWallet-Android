@@ -30,9 +30,9 @@ fun feedbackByEmail(activity: Activity) {
         .append("Android OS version: ${Build.VERSION.RELEASE}")
 
     openEmailClient(
-        activity,
-        FEEDBACK_EMAIL_ADDRESS,
-        "${getString(R.string.app_name)} ${getString(R.string.feedback)}",
-        stringBuilder.toString()
+        activity = activity,
+        receiver = FEEDBACK_EMAIL_ADDRESS,
+        subject = "${getString(R.string.app_name)} ${getString(R.string.feedback)}",
+        text = stringBuilder.toString()
     )
 }
