@@ -32,6 +32,6 @@ interface SSOApi {
     @POST("/1.0/violas/sso/user")
     suspend fun bindIdNumber(@Body body: RequestBody): Response<Any>
 
-    @GET("/1.0/violas/governors")
+    @GET("/1.0/violas/sso/governors")
     suspend fun getGovernorList(@Query("offset") offset: Int, @Query("limit") limit: Int): ListResponse<GovernorDTO>
 }

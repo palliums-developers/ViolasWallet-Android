@@ -22,6 +22,11 @@
 -keepclassmembers,includecode class **DTO{<fields>;}
 -keepclassmembers,includecode class **DTO$**{<fields>;}
 
+-keepclassmembers,includecode class com.smallraw.support.switchcompat.SwitchButton{
+    void setProgress(float);
+    float getProgress();
+}
+
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
 
