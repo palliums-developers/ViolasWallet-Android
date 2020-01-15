@@ -76,7 +76,7 @@ android {
             ext.alwaysUpdateBuildId = false
             multiDexKeepProguard file('../multidexKeep.pro')
             signingConfig signingConfigs.debug
-            buildConfigField "boolean", "SHUFFLE_MNEMONIC", "true"
+            buildConfigField "boolean", "SHUFFLE_MNEMONIC", "false"
         }
     }
 
