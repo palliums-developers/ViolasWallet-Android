@@ -42,7 +42,7 @@ class AccountSelectionActivity : BaseAppActivity() {
 
         Fragmentation.builder()
             // 显示悬浮球 ; 其他Mode:SHAKE: 摇一摇唤出   NONE：隐藏
-            .stackViewMode(Fragmentation.BUBBLE)
+            .stackViewMode(Fragmentation.NONE)
             .debug(BuildConfig.DEBUG)
             .install()
 

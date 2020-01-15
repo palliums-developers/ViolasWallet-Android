@@ -63,9 +63,10 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             zipAlignEnabled true
             pseudoLocalesEnabled true
+            shrinkResources true
             proguardFiles '../proguard-android-optimize-wallet.txt', 'proguard-rules.pro'
             multiDexKeepProguard file('../multidexKeep.pro')
             signingConfig signingConfigs.release

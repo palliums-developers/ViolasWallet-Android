@@ -67,7 +67,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             zipAlignEnabled true
             pseudoLocalesEnabled true
             proguardFiles '../proguard-android-optimize-wallet.txt', 'proguard-rules.pro'

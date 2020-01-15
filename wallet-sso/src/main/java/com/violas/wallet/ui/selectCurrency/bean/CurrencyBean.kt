@@ -7,9 +7,13 @@ import com.google.gson.annotations.SerializedName
 data class CurrencyBean(
     @SerializedName("country_or_territory")
     var countryOrTerritory: String = "",
+    @SerializedName("currency")
     var currency: String = "",
+    @SerializedName("flag")
     var flag: String = "",
+    @SerializedName("indicator")
     var indicator: String = "",
+    @SerializedName("exchange")
     var exchange: Float = 0.0F
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
