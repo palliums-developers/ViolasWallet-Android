@@ -36,7 +36,7 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     address: String,
     amount: Long
 ): TransactionPayload {
-    val moveEncode = Move.decode(context.assets.open("move/peer_to_peer_transfer.json"))
+    val moveEncode = Move.decode(context.assets.open("move/libra_peer_to_peer_transfer.json"))
 
     val addressArgument = TransactionArgument.newAddress(address)
     val amountArgument = TransactionArgument.newU64(amount)
