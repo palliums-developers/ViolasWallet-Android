@@ -213,6 +213,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     private suspend fun loadTokenList() {
+        if (isEnable.value == true) {
+            return
+        }
         try {
             mAccount?.let {
                 val tokenPrices =
