@@ -12,6 +12,7 @@ import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
@@ -91,32 +92,33 @@ class LibraTransferActivity : TransferActivity() {
         account?.let {
             if (isToken) {
                 mTokenDo?.apply {
-                    mTokenManager.getTokenBalance(it.address, this) { tokenBalance, result ->
+                    mTokenManager.getTokenBalance(it.address, this) { tokenAmount, result ->
                         launch {
-                            val balanceStr = BigDecimal(tokenBalance.toString())
-                                .divide(
-                                    BigDecimal("1000000"),
-                                    6,
-                                    RoundingMode.HALF_UP
-                                ).stripTrailingZeros().toPlainString()
+                            val displayAmount = convertViolasTokenUnit(
+                                if (result) tokenAmount else amount
+                            )
                             tvCoinAmount.text = String.format(
                                 getString(R.string.hint_transfer_amount),
-                                balanceStr,
+                                displayAmount,
                                 name
                             )
-                            mBalance = BigDecimal(balanceStr)
+                            mBalance = BigDecimal(displayAmount)
                         }
                     }
                 }
             } else {
-                mAccountManager.getBalanceWithUnit(it) { balance, unit ->
+                mAccountManager.getBalance(it) { amount, success ->
                     launch {
+                        val amountUnit = convertAmountToDisplayUnit(
+                            if (success) amount else it.amount,
+                            CoinTypes.parseCoinType(it.coinNumber)
+                        )
                         tvCoinAmount.text = String.format(
                             getString(R.string.hint_transfer_amount),
-                            balance,
-                            unit
+                            amountUnit.first,
+                            amountUnit.second
                         )
-                        mBalance = BigDecimal(balance)
+                        mBalance = BigDecimal(amountUnit.first)
                     }
                 }
             }

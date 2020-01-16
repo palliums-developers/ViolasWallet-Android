@@ -23,9 +23,9 @@ class LibraAdmissionControl(private val mChannel: Channel) {
     private var mHandler = Handler(Looper.getMainLooper())
 
     fun getBalance(address: String, call: (amount: String) -> Unit) {
-        getBalanceInMicroLibras(address) {
+        getBalanceInMicroLibras(address) { amount, success ->
             mExecutor.execute {
-                val toPlainString = BigDecimal(it.toString())
+                val toPlainString = BigDecimal(amount.toString())
                     .divide(
                         BigDecimal("1000000"),
                         6,
@@ -40,21 +40,21 @@ class LibraAdmissionControl(private val mChannel: Channel) {
         }
     }
 
-    fun getBalanceInMicroLibras(address: String, call: (amount: Long) -> Unit) {
+    fun getBalanceInMicroLibras(address: String, call: (amount: Long, success: Boolean) -> Unit) {
         getAccountStatus(address, { accountStatus ->
             if (accountStatus.accountStates.isEmpty()) {
                 mHandler.post {
-                    call.invoke(0)
+                    call.invoke(0, true)
                 }
 
             } else {
                 mHandler.post {
-                    call.invoke(accountStatus.accountStates[0].balanceInMicroLibras)
+                    call.invoke(accountStatus.accountStates[0].balanceInMicroLibras, true)
                 }
             }
         }, {
             mHandler.post {
-                call.invoke(0)
+                call.invoke(0, false)
             }
         })
     }
@@ -117,7 +117,7 @@ class LibraAdmissionControl(private val mChannel: Channel) {
         call: (success: Boolean) -> Unit
     ) {
         val senderAddress = account.getAddress().toHex()
-        getSequenceNumber(senderAddress, {sequenceNumber->
+        getSequenceNumber(senderAddress, { sequenceNumber ->
 
             val publishTokenPayload = TransactionPayload.optionTransactionPayload(
                 context, address, amount

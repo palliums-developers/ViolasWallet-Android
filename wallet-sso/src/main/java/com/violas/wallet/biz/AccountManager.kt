@@ -50,9 +50,11 @@ class AccountManager : CoroutineScope by IOScope() {
     }
 
     fun refreshAccountAmount(currentAccount: AccountDO, callback: (AccountDO) -> Unit) {
-        getBalance(currentAccount) { amount ->
-            currentAccount.amount = amount
-            updateAccount(currentAccount)
+        getBalance(currentAccount) { amount, success ->
+            if (success) {
+                currentAccount.amount = amount
+                updateAccount(currentAccount)
+            }
             callback.invoke(currentAccount)
         }
     }
@@ -339,7 +341,7 @@ class AccountManager : CoroutineScope by IOScope() {
     }
 
     fun getBalanceWithUnit(account: AccountDO, callback: (String, String) -> Unit) {
-        getBalance(account) { amount ->
+        getBalance(account) { amount, success ->
             val parseCoinType = CoinTypes.parseCoinType(account.coinNumber)
             val convertAmountToDisplayUnit =
                 convertAmountToDisplayUnit(amount, parseCoinType)
@@ -347,7 +349,7 @@ class AccountManager : CoroutineScope by IOScope() {
         }
     }
 
-    fun getBalance(account: AccountDO, callback: (Long) -> Unit) {
+    fun getBalance(account: AccountDO, callback: (Long, Boolean) -> Unit) {
         if (isMainThread()) {
             launch(handler) {
                 getBalance(account, callback)
@@ -358,14 +360,14 @@ class AccountManager : CoroutineScope by IOScope() {
         when (account.coinNumber) {
             CoinTypes.Violas.coinType() -> {
                 DataRepository.getViolasService()
-                    .getBalanceInMicroLibras(account.address) {
-                        callback.invoke(it)
+                    .getBalanceInMicroLibras(account.address) { balance, success ->
+                        callback.invoke(balance, success)
                     }
             }
             CoinTypes.Libra.coinType() -> {
                 DataRepository.getLibraService()
-                    .getBalanceInMicroLibras(account.address) {
-                        callback.invoke(it)
+                    .getBalanceInMicroLibras(account.address) { balance, success ->
+                        callback.invoke(balance, success)
                     }
             }
             CoinTypes.Bitcoin.coinType(),
@@ -373,16 +375,13 @@ class AccountManager : CoroutineScope by IOScope() {
                 DataRepository.getBitcoinService().getBalance(account.address)
                     .subscribe({
                         try {
-                            callback.invoke(
-                                it.toLong()
-                            )
+                            callback.invoke(it.toLong(), true)
                         } catch (e: Exception) {
                             e.printStackTrace()
+                            callback.invoke(0, false)
                         }
                     }, {
-                        callback.invoke(
-                            0
-                        )
+                        callback.invoke(0, false)
                     }, {
 
                     })

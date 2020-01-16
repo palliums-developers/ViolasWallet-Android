@@ -226,6 +226,11 @@ class TokenManager {
         }
         return DataRepository.getViolasService()
             .getBalance(address, tokenAddressList) { accountBalance, tokens, result ->
+                if (!result) {
+                    call.invoke(enableTokens[0].amount, enableTokens)
+                    return@getBalance
+                }
+
                 val tokenMap = mutableMapOf<String, Long>()
                 tokens?.forEach {
                     tokenMap[it.address] = it.balance
@@ -242,23 +247,21 @@ class TokenManager {
                 }
 
                 // 更新本地token资产余额，钱包资产余额交由AccountManager更新
-                if (result) {
-                    mExecutor.submit {
-                        val tokens = enableTokens
-                            .filter {
-                                it.isToken
-                            }.map {
-                                TokenDo(
-                                    id = it.id,
-                                    account_id = it.account_id,
-                                    tokenAddress = it.tokenAddress,
-                                    name = it.name,
-                                    enable = it.enable,
-                                    amount = it.amount
-                                )
-                            }
-                        mTokenStorage.update(*tokens.toTypedArray())
-                    }
+                mExecutor.submit {
+                    val tokens = enableTokens
+                        .filter {
+                            it.isToken
+                        }.map {
+                            TokenDo(
+                                id = it.id,
+                                account_id = it.account_id,
+                                tokenAddress = it.tokenAddress,
+                                name = it.name,
+                                enable = it.enable,
+                                amount = it.amount
+                            )
+                        }
+                    mTokenStorage.update(*tokens.toTypedArray())
                 }
 
                 call.invoke(accountBalance, enableTokens)
