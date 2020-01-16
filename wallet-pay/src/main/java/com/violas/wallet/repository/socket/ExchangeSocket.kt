@@ -1,7 +1,6 @@
 package com.violas.wallet.repository.socket
 
 import android.util.Log
-import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.BaseBizUrl
 import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.ui.main.quotes.bean.ExchangeOrder
@@ -10,7 +9,6 @@ import com.violas.wallet.ui.main.quotes.bean.IOrderType
 import io.socket.client.IO
 import io.socket.client.Socket
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 import java.math.BigDecimal
 import java.util.concurrent.Executors
@@ -34,18 +32,18 @@ object ExchangeSocket {
     private val mSocket by lazy {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(RequestHeaderInterceptor(false))
-            .addInterceptor(HttpLoggingInterceptor().also {
-                it.level = if (BuildConfig.DEBUG)
-                    HttpLoggingInterceptor.Level.BODY
-                else
-                    HttpLoggingInterceptor.Level.NONE
-            })
+//            .addInterceptor(HttpLoggingInterceptor().also {
+//                it.level = if (BuildConfig.DEBUG)
+//                    HttpLoggingInterceptor.Level.HEADERS
+//                else
+//                    HttpLoggingInterceptor.Level.NONE
+//            })
             .build()
 
         IO.setDefaultOkHttpWebSocketFactory(okHttpClient)
         IO.setDefaultOkHttpCallFactory(okHttpClient)
-
-        IO.socket(BaseBizUrl.getDexSocketBaseUrl())
+        val options = IO.Options()
+        IO.socket(BaseBizUrl.getDexSocketBaseUrl(), options)
     }
 
     init {
@@ -123,11 +121,13 @@ object ExchangeSocket {
     }
 
     fun addSubscriber(subscriber: Subscriber) {
+        Log.e("==addSubscriber==", "addSubscriber")
         mSubscriber.add(subscriber)
         checkConnect()
     }
 
     fun removeSubscriber(subscriber: Subscriber) {
+        Log.e("==removeSubscriber==", "removeSubscriber")
         mSubscriber.remove(subscriber)
         checkConnect()
     }
