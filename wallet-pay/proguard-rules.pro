@@ -27,6 +27,13 @@
     float getProgress();
 }
 
+-keep class admission_control.*** {*;}
+-keep class admission_control.***$*** {*;}
+-keep class mempool_status.*** {*;}
+-keep class mempool_status.***$*** {*;}
+-keep class types.*** {*;}
+-keep class types.***$*** {*;}
+
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
 

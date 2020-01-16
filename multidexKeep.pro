@@ -1,2 +1,4 @@
 -keep public class com.tencent.bugly.**{*;}
 -keep public class com.tencent.tinker.**{*;}
+-keep com.violas.wallet.PayApp{*;}
+-keep com.violas.wallet.SSOApp{*;}
