@@ -121,6 +121,7 @@ object ExchangeSocket {
     }
 
     fun addSubscriber(subscriber: Subscriber) {
+        if (mSubscriber.contains(subscriber)) return
         Log.e("==addSubscriber==", "addSubscriber")
         mSubscriber.add(subscriber)
         checkConnect()

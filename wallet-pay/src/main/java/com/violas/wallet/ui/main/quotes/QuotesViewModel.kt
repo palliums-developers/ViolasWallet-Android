@@ -161,10 +161,11 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         }
 
     private fun resetMarkSocket() {
-        if (mAccount != null
-            && currentFormCoinLiveData.value != null
-            && currentToCoinLiveData.value != null
-            && isPositiveChangeLiveData.value != null
+        if ((mAccount != null
+                    && currentFormCoinLiveData.value != null
+                    && currentToCoinLiveData.value != null
+                    && isPositiveChangeLiveData.value != null)
+            && isEnable.value ?: false
         ) {
             exchangeRateNumberLiveData.postValue(BigDecimal("0"))
             mLoadingLiveData.postValue(true)
@@ -365,6 +366,16 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     private fun handleMarkSocket() {
+        isEnable.observeForever {
+            if (it) {
+                mLoadingLiveData.postValue(true)
+                ExchangeSocket.addSubscriber(this)
+            } else {
+                mLoadingLiveData.postValue(false)
+                ExchangeSocket.unSubscribe(oldBaseToken, oldTokenQuote)
+                ExchangeSocket.removeSubscriber(this)
+            }
+        }
         currentFormCoinLiveData.observeForever {
             resetMarkSocket()
         }
