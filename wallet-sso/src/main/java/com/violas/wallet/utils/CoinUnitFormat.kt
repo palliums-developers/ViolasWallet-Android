@@ -20,6 +20,23 @@ fun getCoinDecimal(coinNumber: Int): Long {
     }
 }
 
+
+fun convertViolasTokenUnit(amount: Long): String {
+    return convertViolasTokenUnit(amount.toString())
+}
+
+fun convertViolasTokenUnit(amount: String): String {
+    val amountBigDecimal = BigDecimal(amount)
+    return if (amountBigDecimal > BigDecimal("0")) {
+        amountBigDecimal
+            .divide(BigDecimal(1000000), 6, RoundingMode.HALF_UP)
+            .stripTrailingZeros()
+            .toPlainString()
+    } else {
+        "0"
+    }
+}
+
 fun convertDisplayUnitToAmount(amount: String, coinTypes: CoinTypes): Long {
     return convertDisplayUnitToAmount(amount.toDouble(), coinTypes)
 }

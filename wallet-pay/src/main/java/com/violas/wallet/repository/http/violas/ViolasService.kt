@@ -89,20 +89,20 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             })
     }
 
-    fun getBalanceInMicroLibras(address: String, call: (amount: Long) -> Unit) {
+    fun getBalanceInMicroLibras(address: String, call: (amount: Long, success: Boolean) -> Unit) {
         val subscribe = mViolasRepository.getBalance(address)
             .subscribeOn(Schedulers.io())
             .subscribe({
                 mMainHandler.post {
                     if (it.data == null) {
-                        call.invoke(0)
+                        call.invoke(0, true)
                     } else {
-                        call.invoke(it.data!!.balance)
+                        call.invoke(it.data!!.balance, true)
                     }
                 }
             }, {
                 mMainHandler.post {
-                    call.invoke(0)
+                    call.invoke(0, false)
                 }
             })
     }

@@ -129,12 +129,16 @@ class BTCTransferActivity : TransferActivity() {
 
     private fun refreshCurrentAmount() {
         account?.let {
-            mAccountManager.getBalanceWithUnit(it) { balance, unit ->
+            mAccountManager.getBalance(it) { amount, success ->
                 launch {
+                    val amountUnit = convertAmountToDisplayUnit(
+                        if (success) amount else it.amount,
+                        CoinTypes.parseCoinType(it.coinNumber)
+                    )
                     tvCoinAmount.text = String.format(
                         getString(R.string.hint_transfer_amount),
-                        balance,
-                        unit
+                        amountUnit.first,
+                        amountUnit.second
                     )
                 }
             }

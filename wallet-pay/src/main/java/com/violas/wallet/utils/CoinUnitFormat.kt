@@ -20,6 +20,10 @@ fun getCoinDecimal(coinNumber: Int): Long {
     }
 }
 
+fun convertViolasTokenUnit(amount: Long): String {
+    return convertViolasTokenUnit(amount.toString())
+}
+
 fun convertViolasTokenUnit(amount: String): String {
     val amountBigDecimal = BigDecimal(amount)
     return if (amountBigDecimal > BigDecimal("0")) {
