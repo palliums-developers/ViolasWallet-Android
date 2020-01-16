@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 class LibraTransferActivity : TransferActivity() {
     override fun getLayoutResId() = R.layout.activity_transfer
@@ -129,7 +128,7 @@ class LibraTransferActivity : TransferActivity() {
         when (account?.coinNumber) {
             CoinTypes.Libra.coinType(),
             CoinTypes.Violas.coinType() -> {
-                if (BigDecimal(editAmountInput.text.toString().trim()) > mBalance) {
+                if (BigDecimal(editAmountInput.text.toString().trim()) > mBalance ?: BigDecimal("0")) {
                     LackOfBalanceException().message?.let { showToast(it) }
                     return false
                 }
