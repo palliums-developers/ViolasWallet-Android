@@ -1,6 +1,7 @@
 package com.violas.wallet.repository.http.dex
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
 import kotlinx.android.parcel.Parcelize
@@ -43,6 +44,7 @@ open class Response<T> : ApiResponse {
     }
 }
 
+@Keep
 class ListResponse<T> : Response<List<T>>()
 
 @Parcelize

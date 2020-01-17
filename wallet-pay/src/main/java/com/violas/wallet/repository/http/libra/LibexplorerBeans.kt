@@ -1,5 +1,6 @@
 package com.violas.wallet.repository.http.libra
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
 
@@ -37,6 +38,7 @@ open class Response<T> : ApiResponse {
     }
 }
 
+@Keep
 class ListResponse<T> : Response<List<T>>()
 
 data class TransactionRecordDTO(

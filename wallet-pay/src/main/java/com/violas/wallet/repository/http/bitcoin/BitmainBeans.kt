@@ -1,5 +1,6 @@
 package com.violas.wallet.repository.http.bitcoin
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
 
@@ -37,6 +38,7 @@ open class Response<T> : ApiResponse {
     }
 }
 
+@Keep
 class ListResponse<T> : Response<ListResponse.Data<T>>() {
 
     data class Data<T>(
