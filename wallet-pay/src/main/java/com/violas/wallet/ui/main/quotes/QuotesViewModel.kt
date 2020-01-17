@@ -26,14 +26,17 @@ import com.violas.wallet.ui.main.quotes.bean.ExchangeToken
 import com.violas.wallet.ui.main.quotes.bean.IOrder
 import com.violas.wallet.ui.main.quotes.bean.IOrderStatus
 import com.violas.wallet.ui.main.quotes.bean.IToken
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.concurrent.CountDownLatch
 
 class QuotesViewModel(application: Application) : AndroidViewModel(application), Subscriber {
     // 是否开启兑换功能
@@ -213,7 +216,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     private suspend fun loadTokenList() {
-        if (isEnable.value == true) {
+        if (isEnable.value == false) {
             return
         }
         try {
@@ -632,30 +635,23 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         }
 
         // publish
-        val list = arrayListOf<Deferred<*>>()
         currentUnPublishToken.forEach {
-            list.add(async {
-                val publishToken = publishToken(account, it.tokenAddress())
-                if (publishToken) {
-                    it.setNetEnable(true)
-                    mTokenManager.insert(
-                        true, AssertToken(
-                            tokenAddress = it.tokenAddress(),
-                            fullName = it.tokenName(),
-                            account_id = mAccount!!.id,
-                            name = it.tokenName(),
-                            enable = true,
-                            netEnable = true
-                        )
+            val publishToken = publishToken(account, it.tokenAddress())
+            if (publishToken) {
+                it.setNetEnable(true)
+                mTokenManager.insert(
+                    true, AssertToken(
+                        tokenAddress = it.tokenAddress(),
+                        fullName = it.tokenName(),
+                        account_id = mAccount!!.id,
+                        name = it.tokenName(),
+                        enable = true,
+                        netEnable = true
                     )
-                } else {
-                    throw TransferUnknownException()
-                }
-                publishToken
-            })
-        }
-        list.forEach {
-            it.await()
+                )
+            } else {
+                throw TransferUnknownException()
+            }
         }
 
         Log.e("==exchange==", "${fromCoin.tokenName()}   ${toCoin.tokenName()}")
@@ -672,20 +668,24 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         exchangeToken
     }
 
-    private suspend fun publishToken(mAccount: Account, tokenAddress: String): Boolean {
-        val channel = Channel<Boolean>()
+    private fun publishToken(mAccount: Account, tokenAddress: String): Boolean {
+        val countDownLatch = CountDownLatch(1)
+        var exec = false
         DataRepository.getViolasService()
             .publishToken(
                 getApplication(),
                 mAccount,
                 tokenAddress
             ) {
-                viewModelScope.launch(Dispatchers.IO) {
-                    channel.send(it)
-                    channel.close()
-                }
+                exec = it
+                countDownLatch.countDown()
             }
-        return channel.receive()
+        try {
+            countDownLatch.await()
+        } catch (e: Exception) {
+            exec = false
+        }
+        return exec
     }
 }
 
