@@ -1,6 +1,9 @@
 package com.violas.wallet.ui.main.quotes
 
 import android.app.Application
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
@@ -38,7 +41,8 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.CountDownLatch
 
-class QuotesViewModel(application: Application) : AndroidViewModel(application), Subscriber {
+class QuotesViewModel(application: Application) : AndroidViewModel(application), Subscriber,
+    Handler.Callback {
     // 是否开启兑换功能
     val isEnable = MutableLiveData(false)
     // 当前选择的币种
@@ -107,6 +111,10 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             return BigDecimal("1")
         }
     }
+    // 延时任务
+    private val mHandler = Handler(Looper.getMainLooper(), this)
+    private val mDelayRefreshMark = 0x001
+    private val mDelayRefreshMarkTime = 20 * 1000L
 
     init {
         EventBus.getDefault().register(this)
@@ -158,18 +166,17 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             checkIsEnable()
             loadTokenList()
-            viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler()) {
-                resetMarkSocket()
-            }
+            resetMarkSocket()
         }
 
     private fun resetMarkSocket() {
-        if ((mAccount != null
-                    && currentFormCoinLiveData.value != null
-                    && currentToCoinLiveData.value != null
-                    && isPositiveChangeLiveData.value != null)
-            && isEnable.value ?: false
+        if (mAccount != null
+            && currentFormCoinLiveData.value != null
+            && currentToCoinLiveData.value != null
+            && isPositiveChangeLiveData.value != null
+            && isEnable.value == true
         ) {
+            mHandler.removeMessages(mDelayRefreshMark)
             exchangeRateNumberLiveData.postValue(BigDecimal("0"))
             mLoadingLiveData.postValue(true)
             allDisplayOrdersLiveData.postValue(listOf())
@@ -188,6 +195,11 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             oldBaseToken = baseToken
             oldTokenQuote = tokenQuote
             ExchangeSocket.getMark(baseToken, tokenQuote, mAccount!!.address)
+
+            mHandler.sendMessageDelayed(
+                Message.obtain(mHandler, mDelayRefreshMark),
+                mDelayRefreshMarkTime
+            )
         }
     }
 
@@ -212,7 +224,10 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         } catch (e: Exception) {
             null
         }
-        isEnable.postValue(mAccount?.coinNumber == CoinTypes.Violas.coinType())
+        val enable = mAccount?.coinNumber == CoinTypes.Violas.coinType()
+        withContext(Dispatchers.Main) {
+            isEnable.value = enable
+        }
     }
 
     private suspend fun loadTokenList() {
@@ -414,6 +429,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         rate: BigDecimal
     ) {
         mLoadingLiveData.postValue(false)
+        mHandler.removeMessages(mDelayRefreshMark)
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             meOrdersLiveData.postValue(
                 myOrder.map(setOrderPrice())
@@ -508,6 +524,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     override fun onCleared() {
         EventBus.getDefault().unregister(this)
         ExchangeSocket.removeSubscriber(this)
+        mHandler.removeCallbacksAndMessages(null)
         super.onCleared()
     }
 
@@ -686,6 +703,13 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             exec = false
         }
         return exec
+    }
+
+    override fun handleMessage(msg: Message): Boolean {
+        when (msg.what) {
+            mDelayRefreshMark -> resetMarkSocket()
+        }
+        return true
     }
 }
 
