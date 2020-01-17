@@ -352,10 +352,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     toUnit = currentFormCoinLiveData.value!!.tokenUnit()
                 }
                 exchangeRateLiveData.postValue(
-                    "1 $toUnit ≈ ${exchangeRateNumberLiveData.value!!.setScale(
-                        2,
-                        RoundingMode.DOWN
-                    ).stripTrailingZeros().toPlainString()} $fromUnit"
+                    "1 $toUnit ≈ ${exchangeRateNumberLiveData.value!!.stripTrailingZeros().toPlainString()} $fromUnit"
                 )
             } else {
                 //exchangeRateNumberLiveData.postValue(BigDecimal("0"))
