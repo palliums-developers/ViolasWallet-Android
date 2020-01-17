@@ -162,6 +162,18 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         isShowMoreAllOrderLiveData.value = !isShowMoreAllOrderLiveData.value!!
     }
 
+    fun changeFromCoin(token: IToken) {
+        if (currentFormCoinLiveData.value?.tokenAddress() != token.tokenAddress()) {
+            currentFormCoinLiveData.postValue(token)
+        }
+    }
+
+    fun changeToCoin(token: IToken) {
+        if (currentToCoinLiveData.value?.tokenAddress() != token.tokenAddress()) {
+            currentToCoinLiveData.postValue(token)
+        }
+    }
+
     private fun handleAccountEvent() =
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             checkIsEnable()

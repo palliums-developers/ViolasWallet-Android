@@ -227,10 +227,10 @@ class QuotesFragment : BaseFragment() {
                 sheetDialogFragment.dismiss()
                 when (view?.id) {
                     R.id.layoutFromCoin -> {
-                        mQuotesViewModel.currentFormCoinLiveData.postValue(it)
+                        mQuotesViewModel.changeFromCoin(it)
                     }
                     R.id.layoutToCoin -> {
-                        mQuotesViewModel.currentToCoinLiveData.postValue(it)
+                        mQuotesViewModel.changeToCoin(it)
                     }
                 }
             }
