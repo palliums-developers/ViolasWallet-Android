@@ -358,7 +358,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     ).stripTrailingZeros().toPlainString()} $fromUnit"
                 )
             } else {
-                exchangeRateNumberLiveData.postValue(BigDecimal("0"))
+                //exchangeRateNumberLiveData.postValue(BigDecimal("0"))
                 exchangeRateLiveData.postValue("... ≈ ...")
             }
         }
