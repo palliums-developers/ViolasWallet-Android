@@ -13,7 +13,7 @@ import android.webkit.WebView
  * bug desc: 在Android5.0或5.1上，及androidx appcompat 1.1.0版本，
  * 在xml中引用 WebView 出现 android.content.res.Resources$NotFoundException
  *
- * @see <a href="https://github.com/SheHuan/NiceImageView">link</a>
+ * @see <a href="https://stackoverflow.com/questions/41025200/android-view-inflateexception-error-inflating-class-android-webkit-webview">link</a>
  */
 class LollipopFixedWebView @JvmOverloads constructor(
     context: Context,
