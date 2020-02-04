@@ -5,10 +5,9 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import com.palliums.base.BaseFragment
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColor
@@ -132,7 +131,7 @@ class AccountSelectionFragment : BaseFragment() {
         GroupListLayout.ItemLayout<AccountVo> {
 
         private val tvTitle: TextView = TextView(context).apply {
-            layoutParams = FrameLayout.LayoutParams(
+            layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
@@ -172,7 +171,7 @@ class AccountSelectionFragment : BaseFragment() {
         private var accountVo: AccountVo? = null
 
         init {
-            rootView.layoutParams = FrameLayout.LayoutParams(
+            rootView.layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {

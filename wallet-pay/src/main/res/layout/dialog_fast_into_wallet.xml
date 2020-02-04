@@ -9,6 +9,7 @@
         android:layout_height="381dp"
         android:src="@drawable/bg_welcome_violas"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView

@@ -15,7 +15,6 @@ import kotlinx.android.synthetic.main.dialog_fast_into_wallet.view.*
 class FastIntoWalletDialog : DialogFragment() {
     private lateinit var mRootView: View
 
-    private var message: String? = null
     private var confirmCallback: (() -> Unit)? = null
 
     override fun onCreateView(
@@ -27,7 +26,7 @@ class FastIntoWalletDialog : DialogFragment() {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             setGravity(Gravity.TOP or Gravity.CENTER)
 
-            val params = attributes;
+            val params = attributes
             val windowManager = windowManager
             val display = windowManager.defaultDisplay
             val point = Point()

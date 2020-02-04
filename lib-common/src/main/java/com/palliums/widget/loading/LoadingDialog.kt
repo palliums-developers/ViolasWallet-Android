@@ -28,7 +28,7 @@ class LoadingDialog : DialogFragment() {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             setGravity(Gravity.TOP or Gravity.CENTER)
 
-            val params = attributes;
+            val params = attributes
             val windowManager = windowManager
             val display = windowManager.defaultDisplay
             val point = Point()

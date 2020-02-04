@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.isFastMultiClick
@@ -114,7 +114,7 @@ class AccountManagementActivity : BaseAppActivity() {
         private var accountVo: AccountVo? = null
 
         init {
-            rootView.layoutParams = FrameLayout.LayoutParams(
+            rootView.layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
