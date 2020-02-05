@@ -9,13 +9,15 @@ import androidx.annotation.IntDef
  * desc: 账户操作模式
  */
 @IntDef(
-    AccountOperationMode.SELECTION,  // 选择模式
-    AccountOperationMode.MANAGEMENT  // 管理模式
+    AccountOperationMode.SWITCH,        // 切换模式
+    AccountOperationMode.MANAGEMENT,    // 管理模式
+    AccountOperationMode.SELECTION      // 选择模式
 )
 annotation class AccountOperationMode {
 
     companion object {
-        const val SELECTION = 0x01
+        const val SWITCH = 0x01
         const val MANAGEMENT = 0x02
+        const val SELECTION = 0x03
     }
 }
