@@ -7,6 +7,7 @@ import com.palliums.utils.getString
 import com.palliums.utils.isNetworkConnected
 import org.apache.http.conn.ConnectTimeoutException
 import org.json.JSONException
+import java.io.InterruptedIOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -111,6 +112,15 @@ class RequestException : RuntimeException {
                     getString(R.string.common_http_request_fail, errorCode)
             }
             else -> {
+                if (exception is InterruptedIOException
+                    && exception.message?.contains("timeout", true) == true
+                ) {
+                    // Socket超时，此时数据已发送但服务器未应答
+                    errorCode = ERROR_CODE_SOCKET_TIMEOUT
+                    errorMsg = getString(R.string.common_http_socket_timeout)
+                    return
+                }
+
                 // 未知错误
                 errorCode = ERROR_CODE_UNKNOWN_ERROR
                 errorMsg = if (BuildConfig.DEBUG)
