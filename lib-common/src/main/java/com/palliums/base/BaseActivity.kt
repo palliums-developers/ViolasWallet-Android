@@ -1,5 +1,6 @@
 package com.palliums.base
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -28,7 +29,10 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //透明状态栏，布局延伸到状态栏中
-        StatusBarCompat.translucentStatusBar(this, true)
+        StatusBarCompat.translucentStatusBar(
+            this,
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+        )
         super.onCreate(savedInstanceState)
 
         setContentView(com.palliums.R.layout.activity_base)

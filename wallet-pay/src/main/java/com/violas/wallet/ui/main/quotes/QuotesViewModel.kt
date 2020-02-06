@@ -162,6 +162,18 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         isShowMoreAllOrderLiveData.value = !isShowMoreAllOrderLiveData.value!!
     }
 
+    fun changeFromCoin(token: IToken) {
+        if (currentFormCoinLiveData.value?.tokenAddress() != token.tokenAddress()) {
+            currentFormCoinLiveData.postValue(token)
+        }
+    }
+
+    fun changeToCoin(token: IToken) {
+        if (currentToCoinLiveData.value?.tokenAddress() != token.tokenAddress()) {
+            currentToCoinLiveData.postValue(token)
+        }
+    }
+
     private fun handleAccountEvent() =
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             checkIsEnable()
@@ -340,13 +352,10 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     toUnit = currentFormCoinLiveData.value!!.tokenUnit()
                 }
                 exchangeRateLiveData.postValue(
-                    "1 $toUnit ≈ ${exchangeRateNumberLiveData.value!!.setScale(
-                        2,
-                        RoundingMode.DOWN
-                    ).stripTrailingZeros().toPlainString()} $fromUnit"
+                    "1 $toUnit ≈ ${exchangeRateNumberLiveData.value!!.stripTrailingZeros().toPlainString()} $fromUnit"
                 )
             } else {
-                exchangeRateNumberLiveData.postValue(BigDecimal("0"))
+                //exchangeRateNumberLiveData.postValue(BigDecimal("0"))
                 exchangeRateLiveData.postValue("... ≈ ...")
             }
         }

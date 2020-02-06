@@ -102,16 +102,17 @@ abstract class BaseAppActivity : BaseActivity() {
     private fun StatusBarMode(activity: Activity, dark: Boolean): Int {
         var result = 0
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (MIUISetStatusBarLightMode(activity, dark)) {
                     result = 1
                 } else if (FlymeSetStatusBarLightMode(activity.window, dark)) {
                     result = 2
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    activity.window.decorView.systemUiVisibility =
-                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                    result = 3
                 }
+
+                activity.window.decorView.systemUiVisibility = if (dark)
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                else
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -169,16 +170,6 @@ abstract class BaseAppActivity : BaseActivity() {
                     extraFlagField.invoke(window, 0, darkModeFlag)//清除黑色字体
                 }
                 result = true
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    //开发版 7.7.13 及以后版本采用了系统API，旧方法无效但不会报错，所以两个方式都要加上
-                    if (dark) {
-                        activity.window.decorView.systemUiVisibility =
-                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                    } else {
-                        activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
-                    }
-                }
             } catch (e: Exception) {
 
             }

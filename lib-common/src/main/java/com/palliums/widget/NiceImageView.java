@@ -24,7 +24,7 @@ import com.palliums.utils.DensityUtility;
  * Created by elephant on 2019-11-22 16:49.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: Override NiceImageView for fix bux
+ * desc: Override NiceImageView for fix bug
  * bug desc: 在Android9.0上运行开始没有问题，页面切换或者按home键之后再进入，图片设置的圆角或圆形失效
  *
  * @see <a href="https://github.com/SheHuan/NiceImageView">link</a>

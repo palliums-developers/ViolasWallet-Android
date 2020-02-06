@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColor
@@ -131,7 +131,7 @@ class SelectCountryAreaActivity : BaseAppActivity() {
         GroupListLayout.ItemLayout<CountryAreaVO> {
 
         private val tvTitle: TextView = TextView(context).apply {
-            layoutParams = FrameLayout.LayoutParams(
+            layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
@@ -173,7 +173,7 @@ class SelectCountryAreaActivity : BaseAppActivity() {
         private var countryAreaVO: CountryAreaVO? = null
 
         init {
-            rootView.layoutParams = FrameLayout.LayoutParams(
+            rootView.layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )

@@ -105,6 +105,19 @@ class WalletFragment : BaseFragment() {
         }
     }
 
+
+    override fun onDetach() {
+        super.onDetach()
+        cancelRefreshAssertJob()
+    }
+
+    private fun cancelRefreshAssertJob(){
+        try {
+            refreshAssertJob?.cancel()
+        } catch (ignore: Exception) {
+        }
+    }
+
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.ivCopy -> {
@@ -231,7 +244,7 @@ class WalletFragment : BaseFragment() {
     }
 
     private fun refreshAssert(switchWallet: Boolean) {
-        refreshAssertJob?.cancel()
+        cancelRefreshAssertJob()
 
         refreshAssertJob = launch(Dispatchers.IO) {
             val currentAccount = mAccountManager.currentAccount()
@@ -239,7 +252,7 @@ class WalletFragment : BaseFragment() {
 
             // 刷新当前钱包的信息和当前平台的资产
             if (switchWallet) {
-                recyclerAssert.post {
+                recyclerAssert?.post {
                     mEnableTokens.clear()
                     mEnableTokens.addAll(enableTokens)
                     mAssertAdapter.notifyDataSetChanged()
@@ -252,7 +265,7 @@ class WalletFragment : BaseFragment() {
             } else {
 
                 mAccountManager.refreshAccountAmount(currentAccount) {
-                    recyclerAssert.post {
+                    recyclerAssert?.post {
                         if (swipeRefreshLayout.isRefreshing) {
                             swipeRefreshLayout.isRefreshing = false
                         }
@@ -276,7 +289,7 @@ class WalletFragment : BaseFragment() {
         tokens: List<AssertToken>? = null
     ) {
         if (isMainThread()) {
-            refreshAssertJob?.cancel()
+            cancelRefreshAssertJob()
 
             refreshAssertJob = launch(Dispatchers.IO) {
                 refreshViolasAssert(accountDO, tokens)
@@ -290,7 +303,7 @@ class WalletFragment : BaseFragment() {
             currentAccount.address,
             enableTokens
         ) { accountBalance, assertTokens ->
-            recyclerAssert.post {
+            recyclerAssert?.post {
                 if (swipeRefreshLayout.isRefreshing) {
                     swipeRefreshLayout.isRefreshing = false
                 }

@@ -50,19 +50,23 @@ class LocalUserService {
      * 获取邮箱信息
      */
     fun getEmailInfo(): EmailInfo {
-        val emailInfo = userRepository.getEmailInfo(AccountBindingStatus.UNKNOWN)
+        try {
+            val emailInfo = userRepository.getEmailInfo(AccountBindingStatus.UNKNOWN)
 
-        if (emailInfo.accountBindingStatus == AccountBindingStatus.BOUND
-            && emailInfo.emailAddress.isEmpty()
-        ) {
-            emailInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
-        } else if (emailInfo.emailAddress.isNotEmpty()
-            && emailInfo.accountBindingStatus != AccountBindingStatus.BOUND
-        ) {
-            emailInfo.emailAddress = ""
+            if (emailInfo.accountBindingStatus == AccountBindingStatus.BOUND
+                && emailInfo.emailAddress.isEmpty()
+            ) {
+                emailInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
+            } else if (emailInfo.emailAddress.isNotEmpty()
+                && emailInfo.accountBindingStatus != AccountBindingStatus.BOUND
+            ) {
+                emailInfo.emailAddress = ""
+            }
+
+            return emailInfo
+        } catch (ignore: Exception) {
+            return EmailInfo("", AccountBindingStatus.UNKNOWN)
         }
-
-        return emailInfo
     }
 
     /**
@@ -76,23 +80,27 @@ class LocalUserService {
      * 获取手机信息
      */
     fun getPhoneInfo(): PhoneInfo {
-        val phoneInfo = userRepository.getPhoneInfo(AccountBindingStatus.UNKNOWN)
+        try {
+            val phoneInfo = userRepository.getPhoneInfo(AccountBindingStatus.UNKNOWN)
 
-        if (phoneInfo.accountBindingStatus == AccountBindingStatus.BOUND
-            && (phoneInfo.areaCode.isEmpty() || phoneInfo.phoneNumber.isEmpty())
-        ) {
-            phoneInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
-            phoneInfo.areaCode = ""
-            phoneInfo.phoneNumber = ""
-        } else if (phoneInfo.areaCode.isNotEmpty()
-            && phoneInfo.phoneNumber.isNotEmpty()
-            && phoneInfo.accountBindingStatus != AccountBindingStatus.BOUND
-        ) {
-            phoneInfo.areaCode = ""
-            phoneInfo.phoneNumber = ""
+            if (phoneInfo.accountBindingStatus == AccountBindingStatus.BOUND
+                && (phoneInfo.areaCode.isEmpty() || phoneInfo.phoneNumber.isEmpty())
+            ) {
+                phoneInfo.accountBindingStatus = AccountBindingStatus.UNKNOWN
+                phoneInfo.areaCode = ""
+                phoneInfo.phoneNumber = ""
+            } else if (phoneInfo.areaCode.isNotEmpty()
+                && phoneInfo.phoneNumber.isNotEmpty()
+                && phoneInfo.accountBindingStatus != AccountBindingStatus.BOUND
+            ) {
+                phoneInfo.areaCode = ""
+                phoneInfo.phoneNumber = ""
+            }
+
+            return phoneInfo
+        } catch (ignore: Exception) {
+            return PhoneInfo("", "", AccountBindingStatus.UNKNOWN)
         }
-
-        return phoneInfo
     }
 
     /**
@@ -106,37 +114,41 @@ class LocalUserService {
      * 获取身份信息
      */
     fun getIDInfo(): IDInfo {
-        val idInfo = userRepository.getIDInfo(IDAuthenticationStatus.UNKNOWN)
+        try {
+            val idInfo = userRepository.getIDInfo(IDAuthenticationStatus.UNKNOWN)
 
-        if (idInfo.idAuthenticationStatus != IDAuthenticationStatus.UNKNOWN
-            && idInfo.idAuthenticationStatus != IDAuthenticationStatus.UNAUTHORIZED
-            && (idInfo.idName.isEmpty()
-                    || idInfo.idNumber.isEmpty()
-                    || idInfo.idPhotoFrontUrl.isEmpty()
-                    || idInfo.idPhotoBackUrl.isEmpty()
-                    || idInfo.idCountryCode.isEmpty())
-        ) {
-            idInfo.idAuthenticationStatus = IDAuthenticationStatus.UNKNOWN
-            idInfo.idName = ""
-            idInfo.idNumber = ""
-            idInfo.idPhotoFrontUrl = ""
-            idInfo.idPhotoBackUrl = ""
-            idInfo.idCountryCode = ""
-        } else if (idInfo.idName.isNotEmpty()
-            && idInfo.idNumber.isNotEmpty()
-            && idInfo.idPhotoFrontUrl.isNotEmpty()
-            && idInfo.idPhotoBackUrl.isNotEmpty()
-            && idInfo.idCountryCode.isNotEmpty()
-            && (idInfo.idAuthenticationStatus == IDAuthenticationStatus.UNKNOWN
-                    || idInfo.idAuthenticationStatus == IDAuthenticationStatus.UNAUTHORIZED)
-        ) {
-            idInfo.idName = ""
-            idInfo.idNumber = ""
-            idInfo.idPhotoFrontUrl = ""
-            idInfo.idPhotoBackUrl = ""
-            idInfo.idCountryCode = ""
+            if (idInfo.idAuthenticationStatus != IDAuthenticationStatus.UNKNOWN
+                && idInfo.idAuthenticationStatus != IDAuthenticationStatus.UNAUTHORIZED
+                && (idInfo.idName.isEmpty()
+                        || idInfo.idNumber.isEmpty()
+                        || idInfo.idPhotoFrontUrl.isEmpty()
+                        || idInfo.idPhotoBackUrl.isEmpty()
+                        || idInfo.idCountryCode.isEmpty())
+            ) {
+                idInfo.idAuthenticationStatus = IDAuthenticationStatus.UNKNOWN
+                idInfo.idName = ""
+                idInfo.idNumber = ""
+                idInfo.idPhotoFrontUrl = ""
+                idInfo.idPhotoBackUrl = ""
+                idInfo.idCountryCode = ""
+            } else if (idInfo.idName.isNotEmpty()
+                && idInfo.idNumber.isNotEmpty()
+                && idInfo.idPhotoFrontUrl.isNotEmpty()
+                && idInfo.idPhotoBackUrl.isNotEmpty()
+                && idInfo.idCountryCode.isNotEmpty()
+                && (idInfo.idAuthenticationStatus == IDAuthenticationStatus.UNKNOWN
+                        || idInfo.idAuthenticationStatus == IDAuthenticationStatus.UNAUTHORIZED)
+            ) {
+                idInfo.idName = ""
+                idInfo.idNumber = ""
+                idInfo.idPhotoFrontUrl = ""
+                idInfo.idPhotoBackUrl = ""
+                idInfo.idCountryCode = ""
+            }
+
+            return idInfo
+        } catch (ignore: Exception) {
+            return IDInfo.newEmptyInstance()
         }
-
-        return idInfo
     }
 }

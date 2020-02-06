@@ -5,10 +5,9 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import com.palliums.base.BaseFragment
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColor
@@ -21,6 +20,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_TYPE
 import com.violas.wallet.common.EXTRA_KEY_OPERATION_MODE
 import com.violas.wallet.event.SwitchAccountEvent
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.account.AccountOperationMode
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.AccountVo
@@ -42,7 +42,7 @@ class AccountSelectionFragment : BaseFragment() {
     companion object {
         fun newInstance(
             @AccountType accountType: Int,
-            @AccountOperationMode operationMode: Int = AccountOperationMode.SELECTION
+            @AccountOperationMode operationMode: Int = AccountOperationMode.SWITCH
         ): AccountSelectionFragment {
             return AccountSelectionFragment().apply {
                 arguments = newBundle(accountType, operationMode)
@@ -51,7 +51,7 @@ class AccountSelectionFragment : BaseFragment() {
 
         fun newBundle(
             @AccountType accountType: Int,
-            @AccountOperationMode operationMode: Int = AccountOperationMode.SELECTION
+            @AccountOperationMode operationMode: Int = AccountOperationMode.SWITCH
         ): Bundle {
             return Bundle().apply {
                 putInt(EXTRA_KEY_ACCOUNT_TYPE, accountType)
@@ -60,8 +60,11 @@ class AccountSelectionFragment : BaseFragment() {
         }
     }
 
+    private val accountManager by lazy { AccountManager() }
+    private val accountDao by lazy { DataRepository.getAccountStorage() }
+
     private var accountType: Int = AccountType.ALL
-    private var operationMode: Int = AccountOperationMode.SELECTION
+    private var operationMode: Int = AccountOperationMode.SWITCH
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_account_selection
@@ -72,7 +75,7 @@ class AccountSelectionFragment : BaseFragment() {
 
         arguments?.let {
             accountType = it.getInt(EXTRA_KEY_ACCOUNT_TYPE, AccountType.ALL)
-            operationMode = it.getInt(EXTRA_KEY_OPERATION_MODE, AccountOperationMode.SELECTION)
+            operationMode = it.getInt(EXTRA_KEY_OPERATION_MODE, AccountOperationMode.SWITCH)
         }
 
         initView()
@@ -84,7 +87,7 @@ class AccountSelectionFragment : BaseFragment() {
 
         args?.let {
             accountType = it.getInt(EXTRA_KEY_ACCOUNT_TYPE, AccountType.ALL)
-            operationMode = it.getInt(EXTRA_KEY_OPERATION_MODE, AccountOperationMode.SELECTION)
+            operationMode = it.getInt(EXTRA_KEY_OPERATION_MODE, AccountOperationMode.SWITCH)
         }
 
         initData()
@@ -121,7 +124,9 @@ class AccountSelectionFragment : BaseFragment() {
     private fun initData() {
         launch(Dispatchers.IO) {
             //val data = fakeAccounts(accountType)
-            val data = loadAccounts(accountType)
+            val data = loadAccounts(
+                accountType, accountManager, accountDao
+            )
             withContext(Dispatchers.Main) {
                 vAccountList.setData(data)
             }
@@ -132,7 +137,7 @@ class AccountSelectionFragment : BaseFragment() {
         GroupListLayout.ItemLayout<AccountVo> {
 
         private val tvTitle: TextView = TextView(context).apply {
-            layoutParams = FrameLayout.LayoutParams(
+            layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
@@ -164,7 +169,9 @@ class AccountSelectionFragment : BaseFragment() {
     inner class ContentItem(context: Context) : GroupListLayout.ItemLayout<AccountVo>,
         View.OnClickListener {
 
-        private val rootView: View = View.inflate(context, R.layout.item_account_selection, null)
+        private val rootView: View = View.inflate(
+            context, R.layout.item_account_selection, null
+        )
         private val tvName: TextView
         private val tvAddress: TextView
         private val ivSelected: ImageView
@@ -172,7 +179,7 @@ class AccountSelectionFragment : BaseFragment() {
         private var accountVo: AccountVo? = null
 
         init {
-            rootView.layoutParams = FrameLayout.LayoutParams(
+            rootView.layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
@@ -218,10 +225,12 @@ class AccountSelectionFragment : BaseFragment() {
         override fun onClick(view: View) {
             if (!isFastMultiClick(view)) {
                 accountVo?.let {
-                    // 切换当前钱包账号
-                    AccountManager().switchCurrentAccount(it.accountDO.id)
-                    // 发送切换钱包账号事件
-                    EventBus.getDefault().post(SwitchAccountEvent())
+                    if (operationMode == AccountOperationMode.SWITCH && !it.selected) {
+                        // 切换当前钱包账号
+                        accountManager.switchCurrentAccount(it.accountDO.id)
+                        // 发送切换钱包账号事件
+                        EventBus.getDefault().post(SwitchAccountEvent())
+                    }
                     // 关闭当前页面
                     this@AccountSelectionFragment.finishActivity()
                 }

@@ -122,10 +122,6 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
 
         if (floatTitleItem == null) {
             floatTitleItem = itemFactory!!.createTitle(context, true)
-            floatTitleItem!!.getItemView().layoutParams = LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
             addView(floatTitleItem!!.getItemView())
         }
 
@@ -438,10 +434,16 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
          */
         private fun createDefaultTitle(context: Context, isFloat: Boolean): TextView {
             return TextView(context).apply {
-                layoutParams = LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
+                layoutParams = if (isFloat)
+                    LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                else
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
                 setTextColor(Color.parseColor("#3C3848"))
                 //setTypeface(Typeface.DEFAULT, Typeface.BOLD)
@@ -450,7 +452,8 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         }
 
         /**
-         * 创建 GroupTitle,如果为null,则使用默认的标题,父布局为FrameLayout
+         * 创建 GroupTitle,如果为null,则使用默认的标题,
+         * 父布局 isFloat = true 时为FrameLayout，isFloat = false 时为LinearLayout。
          * @param context
          * @param isFloat 是否是悬浮标题(可以根据是否是悬浮标题定制不同的样式,但是需要注意高度要保持一致)
          */
@@ -462,7 +465,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         }
 
         /**
-         * 创建 GroupContent,不能为null,父布局为FrameLayout
+         * 创建 GroupContent,不能为null,父布局为LinearLayout
          * @param context
          * @param viewType [getContentViewType]
          */

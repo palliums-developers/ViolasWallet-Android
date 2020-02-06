@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.isFastMultiClick
@@ -13,8 +13,10 @@ import com.palliums.widget.groupList.GroupListLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.ChangeAccountNameEvent
 import com.violas.wallet.event.WalletChangeEvent
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.AccountVo
 import com.violas.wallet.ui.account.loadAccounts
@@ -35,6 +37,9 @@ import org.greenrobot.eventbus.ThreadMode
  * desc: 钱包账户管理页面
  */
 class AccountManagementActivity : BaseAppActivity() {
+
+    private val accountManager by lazy { AccountManager() }
+    private val accountDao by lazy { DataRepository.getAccountStorage() }
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_account_management
@@ -64,7 +69,9 @@ class AccountManagementActivity : BaseAppActivity() {
                 viewType: Int
             ): GroupListLayout.ItemLayout<out GroupListLayout.ItemData> {
                 return ContentItem(context) {
-                    WalletManagerActivity.start(this@AccountManagementActivity, it.accountDO.id)
+                    WalletManagerActivity.start(
+                        this@AccountManagementActivity, it.accountDO.id
+                    )
                 }
             }
         }
@@ -81,7 +88,9 @@ class AccountManagementActivity : BaseAppActivity() {
     private fun initData() {
         launch(Dispatchers.IO) {
             //val data = fakeAccounts(AccountType.ALL)
-            val data = loadAccounts(AccountType.ALL)
+            val data = loadAccounts(
+                AccountType.ALL, accountManager, accountDao
+            )
             withContext(Dispatchers.Main) {
                 vAccountList.setData(data)
             }
@@ -107,14 +116,16 @@ class AccountManagementActivity : BaseAppActivity() {
         GroupListLayout.ItemLayout<AccountVo>,
         View.OnClickListener {
 
-        private val rootView: View = View.inflate(context, R.layout.item_account_management, null)
+        private val rootView: View = View.inflate(
+            context, R.layout.item_account_management, null
+        )
         private val tvName: TextView
         private val tvAddress: TextView
 
         private var accountVo: AccountVo? = null
 
         init {
-            rootView.layoutParams = FrameLayout.LayoutParams(
+            rootView.layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {

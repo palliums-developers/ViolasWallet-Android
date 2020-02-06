@@ -122,9 +122,11 @@
             style="@style/BaseButtonPrimary"
             android:layout_marginTop="@dimen/dp_46"
             android:text="@string/btn_next_step"
+            app:layout_constraintBottom_toTopOf="@id/tvBackupLater"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_5" />
+            app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_5"
+            app:layout_goneMarginBottom="@dimen/dp_56" />
 
         <TextView
             android:id="@+id/tvBackupLater"
@@ -142,4 +144,5 @@
             app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_next_step" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.core.widget.NestedScrollView>
