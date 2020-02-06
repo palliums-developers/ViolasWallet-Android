@@ -13,6 +13,11 @@ class ViolasOutputScript {
         val TYPE_CANCEL: ByteArray = byteArrayOf(0x30, 0x02)
     }
 
+    /**
+     * 创建跨链兑换交易
+     * @param address 接收地址
+     * @param vtokenAddress Token 地址
+     */
     fun requestExchange(
         address: ByteArray,
         vtokenAddress: ByteArray,

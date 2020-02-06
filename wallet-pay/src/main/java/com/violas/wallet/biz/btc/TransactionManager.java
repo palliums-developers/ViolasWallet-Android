@@ -133,6 +133,10 @@ public class TransactionManager {
                 });
     }
 
+    public boolean checkBalance(double amount, int toAddressCount) {
+        return obtainUTXO(amount, toAddressCount, 35);
+    }
+
     /**
      * 构建交易
      *

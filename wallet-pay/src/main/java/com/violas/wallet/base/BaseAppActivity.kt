@@ -45,7 +45,7 @@ abstract class BaseAppActivity : BaseActivity() {
     )
     annotation class TitleStyle
 
-    private fun setTitleStyle(@TitleStyle style: Int) {
+    protected fun setTitleStyle(@TitleStyle style: Int) {
         when (style) {
 
             TITLE_STYLE_GREY_BACKGROUND -> {
