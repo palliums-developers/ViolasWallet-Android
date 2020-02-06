@@ -2,6 +2,7 @@ package org.palliums.violascore.move
 
 import org.json.JSONObject
 import org.palliums.violascore.serialization.hexToBytes
+import org.palliums.violascore.utils.sundaySearch
 import java.io.InputStream
 import java.io.InputStreamReader
 
@@ -43,20 +44,6 @@ object Move {
     }
 
     fun findAddressIndex(moveCode: ByteArray, tokenAddress: ByteArray): Int {
-        for (index in moveCode.indices) {
-            if (moveCode[index] == tokenAddress[0]) {
-                var isSuccess = true
-                for (targetPosition in tokenAddress.indices) {
-                    if (moveCode[index + targetPosition] != tokenAddress[targetPosition]) {
-                        isSuccess = false
-                        break
-                    }
-                }
-                if (isSuccess) {
-                    return index
-                }
-            }
-        }
-        return -1
+        return sundaySearch(moveCode, tokenAddress)
     }
 }

@@ -163,3 +163,42 @@ fun TransactionPayload.Companion.optionUndoExchangePayload(
         )
     )
 }
+
+enum class ExchangeMappingType(val type: String, val tokenAddress: String) {
+    Mapping2BTC("v2b", "xxxxx")
+}
+
+/**
+ * 创建兑换 vBTC - BTC 兑换交易 Payload
+ */
+fun TransactionPayload.Companion.optionExchangeMappingPayload(
+    context: Context,
+    receiveAddress: String,
+    mappingType: ExchangeMappingType,
+    exchangeSendAmount: Long,
+    toAddress: String
+): TransactionPayload {
+
+    val subExchangeDate = JSONObject()
+    subExchangeDate.put("flag", "violas")
+    subExchangeDate.put("type", mappingType.type)
+    subExchangeDate.put("to_address", toAddress)
+    subExchangeDate.put("state", "start")
+
+    val addressArgument = TransactionArgument.newAddress(receiveAddress)
+    val amountArgument = TransactionArgument.newU64(exchangeSendAmount)
+    val dateArgument =
+        TransactionArgument.newByteArray(subExchangeDate.toString().toByteArray())
+
+    val moveEncode = Move.violasTokenEncode(
+        context.assets.open("move/transfer_with_data.json"),
+        mappingType.tokenAddress.hexToBytes()
+    )
+
+    return TransactionPayload(
+        TransactionPayload.Script(
+            moveEncode,
+            arrayListOf(addressArgument, amountArgument, dateArgument)
+        )
+    )
+}
