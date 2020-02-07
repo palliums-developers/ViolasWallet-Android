@@ -59,7 +59,7 @@ class OutsideExchangeViewModel : ViewModel() {
                     }
                 }
                 else -> {
-                    TODO()
+                   // TODO
                 }
             }
         }

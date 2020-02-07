@@ -25,6 +25,7 @@ import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
+import com.violas.wallet.ui.outsideExchange.OutsideExchangeActivity
 import com.violas.wallet.ui.record.TransactionRecordActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
@@ -87,6 +88,7 @@ class WalletFragment : BaseFragment() {
         layoutWalletType.setOnClickListener(this)
         btnCollection.setOnClickListener(this)
         btnTransfer.setOnClickListener(this)
+        vCrossChainExchangeLayout.setOnClickListener(this)
         vTransactionRecordLayout.setOnClickListener(this)
 
         if (mAccountManager.isFastIntoWallet()) {
@@ -113,7 +115,7 @@ class WalletFragment : BaseFragment() {
         cancelRefreshAssertJob()
     }
 
-    private fun cancelRefreshAssertJob(){
+    private fun cancelRefreshAssertJob() {
         try {
             refreshAssertJob?.cancel()
         } catch (ignore: Exception) {
@@ -183,6 +185,13 @@ class WalletFragment : BaseFragment() {
                             mAccountManager.currentAccount().id
                         )
                     }
+                }
+            }
+
+            R.id.vCrossChainExchangeLayout -> {
+                launch(Dispatchers.IO) {
+                    val currentAccount = mAccountManager.currentAccount()
+                    activity?.let { OutsideExchangeActivity.start(it, currentAccount.id) }
                 }
             }
 
