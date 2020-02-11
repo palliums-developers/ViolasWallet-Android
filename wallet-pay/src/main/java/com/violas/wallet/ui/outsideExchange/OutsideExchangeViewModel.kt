@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.outsideExchange
 
 import android.app.Application
-import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -195,9 +194,9 @@ class OutsideExchangeViewModel(application: Application) : AndroidViewModel(appl
                     mExchangeMappingManager.currentTokenAddress()
                 )
                 , {
-                    Log.e("===", it)
+                    success.invoke()
                 }, {
-                    Log.e("===", it.message)
+                    error.invoke(it)
                 }
             )
         }

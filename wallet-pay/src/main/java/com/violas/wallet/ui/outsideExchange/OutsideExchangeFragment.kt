@@ -174,7 +174,8 @@ class OutsideExchangeFragment : BaseFragment() {
             showProgress()
             viewModel.initiateChange(sendAccountKey, receiveAccountKey, {
                 dismissProgress()
-                showToast("兑换成功")
+                showToast(R.string.hint_exchange_successful)
+                finishActivity()
             }, {
                 dismissProgress()
                 it.printStackTrace()
@@ -198,7 +199,8 @@ class OutsideExchangeFragment : BaseFragment() {
                         dismissProgress()
                         return@launch
                     }
-                    val decryptReceiveAccountKey = viewModel.decryptReceiveAccountKey(receivePassword)
+                    val decryptReceiveAccountKey =
+                        viewModel.decryptReceiveAccountKey(receivePassword)
                     if (decryptReceiveAccountKey == null) {
                         dialogFragment.setErrorHint("Violas 账户密码错误")
                         dismissProgress()
