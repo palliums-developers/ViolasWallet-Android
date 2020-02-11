@@ -64,7 +64,7 @@ class OutsideExchangeViewModel(application: Application) : AndroidViewModel(appl
                     }
                 }
                 else -> {
-                    TODO()
+                   // TODO
                 }
             }
         }

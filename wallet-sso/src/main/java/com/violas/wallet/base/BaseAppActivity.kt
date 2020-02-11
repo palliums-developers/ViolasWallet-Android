@@ -122,13 +122,13 @@ abstract class BaseAppActivity : BaseActivity() {
     private fun StatusBarMode(activity: Activity, dark: Boolean): Int {
         var result = 0
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (MIUISetStatusBarLightMode(activity, dark)) {
-                    result = 1
-                } else if (FlymeSetStatusBarLightMode(activity.window, dark)) {
-                    result = 2
-                }
+            if (MIUISetStatusBarLightMode(activity, dark)) {
+                result = 1
+            } else if (FlymeSetStatusBarLightMode(activity.window, dark)) {
+                result = 2
+            }
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 activity.window.decorView.systemUiVisibility = if (dark)
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                 else

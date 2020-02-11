@@ -241,4 +241,6 @@
     <string name="hint_exchange_amount_too_large">Excessive exchange amount</string>
     <string name="hint_to_their_error">You can\'t transfer money to yourself</string>
     <string name="hint_transfer_broadcast_success">Transfer transaction broadcast successful</string>
+
+    <string name="label_cross_chain_exchange">币币兑换</string>
 </resources>
