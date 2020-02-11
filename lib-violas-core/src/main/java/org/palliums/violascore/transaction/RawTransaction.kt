@@ -7,7 +7,6 @@ import org.palliums.violascore.serialization.LCSOutputStream
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.utils.HexUtils
 import types.AccessPathOuterClass.AccessPath
-import types.TransactionOuterClass.TransactionArgument.ArgType
 
 
 data class RawTransaction(
@@ -278,6 +277,13 @@ data class TransactionArgument(
     val argType: ArgType,
     val data: ByteArray
 ) {
+    enum class ArgType(val number: Int) {
+        U64(0),
+        ADDRESS(1),
+        BYTEARRAY(2),
+        BOOL(3)
+    }
+
     fun toByteArray(): ByteArray {
         val stream = LCSOutputStream()
         stream.writeInt(argType.number)
@@ -308,10 +314,10 @@ data class TransactionArgument(
         }
 
         @JvmStatic
-        fun newString(value: String): TransactionArgument {
+        fun newBool(value: Boolean): TransactionArgument {
             return TransactionArgument(
-                ArgType.STRING,
-                LCS.encodeString(value)
+                ArgType.BOOL,
+                LCS.encodeBool(value)
             )
         }
 
@@ -334,8 +340,8 @@ data class TransactionArgument(
                     input.read(value)
                     newAddress(value)
                 }
-                ArgType.STRING.number -> {
-                    newString(input.readString())
+                ArgType.BOOL.number -> {
+                    newBool(input.readBool())
                 }
                 ArgType.BYTEARRAY.number -> {
                     newByteArray(input.readBytes())

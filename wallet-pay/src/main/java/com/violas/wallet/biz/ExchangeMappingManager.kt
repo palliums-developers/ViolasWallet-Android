@@ -93,4 +93,8 @@ class ExchangeMappingManager {
 
         }
     }
+
+    fun currentTokenAddress(): String {
+        return "af955c1d62a74a7543235dbb7fa46ed98948d2041dff67dfdb636a54e84f91fb"
+    }
 }

@@ -9,8 +9,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseFragment
 import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
+import com.palliums.utils.toBigDecimal
 import com.violas.wallet.R
+import com.violas.wallet.widget.dialog.ExchangeMappingPasswordDialog
 import kotlinx.android.synthetic.main.outside_exchange_fragment.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -158,6 +163,54 @@ class OutsideExchangeFragment : BaseFragment() {
 
     // ======= 发起兑换的验证 ====== //
     private fun initiateChange() {
-        viewModel.initiateChange()
+        val fromBigDecimal = editFromCoin.text.toString().toBigDecimal()
+        val toBigDecimal = editToCoin.text.toString().toBigDecimal()
+        if (fromBigDecimal <= BigDecimal("0") || toBigDecimal <= BigDecimal("0")) {
+            showToast(getString(R.string.hint_change_number_not_zero))
+            return
+        }
+        showPasswordDialog { sendAccountKey,
+                             receiveAccountKey ->
+            showProgress()
+            viewModel.initiateChange(sendAccountKey, receiveAccountKey, {
+                dismissProgress()
+                showToast("兑换成功")
+            }, {
+                dismissProgress()
+                it.printStackTrace()
+                it.message?.let { message ->
+                    showToast(message)
+                }
+            })
+        }
+    }
+
+    private fun showPasswordDialog(callback: (ByteArray, ByteArray) -> Unit) {
+        ExchangeMappingPasswordDialog()
+            .setSendHint("请输入 BTC 账户密码")
+            .setReceiveHint("请输入 Violas 账户密码")
+            .setConfirmListener { sendPassword, receivePassword, dialogFragment ->
+                showProgress()
+                launch(Dispatchers.IO) {
+                    val decryptSendAccountKey = viewModel.decryptSendAccountKey(sendPassword)
+                    if (decryptSendAccountKey == null) {
+                        dialogFragment.setErrorHint("BTC 账户密码错误")
+                        dismissProgress()
+                        return@launch
+                    }
+                    val decryptReceiveAccountKey = viewModel.decryptReceiveAccountKey(receivePassword)
+                    if (decryptReceiveAccountKey == null) {
+                        dialogFragment.setErrorHint("Violas 账户密码错误")
+                        dismissProgress()
+                        return@launch
+                    }
+                    withContext(Dispatchers.Main) {
+                        dismissProgress()
+                        dialogFragment.dismiss()
+                        callback(decryptSendAccountKey, decryptReceiveAccountKey)
+                    }
+                }
+            }
+            .show(childFragmentManager)
     }
 }

@@ -25,6 +25,14 @@ fun getString(
     return context.getString(res, *formatArgs)
 }
 
+@JvmOverloads
+fun getString(
+    @StringRes res: Int,
+    context: Context = ContextProvider.getContext()
+): String {
+    return context.getString(res)
+}
+
 @ColorInt
 @JvmOverloads
 fun getColor(

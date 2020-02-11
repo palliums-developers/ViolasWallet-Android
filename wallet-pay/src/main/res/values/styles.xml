@@ -97,4 +97,7 @@
         <item name="android:layout_marginEnd">@dimen/dp_23</item>
     </style>
 
+    <style name="EditText.Code">
+        <item name="android:inputType">textPassword</item>
+    </style>
 </resources>

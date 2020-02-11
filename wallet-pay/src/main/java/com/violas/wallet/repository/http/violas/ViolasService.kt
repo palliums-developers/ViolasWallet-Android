@@ -53,6 +53,19 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         return registerToken
     }
 
+    fun checkTokenRegister(address: String, tokenAddress: String): Boolean {
+        var isRegister: Boolean = false
+        mViolasRepository.getRegisterToken(address)
+            .subscribe({
+                if (it.data != null && it.data!!.contains(tokenAddress)) {
+                    isRegister = true
+                    return@subscribe
+                }
+            }, {
+            })
+        return isRegister
+    }
+
     fun getSupportCurrency(call: (list: List<SupportCurrencyDTO>) -> Unit) {
         val subscribe = mViolasRepository.getSupportCurrency()
             .subscribeOn(Schedulers.io())
