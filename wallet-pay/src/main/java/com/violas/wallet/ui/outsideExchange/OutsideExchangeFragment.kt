@@ -55,6 +55,7 @@ class OutsideExchangeFragment : BaseFragment() {
         btnExchange.setOnClickListener {
             initiateChange()
         }
+        btnCancel.setOnClickListener { finishActivity() }
     }
 
     private fun handlerExchangeNumber() {
