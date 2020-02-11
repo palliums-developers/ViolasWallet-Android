@@ -21,7 +21,7 @@ class OutsideExchangeActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitleStyle(TITLE_STYLE_NOT_TITLE)
-        val accountId = intent.getLongExtra(EXT_ACCOUNT_ID, 3)//-1L)
+        val accountId = intent.getLongExtra(EXT_ACCOUNT_ID, -1L)
 
         if (accountId == -1L) {
             return
