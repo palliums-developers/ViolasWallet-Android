@@ -143,8 +143,8 @@ class WalletManagerActivity : BaseAppActivity() {
             if (removeAccountID == currentAccountID) {
                 mAccountManager.switchCurrentAccount()
                 EventBus.getDefault().post(SwitchAccountEvent())
-                EventBus.getDefault().post(WalletChangeEvent())
             }
+            EventBus.getDefault().post(WalletChangeEvent())
             withContext(Dispatchers.Main) {
                 finish()
             }

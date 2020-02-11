@@ -1,8 +1,11 @@
 package com.violas.wallet.ui.outsideExchange
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.AmountInputFilter
 import android.text.TextWatcher
+import android.view.View
 import android.widget.EditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -11,6 +14,9 @@ import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
 import com.palliums.utils.toBigDecimal
 import com.violas.wallet.R
+import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ID
+import com.violas.wallet.ui.account.AccountType
+import com.violas.wallet.ui.account.operations.AccountOperationsActivity
 import com.violas.wallet.widget.dialog.ExchangeMappingPasswordDialog
 import kotlinx.android.synthetic.main.outside_exchange_fragment.*
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +28,8 @@ import java.math.RoundingMode
 class OutsideExchangeFragment : BaseFragment() {
 
     companion object {
+        private const val REQUEST_CODE_SELECT_ACCOUNT = 100
+
         fun newInstance(accountId: Long): OutsideExchangeFragment {
             val fragment = OutsideExchangeFragment()
             fragment.accountId = accountId
@@ -47,6 +55,36 @@ class OutsideExchangeFragment : BaseFragment() {
         handlerExchangeNumber()
     }
 
+    override fun onViewClick(view: View) {
+        when (view.id) {
+            R.id.ivSelectAccount -> {
+                AccountOperationsActivity.selectAccount(
+                    this,
+                    REQUEST_CODE_SELECT_ACCOUNT,
+                    AccountType.VIOLAS
+                )
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_CODE_SELECT_ACCOUNT -> {
+                if (resultCode != Activity.RESULT_OK) {
+                    return
+                }
+
+                val accountId = data?.getLongExtra(EXTRA_KEY_ACCOUNT_ID, -100L)
+                if (accountId == null || accountId == -100L) {
+                    return
+                }
+
+                viewModel.switchReceiveAccount(accountId)
+            }
+        }
+    }
+
     private fun initViewEvent() {
         editFromCoin.addTextChangedListener(mFromAmountTextWatcher)
         editToCoin.addTextChangedListener(mToAmountTextWatcher)
@@ -55,6 +93,7 @@ class OutsideExchangeFragment : BaseFragment() {
         btnExchange.setOnClickListener {
             initiateChange()
         }
+        ivSelectAccount.setOnClickListener(this)
     }
 
     private fun handlerExchangeNumber() {

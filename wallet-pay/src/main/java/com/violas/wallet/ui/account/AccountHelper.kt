@@ -22,7 +22,8 @@ import com.violas.wallet.repository.database.entity.AccountDO
 fun loadAccounts(
     @AccountType accountType: Int,
     accountManager: AccountManager = AccountManager(),
-    accountDao: AccountDao = DataRepository.getAccountStorage()
+    accountDao: AccountDao = DataRepository.getAccountStorage(),
+    differentiateIdentityIfNotAllAccountType: Boolean = false // 不是AccountType.ALL时，区分身份钱包和创建导入钱包
 ): MutableMap<String, List<AccountVo>> {
     val data = mutableMapOf<String, List<AccountVo>>()
 
@@ -51,14 +52,42 @@ fun loadAccounts(
 
     } else {
         val coinTypes = transformAccountType(accountType)
-        val accounts = accountDao.loadAllByCoinType(coinTypes.coinType())
-            .map {
-                AccountVo(it).apply {
-                    selected = it.id == currentAccount.id
-                    setGroupName(coinTypes.coinName())
-                }
+        if (differentiateIdentityIfNotAllAccountType) {
+            val identityAccountLabel = getString(R.string.account_label_identity)
+            val identityAccounts =
+                accountDao.findAllByWalletTypeAndCoinType(0, coinTypes.coinType())
+                    ?.map {
+                        AccountVo(it).apply {
+                            selected = it.id == currentAccount.id
+                            setGroupName(identityAccountLabel)
+                        }
+                    }
+            identityAccounts?.let {
+                data[identityAccountLabel] = identityAccounts
             }
-        data[coinTypes.coinName()] = accounts
+
+            val otherAccountLabel = getString(R.string.account_label_other)
+            val otherAccounts =
+                accountDao.findAllByWalletTypeAndCoinType(1, coinTypes.coinType())
+                    ?.map {
+                        AccountVo(it).apply {
+                            selected = it.id == currentAccount.id
+                            setGroupName(otherAccountLabel)
+                        }
+                    }
+            otherAccounts?.let {
+                data[otherAccountLabel] = otherAccounts
+            }
+        } else {
+            val accounts = accountDao.loadAllByCoinType(coinTypes.coinType())
+                .map {
+                    AccountVo(it).apply {
+                        selected = it.id == currentAccount.id
+                        setGroupName(coinTypes.coinName())
+                    }
+                }
+            data[coinTypes.coinName()] = accounts
+        }
     }
 
     return data

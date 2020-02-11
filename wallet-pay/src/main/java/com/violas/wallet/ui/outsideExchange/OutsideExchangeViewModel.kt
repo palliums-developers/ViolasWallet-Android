@@ -202,6 +202,22 @@ class OutsideExchangeViewModel(application: Application) : AndroidViewModel(appl
         }
     }
 
+    fun switchReceiveAccount(accountId: Long) {
+        if (accountId == stableCurrencyReceivingAccountLiveData.value?.id) {
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val account = mAccountManager.getAccountById(accountId)
+                if (account.coinNumber == CoinTypes.Violas.coinType()) {
+                    stableCurrencyReceivingAccountLiveData.postValue(account)
+                }
+            } catch (e: Exception) {
+            }
+        }
+    }
+
     private fun publishToken(mAccount: Account, tokenAddress: String): Boolean {
         val countDownLatch = CountDownLatch(1)
         var exec = false
