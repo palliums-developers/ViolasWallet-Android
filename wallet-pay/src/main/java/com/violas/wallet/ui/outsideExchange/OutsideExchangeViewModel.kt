@@ -1,31 +1,27 @@
 package com.violas.wallet.ui.outsideExchange
 
-import android.app.Application
 import androidx.annotation.MainThread
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.ContextProvider
 import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.BTCMappingAccount
 import com.violas.wallet.biz.ExchangeMappingManager
-import com.violas.wallet.biz.ViolasMappingAccount
+import com.violas.wallet.biz.ExchangePair
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.database.entity.AccountDO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.palliums.libracore.serialization.hexToBytes
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class OutsideExchangeViewModel(application: Application) : AndroidViewModel(application) {
+class OutsideExchangeViewModel : ViewModel() {
     private lateinit var mAccount: AccountDO
     private val mAccountManager = AccountManager()
 
-    private val exchangeCoinTypeLiveData = MutableLiveData<Int>()
+    private val mCurrentExchangePairLiveData = MutableLiveData<ExchangePair>()
 
     val exchangeFromCoinLiveData = MutableLiveData<String>()
     val exchangeToCoinLiveData = MutableLiveData<String>()
@@ -44,24 +40,18 @@ class OutsideExchangeViewModel(application: Application) : AndroidViewModel(appl
         ExchangeMappingManager()
     }
 
+    private val mExchangePairManager by lazy {
+        mExchangeMappingManager.getExchangePair()
+    }
+
     @MainThread
     fun exchange(accountId: Long) {
         init()
         viewModelScope.launch(Dispatchers.IO) {
             mAccount = mAccountManager.getAccountById(accountId)
-
-            when (mAccount.coinNumber) {
-                CoinTypes.Bitcoin.coinType(),
-                CoinTypes.BitcoinTest.coinType(),
-                CoinTypes.Libra.coinType() -> {
-                    withContext(Dispatchers.Main) {
-                        exchangeCoinTypeLiveData.postValue(mAccount.coinNumber)
-                    }
-                }
-                else -> {
-                    // TODO
-                }
-            }
+            val exchangePair = mExchangePairManager.findExchangePair(mAccount.coinNumber)
+                ?: return@launch
+            mCurrentExchangePairLiveData.postValue(exchangePair)
         }
     }
 
@@ -86,23 +76,10 @@ class OutsideExchangeViewModel(application: Application) : AndroidViewModel(appl
     /**
      * 处理处理交易币种切换的时候
      */
-    private fun observerExchangeCoinType() = exchangeCoinTypeLiveData.observeForever {
-        when (it) {
-            CoinTypes.BitcoinTest.coinType(),
-            CoinTypes.Bitcoin.coinType() -> {
-                exchangeFromCoinLiveData.value = ("BTC")
-                exchangeToCoinLiveData.value = ("vBTC")
-            }
-            CoinTypes.Libra.coinType() -> {
-                exchangeFromCoinLiveData.value = ("Libra")
-                exchangeToCoinLiveData.value = ("vLibra")
-            }
-            else -> {
-                TODO("待处理")
-            }
-        }
-
-        exchangeRateLiveData.value = (BigDecimal.valueOf(1))
+    private fun observerExchangeCoinType() = mCurrentExchangePairLiveData.observeForever {
+        exchangeFromCoinLiveData.value = it.getFirst().getName()
+        exchangeToCoinLiveData.value = it.getLast().getName()
+        exchangeRateLiveData.value = it.getRate()
     }
 
     fun changeToCoinAmount(get: String?) {
@@ -160,25 +137,35 @@ class OutsideExchangeViewModel(application: Application) : AndroidViewModel(appl
             try {
                 val receivingAccount =
                     stableCurrencyReceivingAccountLiveData.value ?: throw RuntimeException()
+                val exchangePair =
+                    mCurrentExchangePairLiveData.value ?: throw java.lang.RuntimeException()
 
                 mExchangeMappingManager.exchangeMapping(
-                    BTCMappingAccount(
-                        mAccount.publicKey.hexToBytes(),
-                        mAccount.address,
+                    mExchangeMappingManager.parseFirstMappingAccount(
+                        exchangePair,
+                        mAccount,
                         accountSendPrivate
                     ),
-                    ViolasMappingAccount(
-                        receivingAccount.address,
-                        "af955c1d62a74a7543235dbb7fa46ed98948d2041dff67dfdb636a54e84f91fb",
+                    mExchangeMappingManager.parseLastMappingAccount(
+                        exchangePair,
+                        receivingAccount,
                         accountReceivePrivate
                     ),
                     mToCoinAmountLiveData.value ?: BigDecimal("0.0001"),
-                    "2MxBZG7295wfsXaUj69quf8vucFzwG35UWh"
+                    exchangePair.getReceiveFirstAddress()
                 )
                 success.invoke()
             } catch (e: Exception) {
                 error.invoke(e)
             }
         }
+    }
+
+    fun getExchangePairChainName(): Pair<String, String> {
+        val value = mCurrentExchangePairLiveData.value!!
+        return Pair(
+            value.getFirst().getCoinType().fullName(),
+            value.getLast().getCoinType().fullName()
+        )
     }
 }

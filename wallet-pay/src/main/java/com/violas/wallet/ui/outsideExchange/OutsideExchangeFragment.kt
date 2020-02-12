@@ -188,22 +188,33 @@ class OutsideExchangeFragment : BaseFragment() {
     }
 
     private fun showPasswordDialog(callback: (ByteArray, ByteArray) -> Unit) {
+        val exchangePair = viewModel.getExchangePairChainName()
         ExchangeMappingPasswordDialog()
-            .setSendHint("请输入 BTC 账户密码")
-            .setReceiveHint("请输入 Violas 账户密码")
+            .setSendHint(getString(R.string.hint_input_account_password, exchangePair.first))
+            .setReceiveHint(getString(R.string.hint_input_account_password, exchangePair.second))
             .setConfirmListener { sendPassword, receivePassword, dialogFragment ->
                 showProgress()
                 launch(Dispatchers.IO) {
                     val decryptSendAccountKey = viewModel.decryptSendAccountKey(sendPassword)
                     if (decryptSendAccountKey == null) {
-                        dialogFragment.setErrorHint("BTC 账户密码错误")
+                        dialogFragment.setErrorHint(
+                            getString(
+                                R.string.hint_input_account_password_error,
+                                exchangePair.first
+                            )
+                        )
                         dismissProgress()
                         return@launch
                     }
                     val decryptReceiveAccountKey =
                         viewModel.decryptReceiveAccountKey(receivePassword)
                     if (decryptReceiveAccountKey == null) {
-                        dialogFragment.setErrorHint("Violas 账户密码错误")
+                        dialogFragment.setErrorHint(
+                            getString(
+                                R.string.hint_input_account_password_error,
+                                exchangePair.second
+                            )
+                        )
                         dismissProgress()
                         return@launch
                     }

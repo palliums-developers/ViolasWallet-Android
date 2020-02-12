@@ -2,10 +2,13 @@ package com.violas.wallet.biz
 
 import com.palliums.content.ContextProvider
 import com.palliums.utils.getString
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.btc.outputScript.ViolasOutputScript
+import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
@@ -14,6 +17,50 @@ import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
 
+// ====== Exchange Pair ========/
+interface ExchangeAssert {
+    fun getCoinType(): CoinTypes
+
+    fun getName(): String {
+        return getCoinType().coinName()
+    }
+}
+
+interface ExchangeCoin : ExchangeAssert {
+
+}
+
+interface ExchangeToken : ExchangeAssert {
+    fun getTokenAddress(): String
+}
+
+// ====== Exchange Pair ========/
+interface ExchangePair {
+    fun getFirst(): ExchangeAssert
+    fun getLast(): ExchangeAssert
+    fun getRate(): BigDecimal
+    fun getReceiveFirstAddress(): String
+    fun getReceiveLastAddress(): String
+}
+
+class ExchangePairManager() {
+    private val mExchangePair = ArrayList<ExchangePair>()
+
+    fun addExchangePair(pair: ExchangePair) {
+        mExchangePair.add(pair)
+    }
+
+    fun findExchangePair(coinNumber: Int): ExchangePair? {
+        mExchangePair.forEach {
+            if (it.getFirst().getCoinType().coinType() == coinNumber) {
+                return it
+            }
+        }
+        return null
+    }
+}
+
+// ==== Account Interface ======/
 interface BTCAccount {
     fun getAddress(): String
     fun getPublicKey(): ByteArray
@@ -27,6 +74,8 @@ interface ViolasAccount {
     fun getAddress(): ByteArray
     fun getTokenAddress(): ByteArray
 }
+
+// ==== Account Mapping ======/
 
 abstract class MappingAccount(private val sendPrivateKey: ByteArray? = null) {
     fun getPrivateKey() = sendPrivateKey
@@ -61,6 +110,8 @@ class ViolasMappingAccount(
     override fun getTokenAddress() = tokenAddress.hexToBytes()
 }
 
+// ==== Transaction Processor Interface ======/
+
 interface TransactionProcessor {
     fun dispense(sendAccount: MappingAccount, receiveAccount: MappingAccount): Boolean
 
@@ -72,6 +123,8 @@ interface TransactionProcessor {
         receiveAddress: String
     ): String
 }
+
+// ==== Transaction Processor Impl ======/
 
 class TransactionProcessorBTCTovBTC() : TransactionProcessor {
     private val mViolasService = DataRepository.getViolasService()
@@ -165,6 +218,8 @@ class TransactionProcessorBTCTovBTC() : TransactionProcessor {
     }
 }
 
+// ==== Transaction Processor Impl ======/
+
 class ExchangeMappingManager {
 
     private val mTransactionProcessors = ArrayList<TransactionProcessor>()
@@ -173,13 +228,68 @@ class ExchangeMappingManager {
         mTransactionProcessors.add(TransactionProcessorBTCTovBTC())
     }
 
+    fun parseFirstMappingAccount(
+        exchangePair: ExchangePair,
+        account: AccountDO,
+        privateKey: ByteArray? = null
+    ): MappingAccount {
+        return parseMappingAccount(exchangePair, account, privateKey, true)
+    }
+
+    fun parseLastMappingAccount(
+        exchangePair: ExchangePair,
+        account: AccountDO,
+        privateKey: ByteArray? = null
+    ): MappingAccount {
+        return parseMappingAccount(exchangePair, account, privateKey, false)
+    }
+
+    fun parseMappingAccount(
+        exchangePair: ExchangePair,
+        account: AccountDO,
+        privateKey: ByteArray?,
+        first: Boolean = true
+    ): MappingAccount {
+        val exchangeAssert = if (first) {
+            exchangePair.getFirst()
+        } else {
+            exchangePair.getLast()
+        }
+        return when (exchangeAssert.getCoinType()) {
+            CoinTypes.Violas -> {
+                ViolasMappingAccount(
+                    account.address,
+                    (exchangePair.getLast() as ExchangeToken).getTokenAddress(),
+                    privateKey
+                )
+            }
+            CoinTypes.Libra -> {
+                LibraMappingAccount(
+                    account.address,
+                    privateKey
+                )
+            }
+            CoinTypes.BitcoinTest,
+            CoinTypes.Bitcoin -> {
+                BTCMappingAccount(
+                    account.publicKey.hexToBytes(),
+                    account.address,
+                    privateKey
+                )
+            }
+            else -> {
+                throw RuntimeException("Unsupported currency")
+            }
+        }
+    }
+
     suspend fun exchangeMapping(
         sendAccount: MappingAccount,
         receiveAccount: MappingAccount,
         sendAmount: BigDecimal,
         receiveAddress: String
     ): String? {
-       return dispenseTransfer(sendAccount, receiveAccount, sendAmount, receiveAddress)
+        return dispenseTransfer(sendAccount, receiveAccount, sendAmount, receiveAddress)
     }
 
     private fun dispenseTransfer(
@@ -196,8 +306,100 @@ class ExchangeMappingManager {
             }
         }
         if (transactionProcessor == null) {
-            throw RuntimeException("不支持的转账")
+            throw RuntimeException("Unsupported transactions, No TransactionProcessor is available.")
         }
         return transactionProcessor?.handle(sendAccount, receiveAccount, sendAmount, receiveAddress)
     }
+
+    fun getExchangePair(): ExchangePairManager {
+        val exchangePairManager = ExchangePairManager()
+        val btc2vbtc = object : ExchangePair {
+            override fun getFirst(): ExchangeAssert {
+                return object : ExchangeCoin {
+                    override fun getCoinType(): CoinTypes {
+                        return if (Vm.TestNet) {
+                            CoinTypes.BitcoinTest
+                        } else {
+                            CoinTypes.Bitcoin
+                        }
+                    }
+                }
+            }
+
+            override fun getLast(): ExchangeAssert {
+                return object : ExchangeToken {
+                    override fun getTokenAddress(): String {
+                        return "af955c1d62a74a7543235dbb7fa46ed98948d2041dff67dfdb636a54e84f91fb"
+                    }
+
+                    override fun getCoinType(): CoinTypes {
+                        return CoinTypes.Violas
+                    }
+
+                    override fun getName(): String {
+                        return "vBTC"
+                    }
+                }
+            }
+
+            override fun getRate(): BigDecimal {
+                return BigDecimal(1)
+            }
+
+            override fun getReceiveFirstAddress(): String {
+                return "2MxBZG7295wfsXaUj69quf8vucFzwG35UWh"
+            }
+
+            override fun getReceiveLastAddress(): String {
+                return "fd0426fa9a3ba4fae760d0f614591c61bb53232a3b1138d5078efa11ef07c49c"
+            }
+        }
+
+        val libra2vlibra = object : ExchangePair {
+            override fun getFirst(): ExchangeAssert {
+                return object : ExchangeCoin {
+                    override fun getCoinType(): CoinTypes {
+                        return CoinTypes.Libra
+                    }
+                }
+            }
+
+            override fun getLast(): ExchangeAssert {
+                return object : ExchangeToken {
+                    override fun getTokenAddress(): String {
+                        return "61b578c0ebaad3852ea5e023fb0f59af61de1a5faf02b1211af0424ee5bbc410"
+                    }
+
+                    override fun getCoinType(): CoinTypes {
+                        return CoinTypes.Violas
+                    }
+
+                    override fun getName(): String {
+                        return "vLibra"
+                    }
+                }
+            }
+
+            override fun getRate(): BigDecimal {
+                return BigDecimal(1)
+            }
+
+            override fun getReceiveFirstAddress(): String {
+                return "29223f25fe4b74d75ca87527aed560b2826f5da9382e2fb83f9ab740ac40b8f7"
+            }
+
+            override fun getReceiveLastAddress(): String {
+                return "fd0426fa9a3ba4fae760d0f614591c61bb53232a3b1138d5078efa11ef07c49c"
+            }
+        }
+
+        exchangePairManager.addExchangePair(
+            btc2vbtc
+        )
+        exchangePairManager.addExchangePair(
+            libra2vlibra
+        )
+        return exchangePairManager
+    }
 }
+
