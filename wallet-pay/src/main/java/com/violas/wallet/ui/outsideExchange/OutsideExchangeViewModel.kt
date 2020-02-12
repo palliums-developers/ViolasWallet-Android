@@ -168,4 +168,20 @@ class OutsideExchangeViewModel : ViewModel() {
             value.getLast().getCoinType().fullName()
         )
     }
+
+    fun switchReceiveAccount(accountId: Long) {
+        if (accountId == stableCurrencyReceivingAccountLiveData.value?.id) {
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val account = mAccountManager.getAccountById(accountId)
+                if (account.coinNumber == CoinTypes.Violas.coinType()) {
+                    stableCurrencyReceivingAccountLiveData.postValue(account)
+                }
+            } catch (e: Exception) {
+            }
+        }
+    }
 }

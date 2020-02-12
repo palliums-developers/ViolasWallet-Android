@@ -27,6 +27,12 @@ interface AccountDao : BaseDao<AccountDO> {
     fun loadAllByCoinType(coinNumber: Int): List<AccountDO>
 
     /**
+     * 查找所有指定钱包类型和币种编号的钱包，并按创建时间升序排序
+     */
+    @Query("SELECT * FROM account WHERE  wallet_type = :walletType AND coin_number = :coinNumber ORDER BY modify_date ASC")
+    fun findAllByWalletTypeAndCoinType(walletType: Int, coinNumber: Int): List<AccountDO>?
+
+    /**
      * 根据 ID 查找账户
      * @param id 账户 ID
      */
