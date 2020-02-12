@@ -18,9 +18,14 @@ class OutsideExchangeActivity : BaseAppActivity() {
         }
     }
 
+    override fun getTitleStyle(): Int {
+        return TITLE_STYLE_NOT_TITLE
+    }
+
+    override fun getLayoutResId() = R.layout.activity_outside_exchange
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitleStyle(TITLE_STYLE_NOT_TITLE)
         val accountId = intent.getLongExtra(EXT_ACCOUNT_ID, -1L)
 
         if (accountId == -1L) {
@@ -32,6 +37,4 @@ class OutsideExchangeActivity : BaseAppActivity() {
             .commit()
 
     }
-
-    override fun getLayoutResId() = R.layout.activity_outside_exchange
 }

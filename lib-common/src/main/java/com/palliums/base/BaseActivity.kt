@@ -3,6 +3,7 @@ package com.palliums.base
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -288,6 +289,86 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
      */
     protected fun setLightStatusBar(isLightStatusBar: Boolean) {
         StatusBarUtil.setLightStatusBarMode(this, isLightStatusBar)
+    }
+
+    fun setStatusBarMode(darkMode: Boolean): Int {
+        var result = 0
+        try {
+            if (setMIUIStatusBarMode(darkMode)) {
+                result = 1
+            } else if (setFlymeStatusBarMode(darkMode)) {
+                result = 2
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                window.decorView.systemUiVisibility = if (darkMode)
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                else
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return result
+    }
+
+    private fun setMIUIStatusBarMode(darkMode: Boolean): Boolean {
+        var result = false
+        val window = window
+        if (window != null) {
+            val clazz = window.javaClass
+            try {
+                var darkModeFlag = 0
+                val layoutParams = Class.forName("android.view.MiuiWindowManager\$LayoutParams")
+                val field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE")
+                darkModeFlag = field.getInt(layoutParams)
+                val extraFlagField = clazz.getMethod(
+                    "setExtraFlags",
+                    Int::class.javaPrimitiveType,
+                    Int::class.javaPrimitiveType
+                )
+                if (darkMode) {
+                    extraFlagField.invoke(window, darkModeFlag, darkModeFlag)//状态栏透明且黑色字体
+                } else {
+                    extraFlagField.invoke(window, 0, darkModeFlag)//清除黑色字体
+                }
+                result = true
+            } catch (e: Exception) {
+
+            }
+
+        }
+        return result
+    }
+
+    private fun setFlymeStatusBarMode(darkMode: Boolean): Boolean {
+        var result = false
+        val window = window
+        if (window != null) {
+            try {
+                val lp = window.attributes
+                val darkFlag = WindowManager.LayoutParams::class.java
+                    .getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON")
+                val meizuFlags = WindowManager.LayoutParams::class.java
+                    .getDeclaredField("meizuFlags")
+                darkFlag.isAccessible = true
+                meizuFlags.isAccessible = true
+                val bit = darkFlag.getInt(null)
+                var value = meizuFlags.getInt(lp)
+                value = if (darkMode) {
+                    value or bit
+                } else {
+                    value and bit.inv()
+                }
+                meizuFlags.setInt(lp, value)
+                window.attributes = lp
+                result = true
+            } catch (e: Exception) {
+
+            }
+
+        }
+        return result
     }
 
     override fun showProgress(@StringRes resId: Int) {

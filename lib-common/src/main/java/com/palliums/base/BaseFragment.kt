@@ -71,4 +71,8 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener, ViewContr
     fun finishActivity() {
         activity?.finish()
     }
+
+    fun setStatusBarMode(darkMode: Boolean) {
+        (activity as? BaseActivity)?.setStatusBarMode( darkMode)
+    }
 }
