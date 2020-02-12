@@ -78,6 +78,8 @@ class WalletFragment : BaseFragment() {
         EventBus.getDefault().register(this)
 
         recyclerAssert.adapter = mAssertAdapter
+        vCrossChainExchangeLayout.visibility = View.GONE
+
         // 初始化钱包当作是切换钱包逻辑
         refreshAssert(true)
 
@@ -284,10 +286,14 @@ class WalletFragment : BaseFragment() {
         refreshAssertJob = launch(Dispatchers.IO) {
             val currentAccount = mAccountManager.currentAccount()
             val enableTokens = mTokenManger.loadEnableToken(currentAccount)
+            val violasAccount = currentAccount.coinNumber == CoinTypes.Violas.coinType()
 
             // 刷新当前钱包的信息和当前平台的资产
             if (switchWallet) {
                 recyclerAssert?.post {
+                    vCrossChainExchangeLayout.visibility =
+                        if (violasAccount) View.GONE else View.VISIBLE
+
                     mEnableTokens.clear()
                     mEnableTokens.addAll(enableTokens)
                     mAssertAdapter.notifyDataSetChanged()
@@ -295,7 +301,7 @@ class WalletFragment : BaseFragment() {
                 }
             }
 
-            if (currentAccount.coinNumber == CoinTypes.Violas.coinType()) {
+            if (violasAccount) {
                 refreshViolasAssert(currentAccount, enableTokens)
             } else {
 
