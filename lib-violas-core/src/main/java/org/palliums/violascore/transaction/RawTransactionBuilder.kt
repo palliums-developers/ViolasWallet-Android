@@ -164,35 +164,44 @@ fun TransactionPayload.Companion.optionUndoExchangePayload(
     )
 }
 
-enum class ExchangeMappingType(val type: String, val tokenAddress: String) {
-    Mapping2BTC("v2b", "xxxxx")
-}
-
-/**
- * 创建兑换 vBTC - BTC 兑换交易 Payload
- */
-fun TransactionPayload.Companion.optionExchangeMappingPayload(
+fun TransactionPayload.Companion.optionWithDataPayload(
     context: Context,
     receiveAddress: String,
-    mappingType: ExchangeMappingType,
     exchangeSendAmount: Long,
-    toAddress: String
+    data: ByteArray
 ): TransactionPayload {
-
-    val subExchangeDate = JSONObject()
-    subExchangeDate.put("flag", "violas")
-    subExchangeDate.put("type", mappingType.type)
-    subExchangeDate.put("to_address", toAddress)
-    subExchangeDate.put("state", "start")
 
     val addressArgument = TransactionArgument.newAddress(receiveAddress)
     val amountArgument = TransactionArgument.newU64(exchangeSendAmount)
-    val dateArgument =
-        TransactionArgument.newByteArray(subExchangeDate.toString().toByteArray())
+    val dateArgument = TransactionArgument.newByteArray(data)
+
+    val moveEncode = Move.decode(
+        context.assets.open("move/violas_transfer_with_data.json")
+    )
+
+    return TransactionPayload(
+        TransactionPayload.Script(
+            moveEncode,
+            arrayListOf(addressArgument, amountArgument, dateArgument)
+        )
+    )
+}
+
+fun TransactionPayload.Companion.optionTokenWithDataPayload(
+    context: Context,
+    receiveAddress: String,
+    exchangeSendAmount: Long,
+    tokenAddress: String,
+    data: ByteArray
+): TransactionPayload {
+
+    val addressArgument = TransactionArgument.newAddress(receiveAddress)
+    val amountArgument = TransactionArgument.newU64(exchangeSendAmount)
+    val dateArgument = TransactionArgument.newByteArray(data)
 
     val moveEncode = Move.violasTokenEncode(
         context.assets.open("move/transfer_with_data.json"),
-        mappingType.tokenAddress.hexToBytes()
+        tokenAddress.hexToBytes()
     )
 
     return TransactionPayload(

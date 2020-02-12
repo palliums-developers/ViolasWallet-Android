@@ -1,5 +1,6 @@
 package com.violas.wallet.biz
 
+import androidx.annotation.WorkerThread
 import com.palliums.content.ContextProvider
 import com.palliums.utils.getString
 import com.quincysx.crypto.CoinTypes
@@ -10,9 +11,16 @@ import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
+import org.json.JSONObject
 import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
+import org.palliums.libracore.transaction.optionTransaction
+import org.palliums.libracore.transaction.optionWithDataPayload
 import org.palliums.libracore.wallet.KeyPair
+import org.palliums.violascore.transaction.RawTransaction
+import org.palliums.violascore.transaction.TransactionPayload
+import org.palliums.violascore.transaction.optionTokenWithDataPayload
+import org.palliums.violascore.transaction.optionTransaction
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
@@ -125,9 +133,80 @@ interface TransactionProcessor {
 }
 
 // ==== Transaction Processor Impl ======/
+/**
+ * Violas 代币交易为其他链的币种
+ */
+class TransactionProcessorViolasTokenToChain() : TransactionProcessor {
+    private val mViolasService by lazy {
+        DataRepository.getViolasService()
+    }
+
+    override fun dispense(sendAccount: MappingAccount, receiveAccount: MappingAccount): Boolean {
+        return sendAccount is ViolasMappingAccount
+                && sendAccount.isSendAccount()
+                && ((receiveAccount is BTCMappingAccount) or (receiveAccount is LibraMappingAccount))
+    }
+
+    override fun handle(
+        sendAccount: MappingAccount,
+        receiveAccount: MappingAccount,
+        sendAmount: BigDecimal,
+        receiveAddress: String
+    ): String {
+        val sendAccount = sendAccount as ViolasMappingAccount
+
+        val subExchangeDate = JSONObject()
+        subExchangeDate.put("flag", "violas")
+        if (receiveAccount is LibraMappingAccount) {
+            subExchangeDate.put("type", "v2l")
+            subExchangeDate.put("to_address", receiveAccount.getAddress())
+        } else if (receiveAccount is BTCMappingAccount) {
+            subExchangeDate.put("type", "v2b")
+            subExchangeDate.put("to_address", receiveAccount.getAddress())
+        }
+        subExchangeDate.put("state", "start")
+
+
+        val transactionPayload = TransactionPayload.optionTokenWithDataPayload(
+            ContextProvider.getContext(),
+            receiveAddress,
+            sendAmount.multiply(BigDecimal("1000000")).toLong(),
+            sendAccount.getTokenAddress().toHex(),
+            subExchangeDate.toString().toByteArray()
+        )
+
+        val sequenceNumber = mViolasService.getSequenceNumber(sendAccount.getAddress().toHex())
+
+        val rawTransaction = RawTransaction.optionTransaction(
+            sendAccount.getAddress().toHex(),
+            transactionPayload,
+            sequenceNumber
+        )
+
+        val keyPair = KeyPair(sendAccount.getPrivateKey()!!)
+
+        var result: Boolean = false
+        val countDownLatch = CountDownLatch(1)
+        mViolasService.sendTransaction(
+            rawTransaction,
+            keyPair.getPublicKey(),
+            keyPair.sign(rawTransaction.toByteArray())
+        ) {
+            result = it
+            countDownLatch.countDown()
+        }
+        countDownLatch.await()
+        if (!result) {
+            throw TransferUnknownException()
+        }
+        return ""
+    }
+}
 
 class TransactionProcessorBTCTovBTC() : TransactionProcessor {
-    private val mViolasService = DataRepository.getViolasService()
+    private val mViolasService by lazy {
+        DataRepository.getViolasService()
+    }
 
     override fun dispense(sendAccount: MappingAccount, receiveAccount: MappingAccount): Boolean {
         return sendAccount is BTCMappingAccount
@@ -218,6 +297,119 @@ class TransactionProcessorBTCTovBTC() : TransactionProcessor {
     }
 }
 
+class TransactionProcessorLibraTovLibra() : TransactionProcessor {
+    private val mViolasService by lazy {
+        DataRepository.getViolasService()
+    }
+    private val mLibraService by lazy {
+        DataRepository.getLibraService()
+    }
+
+    override fun dispense(sendAccount: MappingAccount, receiveAccount: MappingAccount): Boolean {
+        return sendAccount is LibraMappingAccount
+                && sendAccount.isSendAccount()
+                && receiveAccount is ViolasMappingAccount
+                && receiveAccount.isSendAccount()
+    }
+
+    @WorkerThread
+    @Throws(Exception::class)
+    override fun handle(
+        sendAccount: MappingAccount,
+        receiveAccount: MappingAccount,
+        sendAmount: BigDecimal,
+        receiveAddress: String
+    ): String {
+        val sendAccount = sendAccount as LibraMappingAccount
+        val receiveAccount = receiveAccount as ViolasMappingAccount
+
+        val checkTokenRegister = mViolasService.checkTokenRegister(
+            receiveAccount.getAddress().toHex(),
+            receiveAccount.getTokenAddress().toHex()
+        )
+
+        if (!checkTokenRegister) {
+            val publishToken = publishToken(
+                Account(KeyPair(receiveAccount.getPrivateKey()!!)),
+                receiveAccount.getTokenAddress().toHex()
+            )
+            if (!publishToken) {
+                throw RuntimeException(getString(R.string.hint_exchange_error))
+            }
+        }
+
+        val subExchangeDate = JSONObject()
+        subExchangeDate.put("flag", "libra")
+        subExchangeDate.put("type", "l2v")
+        subExchangeDate.put("to_address", receiveAccount.getAddress())
+        subExchangeDate.put("state", "start")
+
+        val transactionPayload =
+            org.palliums.libracore.transaction.TransactionPayload.optionWithDataPayload(
+                ContextProvider.getContext(),
+                receiveAddress,
+                sendAmount.multiply(BigDecimal("1000000")).toLong(),
+                subExchangeDate.toString().toByteArray()
+            )
+
+        var sequenceNumber = 0L
+
+        val sequenceNumberCountDownLatch = CountDownLatch(1)
+        mLibraService.getSequenceNumber(sendAccount.getAddress().toHex(), {
+            sequenceNumber = it
+            sequenceNumberCountDownLatch.countDown()
+        }, {
+            sequenceNumberCountDownLatch.count
+            throw it
+        })
+        sequenceNumberCountDownLatch.await()
+
+        val rawTransaction = org.palliums.libracore.transaction.RawTransaction.optionTransaction(
+            sendAccount.getAddress().toHex(),
+            transactionPayload,
+            sequenceNumber
+        )
+
+        val keyPair = KeyPair(sendAccount.getPrivateKey()!!)
+
+        var result: Boolean = false
+        val countDownLatch = CountDownLatch(1)
+        mLibraService.sendTransaction(
+            rawTransaction,
+            keyPair.getPublicKey(),
+            keyPair.sign(rawTransaction.toByteArray())
+        ) {
+            result = it
+            countDownLatch.countDown()
+        }
+        countDownLatch.await()
+        if (!result) {
+            throw TransferUnknownException()
+        }
+        return ""
+    }
+
+    private fun publishToken(mAccount: Account, tokenAddress: String): Boolean {
+        val countDownLatch = CountDownLatch(1)
+        var exec = false
+        DataRepository.getViolasService()
+            .publishToken(
+                ContextProvider.getContext(),
+                mAccount,
+                tokenAddress
+            ) {
+                exec = it
+                countDownLatch.countDown()
+            }
+        try {
+            countDownLatch.await()
+        } catch (e: Exception) {
+            exec = false
+        }
+        return exec
+    }
+}
+
 // ==== Transaction Processor Impl ======/
 
 class ExchangeMappingManager {
@@ -226,6 +418,8 @@ class ExchangeMappingManager {
 
     init {
         mTransactionProcessors.add(TransactionProcessorBTCTovBTC())
+        mTransactionProcessors.add(TransactionProcessorLibraTovLibra())
+        mTransactionProcessors.add(TransactionProcessorViolasTokenToChain())
     }
 
     fun parseFirstMappingAccount(

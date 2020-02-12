@@ -253,6 +253,19 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         })
     }
 
+    fun getSequenceNumber(address: String): Long {
+        var sequenceNumber = 0L
+        val subscribe = mViolasRepository.getSequenceNumber(address)
+            .subscribe({
+                if (it.data != null) {
+                    sequenceNumber = it.data!!
+                }
+            }, {
+
+            })
+        return sequenceNumber
+    }
+
     fun getSequenceNumber(
         address: String,
         call: (sequenceNumber: Long) -> Unit,

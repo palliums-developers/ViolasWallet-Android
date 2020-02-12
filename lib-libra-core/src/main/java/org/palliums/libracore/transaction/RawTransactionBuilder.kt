@@ -48,3 +48,26 @@ fun TransactionPayload.Companion.optionTransactionPayload(
         )
     )
 }
+
+fun TransactionPayload.Companion.optionWithDataPayload(
+    context: Context,
+    receiveAddress: String,
+    exchangeSendAmount: Long,
+    data: ByteArray
+): TransactionPayload {
+
+    val addressArgument = TransactionArgument.newAddress(receiveAddress)
+    val amountArgument = TransactionArgument.newU64(exchangeSendAmount)
+    val dateArgument = TransactionArgument.newByteArray(data)
+
+    val moveEncode = Move.decode(
+        context.assets.open("move/libra_transfer_with_data.json")
+    )
+
+    return TransactionPayload(
+        TransactionPayload.Script(
+            moveEncode,
+            arrayListOf(addressArgument, amountArgument, dateArgument)
+        )
+    )
+}
