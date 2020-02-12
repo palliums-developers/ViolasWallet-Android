@@ -7,28 +7,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.ContextProvider
 import com.palliums.utils.coroutineExceptionHandler
-import com.palliums.utils.getString
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.R
-import com.violas.wallet.biz.*
+import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.BTCMappingAccount
+import com.violas.wallet.biz.ExchangeMappingManager
+import com.violas.wallet.biz.ViolasMappingAccount
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.palliums.libracore.serialization.hexToBytes
-import org.palliums.libracore.wallet.KeyPair
-import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.concurrent.CountDownLatch
 
 class OutsideExchangeViewModel(application: Application) : AndroidViewModel(application) {
     private lateinit var mAccount: AccountDO
     private val mAccountManager = AccountManager()
-    private val mTokenManager = TokenManager()
-    private val mViolasService = DataRepository.getViolasService()
 
     private val exchangeCoinTypeLiveData = MutableLiveData<Int>()
 
@@ -64,7 +59,7 @@ class OutsideExchangeViewModel(application: Application) : AndroidViewModel(appl
                     }
                 }
                 else -> {
-                   // TODO
+                    // TODO
                 }
             }
         }
@@ -162,63 +157,28 @@ class OutsideExchangeViewModel(application: Application) : AndroidViewModel(appl
         error: (Throwable) -> Unit
     ) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
-            val receivingAccount =
-                stableCurrencyReceivingAccountLiveData.value ?: throw RuntimeException()
+            try {
+                val receivingAccount =
+                    stableCurrencyReceivingAccountLiveData.value ?: throw RuntimeException()
 
-            val checkTokenRegister = mViolasService.checkTokenRegister(
-                receivingAccount.address,
-                mExchangeMappingManager.currentTokenAddress()
-            )
-
-            if (!checkTokenRegister) {
-                val publishToken = publishToken(
-                    Account(KeyPair(accountReceivePrivate)),
-                    mExchangeMappingManager.currentTokenAddress()
+                mExchangeMappingManager.exchangeMapping(
+                    BTCMappingAccount(
+                        mAccount.publicKey.hexToBytes(),
+                        mAccount.address,
+                        accountSendPrivate
+                    ),
+                    ViolasMappingAccount(
+                        receivingAccount.address,
+                        "af955c1d62a74a7543235dbb7fa46ed98948d2041dff67dfdb636a54e84f91fb",
+                        accountReceivePrivate
+                    ),
+                    mToCoinAmountLiveData.value ?: BigDecimal("0.0001"),
+                    "2MxBZG7295wfsXaUj69quf8vucFzwG35UWh"
                 )
-                if (!publishToken) {
-                    error(RuntimeException(getString(R.string.hint_exchange_error)))
-                    return@launch
-                }
+                success.invoke()
+            } catch (e: Exception) {
+                error.invoke(e)
             }
-
-            mExchangeMappingManager.exchangeBTC2vBTC(
-                SendAccount(
-                    mAccount.address,
-                    accountSendPrivate,
-                    mAccount.publicKey.hexToBytes()
-                ),
-                mToCoinAmountLiveData.value?.toDouble() ?: 0.001,
-                "2MxBZG7295wfsXaUj69quf8vucFzwG35UWh",
-                ReceiveTokenAccount(
-                    receivingAccount.address,
-                    mExchangeMappingManager.currentTokenAddress()
-                )
-                , {
-                    success.invoke()
-                }, {
-                    error.invoke(it)
-                }
-            )
         }
-    }
-
-    private fun publishToken(mAccount: Account, tokenAddress: String): Boolean {
-        val countDownLatch = CountDownLatch(1)
-        var exec = false
-        DataRepository.getViolasService()
-            .publishToken(
-                getApplication(),
-                mAccount,
-                tokenAddress
-            ) {
-                exec = it
-                countDownLatch.countDown()
-            }
-        try {
-            countDownLatch.await()
-        } catch (e: Exception) {
-            exec = false
-        }
-        return exec
     }
 }
