@@ -1,12 +1,8 @@
 package com.violas.wallet.base
 
-import android.app.Activity
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
 import androidx.annotation.IntDef
 import com.palliums.base.BaseActivity
 import com.violas.wallet.R
@@ -49,7 +45,7 @@ abstract class BaseAppActivity : BaseActivity() {
         when (style) {
 
             TITLE_STYLE_GREY_BACKGROUND -> {
-                StatusBarMode(this, true)
+                setStatusBarMode(true)
 
                 setContentBackgroundColor(R.color.def_activity_vice_bg)
                 setTitleBackgroundColor(R.color.white)
@@ -83,7 +79,7 @@ abstract class BaseAppActivity : BaseActivity() {
             }
 
             else -> {
-                StatusBarMode(this, true)
+                setStatusBarMode(true)
 
                 setContentBackgroundColor(R.color.def_activity_bg)
                 setTitleBackgroundColor(R.color.white)
@@ -97,84 +93,5 @@ abstract class BaseAppActivity : BaseActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(MultiLanguageUtility.attachBaseContext(newBase))
-    }
-
-    private fun StatusBarMode(activity: Activity, dark: Boolean): Int {
-        var result = 0
-        try {
-            if (MIUISetStatusBarLightMode(activity, dark)) {
-                result = 1
-            } else if (FlymeSetStatusBarLightMode(activity.window, dark)) {
-                result = 2
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                activity.window.decorView.systemUiVisibility = if (dark)
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                else
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return result
-    }
-
-    private fun FlymeSetStatusBarLightMode(window: Window?, dark: Boolean): Boolean {
-        var result = false
-        if (window != null) {
-            try {
-                val lp = window.getAttributes()
-                val darkFlag = WindowManager.LayoutParams::class.java
-                    .getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON")
-                val meizuFlags = WindowManager.LayoutParams::class.java
-                    .getDeclaredField("meizuFlags")
-                darkFlag.isAccessible = true
-                meizuFlags.isAccessible = true
-                val bit = darkFlag.getInt(null)
-                var value = meizuFlags.getInt(lp)
-                if (dark) {
-                    value = value or bit
-                } else {
-                    value = value and bit.inv()
-                }
-                meizuFlags.setInt(lp, value)
-                window.setAttributes(lp)
-                result = true
-            } catch (e: Exception) {
-
-            }
-
-        }
-        return result
-    }
-
-    private fun MIUISetStatusBarLightMode(activity: Activity, dark: Boolean): Boolean {
-        var result = false
-        val window = activity.window
-        if (window != null) {
-            val clazz = window.javaClass
-            try {
-                var darkModeFlag = 0
-                val layoutParams = Class.forName("android.view.MiuiWindowManager\$LayoutParams")
-                val field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE")
-                darkModeFlag = field.getInt(layoutParams)
-                val extraFlagField = clazz.getMethod(
-                    "setExtraFlags",
-                    Int::class.javaPrimitiveType,
-                    Int::class.javaPrimitiveType
-                )
-                if (dark) {
-                    extraFlagField.invoke(window, darkModeFlag, darkModeFlag)//状态栏透明且黑色字体
-                } else {
-                    extraFlagField.invoke(window, 0, darkModeFlag)//清除黑色字体
-                }
-                result = true
-            } catch (e: Exception) {
-
-            }
-
-        }
-        return result
     }
 }
