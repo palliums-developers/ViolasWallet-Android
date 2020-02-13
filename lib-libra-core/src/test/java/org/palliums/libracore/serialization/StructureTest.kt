@@ -25,20 +25,20 @@ class StructureTest {
 
     @Test
     fun test_String() {
-        val xxx = TransactionArgument.newString("Hello, World!").toByteArray()
+        val xxx = TransactionArgument.newByteArray("Hello, World!".toByteArray()).toByteArray()
         assertEquals(xxx.toHex(), "020000000D00000048656C6C6F2C20576F726C6421".toLowerCase())
     }
 
     @Test
     fun test_bytes() {
         val toByteArray = TransactionArgument.newByteArray("cafed00d".hexToBytes()).toByteArray()
-        assertEquals(toByteArray.toHex(), "0300000004000000CAFED00D".toLowerCase())
+        assertEquals(toByteArray.toHex(), "0200000004000000CAFED00D".toLowerCase())
     }
 
     @Test
     fun test_program() {
-        val str1 = TransactionArgument.newString("CAFE D00D")
-        val str2 = TransactionArgument.newString("cafe d00d")
+        val str1 = TransactionArgument.newByteArray("CAFE D00D".toByteArray())
+        val str2 = TransactionArgument.newByteArray("cafe d00d".toByteArray())
         val toByteArray = TransactionPayload.Program(
             "move".toByteArray(),
             arrayListOf(str1, str2),
@@ -72,8 +72,8 @@ class StructureTest {
 
     @Test
     fun test_transactionPayload_program() {
-        val str1 = TransactionArgument.newString("CAFE D00D")
-        val str2 = TransactionArgument.newString("cafe d00d")
+        val str1 = TransactionArgument.newByteArray("CAFE D00D".toByteArray())
+        val str2 = TransactionArgument.newByteArray("cafe d00d".toByteArray())
         val toByteArray = TransactionPayload(
             TransactionPayload.Program(
                 "move".toByteArray(),
@@ -168,8 +168,8 @@ class StructureTest {
 
     @Test
     fun test_rawTransaction_program() {
-        val str1 = TransactionArgument.newString("CAFE D00D")
-        val str2 = TransactionArgument.newString("cafe d00d")
+        val str1 = TransactionArgument.newByteArray("CAFE D00D".toByteArray())
+        val str2 = TransactionArgument.newByteArray("cafe d00d".toByteArray())
         val transactionPayload = TransactionPayload(
             TransactionPayload.Program(
                 "move".toByteArray(),
