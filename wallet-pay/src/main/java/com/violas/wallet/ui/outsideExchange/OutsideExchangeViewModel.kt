@@ -8,8 +8,8 @@ import com.palliums.content.ContextProvider
 import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.ExchangeMappingManager
-import com.violas.wallet.biz.ExchangePair
+import com.violas.wallet.biz.exchangeMapping.ExchangeMappingManager
+import com.violas.wallet.biz.exchangeMapping.ExchangePair
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.database.entity.AccountDO
 import kotlinx.coroutines.Dispatchers
