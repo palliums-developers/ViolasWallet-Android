@@ -4,6 +4,7 @@ import androidx.annotation.WorkerThread
 import com.palliums.content.ContextProvider
 import com.palliums.utils.getString
 import com.violas.wallet.R
+import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.TransferUnknownException
 import com.violas.wallet.biz.exchangeMapping.LibraMappingAccount
 import com.violas.wallet.biz.exchangeMapping.MappingAccount
@@ -46,6 +47,18 @@ class TransactionProcessorLibraTovLibra() :
     ): String {
         val sendAccount = sendAccount as LibraMappingAccount
         val receiveAccount = receiveAccount as ViolasMappingAccount
+
+        var balance = BigDecimal(0)
+        val getBalanceCountDownLatch = CountDownLatch(1)
+        mLibraService.getBalance(sendAccount.getAddress().toHex()) {
+            balance = BigDecimal(it)
+            getBalanceCountDownLatch.countDown()
+        }
+        getBalanceCountDownLatch.await()
+
+        if (sendAmount > balance) {
+            throw LackOfBalanceException()
+        }
 
         val checkTokenRegister = mViolasService.checkTokenRegister(
             receiveAccount.getAddress().toHex(),

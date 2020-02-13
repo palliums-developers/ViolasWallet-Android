@@ -1,6 +1,8 @@
 package com.violas.wallet.biz.exchangeMapping.transactionProcessor
 
 import com.palliums.content.ContextProvider
+import com.violas.wallet.biz.LackOfBalanceException
+import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.TransferUnknownException
 import com.violas.wallet.biz.exchangeMapping.BTCMappingAccount
 import com.violas.wallet.biz.exchangeMapping.LibraMappingAccount
@@ -24,6 +26,9 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
     private val mViolasService by lazy {
         DataRepository.getViolasService()
     }
+    private val mTokenManager by lazy {
+        TokenManager()
+    }
 
     override fun dispense(sendAccount: MappingAccount, receiveAccount: MappingAccount): Boolean {
         return sendAccount is ViolasMappingAccount
@@ -38,6 +43,27 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
         receiveAddress: String
     ): String {
         val sendAccount = sendAccount as ViolasMappingAccount
+
+        var balance = BigDecimal(0)
+        val getBalanceCountDownLatch = CountDownLatch(1)
+        mViolasService.getBalance(
+            sendAccount.getAddress().toHex(),
+            arrayListOf(sendAccount.getTokenAddress().toHex())
+        ) { _, tokens, result ->
+            if (result) {
+                tokens?.forEach {
+                    if (it.address == sendAccount.getTokenAddress().toHex()) {
+                        balance = BigDecimal(it.balance)
+                    }
+                }
+            }
+            getBalanceCountDownLatch.countDown()
+        }
+        getBalanceCountDownLatch.await()
+
+        if (sendAmount.multiply(BigDecimal("1000000")) > balance) {
+            throw LackOfBalanceException()
+        }
 
         val subExchangeDate = JSONObject()
         subExchangeDate.put("flag", "violas")

@@ -14,6 +14,7 @@ import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
 import com.palliums.utils.toBigDecimal
 import com.violas.wallet.R
+import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ID
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.operations.AccountOperationsActivity
@@ -88,8 +89,8 @@ class OutsideExchangeFragment : BaseFragment() {
     private fun initViewEvent() {
         editFromCoin.addTextChangedListener(mFromAmountTextWatcher)
         editToCoin.addTextChangedListener(mToAmountTextWatcher)
-        editFromCoin.filters = arrayOf(AmountInputFilter(3, 8))
-        editToCoin.filters = arrayOf(AmountInputFilter(3, 8))
+        editFromCoin.filters = arrayOf(AmountInputFilter(4, 6))
+        editToCoin.filters = arrayOf(AmountInputFilter(4, 6))
         btnExchange.setOnClickListener {
             initiateChange()
         }
@@ -219,8 +220,15 @@ class OutsideExchangeFragment : BaseFragment() {
             }, {
                 dismissProgress()
                 it.printStackTrace()
-                it.message?.let { message ->
-                    showToast(message)
+                when (it) {
+                    is LackOfBalanceException -> {
+                        showToast(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
+                    }
+                    else -> {
+                        it.message?.let { message ->
+                            showToast(message)
+                        }
+                    }
                 }
             })
         }
