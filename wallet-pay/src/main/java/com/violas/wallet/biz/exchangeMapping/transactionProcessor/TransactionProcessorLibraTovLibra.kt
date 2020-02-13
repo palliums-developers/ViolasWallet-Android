@@ -86,7 +86,7 @@ class TransactionProcessorLibraTovLibra() :
         val subExchangeDate = JSONObject()
         subExchangeDate.put("flag", "libra")
         subExchangeDate.put("type", "l2v")
-        subExchangeDate.put("to_address", receiveAccount.getAddress())
+        subExchangeDate.put("to_address", receiveAccount.getAddress().toHex())
         subExchangeDate.put("state", "start")
 
         val transactionPayload =

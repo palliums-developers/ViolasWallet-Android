@@ -69,7 +69,7 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
         subExchangeDate.put("flag", "violas")
         if (receiveAccount is LibraMappingAccount) {
             subExchangeDate.put("type", "v2l")
-            subExchangeDate.put("to_address", receiveAccount.getAddress())
+            subExchangeDate.put("to_address", receiveAccount.getAddress().toHex())
         } else if (receiveAccount is BTCMappingAccount) {
             subExchangeDate.put("type", "v2b")
             subExchangeDate.put("to_address", receiveAccount.getAddress())
