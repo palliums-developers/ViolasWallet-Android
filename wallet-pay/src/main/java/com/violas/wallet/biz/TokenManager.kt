@@ -151,6 +151,17 @@ class TokenManager {
         return mutableList
     }
 
+    fun insert(checked: Boolean, accountId: Long, tokenName: String, tokenAddress: String) {
+        mTokenStorage.insert(
+            TokenDo(
+                enable = checked,
+                account_id = accountId,
+                name = tokenName,
+                tokenAddress = tokenAddress
+            )
+        )
+    }
+
     fun insert(checked: Boolean, assertToken: AssertToken) {
         mTokenStorage.insert(
             TokenDo(

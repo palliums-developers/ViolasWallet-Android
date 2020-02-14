@@ -51,6 +51,7 @@ class ExchangeMappingManager {
             CoinTypes.Violas -> {
                 ViolasMappingAccount(
                     account.address,
+                    (exchangePair.getLast() as ExchangeToken).getName(),
                     (exchangePair.getLast() as ExchangeToken).getTokenAddress(),
                     privateKey
                 )

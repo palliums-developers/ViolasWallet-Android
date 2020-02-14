@@ -9,14 +9,19 @@ import com.palliums.net.LoadState
 import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.exchangeMapping.ExchangeMappingManager
 import com.violas.wallet.biz.exchangeMapping.ExchangePair
+import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.mappingExchange.MappingType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.palliums.libracore.serialization.toHex
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -24,6 +29,8 @@ class OutsideExchangeViewModel : ViewModel() {
     private lateinit var mAccount: AccountDO
     private lateinit var mMappingType: MappingType
     private val mAccountManager = AccountManager()
+    private val mTokenManager = TokenManager()
+
     private val mMappingExchangeService = DataRepository.getMappingExchangeService()
 
     private val mCurrentExchangePairLiveData = MutableLiveData<ExchangePair>()
@@ -150,20 +157,30 @@ class OutsideExchangeViewModel : ViewModel() {
                 val exchangePair =
                     mCurrentExchangePairLiveData.value ?: throw java.lang.RuntimeException()
 
+                val receiveAccount = mExchangeMappingManager.parseLastMappingAccount(
+                    exchangePair,
+                    receivingAccount,
+                    accountReceivePrivate
+                )
                 mExchangeMappingManager.exchangeMapping(
                     mExchangeMappingManager.parseFirstMappingAccount(
                         exchangePair,
                         mAccount,
                         accountSendPrivate
                     ),
-                    mExchangeMappingManager.parseLastMappingAccount(
-                        exchangePair,
-                        receivingAccount,
-                        accountReceivePrivate
-                    ),
+                    receiveAccount,
                     mToCoinAmountLiveData.value ?: BigDecimal("0.0001"),
                     exchangePair.getReceiveFirstAddress()
                 )
+                if (receiveAccount is ViolasMappingAccount) {
+                    mTokenManager.insert(
+                        true,
+                        receivingAccount.id,
+                        receiveAccount.getTokenName(),
+                        receiveAccount.getTokenAddress().toHex()
+                    )
+                }
+                EventBus.getDefault().post(RefreshBalanceEvent())
                 success.invoke()
             } catch (e: Exception) {
                 error.invoke(e)
