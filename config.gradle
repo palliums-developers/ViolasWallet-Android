@@ -196,8 +196,6 @@ ext {
             novacrypto_BIP39                : "io.github.novacrypto:BIP39:$versions.novacrypto_BIP39",
             // see https://github.com/greenrobot/EventBus
             eventbus                        : "org.greenrobot:eventbus:$versions.eventbus",
-            sqlscout_server                 : "com.idescout.sql:sqlscout-server:$versions.sqlscout_server",
-            sqlscout_server_noop            : "com.idescout.sql:sqlscout-server-noop:$versions.sqlscout_server",
             // 汉字转拼音
             jpinyin                         : "com.github.SilenceDut:jpinyin:$versions.jpinyin",
             Luban                           : "top.zibin:Luban:$versions.Luban",

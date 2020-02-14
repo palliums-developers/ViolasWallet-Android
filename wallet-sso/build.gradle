@@ -159,8 +159,6 @@ dependencies {
     implementation libraries.glide_okhttp3_integration
     kapt libraries.glide_compiler
 
-    debugImplementation libraries.sqlscout_server
-    releaseImplementation libraries.sqlscout_server_noop
     implementation libraries.eventbus
     implementation libraries.jpinyin
     implementation libraries.libphonenumber
