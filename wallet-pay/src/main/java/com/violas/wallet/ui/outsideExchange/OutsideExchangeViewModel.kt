@@ -5,13 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.ContextProvider
+import com.palliums.net.LoadState
 import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.exchangeMapping.ExchangeMappingManager
 import com.violas.wallet.biz.exchangeMapping.ExchangePair
 import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.mappingExchange.MappingType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -19,7 +22,9 @@ import java.math.RoundingMode
 
 class OutsideExchangeViewModel : ViewModel() {
     private lateinit var mAccount: AccountDO
+    private lateinit var mMappingType: MappingType
     private val mAccountManager = AccountManager()
+    private val mMappingExchangeService = DataRepository.getMappingExchangeService()
 
     private val mCurrentExchangePairLiveData = MutableLiveData<ExchangePair>()
 
@@ -36,6 +41,8 @@ class OutsideExchangeViewModel : ViewModel() {
     val mFromCoinAmountLiveData = MutableLiveData<BigDecimal>()
     val mToCoinAmountLiveData = MutableLiveData<BigDecimal>()
 
+    val mExchangeOrdersInfo = MutableLiveData<Pair<LoadState, Int>>()
+
     private val mExchangeMappingManager by lazy {
         ExchangeMappingManager()
     }
@@ -45,23 +52,26 @@ class OutsideExchangeViewModel : ViewModel() {
     }
 
     @MainThread
-    fun exchange(accountId: Long) {
-        init()
-        viewModelScope.launch(Dispatchers.IO) {
-            mAccount = mAccountManager.getAccountById(accountId)
-            val exchangePair = mExchangePairManager.findExchangePair(mAccount.coinNumber)
-                ?: return@launch
-            mCurrentExchangePairLiveData.postValue(exchangePair)
-        }
-    }
-
-    private fun init() {
+    fun init(accountId: Long) {
         observerExchangeRate()
         observerExchangeCoinType()
         viewModelScope.launch(Dispatchers.IO) {
-            stableCurrencyReceivingAccountLiveData.postValue(
-                mAccountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
-            )
+            mAccount = mAccountManager.getAccountById(accountId)
+            val exchangePair =
+                mExchangePairManager.findExchangePair(mAccount.coinNumber) ?: return@launch
+            mCurrentExchangePairLiveData.postValue(exchangePair)
+
+            val tokenReceiveAccount =
+                mAccountManager.getIdentityByCoinType(CoinTypes.Violas.coinType()) ?: return@launch
+            stableCurrencyReceivingAccountLiveData.postValue(tokenReceiveAccount)
+
+            mMappingType = if (mAccount.coinNumber == CoinTypes.Libra.coinType()) {
+                MappingType.LibraToVlibra
+            } else {
+                MappingType.BTCToVbtc
+            }
+
+            refreshOrdersNumber()
         }
     }
 
@@ -181,6 +191,19 @@ class OutsideExchangeViewModel : ViewModel() {
                     stableCurrencyReceivingAccountLiveData.postValue(account)
                 }
             } catch (e: Exception) {
+            }
+        }
+    }
+
+    fun refreshOrdersNumber() {
+        viewModelScope.launch(Dispatchers.IO) {
+            mExchangeOrdersInfo.postValue(Pair(LoadState.RUNNING, 0))
+            try {
+                val response =
+                    mMappingExchangeService.getExchangeOrdersNumber(mMappingType, mAccount.address)
+                mExchangeOrdersInfo.postValue(Pair(LoadState.SUCCESS, response.data!!))
+            } catch (e: Exception) {
+                mExchangeOrdersInfo.postValue(Pair(LoadState.failure(e), 0))
             }
         }
     }
