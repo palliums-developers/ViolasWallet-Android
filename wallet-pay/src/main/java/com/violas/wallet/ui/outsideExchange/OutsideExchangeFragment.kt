@@ -10,7 +10,6 @@ import android.widget.EditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseFragment
-import com.palliums.net.LoadState
 import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
 import com.palliums.utils.toBigDecimal
@@ -55,7 +54,6 @@ class OutsideExchangeFragment : BaseFragment() {
         handlerExchangeRate()
         handlerReceivingAccount()
         handlerExchangeNumber()
-        handlerExchangeOrders()
     }
 
     override fun onViewClick(view: View) {
@@ -68,10 +66,8 @@ class OutsideExchangeFragment : BaseFragment() {
                 )
             }
 
-            R.id.clOrdersLayout -> {
-                if (viewModel.mExchangeOrdersInfo.value?.first?.status == LoadState.Status.FAILURE) {
-                    viewModel.refreshOrdersNumber()
-                }
+            R.id.tvOrders -> {
+                // TODO
             }
         }
     }
@@ -104,6 +100,7 @@ class OutsideExchangeFragment : BaseFragment() {
         }
         btnCancel.setOnClickListener { finishActivity() }
         ivSelectAccount.setOnClickListener(this)
+        tvOrders.setOnClickListener(this)
     }
 
     private fun handlerExchangeNumber() {
@@ -152,36 +149,6 @@ class OutsideExchangeFragment : BaseFragment() {
         viewModel.exchangeToCoinLiveData.observe(viewLifecycleOwner, Observer {
             tvToCoin.text = it
         })
-    }
-
-    private fun handlerExchangeOrders() {
-        viewModel.mExchangeOrdersInfo.observe(viewLifecycleOwner, Observer {
-            if (it.first.status == LoadState.Status.RUNNING) {
-                tvOrdersDesc.visibility = View.INVISIBLE
-                ivOrdersBg.visibility = View.INVISIBLE
-                pbOrdersLoading.visibility = View.VISIBLE
-            } else {
-                tvOrdersDesc.text = when {
-                    it.first.status == LoadState.Status.FAILURE -> {
-                        getString(R.string.hint_mapping_exchange_load_orders_failed)
-                    }
-
-                    it.second > 0 -> {
-                        getString(R.string.hint_mapping_exchange_exist_orders, it.second)
-                    }
-
-                    else -> {
-                        getString(R.string.hint_mapping_exchange_not_exist_orders)
-                    }
-                }
-
-                pbOrdersLoading.visibility = View.GONE
-                tvOrdersDesc.visibility = View.VISIBLE
-                ivOrdersBg.visibility = View.VISIBLE
-            }
-        })
-
-        clOrdersLayout.setOnClickListener(this)
     }
 
     // =========  处理输入金额 ====== //

@@ -182,6 +182,7 @@
     <string name="hint_unsupported_coin">Not Supported Fiat Currency</string>
     <string name="hint_scan_result">Scan Result</string>
     <string name="action_exchange">Exchange</string>
+    <string name="action_view_orders">Orders</string>
     <string name="title_orders">Order</string>
     <string name="title_tab_uncompleted">Incomplete</string>
     <string name="title_tab_completed">Completed</string>

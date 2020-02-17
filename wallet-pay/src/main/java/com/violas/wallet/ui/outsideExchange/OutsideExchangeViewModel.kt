@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.ContextProvider
-import com.palliums.net.LoadState
 import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
@@ -14,7 +13,6 @@ import com.violas.wallet.biz.exchangeMapping.ExchangeMappingManager
 import com.violas.wallet.biz.exchangeMapping.ExchangePair
 import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.mappingExchange.MappingType
@@ -31,8 +29,6 @@ class OutsideExchangeViewModel : ViewModel() {
     private val mAccountManager = AccountManager()
     private val mTokenManager = TokenManager()
 
-    private val mMappingExchangeService = DataRepository.getMappingExchangeService()
-
     private val mCurrentExchangePairLiveData = MutableLiveData<ExchangePair>()
 
     val exchangeFromCoinLiveData = MutableLiveData<String>()
@@ -47,8 +43,6 @@ class OutsideExchangeViewModel : ViewModel() {
     // 兑换数量
     val mFromCoinAmountLiveData = MutableLiveData<BigDecimal>()
     val mToCoinAmountLiveData = MutableLiveData<BigDecimal>()
-
-    val mExchangeOrdersInfo = MutableLiveData<Pair<LoadState, Int>>()
 
     private val mExchangeMappingManager by lazy {
         ExchangeMappingManager()
@@ -77,8 +71,6 @@ class OutsideExchangeViewModel : ViewModel() {
             } else {
                 MappingType.BTCToVbtc
             }
-
-            refreshOrdersNumber()
         }
     }
 
@@ -208,19 +200,6 @@ class OutsideExchangeViewModel : ViewModel() {
                     stableCurrencyReceivingAccountLiveData.postValue(account)
                 }
             } catch (e: Exception) {
-            }
-        }
-    }
-
-    fun refreshOrdersNumber() {
-        viewModelScope.launch(Dispatchers.IO) {
-            mExchangeOrdersInfo.postValue(Pair(LoadState.RUNNING, 0))
-            try {
-                val response =
-                    mMappingExchangeService.getExchangeOrdersNumber(mMappingType, mAccount.address)
-                mExchangeOrdersInfo.postValue(Pair(LoadState.SUCCESS, response.data!!))
-            } catch (e: Exception) {
-                mExchangeOrdersInfo.postValue(Pair(LoadState.failure(e), 0))
             }
         }
     }
