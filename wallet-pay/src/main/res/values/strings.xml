@@ -250,4 +250,5 @@
     <string name="hint_mapping_exchange_exist_orders">您有%1$d笔兑换订单</string>
     <string name="hint_mapping_exchange_not_exist_orders">您还没有兑换订单</string>
     <string name="hint_mapping_exchange_load_orders_failed">兑换订单加载失败，点击重试</string>
+    <string name="hint_unsupported_trading_pair">不支持该交易对</string>
 </resources>

@@ -3,6 +3,7 @@ package com.violas.wallet.ui.outsideExchange
 import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.ContextProvider
 import com.palliums.utils.coroutineExceptionHandler
@@ -23,9 +24,25 @@ import org.palliums.libracore.serialization.toHex
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class OutsideExchangeViewModel : ViewModel() {
+interface OutsideExchangeInitException {
+    fun unsupportedTradingPair()
+}
+
+class OutsideExchangeViewModelFactory(
+    private val initException: OutsideExchangeInitException
+) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return modelClass
+            .getConstructor(OutsideExchangeInitException::class.java)
+            .newInstance(initException)
+    }
+}
+
+class OutsideExchangeViewModel(private val initException: OutsideExchangeInitException? = null) :
+    ViewModel() {
     private lateinit var mAccount: AccountDO
-    private lateinit var mMappingType: MappingType
+    //    private lateinit var mMappingType: MappingType
     private val mAccountManager = AccountManager()
     private val mTokenManager = TokenManager()
 
@@ -52,6 +69,10 @@ class OutsideExchangeViewModel : ViewModel() {
         mExchangeMappingManager.getExchangePair()
     }
 
+    private fun handlerInitException() {
+        initException?.unsupportedTradingPair()
+    }
+
     @MainThread
     fun init(accountId: Long) {
         observerExchangeRate()
@@ -59,18 +80,27 @@ class OutsideExchangeViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             mAccount = mAccountManager.getAccountById(accountId)
             val exchangePair =
-                mExchangePairManager.findExchangePair(mAccount.coinNumber) ?: return@launch
+                mExchangePairManager.findExchangePair(mAccount.coinNumber)
+            if (exchangePair == null) {
+                handlerInitException()
+                return@launch
+            }
+
             mCurrentExchangePairLiveData.postValue(exchangePair)
 
             val tokenReceiveAccount =
-                mAccountManager.getIdentityByCoinType(CoinTypes.Violas.coinType()) ?: return@launch
+                mAccountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
+            if (tokenReceiveAccount == null) {
+                handlerInitException()
+                return@launch
+            }
             stableCurrencyReceivingAccountLiveData.postValue(tokenReceiveAccount)
 
-            mMappingType = if (mAccount.coinNumber == CoinTypes.Libra.coinType()) {
-                MappingType.LibraToVlibra
-            } else {
-                MappingType.BTCToVbtc
-            }
+//            mMappingType = if (mAccount.coinNumber == CoinTypes.Libra.coinType()) {
+//                MappingType.LibraToVlibra
+//            } else {
+//                MappingType.BTCToVbtc
+//            }
         }
     }
 
@@ -136,6 +166,9 @@ class OutsideExchangeViewModel : ViewModel() {
         )
     }
 
+    /**
+     * 发起兑换
+     */
     fun initiateChange(
         accountSendPrivate: ByteArray,
         accountReceivePrivate: ByteArray,
