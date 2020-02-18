@@ -19,6 +19,7 @@ import com.violas.wallet.biz.exchangeMapping.ExchangeAssert
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ID
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.operations.AccountOperationsActivity
+import com.violas.wallet.ui.outsideExchange.orders.MappingExchangeOrdersActivity
 import com.violas.wallet.widget.dialog.ExchangeMappingPasswordDialog
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.outside_exchange_fragment.*
@@ -105,7 +106,9 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
             }
 
             R.id.tvOrders -> {
-                // TODO
+                requireActivity()?.let {
+                    MappingExchangeOrdersActivity.start(it, viewModel.getExchangeFromAddress())
+                }
             }
         }
     }
