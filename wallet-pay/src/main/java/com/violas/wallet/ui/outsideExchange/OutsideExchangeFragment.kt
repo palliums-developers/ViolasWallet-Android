@@ -27,7 +27,7 @@ import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class OutsideExchangeFragment : BaseFragment() {
+class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
 
     companion object {
         private const val REQUEST_CODE_SELECT_ACCOUNT = 100
@@ -48,7 +48,9 @@ class OutsideExchangeFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(OutsideExchangeViewModel::class.java)
+        viewModel = ViewModelProvider(
+            this, OutsideExchangeViewModelFactory(this)
+        ).get(OutsideExchangeViewModel::class.java)
         viewModel.init(accountId)
         initViewEvent()
         handlerExchangeCoin()
@@ -281,5 +283,10 @@ class OutsideExchangeFragment : BaseFragment() {
                 }
             }
             .show(childFragmentManager)
+    }
+
+    override fun unsupportedTradingPair() {
+        showToast(R.string.hint_unsupported_trading_pair)
+        finishActivity()
     }
 }
