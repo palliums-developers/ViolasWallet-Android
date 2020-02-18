@@ -13,6 +13,7 @@ import com.palliums.base.BaseFragment
 import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
 import com.palliums.utils.toBigDecimal
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.exchangeMapping.ExchangeAssert
@@ -98,11 +99,27 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.ivSelectAccount -> {
-                AccountOperationsActivity.selectAccount(
-                    this,
-                    REQUEST_CODE_SELECT_ACCOUNT,
-                    AccountType.VIOLAS
-                )
+                viewModel.stableCurrencyReceivingAccountLiveData.value?.let {
+                    AccountOperationsActivity.selectAccount(
+                        this,
+                        REQUEST_CODE_SELECT_ACCOUNT,
+                        when (it.coinNumber) {
+                            CoinTypes.Violas.coinType() -> {
+                                AccountType.VIOLAS
+                            }
+                            CoinTypes.Libra.coinType() -> {
+                                AccountType.LIBRA
+                            }
+                            CoinTypes.Bitcoin.coinType(),
+                            CoinTypes.BitcoinTest.coinType() -> {
+                                AccountType.BTC
+                            }
+                            else -> {
+                                AccountType.ALL
+                            }
+                        }
+                    )
+                }
             }
 
             R.id.tvOrders -> {

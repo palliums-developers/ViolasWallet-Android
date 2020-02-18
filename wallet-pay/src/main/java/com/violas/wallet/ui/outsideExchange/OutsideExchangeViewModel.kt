@@ -303,7 +303,7 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
     fun isShowMultiplePassword(): Boolean {
         return mAccount.coinNumber != CoinTypes.Violas.coinType()
     }
-    
+
     fun getExchangeFromAddress(): String {
         return mAccount.address
     }
