@@ -203,4 +203,8 @@ class OutsideExchangeViewModel : ViewModel() {
             }
         }
     }
+
+    fun getExchangeFromAddress(): String {
+        return mAccount.address
+    }
 }

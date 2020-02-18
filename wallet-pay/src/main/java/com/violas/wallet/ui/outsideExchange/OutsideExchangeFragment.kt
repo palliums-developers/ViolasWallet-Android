@@ -18,6 +18,7 @@ import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ID
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.operations.AccountOperationsActivity
+import com.violas.wallet.ui.outsideExchange.orders.MappingExchangeOrdersActivity
 import com.violas.wallet.widget.dialog.ExchangeMappingPasswordDialog
 import kotlinx.android.synthetic.main.outside_exchange_fragment.*
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +68,9 @@ class OutsideExchangeFragment : BaseFragment() {
             }
 
             R.id.tvOrders -> {
-                // TODO
+                requireActivity()?.let {
+                    MappingExchangeOrdersActivity.start(it, viewModel.getExchangeFromAddress())
+                }
             }
         }
     }
