@@ -10,15 +10,16 @@ import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.exchangeMapping.ExchangeAssert
 import com.violas.wallet.biz.exchangeMapping.ExchangeMappingManager
 import com.violas.wallet.biz.exchangeMapping.ExchangePair
 import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.repository.http.mappingExchange.MappingType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.palliums.libracore.serialization.toHex
 import java.math.BigDecimal
@@ -47,6 +48,7 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
     private val mTokenManager = TokenManager()
 
     private val mCurrentExchangePairLiveData = MutableLiveData<ExchangePair>()
+    val mExchangePairs = arrayListOf<ExchangePair>()
 
     val exchangeFromCoinLiveData = MutableLiveData<String>()
     val exchangeToCoinLiveData = MutableLiveData<String>()
@@ -60,6 +62,9 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
     // 兑换数量
     val mFromCoinAmountLiveData = MutableLiveData<BigDecimal>()
     val mToCoinAmountLiveData = MutableLiveData<BigDecimal>()
+
+    // 多 Token 交易开关
+    val mMultipleCurrencyLiveData = MutableLiveData<Boolean>(false)
 
     private val mExchangeMappingManager by lazy {
         ExchangeMappingManager()
@@ -80,21 +85,19 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
         viewModelScope.launch(Dispatchers.IO) {
             mAccount = mAccountManager.getAccountById(accountId)
             val exchangePair =
-                mExchangePairManager.findExchangePair(mAccount.coinNumber)
-            if (exchangePair == null) {
+                mExchangePairManager.findExchangePair(mAccount.coinNumber, isForward())
+            if (exchangePair.isEmpty()) {
                 handlerInitException()
                 return@launch
             }
 
-            mCurrentExchangePairLiveData.postValue(exchangePair)
+            mExchangePairs.addAll(exchangePair)
 
-            val tokenReceiveAccount =
-                mAccountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
-            if (tokenReceiveAccount == null) {
-                handlerInitException()
-                return@launch
+            if (exchangePair.size > 1) {
+                mMultipleCurrencyLiveData.postValue(true)
             }
-            stableCurrencyReceivingAccountLiveData.postValue(tokenReceiveAccount)
+
+            mCurrentExchangePairLiveData.postValue(exchangePair[0])
 
 //            mMappingType = if (mAccount.coinNumber == CoinTypes.Libra.coinType()) {
 //                MappingType.LibraToVlibra
@@ -116,9 +119,33 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
      * 处理处理交易币种切换的时候
      */
     private fun observerExchangeCoinType() = mCurrentExchangePairLiveData.observeForever {
-        exchangeFromCoinLiveData.value = it.getFirst().getName()
-        exchangeToCoinLiveData.value = it.getLast().getName()
-        exchangeRateLiveData.value = it.getRate()
+        viewModelScope.launch(Dispatchers.IO) {
+            val receiveAccountCoinType = if (isForward()) {
+                it.getLast().getCoinType().coinType()
+            } else {
+                it.getFirst().getCoinType().coinType()
+            }
+
+            val tokenReceiveAccount =
+                mAccountManager.getIdentityByCoinType(receiveAccountCoinType)
+            if (tokenReceiveAccount == null) {
+                handlerInitException()
+                return@launch
+            }
+            stableCurrencyReceivingAccountLiveData.postValue(tokenReceiveAccount)
+
+            withContext(Dispatchers.Main) {
+                if (isForward()) {
+                    exchangeFromCoinLiveData.value = it.getFirst().getName()
+                    exchangeToCoinLiveData.value = it.getLast().getName()
+                } else {
+                    exchangeFromCoinLiveData.value = it.getLast().getName()
+                    exchangeToCoinLiveData.value = it.getFirst().getName()
+                }
+
+                exchangeRateLiveData.value = it.getRate()
+            }
+        }
     }
 
     fun changeToCoinAmount(get: String?) {
@@ -152,11 +179,15 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
         }
     }
 
-    fun decryptSendAccountKey(password: String): ByteArray? {
+    fun decryptSendAccountKey(password: ByteArray): ByteArray? {
         return SimpleSecurity.instance(ContextProvider.getContext()).decrypt(
-            password.toByteArray(),
+            password,
             mAccount.privateKey
         )
+    }
+
+    fun decryptSendAccountKey(password: String): ByteArray? {
+        return decryptSendAccountKey(password.toByteArray())
     }
 
     fun decryptReceiveAccountKey(password: String): ByteArray? {
@@ -167,11 +198,11 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
     }
 
     /**
-     * 发起兑换
+     * 发起兑换申请
      */
     fun initiateChange(
         accountSendPrivate: ByteArray,
-        accountReceivePrivate: ByteArray,
+        accountReceivePrivate: ByteArray?,
         success: () -> Unit,
         error: (Throwable) -> Unit
     ) {
@@ -180,22 +211,32 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
                 val receivingAccount =
                     stableCurrencyReceivingAccountLiveData.value ?: throw RuntimeException()
                 val exchangePair =
-                    mCurrentExchangePairLiveData.value ?: throw java.lang.RuntimeException()
+                    mCurrentExchangePairLiveData.value ?: throw RuntimeException()
 
-                val receiveAccount = mExchangeMappingManager.parseLastMappingAccount(
+                val sendAccount = mExchangeMappingManager.parseMappingAccount(
+                    exchangePair,
+                    mAccount,
+                    accountSendPrivate,
+                    isForward()
+                )
+
+
+                val receiveAccount = mExchangeMappingManager.parseMappingAccount(
                     exchangePair,
                     receivingAccount,
-                    accountReceivePrivate
+                    accountReceivePrivate,
+                    !isForward()
                 )
+
                 mExchangeMappingManager.exchangeMapping(
-                    mExchangeMappingManager.parseFirstMappingAccount(
-                        exchangePair,
-                        mAccount,
-                        accountSendPrivate
-                    ),
+                    sendAccount,
                     receiveAccount,
                     mToCoinAmountLiveData.value ?: BigDecimal("0.0001"),
-                    exchangePair.getReceiveFirstAddress()
+                    if (isForward()) {
+                        exchangePair.getReceiveFirstAddress()
+                    } else {
+                        exchangePair.getReceiveLastAddress()
+                    }
                 )
                 if (receiveAccount is ViolasMappingAccount) {
                     mTokenManager.insert(
@@ -235,5 +276,31 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
             } catch (e: Exception) {
             }
         }
+    }
+
+    fun isForward(): Boolean {
+        return mAccount.coinNumber != CoinTypes.Violas.coinType()
+    }
+
+    fun changeFromCoin(exchangeAssert: ExchangeAssert) {
+        var exchangePair: ExchangePair? = null
+        mExchangePairs.forEach {
+            val coin = if (isForward()) {
+                it.getFirst()
+            } else {
+                it.getLast()
+            }
+
+            if (exchangeAssert.getName() == coin.getName() && exchangeAssert.getCoinType() == coin.getCoinType()) {
+                exchangePair = it
+                return@forEach
+            }
+        }
+
+        mCurrentExchangePairLiveData.value = exchangePair ?: mExchangePairs[0]
+    }
+
+    fun isShowMultiplePassword(): Boolean {
+        return mAccount.coinNumber != CoinTypes.Violas.coinType()
     }
 }

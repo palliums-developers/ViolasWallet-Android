@@ -112,6 +112,13 @@
                                 android:textSize="20sp"
                                 tools:text="BTC" />
 
+                            <ImageView
+                                android:id="@+id/ivFromCoinArrow"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="7dp"
+                                android:src="@drawable/icon_down_black"
+                                android:visibility="gone" />
                         </LinearLayout>
 
                         <LinearLayout

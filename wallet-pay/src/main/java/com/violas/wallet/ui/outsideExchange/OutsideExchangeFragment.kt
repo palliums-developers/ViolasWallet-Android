@@ -15,10 +15,12 @@ import com.palliums.utils.stripTrailingZeros
 import com.palliums.utils.toBigDecimal
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
+import com.violas.wallet.biz.exchangeMapping.ExchangeAssert
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ID
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.operations.AccountOperationsActivity
 import com.violas.wallet.widget.dialog.ExchangeMappingPasswordDialog
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.outside_exchange_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,6 +58,40 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
         handlerExchangeRate()
         handlerReceivingAccount()
         handlerExchangeNumber()
+        handlerMultipleCurrency()
+    }
+
+    private fun handlerMultipleCurrency() {
+        viewModel.mMultipleCurrencyLiveData.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                ivFromCoinArrow.visibility = View.VISIBLE
+                layoutFromCoin.setOnClickListener {
+                    showExchangeCoinDialog()
+                }
+            } else {
+                ivFromCoinArrow.visibility = View.GONE
+                layoutFromCoin.setOnClickListener(null)
+            }
+        })
+    }
+
+    private fun showExchangeCoinDialog() {
+        val newInstance = TokenBottomSheetDialogFragment.newInstance()
+        val exchangeCoins = ArrayList<ExchangeAssert>()
+        val mExchangePairs = viewModel.mExchangePairs
+
+        mExchangePairs.forEach {
+            if (viewModel.isForward()) {
+                exchangeCoins.add(it.getFirst())
+            } else {
+                exchangeCoins.add(it.getLast())
+            }
+        }
+
+        newInstance.show(childFragmentManager, exchangeCoins) {
+            viewModel.changeFromCoin(it)
+            newInstance.dismiss()
+        }
     }
 
     override fun onViewClick(view: View) {
@@ -217,31 +253,59 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
             showToast(getString(R.string.hint_change_number_not_zero))
             return
         }
-        showPasswordDialog { sendAccountKey,
-                             receiveAccountKey ->
-            showProgress()
-            viewModel.initiateChange(sendAccountKey, receiveAccountKey, {
-                dismissProgress()
-                showToast(R.string.hint_exchange_successful)
-                finishActivity()
-            }, {
-                dismissProgress()
-                it.printStackTrace()
-                when (it) {
-                    is LackOfBalanceException -> {
-                        showToast(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
-                    }
-                    else -> {
-                        it.message?.let { message ->
-                            showToast(message)
-                        }
-                    }
-                }
-            })
+
+        if (viewModel.isShowMultiplePassword()) {
+            showMultiplePasswordDialog { sendAccountKey,
+                                         receiveAccountKey ->
+                handlerInitiateChange(sendAccountKey, receiveAccountKey)
+            }
+        } else {
+            showPasswordDialog { sendAccountKey ->
+                handlerInitiateChange(sendAccountKey, null)
+            }
         }
     }
 
-    private fun showPasswordDialog(callback: (ByteArray, ByteArray) -> Unit) {
+    private fun showPasswordDialog(callback: (ByteArray) -> Unit) {
+        PasswordInputDialog()
+            .setConfirmListener { password, dialogFragment ->
+                val decryptSendAccountKey = viewModel.decryptSendAccountKey(password)
+                if (decryptSendAccountKey == null) {
+                    showToast(R.string.hint_password_error)
+                    return@setConfirmListener
+                }
+                callback.invoke(decryptSendAccountKey)
+                dialogFragment.dismiss()
+            }
+            .show(childFragmentManager)
+    }
+
+    private fun handlerInitiateChange(
+        sendAccountKey: ByteArray,
+        receiveAccountKey: ByteArray?
+    ) {
+        showProgress()
+        viewModel.initiateChange(sendAccountKey, receiveAccountKey, {
+            dismissProgress()
+            showToast(R.string.hint_exchange_successful)
+            finishActivity()
+        }, {
+            dismissProgress()
+            it.printStackTrace()
+            when (it) {
+                is LackOfBalanceException -> {
+                    showToast(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
+                }
+                else -> {
+                    it.message?.let { message ->
+                        showToast(message)
+                    }
+                }
+            }
+        })
+    }
+
+    private fun showMultiplePasswordDialog(callback: (ByteArray, ByteArray) -> Unit) {
         val exchangePair = viewModel.getExchangePairChainName()
         ExchangeMappingPasswordDialog()
             .setSendHint(getString(R.string.hint_input_account_password, exchangePair.first))

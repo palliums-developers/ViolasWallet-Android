@@ -17,12 +17,18 @@ class ExchangePairManager() {
         mExchangePair.add(pair)
     }
 
-    fun findExchangePair(coinNumber: Int): ExchangePair? {
+    fun findExchangePair(coinNumber: Int, forward: Boolean): List<ExchangePair> {
+        val pairs = arrayListOf<ExchangePair>()
         mExchangePair.forEach {
-            if (it.getFirst().getCoinType().coinType() == coinNumber) {
-                return it
+            val coin = if (forward) {
+                it.getFirst()
+            } else {
+                it.getLast()
+            }
+            if (coin.getCoinType().coinType() == coinNumber) {
+                pairs.add(it)
             }
         }
-        return null
+        return pairs
     }
 }

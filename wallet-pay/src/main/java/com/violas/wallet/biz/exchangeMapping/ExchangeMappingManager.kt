@@ -105,8 +105,7 @@ class ExchangeMappingManager {
     }
 
     fun getExchangePair(): ExchangePairManager {
-        val exchangePairManager =
-            ExchangePairManager()
+        val exchangePairManager = ExchangePairManager()
         val btc2vbtc = object :
             ExchangePair {
             override fun getFirst() = ExchangeCoinImpl(
