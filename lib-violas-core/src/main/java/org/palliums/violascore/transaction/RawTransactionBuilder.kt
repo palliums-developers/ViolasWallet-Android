@@ -121,7 +121,7 @@ fun TransactionPayload.Companion.optionExchangePayload(
         TransactionArgument.newByteArray(subExchangeDate.toString().toByteArray())
 
     val moveEncode = Move.violasTokenEncode(
-        context.assets.open("move/transfer_with_data.json"),
+        context.assets.open("move/violas_token_transfer_with_data.json"),
         sendTokenAddress.hexToBytes()
     )
 
@@ -152,7 +152,7 @@ fun TransactionPayload.Companion.optionUndoExchangePayload(
         TransactionArgument.newByteArray(subExchangeDate.toString().toByteArray())
 
     val moveEncode = Move.violasTokenEncode(
-        context.assets.open("move/transfer_with_data.json"),
+        context.assets.open("move/violas_token_transfer_with_data.json"),
         sendTokenAddress.hexToBytes()
     )
 
@@ -200,7 +200,7 @@ fun TransactionPayload.Companion.optionTokenWithDataPayload(
     val dateArgument = TransactionArgument.newByteArray(data)
 
     val moveEncode = Move.violasTokenEncode(
-        context.assets.open("move/transfer_with_data.json"),
+        context.assets.open("move/violas_token_transfer_with_data.json"),
         tokenAddress.hexToBytes()
     )
 
