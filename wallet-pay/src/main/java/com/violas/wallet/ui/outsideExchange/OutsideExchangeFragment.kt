@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.outsideExchange
 
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -24,6 +25,13 @@ import com.violas.wallet.ui.outsideExchange.orders.MappingExchangeOrdersActivity
 import com.violas.wallet.widget.dialog.ExchangeMappingPasswordDialog
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.outside_exchange_fragment.*
+import kotlinx.android.synthetic.main.outside_exchange_fragment.btnExchange
+import kotlinx.android.synthetic.main.outside_exchange_fragment.editFromCoin
+import kotlinx.android.synthetic.main.outside_exchange_fragment.editToCoin
+import kotlinx.android.synthetic.main.outside_exchange_fragment.layoutFromCoin
+import kotlinx.android.synthetic.main.outside_exchange_fragment.tvFromCoin
+import kotlinx.android.synthetic.main.outside_exchange_fragment.tvParitiesInfo
+import kotlinx.android.synthetic.main.outside_exchange_fragment.tvToCoin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,6 +53,8 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
     private var accountId: Long = -1
     private lateinit var viewModel: OutsideExchangeViewModel
 
+    private var mFromArrowAnimator: ObjectAnimator? = null
+
     override fun getLayoutResId(): Int {
         return R.layout.outside_exchange_fragment
     }
@@ -56,11 +66,17 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
         ).get(OutsideExchangeViewModel::class.java)
         viewModel.init(accountId)
         initViewEvent()
+        initAnimator()
         handlerExchangeCoin()
         handlerExchangeRate()
         handlerReceivingAccount()
         handlerExchangeNumber()
         handlerMultipleCurrency()
+    }
+
+    private fun initAnimator() {
+        mFromArrowAnimator = ObjectAnimator.ofFloat(ivFromCoinArrow, "rotation", 0F, 180F)
+            .setDuration(400)
     }
 
     private fun handlerMultipleCurrency() {
@@ -89,8 +105,11 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
                 exchangeCoins.add(it.getLast())
             }
         }
-
-        newInstance.show(childFragmentManager, exchangeCoins) {
+        newInstance.setOnCloseListener {
+            mFromArrowAnimator?.reverse()
+        }
+        mFromArrowAnimator?.start()
+        newInstance.show(childFragmentManager, exchangeCoins, viewModel.getFromCoin()) {
             viewModel.changeFromCoin(it)
             newInstance.dismiss()
         }

@@ -148,6 +148,14 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
         }
     }
 
+    fun getFromCoin(): ExchangeAssert? {
+        return if (isForward()) {
+            mCurrentExchangePairLiveData.value?.getFirst()
+        } else {
+            mCurrentExchangePairLiveData.value?.getLast()
+        }
+    }
+
     fun changeToCoinAmount(get: String?) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             val amount =
