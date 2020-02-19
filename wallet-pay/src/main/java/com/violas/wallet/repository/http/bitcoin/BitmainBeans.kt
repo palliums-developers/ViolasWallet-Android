@@ -55,11 +55,11 @@ class ListResponse<T> : Response<ListResponse.Data<T>>() {
 
 data class TransactionRecordDTO(
     val block_hash: String,
-    val block_height: Int,
-    val block_time: Int,
-    val confirmations: Int,
-    val created_at: Int,
-    val fee: Int,
+    val block_height: Long,
+    val block_time: Long,
+    val confirmations: Long,
+    val created_at: Long,
+    val fee: Long,
     val hash: String,
     val inputs: List<InputDTO>,
     val inputs_count: Int,
@@ -67,24 +67,24 @@ data class TransactionRecordDTO(
     val is_coinbase: Boolean,
     val is_double_spend: Boolean,
     val is_sw_tx: Boolean,
-    val lock_time: Int,
+    val lock_time: Long,
     val outputs: List<OutputDTO>,
     val outputs_count: Int,
     val outputs_value: Long,
     val sigops: Int,
-    val size: Int,
-    val version: Int,
-    val vsize: Int,
-    val weight: Int,
+    val size: Long,
+    val version: Long,
+    val vsize: Long,
+    val weight: Long,
     val witness_hash: String
 )
 
 data class InputDTO(
     val prev_addresses: List<String>,
-    val prev_position: Int,
+    val prev_position: Long,
     val prev_tx_hash: String,
     val prev_type: String,
-    val prev_value: Int,
+    val prev_value: Long,
     val sequence: Long
 )
 
