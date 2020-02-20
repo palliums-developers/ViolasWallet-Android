@@ -119,7 +119,7 @@ class ExchangeMappingManager {
             override fun getLast() = ExchangeTokenImpl(
                 CoinTypes.Violas,
                 "vBTC",
-                "af955c1d62a74a7543235dbb7fa46ed98948d2041dff67dfdb636a54e84f91fb"
+                "2236322cf1e35198302919c2c1b1e4bf5be07359c8995c6a13ec53c17579c768"
             )
 
             override fun getRate(): BigDecimal {
