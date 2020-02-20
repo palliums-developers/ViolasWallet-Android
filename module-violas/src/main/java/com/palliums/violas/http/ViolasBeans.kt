@@ -44,13 +44,13 @@ class ListResponse<T> : Response<List<T>>()
 data class TransactionRecordDTO(
     val amount: String,
     val gas: String,
-    val receiver: String,
-    val receiver_module: String,
+    val receiver: String?,
+    val receiver_module: String?,
     val sender: String,
-    val sender_module: String,
-    val module_name: String,
+    val sender_module: String?,
+    val module_name: String?,
     val expiration_time: Long,
-    val sequence_number: Int,
+    val sequence_number: Long,
     /*
      * 0: write_set
      * 1: mint（平台币铸币）
@@ -68,7 +68,7 @@ data class TransactionRecordDTO(
      * 13: violas_peer_to_peer_transfer_with_data （交易所稳定币转账）
      */
     val type: Int,
-    val version: Int
+    val version: Long
 )
 
 data class BalanceDTO(

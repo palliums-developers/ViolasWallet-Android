@@ -263,7 +263,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
                 }
 
                 else -> {
-                    if ((bean.module_name.isNotEmpty()
+                    if ((!bean.module_name.isNullOrEmpty()
                                 && !bean.module_name.equals(CoinTypes.Violas.coinName(), true))
                         || !tokenName.isNullOrEmpty()
                     ) {
@@ -284,7 +284,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
 
             // 解析展示地址，收款付款均为对方地址
             val showAddress = when (bean.sender) {
-                address -> bean.receiver
+                address -> bean.receiver ?: ""
                 else -> bean.sender
             }
 
