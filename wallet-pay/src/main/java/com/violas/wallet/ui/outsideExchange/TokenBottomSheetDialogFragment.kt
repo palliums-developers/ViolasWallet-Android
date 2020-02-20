@@ -27,7 +27,7 @@ class TokenBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     private var mCallback: ((ExchangeAssert) -> Unit)? = null
-
+    private var mOnCloseCallback: (() -> Unit)? = null
     private val mMyAdapter by lazy {
         MyAdapter()
     }
@@ -46,25 +46,35 @@ class TokenBottomSheetDialogFragment : BottomSheetDialogFragment() {
         return dialog
     }
 
+    fun setOnCloseListener(callback: (() -> Unit)) {
+        mOnCloseCallback = callback
+    }
+
     fun show(
         childFragmentManager: FragmentManager,
         tokenList: List<ExchangeAssert>,
+        selectToken: ExchangeAssert?,
         callback: (ExchangeAssert) -> Unit
     ) {
         mBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
         if (tokenList.isNotEmpty()) {
             mCallback = callback
             show(childFragmentManager, "sheet")
+            mMyAdapter.mSelectToken = selectToken
             mMyAdapter.submitList(tokenList)
         }
     }
 
     override fun onDestroy() {
+        mOnCloseCallback?.invoke()
+        mOnCloseCallback = null
         mCallback = null
         super.onDestroy()
     }
 
     inner class MyAdapter : ListAdapter<ExchangeAssert, CommonViewHolder>(diffUtil) {
+        var mSelectToken: ExchangeAssert? = null
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommonViewHolder {
             return CommonViewHolder(
                 LayoutInflater.from(parent.context).inflate(
@@ -77,7 +87,9 @@ class TokenBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
         override fun onBindViewHolder(holder: CommonViewHolder, position: Int) {
             holder.itemView.tvTokenName.text = getItem(position).getName()
-//            holder.itemView.checkIsEnable.isSelected = getItem(position).isNetEnable()
+            holder.itemView.checkIsEnable.isSelected =
+                mSelectToken?.getCoinType() == getItem(position).getCoinType()
+                        && mSelectToken?.getName() == getItem(position).getName()
             holder.itemView.setOnClickListener { mCallback?.invoke(getItem(position)) }
         }
     }
