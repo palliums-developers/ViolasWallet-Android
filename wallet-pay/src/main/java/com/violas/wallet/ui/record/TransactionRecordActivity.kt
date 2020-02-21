@@ -43,7 +43,7 @@ class TransactionRecordActivity : BaseAppActivity() {
     private var mAccountId = -100L
     private var mTokenAddress: String? = null
     private var mTokenName: String? = null
-    private lateinit var mAddress: String
+    private lateinit var mWalletAddress: String
     private lateinit var mCoinTypes: CoinTypes
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +60,7 @@ class TransactionRecordActivity : BaseAppActivity() {
                     loadRootFragment(
                         R.id.flFragmentContainer,
                         TransactionRecordFragment.newInstance(
-                            mAddress,
+                            mWalletAddress,
                             mCoinTypes,
                             mTokenAddress,
                             mTokenName
@@ -103,7 +103,7 @@ class TransactionRecordActivity : BaseAppActivity() {
         return try {
             val accountDO = AccountManager().getAccountById(mAccountId)
             mCoinTypes = CoinTypes.parseCoinType(accountDO.coinNumber)
-            mAddress = accountDO.address
+            mWalletAddress = accountDO.address
 
             // code for test, test address
             /*if (BuildConfig.DEBUG) {

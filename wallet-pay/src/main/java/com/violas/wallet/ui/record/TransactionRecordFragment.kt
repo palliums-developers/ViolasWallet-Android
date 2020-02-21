@@ -9,7 +9,7 @@ import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
-import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ADDRESS
+import com.violas.wallet.common.EXTRA_KEY_WALLET_ADDRESS
 import com.violas.wallet.common.EXTRA_KEY_COIN_TYPES
 import com.violas.wallet.common.EXTRA_KEY_TOKEN_ADDRESS
 import com.violas.wallet.common.EXTRA_KEY_TOKEN_NAME
@@ -30,13 +30,13 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
     companion object {
         fun newInstance(
-            accountAddress: String,
+            walletAddress: String,
             coinTypes: CoinTypes,
             tokenAddress: String? = null,
             tokenName: String? = null
         ): TransactionRecordFragment {
             val args = Bundle().apply {
-                putString(EXTRA_KEY_ACCOUNT_ADDRESS, accountAddress)
+                putString(EXTRA_KEY_WALLET_ADDRESS, walletAddress)
                 putSerializable(EXTRA_KEY_COIN_TYPES, coinTypes)
                 tokenAddress?.let { putString(EXTRA_KEY_TOKEN_ADDRESS, tokenAddress) }
                 tokenAddress?.let { putString(EXTRA_KEY_TOKEN_NAME, tokenName) }
@@ -100,7 +100,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
                 return false
             }
 
-            mAccountAddress = arguments!!.getString(EXTRA_KEY_ACCOUNT_ADDRESS, null)
+            mAccountAddress = arguments!!.getString(EXTRA_KEY_WALLET_ADDRESS, null)
                 ?: return false
             mCoinTypes = arguments!!.getSerializable(EXTRA_KEY_COIN_TYPES) as CoinTypes
             mTokenAddress = arguments!!.getString(EXTRA_KEY_TOKEN_ADDRESS, null)

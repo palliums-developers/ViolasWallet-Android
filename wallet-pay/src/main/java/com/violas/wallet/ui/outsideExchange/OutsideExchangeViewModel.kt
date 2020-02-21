@@ -312,7 +312,7 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
         return mAccount.coinNumber != CoinTypes.Violas.coinType()
     }
 
-    fun getExchangeFromAddress(): String {
-        return mAccount.address
+    fun getExchangeFromAccount(): AccountDO {
+        return mAccount
     }
 }

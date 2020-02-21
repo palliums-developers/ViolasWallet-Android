@@ -254,7 +254,8 @@
 
     <string name="status_processing">进行中</string>
     <string name="status_failure">失败</string>
+    <string name="status_unknown">未知</string>
     <string name="label_exchange">兑换</string>
-    <string name="title_mapping_exchange_orders">兑换订单</string>
+    <string name="title_mapping_exchange_orders">查看订单</string>
     <string name="tips_no_mapping_exchange_orders">暂无兑换订单</string>
 </resources>

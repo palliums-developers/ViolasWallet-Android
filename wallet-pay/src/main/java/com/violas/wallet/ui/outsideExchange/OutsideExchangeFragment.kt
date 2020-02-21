@@ -143,7 +143,7 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
 
             R.id.tvOrders -> {
                 requireActivity()?.let {
-                    MappingExchangeOrdersActivity.start(it, viewModel.getExchangeFromAddress())
+                    MappingExchangeOrdersActivity.start(it, viewModel.getExchangeFromAccount())
                 }
             }
         }

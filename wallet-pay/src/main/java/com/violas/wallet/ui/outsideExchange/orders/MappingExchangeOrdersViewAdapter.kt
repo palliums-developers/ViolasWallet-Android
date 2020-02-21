@@ -47,6 +47,8 @@ private class ViewHolder(
     override fun onViewBind(itemPosition: Int, itemData: MappingExchangeOrderVO?) {
         itemData?.let {
             itemView.tvTime.text = simpleDateFormat.format(it.time)
+            itemView.tvAmount.text = it.amount
+            itemView.tvName.text = it.coinName
             itemView.tvAddress.text = it.address
             when (it.status) {
                 0 -> {
@@ -59,13 +61,16 @@ private class ViewHolder(
                     itemView.tvStatus.setTextColor(getColor(R.color.black))
                 }
 
-                else -> {
+                2 -> {
                     itemView.tvStatus.setText(R.string.status_failure)
                     itemView.tvStatus.setTextColor(getColor(R.color.color_FF6464))
                 }
-            }
 
-            // TODO other data binding
+                else -> {
+                    itemView.tvStatus.setText(R.string.status_unknown)
+                    itemView.tvStatus.setTextColor(getColor(R.color.color_FFD701))
+                }
+            }
         }
     }
 }

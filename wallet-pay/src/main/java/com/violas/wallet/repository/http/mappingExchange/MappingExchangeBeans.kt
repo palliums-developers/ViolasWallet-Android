@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
  * desc:
  */
 
-data class MappingInfo(
+data class MappingInfoDTO(
     @SerializedName("address")
     val receiveAddress: String,         // 接收地址
     @SerializedName("module")
@@ -17,4 +17,12 @@ data class MappingInfo(
     val name: String,                   // 映射币或平台币的名称
     @SerializedName("rate")
     val exchangeRate: Double            // 兑换比率
+)
+
+data class MappingExchangeOrderDTO(
+    val date: Long,
+    val amount: String,
+    val address: String,
+    val coin: String?,
+    val status: Int                     // 0：进行中；1：成功；2失败
 )

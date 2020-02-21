@@ -15,8 +15,15 @@ class MappingExchangeRepository(private val api: MappingExchangeApi) {
             api.getMappingInfo(type.typeName)
         }
 
-    suspend fun getExchangeOrdersNumber(type: MappingType, address: String) =
+    suspend fun getMappingExchangeOrderNumber(type: MappingType, address: String) =
         checkResponse(dataNullableOnSuccess = false) {
-            api.getExchangeOrdersNumber(type.typeName, address)
+            api.getMappingExchangeOrderNumber(type.typeName, address)
+        }
+
+    suspend fun getMappingExchangeOrders(
+        walletAddress: String, walletType: Int, pageSize: Int, offset: Int
+    ) =
+        checkResponse {
+            api.getMappingExchangeOrders(walletAddress, walletType, pageSize, offset)
         }
 }

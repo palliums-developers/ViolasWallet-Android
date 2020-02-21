@@ -10,9 +10,12 @@ import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
-import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ADDRESS
+import com.violas.wallet.common.EXTRA_KEY_WALLET_ADDRESS
+import com.violas.wallet.common.EXTRA_KEY_WALLET_TYPE
+import com.violas.wallet.repository.database.entity.AccountDO
 
 /**
  * Created by elephant on 2020-02-18 12:09.
@@ -23,21 +26,30 @@ import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ADDRESS
 class MappingExchangeOrdersActivity : BasePagingActivity<MappingExchangeOrderVO>() {
 
     companion object {
-        fun start(context: Context, accountAddress: String) {
+        fun start(context: Context, accountDO: AccountDO) {
             Intent(context, MappingExchangeOrdersActivity::class.java)
                 .apply {
-                    putExtra(EXTRA_KEY_ACCOUNT_ADDRESS, accountAddress)
+                    putExtra(EXTRA_KEY_WALLET_ADDRESS, accountDO.address)
+                    putExtra(
+                        EXTRA_KEY_WALLET_TYPE, when (accountDO.coinNumber) {
+                            CoinTypes.Violas.coinType() -> 0
+                            CoinTypes.Libra.coinType() -> 1
+                            else -> 2
+                        }
+                    )
                 }
                 .start(context)
         }
     }
 
-    private lateinit var accountAddress: String
+    private lateinit var walletAddress: String
+    private var walletType: Int = -1
 
     private val viewModel by viewModels<MappingExchangeOrdersViewModel> {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return MappingExchangeOrdersViewModel(accountAddress) as T
+                return modelClass.getConstructor(String::class.java, Int::class.java)
+                    .newInstance(walletAddress, walletType)
             }
         }
     }
@@ -57,20 +69,31 @@ class MappingExchangeOrdersActivity : BasePagingActivity<MappingExchangeOrderVO>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var address: String? = null
-        if (savedInstanceState != null) {
-            address = savedInstanceState.getString(EXTRA_KEY_ACCOUNT_ADDRESS)
-        } else if (intent != null) {
-            address = intent.getStringExtra(EXTRA_KEY_ACCOUNT_ADDRESS)
-        }
-        if (address.isNullOrEmpty()) {
+        if (initData(savedInstanceState)) {
+            initView()
+        } else {
             close()
-            return
+        }
+    }
+
+    private fun initData(savedInstanceState: Bundle?): Boolean {
+        var address: String? = null
+        var type: Int = -1
+        if (savedInstanceState != null) {
+            address = savedInstanceState.getString(EXTRA_KEY_WALLET_ADDRESS)
+            type = savedInstanceState.getInt(EXTRA_KEY_WALLET_TYPE, type)
+        } else if (intent != null) {
+            address = intent.getStringExtra(EXTRA_KEY_WALLET_ADDRESS)
+            type = intent.getIntExtra(EXTRA_KEY_WALLET_TYPE, type)
         }
 
-        accountAddress = address
+        if (address.isNullOrEmpty() || type == -1) {
+            return false
+        }
 
-        initView()
+        walletAddress = address
+        walletType = type
+        return true
     }
 
     private fun initView() {
@@ -89,6 +112,7 @@ class MappingExchangeOrdersActivity : BasePagingActivity<MappingExchangeOrderVO>
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(EXTRA_KEY_ACCOUNT_ADDRESS, accountAddress)
+        outState.putString(EXTRA_KEY_WALLET_ADDRESS, walletAddress)
+        outState.putInt(EXTRA_KEY_WALLET_TYPE, walletType)
     }
 }
