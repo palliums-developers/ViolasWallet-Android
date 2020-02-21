@@ -258,4 +258,5 @@
     <string name="label_exchange">兑换</string>
     <string name="title_mapping_exchange_orders">查看订单</string>
     <string name="tips_no_mapping_exchange_orders">暂无兑换订单</string>
+    <string name="hint_load_exchange_pair">查询支持的交易对</string>
 </resources>

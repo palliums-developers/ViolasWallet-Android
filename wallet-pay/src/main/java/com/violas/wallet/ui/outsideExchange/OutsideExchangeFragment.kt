@@ -64,6 +64,7 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
         viewModel = ViewModelProvider(
             this, OutsideExchangeViewModelFactory(this)
         ).get(OutsideExchangeViewModel::class.java)
+        handleInitLiveDate()
         viewModel.init(accountId)
         initViewEvent()
         initAnimator()
@@ -72,6 +73,16 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
         handlerReceivingAccount()
         handlerExchangeNumber()
         handlerMultipleCurrency()
+    }
+
+    private fun handleInitLiveDate() {
+        viewModel.mInitLiveData.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                dismissProgress()
+            } else {
+                showProgress(R.string.hint_load_exchange_pair)
+            }
+        })
     }
 
     private fun initAnimator() {

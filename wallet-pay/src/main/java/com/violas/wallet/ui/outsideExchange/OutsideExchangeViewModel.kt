@@ -66,12 +66,11 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
     // 多 Token 交易开关
     val mMultipleCurrencyLiveData = MutableLiveData<Boolean>(false)
 
+    // init 结束
+    val mInitLiveData = MutableLiveData<Boolean>(false)
+
     private val mExchangeMappingManager by lazy {
         ExchangeMappingManager()
-    }
-
-    private val mExchangePairManager by lazy {
-        mExchangeMappingManager.getExchangePair()
     }
 
     private fun handlerInitException() {
@@ -85,11 +84,14 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
         viewModelScope.launch(Dispatchers.IO) {
             mAccount = mAccountManager.getAccountById(accountId)
             val exchangePair =
-                mExchangePairManager.findExchangePair(mAccount.coinNumber, isForward())
+                mExchangeMappingManager.getExchangePair()
+                    .findExchangePair(mAccount.coinNumber, isForward())
             if (exchangePair.isEmpty()) {
                 handlerInitException()
                 return@launch
             }
+
+            mInitLiveData.postValue(true)
 
             mExchangePairs.addAll(exchangePair)
 
@@ -99,11 +101,6 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
 
             mCurrentExchangePairLiveData.postValue(exchangePair[0])
 
-//            mMappingType = if (mAccount.coinNumber == CoinTypes.Libra.coinType()) {
-//                MappingType.LibraToVlibra
-//            } else {
-//                MappingType.BTCToVbtc
-//            }
         }
     }
 
