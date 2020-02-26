@@ -28,6 +28,8 @@ class CreateIdentityActivity : BaseAppActivity() {
         }
     }
 
+    private var mCurrentTypeWallet = WalletType.Governor
+
     override fun getLayoutResId() = R.layout.activity_create_identity
 
     override fun getPageStyle(): Int {
@@ -37,6 +39,10 @@ class CreateIdentityActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_create_the_wallet)
+
+        mCurrentTypeWallet =
+            WalletType.parse(intent.getIntExtra(EXT_WALLET_TYPE, WalletType.Governor.type))
+
         btnConfirm.setOnClickListener {
             val walletName = editName.text.toString().trim()
             val password = editPassword.text.toString().trim()
@@ -60,6 +66,7 @@ class CreateIdentityActivity : BaseAppActivity() {
                     val mnemonicWords = AccountManager().createIdentity(
                         this@CreateIdentityActivity,
                         walletName,
+                        mCurrentTypeWallet,
                         password.toByteArray()
                     )
                     withContext(Dispatchers.Main) {
@@ -74,16 +81,8 @@ class CreateIdentityActivity : BaseAppActivity() {
                         App.finishAllActivity()
                     }
                 }
-            } catch (e: PasswordLengthShortException) {
-                showToast(getString(R.string.hint_please_minimum_password_length))
-            } catch (e: PasswordLengthLongException) {
-                showToast(getString(R.string.hint_please_maxmum_password_length))
-            } catch (e: PasswordSpecialFailsException) {
-                showToast(getString(R.string.hint_please_cannot_contain_special_characters))
-            } catch (e: PasswordValidationFailsException) {
-                showToast(getString(R.string.hint_please_password_rules_are_wrong))
-            } catch (e: PasswordEmptyException) {
-                showToast(getString(R.string.hint_please_password_not_empty))
+            } catch (e: Exception) {
+                e.message?.let { it1 -> showToast(it1) }
             }
         }
     }

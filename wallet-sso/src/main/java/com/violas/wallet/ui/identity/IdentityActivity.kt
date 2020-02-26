@@ -50,7 +50,16 @@ class IdentityActivity : BaseAppActivity() {
         initViewData()
 
         btnCreate.setOnClickListener {
-            CreateIdentityActivity.start(this, mCurrentTypeWallet)
+            if (mCurrentTypeWallet == WalletType.Governor) {
+                HintGovernorDialog()
+                    .setConfirmListener {
+                        it.dismiss()
+                        CreateIdentityActivity.start(this, mCurrentTypeWallet)
+                    }
+                    .show(supportFragmentManager)
+            } else {
+                CreateIdentityActivity.start(this, mCurrentTypeWallet)
+            }
         }
         btnImport.setOnClickListener {
             ImportIdentityActivity.start(this, mCurrentTypeWallet)
@@ -77,7 +86,7 @@ class IdentityActivity : BaseAppActivity() {
             initViewData()
             if (walletType == WalletType.Governor) {
                 showToast(R.string.hint_exchange_governor_identity)
-            }else if(walletType == WalletType.SSO){
+            } else if (walletType == WalletType.SSO) {
                 showToast(R.string.hint_exchange_sso_identity)
             }
         } else {

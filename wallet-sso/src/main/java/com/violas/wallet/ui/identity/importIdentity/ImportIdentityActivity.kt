@@ -27,11 +27,17 @@ class ImportIdentityActivity : BaseAppActivity() {
         }
     }
 
+    private var mCurrentTypeWallet = WalletType.Governor
+
     override fun getLayoutResId() = R.layout.activity_import_identity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_import_the_wallet)
+
+        mCurrentTypeWallet =
+            WalletType.parse(intent.getIntExtra(EXT_WALLET_TYPE, WalletType.Governor.type))
+
         btnConfirm.setOnClickListener {
             val mnemonic = editMnemonicWord.text.toString().trim()
             val walletName = editName.text.toString().trim()
@@ -62,6 +68,7 @@ class ImportIdentityActivity : BaseAppActivity() {
                             this@ImportIdentityActivity,
                             wordList,
                             walletName,
+                            mCurrentTypeWallet,
                             password.toByteArray()
                         )
                         accountManager.setIdentityMnemonicBackup()
@@ -76,16 +83,8 @@ class ImportIdentityActivity : BaseAppActivity() {
                         e.printStackTrace()
                     }
                 }
-            } catch (e: PasswordLengthShortException) {
-                showToast(getString(R.string.hint_please_minimum_password_length))
-            } catch (e: PasswordLengthLongException) {
-                showToast(getString(R.string.hint_please_maxmum_password_length))
-            } catch (e: PasswordSpecialFailsException) {
-                showToast(getString(R.string.hint_please_cannot_contain_special_characters))
-            } catch (e: PasswordValidationFailsException) {
-                showToast(getString(R.string.hint_please_password_rules_are_wrong))
-            } catch (e: PasswordEmptyException) {
-                showToast(getString(R.string.hint_please_password_not_empty))
+            } catch (e: Exception) {
+                e.message?.let { it1 -> showToast(it1) }
             }
         }
     }
