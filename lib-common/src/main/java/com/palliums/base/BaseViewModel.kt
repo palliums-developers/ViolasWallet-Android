@@ -11,6 +11,7 @@ import com.palliums.net.postTipsMessage
 import com.palliums.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Created by elephant on 2019-11-05 10:54.
@@ -31,7 +32,13 @@ abstract class BaseViewModel : ViewModel() {
      * @return 返回true才会调用[realExecute]去真正执行
      */
     @MainThread
-    fun execute(vararg params: Any, action: Int = -1, needCheckParam: Boolean = true): Boolean {
+    fun execute(
+        vararg params: Any,
+        action: Int = -1,
+        needCheckParam: Boolean = true,
+        failureCallback: ((action: Int) -> Unit)? = null,
+        successCallback: ((action: Int) -> Unit)? = null
+    ): Boolean {
         synchronized(lock) {
             if (loadState.value?.peekData()?.status == LoadState.Status.RUNNING) {
                 return false
@@ -43,22 +50,26 @@ abstract class BaseViewModel : ViewModel() {
                 val exception = RequestException.networkUnavailable()
                 loadState.postValueSupport(LoadState.failure(exception))
                 postTipsMessage(tipsMessage, exception)
+
+                failureCallback?.invoke(action)
                 return false
             }
 
             loadState.postValueSupport(LoadState.RUNNING)
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             try {
 
-                realExecute(action, *params)
+                withContext(Dispatchers.IO) { realExecute(action, *params) }
 
                 synchronized(lock) {
                     retry = null
 
                     loadState.postValueSupport(LoadState.SUCCESS)
                 }
+
+                successCallback?.invoke(action)
             } catch (e: Exception) {
                 e.printStackTrace()
 
@@ -68,6 +79,8 @@ abstract class BaseViewModel : ViewModel() {
                     loadState.postValueSupport(LoadState.failure(e))
                     postTipsMessage(tipsMessage, e)
                 }
+
+                failureCallback?.invoke(action)
             }
         }
         return true

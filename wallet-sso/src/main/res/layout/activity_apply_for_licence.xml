@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/page_spacing_start"
+    android:paddingEnd="@dimen/page_spacing_end"
+    tools:background="@color/def_page_bg_light_secondary">
+
+    <TextView
+        android:id="@+id/tvDesc1"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_16"
+        android:gravity="center"
+        android:text="@string/apply_for_licence_desc1"
+        android:textColor="@color/color_3B3847"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvDesc2"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_3"
+        android:gravity="center"
+        android:text="@string/apply_for_licence_desc2"
+        android:textColor="@color/color_F74E4E"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvDesc1" />
+
+    <View
+        android:id="@+id/vInfoBg"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_197"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvDesc2" />
+
+    <EditText
+        android:id="@+id/etTxid"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_21"
+        android:layout_marginTop="@dimen/dp_32"
+        android:layout_marginEnd="@dimen/dp_18"
+        android:background="@drawable/selector_edit_bg_apply_for_licence"
+        android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        android:gravity="start|center_vertical"
+        android:hint="@string/hint_input_txid"
+        android:imeOptions="actionDone"
+        android:inputType="textVisiblePassword"
+        android:paddingStart="@dimen/dp_15"
+        android:paddingTop="@dimen/dp_11"
+        android:paddingEnd="@dimen/dp_15"
+        android:paddingBottom="@dimen/dp_11"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textColorHint="@color/color_7F7F7F"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/vInfoBg" />
+
+    <TextView
+        android:id="@+id/tvDesc3"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_26"
+        android:text="@string/apply_for_licence_desc3"
+        android:textColor="@color/color_7F7F7F"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintStart_toStartOf="@id/etTxid"
+        app:layout_constraintTop_toBottomOf="@id/etTxid" />
+
+    <TextView
+        android:id="@+id/tvGovernorAddress"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:background="@drawable/shape_text_bg_apply_for_licence"
+        android:ellipsize="middle"
+        android:gravity="start|center_vertical"
+        android:paddingStart="@dimen/dp_15"
+        android:paddingTop="@dimen/dp_11"
+        android:paddingEnd="@dimen/dp_15"
+        android:paddingBottom="@dimen/dp_11"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintEnd_toEndOf="@id/etTxid"
+        app:layout_constraintStart_toStartOf="@id/etTxid"
+        app:layout_constraintTop_toBottomOf="@id/tvDesc3"
+        tools:text="35vyzKkfbEKiyTdqWAZTo9japYN997CryP35vyzKkfbEKiyTdqWAZTo9japYN997CryP" />
+
+    <Button
+        android:id="@+id/btnOkToSend"
+        style="@style/BaseButtonPrimary"
+        android:layout_marginTop="@dimen/dp_37"
+        android:text="@string/action_oK_to_send"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vInfoBg" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

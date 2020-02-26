@@ -314,4 +314,11 @@
     <string name="united_states">United States</string>
     <string name="hint_to_their_error">You can\'t transfer money to yourself</string>
     <string name="hint_transfer_broadcast_success">Transfer transaction broadcast successful</string>
+
+    <string name="apply_for_licence_desc1">确认您已向多签地址发送100BTC</string>
+    <string name="apply_for_licence_desc2">请填写以下信息</string>
+    <string name="apply_for_licence_desc3">州长身份地址</string>
+    <string name="hint_input_txid">请填写TXID</string>
+    <string name="title_apply_for_licence">申请州长牌照</string>
+    <string name="action_oK_to_send">确定发送</string>
 </resources>
