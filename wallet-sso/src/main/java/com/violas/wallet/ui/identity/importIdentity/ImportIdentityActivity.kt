@@ -8,6 +8,8 @@ import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.WalletType
+import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_import_identity.*
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +18,12 @@ import kotlinx.coroutines.withContext
 
 class ImportIdentityActivity : BaseAppActivity() {
     companion object {
-        fun start(context: Context) {
-            context.startActivity(Intent(context, ImportIdentityActivity::class.java))
+        private const val EXT_WALLET_TYPE = "ext_wallet_type"
+
+        fun start(context: Context, walletType: WalletType = WalletType.Governor) {
+            Intent(context, ImportIdentityActivity::class.java).apply {
+                putExtra(EXT_WALLET_TYPE, walletType.type)
+            }.start(context)
         }
     }
 

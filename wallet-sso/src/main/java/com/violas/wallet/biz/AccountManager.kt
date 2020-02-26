@@ -28,6 +28,26 @@ import java.util.concurrent.Executors
 class MnemonicException : RuntimeException()
 class AccountNotExistsException : RuntimeException()
 
+enum class WalletType(val type: Int) {
+    Governor(1), SSO(0);
+
+    companion object {
+        fun parse(type: Int): WalletType {
+            return when (type) {
+                Governor.type -> {
+                    Governor
+                }
+                SSO.type -> {
+                    SSO
+                }
+                else -> {
+                    Governor
+                }
+            }
+        }
+    }
+}
+
 class AccountManager : CoroutineScope by IOScope() {
     companion object {
         private const val CURRENT_ACCOUNT = "ab1"
