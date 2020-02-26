@@ -12,6 +12,8 @@ import com.violas.wallet.repository.http.bitcoin.BitmainApi
 import com.violas.wallet.repository.http.bitcoin.BitmainRepository
 import com.violas.wallet.repository.http.bitcoin.BitmainService
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
+import com.violas.wallet.repository.http.governor.GovernorApi
+import com.violas.wallet.repository.http.governor.GovernorRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.repository.http.libra.LibexplorerApi
@@ -76,9 +78,8 @@ object DataRepository {
 
     fun getLibraService() = LibraAdmissionControl(mChannel)
 
-    fun getViolasService(): ViolasService {
-        return ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
-    }
+    fun getViolasService() =
+        ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
     fun getTransactionService(coinTypes: CoinTypes): TransactionService {
         return when (coinTypes) {
@@ -96,9 +97,13 @@ object DataRepository {
         }
     }
 
-    fun getLocalUserService(): LocalUserService {
-        return LocalUserService()
-    }
+    fun getLocalUserService() =
+        LocalUserService()
 
-    fun getSSOService() = SSORepository(retrofit.create(SSOApi::class.java))
+
+    fun getSSOService() =
+        SSORepository(retrofit.create(SSOApi::class.java))
+
+    fun getGovernorService() =
+        GovernorRepository(retrofit.create(GovernorApi::class.java))
 }
