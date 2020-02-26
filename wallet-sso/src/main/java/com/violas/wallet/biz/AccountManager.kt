@@ -28,6 +28,26 @@ import java.util.concurrent.Executors
 class MnemonicException : RuntimeException()
 class AccountNotExistsException : RuntimeException()
 
+enum class WalletType(val type: Int) {
+    Governor(1), SSO(0);
+
+    companion object {
+        fun parse(type: Int): WalletType {
+            return when (type) {
+                Governor.type -> {
+                    Governor
+                }
+                SSO.type -> {
+                    SSO
+                }
+                else -> {
+                    Governor
+                }
+            }
+        }
+    }
+}
+
 class AccountManager : CoroutineScope by IOScope() {
     companion object {
         private const val CURRENT_ACCOUNT = "ab1"
@@ -273,9 +293,14 @@ class AccountManager : CoroutineScope by IOScope() {
     /**
      * 创建身份
      */
-    fun createIdentity(context: Context, walletName: String, password: ByteArray): List<String> {
+    fun createIdentity(
+        context: Context,
+        walletName: String,
+        walletType: WalletType,
+        password: ByteArray
+    ): List<String> {
         val generate = Mnemonic.English().generate()
-        importIdentity(context, generate, walletName, password)
+        importIdentity(context, generate, walletName, walletType, password)
         return generate
     }
 
@@ -287,6 +312,7 @@ class AccountManager : CoroutineScope by IOScope() {
         context: Context,
         wordList: List<String>,
         walletName: String,
+        walletType: WalletType,
         password: ByteArray
     ) {
         checkMnemonicCount(wordList)
@@ -306,8 +332,8 @@ class AccountManager : CoroutineScope by IOScope() {
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Violas.coinName()}-$walletName",
-                walletType = 0
+                walletNickname = walletName,
+                walletType = walletType.type
             )
         )
         switchCurrentAccount(insertIds)

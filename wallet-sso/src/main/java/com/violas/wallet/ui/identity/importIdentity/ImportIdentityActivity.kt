@@ -8,6 +8,8 @@ import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.WalletType
+import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_import_identity.*
 import kotlinx.coroutines.Dispatchers
@@ -16,16 +18,26 @@ import kotlinx.coroutines.withContext
 
 class ImportIdentityActivity : BaseAppActivity() {
     companion object {
-        fun start(context: Context) {
-            context.startActivity(Intent(context, ImportIdentityActivity::class.java))
+        private const val EXT_WALLET_TYPE = "ext_wallet_type"
+
+        fun start(context: Context, walletType: WalletType = WalletType.Governor) {
+            Intent(context, ImportIdentityActivity::class.java).apply {
+                putExtra(EXT_WALLET_TYPE, walletType.type)
+            }.start(context)
         }
     }
+
+    private var mCurrentTypeWallet = WalletType.Governor
 
     override fun getLayoutResId() = R.layout.activity_import_identity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_import_the_wallet)
+
+        mCurrentTypeWallet =
+            WalletType.parse(intent.getIntExtra(EXT_WALLET_TYPE, WalletType.Governor.type))
+
         btnConfirm.setOnClickListener {
             val mnemonic = editMnemonicWord.text.toString().trim()
             val walletName = editName.text.toString().trim()
@@ -56,6 +68,7 @@ class ImportIdentityActivity : BaseAppActivity() {
                             this@ImportIdentityActivity,
                             wordList,
                             walletName,
+                            mCurrentTypeWallet,
                             password.toByteArray()
                         )
                         accountManager.setIdentityMnemonicBackup()
@@ -70,16 +83,8 @@ class ImportIdentityActivity : BaseAppActivity() {
                         e.printStackTrace()
                     }
                 }
-            } catch (e: PasswordLengthShortException) {
-                showToast(getString(R.string.hint_please_minimum_password_length))
-            } catch (e: PasswordLengthLongException) {
-                showToast(getString(R.string.hint_please_maxmum_password_length))
-            } catch (e: PasswordSpecialFailsException) {
-                showToast(getString(R.string.hint_please_cannot_contain_special_characters))
-            } catch (e: PasswordValidationFailsException) {
-                showToast(getString(R.string.hint_please_password_rules_are_wrong))
-            } catch (e: PasswordEmptyException) {
-                showToast(getString(R.string.hint_please_password_not_empty))
+            } catch (e: Exception) {
+                e.message?.let { it1 -> showToast(it1) }
             }
         }
     }

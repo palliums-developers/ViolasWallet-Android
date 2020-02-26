@@ -314,6 +314,16 @@
     <string name="united_states">United States</string>
     <string name="hint_to_their_error">You can\'t transfer money to yourself</string>
     <string name="hint_transfer_broadcast_success">Transfer transaction broadcast successful</string>
+    <string name="create_governor_identity">创建州长身份</string>
+    <string name="import_governor_identity">导入州长身份</string>
+    <string name="exchange_governor_identity">进入州长钱包</string>
+    <string name="create_sso_identity">创建SSO身份</string>
+    <string name="import_sso_identity">导入SSO身份</string>
+    <string name="exchange_sso_identity">进入SSO钱包</string>
+    <string name="hint_exchange_governor_identity">您还没有州长钱包，请先创建或导入</string>
+    <string name="hint_exchange_sso_identity">您还没有SSO钱包，请先创建或导入</string>
+    <string name="hint_has_been_transferred">是否已转账</string>
+    <string name="action_confirm_Transfer">确定已转</string>
 
     <string name="apply_for_licence_desc1">确认您已向多签地址发送100BTC</string>
     <string name="apply_for_licence_desc2">请填写以下信息</string>

@@ -20,6 +20,12 @@ data class AccountDO(
     var mnemonic: ByteArray = ByteArray(0),
     @ColumnInfo(name = "wallet_nickname")
     var walletNickname: String = "wallet",
+    /**
+     * 钱包类型
+     * 0: SSO 钱包
+     * 1： 州长钱包
+     * @see com.violas.wallet.biz.WalletType
+     */
     @ColumnInfo(name = "wallet_type")
     var walletType: Int = 0,
     @ColumnInfo(name = "coin_number")
