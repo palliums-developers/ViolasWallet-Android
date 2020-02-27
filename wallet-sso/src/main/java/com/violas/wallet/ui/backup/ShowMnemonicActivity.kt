@@ -27,7 +27,7 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
         ) {
             Intent(context, ShowMnemonicActivity::class.java).apply {
                 putStringArrayListExtra(INTENT_KET_MNEMONIC_WORDS, mnemonic)
-                putExtra(INTENT_KET_MNEMONIC_FROM, BackupMnemonicFrom.CREATE_IDENTITY_WALLET)
+                putExtra(INTENT_KET_MNEMONIC_FROM, BackupMnemonicFrom.CREATE_GOVERNOR_WALLET)
                 putExtra(INTENT_KET_JUST_SHOW, true)
             }.start(context, requestCode)
         }

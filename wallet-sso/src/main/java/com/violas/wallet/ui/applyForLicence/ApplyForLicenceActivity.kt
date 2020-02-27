@@ -7,6 +7,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewModel
+import com.palliums.content.App
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
 import com.violas.wallet.ui.main.MainActivity
@@ -52,13 +53,32 @@ class ApplyForLicenceActivity : BaseViewModelActivity() {
         })
     }
 
+    override fun onTitleLeftViewClick() {
+        handleBackAndComplete()
+    }
+
+    override fun onBackPressedSupport() {
+        // 只有主页面存在时，点击手机返回键才返回
+        if (App.existsActivity(MainActivity::class.java)) {
+            super.onBackPressedSupport()
+        }
+    }
+
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.btnOkToSend -> {
                 mViewModel.execute(etTxid.text.toString().trim()) {
-                    MainActivity.start(this)
+                    handleBackAndComplete()
                 }
             }
+        }
+    }
+
+    private fun handleBackAndComplete() {
+        if (App.existsActivity(MainActivity::class.java)) {
+            close()
+        } else {
+            MainActivity.start(this)
         }
     }
 }

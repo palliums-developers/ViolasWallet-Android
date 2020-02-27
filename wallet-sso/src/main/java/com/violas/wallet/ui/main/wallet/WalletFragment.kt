@@ -14,9 +14,10 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.WalletType
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.biz.decodeScanQRCode
-import com.violas.wallet.event.BackupIdentityMnemonicEvent
+import com.violas.wallet.event.BackupMnemonicEvent
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.event.TokenBalanceUpdateEvent
@@ -89,15 +90,11 @@ class WalletFragment : BaseFragment() {
         if (mAccountManager.isFastIntoWallet()) {
             FastIntoWalletDialog()
                 .setConfirmCallback {
-                    if (!mAccountManager.isIdentityMnemonicBackup()) {
-                        layoutBackupNow.visibility = View.VISIBLE
-                        btnConfirm.setOnClickListener(this)
-                    }
+                    handleBackupMnemonicTips()
                 }
                 .show(requireActivity().supportFragmentManager, "fast")
-        } else if (!mAccountManager.isIdentityMnemonicBackup()) {
-            layoutBackupNow.visibility = View.VISIBLE
-            btnConfirm.setOnClickListener(this)
+        } else {
+            handleBackupMnemonicTips()
         }
 
         swipeRefreshLayout.setOnRefreshListener {
@@ -105,13 +102,25 @@ class WalletFragment : BaseFragment() {
         }
     }
 
+    private fun handleBackupMnemonicTips() {
+        refreshAssertJob = launch(Dispatchers.IO) {
+            val currentAccount = mAccountManager.currentAccount()
+            val walletType = WalletType.parse(currentAccount.walletType)
+            if (mAccountManager.isMnemonicBackup(walletType)) return@launch
+
+            withContext(Dispatchers.Main) {
+                layoutBackupNow.visibility = View.VISIBLE
+                btnConfirm.setOnClickListener(this@WalletFragment)
+            }
+        }
+    }
 
     override fun onDetach() {
         super.onDetach()
         cancelRefreshAssertJob()
     }
 
-    private fun cancelRefreshAssertJob(){
+    private fun cancelRefreshAssertJob() {
         try {
             refreshAssertJob?.cancel()
         } catch (ignore: Exception) {
@@ -174,16 +183,23 @@ class WalletFragment : BaseFragment() {
                         launch(Dispatchers.IO) {
                             activity?.applicationContext?.let {
                                 try {
-                                    val currentAccount =
-                                        mAccountManager.getIdentityWalletMnemonic(it, bytes)
-
+                                    val currentAccount = mAccountManager.currentAccount()
+                                    val mnemonic =
+                                        mAccountManager.getAccountMnemonic(
+                                            it, bytes, currentAccount
+                                        )
+                                    val backupMnemonicFrom =
+                                        if (currentAccount.walletType == WalletType.Governor.type)
+                                            BackupMnemonicFrom.BACKUP_GOVERNOR_WALLET
+                                        else
+                                            BackupMnemonicFrom.BACKUP_SSO_WALLET
                                     withContext(Dispatchers.Main) {
-                                        if (currentAccount != null) {
+                                        if (!mnemonic.isNullOrEmpty()) {
                                             dialogFragment.dismiss()
                                             BackupPromptActivity.start(
                                                 requireActivity(),
-                                                currentAccount,
-                                                BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
+                                                mnemonic,
+                                                backupMnemonicFrom
                                             )
                                         } else {
                                             showToast(R.string.hint_password_error)
@@ -216,10 +232,11 @@ class WalletFragment : BaseFragment() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSwitchAccountEvent(event: SwitchAccountEvent) {
         refreshAssert(true)
+        handleBackupMnemonicTips()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onBackupIdentityMnemonicEvent(event: BackupIdentityMnemonicEvent) {
+    fun onBackupMnemonicEvent(event: BackupMnemonicEvent) {
         layoutBackupNow.visibility = View.GONE
     }
 

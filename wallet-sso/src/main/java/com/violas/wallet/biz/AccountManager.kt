@@ -51,7 +51,8 @@ enum class WalletType(val type: Int) {
 class AccountManager : CoroutineScope by IOScope() {
     companion object {
         private const val CURRENT_ACCOUNT = "ab1"
-        private const val IDENTITY_MNEMONIC_BACKUP = "IDENTITY_MNEMONIC_BACKUP"
+        private const val GOVERNOR_MNEMONIC_BACKUP = "GOVERNOR_MNEMONIC_BACKUP"
+        private const val SSO_MNEMONIC_BACKUP = "SSO_MNEMONIC_BACKUP"
         private const val FAST_INTO_WALLET = "ab2"
     }
 
@@ -106,14 +107,14 @@ class AccountManager : CoroutineScope by IOScope() {
      * 是否存在账户
      */
     fun existsWalletAccount(): Boolean {
-        if (mAccountStorage.loadByWalletType(0) == null) {
+        if (mAccountStorage.loadByCoinType(CoinTypes.Violas.coinType()) == null) {
             return false
         }
         return true
     }
 
     private fun getDefWallet(): Long {
-        return mAccountStorage.loadByWalletType(0)?.id ?: 1L
+        return mAccountStorage.loadByCoinType(CoinTypes.Violas.coinType())?.id ?: 1L
     }
 
     /**
@@ -124,17 +125,29 @@ class AccountManager : CoroutineScope by IOScope() {
     }
 
     /**
-     * 身份钱包助记词是否备份
+     * 钱包助记词是否备份
      */
-    fun isIdentityMnemonicBackup(): Boolean {
-        return mConfigSharedPreferences.getBoolean(IDENTITY_MNEMONIC_BACKUP, false)
+    fun isMnemonicBackup(walletType: WalletType): Boolean {
+        return mConfigSharedPreferences.getBoolean(
+            if (walletType == WalletType.Governor)
+                GOVERNOR_MNEMONIC_BACKUP
+            else
+                SSO_MNEMONIC_BACKUP,
+            false
+        )
     }
 
     /**
-     * 设置身份钱包助记词已备份
+     * 设置钱包助记词已备份
      */
-    fun setIdentityMnemonicBackup() {
-        mConfigSharedPreferences.edit().putBoolean(IDENTITY_MNEMONIC_BACKUP, true).apply()
+    fun setMnemonicBackup(walletType: WalletType) {
+        mConfigSharedPreferences.edit().putBoolean(
+            if (walletType == WalletType.Governor)
+                GOVERNOR_MNEMONIC_BACKUP
+            else
+                SSO_MNEMONIC_BACKUP,
+            true
+        ).apply()
     }
 
     fun isFastIntoWallet(): Boolean {
@@ -146,10 +159,9 @@ class AccountManager : CoroutineScope by IOScope() {
     }
 
     /**
-     * 获取身份钱包的助记词
+     * 获取当前账号的助记词
      */
-    fun getIdentityWalletMnemonic(context: Context, password: ByteArray): ArrayList<String>? {
-        val account = mAccountStorage.loadByWalletType(0)!!
+    fun getAccountMnemonic(context: Context, password: ByteArray,account: AccountDO): ArrayList<String>? {
         val security = SimpleSecurity.instance(context)
         val bytes = security.decrypt(password, account.mnemonic) ?: return null
         val mnemonic = String(bytes)

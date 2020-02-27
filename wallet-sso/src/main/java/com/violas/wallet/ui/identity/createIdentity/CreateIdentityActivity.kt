@@ -11,7 +11,6 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.WalletType
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
-import com.violas.wallet.ui.identity.IdentityActivity
 import kotlinx.android.synthetic.main.activity_import_identity.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,7 +74,10 @@ class CreateIdentityActivity : BaseAppActivity() {
                         BackupPromptActivity.start(
                             this@CreateIdentityActivity,
                             mnemonicWords as ArrayList<String>,
-                            BackupMnemonicFrom.CREATE_IDENTITY_WALLET
+                            if (mCurrentTypeWallet == WalletType.Governor)
+                                BackupMnemonicFrom.CREATE_GOVERNOR_WALLET
+                            else
+                                BackupMnemonicFrom.CREATE_SSO_WALLET
                         )
 
                         App.finishAllActivity()

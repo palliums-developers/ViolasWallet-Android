@@ -9,7 +9,6 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.WalletType
-import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_import_identity.*
 import kotlinx.coroutines.Dispatchers
@@ -71,7 +70,7 @@ class ImportIdentityActivity : BaseAppActivity() {
                             mCurrentTypeWallet,
                             password.toByteArray()
                         )
-                        accountManager.setIdentityMnemonicBackup()
+                        accountManager.setMnemonicBackup(mCurrentTypeWallet)
                         withContext(Dispatchers.Main) {
                             dismissProgress()
                             MainActivity.start(this@ImportIdentityActivity)

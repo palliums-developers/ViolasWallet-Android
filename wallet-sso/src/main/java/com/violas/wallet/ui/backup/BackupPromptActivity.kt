@@ -8,6 +8,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.palliums.utils.start
 import com.violas.wallet.R
+import com.violas.wallet.ui.applyForLicence.ApplyForLicenceActivity
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_backup_prompt.*
 
@@ -52,7 +53,9 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.backup_mnemonic_prompt_title)
-        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY_WALLET) {
+        if (mnemonicFrom == BackupMnemonicFrom.CREATE_GOVERNOR_WALLET
+            || mnemonicFrom == BackupMnemonicFrom.CREATE_SSO_WALLET
+        ) {
             // 如果是创建身份钱包后进入该页面，则不支持后退
             setTitleLeftViewVisibility(View.GONE)
             tvBackupLater.visibility = View.VISIBLE
@@ -65,7 +68,9 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
     }
 
     override fun onBackPressedSupport() {
-        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY_WALLET) {
+        if (mnemonicFrom == BackupMnemonicFrom.CREATE_GOVERNOR_WALLET
+            || mnemonicFrom == BackupMnemonicFrom.CREATE_SSO_WALLET
+        ) {
             // 如果是创建身份钱包后进入该页面，则不支持后退
             return
         }
@@ -81,7 +86,11 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
             }
 
             tvBackupLater -> {
-                MainActivity.start(this)
+                if (mnemonicFrom == BackupMnemonicFrom.CREATE_GOVERNOR_WALLET) {
+                    ApplyForLicenceActivity.start(this)
+                } else {
+                    MainActivity.start(this)
+                }
                 finish()
             }
         }

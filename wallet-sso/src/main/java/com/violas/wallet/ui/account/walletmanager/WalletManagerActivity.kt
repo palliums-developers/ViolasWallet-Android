@@ -11,6 +11,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.WalletType
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.ChangeAccountNameEvent
 import com.violas.wallet.event.SwitchAccountEvent
@@ -71,9 +72,10 @@ class WalletManagerActivity : BaseAppActivity() {
                 mAccountManager.getAccountById(accountId)
             }
 
-            if (account.walletType == 1) {
+            // 州长钱包或SSO钱包都不能删除
+            /*if (account.walletType == 1) {
                 btnRemoveWallet.visibility = View.VISIBLE
-            }
+            }*/
 
             withContext(Dispatchers.Main) {
                 tvName.text = account.walletNickname
@@ -86,7 +88,7 @@ class WalletManagerActivity : BaseAppActivity() {
                 layoutBack.setOnClickListener {
                     PasswordInputDialog()
                         .setConfirmListener { password, dialog ->
-                            backWallet(account, password)
+                            backupWallet(account, password)
                             dialog.dismiss()
                         }
                         .show(supportFragmentManager)
@@ -104,7 +106,7 @@ class WalletManagerActivity : BaseAppActivity() {
         }
     }
 
-    private fun backWallet(account: AccountDO, password: ByteArray) {
+    private fun backupWallet(account: AccountDO, password: ByteArray) {
         launch(Dispatchers.IO) {
             try {
                 val decrypt = SimpleSecurity.instance(this@WalletManagerActivity.applicationContext)
@@ -119,16 +121,20 @@ class WalletManagerActivity : BaseAppActivity() {
                     .map { it.trim() }
                     .toMutableList() as ArrayList
 
-                if (account.walletType == 0 && !mAccountManager.isIdentityMnemonicBackup()) {
+                val walletType = WalletType.parse(account.walletType)
+                if (!mAccountManager.isMnemonicBackup(walletType)) {
                     BackupPromptActivity.start(
                         this@WalletManagerActivity,
                         mnemonic,
-                        BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
+                        if (walletType == WalletType.Governor)
+                            BackupMnemonicFrom.BACKUP_GOVERNOR_WALLET
+                        else
+                            BackupMnemonicFrom.BACKUP_SSO_WALLET
                     )
                 } else {
                     ShowMnemonicActivity.start(this@WalletManagerActivity, mnemonic)
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }

@@ -17,6 +17,15 @@ open class App : Application() {
                 }
             }
         }
+
+        fun existsActivity(clazz: Class<out Activity>): Boolean {
+            activityStore.forEach {
+                if (it.javaClass == clazz) {
+                    return true
+                }
+            }
+            return false
+        }
     }
 
     override fun onCreate() {

@@ -8,7 +8,9 @@ import com.palliums.content.App
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.event.BackupIdentityMnemonicEvent
+import com.violas.wallet.biz.WalletType
+import com.violas.wallet.event.BackupMnemonicEvent
+import com.violas.wallet.ui.applyForLicence.ApplyForLicenceActivity
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_confirm_mnemonic.*
 import org.greenrobot.eventbus.EventBus
@@ -85,29 +87,47 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
             vComplete -> {
                 // 验证助记词顺序
                 if (checkMnemonic()) {
-                    if (mnemonicFrom != BackupMnemonicFrom.CREATE_OTHER_WALLET) {
-                        // 如果是身份钱包，需要存储备份结果到本地
-                        val accountManager = AccountManager()
-                        if (!accountManager.isIdentityMnemonicBackup()) {
-                            accountManager.setIdentityMnemonicBackup()
-
-                            // 如果是来自备份身份钱包的助记词，需要通知钱包首页关闭安全设置视图
-                            if (mnemonicFrom == BackupMnemonicFrom.BACKUP_IDENTITY_WALLET) {
-                                EventBus.getDefault().post(BackupIdentityMnemonicEvent())
-                            }
+                    val walletType = when (mnemonicFrom) {
+                        BackupMnemonicFrom.CREATE_GOVERNOR_WALLET,
+                        BackupMnemonicFrom.BACKUP_GOVERNOR_WALLET -> {
+                            WalletType.Governor
                         }
 
-                        // 如果是来自创建身份钱包，完成后需要跳转到App首页
-                        if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY_WALLET) {
-                            MainActivity.start(this)
-                            App.finishAllActivity()
-                            return
+                        else -> {
+                            WalletType.SSO
                         }
                     }
 
-                    // 如果是来自备份身份钱包或创建非身份钱包，完成后需要返回成功结果
-                    setResult(Activity.RESULT_OK)
-                    finish()
+                    // 存储备份结果到本地
+                    val accountManager = AccountManager()
+                    if (!accountManager.isMnemonicBackup(walletType)) {
+                        accountManager.setMnemonicBackup(walletType)
+
+                        // 如果是来自备份钱包的助记词，需要通知钱包首页关闭安全提醒视图
+                        if (mnemonicFrom == BackupMnemonicFrom.BACKUP_GOVERNOR_WALLET
+                            || mnemonicFrom == BackupMnemonicFrom.BACKUP_SSO_WALLET
+                        ) {
+                            EventBus.getDefault().post(BackupMnemonicEvent())
+                        }
+                    }
+
+                    when (mnemonicFrom) {
+                        BackupMnemonicFrom.CREATE_SSO_WALLET -> {
+                            // 如果是来自创建SSO钱包，完成后需要跳转到首页
+                            MainActivity.start(this)
+                            App.finishAllActivity()
+                        }
+                        BackupMnemonicFrom.CREATE_GOVERNOR_WALLET -> {
+                            // 如果是来自创建州长钱包，完成后需要跳转到申请州长牌照页
+                            ApplyForLicenceActivity.start(this)
+                            App.finishAllActivity()
+                        }
+                        else -> {
+                            // 如果是来自备份钱包，完成后需要返回成功结果
+                            setResult(Activity.RESULT_OK)
+                            finish()
+                        }
+                    }
                 }
             }
         }

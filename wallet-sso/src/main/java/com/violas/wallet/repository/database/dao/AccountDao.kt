@@ -9,10 +9,13 @@ interface AccountDao : BaseDao<AccountDO> {
 
     /**
      * 加载一个指定钱包类型的钱包
-     * @param walletType 0：身份钱包；1：非身份钱包
+     * @param walletType 0：SSO 钱包；1：州长钱包
      */
     @Query("SELECT * FROM account WHERE wallet_type = :walletType LIMIT 1")
     fun loadByWalletType(walletType: Int): AccountDO?
+
+    @Query("SELECT * FROM account WHERE coin_number = :coinType LIMIT 1")
+    fun loadByCoinType(coinType: Int): AccountDO?
 
     /**
      * 加载所有指定钱包类型的钱包，并按创建时间升序排序
