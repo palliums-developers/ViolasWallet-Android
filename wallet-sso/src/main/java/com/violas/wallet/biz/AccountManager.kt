@@ -161,7 +161,11 @@ class AccountManager : CoroutineScope by IOScope() {
     /**
      * 获取当前账号的助记词
      */
-    fun getAccountMnemonic(context: Context, password: ByteArray,account: AccountDO): ArrayList<String>? {
+    fun getAccountMnemonic(
+        context: Context,
+        password: ByteArray,
+        account: AccountDO
+    ): ArrayList<String>? {
         val security = SimpleSecurity.instance(context)
         val bytes = security.decrypt(password, account.mnemonic) ?: return null
         val mnemonic = String(bytes)
@@ -432,10 +436,10 @@ class AccountManager : CoroutineScope by IOScope() {
     }
 
     fun getIdentityByCoinType(coinType: Int): AccountDO? {
-        return mAccountStorage.findByCoinTypeByIdentity(coinType)
+        return mAccountStorage.loadByCoinType(coinType)
     }
 
-    fun getIdentityByWalletType(coinType: Int): AccountDO? {
-        return mAccountStorage.findByWalletTypeByIdentity(coinType)
+    fun getIdentityByWalletType(walletType: Int): AccountDO? {
+        return mAccountStorage.findByCoinTypeAndWalletType(CoinTypes.Violas.coinType(), walletType)
     }
 }

@@ -36,9 +36,6 @@ interface AccountDao : BaseDao<AccountDO> {
     @Query("SELECT * FROM account WHERE id = :id LIMIT 1")
     fun findById(id: Long): AccountDO?
 
-    @Query("SELECT * FROM account WHERE coin_number = :coinType AND wallet_type = 0 LIMIT 1")
-    fun findByCoinTypeByIdentity(coinType: Int): AccountDO?
-
-    @Query("SELECT * FROM account WHERE wallet_type = :walletType LIMIT 1")
-    fun findByWalletTypeByIdentity(walletType: Int): AccountDO?
+    @Query("SELECT * FROM account WHERE coin_number = :coinType AND wallet_type = :walletType LIMIT 1")
+    fun findByCoinTypeAndWalletType(coinType: Int, walletType: Int): AccountDO?
 }
