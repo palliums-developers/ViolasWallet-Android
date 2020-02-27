@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
 import com.palliums.utils.isFastMultiClick
@@ -14,6 +15,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.WalletType
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.event.BackupIdentityMnemonicEvent
@@ -25,6 +27,7 @@ import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.collection.CollectionActivity
+import com.violas.wallet.ui.identity.IdentityActivity
 import com.violas.wallet.ui.record.TransactionRecordActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
@@ -85,6 +88,7 @@ class WalletFragment : BaseFragment() {
         btnCollection.setOnClickListener(this)
         btnTransfer.setOnClickListener(this)
         vTransactionRecordLayout.setOnClickListener(this)
+        layoutWalletType.setOnClickListener(this)
 
         if (mAccountManager.isFastIntoWallet()) {
             FastIntoWalletDialog()
@@ -111,7 +115,7 @@ class WalletFragment : BaseFragment() {
         cancelRefreshAssertJob()
     }
 
-    private fun cancelRefreshAssertJob(){
+    private fun cancelRefreshAssertJob() {
         try {
             refreshAssertJob?.cancel()
         } catch (ignore: Exception) {
@@ -197,6 +201,36 @@ class WalletFragment : BaseFragment() {
                     }
                     .show(requireActivity().supportFragmentManager)
             }
+            R.id.layoutWalletType -> {
+                showProgress()
+                launch(Dispatchers.IO) {
+                    val currentAccount = mAccountManager.currentAccount()
+                    when (currentAccount.walletType) {
+                        WalletType.SSO.type -> {
+                            handlerChangeWallet(WalletType.Governor)
+                        }
+                        WalletType.Governor.type -> {
+                            handlerChangeWallet(WalletType.SSO)
+                        }
+                    }
+                }
+                dismissProgress()
+            }
+        }
+    }
+
+    @WorkerThread
+    private fun handlerChangeWallet(walletType: WalletType) {
+        val account =
+            mAccountManager.getIdentityByWalletType(walletType.type)
+        if (account == null) {
+            activity?.let {
+                IdentityActivity.start(it, walletType)
+                finishActivity()
+            }
+        } else {
+            mAccountManager.switchCurrentAccount(account.id)
+            EventBus.getDefault().post(SwitchAccountEvent())
         }
     }
 
