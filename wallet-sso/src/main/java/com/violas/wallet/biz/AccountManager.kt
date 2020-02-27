@@ -434,4 +434,8 @@ class AccountManager : CoroutineScope by IOScope() {
     fun getIdentityByCoinType(coinType: Int): AccountDO? {
         return mAccountStorage.findByCoinTypeByIdentity(coinType)
     }
+
+    fun getIdentityByWalletType(coinType: Int): AccountDO? {
+        return mAccountStorage.findByWalletTypeByIdentity(coinType)
+    }
 }

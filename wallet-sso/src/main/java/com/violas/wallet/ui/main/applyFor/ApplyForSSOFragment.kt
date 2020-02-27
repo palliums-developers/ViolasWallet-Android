@@ -35,7 +35,9 @@ class ApplyForSSOFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         vTitleMiddleText.text = getString(R.string.title_apply_issue_sso)
-        EventBus.getDefault().register(this)
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
 
         mUserViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
             it.getDataIfNotHandled()?.let { msg ->

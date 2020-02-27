@@ -78,9 +78,9 @@ class IdentityActivity : BaseAppActivity() {
         }
     }
 
-    private suspend fun handleChangeWallet(walletType: WalletType) {
+    private fun handleChangeWallet(walletType: WalletType) {
         val account =
-            mAccountManager.getIdentityByCoinType(walletType.type)
+            mAccountManager.getIdentityByWalletType(walletType.type)
         if (account == null) {
             mCurrentTypeWallet = walletType
             initViewData()
@@ -91,9 +91,7 @@ class IdentityActivity : BaseAppActivity() {
             }
         } else {
             mAccountManager.switchCurrentAccount(account.id)
-            withContext(Dispatchers.Main) {
-                MainActivity.start(this@IdentityActivity)
-            }
+            MainActivity.start(this@IdentityActivity)
         }
     }
 

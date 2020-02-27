@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
 import com.palliums.utils.isFastMultiClick
@@ -26,6 +27,7 @@ import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.collection.CollectionActivity
+import com.violas.wallet.ui.identity.IdentityActivity
 import com.violas.wallet.ui.record.TransactionRecordActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
@@ -86,6 +88,7 @@ class WalletFragment : BaseFragment() {
         btnCollection.setOnClickListener(this)
         btnTransfer.setOnClickListener(this)
         vTransactionRecordLayout.setOnClickListener(this)
+        layoutWalletType.setOnClickListener(this)
 
         if (mAccountManager.isFastIntoWallet()) {
             FastIntoWalletDialog()
@@ -213,6 +216,36 @@ class WalletFragment : BaseFragment() {
                     }
                     .show(requireActivity().supportFragmentManager)
             }
+            R.id.layoutWalletType -> {
+                showProgress()
+                launch(Dispatchers.IO) {
+                    val currentAccount = mAccountManager.currentAccount()
+                    when (currentAccount.walletType) {
+                        WalletType.SSO.type -> {
+                            handlerChangeWallet(WalletType.Governor)
+                        }
+                        WalletType.Governor.type -> {
+                            handlerChangeWallet(WalletType.SSO)
+                        }
+                    }
+                    dismissProgress()
+                }
+            }
+        }
+    }
+
+    @WorkerThread
+    private fun handlerChangeWallet(walletType: WalletType) {
+        val account =
+            mAccountManager.getIdentityByWalletType(walletType.type)
+        if (account == null) {
+            activity?.let {
+                IdentityActivity.start(it, walletType)
+                finishActivity()
+            }
+        } else {
+            mAccountManager.switchCurrentAccount(account.id)
+            EventBus.getDefault().post(SwitchAccountEvent())
         }
     }
 
@@ -266,6 +299,17 @@ class WalletFragment : BaseFragment() {
         refreshAssertJob = launch(Dispatchers.IO) {
             val currentAccount = mAccountManager.currentAccount()
             val enableTokens = mTokenManger.loadEnableToken(currentAccount)
+
+            withContext(Dispatchers.Main) {
+                when (currentAccount.walletType) {
+                    WalletType.SSO.type -> {
+                        tvWalletType.setText(R.string.hint_sso_wallet)
+                    }
+                    WalletType.Governor.type -> {
+                        tvWalletType.setText(R.string.hint_governor_wallet)
+                    }
+                }
+            }
 
             // 刷新当前钱包的信息和当前平台的资产
             if (switchWallet) {
