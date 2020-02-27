@@ -213,8 +213,8 @@ class WalletFragment : BaseFragment() {
                             handlerChangeWallet(WalletType.SSO)
                         }
                     }
+                    dismissProgress()
                 }
-                dismissProgress()
             }
         }
     }
@@ -283,6 +283,17 @@ class WalletFragment : BaseFragment() {
         refreshAssertJob = launch(Dispatchers.IO) {
             val currentAccount = mAccountManager.currentAccount()
             val enableTokens = mTokenManger.loadEnableToken(currentAccount)
+
+            withContext(Dispatchers.Main) {
+                when (currentAccount.walletType) {
+                    WalletType.SSO.type -> {
+                        tvWalletType.setText(R.string.hint_sso_wallet)
+                    }
+                    WalletType.Governor.type -> {
+                        tvWalletType.setText(R.string.hint_governor_wallet)
+                    }
+                }
+            }
 
             // 刷新当前钱包的信息和当前平台的资产
             if (switchWallet) {

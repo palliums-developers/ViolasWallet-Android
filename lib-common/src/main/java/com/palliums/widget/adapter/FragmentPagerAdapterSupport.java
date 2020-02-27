@@ -34,4 +34,8 @@ public class FragmentPagerAdapterSupport extends FragmentPagerAdapter {
         mFragmentList.add(fragment);
     }
 
+    public void replaceFragment(int index, Fragment fragment) {
+        mFragmentList.set(index, fragment);
+    }
+
 }
