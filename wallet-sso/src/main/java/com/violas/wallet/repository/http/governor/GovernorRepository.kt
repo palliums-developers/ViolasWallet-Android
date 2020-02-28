@@ -12,6 +12,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
  */
 class GovernorRepository(private val api: GovernorApi) {
 
+    /**
+     * 注册州长
+     */
     suspend fun signUpGovernor(
         walletAddress: String, name: String, txid: String
     ) =
@@ -24,16 +27,49 @@ class GovernorRepository(private val api: GovernorApi) {
             api.signUpGovernor(requestBody)
         }
 
+    /**
+     * 获取州长信息
+     */
     suspend fun getGovernorInfo(walletAddress: String) =
         checkResponse(dataNullableOnSuccess = false) {
             api.getGovernorInfo(walletAddress)
         }
 
+    /**
+     * 更新子账户个数
+     */
+    suspend fun updateSubAccountCount(walletAddress: String, subAccountCount: Int) =
+        checkResponse {
+            val requestBody = """{
+    "wallet_address":"$walletAddress",
+    "subaccount_count":$subAccountCount
+}""".toRequestBody("application/json".toMediaTypeOrNull())
+            api.updateGovernorInfo(requestBody)
+        }
+
+    /**
+     * 更新州长名称
+     */
+    suspend fun updateGovernorName(walletAddress: String, name: String) =
+        checkResponse {
+            val requestBody = """{
+    "wallet_address":"$walletAddress",
+    "name":"$name"
+}""".toRequestBody("application/json".toMediaTypeOrNull())
+            api.updateGovernorInfo(requestBody)
+        }
+
+    /**
+     * 获取vstake地址
+     */
     suspend fun getVStakeAddress() =
         checkResponse(dataNullableOnSuccess = false) {
             api.getVStakeAddress()
         }
 
+    /**
+     * 获取SSO发币申请
+     */
     suspend fun getSSOApplications(
         walletAddress: String, pageSize: Int, offset: Int
     ) =
@@ -41,18 +77,25 @@ class GovernorRepository(private val api: GovernorApi) {
             api.getSSOApplications(walletAddress, pageSize, offset)
         }
 
+    /**
+     * 审批SSO发币申请
+     */
     suspend fun approvalSSOApplication(
-        pass: Boolean, newTokenAddress: String, ssoWalletAddress: String
+        pass: Boolean, newTokenAddress: String, ssoWalletAddress: String, walletLayersNumber: Int
     ) =
         checkResponse {
             val requestBody = """{
     "approval_status":${if (pass) 1 else 2},
     "module_address":"${if (pass) newTokenAddress else ""}",
-    "wallet_address":"$ssoWalletAddress"
+    "wallet_address":"$ssoWalletAddress",
+    "subaccount_count":$walletLayersNumber
 }""".toRequestBody("application/json".toMediaTypeOrNull())
             api.approvalSSOApplication(requestBody)
         }
 
+    /**
+     * 改变SSO发币申请状态为已铸币
+     */
     suspend fun changeSSOApplicationToMinted(ssoWalletAddress: String) =
         checkResponse {
             val requestBody = """{

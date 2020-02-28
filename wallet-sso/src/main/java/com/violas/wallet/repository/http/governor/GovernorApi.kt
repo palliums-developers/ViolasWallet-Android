@@ -26,7 +26,13 @@ interface GovernorApi {
     suspend fun getGovernorInfo(@Path("walletAddress") walletAddress: String): Response<GovernorInfoDTO>
 
     /**
-     * 获取vstake address
+     * 修改州长信息
+     */
+    @PUT("/1.0/violas/governor")
+    suspend fun updateGovernorInfo(@Body body: RequestBody): Response<Any>
+
+    /**
+     * 获取vstake地址
      */
     @GET("/1.0/violas/governor/vstake/address")
     suspend fun getVStakeAddress(): Response<String>

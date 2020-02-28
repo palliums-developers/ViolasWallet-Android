@@ -11,15 +11,18 @@ import com.google.gson.annotations.SerializedName
 
 data class GovernorInfoDTO(
     @SerializedName("wallet_address")
-    val walletAddress: String,
-    val name: String,
+    val walletAddress: String,  // 钱包地址
+    @SerializedName("name")
+    val name: String,           // 州长名称
+    @SerializedName("status")
+    val applicationStatus: Int, // 申请州长状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
     @SerializedName("subaccount_count")
-    val subAccountCount: Int
+    val subAccountCount: Int    // 子账户个数（用于派生铸币账户注册新的module）
 )
 
 data class SSOApplicationDTO(
     @SerializedName("wallet_address")
-    val walletAddress: String,                      // 申请者的钱包地址
+    val ssoWalletAddress: String,                   // 申请者的钱包地址
     @SerializedName("name")
     val idName: String,                             // 申请者的身份姓名
     @SerializedName("id_number")
@@ -38,13 +41,15 @@ data class SSOApplicationDTO(
     val phoneAreaCode: String,                      // 申请者的手机区号
 
     @SerializedName("token_type")
-    val tokenType: String,                          // 法币种类
+    val fiatCurrencyType: String,                   // 法币种类，即发币类型（如：USD、RMB）
     @SerializedName("amount")
-    val tokenAmount: String,                        // 法币数量
+    val tokenAmount: String,                        // 稳定币数量，即发行数量
     @SerializedName("token_name")
     val tokenName: String,                          // 稳定币名称
     @SerializedName("token_value")
-    val tokenValue: Int,                            // 稳定币价值
+    val tokenValue: Int,                            // 稳定币价值（单位发币种类）
+    @SerializedName("module_address")
+    val tokenAddress: String?,                      // 稳定币地址，即发行的module的address，在申请状态为pass之后才有
     @SerializedName("reserve_photo_url")
     val reservePhotoUrl: String,                    // 储备金照片url
     @SerializedName("account_info_photo_positive_url")
@@ -58,5 +63,7 @@ data class SSOApplicationDTO(
     @SerializedName("validity_period")
     val validityPeriod: Int,                        // 申请有效期（单位天数）
     @SerializedName("approval_status")
-    val approvalStatus: Int                         // 审批状态 0: 未审批; 1: 审批通过; 2: 审批失败; 3: 已Publish; 4: 铸币成功
+    val applicationStatus: Int,                     // 申请发币状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
+    @SerializedName("subaccount_count")
+    val walletLayersNumber: Int = -1                // 铸币账户的钱包层数，在申请状态为pass之后才有
 )
