@@ -92,6 +92,7 @@ class IdentityActivity : BaseAppActivity() {
         } else {
             mAccountManager.switchCurrentAccount(account.id)
             MainActivity.start(this@IdentityActivity)
+            close()
         }
     }
 

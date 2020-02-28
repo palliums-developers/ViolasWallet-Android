@@ -211,3 +211,55 @@ fun TransactionPayload.Companion.optionTokenWithDataPayload(
         )
     )
 }
+
+/**
+ * 生成链上注册稳定比交易 Payload
+ *
+ * @param tokenAddress 稳定币的 model address
+ */
+fun TransactionPayload.Companion.optionTokenRegisterPayload(
+    context: Context,
+    tokenAddress: String
+): TransactionPayload {
+
+    val moveEncode = Move.violasTokenMultiEncode(
+        context.assets.open("move/violas_token.json"),
+        tokenAddress.hexToBytes()
+    )
+
+    return TransactionPayload(
+        TransactionPayload.Module(
+            moveEncode
+        )
+    )
+}
+
+/**
+ * 生成铸币交易 Payload
+ *
+ * @param tokenAddress 稳定币的 model address
+ * @param receiveAddress 稳定币接收地址
+ * @param receiveAmount 铸币数量(最小单位)
+ */
+fun TransactionPayload.Companion.optionTokenMintPayload(
+    context: Context,
+    tokenAddress: String,
+    receiveAddress: String,
+    receiveAmount: Long
+): TransactionPayload {
+
+    val addressArgument = TransactionArgument.newAddress(receiveAddress)
+    val amountArgument = TransactionArgument.newU64(receiveAmount)
+
+    val moveEncode = Move.violasTokenEncode(
+        context.assets.open("move/violas_token_mint.json"),
+        tokenAddress.hexToBytes()
+    )
+
+    return TransactionPayload(
+        TransactionPayload.Script(
+            moveEncode,
+            arrayListOf(addressArgument, amountArgument)
+        )
+    )
+}

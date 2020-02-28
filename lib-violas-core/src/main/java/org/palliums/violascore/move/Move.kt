@@ -43,6 +43,23 @@ object Move {
         return decode
     }
 
+    fun violasTokenMultiEncode(
+        inputStream: InputStream,
+        token: ByteArray
+    ): ByteArray {
+        val decode = decode(inputStream)
+        var exists = true
+        do {
+            val findAddressIndex = findAddressIndex(decode, defaultTokenAddress)
+            if (findAddressIndex != -1) {
+                System.arraycopy(token, 0, decode, findAddressIndex, token.size)
+            } else {
+                exists = false
+            }
+        } while (exists)
+        return decode
+    }
+
     fun findAddressIndex(moveCode: ByteArray, tokenAddress: ByteArray): Int {
         return sundaySearch(moveCode, tokenAddress)
     }
