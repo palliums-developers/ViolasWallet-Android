@@ -79,6 +79,7 @@ class ApplyForLicenceActivity : BaseViewModelActivity() {
             close()
         } else {
             MainActivity.start(this)
+            close()
         }
     }
 }
