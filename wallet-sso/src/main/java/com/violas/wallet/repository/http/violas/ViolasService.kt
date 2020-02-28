@@ -170,6 +170,82 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         })
     }
 
+    /**
+     * 链上注册稳定比交易
+     *
+     * @param tokenAddress 稳定币的 model address
+     * @param account 发送交易的账户
+     */
+    fun tokenRegister(
+        context: Context,
+        tokenAddress: String,
+        account: Account,
+        call: (success: Boolean) -> Unit
+    ) {
+        val senderAddress = account.getAddress().toHex()
+        getSequenceNumber(senderAddress, { sequenceNumber ->
+
+            val publishTokenPayload = TransactionPayload.optionTokenRegisterPayload(
+                context, tokenAddress
+            )
+
+            val rawTransaction = RawTransaction.optionTransaction(
+                senderAddress,
+                publishTokenPayload,
+                sequenceNumber
+            )
+
+            sendTransaction(
+                rawTransaction,
+                account.keyPair.getPublicKey(),
+                account.keyPair.sign(rawTransaction.toByteArray()),
+                call
+            )
+        }, {
+            call.invoke(false)
+        })
+    }
+
+    /**
+     * 生成铸币交易 Payload
+     *
+     * @param tokenAddress 稳定币的 model address
+     * @param account 发送交易的账户
+     * @param receiveAddress 稳定币接收地址
+     * @param receiveAmount 铸币数量(最小单位)
+     */
+    fun tokenMint(
+        context: Context,
+        tokenAddress: String,
+        account: Account,
+        receiveAddress: String,
+        receiveAmount: Long,
+        call: (success: Boolean) -> Unit
+    ) {
+        val senderAddress = account.getAddress().toHex()
+        getSequenceNumber(senderAddress, { sequenceNumber ->
+
+            val publishTokenPayload = TransactionPayload.optionTokenMintPayload(
+                context, tokenAddress, receiveAddress, receiveAmount
+            )
+
+            val rawTransaction = RawTransaction.optionTransaction(
+                senderAddress,
+                publishTokenPayload,
+                sequenceNumber
+            )
+
+            sendTransaction(
+                rawTransaction,
+                account.keyPair.getPublicKey(),
+                account.keyPair.sign(rawTransaction.toByteArray()),
+                call
+            )
+        }, {
+            call.invoke(false)
+        })
+    }
+
     fun sendCoin(
         context: Context,
         account: Account,
