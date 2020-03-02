@@ -38,7 +38,7 @@ class GovernorRepository(private val api: GovernorApi) {
     /**
      * 更新子账户个数
      */
-    suspend fun updateSubAccountCount(walletAddress: String, subAccountCount: Int) =
+    suspend fun updateSubAccountCount(walletAddress: String, subAccountCount: Long) =
         checkResponse {
             val requestBody = """{
     "wallet_address":"$walletAddress",
@@ -81,7 +81,7 @@ class GovernorRepository(private val api: GovernorApi) {
      * 审批SSO发币申请
      */
     suspend fun approvalSSOApplication(
-        pass: Boolean, newTokenAddress: String, ssoWalletAddress: String, walletLayersNumber: Int
+        pass: Boolean, newTokenAddress: String, ssoWalletAddress: String, walletLayersNumber: Long
     ) =
         checkResponse {
             val requestBody = """{

@@ -1,12 +1,79 @@
 package com.violas.wallet.biz.applysso
 
+import android.util.Log
+import com.palliums.content.ContextProvider
 import com.violas.wallet.biz.applysso.handler.ApplyHandle
+import com.violas.wallet.biz.applysso.handler.ServiceProvider
+import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.database.AppDatabase
+import com.violas.wallet.repository.database.dao.ApplySSORecordDao
+import com.violas.wallet.repository.database.entity.ApplySSORecordDo
+import com.violas.wallet.repository.http.governor.GovernorRepository
 import java.util.*
 
-class ApplyEngine(
-    handleList: LinkedList<ApplyHandle>
-) {
+class ApplyEngine {
+    private val mApplyHandles = LinkedList<ApplyHandle>()
+
+    private val mApplySsoRecordDao by lazy {
+        AppDatabase.getInstance(ContextProvider.getContext()).applySsoRecordDao()
+    }
+
+    private val mGovernorService by lazy {
+        DataRepository.getGovernorService()
+    }
+
     fun execSSOApply(status: Int? = SSOApplyTokenHandler.None): Boolean {
-        return false
+        val currentStatus = status ?: SSOApplyTokenHandler.None
+        var isSuccess = false
+        for (index in SSOApplyTokenHandler.None until currentStatus) {
+            mApplyHandles.removeAt(0)
+        }
+        mApplyHandles.forEach {
+            val handler = it.handler()
+            if (!handler) {
+                isSuccess = false
+                Log.e("ApplyEngine", "ApplyEngine error ${it.javaClass.simpleName}")
+                return@forEach
+            }
+        }
+        return isSuccess
+    }
+
+    fun addApplyHandle(handle: ApplyHandle) {
+        handle.setServiceProvider(object : ServiceProvider {
+            override fun getApplySsoRecordDao(): ApplySSORecordDao {
+                return mApplySsoRecordDao
+            }
+
+            override fun getGovernorService(): GovernorRepository {
+                return mGovernorService
+            }
+        })
+        mApplyHandles.add(handle)
+    }
+
+    fun getUnDoneRecord(accountId: Long): ApplySSORecordDo? {
+        return mApplySsoRecordDao.findUnDoneRecord(accountId)
+    }
+
+    fun getUnMintRecord(accountId: Long, mintTokenAddress: String): ApplySSORecordDo? {
+        return mApplySsoRecordDao.findUnMintRecord(accountId, mintTokenAddress)
+    }
+
+    fun execMint(status: Int? = SSOApplyTokenHandler.Approval): Boolean {
+        val currentStatus = status ?: SSOApplyTokenHandler.Approval
+        var isSuccess = false
+        for (index in SSOApplyTokenHandler.None until currentStatus) {
+            mApplyHandles.removeAt(0)
+        }
+        mApplyHandles.forEach {
+            val handler = it.handler()
+            if (!handler) {
+                isSuccess = false
+                Log.e("ApplyEngine", "ApplyEngine error ${it.javaClass.simpleName}")
+                return@forEach
+            }
+        }
+        return isSuccess
     }
 }

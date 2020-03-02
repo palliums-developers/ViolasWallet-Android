@@ -1,15 +1,12 @@
 package com.violas.wallet.biz.applysso
 
 import androidx.annotation.IntDef
-import com.palliums.content.ContextProvider
+import androidx.annotation.WorkerThread
 import com.violas.wallet.biz.applysso.handler.*
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.database.AppDatabase
 import org.palliums.violascore.wallet.Account
 import org.palliums.violascore.wallet.LibraWallet
 import org.palliums.violascore.wallet.WalletConfig
-import java.lang.RuntimeException
-import java.util.*
 
 @IntDef(
     SSOApplyTokenHandler.None,
@@ -17,13 +14,15 @@ import java.util.*
     SSOApplyTokenHandler.ReadyRegister,
     SSOApplyTokenHandler.Registered,
     SSOApplyTokenHandler.ReadyApproval,
-    SSOApplyTokenHandler.Approval
+    SSOApplyTokenHandler.Approval,
+    SSOApplyTokenHandler.MintSuccess
 )
 annotation class SSOApplyTokenStatus
 
 /**
  * 申请审批流程
  * 获取钱包已使用层数，派生铸币账户
+ *
  * 通知服务器更新钱包层数 +1
  * 本地记录某一层铸币账户已经开始使用
  *
@@ -43,7 +42,7 @@ class SSOApplyTokenHandler(
     private val accountId: Long,
     private val account: Account,
     private val mnemonics: List<String>,
-    private val walletAddress: String
+    private val SSOApplyWalletAddress: String
 ) {
     companion object {
         /**
@@ -70,47 +69,79 @@ class SSOApplyTokenHandler(
          * 审批 SSO 申请完成
          */
         const val Approval = 5
+        /**
+         * Mint 成功
+         */
+        const val MintSuccess = 6
     }
 
-    private val mApplySsoRecordDao by lazy {
-        AppDatabase.getInstance(ContextProvider.getContext()).applySsoRecordDao()
-    }
 
     private val mGovernorService by lazy {
         DataRepository.getGovernorService()
     }
 
+    @WorkerThread
     suspend fun exec(): Boolean {
-        val findUnDoneRecord = mApplySsoRecordDao.findUnDoneRecord(accountId)
+        val applyEngine = ApplyEngine()
+        val findUnDoneRecord = applyEngine.getUnDoneRecord(accountId)
         val layerWallet = if (findUnDoneRecord == null) {
             //todo net work error
-            mGovernorService.getGovernorInfo(walletAddress).data?.subAccountCount?.plus(1)
+            mGovernorService.getGovernorInfo(account.getAddress().toHex()).data?.subAccountCount?.plus(
+                1
+            )
                 ?: throw RuntimeException()
         } else {
             findUnDoneRecord.childNumber
         }
 
-        val libraWallet = LibraWallet(WalletConfig(mnemonics))
-        val tokenAccount = libraWallet.generateAccount(layerWallet)
+        val mintAccount = LibraWallet(WalletConfig(mnemonics)).generateAccount(layerWallet)
 
-        val linkedList = LinkedList<ApplyHandle>()
-        linkedList.add(SendWalletLayersHandle(layerWallet, accountId, walletAddress))
-        linkedList.add(SendTokenAccountCoinHandle(account, tokenAccount.getAddress().toBytes(), 10))
-        linkedList.add(
+        applyEngine.addApplyHandle(
+            SendWalletLayersHandle(
+                layerWallet,
+                accountId,
+                account.getAddress().toHex()
+            )
+        )
+        applyEngine.addApplyHandle(
+            SendTokenAccountCoinHandle(
+                accountId,
+                account,
+                layerWallet,
+                mintAccount.getAddress().toHex(),
+                10
+            )
+        )
+        applyEngine.addApplyHandle(
             TokenAccountRegisterHandle(
-                tokenAccount,
-                tokenAccount.getAddress().toBytes()
+                accountId,
+                account.getAddress().toHex(),
+                layerWallet,
+                mintAccount,
+                mintAccount.getAddress().toHex()
             )
         )
-        linkedList.add(
+        applyEngine.addApplyHandle(
             SendSSOAccountCoinHandle(
-                tokenAccount,
-                tokenAccount.getAddress().toBytes(),
-                1000
+                accountId,
+                account.getAddress().toHex(),
+                layerWallet,
+                account,
+                SSOApplyWalletAddress,
+                1000,
+                mintAccount.getAddress().toHex()
             )
         )
-        linkedList.add(SendWalletLayersHandle(layerWallet, accountId, walletAddress))
+        applyEngine.addApplyHandle(
+            SendApplySSOHandle(
+                accountId,
+                account.getAddress().toHex(),
+                layerWallet,
+                mintAccount.getAddress().toHex(),
+                SSOApplyWalletAddress
+            )
+        )
 
-        return ApplyEngine(linkedList).execSSOApply(findUnDoneRecord?.status)
+        return applyEngine.execSSOApply(findUnDoneRecord?.status)
     }
 }

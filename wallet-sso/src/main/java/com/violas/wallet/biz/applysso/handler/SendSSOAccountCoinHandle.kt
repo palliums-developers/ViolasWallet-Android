@@ -1,14 +1,35 @@
 package com.violas.wallet.biz.applysso.handler
 
+import com.violas.wallet.biz.applysso.SSOApplyTokenHandler
 import org.palliums.violascore.wallet.Account
 
 class SendSSOAccountCoinHandle(
+    private val accountId: Long,
+    private val walletAddress: String,
+    private val layerWallet: Long,
     private val account: Account,
-    private val receiveAddress: ByteArray,
-    private val amount: Int
-) : ApplyHandle {
+    private val receiveAddress: String,
+    private val amount: Long,
+    private val mintTokenAddress: String
+) : ApplyHandle() {
     override fun handler(): Boolean {
-        SendAccountCoinHandler(account, receiveAddress, amount).send()
+        try {
+            val send = SendAccountCoinHandler(account, receiveAddress, amount).send()
+            if (send) {
+                getServiceProvider()!!.getApplySsoRecordDao()
+                    .updateRecordStatusAndTokenAddress(
+                        accountId,
+                        walletAddress,
+                        layerWallet,
+                        mintTokenAddress,
+                        SSOApplyTokenHandler.ReadyApproval
+                    )
+                return true
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
         return false
     }
 }

@@ -1,6 +1,5 @@
 package com.violas.wallet.biz.applysso
 
-import com.violas.wallet.repository.DataRepository
 import org.palliums.violascore.wallet.Account
 
 class ApplySSOManager {
@@ -8,8 +7,14 @@ class ApplySSOManager {
     /**
      * @param account 解密后的 Account 账户
      */
-    fun apply(accountId: Long, account: Account, walletAddress: String) {
-        val applySSOHandler = SSOApplyTokenHandler(accountId, account, walletAddress)
+    suspend fun apply(
+        accountId: Long,
+        account: Account,
+        applySSOWalletAddress: String,
+        mnemonic: List<String>
+    ) {
+        val applySSOHandler =
+            SSOApplyTokenHandler(accountId, account, mnemonic, applySSOWalletAddress)
         applySSOHandler.exec()
     }
 

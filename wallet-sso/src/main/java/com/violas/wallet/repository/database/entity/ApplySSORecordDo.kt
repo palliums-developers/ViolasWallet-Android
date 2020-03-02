@@ -6,6 +6,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.violas.wallet.biz.applysso.SSOApplyTokenStatus
 
 @Entity(
     tableName = ApplySSORecordDo.TABLE_NAME,
@@ -18,13 +19,14 @@ data class ApplySSORecordDo(
     @ColumnInfo(name = "id")
     var id: Long? = null,
     @ColumnInfo(name = "account_id")
-    var account_id: Long = 0,
+    var accountId: Long = 0,
     @ColumnInfo(name = "child_number")
     var childNumber: Long = 0,
     @ColumnInfo(name = "wallet_address")
     var walletAddress: String = "",
     @ColumnInfo(name = "token_address")
     var tokenAddress: String = "",
+    @SSOApplyTokenStatus
     @ColumnInfo(name = "status")
     var status: Int = 0
 ) : Parcelable {
@@ -56,7 +58,7 @@ data class ApplySSORecordDo(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeValue(id)
-        parcel.writeLong(account_id)
+        parcel.writeLong(accountId)
         parcel.writeLong(childNumber)
         parcel.writeString(walletAddress)
         parcel.writeString(tokenAddress)

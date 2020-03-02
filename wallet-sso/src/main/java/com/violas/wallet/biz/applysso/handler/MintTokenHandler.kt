@@ -6,33 +6,39 @@ import com.violas.wallet.repository.DataRepository
 import org.palliums.violascore.wallet.Account
 import java.util.concurrent.CountDownLatch
 
-class TokenAccountRegisterHandle(
+class MintTokenHandler(
     private val accountId: Long,
-    private val walletAddress: String,
+    private val accountAddress: String,
     private val layerWallet: Long,
-    private val account: Account,
-    private val tokenAddress: String
+    private val tokenAddress: String,
+    private val mintAccount: Account,
+    private val receiveAddress: String,
+    private val receiveAmount: Long
 ) : ApplyHandle() {
+
     override fun handler(): Boolean {
         val countDownLatch = CountDownLatch(1)
         var isSuccess = false
-        DataRepository.getViolasService().tokenRegister(
+        DataRepository.getViolasService().tokenMint(
             ContextProvider.getContext(),
             tokenAddress,
-            account
+            mintAccount,
+            receiveAddress,
+            receiveAmount
         ) {
             isSuccess = it
             countDownLatch.countDown()
         }
-        countDownLatch.await()
         if (isSuccess) {
-            getServiceProvider()?.getApplySsoRecordDao()?.updateRecordStatus(
-                accountId,
-                walletAddress,
-                layerWallet,
-                SSOApplyTokenHandler.Registered
-            )
+            getServiceProvider()!!.getApplySsoRecordDao()
+                .updateRecordStatus(
+                    accountId,
+                    accountAddress,
+                    layerWallet,
+                    SSOApplyTokenHandler.MintSuccess
+                )
         }
+        countDownLatch.await()
         return isSuccess
     }
 }
