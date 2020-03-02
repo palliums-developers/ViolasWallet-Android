@@ -73,6 +73,11 @@ class WalletFragment : BaseFragment() {
         return R.layout.fragment_wallet
     }
 
+    override fun onSupportVisible() {
+        super.onSupportVisible()
+        setStatusBarMode(false)
+    }
+
     override fun onLazyInitView(savedInstanceState: Bundle?) {
         super.onLazyInitView(savedInstanceState)
 

@@ -42,6 +42,11 @@ class MeFragment : BaseFragment() {
         return R.layout.fragment_me
     }
 
+    override fun onSupportVisible() {
+        super.onSupportVisible()
+        setStatusBarMode(false)
+    }
+
     override fun onLazyInitView(savedInstanceState: Bundle?) {
         super.onLazyInitView(savedInstanceState)
 
@@ -63,7 +68,7 @@ class MeFragment : BaseFragment() {
                 && loadState.status == LoadState.Status.FAILURE
                 && isNetworkConnected()
             ) {
-                mViewModel.execute()
+                mViewModel.execute(checkNetworkBeforeExecute = false)
             }
         }
 
@@ -175,7 +180,7 @@ class MeFragment : BaseFragment() {
                 val idInfo = mViewModel.getIdInfo() ?: return
                 when (idInfo.idAuthenticationStatus) {
                     IDAuthenticationStatus.UNKNOWN -> {
-                        mViewModel.execute()
+                        mViewModel.execute(checkNetworkBeforeExecute = false)
                     }
 
                     IDAuthenticationStatus.AUTHENTICATED -> {
@@ -203,7 +208,7 @@ class MeFragment : BaseFragment() {
                 val phoneInfo = mViewModel.getPhoneInfo() ?: return
                 when (phoneInfo.accountBindingStatus) {
                     AccountBindingStatus.UNKNOWN -> {
-                        mViewModel.execute()
+                        mViewModel.execute(checkNetworkBeforeExecute = false)
                     }
 
                     AccountBindingStatus.UNBOUND -> {
@@ -222,7 +227,7 @@ class MeFragment : BaseFragment() {
                 val emailInfo = mViewModel.getEmailInfo() ?: return
                 when (emailInfo.accountBindingStatus) {
                     AccountBindingStatus.UNKNOWN -> {
-                        mViewModel.execute()
+                        mViewModel.execute(checkNetworkBeforeExecute = false)
                     }
 
                     AccountBindingStatus.UNBOUND -> {

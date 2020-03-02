@@ -72,7 +72,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                 && loadState.status == LoadState.Status.FAILURE
                 && isNetworkConnected()
             ) {
-                userViewModel.execute()
+                userViewModel.execute(checkNetworkBeforeExecute = false)
             }
         }
 
@@ -205,7 +205,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
             if (loadState != null
                 && loadState.status == LoadState.Status.FAILURE
             ) {
-                userViewModel.execute()
+                userViewModel.execute(checkNetworkBeforeExecute = false)
             }
             refreshApplyStatusByNetwork(mAccount!!)
         }

@@ -372,8 +372,4 @@ class UserViewModel : BaseViewModel() {
                 || (emailInfo != null && !emailInfo.isBoundEmail())
                 || (phoneInfo != null && !phoneInfo.isBoundPhone())
     }
-
-    override fun checkNetworkBeforeExecute(): Boolean {
-        return false
-    }
 }
