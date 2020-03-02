@@ -6,12 +6,14 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.AttributeSet
 import android.util.SparseArray
+import android.util.TypedValue
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.TextView
 import com.palliums.R
-import com.palliums.utils.getDrawable
-import com.palliums.utils.getString
-import com.palliums.utils.isFastMultiClick
+import com.palliums.utils.*
+import com.scwang.smartrefresh.layout.internal.ProgressDrawable
+import kotlinx.android.synthetic.main.layout_loading.view.*
 import kotlinx.android.synthetic.main.widget_status_layout.view.*
 
 /**
@@ -22,7 +24,16 @@ import kotlinx.android.synthetic.main.widget_status_layout.view.*
  */
 class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
 
-    private var mOnReloadListener: OnReloadListener? = null
+    private var mLastStatus = IStatusLayout.Status.STATUS_NONE
+    private var mShowReloadOnFailed = false
+
+    private var mReloadCallback: (() -> Unit)? = null
+
+    private val mProgressDrawable by lazy {
+        ProgressDrawable().apply {
+            setColor(getColor(R.color.color_666666))
+        }
+    }
 
     private val mTipsArr by lazy { SparseArray<String>(3) }
     private val mImageArr by lazy { SparseArray<Drawable>(3) }
@@ -56,6 +67,13 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         var failureTips = context.getString(R.string.common_status_failure)
         var noNetWorkTips = context.getString(R.string.common_status_no_network)
 
+        var tipsTextSize = DensityUtility.sp2px(context, 14f).toInt()
+        var tipsTextColor = getColor(R.color.black_30)
+
+        var reloadTextSize = tipsTextSize
+        var reloadTextColor = tipsTextColor
+        var reloadText = getString(R.string.common_status_click_reload)
+
         attrs?.let { it ->
             val typedArray =
                 context.obtainStyledAttributes(
@@ -81,12 +99,37 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
             failureIcon?.run { setImageWithStatus(IStatusLayout.Status.STATUS_FAILURE, this) }
             noNetworkIcon?.run { setImageWithStatus(IStatusLayout.Status.STATUS_NO_NETWORK, this) }
 
+            tipsTextSize = typedArray.getDimensionPixelSize(
+                R.styleable.StatusLayout_slTipsTextSize, tipsTextSize
+            )
+            tipsTextColor = typedArray.getColor(
+                R.styleable.StatusLayout_slTipsTextColor, tipsTextColor
+            )
+
+            reloadTextSize = typedArray.getDimensionPixelSize(
+                R.styleable.StatusLayout_slReloadTextSize, reloadTextSize
+            )
+            reloadTextColor = typedArray.getColor(
+                R.styleable.StatusLayout_slReloadTextColor, reloadTextColor
+            )
+            if (typedArray.hasValue(R.styleable.StatusLayout_slReloadText)) {
+                reloadText = typedArray.getString(R.styleable.StatusLayout_slReloadText)!!
+            }
+            mShowReloadOnFailed = typedArray.getBoolean(
+                R.styleable.StatusLayout_slShowReloadOnFailed, mShowReloadOnFailed
+            )
+
             typedArray.recycle()
         }
 
         setTipsWithStatus(IStatusLayout.Status.STATUS_EMPTY, emptyTips)
         setTipsWithStatus(IStatusLayout.Status.STATUS_FAILURE, failureTips)
         setTipsWithStatus(IStatusLayout.Status.STATUS_NO_NETWORK, noNetWorkTips)
+        setTipsTextSize(tipsTextSize)
+        setTipsTextColor(tipsTextColor)
+        setReloadTextSize(reloadTextSize)
+        setReloadTextColor(reloadTextColor)
+        setReloadText(reloadText)
         showStatus(status)
     }
 
@@ -94,38 +137,55 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         if (!isFastMultiClick(view)) {
             when (view.id) {
                 R.id.vStatusReload -> {
-                    mOnReloadListener?.onReload()
+                    mReloadCallback?.invoke()
                 }
             }
         }
     }
 
-    override fun setImageWithStatus(@IStatusLayout.Status status: Int, imageRes: Int) {
+    override fun setImageWithStatus(@IStatusLayout.Status status: Int, imageRes: Int): IStatusLayout {
         getDrawable(imageRes)?.let {
             setImageWithStatus(status, it)
         }
+        return this
     }
 
-    override fun setImageWithStatus(@IStatusLayout.Status status: Int, image: Drawable) {
+    override fun setImageWithStatus(@IStatusLayout.Status status: Int, image: Drawable): IStatusLayout {
         mImageArr.put(status, image)
+        return this
     }
 
-    override fun setTipsWithStatus(@IStatusLayout.Status status: Int, tipsRes: Int) {
+    override fun setTipsWithStatus(@IStatusLayout.Status status: Int, tipsRes: Int): IStatusLayout {
         setTipsWithStatus(status, getString(tipsRes))
+        return this
     }
 
-    override fun setTipsWithStatus(@IStatusLayout.Status status: Int, tips: String) {
+    override fun setTipsWithStatus(@IStatusLayout.Status status: Int, tips: String): IStatusLayout {
         mTipsArr.put(status, tips)
+        return this
     }
 
     override fun showStatus(@IStatusLayout.Status status: Int, errorMsg: String?) {
         when (status) {
             IStatusLayout.Status.STATUS_NONE -> {
                 visibility = GONE
+                hideLoading()
+            }
+
+            IStatusLayout.Status.STATUS_LOADING -> {
+                visibility = VISIBLE
+                vStatusIcon.visibility = GONE
+                vStatusTips.visibility = GONE
+                vStatusTipsNoImage.visibility = GONE
+                vStatusReload.visibility = GONE
+
+                showLoading()
             }
 
             IStatusLayout.Status.STATUS_EMPTY -> {
                 visibility = VISIBLE
+                hideLoading()
+                vStatusReload.visibility = GONE
 
                 val tips: String? = mTipsArr[IStatusLayout.Status.STATUS_EMPTY]
                 val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_EMPTY]
@@ -134,22 +194,80 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
 
             IStatusLayout.Status.STATUS_FAILURE -> {
                 visibility = View.VISIBLE
+                hideLoading()
 
                 val tips: String? = mTipsArr[IStatusLayout.Status.STATUS_FAILURE]
                 val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_FAILURE]
                     ?: mImageArr[IStatusLayout.Status.STATUS_EMPTY]
                 setStatusData(tips, image)
+
+                if (mShowReloadOnFailed) {
+                    vStatusReload.visibility = View.VISIBLE
+                }
             }
 
             IStatusLayout.Status.STATUS_NO_NETWORK -> {
                 visibility = View.VISIBLE
+                hideLoading()
 
                 val tips: String? = mTipsArr[IStatusLayout.Status.STATUS_NO_NETWORK]
                 val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_NO_NETWORK]
                     ?: mImageArr[IStatusLayout.Status.STATUS_EMPTY]
                 setStatusData(tips, image)
+
+                if (mShowReloadOnFailed) {
+                    vStatusReload.visibility = View.VISIBLE
+                }
             }
         }
+
+        mLastStatus = status
+    }
+
+    override fun setTipsTextSize(size: Int): IStatusLayout {
+        vStatusTips.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.toFloat())
+        vStatusTipsNoImage.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.toFloat())
+        return this
+    }
+
+    override fun setTipsTextColor(color: Int): IStatusLayout {
+        vStatusTips.setTextColor(color)
+        vStatusTipsNoImage.setTextColor(color)
+        return this
+    }
+
+    override fun setReloadText(resId: Int): IStatusLayout {
+        vStatusReload.setText(resId)
+        return this
+    }
+
+    override fun setReloadText(text: String): IStatusLayout {
+        vStatusReload.text = text
+        return this
+    }
+
+    override fun setReloadTextSize(size: Int): IStatusLayout {
+        vStatusReload.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.toFloat())
+        return this
+    }
+
+    override fun setReloadTextColor(color: Int): IStatusLayout {
+        vStatusReload.setTextColor(color)
+        return this
+    }
+
+    override fun getReloadTextView(): TextView {
+        return vStatusReload
+    }
+
+    override fun setShowReloadOnFailed(show: Boolean): IStatusLayout {
+        mShowReloadOnFailed = show
+        return this
+    }
+
+    override fun setReloadCallback(callback: () -> Unit): IStatusLayout {
+        this.mReloadCallback = callback
+        return this
     }
 
     private fun setStatusData(tips: String?, image: Drawable?) {
@@ -167,12 +285,18 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         }
     }
 
-    fun setOnReloadListener(listener: OnReloadListener) {
-        this.mOnReloadListener = listener
+    private fun showLoading() {
+        if (ivProgress.drawable == null) {
+            ivProgress.setImageDrawable(mProgressDrawable)
+        }
+        mProgressDrawable.start()
+        clLoading.visibility = VISIBLE
     }
 
-    interface OnReloadListener {
-
-        fun onReload()
+    private fun hideLoading() {
+        clLoading.visibility = GONE
+        if (mLastStatus == IStatusLayout.Status.STATUS_LOADING) {
+            mProgressDrawable.stop()
+        }
     }
 }

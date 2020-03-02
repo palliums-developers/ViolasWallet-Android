@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.palliums.widget.MenuItemView
+        android:id="@+id/mivStatus"
+        style="@style/MenuItemView"
+        android:layout_marginTop="@dimen/dp_13"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:mivShowBottomLine="false"
+        app:mivShowEndArrow="false"
+        app:mivStartTitleText="@string/label_governor_license"
+        tools:mivEndDescText="@string/desc_authenticating"
+        tools:mivEndDescTextColor="@color/color_00D1AF" />
+
+    <Button
+        android:id="@+id/btnGoto"
+        style="@style/BaseButtonPrimary"
+        android:layout_marginTop="@dimen/dp_37"
+        android:text="@string/action_goto_apply_for_licence"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

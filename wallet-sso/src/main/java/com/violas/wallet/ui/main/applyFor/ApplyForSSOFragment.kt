@@ -31,6 +31,11 @@ class ApplyForSSOFragment : BaseFragment() {
         return R.layout.fragment_apply_for_sso
     }
 
+    override fun onSupportVisible() {
+        super.onSupportVisible()
+        setStatusBarMode(false)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

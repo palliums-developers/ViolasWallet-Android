@@ -46,7 +46,7 @@ class SSORepository(private val ssoApi: SSOApi) {
      * 获取用户基本信息，包括绑定状态
      */
     suspend fun loadUserInfo(address: String): Response<UserInfoDTO> {
-        return checkResponse(2005) {
+        return checkResponse(2004) {
             ssoApi.loadUserInfo(address)
         }
     }

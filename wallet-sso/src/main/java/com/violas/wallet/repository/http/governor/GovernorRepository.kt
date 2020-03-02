@@ -31,7 +31,7 @@ class GovernorRepository(private val api: GovernorApi) {
      * 获取州长信息
      */
     suspend fun getGovernorInfo(walletAddress: String) =
-        checkResponse(dataNullableOnSuccess = false) {
+        checkResponse {
             api.getGovernorInfo(walletAddress)
         }
 

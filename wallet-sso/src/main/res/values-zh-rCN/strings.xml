@@ -334,4 +334,9 @@
     <string name="hint_sso_wallet">SSO 钱包</string>
     <string name="hint_governor_wallet">州长钱包</string>
     <string name="table_apply_message">消息</string>
+    <string name="title_message">消息</string>
+    <string name="label_governor_license">州长牌照</string>
+    <string name="desc_authenticating">认证中</string>
+    <string name="desc_authentication_failed">未通过认证</string>
+    <string name="action_goto_apply_for_licence">进入申请页面</string>
 </resources>

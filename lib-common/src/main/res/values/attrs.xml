@@ -9,11 +9,18 @@
         <attr name="slFailureIcon" format="reference" />
         <attr name="slNoNetworkTip" format="string" />
         <attr name="slNoNetworkIcon" format="reference" />
+        <attr name="slTipsTextSize" format="dimension" />
+        <attr name="slTipsTextColor" format="color" />
+        <attr name="slReloadText" format="reference" />
+        <attr name="slReloadTextSize" format="dimension" />
+        <attr name="slReloadTextColor" format="color" />
+        <attr name="slShowReloadOnFailed" format="boolean" />
         <attr name="slStatus" format="enum">
             <enum name="none" value="1" />
-            <enum name="empty" value="2" />
-            <enum name="failure" value="3" />
-            <enum name="no_network" value="4" />
+            <enum name="loading" value="2" />
+            <enum name="empty" value="3" />
+            <enum name="failure" value="4" />
+            <enum name="no_network" value="5" />
         </attr>
     </declare-styleable>
 

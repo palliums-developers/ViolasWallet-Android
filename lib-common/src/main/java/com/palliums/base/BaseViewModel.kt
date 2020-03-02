@@ -29,23 +29,36 @@ abstract class BaseViewModel : ViewModel() {
 
     /**
      * 执行
+     * @param params 执行的参数
+     * @param action 执行的动作
+     * @param checkParamBeforeExecute  执行前检查参数[params]，为true时，且[checkParams]返回true，则中断执行，反之继续执行
+     * @param checkNetworkBeforeExecute 执行前检查网络，为true时，且检查网络未连接，则中断执行并抛出错误，反之继续执行
+     * @param failureCallback 失败回调
+     * @param successCallback 成功回调
      * @return 返回true才会调用[realExecute]去真正执行
      */
     @MainThread
     fun execute(
         vararg params: Any,
         action: Int = -1,
-        needCheckParam: Boolean = true,
+        checkParamBeforeExecute: Boolean = true,
+        checkNetworkBeforeExecute: Boolean = true,
         failureCallback: ((action: Int) -> Unit)? = null,
         successCallback: ((action: Int) -> Unit)? = null
     ): Boolean {
         synchronized(lock) {
             if (loadState.value?.peekData()?.status == LoadState.Status.RUNNING) {
                 return false
-            } else if (needCheckParam && !checkParams(action, *params)) {
+            } else if (checkParamBeforeExecute && !checkParams(action, *params)) {
                 return false
-            } else if (checkNetworkBeforeExecute() && !isNetworkConnected()) {
-                retry = { execute(*params, action = action, needCheckParam = needCheckParam) }
+            } else if (checkNetworkBeforeExecute && !isNetworkConnected()) {
+                retry = {
+                    execute(
+                        *params,
+                        action = action,
+                        checkParamBeforeExecute = checkParamBeforeExecute
+                    )
+                }
 
                 val exception = RequestException.networkUnavailable()
                 loadState.postValueSupport(LoadState.failure(exception))
@@ -74,7 +87,13 @@ abstract class BaseViewModel : ViewModel() {
                 e.printStackTrace()
 
                 synchronized(lock) {
-                    retry = { execute(*params, action = action, needCheckParam = needCheckParam) }
+                    retry = {
+                        execute(
+                            *params,
+                            action = action,
+                            checkParamBeforeExecute = checkParamBeforeExecute
+                        )
+                    }
 
                     loadState.postValueSupport(LoadState.failure(e))
                     postTipsMessage(tipsMessage, e)
@@ -103,15 +122,6 @@ abstract class BaseViewModel : ViewModel() {
      */
     @MainThread
     open fun checkParams(action: Int, vararg params: Any): Boolean {
-        return true
-    }
-
-    /**
-     * 执行前检查网络
-     * @return 返回true，且检查网络未连接，则中断执行，反之继续执行
-     */
-    @MainThread
-    protected open fun checkNetworkBeforeExecute(): Boolean {
         return true
     }
 
