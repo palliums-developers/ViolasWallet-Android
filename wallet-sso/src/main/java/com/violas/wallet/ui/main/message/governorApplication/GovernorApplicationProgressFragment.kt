@@ -6,7 +6,7 @@ import com.palliums.base.BaseFragment
 import com.palliums.utils.getColor
 import com.violas.wallet.R
 import com.violas.wallet.ui.applyForLicence.ApplyForLicenceActivity
-import kotlinx.android.synthetic.main.fragment_governor_application.*
+import kotlinx.android.synthetic.main.fragment_governor_application_progress.*
 
 /**
  * Created by elephant on 2020/2/28 18:25.
@@ -14,13 +14,13 @@ import kotlinx.android.synthetic.main.fragment_governor_application.*
  * <p>
  * desc: 州长牌照申请进度页面
  */
-class GovernorApplicationFragment : BaseFragment() {
+class GovernorApplicationProgressFragment : BaseFragment() {
 
     companion object {
         private const val EXTRA_KEY_APPLICATION_STATUS = "EXTRA_KEY_APPLICATION_STATUS"
 
-        fun newInstance(applicationStatus: Int): GovernorApplicationFragment {
-            return GovernorApplicationFragment().apply {
+        fun newInstance(applicationStatus: Int): GovernorApplicationProgressFragment {
+            return GovernorApplicationProgressFragment().apply {
                 arguments = newBundle(applicationStatus)
             }
         }
@@ -35,7 +35,7 @@ class GovernorApplicationFragment : BaseFragment() {
     private var mApplicationStatus = -1
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_governor_application
+        return R.layout.fragment_governor_application_progress
     }
 
     override fun onLazyInitView(savedInstanceState: Bundle?) {

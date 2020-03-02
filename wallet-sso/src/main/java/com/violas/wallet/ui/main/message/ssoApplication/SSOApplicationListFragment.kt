@@ -10,10 +10,10 @@ import com.violas.wallet.R
  * <p>
  * desc: SSO发币申请列表页面
  */
-class SSOApplicationFragment : BaseFragment() {
+class SSOApplicationListFragment : BaseFragment() {
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_sso_application
+        return R.layout.fragment_sso_application_list
     }
 
     override fun onLazyInitView(savedInstanceState: Bundle?) {

@@ -24,26 +24,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <FrameLayout
-        android:id="@+id/flFragmentContainer"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srlRefreshLayout"
         android:layout_width="@dimen/dp_0"
         android:layout_height="@dimen/dp_0"
         android:background="@color/def_page_bg_light_secondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
-    <com.palliums.widget.status.DefaultStatusLayout
-        android:id="@+id/slStatusLayout"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        app:slReloadText="@string/web_load_failed_retry"
-        app:slShowReloadOnFailed="true"
-        app:slStatus="none" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:id="@+id/flFragmentContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.palliums.widget.status.DefaultStatusLayout
+                android:id="@+id/slStatusLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:slStatus="none" />
+
+        </FrameLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

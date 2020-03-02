@@ -10,8 +10,10 @@ import com.palliums.base.BaseViewModel
 import com.palliums.content.App
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
+import com.violas.wallet.event.RefreshGovernorApplicationProgressEvent
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_apply_for_licence.*
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 2020/2/26 14:53.
@@ -54,7 +56,7 @@ class ApplyForLicenceActivity : BaseViewModelActivity() {
     }
 
     override fun onTitleLeftViewClick() {
-        handleBackAndComplete()
+        handleBackAndComplete(false)
     }
 
     override fun onBackPressedSupport() {
@@ -68,15 +70,18 @@ class ApplyForLicenceActivity : BaseViewModelActivity() {
         when (view.id) {
             R.id.btnOkToSend -> {
                 mViewModel.execute(etTxid.text.toString().trim()) {
-                    handleBackAndComplete()
+                    handleBackAndComplete(true)
                 }
             }
         }
     }
 
-    private fun handleBackAndComplete() {
+    private fun handleBackAndComplete(sendEvent: Boolean) {
         if (App.existsActivity(MainActivity::class.java)) {
             close()
+            if (sendEvent) {
+                EventBus.getDefault().post(RefreshGovernorApplicationProgressEvent())
+            }
         } else {
             MainActivity.start(this)
             close()
