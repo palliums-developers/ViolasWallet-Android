@@ -23,4 +23,9 @@
     <color name="blue_50">#800000FF</color>
     <color name="green">#00FF00</color>
 
+    <color name="bg_loading">@color/color_333333</color>
+
+    <color name="color_333333">#333333</color>
+    <color name="color_666666">#666666</color>
+
 </resources>
