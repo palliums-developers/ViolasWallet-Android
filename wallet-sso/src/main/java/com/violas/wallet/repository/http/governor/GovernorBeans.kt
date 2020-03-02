@@ -11,13 +11,13 @@ import com.google.gson.annotations.SerializedName
 
 data class GovernorInfoDTO(
     @SerializedName("wallet_address")
-    val walletAddress: String,  // 钱包地址
+    val walletAddress: String = "",                 // 钱包地址
     @SerializedName("name")
-    val name: String,           // 州长名称
+    val name: String = "",                          // 州长名称
     @SerializedName("status")
-    val applicationStatus: Int, // 申请州长状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
+    val applicationStatus: Int = -1,                // 申请州长状态 -1: no application; 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
     @SerializedName("subaccount_count")
-    val subAccountCount: Long    // 子账户个数（用于派生铸币账户注册新的module）
+    val subAccountCount: Long = 0                   // 子账户个数（用于派生铸币账户注册新的module）
 )
 
 data class SSOApplicationDTO(

@@ -34,7 +34,7 @@ class ApplyMessageViewModel : BaseViewModel() {
         val walletAddress = mAccountLD.value!!.address
         val response = mGovernorService.getGovernorInfo(walletAddress)
         val governorInfo = response.data
-            ?: GovernorInfoDTO(walletAddress, "", -1, 1)
+            ?: GovernorInfoDTO(walletAddress, "", -1, 0)
         mGovernorInfoLD.postValue(governorInfo)
     }
 

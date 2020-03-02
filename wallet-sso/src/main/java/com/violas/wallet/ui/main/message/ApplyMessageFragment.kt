@@ -30,7 +30,9 @@ class ApplyMessageFragment : BaseFragment() {
 
     override fun onLazyInitView(savedInstanceState: Bundle?) {
         super.onLazyInitView(savedInstanceState)
-        val fragment = findChildFragment(BaseFragment::class.java)
+        val fragment =
+            findChildFragment(GovernorApplicationFragment::class.java)
+                ?: findChildFragment(SSOApplicationFragment::class.java)
         fragment?.let {
             it.popChild()
         }
@@ -45,21 +47,12 @@ class ApplyMessageFragment : BaseFragment() {
         mViewModel.mGovernorInfoLD.observe(this, Observer {
             when (it.applicationStatus) {
                 -1, 0, 1, 2, 3 -> { // -1: no application
-                    val baseFragment = findChildFragment(BaseFragment::class.java)
-                    if (baseFragment == null) {
-                        loadRootFragment(
-                            R.id.flFragmentContainer,
-                            GovernorApplicationFragment.newInstance(it.applicationStatus)
-                        )
-                        return@Observer
-                    }
-
                     val fragment =
                         findChildFragment(GovernorApplicationFragment::class.java)
                     if (fragment == null) {
-                        replaceFragment(
+                        loadRootFragment(
+                            R.id.flFragmentContainer,
                             GovernorApplicationFragment.newInstance(it.applicationStatus)
-                            , true
                         )
                     } else {
                         fragment.putNewBundle(
@@ -73,8 +66,9 @@ class ApplyMessageFragment : BaseFragment() {
                 }
 
                 else -> {
-                    val baseFragment = findChildFragment(BaseFragment::class.java)
-                    if (baseFragment == null) {
+                    val fragment =
+                        findChildFragment(GovernorApplicationFragment::class.java)
+                    if (fragment == null) {
                         loadRootFragment(
                             R.id.flFragmentContainer,
                             SSOApplicationFragment()
@@ -91,7 +85,8 @@ class ApplyMessageFragment : BaseFragment() {
         mViewModel.loadState.observe(this, Observer {
             when (it.peekData().status) {
                 LoadState.Status.RUNNING -> {
-                    val fragment = findChildFragment(BaseFragment::class.java)
+                    val fragment =
+                        findChildFragment(GovernorApplicationFragment::class.java)
                     if (fragment == null) {
                         slStatusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
                     }
@@ -102,7 +97,8 @@ class ApplyMessageFragment : BaseFragment() {
                 }
 
                 else -> {
-                    val fragment = findChildFragment(BaseFragment::class.java)
+                    val fragment =
+                        findChildFragment(GovernorApplicationFragment::class.java)
                     if (fragment == null) {
                         slStatusLayout.isClickable = true
                         slStatusLayout.showStatus(

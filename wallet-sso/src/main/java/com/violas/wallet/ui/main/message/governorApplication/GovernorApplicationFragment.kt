@@ -32,7 +32,7 @@ class GovernorApplicationFragment : BaseFragment() {
         }
     }
 
-    private var mApplicationStatus = 0
+    private var mApplicationStatus = -1
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_governor_application
