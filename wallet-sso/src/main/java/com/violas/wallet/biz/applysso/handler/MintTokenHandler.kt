@@ -7,7 +7,6 @@ import org.palliums.violascore.wallet.Account
 import java.util.concurrent.CountDownLatch
 
 class MintTokenHandler(
-    private val accountId: Long,
     private val accountAddress: String,
     private val layerWallet: Long,
     private val tokenAddress: String,
@@ -32,7 +31,6 @@ class MintTokenHandler(
         if (isSuccess) {
             getServiceProvider()!!.getApplySsoRecordDao()
                 .updateRecordStatus(
-                    accountId,
                     accountAddress,
                     layerWallet,
                     SSOApplyTokenHandler.MintSuccess

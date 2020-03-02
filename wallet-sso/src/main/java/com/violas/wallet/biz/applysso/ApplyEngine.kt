@@ -52,12 +52,12 @@ class ApplyEngine {
         mApplyHandles.add(handle)
     }
 
-    fun getUnDoneRecord(accountId: Long): ApplySSORecordDo? {
-        return mApplySsoRecordDao.findUnDoneRecord(accountId)
+    fun getUnDoneRecord(walletAddress: String): ApplySSORecordDo? {
+        return mApplySsoRecordDao.findUnDoneRecord(walletAddress)
     }
 
-    fun getUnMintRecord(accountId: Long, mintTokenAddress: String): ApplySSORecordDo? {
-        return mApplySsoRecordDao.findUnMintRecord(accountId, mintTokenAddress)
+    fun getUnMintRecord(mintTokenAddress: String): ApplySSORecordDo? {
+        return mApplySsoRecordDao.findUnMintRecord(mintTokenAddress)
     }
 
     fun execMint(status: Int? = SSOApplyTokenHandler.Approval): Boolean {

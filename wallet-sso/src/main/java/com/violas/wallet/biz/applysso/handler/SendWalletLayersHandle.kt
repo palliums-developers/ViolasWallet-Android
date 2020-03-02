@@ -6,7 +6,6 @@ import kotlinx.coroutines.runBlocking
 
 class SendWalletLayersHandle(
     private val layerWallet: Long,
-    private val accountId: Long,
     private val walletAddress: String
 ) : ApplyHandle() {
     override fun handler(): Boolean {
@@ -16,7 +15,6 @@ class SendWalletLayersHandle(
             getServiceProvider()!!.getApplySsoRecordDao()
                 .insert(
                     ApplySSORecordDo(
-                        accountId = accountId,
                         childNumber = layerWallet,
                         walletAddress = walletAddress,
                         tokenAddress = "",

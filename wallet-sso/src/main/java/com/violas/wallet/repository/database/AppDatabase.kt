@@ -19,7 +19,7 @@ import com.violas.wallet.repository.database.entity.TokenDo
 
 @Database(
     entities = [AccountDO::class, TokenDo::class, AddressBookDo::class, ApplySSORecordDo::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class)
@@ -51,6 +51,7 @@ abstract class AppDatabase : RoomDatabase() {
                     }
                 })
                 .addMigrations(migration1To2())
+                .addMigrations(migration2To3())
                 .build()
         }
 
@@ -68,6 +69,23 @@ abstract class AppDatabase : RoomDatabase() {
                 """
                 database.execSQL(sql)
                 database.execSQL("CREATE UNIQUE INDEX 'index_apply_sso_record_account_id_child_number' ON apply_sso_record('account_id','child_number')")
+            }
+        }
+
+        private fun migration2To3() = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("drop table apply_sso_record")
+                val sql = """
+                CREATE TABLE IF NOT EXISTS apply_sso_record(
+	                'id' INTEGER PRIMARY KEY,
+	                'child_number' INTEGER NOT NULL,
+	                'wallet_address' TEXT NOT NULL,
+	                'token_address' TEXT NOT NULL,
+	                'status' INTEGER NOT NULL
+                )
+                """
+                database.execSQL(sql)
+                database.execSQL("CREATE UNIQUE INDEX 'index_apply_sso_record_wallet_address_child_number' ON apply_sso_record('wallet_address','child_number')")
             }
         }
     }

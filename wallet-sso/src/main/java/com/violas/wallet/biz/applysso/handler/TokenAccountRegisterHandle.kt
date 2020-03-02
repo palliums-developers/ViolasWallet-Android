@@ -7,7 +7,6 @@ import org.palliums.violascore.wallet.Account
 import java.util.concurrent.CountDownLatch
 
 class TokenAccountRegisterHandle(
-    private val accountId: Long,
     private val walletAddress: String,
     private val layerWallet: Long,
     private val account: Account,
@@ -27,7 +26,6 @@ class TokenAccountRegisterHandle(
         countDownLatch.await()
         if (isSuccess) {
             getServiceProvider()?.getApplySsoRecordDao()?.updateRecordStatus(
-                accountId,
                 walletAddress,
                 layerWallet,
                 SSOApplyTokenHandler.Registered

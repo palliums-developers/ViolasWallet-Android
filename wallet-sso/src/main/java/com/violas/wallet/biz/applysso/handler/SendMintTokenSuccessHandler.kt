@@ -3,7 +3,6 @@ package com.violas.wallet.biz.applysso.handler
 import kotlinx.coroutines.runBlocking
 
 class SendMintTokenSuccessHandler(
-    private val accountId: Long,
     private val accountAddress: String,
     private val layerWallet: Long,
     private val ssoApplyAddress: String
@@ -16,7 +15,6 @@ class SendMintTokenSuccessHandler(
                     .changeSSOApplicationToMinted(ssoApplyAddress)
                 getServiceProvider()!!.getApplySsoRecordDao()
                     .remove(
-                        accountId,
                         accountAddress,
                         layerWallet
                     )

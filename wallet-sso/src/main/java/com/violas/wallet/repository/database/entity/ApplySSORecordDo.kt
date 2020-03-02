@@ -11,15 +11,13 @@ import com.violas.wallet.biz.applysso.SSOApplyTokenStatus
 @Entity(
     tableName = ApplySSORecordDo.TABLE_NAME,
     indices = [
-        Index(unique = true, value = ["account_id", "child_number"])
+        Index(unique = true, value = ["wallet_address", "child_number"])
     ]
 )
 data class ApplySSORecordDo(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Long? = null,
-    @ColumnInfo(name = "account_id")
-    var accountId: Long = 0,
     @ColumnInfo(name = "child_number")
     var childNumber: Long = 0,
     @ColumnInfo(name = "wallet_address")
@@ -33,7 +31,6 @@ data class ApplySSORecordDo(
 
     constructor(parcel: Parcel) : this(
         parcel.readValue(Long::class.java.classLoader) as? Long,
-        parcel.readLong(),
         parcel.readLong(),
         parcel.readString()!!,
         parcel.readString()!!,
@@ -58,7 +55,6 @@ data class ApplySSORecordDo(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeValue(id)
-        parcel.writeLong(accountId)
         parcel.writeLong(childNumber)
         parcel.writeString(walletAddress)
         parcel.writeString(tokenAddress)

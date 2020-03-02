@@ -39,7 +39,6 @@ annotation class SSOApplyTokenStatus
  * 本地记录某一层铸币账户已经审批成功
  */
 class SSOApplyTokenHandler(
-    private val accountId: Long,
     private val account: Account,
     private val mnemonics: List<String>,
     private val SSOApplyWalletAddress: String
@@ -83,7 +82,7 @@ class SSOApplyTokenHandler(
     @WorkerThread
     suspend fun exec(): Boolean {
         val applyEngine = ApplyEngine()
-        val findUnDoneRecord = applyEngine.getUnDoneRecord(accountId)
+        val findUnDoneRecord = applyEngine.getUnDoneRecord(account.getAddress().toHex())
         val layerWallet = if (findUnDoneRecord == null) {
             //todo net work error
             mGovernorService.getGovernorInfo(account.getAddress().toHex()).data?.subAccountCount?.plus(
@@ -99,13 +98,11 @@ class SSOApplyTokenHandler(
         applyEngine.addApplyHandle(
             SendWalletLayersHandle(
                 layerWallet,
-                accountId,
                 account.getAddress().toHex()
             )
         )
         applyEngine.addApplyHandle(
             SendTokenAccountCoinHandle(
-                accountId,
                 account,
                 layerWallet,
                 mintAccount.getAddress().toHex(),
@@ -114,7 +111,6 @@ class SSOApplyTokenHandler(
         )
         applyEngine.addApplyHandle(
             TokenAccountRegisterHandle(
-                accountId,
                 account.getAddress().toHex(),
                 layerWallet,
                 mintAccount,
@@ -123,7 +119,6 @@ class SSOApplyTokenHandler(
         )
         applyEngine.addApplyHandle(
             SendSSOAccountCoinHandle(
-                accountId,
                 account.getAddress().toHex(),
                 layerWallet,
                 account,
@@ -134,7 +129,6 @@ class SSOApplyTokenHandler(
         )
         applyEngine.addApplyHandle(
             SendApplySSOHandle(
-                accountId,
                 account.getAddress().toHex(),
                 layerWallet,
                 mintAccount.getAddress().toHex(),

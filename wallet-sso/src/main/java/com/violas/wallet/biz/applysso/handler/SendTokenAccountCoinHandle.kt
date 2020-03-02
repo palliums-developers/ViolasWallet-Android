@@ -4,7 +4,6 @@ import com.violas.wallet.biz.applysso.SSOApplyTokenHandler
 import org.palliums.violascore.wallet.Account
 
 class SendTokenAccountCoinHandle(
-    private val accountId: Long,
     private val account: Account,
     private val layerWallet: Long,
     private val receiveAddress: String,
@@ -16,7 +15,6 @@ class SendTokenAccountCoinHandle(
             if (send) {
                 getServiceProvider()!!.getApplySsoRecordDao()
                     .updateRecordStatus(
-                        accountId,
                         account.getAddress().toHex(),
                         layerWallet,
                         SSOApplyTokenHandler.ReadyRegister

@@ -18,7 +18,6 @@ import org.palliums.violascore.wallet.WalletConfig
  * 删除本地记录某一层铸币账户的铸币记录
  */
 class SSOMintTokenHandler(
-    private val accountId: Long,
     private val account: Account,
     private val mnemonics: List<String>,
     private val SSOApplyWalletAddress: String,
@@ -33,7 +32,7 @@ class SSOMintTokenHandler(
     @WorkerThread
     suspend fun exec(): Boolean {
         val applyEngine = ApplyEngine()
-        val findUnDoneRecord = applyEngine.getUnMintRecord(accountId, mintTokenAddress)
+        val findUnDoneRecord = applyEngine.getUnMintRecord(mintTokenAddress)
         val layerWallet = if (findUnDoneRecord == null) {
             //todo net work error
             mGovernorService.getGovernorInfo(account.getAddress().toHex()).data?.subAccountCount?.plus(
@@ -48,7 +47,6 @@ class SSOMintTokenHandler(
 
         applyEngine.addApplyHandle(
             MintTokenHandler(
-                accountId,
                 account.getAddress().toHex(),
                 layerWallet,
                 mintTokenAddress,
@@ -60,7 +58,6 @@ class SSOMintTokenHandler(
 
         applyEngine.addApplyHandle(
             SendMintTokenSuccessHandler(
-                accountId,
                 account.getAddress().toHex(),
                 layerWallet,
                 SSOApplyWalletAddress

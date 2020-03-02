@@ -4,7 +4,6 @@ import com.violas.wallet.biz.applysso.SSOApplyTokenHandler
 import kotlinx.coroutines.runBlocking
 
 class SendApplySSOHandle(
-    private val accountId: Long,
     private val accountAddress: String,
     private val layerWallet: Long,
     private val mintTokenAddress: String,
@@ -24,7 +23,6 @@ class SendApplySSOHandle(
                     )
                 if (!pass) {
                     getServiceProvider()?.getApplySsoRecordDao()?.updateRecordStatus(
-                        accountId,
                         accountAddress,
                         layerWallet,
                         SSOApplyTokenHandler.Approval
