@@ -94,4 +94,6 @@
 
     <color name="view_pressed_tint">@color/color_D4D3D6</color>
 
+    <color name="spotlightBackground">#BF000000</color>
+
 </resources>
