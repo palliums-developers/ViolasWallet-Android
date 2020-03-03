@@ -103,10 +103,13 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
         }
     }
 
-    fun hasExtraRow(): Boolean {
-        return loadMoreState.status != LoadState.Status.SUCCESS
-                && loadMoreState.status != LoadState.Status.IDLE
+    open fun hasExtraRow(): Boolean {
+        return loadMoreState.status == LoadState.Status.RUNNING
+                || loadMoreState.status == LoadState.Status.FAILURE
+                || (loadMoreState.status == LoadState.Status.SUCCESS_NO_MORE && showNoMoreView())
     }
+
+    open fun showNoMoreView(): Boolean = true
 
     fun setLoadMoreState(loadMoreState: LoadState) {
         val prevLoadMoreState = this.loadMoreState
@@ -126,7 +129,10 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
         }
     }
 
-    abstract fun onCreateViewHolderSupport(parent: ViewGroup, viewType: Int): BaseViewHolder<out Any>
+    abstract fun onCreateViewHolderSupport(
+        parent: ViewGroup,
+        viewType: Int
+    ): BaseViewHolder<out Any>
 
     open fun getItemViewTypeSupport(position: Int): Int {
         return 0

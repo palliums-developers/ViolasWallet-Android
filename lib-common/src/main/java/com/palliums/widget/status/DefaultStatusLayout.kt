@@ -63,16 +63,16 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         vStatusReload.setOnClickListener(this)
 
         var status = IStatusLayout.Status.STATUS_NONE
-        var emptyTips = context.getString(R.string.common_status_empty)
-        var failureTips = context.getString(R.string.common_status_failure)
-        var noNetWorkTips = context.getString(R.string.common_status_no_network)
+        var emptyTips = getString(R.string.common_status_empty, context = context)
+        var failureTips = getString(R.string.common_status_failure, context = context)
+        var noNetWorkTips = getString(R.string.common_status_no_network, context = context)
 
         var tipsTextSize = DensityUtility.sp2px(context, 14f).toInt()
-        var tipsTextColor = getColor(R.color.black_30)
+        var tipsTextColor = getColor(R.color.black_30, context = context)
 
         var reloadTextSize = tipsTextSize
         var reloadTextColor = tipsTextColor
-        var reloadText = getString(R.string.common_status_click_reload)
+        var reloadText = getString(R.string.common_status_click_reload, context = context)
 
         attrs?.let { it ->
             val typedArray =
@@ -84,11 +84,14 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
                 )
 
             status = typedArray.getInt(R.styleable.StatusLayout_slStatus, status)
+            if (typedArray.hasValue(R.styleable.StatusLayout_slEmptyTip)) {
+                emptyTips = typedArray.getString(R.styleable.StatusLayout_slEmptyTip)!!
+            }
             if (typedArray.hasValue(R.styleable.StatusLayout_slFailureTip)) {
                 failureTips = typedArray.getString(R.styleable.StatusLayout_slFailureTip)!!
             }
             if (typedArray.hasValue(R.styleable.StatusLayout_slNoNetworkTip)) {
-                emptyTips = typedArray.getString(R.styleable.StatusLayout_slNoNetworkTip)!!
+                noNetWorkTips = typedArray.getString(R.styleable.StatusLayout_slNoNetworkTip)!!
             }
 
             val emptyIcon = typedArray.getDrawable(R.styleable.StatusLayout_slEmptyIcon)
@@ -144,7 +147,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
     }
 
     override fun setImageWithStatus(@IStatusLayout.Status status: Int, imageRes: Int): IStatusLayout {
-        getDrawable(imageRes)?.let {
+        getDrawable(imageRes, context = context)?.let {
             setImageWithStatus(status, it)
         }
         return this
@@ -156,7 +159,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
     }
 
     override fun setTipsWithStatus(@IStatusLayout.Status status: Int, tipsRes: Int): IStatusLayout {
-        setTipsWithStatus(status, getString(tipsRes))
+        setTipsWithStatus(status, getString(tipsRes, context = context))
         return this
     }
 
