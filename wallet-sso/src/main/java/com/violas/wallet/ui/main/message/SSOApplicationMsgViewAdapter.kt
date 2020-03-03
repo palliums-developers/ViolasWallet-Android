@@ -25,7 +25,7 @@ class SSOApplicationMsgViewAdapter(
     private val mItemCallback: (SSOApplicationMsgVO) -> Unit
 ) : PagingViewAdapter<SSOApplicationMsgVO>(retryCallback, DiffCallback()) {
 
-    private val mDateFormat = SimpleDateFormat("yy.MM.dd HH:mm", Locale.ENGLISH)
+    private val mDateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.ENGLISH)
 
     override fun onCreateViewHolderSupport(
         parent: ViewGroup,

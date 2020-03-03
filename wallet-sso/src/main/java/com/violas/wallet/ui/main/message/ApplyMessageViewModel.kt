@@ -130,7 +130,7 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
 
             SSOApplicationMsgVO(
                 applicationId = it.applicationId,
-                applicationDate = it.applicationDate * 1000,
+                applicationDate = it.applicationDate,
                 applicationStatus = it.applicationStatus,
                 applicantIdName = it.applicantIdName,
                 msgUnread = msgUnread
