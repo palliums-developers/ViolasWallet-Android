@@ -339,6 +339,11 @@
     <string name="desc_authenticating">认证中</string>
     <string name="desc_authentication_failed">未通过认证</string>
     <string name="action_goto_apply_for_licence">进入申请页面</string>
+    <string name="hint_help_click">点击</string>
+    <string name="hint_help_sso_change">可切换至SSO钱包</string>
+    <string name="hint_help_sso_info">SSO钱包可申请铸币请求</string>
+    <string name="hint_help_governor_change">可切换至州长钱包</string>
+    <string name="hint_help_governor_info">州长钱包可审批 SSO 铸币请求</string>
     <string name="title_sso_msg_issuing_token">%1$s提交发币请求</string>
     <string name="title_sso_msg_mint_token">%1$s申请铸币</string>
     <string name="state_passed">已通过</string>

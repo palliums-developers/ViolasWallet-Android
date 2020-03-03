@@ -6,12 +6,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
+import android.widget.FrameLayout
 import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
 import com.palliums.utils.isFastMultiClick
 import com.palliums.utils.isMainThread
 import com.quincysx.crypto.CoinTypes
+import com.takusemba.spotlight.Spotlight
+import com.takusemba.spotlight.Target
+import com.takusemba.spotlight.shape.RoundedRectangle
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
@@ -105,8 +110,55 @@ class WalletFragment : BaseFragment() {
             handleBackupMnemonicTips()
         }
 
+        launch(Dispatchers.IO) {
+            val currentAccount = mAccountManager.currentAccount()
+            val walletType = WalletType.parse(currentAccount.walletType)
+
+            if (mAccountManager.isFastIntoCurrentTypeWallet(walletType)) {
+                withContext(Dispatchers.Main) {
+                    showHintSpotlight(walletType)
+                }
+            }
+        }
+
         swipeRefreshLayout.setOnRefreshListener {
             refreshAssert(false)
+        }
+    }
+
+    private fun showHintSpotlight(walletType: WalletType) {
+
+        context?.let {
+            val frameLayout = FrameLayout(it)
+
+            val targetView = if (walletType == WalletType.SSO) {
+                layoutInflater.inflate(
+                    R.layout.view_help_change_governor,
+                    frameLayout
+                )
+            } else {
+                layoutInflater.inflate(
+                    R.layout.view_help_change_sso,
+                    frameLayout
+                )
+            }
+            val target = Target.Builder()
+                .setAnchor(layoutWalletType)
+                .setShape(RoundedRectangle(100f, 400f, 10f, 50))
+                .setOverlay(targetView)
+                .build()
+
+            val spotlight =
+                Spotlight.Builder(requireActivity())
+                    .setTargets(target)
+                    .setBackgroundColor(R.color.spotlightBackground)
+                    .setDuration(1000L)
+                    .setAnimation(DecelerateInterpolator(2f))
+                    .build()
+
+            spotlight.start()
+            val closeSpotlight = View.OnClickListener { spotlight.finish() }
+            targetView.findViewById<View>(R.id.viewClose).setOnClickListener(closeSpotlight)
         }
     }
 

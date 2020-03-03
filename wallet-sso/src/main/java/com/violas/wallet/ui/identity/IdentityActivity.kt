@@ -3,6 +3,7 @@ package com.violas.wallet.ui.identity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -14,13 +15,13 @@ import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_identity.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class IdentityActivity : BaseAppActivity() {
     private var mCurrentTypeWallet = WalletType.Governor
 
     companion object {
         private const val EXT_WALLET_TYPE = "ext_wallet_type"
+        private const val QUIT_CHECK_INTERNAL = 2000
 
         fun start(context: Context, walletType: WalletType = WalletType.Governor) {
             Intent(context, IdentityActivity::class.java).apply {
@@ -28,6 +29,8 @@ class IdentityActivity : BaseAppActivity() {
             }.start(context)
         }
     }
+
+    private var mQuitTimePoint: Long = 0
 
     private val mAccountManager by lazy {
         AccountManager()
@@ -107,6 +110,24 @@ class IdentityActivity : BaseAppActivity() {
                 btnCreate.setText(R.string.create_sso_identity)
                 btnImport.setText(R.string.import_sso_identity)
                 btnExchange.setText(R.string.exchange_governor_identity)
+            }
+        }
+    }
+
+    override fun onBackPressedSupport() {
+        if (System.currentTimeMillis() - mQuitTimePoint > QUIT_CHECK_INTERNAL) {
+            Toast.makeText(
+                applicationContext, R.string.quit_confirmation,
+                Toast.LENGTH_SHORT
+            ).show()
+            mQuitTimePoint = System.currentTimeMillis()
+        } else {
+            // work around for https://code.google.com/p/android/issues/detail?id=176265
+            try {
+                super.onBackPressedSupport()
+            } catch (ex: IllegalStateException) {
+                super.supportFinishAfterTransition()
+                ex.printStackTrace()
             }
         }
     }

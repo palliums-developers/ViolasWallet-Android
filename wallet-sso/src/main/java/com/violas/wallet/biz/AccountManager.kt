@@ -54,6 +54,8 @@ class AccountManager : CoroutineScope by IOScope() {
         private const val GOVERNOR_MNEMONIC_BACKUP = "GOVERNOR_MNEMONIC_BACKUP"
         private const val SSO_MNEMONIC_BACKUP = "SSO_MNEMONIC_BACKUP"
         private const val FAST_INTO_WALLET = "ab2"
+        private const val FAST_INTO_SSO_WALLET = "ab3"
+        private const val FAST_INTO_GOVERNOR_WALLET = "ab4"
     }
 
     private val handler = CoroutineExceptionHandler { _, exception ->
@@ -150,10 +152,33 @@ class AccountManager : CoroutineScope by IOScope() {
         ).apply()
     }
 
+    fun isFastIntoCurrentTypeWallet(walletType: WalletType): Boolean {
+        return if (walletType == WalletType.Governor)
+            isFastIntoGovernorWallet()
+        else
+            isFastIntoSSOWallet()
+    }
+
     fun isFastIntoWallet(): Boolean {
         val fastInto = mConfigSharedPreferences.getBoolean(FAST_INTO_WALLET, true)
         if (fastInto) {
             mConfigSharedPreferences.edit().putBoolean(FAST_INTO_WALLET, false).apply()
+        }
+        return fastInto
+    }
+
+    private fun isFastIntoSSOWallet(): Boolean {
+        val fastInto = mConfigSharedPreferences.getBoolean(FAST_INTO_SSO_WALLET, true)
+        if (fastInto) {
+            mConfigSharedPreferences.edit().putBoolean(FAST_INTO_SSO_WALLET, false).apply()
+        }
+        return fastInto
+    }
+
+    private fun isFastIntoGovernorWallet(): Boolean {
+        val fastInto = mConfigSharedPreferences.getBoolean(FAST_INTO_GOVERNOR_WALLET, true)
+        if (fastInto) {
+            mConfigSharedPreferences.edit().putBoolean(FAST_INTO_GOVERNOR_WALLET, false).apply()
         }
         return fastInto
     }
