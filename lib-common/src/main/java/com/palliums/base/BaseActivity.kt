@@ -391,7 +391,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
     override fun dismissProgress() {
         try {
             launch {
-                mLoadingDialog?.dismiss()
+                mLoadingDialog?.dismissAllowingStateLoss()
                 mLoadingDialog = null
             }
         } catch (e: Throwable) {
