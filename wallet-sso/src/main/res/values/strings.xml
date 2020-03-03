@@ -339,4 +339,10 @@
     <string name="desc_authenticating">认证中</string>
     <string name="desc_authentication_failed">未通过认证</string>
     <string name="action_goto_apply_for_licence">进入申请页面</string>
+    <string name="title_sso_msg_issuing_token">%1$s提交发币请求</string>
+    <string name="title_sso_msg_mint_token">%1$s申请铸币</string>
+    <string name="state_passed">已通过</string>
+    <string name="state_rejected">已拒绝</string>
+    <string name="state_completed">已完成</string>
+    <string name="tips_no_sso_msg">暂无SSO申请消息</string>
 </resources>

@@ -20,6 +20,17 @@ data class GovernorInfoDTO(
     val subAccountCount: Long = 0                   // 子账户个数（用于派生铸币账户注册新的module）
 )
 
+data class SSOApplicationMsgDTO(
+    @SerializedName("apply_id")
+    val applicationId: String,                       // 申请ID
+    @SerializedName("application_date")
+    val applicationDate: Long,                      // 申请日期
+    @SerializedName("approval_status")
+    val applicationStatus: Int,                     // 申请发币状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
+    @SerializedName("name")
+    val applicantIdName: String                     // 申请人身份姓名
+)
+
 data class SSOApplicationDTO(
     @SerializedName("wallet_address")
     val ssoWalletAddress: String,                   // 申请者的钱包地址
@@ -31,7 +42,7 @@ data class SSOApplicationDTO(
     val idPhotoPositiveUrl: String,                 // 申请者的证件正面照片url
     @SerializedName("id_photo_back_url")
     val idPhotoBackUrl: String,                     // 申请者的证件背面照片url
-    @SerializedName("name")
+    @SerializedName("country")
     val countryCode: String,                        // 申请者的国家码（需要本地换算成国家名称）
     @SerializedName("email_address")
     val emailAddress: String,                       // 申请者的邮箱地址
@@ -65,5 +76,7 @@ data class SSOApplicationDTO(
     @SerializedName("approval_status")
     val applicationStatus: Int,                     // 申请发币状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
     @SerializedName("subaccount_count")
-    val walletLayersNumber: Int = -1                // 铸币账户的钱包层数，在申请状态为pass之后才有
+    val walletLayersNumber: Int = -1,               // 铸币账户的钱包层数，在申请状态为pass之后才有
+    @SerializedName("apply_id")
+    val applicationId: String                       // 申请ID
 )

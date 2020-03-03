@@ -74,6 +74,8 @@ object DataRepository {
 
     fun getAddressBookStorage() = appDatabase.addressBookDao()
 
+    fun getSSOApplicationMsgStorage() = appDatabase.ssoApplicationMsgDao()
+
     fun getBitcoinService() = BitcoinChainApi.get()
 
     fun getLibraService() = LibraAdmissionControl(mChannel)

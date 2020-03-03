@@ -38,23 +38,23 @@ interface GovernorApi {
     suspend fun getVStakeAddress(): Response<String>
 
     /**
-     * 获取SSO发币申请
+     * 获取SSO申请消息
      */
     @GET("/1.0/violas/sso/token/approval")
-    suspend fun getSSOApplications(
+    suspend fun getSSOApplicationMsgs(
         @Query("address") walletAddress: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
-    ): ListResponse<SSOApplicationDTO>
+    ): ListResponse<SSOApplicationMsgDTO>
 
     /**
-     * 审批SSO发币申请
+     * 审批SSO申请
      */
     @PUT("/1.0/violas/governor/sso")
     suspend fun approvalSSOApplication(@Body body: RequestBody): Response<Any>
 
     /**
-     * 改变SSO发币申请为已铸币
+     * 改变SSO申请状态为已铸币
      */
     @PUT("/1.0/violas/sso/token/minted")
     suspend fun changeSSOApplicationToMinted(@Body body: RequestBody): Response<Any>

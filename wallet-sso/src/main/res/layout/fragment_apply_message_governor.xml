@@ -2,11 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clGovernorLicenceLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.palliums.widget.MenuItemView
-        android:id="@+id/mivStatus"
+        android:id="@+id/mivGovernorLicenceStatus"
         style="@style/MenuItemView"
         android:layout_marginTop="@dimen/dp_13"
         android:background="@color/white"
@@ -20,7 +21,7 @@
         tools:mivEndDescTextColor="@color/color_00D1AF" />
 
     <Button
-        android:id="@+id/btnGoto"
+        android:id="@+id/btnGovernorLicenceGoto"
         style="@style/BaseButtonPrimary"
         android:layout_marginTop="@dimen/dp_37"
         android:text="@string/action_goto_apply_for_licence"

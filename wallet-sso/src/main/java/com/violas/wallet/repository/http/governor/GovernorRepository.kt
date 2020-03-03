@@ -68,17 +68,17 @@ class GovernorRepository(private val api: GovernorApi) {
         }
 
     /**
-     * 获取SSO发币申请
+     * 获取SSO申请消息
      */
-    suspend fun getSSOApplications(
+    suspend fun getSSOApplicationMsgs(
         walletAddress: String, pageSize: Int, offset: Int
     ) =
-        checkResponse {
-            api.getSSOApplications(walletAddress, pageSize, offset)
+        checkResponse(0, 1, 2, 3, 4) {
+            api.getSSOApplicationMsgs(walletAddress, pageSize, offset)
         }
 
     /**
-     * 审批SSO发币申请
+     * 审批SSO申请
      */
     suspend fun approvalSSOApplication(
         pass: Boolean, newTokenAddress: String, ssoWalletAddress: String, walletLayersNumber: Long
@@ -94,7 +94,7 @@ class GovernorRepository(private val api: GovernorApi) {
         }
 
     /**
-     * 改变SSO发币申请状态为已铸币
+     * 改变SSO申请状态为已铸币
      */
     suspend fun changeSSOApplicationToMinted(ssoWalletAddress: String) =
         checkResponse {

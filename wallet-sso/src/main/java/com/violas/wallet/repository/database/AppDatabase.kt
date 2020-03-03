@@ -8,18 +8,12 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.violas.wallet.repository.database.converter.DateConverter
-import com.violas.wallet.repository.database.dao.AccountDao
-import com.violas.wallet.repository.database.dao.AddressBookDao
-import com.violas.wallet.repository.database.dao.ApplySSORecordDao
-import com.violas.wallet.repository.database.dao.TokenDao
-import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.repository.database.entity.AddressBookDo
-import com.violas.wallet.repository.database.entity.ApplySSORecordDo
-import com.violas.wallet.repository.database.entity.TokenDo
+import com.violas.wallet.repository.database.dao.*
+import com.violas.wallet.repository.database.entity.*
 
 @Database(
-    entities = [AccountDO::class, TokenDo::class, AddressBookDo::class, ApplySSORecordDo::class],
-    version = 3,
+    entities = [AccountDO::class, TokenDo::class, AddressBookDo::class, ApplySSORecordDo::class, SSOApplicationMsgDO::class],
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class)
@@ -29,6 +23,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun tokenDao(): TokenDao
     abstract fun addressBookDao(): AddressBookDao
     abstract fun applySsoRecordDao(): ApplySSORecordDao
+    abstract fun ssoApplicationMsgDao(): SSOApplicationMsgDao
 
     companion object {
         private const val DATABASE_NAME = "timeDb"
@@ -52,6 +47,7 @@ abstract class AppDatabase : RoomDatabase() {
                 })
                 .addMigrations(migration1To2())
                 .addMigrations(migration2To3())
+                .addMigrations(migration3To4())
                 .build()
         }
 
@@ -86,6 +82,25 @@ abstract class AppDatabase : RoomDatabase() {
                 """
                 database.execSQL(sql)
                 database.execSQL("CREATE UNIQUE INDEX 'index_apply_sso_record_wallet_address_child_number' ON apply_sso_record('wallet_address','child_number')")
+            }
+        }
+
+        private fun migration3To4() = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                val sql = """
+                CREATE TABLE IF NOT EXISTS ${SSOApplicationMsgDO.TABLE_NAME}(
+	                'id' INTEGER PRIMARY KEY,
+	                'account_id' INTEGER NOT NULL,
+	                'application_id' TEXT NOT NULL,
+	                'application_date' INTEGER NOT NULL,
+	                'application_status' INTEGER NOT NULL,
+	                'applicant_id_name' TEXT NOT NULL,
+	                'issuing_unread' INTEGER NOT NULL,
+	                'mint_unread' INTEGER NOT NULL
+                )
+                """
+                database.execSQL(sql)
+                database.execSQL("CREATE UNIQUE INDEX 'index_${SSOApplicationMsgDO.TABLE_NAME}_account_id_application_id' ON ${SSOApplicationMsgDO.TABLE_NAME}('account_id','application_id')")
             }
         }
     }

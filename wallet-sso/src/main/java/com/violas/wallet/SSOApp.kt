@@ -8,7 +8,7 @@ import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 class SSOApp : App() {
     override fun onCreate() {
         super.onCreate()
-        Bugly.init(applicationContext, "beaf9fe271", false);
+        //Bugly.init(applicationContext, "beaf9fe271", false);
     }
 
     override fun attachBaseContext(newBase: Context) {

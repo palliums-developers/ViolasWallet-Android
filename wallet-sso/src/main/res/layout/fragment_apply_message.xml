@@ -38,16 +38,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <FrameLayout
-                android:id="@+id/flFragmentContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <com.palliums.widget.status.DefaultStatusLayout
-                android:id="@+id/slStatusLayout"
+            <ViewStub
+                android:id="@+id/vsGovernorLicenceLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:slStatus="none" />
+                android:layout="@layout/fragment_apply_message_governor" />
+
+            <ViewStub
+                android:id="@+id/vsSSOMsgLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout="@layout/fragment_apply_message_sso" />
+
+            <com.palliums.widget.status.DefaultStatusLayout
+                android:id="@+id/dslStatusLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:slEmptyIcon="@drawable/table_apply_message_normal"
+                app:slEmptyTip="@string/tips_no_sso_msg"
+                app:slStatus="none"
+                tools:slStatus="empty" />
 
         </FrameLayout>
 
