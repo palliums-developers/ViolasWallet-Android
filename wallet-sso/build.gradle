@@ -71,12 +71,14 @@ android {
             multiDexKeepProguard file('../multidexKeep.pro')
             signingConfig signingConfigs.release
             buildConfigField "boolean", "SHUFFLE_MNEMONIC", "true"
+            buildConfigField "boolean", "MOCK_GOVERNOR_DATA", "false"
         }
         debug {
             ext.alwaysUpdateBuildId = false
             multiDexKeepProguard file('../multidexKeep.pro')
             signingConfig signingConfigs.debug
             buildConfigField "boolean", "SHUFFLE_MNEMONIC", "false"
+            buildConfigField "boolean", "MOCK_GOVERNOR_DATA", "false"
         }
     }
 

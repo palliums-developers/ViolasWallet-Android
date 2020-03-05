@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.toMap
 import com.palliums.violas.http.ListResponse
+import com.violas.wallet.BuildConfig
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -64,9 +65,7 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
 
     // TODO delete test code
     // test code =========> start
-    private
-
-    var nextErrorCode = 2001
+    private var nextMockErrorCode = -1
     // test code =========> end
 
     override suspend fun loadData(
@@ -84,18 +83,24 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
                     (pageNumber - 1) * pageSize
                 )
             } catch (e: Exception) {
-                ListResponse<SSOApplicationMsgDTO>()
+                if (BuildConfig.MOCK_GOVERNOR_DATA) {
+                    ListResponse<SSOApplicationMsgDTO>()
+                } else {
+                    throw e
+                }
             }
         // test code =========> end
 
         // test code =========> start
-        response.errorCode = nextErrorCode
-        nextErrorCode++
-        if (nextErrorCode == 7) {
-            nextErrorCode = 2000
-        }
-        if (nextErrorCode == 2000) {
-            nextErrorCode = -1
+        if (BuildConfig.MOCK_GOVERNOR_DATA) {
+            response.errorCode = nextMockErrorCode
+            nextMockErrorCode++
+            if (nextMockErrorCode == 7) {
+                nextMockErrorCode = 2000
+            }
+            if (nextMockErrorCode == 2000) {
+                nextMockErrorCode = -1
+            }
         }
         // test code =========> end
 
@@ -107,25 +112,27 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
         }
 
         // test code =========> start
-        if (response.errorCode == 4) {
-            onSuccess.invoke(emptyList(), null)
-            return
-        }
+        if (BuildConfig.MOCK_GOVERNOR_DATA) {
+            if (response.errorCode == 4) {
+                onSuccess.invoke(emptyList(), null)
+                return
+            }
 
-        val fakeList = arrayListOf<SSOApplicationMsgDTO>()
-        for (index in 0..4) {
-            delay(1000)
-            val date = System.currentTimeMillis()
-            fakeList.add(
-                SSOApplicationMsgDTO(
-                    applicationId = "apply_id_$date",
-                    applicationDate = date,
-                    applicationStatus = index,
-                    applicantIdName = "Name $date"
+            val fakeList = arrayListOf<SSOApplicationMsgDTO>()
+            for (index in 0..4) {
+                delay(200)
+                val date = System.currentTimeMillis()
+                fakeList.add(
+                    SSOApplicationMsgDTO(
+                        applicationId = "apply_id_$date",
+                        applicationDate = date,
+                        applicationStatus = index,
+                        applicantIdName = "Name $date"
+                    )
                 )
-            )
+            }
+            response.data = fakeList
         }
-        response.data = fakeList
         // test code =========> end
 
         // 州长牌照已批准，可以处理SSO发币申请消息

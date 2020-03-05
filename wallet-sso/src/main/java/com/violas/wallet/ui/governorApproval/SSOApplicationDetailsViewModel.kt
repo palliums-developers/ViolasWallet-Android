@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.violas.http.Response
+import com.violas.wallet.BuildConfig
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.applysso.ApplySSOManager
 import com.violas.wallet.repository.DataRepository
@@ -123,35 +124,43 @@ class SSOApplicationDetailsViewModel(
             try {
                 mGovernorService.getSSOApplicationDetails(mSSOApplicationMsg.applicationId)
             } catch (e: Exception) {
-                Response<SSOApplicationDetailsDTO>()
+                if (BuildConfig.MOCK_GOVERNOR_DATA) {
+                    Response<SSOApplicationDetailsDTO>()
+                } else {
+                    throw e
+                }
             }
+        // test code =========> end
 
-        val fakeDetails = SSOApplicationDetailsDTO(
-            ssoWalletAddress = mAccountLD.value!!.address,
-            idName = mSSOApplicationMsg.applicantIdName,
-            idNumber = "1234567890",
-            idPhotoPositiveUrl = "",
-            idPhotoBackUrl = "",
-            countryCode = "CN",
-            emailAddress = "luckeast@163.com",
-            phoneNumber = "18919025675",
-            phoneAreaCode = "+86",
-            fiatCurrencyType = "RMB",
-            tokenAmount = "100000000000000",
-            tokenName = "DTY",
-            tokenValue = 2,
-            tokenAddress = "",
-            reservePhotoUrl = "",
-            bankChequePhotoPositiveUrl = "",
-            bankChequePhotoBackUrl = "",
-            applicationDate = mSSOApplicationMsg.applicationDate,
-            applicationPeriod = 7,
-            expirationDate = System.currentTimeMillis(),
-            applicationStatus = mSSOApplicationMsg.applicationStatus,
-            walletLayersNumber = 2,
-            applicationId = mSSOApplicationMsg.applicationId
-        )
-        response.data = fakeDetails
+        // test code =========> start
+        if (BuildConfig.MOCK_GOVERNOR_DATA) {
+            val fakeDetails = SSOApplicationDetailsDTO(
+                ssoWalletAddress = mAccountLD.value!!.address,
+                idName = mSSOApplicationMsg.applicantIdName,
+                idNumber = "1234567890",
+                idPhotoPositiveUrl = "",
+                idPhotoBackUrl = "",
+                countryCode = "CN",
+                emailAddress = "luckeast@163.com",
+                phoneNumber = "18919025675",
+                phoneAreaCode = "+86",
+                fiatCurrencyType = "RMB",
+                tokenAmount = "100000000000000",
+                tokenName = "DTY",
+                tokenValue = 2,
+                tokenAddress = "",
+                reservePhotoUrl = "",
+                bankChequePhotoPositiveUrl = "",
+                bankChequePhotoBackUrl = "",
+                applicationDate = mSSOApplicationMsg.applicationDate,
+                applicationPeriod = 7,
+                expirationDate = System.currentTimeMillis(),
+                applicationStatus = mSSOApplicationMsg.applicationStatus,
+                walletLayersNumber = 2,
+                applicationId = mSSOApplicationMsg.applicationId
+            )
+            response.data = fakeDetails
+        }
         // test code =========> end
 
         if (response.data != null) {
