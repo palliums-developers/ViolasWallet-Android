@@ -1,6 +1,9 @@
 package com.palliums.utils
 
 import android.view.View
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -45,4 +48,28 @@ public inline fun String.toBigDecimal(): java.math.BigDecimal {
     } else {
         java.math.BigDecimal(this)
     }
+}
+
+fun <T> LiveData<T>.getDistinct(
+    firstNotify: Boolean = false,
+    notifyIfDataNull: Boolean = false
+): LiveData<T> {
+    val distinctLiveData = MediatorLiveData<T>()
+    distinctLiveData.addSource(this, object : Observer<T> {
+        private var initialized = false
+        private var lastObj: T? = null
+        override fun onChanged(obj: T?) {
+            if (!initialized) {
+                initialized = true
+                lastObj = obj
+                if (firstNotify && (obj != null || notifyIfDataNull)) {
+                    distinctLiveData.postValue(obj)
+                }
+            } else if (obj != null || (notifyIfDataNull && lastObj != null)) {
+                lastObj = obj
+                distinctLiveData.postValue(obj)
+            }
+        }
+    })
+    return distinctLiveData
 }

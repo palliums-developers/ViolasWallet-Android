@@ -13,7 +13,7 @@ import kotlinx.android.parcel.Parcelize
 data class SSOApplicationMsgVO(
     val applicationId: String,          // 申请ID
     val applicationDate: Long,          // 申请日期
-    val applicationStatus: Int,         // 申请状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
+    var applicationStatus: Int,         // 申请状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
     val applicantIdName: String,        // 申请人身份姓名
     var msgUnread: Boolean              // 消息未读已读，true: 未读; false: 已读
 ) : Parcelable

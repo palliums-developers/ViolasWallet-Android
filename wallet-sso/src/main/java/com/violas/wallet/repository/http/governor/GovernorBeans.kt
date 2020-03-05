@@ -78,8 +78,8 @@ data class SSOApplicationDetailsDTO(
     val expirationDate: Long,                       // 申请失效日期
     @SerializedName("approval_status")
     val applicationStatus: Int,                     // 申请发币状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
-    @SerializedName("subaccount_count")
-    val walletLayersNumber: Int = -1,               // 铸币账户的钱包层数，在申请状态为pass之后才有
+    @SerializedName("module_depth")
+    val walletLayersNumber: Long = -1,              // 铸币账户的钱包层数，在申请状态为pass之后才有
     @SerializedName("apply_id")
     val applicationId: String                       // 申请ID
 )

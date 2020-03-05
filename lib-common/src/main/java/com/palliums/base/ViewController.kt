@@ -1,5 +1,6 @@
 package com.palliums.base
 
+import android.widget.Toast
 import androidx.annotation.StringRes
 
 /**
@@ -16,7 +17,7 @@ interface ViewController {
 
     fun dismissProgress()
 
-    fun showToast(@StringRes msgId: Int)
+    fun showToast(@StringRes msgId: Int, duration: Int = Toast.LENGTH_SHORT)
 
-    fun showToast(msg: String)
+    fun showToast(msg: String, duration: Int = Toast.LENGTH_SHORT)
 }

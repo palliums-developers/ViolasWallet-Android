@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
+import com.palliums.net.RequestException
 import com.palliums.violas.http.Response
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.biz.AccountManager
@@ -25,7 +26,7 @@ import org.palliums.violascore.wallet.Account
  * <p>
  * desc:
  */
-class SSOApplicationDetailsViewModelFactory(
+class GovernorApprovalViewModelFactory(
     private val mSSOApplicationMsg: SSOApplicationMsgVO
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -35,7 +36,7 @@ class SSOApplicationDetailsViewModelFactory(
     }
 }
 
-class SSOApplicationDetailsViewModel(
+class GovernorApprovalViewModel(
     private val mSSOApplicationMsg: SSOApplicationMsgVO
 ) : BaseViewModel() {
 
@@ -62,31 +63,8 @@ class SSOApplicationDetailsViewModel(
             val currentAccount = AccountManager().currentAccount()
             mAccountLD.postValue(currentAccount)
 
-            // 存储SSO申请消息
-            val localMsg =
-                mSSOApplicationMsgStorage.loadMsgFromApplicationId(
-                    currentAccount.id,
-                    mSSOApplicationMsg.applicationId
-                )
-            if (localMsg == null) {
-                mSSOApplicationMsgStorage.insert(
-                    SSOApplicationMsgDO(
-                        accountId = currentAccount.id,
-                        applicationId = mSSOApplicationMsg.applicationId,
-                        applicationDate = mSSOApplicationMsg.applicationDate,
-                        applicationStatus = mSSOApplicationMsg.applicationStatus,
-                        applicantIdName = mSSOApplicationMsg.applicantIdName,
-                        issuingUnread = false,
-                        mintUnread = mSSOApplicationMsg.applicationStatus < 3
-                    )
-                )
-            } else if (mSSOApplicationMsg.applicationStatus != localMsg.applicationStatus) {
-                localMsg.applicationStatus = mSSOApplicationMsg.applicationStatus
-                if (mSSOApplicationMsg.applicationStatus < 3) {
-                    localMsg.mintUnread = false
-                }
-                mSSOApplicationMsgStorage.update(localMsg)
-            }
+            // 进入州长铸币页面自动标记本地消息为已读
+            markLocalMsgAsRead(currentAccount)
         }
     }
 
@@ -99,22 +77,29 @@ class SSOApplicationDetailsViewModel(
 
         // 审批申请
         val pass = params[0] as Boolean
-        val ssoWalletAddress = mSSOApplicationDetailsLD.value!!.ssoWalletAddress
-        if (!pass) {
-            // 审核不通过
-            mGovernorService.approvalSSOApplication(
-                pass = false,
-                newTokenAddress = "",
-                ssoWalletAddress = ssoWalletAddress,
-                walletLayersNumber = -1
+        if (pass) {
+            // 审批通过
+            mApplySSOManager.apply(
+                account = params[1] as Account,
+                mnemonic = params[2] as List<String>,
+                applySSOWalletAddress = mSSOApplicationDetailsLD.value!!.ssoWalletAddress
             )
-            return
+        } else {
+            // 审批不通过
+            try {
+                mGovernorService.approvalSSOApplication(
+                    pass = false,
+                    newTokenAddress = "",
+                    ssoWalletAddress = mSSOApplicationDetailsLD.value!!.ssoWalletAddress,
+                    walletLayersNumber = -1
+                )
+            } catch (e: Exception) {
+
+            }
         }
 
-        // 审核通过
-        val account = params[1] as Account
-        val mnemonics = params[2] as List<String>
-        mApplySSOManager.apply(account, ssoWalletAddress, mnemonics)
+        // 审批操作成功后更新本地消息状态
+        updateLocalMsgStatus(if (pass) 1 else 2)
     }
 
     private suspend fun loadApplicationDetails() {
@@ -148,7 +133,7 @@ class SSOApplicationDetailsViewModel(
                 tokenAmount = "100000000000000",
                 tokenName = "DTY",
                 tokenValue = 2,
-                tokenAddress = "",
+                tokenAddress = mAccountLD.value!!.address,
                 reservePhotoUrl = "",
                 bankChequePhotoPositiveUrl = "",
                 bankChequePhotoBackUrl = "",
@@ -164,9 +149,91 @@ class SSOApplicationDetailsViewModel(
         // test code =========> end
 
         if (response.data != null) {
+            if (response.data!!.applicationStatus == 1 || response.data!!.applicationStatus >= 3) {
+                if (response.data!!.tokenAddress.isNullOrEmpty()) {
+                    throw RequestException.responseDataException("module address cannot be null")
+                } else if (response.data!!.walletLayersNumber <= 0) {
+                    throw RequestException.responseDataException(
+                        "Incorrect module depth(${response.data!!.walletLayersNumber})"
+                    )
+                }
+            }
+
             val countryArea = getCountryArea(response.data!!.countryCode)
             response.data!!.countryName = countryArea.countryName
+
+            if (mSSOApplicationMsg.applicationStatus != response.data!!.applicationStatus) {
+                updateLocalMsgStatus(response.data!!.applicationStatus)
+            }
         }
         mSSOApplicationDetailsLD.postValue(response.data)
+    }
+
+    /**
+     * 标记本地消息为已读
+     */
+    private fun markLocalMsgAsRead(accountDO: AccountDO) {
+        try {
+            val localMsg =
+                mSSOApplicationMsgStorage.loadMsgFromApplicationId(
+                    accountDO.id,
+                    mSSOApplicationMsg.applicationId
+                )
+
+            if (localMsg == null) {
+                mSSOApplicationMsgStorage.insert(
+                    SSOApplicationMsgDO(
+                        accountId = accountDO.id,
+                        applicationId = mSSOApplicationMsg.applicationId,
+                        applicationDate = mSSOApplicationMsg.applicationDate,
+                        applicationStatus = mSSOApplicationMsg.applicationStatus,
+                        applicantIdName = mSSOApplicationMsg.applicantIdName,
+                        issuingUnread = false,
+                        mintUnread = mSSOApplicationMsg.applicationStatus < 3
+                    )
+                )
+            } else if (mSSOApplicationMsg.applicationStatus != localMsg.applicationStatus) {
+                localMsg.applicationStatus = mSSOApplicationMsg.applicationStatus
+                if (mSSOApplicationMsg.applicationStatus < 3) {
+                    localMsg.mintUnread = false
+                }
+                mSSOApplicationMsgStorage.update(localMsg)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * 跟新本地消息状态
+     */
+    private fun updateLocalMsgStatus(targetApplicationStatus: Int) {
+        try {
+            val localMsg =
+                mSSOApplicationMsgStorage.loadMsgFromApplicationId(
+                    mAccountLD.value!!.id,
+                    mSSOApplicationMsg.applicationId
+                )
+
+            if (localMsg == null) {
+                mSSOApplicationMsgStorage.insert(
+                    SSOApplicationMsgDO(
+                        accountId = mAccountLD.value!!.id,
+                        applicationId = mSSOApplicationMsg.applicationId,
+                        applicationDate = mSSOApplicationMsg.applicationDate,
+                        applicationStatus = targetApplicationStatus,
+                        applicantIdName = mSSOApplicationMsg.applicantIdName,
+                        issuingUnread = false,
+                        mintUnread = targetApplicationStatus < 3
+                    )
+                )
+            } else {
+                localMsg.applicationStatus = targetApplicationStatus
+                localMsg.mintUnread = targetApplicationStatus < 3
+                mSSOApplicationMsgStorage.update(localMsg)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
