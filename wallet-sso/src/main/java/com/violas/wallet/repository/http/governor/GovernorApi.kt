@@ -48,6 +48,14 @@ interface GovernorApi {
     ): ListResponse<SSOApplicationMsgDTO>
 
     /**
+     * 获取SSO申请详情
+     */
+    @GET("/1.0/violas/sso/token/approval")
+    suspend fun getSSOApplicationDetails(
+        @Query("apply_id") ssoApplicationId: String
+    ): Response<SSOApplicationDetailsDTO>
+
+    /**
      * 审批SSO申请
      */
     @PUT("/1.0/violas/governor/sso")

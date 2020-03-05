@@ -1,5 +1,7 @@
 package com.violas.wallet.ui.main.message
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.paging.PagingViewModel
@@ -8,8 +10,10 @@ import com.palliums.violas.http.ListResponse
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.database.entity.SSOApplicationMsgDO
 import com.violas.wallet.repository.http.governor.SSOApplicationMsgDTO
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
@@ -19,6 +23,9 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
      */
     val mApplyGovernorLicenceStatusLD = MutableLiveData<Int>()
     val mAccountLD = MutableLiveData<AccountDO>()
+    val mReadSSOApplicationMsgLD = MediatorLiveData<SSOApplicationMsgDO>()
+
+    private var mLastReadSSOApplicationMsgLD: LiveData<SSOApplicationMsgDO?>? = null
 
     private val mGovernorService by lazy {
         DataRepository.getGovernorService()
@@ -34,9 +41,32 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
         }
     }
 
+    fun observeReadSSOApplicationMsg(observedMsg: SSOApplicationMsgVO) {
+        if (!observedMsg.msgUnread) {
+            return
+        }
+
+        mLastReadSSOApplicationMsgLD?.let {
+            mReadSSOApplicationMsgLD.removeSource(it)
+        }
+
+        mAccountLD.value?.let { account ->
+            val readMsgLD =
+                mSSOApplicationMsgStorage.loadReadMsgFromApplicationId(
+                    account.id, observedMsg.applicationId
+                )
+            mLastReadSSOApplicationMsgLD = readMsgLD
+            mReadSSOApplicationMsgLD.addSource(readMsgLD) { msg ->
+                msg?.let { mReadSSOApplicationMsgLD.value = it }
+            }
+        }
+    }
+
     // TODO delete test code
     // test code =========> start
-    private var nextErrorCode = -1
+    private
+
+    var nextErrorCode = 2001
     // test code =========> end
 
     override suspend fun loadData(
@@ -56,7 +86,7 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
             } catch (e: Exception) {
                 ListResponse<SSOApplicationMsgDTO>()
             }
-            // test code =========> end
+        // test code =========> end
 
         // test code =========> start
         response.errorCode = nextErrorCode
@@ -84,12 +114,14 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
 
         val fakeList = arrayListOf<SSOApplicationMsgDTO>()
         for (index in 0..4) {
+            delay(1000)
+            val date = System.currentTimeMillis()
             fakeList.add(
                 SSOApplicationMsgDTO(
-                    applicationId = "apply_id_${index + 1}",
-                    applicationDate = System.currentTimeMillis(),
+                    applicationId = "apply_id_$date",
+                    applicationDate = date,
                     applicationStatus = index,
-                    applicantIdName = "Name ${index + 1}"
+                    applicantIdName = "Name $date"
                 )
             )
         }
@@ -106,9 +138,11 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
         val applicationIds = response.data!!.map {
             it.applicationId
         }
-        val localMsgs = mSSOApplicationMsgStorage
-            .loadMsgsFromAccountIdAndApplyIds(mAccountLD.value!!.id, *applicationIds.toTypedArray())
-            .toMap { it.applicationId }
+        val localMsgs =
+            mSSOApplicationMsgStorage.loadMsgsFromApplicationIds(
+                mAccountLD.value!!.id,
+                *applicationIds.toTypedArray()
+            ).toMap { it.applicationId }
 
         // DTO 转换 VO
         val list = response.data!!.map {

@@ -43,8 +43,8 @@ abstract class BaseViewModel : ViewModel() {
         action: Int = -1,
         checkParamBeforeExecute: Boolean = true,
         checkNetworkBeforeExecute: Boolean = true,
-        failureCallback: ((action: Int) -> Unit)? = null,
-        successCallback: ((action: Int) -> Unit)? = null
+        failureCallback: ((error: Throwable) -> Unit)? = null,
+        successCallback: (() -> Unit)? = null
     ): Boolean {
         synchronized(lock) {
             if (loadState.value?.peekData()?.status == LoadState.Status.RUNNING) {
@@ -64,7 +64,7 @@ abstract class BaseViewModel : ViewModel() {
                 loadState.postValueSupport(LoadState.failure(exception))
                 postTipsMessage(tipsMessage, exception)
 
-                failureCallback?.invoke(action)
+                failureCallback?.invoke(exception)
                 return false
             }
 
@@ -82,7 +82,7 @@ abstract class BaseViewModel : ViewModel() {
                     loadState.postValueSupport(LoadState.SUCCESS)
                 }
 
-                successCallback?.invoke(action)
+                successCallback?.invoke()
             } catch (e: Exception) {
                 e.printStackTrace()
 
@@ -99,7 +99,7 @@ abstract class BaseViewModel : ViewModel() {
                     postTipsMessage(tipsMessage, e)
                 }
 
-                failureCallback?.invoke(action)
+                failureCallback?.invoke(e)
             }
         }
         return true

@@ -56,6 +56,11 @@ class RequestException : RuntimeException {
                     getString(R.string.common_http_request_fail, errorCode)
             )
         }
+
+        fun isNoNetwork(error: Throwable): Boolean {
+            return error is RequestException
+                    && error.errorCode == ERROR_CODE_NO_NETWORK
+        }
     }
 
     /**

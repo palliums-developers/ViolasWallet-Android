@@ -41,8 +41,7 @@ data class LoadState private constructor(
     }
 
     fun isNoNetwork(): Boolean {
-        return throwable != null && throwable is RequestException
-                && throwable.errorCode == RequestException.ERROR_CODE_NO_NETWORK
+        return throwable != null && RequestException.isNoNetwork(throwable)
     }
 
     fun getErrorMsg(): String? {

@@ -1,5 +1,6 @@
 package com.violas.wallet.repository.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.violas.wallet.repository.database.entity.SSOApplicationMsgDO
@@ -14,8 +15,20 @@ import com.violas.wallet.repository.database.entity.SSOApplicationMsgDO
 interface SSOApplicationMsgDao : BaseDao<SSOApplicationMsgDO> {
 
     @Query("SELECT * FROM ${SSOApplicationMsgDO.TABLE_NAME} WHERE account_id = :accountId AND application_id in(:applicationIds)")
-    fun loadMsgsFromAccountIdAndApplyIds(
+    fun loadMsgsFromApplicationIds(
         accountId: Long,
         vararg applicationIds: String
     ): List<SSOApplicationMsgDO>
+
+    @Query("SELECT * FROM ${SSOApplicationMsgDO.TABLE_NAME} WHERE account_id = :accountId AND application_id = :applicationId")
+    fun loadMsgFromApplicationId(
+        accountId: Long,
+        applicationId: String
+    ): SSOApplicationMsgDO?
+
+    @Query("SELECT * FROM ${SSOApplicationMsgDO.TABLE_NAME} WHERE account_id = :accountId AND application_id = :applicationId AND (issuing_unread = 0 OR mint_unread = 0)")
+    fun loadReadMsgFromApplicationId(
+        accountId: Long,
+        applicationId: String
+    ): LiveData<SSOApplicationMsgDO?>
 }

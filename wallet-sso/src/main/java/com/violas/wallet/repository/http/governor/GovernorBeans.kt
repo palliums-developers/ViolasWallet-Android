@@ -1,5 +1,6 @@
 package com.violas.wallet.repository.http.governor
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -31,7 +32,7 @@ data class SSOApplicationMsgDTO(
     val applicantIdName: String                     // 申请人身份姓名
 )
 
-data class SSOApplicationDTO(
+data class SSOApplicationDetailsDTO(
     @SerializedName("wallet_address")
     val ssoWalletAddress: String,                   // 申请者的钱包地址
     @SerializedName("name")
@@ -44,6 +45,8 @@ data class SSOApplicationDTO(
     val idPhotoBackUrl: String,                     // 申请者的证件背面照片url
     @SerializedName("country")
     val countryCode: String,                        // 申请者的国家码（需要本地换算成国家名称）
+    @Expose(serialize = false, deserialize = false)
+    var countryName: String = "",                   // 国家名称
     @SerializedName("email_address")
     val emailAddress: String,                       // 申请者的邮箱地址
     @SerializedName("phone_number")
@@ -69,10 +72,10 @@ data class SSOApplicationDTO(
     val bankChequePhotoBackUrl: String,             // 银行支付支票背面照片url
     @SerializedName("application_date")
     val applicationDate: Long,                      // 申请日期
+    @SerializedName("validity_period")
+    val applicationPeriod: Int,                     // 申请有效期（单位天数）
     @SerializedName("expiration_date")
     val expirationDate: Long,                       // 申请失效日期
-    @SerializedName("validity_period")
-    val validityPeriod: Int,                        // 申请有效期（单位天数）
     @SerializedName("approval_status")
     val applicationStatus: Int,                     // 申请发币状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
     @SerializedName("subaccount_count")

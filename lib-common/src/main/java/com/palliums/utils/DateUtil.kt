@@ -30,9 +30,13 @@ fun correctDateLength(date: Long): Long {
         date
 }
 
-fun formatDate(date: Long, simpleDateFormat: SimpleDateFormat? = null): String {
+fun formatDate(
+    date: Long,
+    simpleDateFormat: SimpleDateFormat? = null,
+    pattern: String? = null
+): String {
     val dateFormat = simpleDateFormat
-        ?: SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
+        ?: SimpleDateFormat(pattern ?: "MM.dd HH:mm:ss", Locale.ENGLISH)
     return dateFormat.format(correctDateLength(date))
 }
 

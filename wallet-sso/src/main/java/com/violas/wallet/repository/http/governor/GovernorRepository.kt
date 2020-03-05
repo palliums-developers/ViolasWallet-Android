@@ -78,6 +78,14 @@ class GovernorRepository(private val api: GovernorApi) {
         }
 
     /**
+     * 获取SSO申请详情
+     */
+    suspend fun getSSOApplicationDetails(ssoApplicationId: String) =
+        checkResponse {
+            api.getSSOApplicationDetails(ssoApplicationId)
+        }
+
+    /**
      * 审批SSO申请
      */
     suspend fun approvalSSOApplication(
@@ -88,7 +96,7 @@ class GovernorRepository(private val api: GovernorApi) {
     "approval_status":${if (pass) 1 else 2},
     "module_address":"${if (pass) newTokenAddress else ""}",
     "wallet_address":"$ssoWalletAddress",
-    "subaccount_count":$walletLayersNumber
+    "module_depth":$walletLayersNumber
 }""".toRequestBody("application/json".toMediaTypeOrNull())
             api.approvalSSOApplication(requestBody)
         }

@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.main.message
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -14,9 +15,13 @@ import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.event.RefreshGovernorApplicationProgressEvent
 import com.violas.wallet.ui.applyForLicence.ApplyForLicenceActivity
+import com.violas.wallet.ui.governorApproval.SSOApplicationDetailsActivity
 import kotlinx.android.synthetic.main.fragment_apply_message.*
 import kotlinx.android.synthetic.main.fragment_apply_message_governor.*
 import kotlinx.android.synthetic.main.fragment_apply_message_sso.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -39,8 +44,11 @@ class ApplyMessageFragment : BaseFragment() {
         ViewModelProvider(this).get(ApplyMessageViewModel::class.java)
     }
     private val mSSOMsgViewAdapter by lazy {
-        SSOApplicationMsgViewAdapter(retryCallback = { mViewModel.retry() }) {
-            // TODO
+        SSOApplicationMsgViewAdapter(retryCallback = { mViewModel.retry() }) { msg ->
+            activity?.let {
+                mViewModel.observeReadSSOApplicationMsg(msg)
+                SSOApplicationDetailsActivity.start(it, msg)
+            }
         }
     }
 
@@ -282,7 +290,33 @@ class ApplyMessageFragment : BaseFragment() {
 
     private fun observeAccount() {
         mViewModel.mAccountLD.observe(this, Observer {
+            observeReadSSOApplicationMsg()
             mViewModel.start()
+        })
+    }
+
+    private fun observeReadSSOApplicationMsg() {
+        mViewModel.mReadSSOApplicationMsgLD.observe(this, Observer { readMsg ->
+            Log.e("TestReadMsg", "read msg => $readMsg")
+            launch(Dispatchers.Main) {
+                val needRefreshMsgPosition = withContext(Dispatchers.IO) {
+                    mSSOMsgViewAdapter.currentList?.let {
+                        it.forEachIndexed { index, ssoApplicationMsgVO ->
+                            if (readMsg.applicationId == ssoApplicationMsgVO.applicationId
+                                && ssoApplicationMsgVO.msgUnread
+                            ) {
+                                ssoApplicationMsgVO.msgUnread = false
+                                return@withContext index
+                            }
+                        }
+                    }
+                    return@withContext -1
+                }
+
+                if (needRefreshMsgPosition >= 0) {
+                    mSSOMsgViewAdapter.notifyItemChanged(needRefreshMsgPosition)
+                }
+            }
         })
     }
 }

@@ -350,4 +350,13 @@
     <string name="state_rejected">已拒绝</string>
     <string name="state_completed">已完成</string>
     <string name="tips_no_sso_msg">暂无SSO申请消息</string>
+    <string name="format_sso_application_title">%1$s申请发行%2$s</string>
+    <string name="state_minted">已铸币成功</string>
+    <string name="format_days">%1$d天</string>
+    <string name="id_card">身份证</string>
+    <string name="label_reserve_photo">手持储备金文件照片</string>
+    <string name="label_bank_cheque_photo">银行账户信息</string>
+    <string name="tips_not_found_sso_application_details">找不到申请详情</string>
+    <string name="action_approval_pass">审核通过</string>
+    <string name="action_approval_not_pass">审核不通过</string>
 </resources>
