@@ -280,7 +280,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
     private fun getSequenceNumber(
         address: String,
         call: (sequenceNumber: Long) -> Unit,
-        error: (Exception) -> Unit
+        error: (Throwable) -> Unit
     ) {
         val subscribe = mViolasRepository.getSequenceNumber(address)
             .subscribeOn(Schedulers.io())
@@ -291,7 +291,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
                     call.invoke(it.data!!)
                 }
             }, {
-                call.invoke(0)
+                error.invoke(it)
             })
     }
 

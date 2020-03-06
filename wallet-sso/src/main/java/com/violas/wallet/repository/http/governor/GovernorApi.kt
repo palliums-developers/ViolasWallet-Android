@@ -16,7 +16,7 @@ interface GovernorApi {
     /**
      * 注册州长
      */
-    @POST("/1.0/violas/governor/sso")
+    @POST("/1.1/violas/governor")
     suspend fun signUpGovernor(@Body body: RequestBody): Response<Any>
 
     /**
@@ -40,7 +40,7 @@ interface GovernorApi {
     /**
      * 获取SSO申请消息
      */
-    @GET("/1.0/violas/sso/token/approval")
+    @GET("/1.1/violas/sso/token/approval")
     suspend fun getSSOApplicationMsgs(
         @Query("address") walletAddress: String,
         @Query("limit") pageSize: Int,
@@ -50,15 +50,15 @@ interface GovernorApi {
     /**
      * 获取SSO申请详情
      */
-    @GET("/1.0/violas/sso/token/approval")
+    @GET("/1.0/violas/sso/token/approval/{id}")
     suspend fun getSSOApplicationDetails(
-        @Query("apply_id") ssoApplicationId: String
+        @Path("id") ssoApplicationId: String
     ): Response<SSOApplicationDetailsDTO>
 
     /**
      * 审批SSO申请
      */
-    @PUT("/1.0/violas/governor/sso")
+    @PUT("/1.1/violas/sso/token/approval")
     suspend fun approvalSSOApplication(@Body body: RequestBody): Response<Any>
 
     /**

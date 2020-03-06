@@ -148,7 +148,7 @@ class RequestException : RuntimeException {
             }
     }
 
-    private constructor(errorCode: Any, errorMsg: String) {
+    constructor(errorCode: Any, errorMsg: String) {
         this.errorCode = errorCode
         this.errorMsg = errorMsg
     }

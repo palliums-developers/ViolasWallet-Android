@@ -16,13 +16,14 @@ class GovernorRepository(private val api: GovernorApi) {
      * 注册州长
      */
     suspend fun signUpGovernor(
-        walletAddress: String, name: String, txid: String
+        walletAddress: String, name: String, txid: String, toxid: String = ""
     ) =
         checkResponse {
             val requestBody = """{
     "wallet_address":"$walletAddress",
     "name":"$name",
-    "txid":"$txid"
+    "txid":"$txid",
+    "toxid":"$toxid"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
             api.signUpGovernor(requestBody)
         }
@@ -31,7 +32,7 @@ class GovernorRepository(private val api: GovernorApi) {
      * 获取州长信息
      */
     suspend fun getGovernorInfo(walletAddress: String) =
-        checkResponse {
+        checkResponse(2011) {
             api.getGovernorInfo(walletAddress)
         }
 
@@ -96,7 +97,7 @@ class GovernorRepository(private val api: GovernorApi) {
     "approval_status":${if (pass) 1 else 2},
     "module_address":"${if (pass) newTokenAddress else ""}",
     "wallet_address":"$ssoWalletAddress",
-    "module_depth":$walletLayersNumber
+    "subaccount_number":$walletLayersNumber
 }""".toRequestBody("application/json".toMediaTypeOrNull())
             api.approvalSSOApplication(requestBody)
         }

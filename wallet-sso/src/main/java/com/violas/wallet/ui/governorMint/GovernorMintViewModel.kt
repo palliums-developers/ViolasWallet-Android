@@ -107,6 +107,7 @@ class GovernorMintViewModel(
         // test code =========> start
         if (BuildConfig.MOCK_GOVERNOR_DATA) {
             val fakeDetails = SSOApplicationDetailsDTO(
+                applicationId = mSSOApplicationMsg.applicationId,
                 ssoWalletAddress = mAccountLD.value!!.address,
                 idName = mSSOApplicationMsg.applicantIdName,
                 idNumber = "1234567890",
@@ -128,8 +129,7 @@ class GovernorMintViewModel(
                 applicationPeriod = 7,
                 expirationDate = System.currentTimeMillis(),
                 applicationStatus = mSSOApplicationMsg.applicationStatus,
-                walletLayersNumber = 2,
-                applicationId = mSSOApplicationMsg.applicationId
+                walletLayersNumber = 2
             )
             response.data = fakeDetails
         }

@@ -7,15 +7,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import com.palliums.base.BaseFragment
 import com.palliums.net.LoadState
+import com.palliums.net.RequestException
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColor
 import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
+import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshGovernorApplicationProgressEvent
 import com.violas.wallet.ui.applyForLicence.ApplyForLicenceActivity
 import com.violas.wallet.ui.governorApproval.GovernorApprovalActivity
 import com.violas.wallet.ui.governorMint.GovernorMintActivity
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.fragment_apply_message.*
 import kotlinx.android.synthetic.main.fragment_apply_message_governor.*
 import kotlinx.android.synthetic.main.fragment_apply_message_sso.*
@@ -25,6 +28,8 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.palliums.libracore.wallet.KeyPair
+import org.palliums.violascore.wallet.Account
 
 /**
  * 消息首页，包含州长牌照申请进度视图 和 SSO发币申请消息列表视图
@@ -63,8 +68,7 @@ class ApplyMessageFragment : BaseFragment() {
     override fun onLazyInitView(savedInstanceState: Bundle?) {
         super.onLazyInitView(savedInstanceState)
 
-        initSettings()
-        observeGovernorLicenceStatus()
+        initView()
         observeSSOMsgList()
         observeLoadStateAndTipsMsg()
         observeAccount()
@@ -85,95 +89,220 @@ class ApplyMessageFragment : BaseFragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onRefreshGovernorApplicationProgressEvent(event: RefreshGovernorApplicationProgressEvent) {
-        // 刷新时原有数据会被清空，造成短暂的页面闪屏或页面空白
-        // 刷新时先做个标记不更新数据，刷新完成后再做处理
-        mUpdateSSOMsgDataFlag = false
-        mViewModel.refresh()
+        loadGovernorApplicationProgress()
     }
 
-    private fun initSettings() {
+    private fun initView() {
         setStatusBarMode(true)
+
+        dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
 
         srlRefreshLayout.isEnabled = false
         srlRefreshLayout.setOnRefreshListener {
-            // 刷新时原有数据会被清空，造成短暂的页面闪屏或页面空白
-            // 刷新时先做个标记不更新数据，刷新完成后再做处理
-            mUpdateSSOMsgDataFlag = false
-            mViewModel.refresh()
+            if (mViewModel.mGovernorApplicationStatus == 4) {
+                // 刷新时原有数据会被清空，造成短暂的页面闪屏或页面空白
+                // 刷新时先做个标记不更新数据，刷新完成后再做处理
+                mUpdateSSOMsgDataFlag = false
+                mViewModel.refresh()
+            } else {
+                loadGovernorApplicationProgress()
+            }
         }
     }
 
-    private fun observeGovernorLicenceStatus() {
-        mViewModel.mApplyGovernorLicenceStatusLD.observe(this, Observer { status ->
-            if (status >= 4) {
-                // 州长牌照已批准，显示SSO发币申请消息视图，隐藏州长牌照申请进度视图
-                if (drlSSOMsgRefreshLayout == null) {
-                    // 初始化SSO发币申请消息视图
-                    try {
-                        vsSSOMsgLayout.inflate()
-                    } catch (ignore: Exception) {
-                    }
+    private fun observeAccount() {
+        mViewModel.mAccountLD.observe(this, Observer {
+            loadGovernorApplicationProgress(true)
+        })
+    }
 
-                    // 初始化SSO发币申请消息视图的控件
-                    drlSSOMsgRefreshLayout.setEnableLoadMore(false)
-                    drlSSOMsgRefreshLayout.setEnableOverScrollBounce(true)
-                    drlSSOMsgRefreshLayout.setEnableOverScrollDrag(true)
-                    drlSSOMsgRefreshLayout.setOnRefreshListener {
-                        // 刷新时原有数据会被清空，造成短暂的页面闪屏或页面空白
-                        // 刷新时先做个标记不更新数据，刷新完成后再做处理
-                        mUpdateSSOMsgDataFlag = false
-                        mViewModel.refresh()
-                    }
+    private fun loadGovernorApplicationProgress(init: Boolean = false) {
+        if (!init && !srlRefreshLayout.isRefreshing) {
+            srlRefreshLayout.isRefreshing = true
+        }
 
-                    rvSSOMsgList.adapter = mSSOMsgViewAdapter
-                    rvSSOMsgList.addItemDecoration(
-                        RecycleViewItemDividers(
-                            top = DensityUtility.dp2px(requireContext(), 10),
-                            bottom = 0,
-                            showFirstTop = true,
-                            onlyShowLastBottom = true
-                        )
+        mViewModel.loadGovernorApplicationProgress(
+            failureCallback = {
+                if (srlRefreshLayout.isRefreshing) {
+                    srlRefreshLayout.isRefreshing = false
+                } else {
+                    srlRefreshLayout.isEnabled = true
+                }
+
+                if (clGovernorLicenceLayout?.visibility != View.VISIBLE) {
+                    dslStatusLayout.showStatus(
+                        if (RequestException.isNoNetwork(it))
+                            IStatusLayout.Status.STATUS_NO_NETWORK
+                        else
+                            IStatusLayout.Status.STATUS_FAILURE
                     )
                 }
-                clGovernorLicenceLayout?.visibility = View.GONE
-                drlSSOMsgRefreshLayout.visibility = View.VISIBLE
-
-                return@Observer
-            }
-
-            // 州长牌照还未批准，显示州长牌照申请进度视图，隐藏SSO发币申请消息视图
-            if (clGovernorLicenceLayout == null) {
-                // 初始州长牌照申请进度视图
-                try {
-                    vsGovernorLicenceLayout.inflate()
-                } catch (ignore: Exception) {
-                }
-            }
-            drlSSOMsgRefreshLayout?.visibility = View.GONE
-            clGovernorLicenceLayout.visibility = View.VISIBLE
-
-            // -1: no application; 2: not pass
-            if (status == -1 || status == 2) {
-                mivGovernorLicenceStatus.setEndDescText(R.string.desc_authentication_failed)
-                mivGovernorLicenceStatus.setEndDescTextColor(getColor(R.color.def_text_warn))
-                btnGovernorLicenceGoto.visibility = View.VISIBLE
-                if (!btnGovernorLicenceGoto.hasOnClickListeners()) {
-                    if (!EventBus.getDefault().isRegistered(this)) {
-                        EventBus.getDefault().register(this)
+            },
+            successCallback = {
+                if (it == 4) { // 4: minted
+                    // 州长牌照已批准
+                    showSSOApplicationMsgView()
+                } else {
+                    // 州长牌照还未批准
+                    if (srlRefreshLayout.isRefreshing) {
+                        srlRefreshLayout.isRefreshing = false
+                    } else {
+                        srlRefreshLayout.isEnabled = true
+                        dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
                     }
 
-                    btnGovernorLicenceGoto.setOnClickListener {
-                        activity?.let {
-                            ApplyForLicenceActivity.start(it)
-                        }
-                    }
+                    showGovernorApplicationProgressView(it)
                 }
-            } else {
-                mivGovernorLicenceStatus.setEndDescText(R.string.desc_authenticating)
+            }
+        )
+    }
+
+    private fun showSSOApplicationMsgView() {
+        // 显示SSO发币申请消息视图，隐藏州长牌照申请进度视图
+        if (drlSSOMsgRefreshLayout == null) {
+            // 初始化SSO发币申请消息视图
+            try {
+                vsSSOMsgLayout.inflate()
+            } catch (ignore: Exception) {
+            }
+
+            // 初始化SSO发币申请消息视图的控件设置
+            drlSSOMsgRefreshLayout.setEnableLoadMore(false)
+            drlSSOMsgRefreshLayout.setEnableOverScrollBounce(true)
+            drlSSOMsgRefreshLayout.setEnableOverScrollDrag(true)
+            drlSSOMsgRefreshLayout.setOnRefreshListener {
+                // 刷新时原有数据会被清空，造成短暂的页面闪屏或页面空白
+                // 刷新时先做个标记不更新数据，刷新完成后再做处理
+                mUpdateSSOMsgDataFlag = false
+                mViewModel.refresh()
+            }
+
+            rvSSOMsgList.adapter = mSSOMsgViewAdapter
+            rvSSOMsgList.addItemDecoration(
+                RecycleViewItemDividers(
+                    top = DensityUtility.dp2px(requireContext(), 10),
+                    bottom = 0,
+                    showFirstTop = true,
+                    onlyShowLastBottom = true
+                )
+            )
+
+            observeChangedSSOApplicationMsg()
+        }
+
+        clGovernorLicenceLayout?.visibility = View.GONE
+        drlSSOMsgRefreshLayout.visibility = View.VISIBLE
+
+        mViewModel.start()
+    }
+
+    private fun showGovernorApplicationProgressView(applicationStatus: Int) {
+        // 显示州长牌照申请进度视图，隐藏SSO发币申请消息视图
+        if (clGovernorLicenceLayout == null) {
+            // 初始州长牌照申请进度视图
+            try {
+                vsGovernorLicenceLayout.inflate()
+            } catch (ignore: Exception) {
+            }
+
+            // 初始州长牌照申请进度视图的控件设置
+            if (!EventBus.getDefault().isRegistered(this)) {
+                EventBus.getDefault().register(this)
+            }
+
+            btnGovernorLicenceGoto.setOnClickListener {
+                if (mViewModel.mGovernorApplicationStatus == -1
+                    || mViewModel.mGovernorApplicationStatus == 2
+                ) {
+                    activity?.let {
+                        ApplyForLicenceActivity.start(it)
+                    }
+                } else if (mViewModel.mGovernorApplicationStatus == 1) {
+                    showPasswordInputDialog()
+                }
+            }
+        }
+
+        drlSSOMsgRefreshLayout?.visibility = View.GONE
+        clGovernorLicenceLayout.visibility = View.VISIBLE
+
+        // 更新州长牌照申请进度视图
+        when (applicationStatus) {
+            0 -> {  // 0: not approved
+                mivGovernorLicenceStatus.setEndDescText(R.string.desc_governor_application_not_approved)
                 mivGovernorLicenceStatus.setEndDescTextColor(getColor(R.color.color_00D1AF))
                 btnGovernorLicenceGoto.visibility = View.GONE
             }
-        })
+
+            1 -> {  // 1: pass
+                mivGovernorLicenceStatus.setEndDescText(R.string.desc_governor_application_pass)
+                mivGovernorLicenceStatus.setEndDescTextColor(getColor(R.color.color_3C3848_80))
+                btnGovernorLicenceGoto.setText(R.string.action_apply_for_licence)
+                btnGovernorLicenceGoto.visibility = View.VISIBLE
+            }
+
+            2 -> {  // 2: not pass
+                mivGovernorLicenceStatus.setEndDescText(R.string.desc_governor_application_not_pass)
+                mivGovernorLicenceStatus.setEndDescTextColor(getColor(R.color.def_text_warn))
+                btnGovernorLicenceGoto.setText(R.string.action_goto_apply_for_governor)
+                btnGovernorLicenceGoto.visibility = View.VISIBLE
+            }
+
+            3 -> {  // 3: published
+                mivGovernorLicenceStatus.setEndDescText(R.string.desc_governor_application_published)
+                mivGovernorLicenceStatus.setEndDescTextColor(getColor(R.color.color_00D1AF))
+                btnGovernorLicenceGoto.visibility = View.GONE
+            }
+
+            else -> { // -1: no application
+                mivGovernorLicenceStatus.setEndDescText(R.string.desc_governor_application_not_application)
+                mivGovernorLicenceStatus.setEndDescTextColor(getColor(R.color.color_3C3848_80))
+                btnGovernorLicenceGoto.setText(R.string.action_goto_apply_for_governor)
+                btnGovernorLicenceGoto.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun showPasswordInputDialog() {
+        PasswordInputDialog()
+            .setConfirmListener { password, dialogFragment ->
+                dialogFragment.dismiss()
+                showProgress()
+
+                launch(Dispatchers.Main) {
+                    val account = withContext(Dispatchers.IO) {
+                        val simpleSecurity =
+                            SimpleSecurity.instance(requireContext().applicationContext)
+                        val privateKey = simpleSecurity.decrypt(
+                            password, mViewModel.mAccountLD.value!!.privateKey
+                        )
+                        return@withContext if (privateKey == null)
+                            null
+                        else
+                            Account(KeyPair.fromSecretKey(privateKey))
+                    }
+
+                    if (account != null) {
+                        publishVStake(account)
+                    } else {
+                        dismissProgress()
+                        showToast(getString(R.string.hint_password_error))
+                    }
+                }
+            }
+            .show(childFragmentManager)
+    }
+
+    private fun publishVStake(account: Account) {
+        mViewModel.publishVStake(
+            requireContext(), account,
+            failureCallback = {
+                dismissProgress()
+            },
+            successCallback = {
+                dismissProgress()
+                loadGovernorApplicationProgress()
+            })
     }
 
     private fun observeSSOMsgList() {
@@ -189,78 +318,69 @@ class ApplyMessageFragment : BaseFragment() {
     private fun observeLoadStateAndTipsMsg() {
         mViewModel.refreshState.observe(this, Observer {
             when (it.peekData().status) {
-                LoadState.Status.RUNNING -> {
-                    if (clGovernorLicenceLayout?.visibility != View.VISIBLE
-                        && drlSSOMsgRefreshLayout?.visibility != View.VISIBLE
-                        && dslStatusLayout.visibility != View.VISIBLE
-                    ) {
-                        // 首次加载
-                        dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
-                    }
-                }
-
                 LoadState.Status.SUCCESS,
                 LoadState.Status.SUCCESS_NO_MORE -> {
-                    handleSSOMsgDataUpdate(true)
-
                     if (srlRefreshLayout.isRefreshing) {
                         srlRefreshLayout.isRefreshing = false
-                    } else if (drlSSOMsgRefreshLayout?.state?.isOpening == true) {
+                        srlRefreshLayout.isEnabled = false
+                        drlSSOMsgRefreshLayout.setEnableRefresh(true)
+                    } else if (drlSSOMsgRefreshLayout.state.isOpening) {
                         drlSSOMsgRefreshLayout.finishRefresh(true)
                     }
-                    srlRefreshLayout.isEnabled = false
-                    drlSSOMsgRefreshLayout?.setEnableRefresh(true)
 
                     dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
+                    if (drlSSOMsgRefreshLayout.visibility != View.VISIBLE) {
+                        drlSSOMsgRefreshLayout.visibility = View.VISIBLE
+                    }
+
+                    handleSSOMsgDataUpdate(true)
                 }
 
                 LoadState.Status.SUCCESS_EMPTY -> {
-                    handleSSOMsgDataUpdate(true)
-
                     if (srlRefreshLayout.isRefreshing) {
                         srlRefreshLayout.isRefreshing = false
-                    } else if (drlSSOMsgRefreshLayout?.state?.isOpening == true) {
+                    } else if (drlSSOMsgRefreshLayout.state.isOpening) {
                         drlSSOMsgRefreshLayout.finishRefresh(true)
+                        drlSSOMsgRefreshLayout.setEnableRefresh(false)
+                        srlRefreshLayout.isEnabled = true
                     }
-                    srlRefreshLayout.isEnabled = true
-                    drlSSOMsgRefreshLayout?.setEnableRefresh(false)
 
-                    dslStatusLayout.showStatus(
-                        if (mViewModel.mApplyGovernorLicenceStatusLD.value != null
-                            && mViewModel.mApplyGovernorLicenceStatusLD.value!! < 4
-                        )
-                            IStatusLayout.Status.STATUS_NONE
-                        else
-                            IStatusLayout.Status.STATUS_EMPTY
-                    )
-                    if (drlSSOMsgRefreshLayout?.visibility == View.VISIBLE) {
+                    dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
+                    if (drlSSOMsgRefreshLayout.visibility == View.VISIBLE) {
                         drlSSOMsgRefreshLayout.visibility = View.INVISIBLE
                     }
+
+                    handleSSOMsgDataUpdate(true)
                 }
 
                 LoadState.Status.FAILURE -> {
-                    handleSSOMsgDataUpdate(false)
-
                     if (srlRefreshLayout.isRefreshing) {
                         srlRefreshLayout.isRefreshing = false
-                    } else if (drlSSOMsgRefreshLayout?.state?.isOpening == true) {
+                    } else if (drlSSOMsgRefreshLayout.state.isOpening) {
                         drlSSOMsgRefreshLayout.finishRefresh(
                             300, false, false
                         )
                     }
 
-                    if (clGovernorLicenceLayout?.visibility != View.VISIBLE
-                        && drlSSOMsgRefreshLayout?.visibility != View.VISIBLE
-                    ) {
-                        // 首次加载失败, 或在状态视图刷新失败
-                        srlRefreshLayout.isEnabled = true
+                    if (mSSOMsgViewAdapter.itemCount > 0) {
+                        dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
+                        if (drlSSOMsgRefreshLayout.visibility != View.VISIBLE) {
+                            drlSSOMsgRefreshLayout.visibility = View.VISIBLE
+                        }
+                    } else {
                         dslStatusLayout.showStatus(
-                            if (it.peekData().isNoNetwork())
+                            if (it.peekData().isNoNetwork()) {
                                 IStatusLayout.Status.STATUS_NO_NETWORK
-                            else
+                            } else {
                                 IStatusLayout.Status.STATUS_FAILURE
+                            }
                         )
+                        if (drlSSOMsgRefreshLayout.visibility == View.VISIBLE) {
+                            drlSSOMsgRefreshLayout.visibility = View.INVISIBLE
+                        }
                     }
+
+                    handleSSOMsgDataUpdate(false)
                 }
             }
         })
@@ -270,6 +390,14 @@ class ApplyMessageFragment : BaseFragment() {
         })
 
         mViewModel.pagingTipsMessage.observe(this, Observer {
+            it.getDataIfNotHandled()?.let { msg ->
+                if (msg.isNotEmpty()) {
+                    showToast(msg)
+                }
+            }
+        })
+
+        mViewModel.mTipsMessageLD.observe(this, Observer {
             it.getDataIfNotHandled()?.let { msg ->
                 if (msg.isNotEmpty()) {
                     showToast(msg)
@@ -292,14 +420,7 @@ class ApplyMessageFragment : BaseFragment() {
         }
     }
 
-    private fun observeAccount() {
-        mViewModel.mAccountLD.observe(this, Observer {
-            observeReadSSOApplicationMsg()
-            mViewModel.start()
-        })
-    }
-
-    private fun observeReadSSOApplicationMsg() {
+    private fun observeChangedSSOApplicationMsg() {
         mViewModel.mChangedSSOApplicationMsgLD.observe(this, Observer { changedMsg ->
             launch(Dispatchers.Main) {
                 val needRefreshMsgPosition = withContext(Dispatchers.IO) {

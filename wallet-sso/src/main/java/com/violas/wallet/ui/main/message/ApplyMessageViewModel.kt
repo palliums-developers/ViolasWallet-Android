@@ -1,31 +1,41 @@
 package com.violas.wallet.ui.main.message
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import android.content.Context
+import androidx.lifecycle.*
+import com.palliums.net.RequestException
+import com.palliums.net.RequestException.Companion.ERROR_CODE_UNKNOWN_ERROR
+import com.palliums.net.postTipsMessage
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getDistinct
+import com.palliums.utils.getString
+import com.palliums.utils.isNetworkConnected
 import com.palliums.utils.toMap
 import com.palliums.violas.http.ListResponse
+import com.palliums.violas.http.Response
 import com.violas.wallet.BuildConfig
+import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.SSOApplicationMsgDO
+import com.violas.wallet.repository.http.governor.GovernorInfoDTO
 import com.violas.wallet.repository.http.governor.SSOApplicationMsgDTO
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.palliums.violascore.wallet.Account
 
 class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
 
     /**
      * 申请州长牌照状态
      */
-    val mApplyGovernorLicenceStatusLD = MutableLiveData<Int>()
     val mAccountLD = MutableLiveData<AccountDO>()
     val mChangedSSOApplicationMsgLD = MediatorLiveData<SSOApplicationMsgDO>()
+    val mTipsMessageLD by lazy { EnhancedMutableLiveData<String>() }
+    var mGovernorApplicationStatus = -2
 
     private var mLastObservedMsgApplicationId: String? = null
     private var mLastChangedSSOApplicationMsgLD: LiveData<SSOApplicationMsgDO?>? = null
@@ -72,8 +82,55 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
 
     // TODO delete test code
     // test code =========> start
-    private var nextMockErrorCode = -1
+    private var nextMockGovernorApplicationStatus = -1
     // test code =========> end
+
+    fun loadGovernorApplicationProgress(
+        failureCallback: ((error: Throwable) -> Unit)? = null,
+        successCallback: ((applicationStatus: Int) -> Unit)? = null
+    ) {
+        viewModelScope.launch(Dispatchers.Main) {
+            try {
+                val applicationStatus = withContext(Dispatchers.IO) {
+                    val response =
+                        // test code =========> start
+                        try {
+                            mGovernorService.getGovernorInfo(mAccountLD.value!!.address)
+                        } catch (e: Exception) {
+                            if (BuildConfig.MOCK_GOVERNOR_DATA) {
+                                Response<GovernorInfoDTO>()
+                            } else {
+                                throw e
+                            }
+                        }
+                    // test code =========> end
+
+                    // test code =========> start
+                    if (BuildConfig.MOCK_GOVERNOR_DATA) {
+                        response.data = GovernorInfoDTO(
+                            walletAddress = mAccountLD.value!!.address,
+                            name = mAccountLD.value!!.walletNickname,
+                            applicationStatus = nextMockGovernorApplicationStatus,
+                            subAccountCount = 1
+                        )
+                        nextMockGovernorApplicationStatus++
+                        if (nextMockGovernorApplicationStatus == 5) {
+                            nextMockGovernorApplicationStatus = -1
+                        }
+                    }
+                    // test code =========> end
+
+                    return@withContext response.data?.applicationStatus ?: -1
+                }
+
+                mGovernorApplicationStatus = applicationStatus
+                successCallback?.invoke(applicationStatus)
+            } catch (e: Exception) {
+                failureCallback?.invoke(e)
+                postTipsMessage(mTipsMessageLD, e)
+            }
+        }
+    }
 
     override suspend fun loadData(
         pageSize: Int,
@@ -100,40 +157,16 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
 
         // test code =========> start
         if (BuildConfig.MOCK_GOVERNOR_DATA) {
-            response.errorCode = nextMockErrorCode
-            nextMockErrorCode++
-            if (nextMockErrorCode == 7) {
-                nextMockErrorCode = 2000
-            }
-            if (nextMockErrorCode == 2000) {
-                nextMockErrorCode = -1
-            }
-        }
-        // test code =========> end
-
-        mApplyGovernorLicenceStatusLD.postValue(response.errorCode)
-        if (response.errorCode < 4) {
-            // 州长牌照还未批准，不能处理SSO发币申请消息
-            onSuccess.invoke(emptyList(), null)
-            return
-        }
-
-        // test code =========> start
-        if (BuildConfig.MOCK_GOVERNOR_DATA) {
-            if (response.errorCode == 4) {
-                onSuccess.invoke(emptyList(), null)
-                return
-            }
-
             val fakeList = arrayListOf<SSOApplicationMsgDTO>()
-            for (index in 0..4) {
+            for (index in 0..5) {
                 delay(200)
                 val date = System.currentTimeMillis()
                 fakeList.add(
                     SSOApplicationMsgDTO(
                         applicationId = "apply_id_$date",
+                        applicationStatus = if (index > 4) 1 else index,
                         applicationDate = date,
-                        applicationStatus = index,
+                        expirationDate = if (index > 4) date - 1000 else date + 1000,
                         applicantIdName = "Name $date"
                     )
                 )
@@ -142,7 +175,6 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
         }
         // test code =========> end
 
-        // 州长牌照已批准，可以处理SSO发币申请消息
         if (response.data.isNullOrEmpty()) {
             onSuccess.invoke(emptyList(), null)
             return
@@ -183,5 +215,49 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
             )
         }
         onSuccess.invoke(list, null)
+    }
+
+    fun publishVStake(
+        context: Context,
+        account: Account,
+        failureCallback: ((error: Throwable) -> Unit)? = null,
+        successCallback: (() -> Unit)? = null
+    ) {
+        viewModelScope.launch(Dispatchers.Main) {
+            try {
+                withContext(Dispatchers.IO) {
+                    val vStakeAddress = try {
+                        mGovernorService.getVStakeAddress().data!!
+                    } catch (e: Exception) {
+                        if (BuildConfig.MOCK_GOVERNOR_DATA) {
+                            account.getAddress().toHex()
+                        } else {
+                            throw e
+                        }
+                    }
+
+                    var result = false
+                    DataRepository.getViolasService()
+                        .publishToken(context, account, vStakeAddress) {
+                            result = it
+                        }
+
+                    if (!result) {
+                        throw if (!isNetworkConnected())
+                            RequestException.networkUnavailable()
+                        else
+                            RequestException(
+                                ERROR_CODE_UNKNOWN_ERROR,
+                                getString(R.string.tips_apply_for_licence_fail)
+                            )
+                    }
+                }
+
+                successCallback?.invoke()
+            } catch (e: Exception) {
+                failureCallback?.invoke(e)
+                postTipsMessage(mTipsMessageLD, e)
+            }
+        }
     }
 }
