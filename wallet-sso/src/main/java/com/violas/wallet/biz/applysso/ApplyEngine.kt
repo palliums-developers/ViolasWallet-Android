@@ -56,8 +56,8 @@ class ApplyEngine {
             ?: return mApplySsoRecordDao.findUnDoneRecord(walletAddress)
     }
 
-    fun getUnMintRecord(mintTokenAddress: String): ApplySSORecordDo? {
-        return mApplySsoRecordDao.findUnMintRecord(mintTokenAddress)
+    fun getUnMintRecord(mintTokenAddress: String,SSOApplyWalletAddress:String): ApplySSORecordDo? {
+        return mApplySsoRecordDao.findUnMintRecord(mintTokenAddress,SSOApplyWalletAddress)
     }
 
     fun execMint(status: Int? = SSOApplyTokenHandler.Approval): Boolean {

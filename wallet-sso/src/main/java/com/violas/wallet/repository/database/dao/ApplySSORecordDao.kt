@@ -14,7 +14,7 @@ interface ApplySSORecordDao : BaseDao<ApplySSORecordDo> {
     fun findSSOWalletUnDoneRecord(
         walletAddress: String,
         ssoWalletAddress: String
-    ):ApplySSORecordDo?
+    ): ApplySSORecordDo?
 
     @Query("UPDATE apply_sso_record set status = :status WHERE wallet_address = :walletAddress AND child_number = :childNumber")
     fun updateRecordStatus(
@@ -32,8 +32,8 @@ interface ApplySSORecordDao : BaseDao<ApplySSORecordDo> {
         @SSOApplyTokenStatus status: Int
     )
 
-    @Query("SELECT * FROM apply_sso_record WHERE status >= 5 AND token_address = :mintTokenAddress")
-    fun findUnMintRecord(mintTokenAddress: String): ApplySSORecordDo?
+    @Query("SELECT * FROM apply_sso_record WHERE status >= 5 AND token_address = :mintTokenAddress AND sso_wallet_address = :SSOApplyWalletAddress")
+    fun findUnMintRecord(mintTokenAddress: String, SSOApplyWalletAddress: String): ApplySSORecordDo?
 
     @Query("DELETE from apply_sso_record WHERE child_number = :layerWallet AND wallet_address = :accountAddress")
     fun remove(accountAddress: String, layerWallet: Long)
