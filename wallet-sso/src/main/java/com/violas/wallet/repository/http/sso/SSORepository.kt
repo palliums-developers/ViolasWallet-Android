@@ -98,7 +98,7 @@ class SSORepository(private val ssoApi: SSOApi) {
         handleException: Boolean = true
     ): Response<ApplyForStatusDTO>? {
         return try {
-            checkResponse(2006) {
+            checkResponse(2005) {
                 ssoApi.selectApplyForStatus(address)
             }
         } catch (e: Exception) {
