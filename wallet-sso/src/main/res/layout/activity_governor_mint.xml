@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/srlRefreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/def_page_bg_light_secondary"
+    tools:context="com.violas.wallet.ui.applyForMint.ApplyForMintActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/llContentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <com.violas.wallet.widget.ApplySubmitItemView
+                android:id="@+id/asivSSOWalletAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                app:item_title="@string/label_wallet_address"
+                tools:item_content="dfjajkdjkfjklajfuwhidoefjc" />
+
+            <com.violas.wallet.widget.ApplySubmitItemView
+                android:id="@+id/asivTokenName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                app:item_title="@string/label_stable_currency_name"
+                tools:item_content="VXX" />
+
+            <com.violas.wallet.widget.ApplySubmitItemView
+                android:id="@+id/asivTokenAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                app:item_title="@string/label_number_types_issuing"
+                tools:item_content="100000" />
+
+            <Button
+                android:id="@+id/btnMint"
+                style="@style/BaseButtonPrimary"
+                android:layout_gravity="center"
+                android:layout_marginTop="40dp"
+                android:text="@string/action_mint" />
+
+        </LinearLayout>
+
+        <com.palliums.widget.status.DefaultStatusLayout
+            android:id="@+id/dslStatusLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:slStatus="failure" />
+
+    </FrameLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

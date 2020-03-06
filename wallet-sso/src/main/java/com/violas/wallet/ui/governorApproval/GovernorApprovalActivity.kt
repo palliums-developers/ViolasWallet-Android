@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -13,15 +14,16 @@ import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.common.EXTRA_KEY_SSO_MSG
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.image.GlideApp
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
-import com.violas.wallet.ui.governorApproval.SSOApplicationDetailsViewModel.Companion.ACTION_APPROVAL_APPLICATION
-import com.violas.wallet.ui.governorApproval.SSOApplicationDetailsViewModel.Companion.ACTION_LOAD_APPLICATION_DETAILS
+import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_APPROVAL_APPLICATION
+import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_LOAD_APPLICATION_DETAILS
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
 import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.widget.dialog.PasswordInputDialog
-import kotlinx.android.synthetic.main.activity_sso_application_details.*
+import kotlinx.android.synthetic.main.activity_governor_approval.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,15 +34,14 @@ import org.palliums.violascore.wallet.Account
  * Created by elephant on 2020/3/4 14:50.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: SSO发币申请详情页面
+ * desc: 州长审批页面，如果申请状态不为未审批，则只是展示SSO申请信息
  */
-class SSOApplicationDetailsActivity : BaseAppActivity() {
+class GovernorApprovalActivity : BaseAppActivity() {
 
     companion object {
-        private const val EXTRA_KEY_SSO_MSG = "EXTRA_KEY_SSO_MSG"
 
         fun start(context: Context, msg: SSOApplicationMsgVO) {
-            Intent(context, SSOApplicationDetailsActivity::class.java)
+            Intent(context, GovernorApprovalActivity::class.java)
                 .apply { putExtra(EXTRA_KEY_SSO_MSG, msg) }
                 .start(context)
         }
@@ -49,12 +50,12 @@ class SSOApplicationDetailsActivity : BaseAppActivity() {
     private lateinit var mSSOApplicationMsg: SSOApplicationMsgVO
 
     private val mViewModel by lazy {
-        ViewModelProvider(this, SSOApplicationDetailsViewModelFactory(mSSOApplicationMsg))
-            .get(SSOApplicationDetailsViewModel::class.java)
+        ViewModelProvider(this, GovernorApprovalViewModelFactory(mSSOApplicationMsg))
+            .get(GovernorApprovalViewModel::class.java)
     }
 
     override fun getLayoutResId(): Int {
-        return R.layout.activity_sso_application_details
+        return R.layout.activity_governor_approval
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -208,6 +209,18 @@ class SSOApplicationDetailsActivity : BaseAppActivity() {
             },
             successCallback = {
                 dismissProgress()
+                showToast(
+                    getString(
+                        if (pass)
+                            R.string.tips_governor_approval_pass_success
+                        else
+                            R.string.tips_governor_approval_not_pass_success
+                        ,
+                        mSSOApplicationMsg.applicantIdName
+                    ),
+                    Toast.LENGTH_LONG
+                )
+                close()
             }
         )
     }

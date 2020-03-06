@@ -139,8 +139,11 @@
             android:name=".ui.applyForLicence.ApplyForLicenceActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.governorApproval.SSOApplicationDetailsActivity"
-            android:screenOrientation="portrait"/>
+            android:name=".ui.governorApproval.GovernorApprovalActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.governorMint.GovernorMintActivity"
+            android:screenOrientation="portrait" />
 
         <!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data

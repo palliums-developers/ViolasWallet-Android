@@ -37,14 +37,16 @@ class ApplySSOManager {
         tokenAddress: String,
         receiveAddress: String,
         receiveAmount: Long,
-        mnemonic: List<String>
+        mnemonic: List<String>,
+        walletLayersNumber: Long
     ): Boolean {
         val ssoMintTokenHandler = SSOMintTokenHandler(
             account,
             mnemonic,
             receiveAddress,
             receiveAmount,
-            tokenAddress
+            tokenAddress,
+            walletLayersNumber
         )
         return ssoMintTokenHandler.exec()
     }

@@ -5,6 +5,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.paging.PagingViewModel
+import com.palliums.utils.getDistinct
 import com.palliums.utils.toMap
 import com.palliums.violas.http.ListResponse
 import com.violas.wallet.BuildConfig
@@ -24,9 +25,9 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
      */
     val mApplyGovernorLicenceStatusLD = MutableLiveData<Int>()
     val mAccountLD = MutableLiveData<AccountDO>()
-    val mReadSSOApplicationMsgLD = MediatorLiveData<SSOApplicationMsgDO>()
+    val mChangedSSOApplicationMsgLD = MediatorLiveData<SSOApplicationMsgDO>()
 
-    private var mLastReadSSOApplicationMsgLD: LiveData<SSOApplicationMsgDO?>? = null
+    private var mLastChangedSSOApplicationMsgLD: LiveData<SSOApplicationMsgDO?>? = null
 
     private val mGovernorService by lazy {
         DataRepository.getGovernorService()
@@ -42,23 +43,23 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
         }
     }
 
-    fun observeReadSSOApplicationMsg(observedMsg: SSOApplicationMsgVO) {
-        if (!observedMsg.msgUnread) {
+    fun observeChangedSSOApplicationMsg(observedMsg: SSOApplicationMsgVO) {
+        if (mLastChangedSSOApplicationMsgLD?.value?.applicationId == observedMsg.applicationId) {
             return
         }
 
-        mLastReadSSOApplicationMsgLD?.let {
-            mReadSSOApplicationMsgLD.removeSource(it)
+        mLastChangedSSOApplicationMsgLD?.let {
+            mChangedSSOApplicationMsgLD.removeSource(it)
         }
 
         mAccountLD.value?.let { account ->
-            val readMsgLD =
-                mSSOApplicationMsgStorage.loadReadMsgFromApplicationId(
+            val msgLD =
+                mSSOApplicationMsgStorage.loadLiveDataMsgFromApplicationId(
                     account.id, observedMsg.applicationId
-                )
-            mLastReadSSOApplicationMsgLD = readMsgLD
-            mReadSSOApplicationMsgLD.addSource(readMsgLD) { msg ->
-                msg?.let { mReadSSOApplicationMsgLD.value = it }
+                ).getDistinct()
+            mLastChangedSSOApplicationMsgLD = msgLD
+            mChangedSSOApplicationMsgLD.addSource(msgLD) { msg ->
+                msg?.let { mChangedSSOApplicationMsgLD.value = it }
             }
         }
     }
@@ -142,13 +143,11 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
         }
 
         // 获取SSO发币申请本地记录
-        val applicationIds = response.data!!.map {
-            it.applicationId
-        }
+        val applicationIds = response.data!!.map { it.applicationId }.toTypedArray()
         val localMsgs =
             mSSOApplicationMsgStorage.loadMsgsFromApplicationIds(
                 mAccountLD.value!!.id,
-                *applicationIds.toTypedArray()
+                *applicationIds
             ).toMap { it.applicationId }
 
         // DTO 转换 VO

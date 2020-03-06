@@ -60,12 +60,12 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener, ViewContr
         (activity as? BaseActivity)?.dismissProgress()
     }
 
-    override fun showToast(@StringRes msgId: Int) {
-        showToast(getString(msgId))
+    override fun showToast(@StringRes msgId: Int, duration: Int) {
+        showToast(getString(msgId), duration)
     }
 
-    override fun showToast(msg: String) {
-        (activity as? BaseActivity)?.showToast(msg)
+    override fun showToast(msg: String, duration: Int) {
+        (activity as? BaseActivity)?.showToast(msg, duration)
     }
 
     fun finishActivity() {
@@ -73,6 +73,6 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener, ViewContr
     }
 
     fun setStatusBarMode(darkMode: Boolean) {
-        (activity as? BaseActivity)?.setStatusBarMode( darkMode)
+        (activity as? BaseActivity)?.setStatusBarMode(darkMode)
     }
 }

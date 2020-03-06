@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.main.message
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +14,8 @@ import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.event.RefreshGovernorApplicationProgressEvent
 import com.violas.wallet.ui.applyForLicence.ApplyForLicenceActivity
-import com.violas.wallet.ui.governorApproval.SSOApplicationDetailsActivity
+import com.violas.wallet.ui.governorApproval.GovernorApprovalActivity
+import com.violas.wallet.ui.governorMint.GovernorMintActivity
 import kotlinx.android.synthetic.main.fragment_apply_message.*
 import kotlinx.android.synthetic.main.fragment_apply_message_governor.*
 import kotlinx.android.synthetic.main.fragment_apply_message_sso.*
@@ -46,8 +46,12 @@ class ApplyMessageFragment : BaseFragment() {
     private val mSSOMsgViewAdapter by lazy {
         SSOApplicationMsgViewAdapter(retryCallback = { mViewModel.retry() }) { msg ->
             activity?.let {
-                mViewModel.observeReadSSOApplicationMsg(msg)
-                SSOApplicationDetailsActivity.start(it, msg)
+                mViewModel.observeChangedSSOApplicationMsg(msg)
+                if (msg.applicationStatus == 3) {
+                    GovernorMintActivity.start(it, msg)
+                } else {
+                    GovernorApprovalActivity.start(it, msg)
+                }
             }
         }
     }
@@ -296,16 +300,15 @@ class ApplyMessageFragment : BaseFragment() {
     }
 
     private fun observeReadSSOApplicationMsg() {
-        mViewModel.mReadSSOApplicationMsgLD.observe(this, Observer { readMsg ->
-            Log.e("TestReadMsg", "read msg => $readMsg")
+        mViewModel.mChangedSSOApplicationMsgLD.observe(this, Observer { changedMsg ->
             launch(Dispatchers.Main) {
                 val needRefreshMsgPosition = withContext(Dispatchers.IO) {
-                    mSSOMsgViewAdapter.currentList?.let {
-                        it.forEachIndexed { index, ssoApplicationMsgVO ->
-                            if (readMsg.applicationId == ssoApplicationMsgVO.applicationId
-                                && ssoApplicationMsgVO.msgUnread
-                            ) {
-                                ssoApplicationMsgVO.msgUnread = false
+                    val msgList = mSSOMsgViewAdapter.currentList
+                    msgList?.let {
+                        it.forEachIndexed { index, msg ->
+                            if (changedMsg.applicationId == msg.applicationId) {
+                                msg.applicationStatus = changedMsg.applicationStatus
+                                msg.msgUnread = false
                                 return@withContext index
                             }
                         }

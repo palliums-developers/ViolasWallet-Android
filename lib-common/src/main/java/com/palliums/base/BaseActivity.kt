@@ -400,13 +400,13 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
 
     }
 
-    override fun showToast(@StringRes msgId: Int) {
-        showToast(getString(msgId))
+    override fun showToast(@StringRes msgId: Int, duration: Int) {
+        showToast(getString(msgId), duration)
     }
 
-    override fun showToast(msg: String) {
+    override fun showToast(msg: String, duration: Int) {
         launch {
-            Toast.makeText(this@BaseActivity, msg, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@BaseActivity, msg, duration).show()
         }
     }
 

@@ -14,7 +14,7 @@ import com.violas.wallet.repository.database.entity.SSOApplicationMsgDO
 @Dao
 interface SSOApplicationMsgDao : BaseDao<SSOApplicationMsgDO> {
 
-    @Query("SELECT * FROM ${SSOApplicationMsgDO.TABLE_NAME} WHERE account_id = :accountId AND application_id in(:applicationIds)")
+    @Query("SELECT * FROM ${SSOApplicationMsgDO.TABLE_NAME} WHERE account_id = :accountId AND application_id IN (:applicationIds)")
     fun loadMsgsFromApplicationIds(
         accountId: Long,
         vararg applicationIds: String
@@ -26,8 +26,8 @@ interface SSOApplicationMsgDao : BaseDao<SSOApplicationMsgDO> {
         applicationId: String
     ): SSOApplicationMsgDO?
 
-    @Query("SELECT * FROM ${SSOApplicationMsgDO.TABLE_NAME} WHERE account_id = :accountId AND application_id = :applicationId AND (issuing_unread = 0 OR mint_unread = 0)")
-    fun loadReadMsgFromApplicationId(
+    @Query("SELECT * FROM ${SSOApplicationMsgDO.TABLE_NAME} WHERE account_id = :accountId AND application_id = :applicationId")
+    fun loadLiveDataMsgFromApplicationId(
         accountId: Long,
         applicationId: String
     ): LiveData<SSOApplicationMsgDO?>

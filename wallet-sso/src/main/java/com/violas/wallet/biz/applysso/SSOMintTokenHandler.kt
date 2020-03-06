@@ -22,7 +22,8 @@ class SSOMintTokenHandler(
     private val mnemonics: List<String>,
     private val SSOApplyWalletAddress: String,
     private val SSOApplyAmount: Long,
-    private val mintTokenAddress: String
+    private val mintTokenAddress: String,
+    private val walletLayersNumber: Long
 ) {
 
     private val mGovernorService by lazy {
@@ -33,15 +34,7 @@ class SSOMintTokenHandler(
     suspend fun exec(): Boolean {
         val applyEngine = ApplyEngine()
         val findUnDoneRecord = applyEngine.getUnMintRecord(mintTokenAddress)
-        val layerWallet = if (findUnDoneRecord == null) {
-            //todo net work error
-            mGovernorService.getGovernorInfo(account.getAddress().toHex()).data?.subAccountCount?.plus(
-                1
-            )
-                ?: throw RuntimeException()
-        } else {
-            findUnDoneRecord.childNumber
-        }
+        val layerWallet = findUnDoneRecord?.childNumber ?: walletLayersNumber
 
         val mintAccount = LibraWallet(WalletConfig(mnemonics)).generateAccount(layerWallet)
 
