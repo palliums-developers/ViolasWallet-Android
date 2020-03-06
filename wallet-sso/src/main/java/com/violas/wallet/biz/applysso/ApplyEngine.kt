@@ -28,12 +28,11 @@ class ApplyEngine {
         for (index in SSOApplyTokenHandler.None until currentStatus) {
             mApplyHandles.removeAt(0)
         }
-        mApplyHandles.forEach {
-            val handler = it.handler()
+        for (item in mApplyHandles) {
+            val handler = item.handler()
             if (!handler) {
                 isSuccess = false
-                Log.e("ApplyEngine", "ApplyEngine error ${it.javaClass.simpleName}")
-                return@forEach
+                break
             }
         }
         return isSuccess
@@ -52,12 +51,13 @@ class ApplyEngine {
         mApplyHandles.add(handle)
     }
 
-    fun getUnDoneRecord(walletAddress: String): ApplySSORecordDo? {
-        return mApplySsoRecordDao.findUnDoneRecord(walletAddress)
+    fun getUnDoneRecord(walletAddress: String, SSOApplyWalletAddress: String): ApplySSORecordDo? {
+        return mApplySsoRecordDao.findSSOWalletUnDoneRecord(walletAddress, SSOApplyWalletAddress)
+            ?: return mApplySsoRecordDao.findUnDoneRecord(walletAddress)
     }
 
-    fun getUnMintRecord(mintTokenAddress: String): ApplySSORecordDo? {
-        return mApplySsoRecordDao.findUnMintRecord(mintTokenAddress)
+    fun getUnMintRecord(mintTokenAddress: String,SSOApplyWalletAddress:String): ApplySSORecordDo? {
+        return mApplySsoRecordDao.findUnMintRecord(mintTokenAddress,SSOApplyWalletAddress)
     }
 
     fun execMint(status: Int? = SSOApplyTokenHandler.Approval): Boolean {
@@ -66,12 +66,12 @@ class ApplyEngine {
         for (index in SSOApplyTokenHandler.None until currentStatus) {
             mApplyHandles.removeAt(0)
         }
-        mApplyHandles.forEach {
-            val handler = it.handler()
+        for (item in mApplyHandles) {
+            val handler = item.handler()
             if (!handler) {
                 isSuccess = false
-                Log.e("ApplyEngine", "ApplyEngine error ${it.javaClass.simpleName}")
-                return@forEach
+                Log.e("ApplyEngine", "ApplyEngine error ${item.javaClass.simpleName}")
+                break
             }
         }
         return isSuccess

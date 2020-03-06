@@ -20,6 +20,7 @@ class SendSSOAccountCoinHandle(
                         walletAddress,
                         layerWallet,
                         mintTokenAddress,
+                        receiveAddress,
                         SSOApplyTokenHandler.ReadyApproval
                     )
                 return true

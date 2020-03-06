@@ -13,7 +13,7 @@ import com.violas.wallet.repository.database.entity.*
 
 @Database(
     entities = [AccountDO::class, TokenDo::class, AddressBookDo::class, ApplySSORecordDo::class, SSOApplicationMsgDO::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class)
@@ -48,6 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
                 .addMigrations(migration1To2())
                 .addMigrations(migration2To3())
                 .addMigrations(migration3To4())
+                .addMigrations(migration4To5())
                 .build()
         }
 
@@ -101,6 +102,12 @@ abstract class AppDatabase : RoomDatabase() {
                 """
                 database.execSQL(sql)
                 database.execSQL("CREATE UNIQUE INDEX 'index_${SSOApplicationMsgDO.TABLE_NAME}_account_id_application_id' ON ${SSOApplicationMsgDO.TABLE_NAME}('account_id','application_id')")
+            }
+        }
+
+        private fun migration4To5() = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE apply_sso_record ADD COLUMN sso_wallet_address TEXT")
             }
         }
     }
