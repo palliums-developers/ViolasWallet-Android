@@ -41,33 +41,39 @@ annotation class SSOApplyTokenStatus
 class SSOApplyTokenHandler(
     private val account: Account,
     private val mnemonics: List<String>,
-    private val SSOApplyWalletAddress: String
+    private var SSOApplyWalletAddress: String
 ) {
     companion object {
         /**
          * 没有任何准备
          */
         const val None = 0
+
         /**
          * 铸币账户已经准备好
          */
         const val Initial = 1
+
         /**
          * 铸币账户已经可以注册稳定币
          */
         const val ReadyRegister = 2
+
         /**
          * 铸币账户注册稳定币成功
          */
         const val Registered = 3
+
         /**
          * 已经可以审批 SSO 申请
          */
         const val ReadyApproval = 4
+
         /**
          * 审批 SSO 申请完成
          */
         const val Approval = 5
+
         /**
          * Mint 成功
          */
@@ -82,10 +88,14 @@ class SSOApplyTokenHandler(
     @WorkerThread
     suspend fun exec(): Boolean {
         val applyEngine = ApplyEngine()
-        val findUnDoneRecord = applyEngine.getUnDoneRecord(account.getAddress().toHex())
+
+        val findUnDoneRecord =
+            applyEngine.getUnDoneRecord(account.getAddress().toHex(), SSOApplyWalletAddress)
         val layerWallet = if (findUnDoneRecord == null) {
             //todo net work error
-            mGovernorService.getGovernorInfo(account.getAddress().toHex()).data?.subAccountCount?.plus(
+            mGovernorService.getGovernorInfo(
+                account.getAddress().toHex()
+            ).data?.subAccountCount?.plus(
                 1
             )
                 ?: throw RuntimeException()
@@ -106,7 +116,7 @@ class SSOApplyTokenHandler(
                 account,
                 layerWallet,
                 mintAccount.getAddress().toHex(),
-                10
+                10 * 1000000
             )
         )
         applyEngine.addApplyHandle(
@@ -123,7 +133,7 @@ class SSOApplyTokenHandler(
                 layerWallet,
                 account,
                 SSOApplyWalletAddress,
-                1000,
+                100 * 1000000,
                 mintAccount.getAddress().toHex()
             )
         )

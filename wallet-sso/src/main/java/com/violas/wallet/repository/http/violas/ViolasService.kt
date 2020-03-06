@@ -128,7 +128,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
                 .subscribeOn(Schedulers.io())
                 .subscribe({
-                    if (it.errorCode == it.getSuccessCode()) {
+                    if (it.getErrorCode() == it.getSuccessCode()) {
                         call.invoke(true)
                     } else {
                         call.invoke(false)

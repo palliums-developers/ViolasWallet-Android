@@ -8,7 +8,7 @@ class SendApplySSOHandle(
     private val layerWallet: Long,
     private val mintTokenAddress: String,
     private val SSOApplyWalletAddress: String,
-    private val pass: Boolean = false
+    private val pass: Boolean = true
 ) : ApplyHandle() {
     override fun handler(): Boolean {
         return runBlocking {
@@ -21,7 +21,7 @@ class SendApplySSOHandle(
                         SSOApplyWalletAddress,
                         layerWallet
                     )
-                if (!pass) {
+                if (pass) {
                     getServiceProvider()?.getApplySsoRecordDao()?.updateRecordStatus(
                         accountAddress,
                         layerWallet,

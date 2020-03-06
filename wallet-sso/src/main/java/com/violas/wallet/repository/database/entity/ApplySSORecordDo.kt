@@ -24,6 +24,8 @@ data class ApplySSORecordDo(
     var walletAddress: String = "",
     @ColumnInfo(name = "token_address")
     var tokenAddress: String = "",
+    @ColumnInfo(name = "sso_wallet_address")
+    var ssoWalletAddress: String?,
     @SSOApplyTokenStatus
     @ColumnInfo(name = "status")
     var status: Int = 0
@@ -34,6 +36,7 @@ data class ApplySSORecordDo(
         parcel.readLong(),
         parcel.readString()!!,
         parcel.readString()!!,
+        parcel.readString()?:"",
         parcel.readInt()
     )
 
@@ -58,6 +61,7 @@ data class ApplySSORecordDo(
         parcel.writeLong(childNumber)
         parcel.writeString(walletAddress)
         parcel.writeString(tokenAddress)
+        parcel.writeString(ssoWalletAddress)
         parcel.writeInt(status)
     }
 
