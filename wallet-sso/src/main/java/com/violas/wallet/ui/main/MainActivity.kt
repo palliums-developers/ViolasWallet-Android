@@ -84,13 +84,13 @@ class MainActivity : BaseAppActivity() {
             loadWallet()
             when (mWalletType) {
                 WalletType.SSO -> {
-                    viewPagerAdapter?.replaceFragment(1, mApplyForSSOFragment)
+                    viewPagerAdapter?.replaceFragment(1, ApplyForSSOFragment())
                 }
                 WalletType.Governor -> {
-                    viewPagerAdapter?.replaceFragment(1, mApplyMessageFragment)
+                    viewPagerAdapter?.replaceFragment(1, ApplyMessageFragment())
                 }
                 else -> {
-                    viewPagerAdapter?.replaceFragment(1, mApplyForSSOFragment)
+                    viewPagerAdapter?.replaceFragment(1, ApplyForSSOFragment())
                 }
             }
             withContext(Dispatchers.Main) {
@@ -117,13 +117,13 @@ class MainActivity : BaseAppActivity() {
         viewPagerAdapter?.addFragment(WalletFragment())
         when (mWalletType) {
             WalletType.SSO -> {
-                viewPagerAdapter?.addFragment(mApplyForSSOFragment)
+                viewPagerAdapter?.addFragment(ApplyForSSOFragment())
             }
             WalletType.Governor -> {
-                viewPagerAdapter?.addFragment(mApplyMessageFragment)
+                viewPagerAdapter?.addFragment(ApplyMessageFragment())
             }
             else -> {
-                viewPagerAdapter?.addFragment(mApplyForSSOFragment)
+                viewPagerAdapter?.addFragment(ApplyForSSOFragment())
             }
         }
         viewPagerAdapter?.addFragment(MeFragment())
