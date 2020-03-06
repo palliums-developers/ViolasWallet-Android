@@ -27,6 +27,7 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
     val mAccountLD = MutableLiveData<AccountDO>()
     val mChangedSSOApplicationMsgLD = MediatorLiveData<SSOApplicationMsgDO>()
 
+    private var mLastObservedMsgApplicationId: String? = null
     private var mLastChangedSSOApplicationMsgLD: LiveData<SSOApplicationMsgDO?>? = null
 
     private val mGovernorService by lazy {
@@ -44,22 +45,27 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
     }
 
     fun observeChangedSSOApplicationMsg(observedMsg: SSOApplicationMsgVO) {
-        if (mLastChangedSSOApplicationMsgLD?.value?.applicationId == observedMsg.applicationId) {
-            return
-        }
+        synchronized(this) {
+            if (mLastObservedMsgApplicationId == observedMsg.applicationId) {
+                return
+            }
 
-        mLastChangedSSOApplicationMsgLD?.let {
-            mChangedSSOApplicationMsgLD.removeSource(it)
-        }
+            mLastChangedSSOApplicationMsgLD?.let {
+                mChangedSSOApplicationMsgLD.removeSource(it)
+            }
+            mLastObservedMsgApplicationId = null
+            mLastChangedSSOApplicationMsgLD = null
 
-        mAccountLD.value?.let { account ->
-            val msgLD =
-                mSSOApplicationMsgStorage.loadLiveDataMsgFromApplicationId(
-                    account.id, observedMsg.applicationId
-                ).getDistinct()
-            mLastChangedSSOApplicationMsgLD = msgLD
-            mChangedSSOApplicationMsgLD.addSource(msgLD) { msg ->
-                msg?.let { mChangedSSOApplicationMsgLD.value = it }
+            mAccountLD.value?.let { account ->
+                val msgLD =
+                    mSSOApplicationMsgStorage.loadLiveDataMsgFromApplicationId(
+                        account.id, observedMsg.applicationId
+                    ).getDistinct()
+                mChangedSSOApplicationMsgLD.addSource(msgLD) { msg ->
+                    msg?.let { mChangedSSOApplicationMsgLD.value = it }
+                }
+                mLastObservedMsgApplicationId = observedMsg.applicationId
+                mLastChangedSSOApplicationMsgLD = msgLD
             }
         }
     }
