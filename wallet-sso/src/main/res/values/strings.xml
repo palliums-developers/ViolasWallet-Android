@@ -331,8 +331,8 @@
     <string name="hint_input_txid">请填写TXID</string>
     <string name="title_apply_for_licence">申请州长牌照</string>
     <string name="action_oK_to_send">确定发送</string>
-    <string name="hint_sso_wallet">SSO 钱包</string>
-    <string name="hint_governor_wallet">州长钱包</string>
+    <string name="title_sso_wallet">SSO钱包</string>
+    <string name="title_governor_wallet">州长钱包</string>
     <string name="table_apply_message">消息</string>
     <string name="title_message">消息</string>
     <string name="label_governor_license">州长牌照</string>
@@ -370,4 +370,6 @@
     <string name="action_apply_for_licence">申请牌照</string>
     <string name="action_goto_apply_for_governor">进入申请页面</string>
     <string name="tips_apply_for_licence_fail">申请失败，请稍后重试</string>
+    <string name="state_not_pass">未通过</string>
+    <string name="state_approving">审核中</string>
 </resources>

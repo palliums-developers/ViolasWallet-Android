@@ -8,11 +8,10 @@ import com.palliums.net.LoadState
 import com.palliums.net.postTipsMessage
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.event.AuthenticationIDEvent
-import com.violas.wallet.event.BindEmailEvent
-import com.violas.wallet.event.BindPhoneEvent
+import com.violas.wallet.event.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.governor.GovernorInfoDTO
 import com.violas.wallet.repository.local.user.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -45,7 +44,8 @@ class UserViewModel : BaseViewModel() {
         private const val ACTION_INIT = 0x123
     }
 
-    private lateinit var currentAccount: AccountDO
+    val mCurrentAccountLD = MutableLiveData<AccountDO>()
+    val mGovernorInfoLD = MutableLiveData<GovernorInfoDTO>()
 
     private val ssoService by lazy {
         DataRepository.getSSOService()
@@ -68,6 +68,10 @@ class UserViewModel : BaseViewModel() {
 
     init {
         EventBus.getDefault().register(this)
+        viewModelScope.launch(Dispatchers.IO) {
+            val currentAccount = AccountManager().currentAccount()
+            mCurrentAccountLD.postValue(currentAccount)
+        }
     }
 
     override fun onCleared() {
@@ -127,6 +131,20 @@ class UserViewModel : BaseViewModel() {
         synchronized(lock) {
             return allReadyLiveData
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    fun onSwitchAccountEvent(event: SwitchAccountEvent) {
+        viewModelScope.launch(Dispatchers.IO) {
+            initFlag.set(false)
+            val currentAccount = AccountManager().currentAccount()
+            mCurrentAccountLD.postValue(currentAccount)
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    fun onUpdateGovernorInfoEvent(event: UpdateGovernorInfoEvent) {
+        mGovernorInfoLD.postValue(event.governorInfo)
     }
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
@@ -223,8 +241,6 @@ class UserViewModel : BaseViewModel() {
                 }
                 phoneInfoLiveData.postValue(Pair(phoneInfo, infoLoadState))
 
-                currentAccount = AccountManager().currentAccount()
-
                 if (allReady) {
                     allReadyLiveData.postValueSupport(true)
                     loadState.postValueSupport(LoadState.SUCCESS)
@@ -263,7 +279,7 @@ class UserViewModel : BaseViewModel() {
         delay(500)
 
         // 从服务器获取用户信息
-        val walletAddress = currentAccount.address
+        val walletAddress = mCurrentAccountLD.value!!.address
         val userInfoDTO = try {
             ssoService.loadUserInfo(walletAddress).data
         } catch (e: Exception) {

@@ -65,8 +65,8 @@ class ApplyMessageFragment : BaseFragment() {
         return R.layout.fragment_apply_message
     }
 
-    override fun onLazyInitView(savedInstanceState: Bundle?) {
-        super.onLazyInitView(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         initView()
         observeSSOMsgList()
@@ -93,8 +93,6 @@ class ApplyMessageFragment : BaseFragment() {
     }
 
     private fun initView() {
-        setStatusBarMode(true)
-
         dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
 
         srlRefreshLayout.isEnabled = false
@@ -111,7 +109,7 @@ class ApplyMessageFragment : BaseFragment() {
     }
 
     private fun observeAccount() {
-        mViewModel.mAccountLD.observe(this, Observer {
+        mViewModel.mAccountLD.observe(viewLifecycleOwner, Observer {
             loadGovernorApplicationProgress(true)
         })
     }
@@ -306,7 +304,7 @@ class ApplyMessageFragment : BaseFragment() {
     }
 
     private fun observeSSOMsgList() {
-        mViewModel.pagedList.observe(this, Observer {
+        mViewModel.pagedList.observe(viewLifecycleOwner, Observer {
             if (mUpdateSSOMsgDataFlag) {
                 mSSOMsgViewAdapter.submitList(it)
             } else {
@@ -316,7 +314,7 @@ class ApplyMessageFragment : BaseFragment() {
     }
 
     private fun observeLoadStateAndTipsMsg() {
-        mViewModel.refreshState.observe(this, Observer {
+        mViewModel.refreshState.observe(viewLifecycleOwner, Observer {
             when (it.peekData().status) {
                 LoadState.Status.SUCCESS,
                 LoadState.Status.SUCCESS_NO_MORE -> {
@@ -385,11 +383,11 @@ class ApplyMessageFragment : BaseFragment() {
             }
         })
 
-        mViewModel.loadMoreState.observe(this, Observer {
+        mViewModel.loadMoreState.observe(viewLifecycleOwner, Observer {
             mSSOMsgViewAdapter.setLoadMoreState(it.peekData())
         })
 
-        mViewModel.pagingTipsMessage.observe(this, Observer {
+        mViewModel.pagingTipsMessage.observe(viewLifecycleOwner, Observer {
             it.getDataIfNotHandled()?.let { msg ->
                 if (msg.isNotEmpty()) {
                     showToast(msg)
@@ -397,7 +395,7 @@ class ApplyMessageFragment : BaseFragment() {
             }
         })
 
-        mViewModel.mTipsMessageLD.observe(this, Observer {
+        mViewModel.mTipsMessageLD.observe(viewLifecycleOwner, Observer {
             it.getDataIfNotHandled()?.let { msg ->
                 if (msg.isNotEmpty()) {
                     showToast(msg)
@@ -421,7 +419,7 @@ class ApplyMessageFragment : BaseFragment() {
     }
 
     private fun observeChangedSSOApplicationMsg() {
-        mViewModel.mChangedSSOApplicationMsgLD.observe(this, Observer { changedMsg ->
+        mViewModel.mChangedSSOApplicationMsgLD.observe(viewLifecycleOwner, Observer { changedMsg ->
             launch(Dispatchers.Main) {
                 val needRefreshMsgPosition = withContext(Dispatchers.IO) {
                     val msgList = mSSOMsgViewAdapter.currentList

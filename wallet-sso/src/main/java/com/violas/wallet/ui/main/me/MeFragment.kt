@@ -12,6 +12,9 @@ import com.palliums.utils.getColor
 import com.palliums.utils.isNetworkConnected
 import com.palliums.widget.MenuItemView
 import com.violas.wallet.R
+import com.violas.wallet.biz.WalletType
+import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.governor.GovernorInfoDTO
 import com.violas.wallet.repository.local.user.AccountBindingStatus
 import com.violas.wallet.repository.local.user.IDAuthenticationStatus
 import com.violas.wallet.ui.addressBook.AddressBookActivity
@@ -47,8 +50,8 @@ class MeFragment : BaseFragment() {
         setStatusBarMode(false)
     }
 
-    override fun onLazyInitView(savedInstanceState: Bundle?) {
-        super.onLazyInitView(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         mivIDAuthentication.setOnClickListener(this)
         mivPhoneVerification.setOnClickListener(this)
@@ -56,23 +59,37 @@ class MeFragment : BaseFragment() {
         mivAddressBook.setOnClickListener(this)
         mivSettings.setOnClickListener(this)
 
-        /*
-         * 因为申请发行首页与我的首页共用UserViewModel，当先进入申请发行首页时，用户信息会开始同步，
-         * 当再切换进入我的首页时，若用户信息已同步结束，此时先添加对UserViewModel的LiveData观察
-         * 时，会立即返回相应结果，若用户信息同步失败会立即更新我的页面。此时应该判断UserViewModel
-         * 是否已初始化，若已初始化则判断是否重新同步用户信息
-         */
-        if (!mViewModel.init()) {
-            val loadState = mViewModel.loadState.value?.peekData()
-            if (loadState != null
-                && loadState.status == LoadState.Status.FAILURE
-                && isNetworkConnected()
-            ) {
-                mViewModel.execute(checkNetworkBeforeExecute = false)
+        mViewModel.mCurrentAccountLD.observe(viewLifecycleOwner, Observer {
+            if (it.walletType == WalletType.Governor.type) {
+                tvWalletTypeName.setText(R.string.title_governor_wallet)
+                showGovernorHeaderView(it, mViewModel.mGovernorInfoLD.value)
+            } else {
+                tvWalletTypeName.setText(R.string.title_sso_wallet)
+                showSSOHeaderView()
             }
-        }
 
-        mViewModel.tipsMessage.observe(this, Observer {
+            /*
+             * 因为申请发行首页与我的首页共用UserViewModel，当先进入申请发行首页时，用户信息会开始同步，
+             * 当再切换进入我的首页时，若用户信息已同步结束，此时先添加对UserViewModel的LiveData观察
+             * 时，会立即返回相应结果，若用户信息同步失败会立即更新我的页面。此时应该判断UserViewModel
+             * 是否已初始化，若已初始化则判断是否重新同步用户信息
+             */
+            if (!mViewModel.init()) {
+                val loadState = mViewModel.loadState.value?.peekData()
+                if (loadState != null
+                    && loadState.status == LoadState.Status.FAILURE
+                    && isNetworkConnected()
+                ) {
+                    mViewModel.execute(checkNetworkBeforeExecute = false)
+                }
+            }
+        })
+
+        mViewModel.mGovernorInfoLD.observe(viewLifecycleOwner, Observer {
+            showGovernorHeaderView(mViewModel.mCurrentAccountLD.value, it)
+        })
+
+        mViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
             it.getDataIfNotHandled()?.let { msg ->
                 if (msg.isNotEmpty()) {
                     showToast(msg)
@@ -80,7 +97,7 @@ class MeFragment : BaseFragment() {
             }
         })
 
-        mViewModel.getIdInfoLiveData().observe(this, Observer {
+        mViewModel.getIdInfoLiveData().observe(viewLifecycleOwner, Observer {
             when (it.first.idAuthenticationStatus) {
                 IDAuthenticationStatus.UNKNOWN -> {
                     mivIDAuthentication.showEndArrow(false)
@@ -103,7 +120,7 @@ class MeFragment : BaseFragment() {
             handleLoadState(pbIDAuthenticationLoading, it.second, mivIDAuthentication)
         })
 
-        mViewModel.getPhoneInfoLiveData().observe(this, Observer {
+        mViewModel.getPhoneInfoLiveData().observe(viewLifecycleOwner, Observer {
             when (it.first.accountBindingStatus) {
                 AccountBindingStatus.UNKNOWN -> {
                     mivPhoneVerification.showEndArrow(false)
@@ -126,7 +143,7 @@ class MeFragment : BaseFragment() {
             handleLoadState(pbPhoneVerificationLoading, it.second, mivPhoneVerification)
         })
 
-        mViewModel.getEmailInfoLiveData().observe(this, Observer {
+        mViewModel.getEmailInfoLiveData().observe(viewLifecycleOwner, Observer {
             when (it.first.accountBindingStatus) {
                 AccountBindingStatus.UNKNOWN -> {
                     mivEmailVerification.showEndArrow(false)
@@ -172,6 +189,47 @@ class MeFragment : BaseFragment() {
                 progressBar.visibility = View.GONE
             }
         }
+    }
+
+    private fun showGovernorHeaderView(account: AccountDO?, governorInfo: GovernorInfoDTO?) {
+        if (account == null
+            || governorInfo == null
+            || account.address != governorInfo.walletAddress
+        ) {
+            return
+        }
+
+        when (governorInfo.applicationStatus) {
+            -1, 2 -> { // -1: no application; 2: not pass
+                tvNickname.setText(R.string.state_not_pass)
+                tvNickname.setTextColor(getColor(R.color.def_text_warn))
+                tvNickname.visibility = View.VISIBLE
+                nivAvatar.visibility = View.GONE
+            }
+
+            0, 1, 3 -> {  // 0: not approved; 1: pass; 3: published
+                tvNickname.setText(R.string.state_approving)
+                tvNickname.setTextColor(getColor(R.color.def_text_warn))
+                tvNickname.visibility = View.VISIBLE
+                nivAvatar.visibility = View.GONE
+            }
+
+            else -> { // 4: minted
+                tvNickname.text = account.walletNickname
+                tvNickname.setTextColor(getColor(R.color.white))
+                tvNickname.visibility = View.VISIBLE
+                nivAvatar.setImageResource(R.drawable.ic_governor_default)
+                nivAvatar.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun showSSOHeaderView() {
+        tvNickname.text = "SSO"
+        tvNickname.setTextColor(getColor(R.color.white))
+        tvNickname.visibility = View.VISIBLE
+        nivAvatar.setImageResource(R.drawable.ic_logo)
+        nivAvatar.visibility = View.VISIBLE
     }
 
     override fun onViewClick(view: View) {

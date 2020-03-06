@@ -360,10 +360,10 @@ class WalletFragment : BaseFragment() {
             withContext(Dispatchers.Main) {
                 when (currentAccount.walletType) {
                     WalletType.SSO.type -> {
-                        tvWalletType.setText(R.string.hint_sso_wallet)
+                        tvWalletType.setText(R.string.title_sso_wallet)
                     }
                     WalletType.Governor.type -> {
-                        tvWalletType.setText(R.string.hint_governor_wallet)
+                        tvWalletType.setText(R.string.title_governor_wallet)
                     }
                 }
             }

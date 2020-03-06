@@ -15,16 +15,17 @@ import com.palliums.violas.http.Response
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.event.UpdateGovernorInfoEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.SSOApplicationMsgDO
 import com.violas.wallet.repository.http.governor.GovernorInfoDTO
 import com.violas.wallet.repository.http.governor.SSOApplicationMsgDTO
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 import org.palliums.violascore.wallet.Account
 
 class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
@@ -119,6 +120,17 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
                         }
                     }
                     // test code =========> end
+
+                    // 发送更新州长信息事件
+                    val event = UpdateGovernorInfoEvent(
+                        response.data ?: GovernorInfoDTO(
+                            walletAddress = mAccountLD.value!!.address,
+                            name = mAccountLD.value!!.walletNickname,
+                            applicationStatus = -1,
+                            subAccountCount = 1
+                        )
+                    )
+                    EventBus.getDefault().post(event)
 
                     return@withContext response.data?.applicationStatus ?: -1
                 }
