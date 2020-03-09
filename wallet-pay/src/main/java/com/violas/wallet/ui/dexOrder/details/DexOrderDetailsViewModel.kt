@@ -4,7 +4,7 @@ import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.ContextProvider
 import com.palliums.net.LoadState
-import com.palliums.net.postTipsMessage
+import com.palliums.net.getErrorTipsMsg
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getString
 import com.violas.wallet.R
@@ -100,7 +100,7 @@ class DexOrderDetailsViewModel(
 
                 synchronized(lock) {
                     loadState.postValueSupport(LoadState.failure(e))
-                    postTipsMessage(tipsMessage, e)
+                    tipsMessage.postValueSupport(e.getErrorTipsMsg())
                 }
             }
         }

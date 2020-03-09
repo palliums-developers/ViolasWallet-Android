@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.applyForLicence
+package com.violas.wallet.ui.signUpGovernor
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
  * <p>
  * desc:
  */
-class ApplyForLicenceViewModel : BaseViewModel() {
+class SignUpGovernorViewModel : BaseViewModel() {
 
     val mAccountLD = MutableLiveData<AccountDO>()
     private val mGovernorManager by lazy { GovernorManager() }

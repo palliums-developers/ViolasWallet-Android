@@ -1,6 +1,5 @@
 package com.palliums.net
 
-import androidx.lifecycle.EnhancedMutableLiveData
 import com.palliums.BuildConfig
 import com.palliums.R
 import com.palliums.utils.getString
@@ -13,24 +12,23 @@ import java.util.*
  * desc:
  */
 
-fun postTipsMessage(liveData: EnhancedMutableLiveData<String>, exception: Throwable) {
-    val tipsMsg = when {
-        exception is RequestException -> {
-            exception.errorMsg
+fun Throwable.getErrorTipsMsg(): String {
+    return when {
+        this is RequestException -> {
+            this.errorMsg
         }
         BuildConfig.DEBUG -> {
             String.format(
                 Locale.ENGLISH,
                 "%s\n%s",
                 getString(R.string.common_load_fail),
-                exception.toString()
+                this.toString()
             )
         }
         else -> {
             getString(R.string.common_load_fail)
         }
     }
-    liveData.postValueSupport(tipsMsg)
 }
 
 @Throws(RequestException::class)

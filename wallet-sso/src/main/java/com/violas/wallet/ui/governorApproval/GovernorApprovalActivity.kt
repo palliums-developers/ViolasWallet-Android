@@ -218,8 +218,7 @@ class GovernorApprovalActivity : BaseAppActivity() {
                             R.string.tips_governor_approval_not_pass_success
                         ,
                         mSSOApplicationMsgVO.applicantIdName
-                    ),
-                    Toast.LENGTH_LONG
+                    )
                 )
                 close()
             }

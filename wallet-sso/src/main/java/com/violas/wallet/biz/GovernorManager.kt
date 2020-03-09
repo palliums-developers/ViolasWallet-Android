@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.palliums.violascore.wallet.Account
+import java.util.concurrent.CountDownLatch
 
 /**
  * Created by elephant on 2020/3/9 11:13.
@@ -38,7 +39,7 @@ class GovernorManager {
         DataRepository.getSSOApplicationMsgStorage()
     }
 
-    private var nextMockGovernorApplicationStatus = -1
+    private var mNextMockGovernorApplicationStatus = -1
 
     /**
      * 注册州长
@@ -75,12 +76,12 @@ class GovernorManager {
             response.data = GovernorInfoDTO(
                 walletAddress = accountDO.address,
                 name = accountDO.walletNickname,
-                applicationStatus = nextMockGovernorApplicationStatus,
+                applicationStatus = mNextMockGovernorApplicationStatus,
                 subAccountCount = 1
             )
-            nextMockGovernorApplicationStatus++
-            if (nextMockGovernorApplicationStatus == 5) {
-                nextMockGovernorApplicationStatus = -1
+            mNextMockGovernorApplicationStatus++
+            if (mNextMockGovernorApplicationStatus == 5) {
+                mNextMockGovernorApplicationStatus = -1
             }
         }
         // test code =========> end
@@ -111,12 +112,15 @@ class GovernorManager {
         }
 
         var result = false
+        val countDownLatch = CountDownLatch(1)
         DataRepository.getViolasService()
             .publishToken(context, account, vStakeAddress) {
                 result = it
+                countDownLatch.countDown()
             }
+        countDownLatch.await()
 
-        if (!result) {
+        if (!result && !BuildConfig.MOCK_GOVERNOR_DATA) {
             throw if (!isNetworkConnected())
                 RequestException.networkUnavailable()
             else

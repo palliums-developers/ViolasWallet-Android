@@ -260,6 +260,7 @@
                         android:gravity="center"
                         android:padding="@dimen/dp_18"
                         android:text="@string/action_approval_not_pass"
+                        android:textAllCaps="true"
                         android:textColor="@color/selector_text_gray"
                         android:textSize="@dimen/sp_16" />
 

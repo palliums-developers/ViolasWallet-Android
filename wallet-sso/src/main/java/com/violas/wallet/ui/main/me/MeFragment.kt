@@ -37,6 +37,8 @@ class MeFragment : BaseFragment() {
         private const val REQUEST_CODE_AUTHENTICATION_ID = 0x33
     }
 
+    private var mShowedApplyForLicenceDialogFlag = false
+
     private val mViewModel by lazy {
         requireActivity().provideUserViewModel()
     }
@@ -48,6 +50,10 @@ class MeFragment : BaseFragment() {
     override fun onSupportVisible() {
         super.onSupportVisible()
         setStatusBarMode(false)
+        showApplyForLicenceDialog(
+            mViewModel.mCurrentAccountLD.value,
+            mViewModel.mGovernorInfoLD.value
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,6 +69,7 @@ class MeFragment : BaseFragment() {
             if (it.walletType == WalletType.Governor.type) {
                 tvWalletTypeName.setText(R.string.title_governor_wallet)
                 showGovernorHeaderView(it, mViewModel.mGovernorInfoLD.value)
+                showApplyForLicenceDialog(it, mViewModel.mGovernorInfoLD.value)
             } else {
                 tvWalletTypeName.setText(R.string.title_sso_wallet)
                 showSSOHeaderView()
@@ -87,6 +94,7 @@ class MeFragment : BaseFragment() {
 
         mViewModel.mGovernorInfoLD.observe(viewLifecycleOwner, Observer {
             showGovernorHeaderView(mViewModel.mCurrentAccountLD.value, it)
+            showApplyForLicenceDialog(mViewModel.mCurrentAccountLD.value, it)
         })
 
         mViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
@@ -199,29 +207,42 @@ class MeFragment : BaseFragment() {
             return
         }
 
-        when (governorInfo.applicationStatus) {
-            -1, 2 -> { // -1: no application; 2: not pass
-                tvNickname.setText(R.string.state_not_pass)
-                tvNickname.setTextColor(getColor(R.color.def_text_warn))
-                tvNickname.visibility = View.VISIBLE
-                nivAvatar.visibility = View.GONE
-            }
-
-            0, 1, 3 -> {  // 0: not approved; 1: pass; 3: published
-                tvNickname.setText(R.string.state_approving)
-                tvNickname.setTextColor(getColor(R.color.def_text_warn))
-                tvNickname.visibility = View.VISIBLE
-                nivAvatar.visibility = View.GONE
-            }
-
-            else -> { // 4: minted
-                tvNickname.text = account.walletNickname
-                tvNickname.setTextColor(getColor(R.color.white))
-                tvNickname.visibility = View.VISIBLE
-                nivAvatar.setImageResource(R.drawable.ic_governor_default)
-                nivAvatar.visibility = View.VISIBLE
-            }
+        if (governorInfo.applicationStatus == 4) {
+            // 4: minted
+            tvNickname.text = account.walletNickname
+            tvNickname.setTextColor(getColor(R.color.white))
+            tvNickname.visibility = View.VISIBLE
+            nivAvatar.setImageResource(R.drawable.ic_governor_default)
+            nivAvatar.visibility = View.VISIBLE
+            return
         }
+
+        tvNickname.setTextColor(getColor(R.color.def_text_warn))
+        tvNickname.visibility = View.VISIBLE
+        nivAvatar.visibility = View.GONE
+        tvNickname.setText(
+            when (governorInfo.applicationStatus) {
+                0 -> {  // 0: not approved
+                    R.string.state_approving
+                }
+
+                1 -> {  // 1: pass
+                    R.string.state_approving
+                }
+
+                2 -> {  // 2: not pass
+                    R.string.state_not_pass
+                }
+
+                3 -> {  // 3: published
+                    R.string.desc_governor_application_published
+                }
+
+                else -> {  // -1: no application
+                    R.string.state_not_pass
+                }
+            }
+        )
     }
 
     private fun showSSOHeaderView() {
@@ -230,6 +251,21 @@ class MeFragment : BaseFragment() {
         tvNickname.visibility = View.VISIBLE
         nivAvatar.setImageResource(R.drawable.ic_logo)
         nivAvatar.visibility = View.VISIBLE
+    }
+
+    private fun showApplyForLicenceDialog(account: AccountDO?, governorInfo: GovernorInfoDTO?) {
+        if (account == null
+            || governorInfo == null
+            || governorInfo.applicationStatus != 1
+            || account.address != governorInfo.walletAddress
+            || mShowedApplyForLicenceDialogFlag
+            || !isSupportVisible
+        ) {
+            return
+        }
+
+        mShowedApplyForLicenceDialogFlag = true
+        ApplyForLicenceDialog().show()
     }
 
     override fun onViewClick(view: View) {

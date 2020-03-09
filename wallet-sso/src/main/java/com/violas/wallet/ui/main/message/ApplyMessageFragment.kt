@@ -15,7 +15,7 @@ import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshGovernorApplicationProgressEvent
-import com.violas.wallet.ui.applyForLicence.ApplyForLicenceActivity
+import com.violas.wallet.ui.signUpGovernor.SignUpGovernorActivity
 import com.violas.wallet.ui.governorApproval.GovernorApprovalActivity
 import com.violas.wallet.ui.governorMint.GovernorMintActivity
 import com.violas.wallet.widget.dialog.PasswordInputDialog
@@ -213,7 +213,7 @@ class ApplyMessageFragment : BaseFragment() {
                     || mViewModel.mGovernorApplicationStatus == 2
                 ) {
                     activity?.let {
-                        ApplyForLicenceActivity.start(it)
+                        SignUpGovernorActivity.start(it)
                     }
                 } else if (mViewModel.mGovernorApplicationStatus == 1) {
                     showPasswordInputDialog()
@@ -235,7 +235,7 @@ class ApplyMessageFragment : BaseFragment() {
             1 -> {  // 1: pass
                 mivGovernorLicenceStatus.setEndDescText(R.string.desc_governor_application_pass)
                 mivGovernorLicenceStatus.setEndDescTextColor(getColor(R.color.color_3C3848_80))
-                btnGovernorLicenceGoto.setText(R.string.action_apply_for_licence)
+                btnGovernorLicenceGoto.setText(R.string.action_apply_for_licence_now)
                 btnGovernorLicenceGoto.visibility = View.VISIBLE
             }
 

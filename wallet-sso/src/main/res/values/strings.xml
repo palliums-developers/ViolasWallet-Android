@@ -366,10 +366,13 @@
     <string name="desc_governor_application_not_approved">认证中</string>
     <string name="desc_governor_application_pass">未申请牌照</string>
     <string name="desc_governor_application_not_pass">未通过认证</string>
-    <string name="desc_governor_application_published">发放中</string>
-    <string name="action_apply_for_licence">申请牌照</string>
+    <string name="desc_governor_application_published">申请牌照中</string>
+    <string name="action_apply_for_licence_now">立即申请牌照</string>
     <string name="action_goto_apply_for_governor">进入申请页面</string>
     <string name="tips_apply_for_licence_fail">申请失败，请稍后重试</string>
     <string name="state_not_pass">未通过</string>
     <string name="state_approving">审核中</string>
+    <string name="title_governor_wallet_approved">州长钱包审核通过</string>
+    <string name="tips_sign_up_governor_success">州长申请已发出，请耐心等待</string>
+    <string name="tips_apply_for_licence_success">牌照申请已发出，请耐心等待</string>
 </resources>

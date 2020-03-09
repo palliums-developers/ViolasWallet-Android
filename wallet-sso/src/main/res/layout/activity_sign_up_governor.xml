@@ -86,7 +86,7 @@
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_8"
-        android:background="@drawable/shape_text_bg_apply_for_licence"
+        android:background="@drawable/shape_text_bg_sign_up_governor"
         android:ellipsize="middle"
         android:gravity="start|center_vertical"
         android:paddingStart="@dimen/dp_15"

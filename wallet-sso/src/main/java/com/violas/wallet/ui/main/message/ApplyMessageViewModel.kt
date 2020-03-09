@@ -2,8 +2,10 @@ package com.violas.wallet.ui.main.message
 
 import android.content.Context
 import androidx.lifecycle.*
-import com.palliums.net.postTipsMessage
+import com.palliums.net.getErrorTipsMsg
 import com.palliums.paging.PagingViewModel
+import com.palliums.utils.getString
+import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.GovernorManager
 import com.violas.wallet.event.UpdateGovernorInfoEvent
@@ -78,7 +80,7 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
                 successCallback?.invoke(mGovernorApplicationStatus)
             } catch (e: Exception) {
                 failureCallback?.invoke(e)
-                postTipsMessage(mTipsMessageLD, e)
+                mTipsMessageLD.postValueSupport(e.getErrorTipsMsg())
             }
         }
     }
@@ -94,9 +96,10 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
                 mGovernorManager.publishVStake(context, account)
 
                 successCallback?.invoke()
+                mTipsMessageLD.postValueSupport(getString(R.string.tips_apply_for_licence_success))
             } catch (e: Exception) {
                 failureCallback?.invoke(e)
-                postTipsMessage(mTipsMessageLD, e)
+                mTipsMessageLD.postValueSupport(e.getErrorTipsMsg())
             }
         }
     }

@@ -206,8 +206,7 @@ class GovernorMintActivity : BaseAppActivity() {
                     getString(
                         R.string.tips_governor_mint_token_success,
                         mSSOApplicationMsgVO.applicantIdName
-                    ),
-                    Toast.LENGTH_LONG
+                    )
                 )
                 close()
             }

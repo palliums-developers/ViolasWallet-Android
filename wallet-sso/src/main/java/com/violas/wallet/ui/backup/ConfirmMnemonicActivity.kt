@@ -10,7 +10,7 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.WalletType
 import com.violas.wallet.event.BackupMnemonicEvent
-import com.violas.wallet.ui.applyForLicence.ApplyForLicenceActivity
+import com.violas.wallet.ui.signUpGovernor.SignUpGovernorActivity
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_confirm_mnemonic.*
 import org.greenrobot.eventbus.EventBus
@@ -119,7 +119,7 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
                         }
                         BackupMnemonicFrom.CREATE_GOVERNOR_WALLET -> {
                             // 如果是来自创建州长钱包，完成后需要跳转到申请州长牌照页
-                            ApplyForLicenceActivity.start(this)
+                            SignUpGovernorActivity.start(this)
                             App.finishAllActivity()
                         }
                         else -> {

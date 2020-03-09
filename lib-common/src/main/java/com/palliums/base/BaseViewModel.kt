@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palliums.net.LoadState
 import com.palliums.net.RequestException
-import com.palliums.net.postTipsMessage
+import com.palliums.net.getErrorTipsMsg
 import com.palliums.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,7 +62,7 @@ abstract class BaseViewModel : ViewModel() {
 
                 val exception = RequestException.networkUnavailable()
                 loadState.postValueSupport(LoadState.failure(exception))
-                postTipsMessage(tipsMessage, exception)
+                tipsMessage.postValueSupport(exception.getErrorTipsMsg())
 
                 failureCallback?.invoke(exception)
                 return false
@@ -96,7 +96,7 @@ abstract class BaseViewModel : ViewModel() {
                     }
 
                     loadState.postValueSupport(LoadState.failure(e))
-                    postTipsMessage(tipsMessage, e)
+                    tipsMessage.postValueSupport(e.getErrorTipsMsg())
                 }
 
                 failureCallback?.invoke(e)

@@ -136,7 +136,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".ui.applyForLicence.ApplyForLicenceActivity"
+            android:name=".ui.signUpGovernor.SignUpGovernorActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.governorApproval.GovernorApprovalActivity"

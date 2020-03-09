@@ -8,7 +8,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.palliums.utils.start
 import com.violas.wallet.R
-import com.violas.wallet.ui.applyForLicence.ApplyForLicenceActivity
+import com.violas.wallet.ui.signUpGovernor.SignUpGovernorActivity
 import com.violas.wallet.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_backup_prompt.*
 
@@ -87,7 +87,7 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
 
             tvBackupLater -> {
                 if (mnemonicFrom == BackupMnemonicFrom.CREATE_GOVERNOR_WALLET) {
-                    ApplyForLicenceActivity.start(this)
+                    SignUpGovernorActivity.start(this)
                 } else {
                     MainActivity.start(this)
                 }

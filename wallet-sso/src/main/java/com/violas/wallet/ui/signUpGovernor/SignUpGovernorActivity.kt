@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.applyForLicence
+package com.violas.wallet.ui.signUpGovernor
 
 import android.content.Context
 import android.content.Intent
@@ -12,29 +12,29 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
 import com.violas.wallet.event.RefreshGovernorApplicationProgressEvent
 import com.violas.wallet.ui.main.MainActivity
-import kotlinx.android.synthetic.main.activity_apply_for_licence.*
+import kotlinx.android.synthetic.main.activity_sign_up_governor.*
 import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 2020/2/26 14:53.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 申请州长牌照页面
+ * desc: 注册州长页面
  */
-class ApplyForLicenceActivity : BaseViewModelActivity() {
+class SignUpGovernorActivity : BaseViewModelActivity() {
 
     companion object {
         fun start(context: Context) {
-            context.startActivity(Intent(context, ApplyForLicenceActivity::class.java))
+            context.startActivity(Intent(context, SignUpGovernorActivity::class.java))
         }
     }
 
     private val mViewModel by lazy {
-        ViewModelProvider(this).get(ApplyForLicenceViewModel::class.java)
+        ViewModelProvider(this).get(SignUpGovernorViewModel::class.java)
     }
 
     override fun getLayoutResId(): Int {
-        return R.layout.activity_apply_for_licence
+        return R.layout.activity_sign_up_governor
     }
 
     override fun getPageStyle(): Int {
@@ -70,6 +70,7 @@ class ApplyForLicenceActivity : BaseViewModelActivity() {
         when (view.id) {
             R.id.btnOkToSend -> {
                 mViewModel.execute(etTxid.text.toString().trim()) {
+                    showToast(R.string.tips_sign_up_governor_success)
                     handleBackAndComplete(true)
                 }
             }
