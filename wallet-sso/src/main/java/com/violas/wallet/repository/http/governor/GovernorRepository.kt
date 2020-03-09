@@ -16,7 +16,10 @@ class GovernorRepository(private val api: GovernorApi) {
      * 注册州长
      */
     suspend fun signUpGovernor(
-        walletAddress: String, name: String, txid: String, toxid: String = ""
+        walletAddress: String,
+        name: String,
+        txid: String,
+        toxid: String = ""
     ) =
         checkResponse {
             val requestBody = """{
@@ -31,7 +34,9 @@ class GovernorRepository(private val api: GovernorApi) {
     /**
      * 获取州长信息
      */
-    suspend fun getGovernorInfo(walletAddress: String) =
+    suspend fun getGovernorInfo(
+        walletAddress: String
+    ) =
         checkResponse(2011) {
             api.getGovernorInfo(walletAddress)
         }
@@ -39,7 +44,10 @@ class GovernorRepository(private val api: GovernorApi) {
     /**
      * 更新子账户个数
      */
-    suspend fun updateSubAccountCount(walletAddress: String, subAccountCount: Long) =
+    suspend fun updateSubAccountCount(
+        walletAddress: String,
+        subAccountCount: Long
+    ) =
         checkResponse {
             val requestBody = """{
     "wallet_address":"$walletAddress",
@@ -51,7 +59,10 @@ class GovernorRepository(private val api: GovernorApi) {
     /**
      * 更新州长名称
      */
-    suspend fun updateGovernorName(walletAddress: String, name: String) =
+    suspend fun updateGovernorName(
+        walletAddress: String,
+        name: String
+    ) =
         checkResponse {
             val requestBody = """{
     "wallet_address":"$walletAddress",
@@ -81,7 +92,9 @@ class GovernorRepository(private val api: GovernorApi) {
     /**
      * 获取SSO申请详情
      */
-    suspend fun getSSOApplicationDetails(ssoApplicationId: String) =
+    suspend fun getSSOApplicationDetails(
+        ssoApplicationId: String
+    ) =
         checkResponse {
             api.getSSOApplicationDetails(ssoApplicationId)
         }
@@ -90,7 +103,10 @@ class GovernorRepository(private val api: GovernorApi) {
      * 审批SSO申请
      */
     suspend fun approvalSSOApplication(
-        pass: Boolean, newTokenAddress: String, ssoWalletAddress: String, walletLayersNumber: Long
+        pass: Boolean,
+        newTokenAddress: String,
+        ssoWalletAddress: String,
+        walletLayersNumber: Long
     ) =
         checkResponse {
             val requestBody = """{
@@ -105,7 +121,9 @@ class GovernorRepository(private val api: GovernorApi) {
     /**
      * 改变SSO申请状态为已铸币
      */
-    suspend fun changeSSOApplicationToMinted(ssoWalletAddress: String) =
+    suspend fun changeSSOApplicationToMinted(
+        ssoWalletAddress: String
+    ) =
         checkResponse {
             val requestBody = """{
     "wallet_address":"$ssoWalletAddress"

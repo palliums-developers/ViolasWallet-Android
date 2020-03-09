@@ -40,17 +40,17 @@ class GovernorApprovalActivity : BaseAppActivity() {
 
     companion object {
 
-        fun start(context: Context, msg: SSOApplicationMsgVO) {
+        fun start(context: Context, msgVO: SSOApplicationMsgVO) {
             Intent(context, GovernorApprovalActivity::class.java)
-                .apply { putExtra(EXTRA_KEY_SSO_MSG, msg) }
+                .apply { putExtra(EXTRA_KEY_SSO_MSG, msgVO) }
                 .start(context)
         }
     }
 
-    private lateinit var mSSOApplicationMsg: SSOApplicationMsgVO
+    private lateinit var mSSOApplicationMsgVO: SSOApplicationMsgVO
 
     private val mViewModel by lazy {
-        ViewModelProvider(this, GovernorApprovalViewModelFactory(mSSOApplicationMsg))
+        ViewModelProvider(this, GovernorApprovalViewModelFactory(mSSOApplicationMsgVO))
             .get(GovernorApprovalViewModel::class.java)
     }
 
@@ -70,27 +70,28 @@ class GovernorApprovalActivity : BaseAppActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(EXTRA_KEY_SSO_MSG, mSSOApplicationMsg)
+        outState.putParcelable(EXTRA_KEY_SSO_MSG, mSSOApplicationMsgVO)
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
-        var msg: SSOApplicationMsgVO? = null
+        var msgVO: SSOApplicationMsgVO? = null
         if (savedInstanceState != null) {
-            msg = savedInstanceState.getParcelable(EXTRA_KEY_SSO_MSG)
+            msgVO = savedInstanceState.getParcelable(EXTRA_KEY_SSO_MSG)
         } else if (intent != null) {
-            msg = intent.getParcelableExtra(EXTRA_KEY_SSO_MSG)
+            msgVO = intent.getParcelableExtra(EXTRA_KEY_SSO_MSG)
         }
 
-        if (msg == null) {
+        if (msgVO == null) {
             return false
         }
 
-        mSSOApplicationMsg = msg
+        mSSOApplicationMsgVO = msgVO
         return true
     }
 
     private fun initView() {
-        title = getString(R.string.title_sso_msg_issuing_token, mSSOApplicationMsg.applicantIdName)
+        title =
+            getString(R.string.title_sso_msg_issuing_token, mSSOApplicationMsgVO.applicantIdName)
 
         dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         srlRefreshLayout.isEnabled = false
@@ -216,7 +217,7 @@ class GovernorApprovalActivity : BaseAppActivity() {
                         else
                             R.string.tips_governor_approval_not_pass_success
                         ,
-                        mSSOApplicationMsg.applicantIdName
+                        mSSOApplicationMsgVO.applicantIdName
                     ),
                     Toast.LENGTH_LONG
                 )

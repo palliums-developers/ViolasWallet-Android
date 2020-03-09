@@ -27,7 +27,7 @@ interface SSOApplicationMsgDao : BaseDao<SSOApplicationMsgDO> {
     ): SSOApplicationMsgDO?
 
     @Query("SELECT * FROM ${SSOApplicationMsgDO.TABLE_NAME} WHERE account_id = :accountId AND application_id = :applicationId")
-    fun loadLiveDataMsgFromApplicationId(
+    fun loadMsgLiveDataFromApplicationId(
         accountId: Long,
         applicationId: String
     ): LiveData<SSOApplicationMsgDO?>

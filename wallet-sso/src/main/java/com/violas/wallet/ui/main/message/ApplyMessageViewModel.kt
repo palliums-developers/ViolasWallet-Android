@@ -2,29 +2,15 @@ package com.violas.wallet.ui.main.message
 
 import android.content.Context
 import androidx.lifecycle.*
-import com.palliums.net.RequestException
-import com.palliums.net.RequestException.Companion.ERROR_CODE_UNKNOWN_ERROR
 import com.palliums.net.postTipsMessage
 import com.palliums.paging.PagingViewModel
-import com.palliums.utils.getDistinct
-import com.palliums.utils.getString
-import com.palliums.utils.isNetworkConnected
-import com.palliums.utils.toMap
-import com.palliums.violas.http.ListResponse
-import com.palliums.violas.http.Response
-import com.violas.wallet.BuildConfig
-import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.GovernorManager
 import com.violas.wallet.event.UpdateGovernorInfoEvent
-import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.SSOApplicationMsgDO
-import com.violas.wallet.repository.http.governor.GovernorInfoDTO
-import com.violas.wallet.repository.http.governor.SSOApplicationMsgDTO
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.palliums.violascore.wallet.Account
 
@@ -40,13 +26,7 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
 
     private var mLastObservedMsgApplicationId: String? = null
     private var mLastChangedSSOApplicationMsgLD: LiveData<SSOApplicationMsgDO?>? = null
-
-    private val mGovernorService by lazy {
-        DataRepository.getGovernorService()
-    }
-    private val mSSOApplicationMsgStorage by lazy {
-        DataRepository.getSSOApplicationMsgStorage()
-    }
+    private val mGovernorManager by lazy { GovernorManager() }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -69,9 +49,10 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
 
             mAccountLD.value?.let { account ->
                 val msgLD =
-                    mSSOApplicationMsgStorage.loadLiveDataMsgFromApplicationId(
-                        account.id, observedMsg.applicationId
-                    ).getDistinct()
+                    mGovernorManager.getSSOApplicationMsgLiveData(
+                        account.id,
+                        observedMsg.applicationId
+                    )
                 mChangedSSOApplicationMsgLD.addSource(msgLD) { msg ->
                     msg?.let { mChangedSSOApplicationMsgLD.value = it }
                 }
@@ -81,62 +62,38 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
         }
     }
 
-    // TODO delete test code
-    // test code =========> start
-    private var nextMockGovernorApplicationStatus = -1
-    // test code =========> end
-
     fun loadGovernorApplicationProgress(
         failureCallback: ((error: Throwable) -> Unit)? = null,
         successCallback: ((applicationStatus: Int) -> Unit)? = null
     ) {
         viewModelScope.launch(Dispatchers.Main) {
             try {
-                val applicationStatus = withContext(Dispatchers.IO) {
-                    val response =
-                        // test code =========> start
-                        try {
-                            mGovernorService.getGovernorInfo(mAccountLD.value!!.address)
-                        } catch (e: Exception) {
-                            if (BuildConfig.MOCK_GOVERNOR_DATA) {
-                                Response<GovernorInfoDTO>()
-                            } else {
-                                throw e
-                            }
-                        }
-                    // test code =========> end
+                val governorInfo =
+                    mGovernorManager.getGovernorInfo(mAccountLD.value!!)
 
-                    // test code =========> start
-                    if (BuildConfig.MOCK_GOVERNOR_DATA) {
-                        response.data = GovernorInfoDTO(
-                            walletAddress = mAccountLD.value!!.address,
-                            name = mAccountLD.value!!.walletNickname,
-                            applicationStatus = nextMockGovernorApplicationStatus,
-                            subAccountCount = 1
-                        )
-                        nextMockGovernorApplicationStatus++
-                        if (nextMockGovernorApplicationStatus == 5) {
-                            nextMockGovernorApplicationStatus = -1
-                        }
-                    }
-                    // test code =========> end
+                // 发送更新州长信息事件
+                EventBus.getDefault().post(UpdateGovernorInfoEvent(governorInfo))
 
-                    // 发送更新州长信息事件
-                    val event = UpdateGovernorInfoEvent(
-                        response.data ?: GovernorInfoDTO(
-                            walletAddress = mAccountLD.value!!.address,
-                            name = mAccountLD.value!!.walletNickname,
-                            applicationStatus = -1,
-                            subAccountCount = 1
-                        )
-                    )
-                    EventBus.getDefault().post(event)
+                mGovernorApplicationStatus = governorInfo.applicationStatus
+                successCallback?.invoke(mGovernorApplicationStatus)
+            } catch (e: Exception) {
+                failureCallback?.invoke(e)
+                postTipsMessage(mTipsMessageLD, e)
+            }
+        }
+    }
 
-                    return@withContext response.data?.applicationStatus ?: -1
-                }
+    fun publishVStake(
+        context: Context,
+        account: Account,
+        failureCallback: ((error: Throwable) -> Unit)? = null,
+        successCallback: (() -> Unit)? = null
+    ) {
+        viewModelScope.launch(Dispatchers.Main) {
+            try {
+                mGovernorManager.publishVStake(context, account)
 
-                mGovernorApplicationStatus = applicationStatus
-                successCallback?.invoke(applicationStatus)
+                successCallback?.invoke()
             } catch (e: Exception) {
                 failureCallback?.invoke(e)
                 postTipsMessage(mTipsMessageLD, e)
@@ -150,126 +107,12 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
         pageKey: Any?,
         onSuccess: (List<SSOApplicationMsgVO>, Any?) -> Unit
     ) {
-        val response =
-            // test code =========> start
-            try {
-                mGovernorService.getSSOApplicationMsgs(
-                    mAccountLD.value!!.address,
-                    pageSize,
-                    (pageNumber - 1) * pageSize
-                )
-            } catch (e: Exception) {
-                if (BuildConfig.MOCK_GOVERNOR_DATA) {
-                    ListResponse<SSOApplicationMsgDTO>()
-                } else {
-                    throw e
-                }
-            }
-        // test code =========> end
-
-        // test code =========> start
-        if (BuildConfig.MOCK_GOVERNOR_DATA) {
-            val fakeList = arrayListOf<SSOApplicationMsgDTO>()
-            for (index in 0..5) {
-                delay(200)
-                val date = System.currentTimeMillis()
-                fakeList.add(
-                    SSOApplicationMsgDTO(
-                        applicationId = "apply_id_$date",
-                        applicationStatus = if (index > 4) 1 else index,
-                        applicationDate = date,
-                        expirationDate = if (index > 4) date - 1000 else date + 1000,
-                        applicantIdName = "Name $date"
-                    )
-                )
-            }
-            response.data = fakeList
-        }
-        // test code =========> end
-
-        if (response.data.isNullOrEmpty()) {
-            onSuccess.invoke(emptyList(), null)
-            return
-        }
-
-        // 获取SSO发币申请本地记录
-        val applicationIds = response.data!!.map { it.applicationId }.toTypedArray()
-        val localMsgs =
-            mSSOApplicationMsgStorage.loadMsgsFromApplicationIds(
-                mAccountLD.value!!.id,
-                *applicationIds
-            ).toMap { it.applicationId }
-
-        // DTO 转换 VO
-        val list = response.data!!.map {
-            val msgUnread = when (it.applicationStatus) {
-                0 -> { // not approved
-                    val ssoRecord = localMsgs[it.applicationId]
-                    ssoRecord == null || ssoRecord.issuingUnread
-                }
-
-                3 -> { // published
-                    val ssoRecord = localMsgs[it.applicationId]
-                    ssoRecord == null || ssoRecord.mintUnread
-                }
-
-                else -> {
-                    false
-                }
-            }
-
-            SSOApplicationMsgVO(
-                applicationId = it.applicationId,
-                applicationDate = it.applicationDate,
-                applicationStatus = it.applicationStatus,
-                applicantIdName = it.applicantIdName,
-                msgUnread = msgUnread
+        val msgs =
+            mGovernorManager.getSSOApplicationMsgs(
+                mAccountLD.value!!,
+                pageSize,
+                (pageNumber - 1) * pageSize
             )
-        }
-        onSuccess.invoke(list, null)
-    }
-
-    fun publishVStake(
-        context: Context,
-        account: Account,
-        failureCallback: ((error: Throwable) -> Unit)? = null,
-        successCallback: (() -> Unit)? = null
-    ) {
-        viewModelScope.launch(Dispatchers.Main) {
-            try {
-                withContext(Dispatchers.IO) {
-                    val vStakeAddress = try {
-                        mGovernorService.getVStakeAddress().data!!
-                    } catch (e: Exception) {
-                        if (BuildConfig.MOCK_GOVERNOR_DATA) {
-                            account.getAddress().toHex()
-                        } else {
-                            throw e
-                        }
-                    }
-
-                    var result = false
-                    DataRepository.getViolasService()
-                        .publishToken(context, account, vStakeAddress) {
-                            result = it
-                        }
-
-                    if (!result) {
-                        throw if (!isNetworkConnected())
-                            RequestException.networkUnavailable()
-                        else
-                            RequestException(
-                                ERROR_CODE_UNKNOWN_ERROR,
-                                getString(R.string.tips_apply_for_licence_fail)
-                            )
-                    }
-                }
-
-                successCallback?.invoke()
-            } catch (e: Exception) {
-                failureCallback?.invoke(e)
-                postTipsMessage(mTipsMessageLD, e)
-            }
-        }
+        onSuccess.invoke(msgs, null)
     }
 }

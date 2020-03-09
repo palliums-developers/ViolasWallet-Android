@@ -24,7 +24,6 @@ import kotlinx.android.synthetic.main.activity_governor_mint.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.greenrobot.eventbus.EventBus
 import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 
@@ -38,17 +37,17 @@ class GovernorMintActivity : BaseAppActivity() {
 
     companion object {
 
-        fun start(context: Context, msg: SSOApplicationMsgVO) {
+        fun start(context: Context, msgVO: SSOApplicationMsgVO) {
             Intent(context, GovernorMintActivity::class.java)
-                .apply { putExtra(EXTRA_KEY_SSO_MSG, msg) }
+                .apply { putExtra(EXTRA_KEY_SSO_MSG, msgVO) }
                 .start(context)
         }
     }
 
-    private lateinit var mSSOApplicationMsg: SSOApplicationMsgVO
+    private lateinit var mSSOApplicationMsgVO: SSOApplicationMsgVO
 
     private val mViewModel by lazy {
-        ViewModelProvider(this, GovernorMintViewModelFactory(mSSOApplicationMsg))
+        ViewModelProvider(this, GovernorMintViewModelFactory(mSSOApplicationMsgVO))
             .get(GovernorMintViewModel::class.java)
     }
 
@@ -68,27 +67,27 @@ class GovernorMintActivity : BaseAppActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(EXTRA_KEY_SSO_MSG, mSSOApplicationMsg)
+        outState.putParcelable(EXTRA_KEY_SSO_MSG, mSSOApplicationMsgVO)
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
-        var msg: SSOApplicationMsgVO? = null
+        var msgVO: SSOApplicationMsgVO? = null
         if (savedInstanceState != null) {
-            msg = savedInstanceState.getParcelable(EXTRA_KEY_SSO_MSG)
+            msgVO = savedInstanceState.getParcelable(EXTRA_KEY_SSO_MSG)
         } else if (intent != null) {
-            msg = intent.getParcelableExtra(EXTRA_KEY_SSO_MSG)
+            msgVO = intent.getParcelableExtra(EXTRA_KEY_SSO_MSG)
         }
 
-        if (msg == null) {
+        if (msgVO == null) {
             return false
         }
 
-        mSSOApplicationMsg = msg
+        mSSOApplicationMsgVO = msgVO
         return true
     }
 
     private fun initView() {
-        title = getString(R.string.title_sso_msg_mint_token, mSSOApplicationMsg.applicantIdName)
+        title = getString(R.string.title_sso_msg_mint_token, mSSOApplicationMsgVO.applicantIdName)
 
         dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         srlRefreshLayout.isEnabled = false
@@ -113,12 +112,6 @@ class GovernorMintActivity : BaseAppActivity() {
                 showToast(R.string.tips_not_found_sso_application_details)
                 close()
                 return@Observer
-            }
-
-            if (it.applicationStatus != mSSOApplicationMsg.applicationStatus) {
-                // 如果发现状态不一样，需要更新消息首页的消息状态
-                mSSOApplicationMsg.applicationStatus = it.applicationStatus
-                EventBus.getDefault().post(mSSOApplicationMsg)
             }
 
             fillApplicationInfo(it)
@@ -212,7 +205,7 @@ class GovernorMintActivity : BaseAppActivity() {
                 showToast(
                     getString(
                         R.string.tips_governor_mint_token_success,
-                        mSSOApplicationMsg.applicantIdName
+                        mSSOApplicationMsgVO.applicantIdName
                     ),
                     Toast.LENGTH_LONG
                 )

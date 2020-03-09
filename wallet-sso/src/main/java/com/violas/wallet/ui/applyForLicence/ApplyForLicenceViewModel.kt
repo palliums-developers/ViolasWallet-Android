@@ -6,7 +6,7 @@ import com.palliums.base.BaseViewModel
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.biz.GovernorManager
 import com.violas.wallet.repository.database.entity.AccountDO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,9 +20,7 @@ import kotlinx.coroutines.launch
 class ApplyForLicenceViewModel : BaseViewModel() {
 
     val mAccountLD = MutableLiveData<AccountDO>()
-    private val mGovernorService by lazy {
-        DataRepository.getGovernorService()
-    }
+    private val mGovernorManager by lazy { GovernorManager() }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -32,10 +30,7 @@ class ApplyForLicenceViewModel : BaseViewModel() {
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        val walletAddress = mAccountLD.value!!.address
-        val name = mAccountLD.value!!.walletNickname
-        val txid = params[0] as String
-        mGovernorService.signUpGovernor(walletAddress, name, txid)
+        mGovernorManager.signUpGovernor(mAccountLD.value!!, params[0] as String)
     }
 
     override fun checkParams(action: Int, vararg params: Any): Boolean {
