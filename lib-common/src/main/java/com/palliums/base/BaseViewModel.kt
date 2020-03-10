@@ -54,9 +54,12 @@ abstract class BaseViewModel : ViewModel() {
             } else if (checkNetworkBeforeExecute && !isNetworkConnected()) {
                 retry = {
                     execute(
-                        *params,
+                        params = *params,
                         action = action,
-                        checkParamBeforeExecute = checkParamBeforeExecute
+                        checkParamBeforeExecute = checkParamBeforeExecute,
+                        checkNetworkBeforeExecute = checkNetworkBeforeExecute,
+                        failureCallback = failureCallback,
+                        successCallback = successCallback
                     )
                 }
 
@@ -89,9 +92,12 @@ abstract class BaseViewModel : ViewModel() {
                 synchronized(lock) {
                     retry = {
                         execute(
-                            *params,
+                            params = *params,
                             action = action,
-                            checkParamBeforeExecute = checkParamBeforeExecute
+                            checkParamBeforeExecute = checkParamBeforeExecute,
+                            checkNetworkBeforeExecute = checkNetworkBeforeExecute,
+                            failureCallback = failureCallback,
+                            successCallback = successCallback
                         )
                     }
 

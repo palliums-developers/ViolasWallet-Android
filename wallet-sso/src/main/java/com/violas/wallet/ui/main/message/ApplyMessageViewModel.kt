@@ -21,13 +21,15 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
     /**
      * 申请州长牌照状态
      */
+    var mGovernorApplicationStatus = -2
+
     val mAccountLD = MutableLiveData<AccountDO>()
     val mChangedSSOApplicationMsgLD = MediatorLiveData<SSOApplicationMsgDO>()
     val mTipsMessageLD by lazy { EnhancedMutableLiveData<String>() }
-    var mGovernorApplicationStatus = -2
 
     private var mLastObservedMsgApplicationId: String? = null
     private var mLastChangedSSOApplicationMsgLD: LiveData<SSOApplicationMsgDO?>? = null
+
     private val mGovernorManager by lazy { GovernorManager() }
 
     init {

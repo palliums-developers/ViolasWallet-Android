@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.net.RequestException
@@ -13,18 +12,13 @@ import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.EXTRA_KEY_SSO_MSG
-import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.governorMint.GovernorMintViewModel.Companion.ACTION_LOAD_APPLICATION_DETAILS
 import com.violas.wallet.ui.governorMint.GovernorMintViewModel.Companion.ACTION_MINT_TOKEN
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
 import com.violas.wallet.utils.convertViolasTokenUnit
-import com.violas.wallet.widget.dialog.PasswordInputDialog
+import com.violas.wallet.utils.showPwdInputDialog
 import kotlinx.android.synthetic.main.activity_governor_mint.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 
 /**
@@ -96,7 +90,11 @@ class GovernorMintActivity : BaseAppActivity() {
         }
 
         btnMint.setOnClickListener {
-            showPasswordInputDialog()
+            showPwdInputDialog(
+                mViewModel.mAccountLD.value!!,
+                accountMnemonicCallback = { account, mnemonics ->
+                    mintToken(account, mnemonics)
+                })
         }
 
         mViewModel.tipsMessage.observe(this, Observer {
@@ -147,47 +145,6 @@ class GovernorMintActivity : BaseAppActivity() {
                 llContentLayout.visibility = View.VISIBLE
                 dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
             })
-    }
-
-    private fun showPasswordInputDialog() {
-        PasswordInputDialog()
-            .setConfirmListener { password, dialogFragment ->
-                dialogFragment.dismiss()
-                showProgress()
-
-                launch(Dispatchers.Main) {
-                    var account: Account? = null
-                    var mnemonics: List<String>? = null
-                    withContext(Dispatchers.IO) {
-                        val simpleSecurity = SimpleSecurity.instance(applicationContext)
-                        val privateKey = simpleSecurity.decrypt(
-                            password, mViewModel.mAccountLD.value!!.privateKey
-                        )
-                        if (privateKey != null) {
-                            account = Account(KeyPair.fromSecretKey(privateKey))
-                        }
-
-                        val mnemonicByteArray = simpleSecurity.decrypt(
-                            password, mViewModel.mAccountLD.value!!.mnemonic
-                        )
-                        if (mnemonicByteArray != null) {
-                            val mnemonicStr = String(mnemonicByteArray)
-                            mnemonics = mnemonicStr.substring(1, mnemonicStr.length - 1)
-                                .split(",")
-                                .map { it.trim() }
-                        }
-                    }
-
-                    if (account == null || mnemonics == null) {
-                        dismissProgress()
-                        showToast(getString(R.string.hint_password_error))
-                        return@launch
-                    }
-
-                    mintToken(account!!, mnemonics!!)
-                }
-            }
-            .show(supportFragmentManager)
     }
 
     private fun mintToken(

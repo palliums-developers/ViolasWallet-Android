@@ -13,6 +13,7 @@ import com.palliums.utils.isNetworkConnected
 import com.palliums.widget.MenuItemView
 import com.violas.wallet.R
 import com.violas.wallet.biz.WalletType
+import com.violas.wallet.event.RefreshGovernorApplicationProgressEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.governor.GovernorInfoDTO
 import com.violas.wallet.repository.local.user.AccountBindingStatus
@@ -20,11 +21,15 @@ import com.violas.wallet.repository.local.user.IDAuthenticationStatus
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.authentication.IDAuthenticationActivity
 import com.violas.wallet.ui.authentication.IDInformationActivity
+import com.violas.wallet.ui.main.UserViewModel
 import com.violas.wallet.ui.main.provideUserViewModel
 import com.violas.wallet.ui.setting.SettingActivity
 import com.violas.wallet.ui.verification.EmailVerificationActivity
 import com.violas.wallet.ui.verification.PhoneVerificationActivity
+import com.violas.wallet.utils.showPwdInputDialog
 import kotlinx.android.synthetic.main.fragment_me.*
+import org.greenrobot.eventbus.EventBus
+import org.palliums.violascore.wallet.Account
 
 /**
  * 我的页面
@@ -265,7 +270,31 @@ class MeFragment : BaseFragment() {
         }
 
         mShowedApplyForLicenceDialogFlag = true
-        ApplyForLicenceDialog().show()
+        ApplyForLicenceDialog()
+            .setApplyForCallback { applyForLicenceDialog ->
+                applyForLicenceDialog.close()
+
+                showPwdInputDialog(
+                    mViewModel.mCurrentAccountLD.value!!,
+                    accountCallback = {
+                        publishVStake(it)
+                    })
+            }
+            .show()
+    }
+
+    private fun publishVStake(account: Account) {
+        mViewModel.execute(
+            requireContext(), account,
+            action = UserViewModel.ACTION_PUBLISH_VSTAKE,
+            failureCallback = {
+                dismissProgress()
+            },
+            successCallback = {
+                EventBus.getDefault().post(RefreshGovernorApplicationProgressEvent())
+                dismissProgress()
+                showToast(R.string.tips_apply_for_licence_success)
+            })
     }
 
     override fun onViewClick(view: View) {

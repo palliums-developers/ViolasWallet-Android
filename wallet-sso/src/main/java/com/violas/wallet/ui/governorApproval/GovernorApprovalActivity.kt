@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -15,19 +14,14 @@ import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.EXTRA_KEY_SSO_MSG
-import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.image.GlideApp
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_APPROVAL_APPLICATION
 import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_LOAD_APPLICATION_DETAILS
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
 import com.violas.wallet.utils.convertViolasTokenUnit
-import com.violas.wallet.widget.dialog.PasswordInputDialog
+import com.violas.wallet.utils.showPwdInputDialog
 import kotlinx.android.synthetic.main.activity_governor_approval.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 
 /**
@@ -100,10 +94,18 @@ class GovernorApprovalActivity : BaseAppActivity() {
         }
 
         btnApprovalPass.setOnClickListener {
-            showPasswordInputDialog(true)
+            showPwdInputDialog(
+                mViewModel.mAccountLD.value!!,
+                accountMnemonicCallback = { account, mnemonics ->
+                    approvalApplication(true, account, mnemonics)
+                })
         }
         tvApprovalNotPass.setOnClickListener {
-            showPasswordInputDialog(false)
+            showPwdInputDialog(
+                mViewModel.mAccountLD.value!!,
+                accountCallback = {
+                    approvalApplication(false)
+                })
         }
 
         mViewModel.tipsMessage.observe(this, Observer {
@@ -156,54 +158,19 @@ class GovernorApprovalActivity : BaseAppActivity() {
             })
     }
 
-    private fun showPasswordInputDialog(pass: Boolean) {
-        PasswordInputDialog()
-            .setConfirmListener { password, dialogFragment ->
-                dialogFragment.dismiss()
-                showProgress()
-
-                launch(Dispatchers.Main) {
-                    var account: Account? = null
-                    var mnemonics: List<String>? = null
-                    withContext(Dispatchers.IO) {
-                        val simpleSecurity = SimpleSecurity.instance(applicationContext)
-                        val privateKey = simpleSecurity.decrypt(
-                            password, mViewModel.mAccountLD.value!!.privateKey
-                        )
-                        if (privateKey != null) {
-                            account = Account(KeyPair.fromSecretKey(privateKey))
-                        }
-
-                        val mnemonicByteArray = simpleSecurity.decrypt(
-                            password, mViewModel.mAccountLD.value!!.mnemonic
-                        )
-                        if (mnemonicByteArray != null) {
-                            val mnemonicStr = String(mnemonicByteArray)
-                            mnemonics = mnemonicStr.substring(1, mnemonicStr.length - 1)
-                                .split(",")
-                                .map { it.trim() }
-                        }
-                    }
-
-                    if (account == null || mnemonics == null) {
-                        dismissProgress()
-                        showToast(getString(R.string.hint_password_error))
-                        return@launch
-                    }
-
-                    approvalApplication(pass, account!!, mnemonics!!)
-                }
-            }
-            .show(supportFragmentManager)
-    }
-
     private fun approvalApplication(
         pass: Boolean,
-        account: Account,
-        mnemonics: List<String>
+        account: Account? = null,
+        mnemonics: List<String>? = null
     ) {
+        val params = if (pass) {
+            arrayOf(pass, account!!, mnemonics!!)
+        } else {
+            arrayOf(pass)
+        }
+
         mViewModel.execute(
-            pass, account, mnemonics,
+            params = *params,
             action = ACTION_APPROVAL_APPLICATION,
             failureCallback = {
                 dismissProgress()
@@ -281,12 +248,36 @@ class GovernorApprovalActivity : BaseAppActivity() {
         // TODO 证件类型没有区分
         asivIDType.setContent(getString(R.string.id_card))
         asivIDNumber.setContent(details.idNumber)
-        val phoneAreaCode = if (details.phoneAreaCode.startsWith("+"))
+
+        /*val phoneAreaCode = if (details.phoneAreaCode.startsWith("+"))
             details.phoneAreaCode
         else
-            "+${details.phoneAreaCode}"
-        asivPhoneNumber.setContent("$phoneAreaCode ${details.phoneNumber}")
-        asivEmail.setContent(details.emailAddress)
+            "+${details.phoneAreaCode}"*/
+        val phoneEndIndex = if (details.phoneNumber.length > 7)
+            7
+        else
+            details.phoneNumber.length
+        val phoneStartIndex = if (phoneEndIndex >= 3) 3 else phoneEndIndex
+        var phoneReplacement = ""
+        for (index in phoneStartIndex until phoneEndIndex) {
+            phoneReplacement += "*"
+        }
+        val phoneNumber = details.phoneNumber.replaceRange(
+            phoneStartIndex, phoneEndIndex, phoneReplacement
+        )
+        //asivPhoneNumber.setContent("$phoneAreaCode $phoneNumber")
+        asivPhoneNumber.setContent(phoneNumber)
+
+        val emailEndIndex = details.emailAddress.indexOf("@")
+        val emailStartIndex = if (emailEndIndex >= 3) 3 else emailEndIndex
+        var emailReplacement = ""
+        for (index in emailStartIndex until emailEndIndex) {
+            emailReplacement += "*"
+        }
+        val emailAddress = details.emailAddress.replaceRange(
+            emailStartIndex, emailEndIndex, emailReplacement
+        )
+        asivEmail.setContent(emailAddress)
 
         GlideApp.with(this)
             .load(details.reservePhotoUrl)

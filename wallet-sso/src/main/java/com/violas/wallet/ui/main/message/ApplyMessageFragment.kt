@@ -13,12 +13,11 @@ import com.palliums.utils.getColor
 import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
-import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshGovernorApplicationProgressEvent
-import com.violas.wallet.ui.signUpGovernor.SignUpGovernorActivity
 import com.violas.wallet.ui.governorApproval.GovernorApprovalActivity
 import com.violas.wallet.ui.governorMint.GovernorMintActivity
-import com.violas.wallet.widget.dialog.PasswordInputDialog
+import com.violas.wallet.ui.signUpGovernor.SignUpGovernorActivity
+import com.violas.wallet.utils.showPwdInputDialog
 import kotlinx.android.synthetic.main.fragment_apply_message.*
 import kotlinx.android.synthetic.main.fragment_apply_message_governor.*
 import kotlinx.android.synthetic.main.fragment_apply_message_sso.*
@@ -28,7 +27,6 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 
 /**
@@ -216,7 +214,11 @@ class ApplyMessageFragment : BaseFragment() {
                         SignUpGovernorActivity.start(it)
                     }
                 } else if (mViewModel.mGovernorApplicationStatus == 1) {
-                    showPasswordInputDialog()
+                    showPwdInputDialog(
+                        mViewModel.mAccountLD.value!!,
+                        accountCallback = {
+                            publishVStake(it)
+                        })
                 }
             }
         }
@@ -259,36 +261,6 @@ class ApplyMessageFragment : BaseFragment() {
                 btnGovernorLicenceGoto.visibility = View.VISIBLE
             }
         }
-    }
-
-    private fun showPasswordInputDialog() {
-        PasswordInputDialog()
-            .setConfirmListener { password, dialogFragment ->
-                dialogFragment.dismiss()
-                showProgress()
-
-                launch(Dispatchers.Main) {
-                    val account = withContext(Dispatchers.IO) {
-                        val simpleSecurity =
-                            SimpleSecurity.instance(requireContext().applicationContext)
-                        val privateKey = simpleSecurity.decrypt(
-                            password, mViewModel.mAccountLD.value!!.privateKey
-                        )
-                        return@withContext if (privateKey == null)
-                            null
-                        else
-                            Account(KeyPair.fromSecretKey(privateKey))
-                    }
-
-                    if (account != null) {
-                        publishVStake(account)
-                    } else {
-                        dismissProgress()
-                        showToast(getString(R.string.hint_password_error))
-                    }
-                }
-            }
-            .show(childFragmentManager)
     }
 
     private fun publishVStake(account: Account) {

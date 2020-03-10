@@ -4,15 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.Fragment
 import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.WalletType
-import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.ChangeAccountNameEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.event.WalletChangeEvent
@@ -21,6 +18,7 @@ import com.violas.wallet.ui.account.AccountInfoActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.backup.ShowMnemonicActivity
+import com.violas.wallet.utils.showPwdInputDialog
 import kotlinx.android.synthetic.main.activity_wallet_manager.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,7 +64,7 @@ class WalletManagerActivity : BaseAppActivity() {
 
         val accountId = intent.getLongExtra(EXT_ACCOUNT_ID, -1L)
         launch(Dispatchers.IO) {
-            val account = if (accountId == -1L) {
+            val accountDO = if (accountId == -1L) {
                 mAccountManager.currentAccount()
             } else {
                 mAccountManager.getAccountById(accountId)
@@ -78,70 +76,52 @@ class WalletManagerActivity : BaseAppActivity() {
             }*/
 
             withContext(Dispatchers.Main) {
-                tvName.text = account.walletNickname
-                tvAddress.text = account.address
+                tvName.text = accountDO.walletNickname
+                tvAddress.text = accountDO.address
 
                 layoutChangeName.setOnClickListener {
                     AccountInfoActivity.start(this@WalletManagerActivity, accountId)
                 }
 
                 layoutBack.setOnClickListener {
-                    PasswordInputDialog()
-                        .setConfirmListener { password, dialog ->
-                            backupWallet(account, password)
-                            dialog.dismiss()
-                        }
-                        .show(supportFragmentManager)
+                    showPwdInputDialog(
+                        accountDO,
+                        mnemonicCallback = {
+                            dismissProgress()
+                            backupWallet(accountDO, it)
+                        })
                 }
 
                 btnRemoveWallet.setOnClickListener {
-                    PasswordInputDialog()
-                        .setConfirmListener { password, dialog ->
-                            removeWallet(account)
-                            dialog.dismiss()
+                    showPwdInputDialog(
+                        accountDO,
+                        accountCallback = {
+                            dismissProgress()
+                            removeWallet(accountDO)
                         }
-                        .show(supportFragmentManager)
+                    )
                 }
             }
         }
     }
 
-    private fun backupWallet(account: AccountDO, password: ByteArray) {
-        launch(Dispatchers.IO) {
-            try {
-                val decrypt = SimpleSecurity.instance(this@WalletManagerActivity.applicationContext)
-                    .decrypt(password, account.mnemonic)
-                if (decrypt == null) {
-                    showToast(getString(R.string.hint_password_error))
-                    return@launch
-                }
-                val decryptStr = String(decrypt)
-                val mnemonic = decryptStr.substring(1, decryptStr.length - 1)
-                    .split(",")
-                    .map { it.trim() }
-                    .toMutableList() as ArrayList
-
-                val walletType = WalletType.parse(account.walletType)
-                if (!mAccountManager.isMnemonicBackup(walletType)) {
-                    BackupPromptActivity.start(
-                        this@WalletManagerActivity,
-                        mnemonic,
-                        if (walletType == WalletType.Governor)
-                            BackupMnemonicFrom.BACKUP_GOVERNOR_WALLET
-                        else
-                            BackupMnemonicFrom.BACKUP_SSO_WALLET
-                    )
-                } else {
-                    ShowMnemonicActivity.start(this@WalletManagerActivity, mnemonic)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+    private fun backupWallet(accountDO: AccountDO, mnemonics: List<String>) {
+        val walletType = WalletType.parse(accountDO.walletType)
+        if (!mAccountManager.isMnemonicBackup(walletType)) {
+            BackupPromptActivity.start(
+                this@WalletManagerActivity,
+                mnemonics as ArrayList<String>,
+                if (walletType == WalletType.Governor)
+                    BackupMnemonicFrom.BACKUP_GOVERNOR_WALLET
+                else
+                    BackupMnemonicFrom.BACKUP_SSO_WALLET
+            )
+        } else {
+            ShowMnemonicActivity.start(this, mnemonics as ArrayList<String>)
         }
     }
 
     private fun removeWallet(account: AccountDO) {
-        showProgress()
         launch(Dispatchers.IO) {
             val removeAccountID = account.id
             val currentAccountID = mAccountManager.currentAccount().id

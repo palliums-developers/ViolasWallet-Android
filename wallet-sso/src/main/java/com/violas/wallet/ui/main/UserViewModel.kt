@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main
 
+import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.lifecycle.*
@@ -8,17 +9,18 @@ import com.palliums.net.LoadState
 import com.palliums.net.getErrorTipsMsg
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.GovernorManager
 import com.violas.wallet.event.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.governor.GovernorInfoDTO
 import com.violas.wallet.repository.local.user.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.palliums.violascore.wallet.Account
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -42,6 +44,7 @@ class UserViewModel : BaseViewModel() {
 
     companion object {
         private const val ACTION_INIT = 0x123
+        const val ACTION_PUBLISH_VSTAKE = 0x124
     }
 
     val mCurrentAccountLD = MutableLiveData<AccountDO>()
@@ -50,10 +53,10 @@ class UserViewModel : BaseViewModel() {
     private val ssoService by lazy {
         DataRepository.getSSOService()
     }
-
     private val localUserService by lazy {
         DataRepository.getLocalUserService()
     }
+    private val mGovernorManager by lazy { GovernorManager() }
 
     private val idInfoLiveData = MutableLiveData<Pair<IDInfo, LoadState>>()
     private val emailInfoLiveData = MutableLiveData<Pair<EmailInfo, LoadState>>()
@@ -271,12 +274,16 @@ class UserViewModel : BaseViewModel() {
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
 
+        // publish VStake
+        if (action == ACTION_PUBLISH_VSTAKE) {
+            mGovernorManager.publishVStake(params[0] as Context, params[1] as Account)
+            return
+        }
+
+        // 加载用户认证绑定信息
         if (action != ACTION_INIT) {
             postStateIfNotReady(LoadState.RUNNING)
         }
-
-        // 加载太快动画效果不好看
-        delay(500)
 
         // 从服务器获取用户信息
         val walletAddress = mCurrentAccountLD.value!!.address
@@ -380,10 +387,13 @@ class UserViewModel : BaseViewModel() {
     }
 
     override fun checkParams(action: Int, vararg params: Any): Boolean {
+        if (action == ACTION_PUBLISH_VSTAKE) {
+            return true
+        }
+
         val idInfo = idInfo()
         val emailInfo = emailInfo()
         val phoneInfo = phoneInfo()
-
         return (idInfo != null && !idInfo.isAuthenticatedID())
                 || (emailInfo != null && !emailInfo.isBoundEmail())
                 || (phoneInfo != null && !phoneInfo.isBoundPhone())
