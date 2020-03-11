@@ -38,6 +38,12 @@ interface GovernorApi {
     suspend fun getVStakeAddress(): Response<VstakeAddressDTO>
 
     /**
+     * 更新州长申请状态为published
+     */
+    @PUT("/1.0/violas/governor/investment")
+    suspend fun updateGovernorApplicationToPublished(@Body body: RequestBody): Response<Any>
+
+    /**
      * 获取SSO申请消息
      */
     @GET("/1.1/violas/sso/token/approval")

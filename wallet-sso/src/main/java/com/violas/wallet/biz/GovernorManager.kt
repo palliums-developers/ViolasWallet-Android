@@ -101,6 +101,7 @@ class GovernorManager {
         context: Context,
         account: Account
     ) = withContext(Dispatchers.IO) {
+        // 1.获取VStake address
         val vStakeAddress = try {
             mGovernorService.getVStakeAddress().data?.address!!
         } catch (e: Exception) {
@@ -111,6 +112,7 @@ class GovernorManager {
             }
         }
 
+        // 2.publish VStake
         var result = false
         val countDownLatch = CountDownLatch(1)
         DataRepository.getViolasService()
@@ -120,7 +122,11 @@ class GovernorManager {
             }
         countDownLatch.await()
 
-        if (!result && !BuildConfig.MOCK_GOVERNOR_DATA) {
+        if (BuildConfig.MOCK_GOVERNOR_DATA) {
+            result = true
+        }
+
+        if (!result) {
             throw if (!isNetworkConnected())
                 RequestException.networkUnavailable()
             else
@@ -128,6 +134,16 @@ class GovernorManager {
                     RequestException.ERROR_CODE_UNKNOWN_ERROR,
                     getString(R.string.tips_apply_for_licence_fail)
                 )
+        }
+
+        // 3.通知服务器州长已publish VStake
+        try {
+            mGovernorService.updateGovernorApplicationToPublished(account.getAddress().toHex())
+        } catch (e: Exception) {
+            if (BuildConfig.MOCK_GOVERNOR_DATA) {
+            } else {
+                throw e
+            }
         }
     }
 

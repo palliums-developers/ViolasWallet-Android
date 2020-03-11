@@ -72,6 +72,20 @@ class GovernorRepository(private val api: GovernorApi) {
         }
 
     /**
+     * 更新州长申请状态为published
+     */
+    suspend fun updateGovernorApplicationToPublished(
+        walletAddress: String
+    ) =
+        checkResponse {
+            val requestBody = """{
+    "wallet_address":"$walletAddress",
+    "is_handle":3
+}""".toRequestBody("application/json".toMediaTypeOrNull())
+            api.updateGovernorApplicationToPublished(requestBody)
+        }
+
+    /**
      * 获取vstake地址
      */
     suspend fun getVStakeAddress() =
