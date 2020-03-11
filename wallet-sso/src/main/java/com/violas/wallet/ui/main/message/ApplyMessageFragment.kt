@@ -163,6 +163,7 @@ class ApplyMessageFragment : BaseFragment() {
             }
 
             // 初始化SSO发币申请消息视图的控件设置
+            drlSSOMsgRefreshLayout.setEnableRefresh(false)
             drlSSOMsgRefreshLayout.setEnableLoadMore(false)
             drlSSOMsgRefreshLayout.setEnableOverScrollBounce(true)
             drlSSOMsgRefreshLayout.setEnableOverScrollDrag(true)
@@ -290,12 +291,18 @@ class ApplyMessageFragment : BaseFragment() {
             when (it.peekData().status) {
                 LoadState.Status.SUCCESS,
                 LoadState.Status.SUCCESS_NO_MORE -> {
-                    if (srlRefreshLayout.isRefreshing) {
-                        srlRefreshLayout.isRefreshing = false
-                        srlRefreshLayout.isEnabled = false
-                        drlSSOMsgRefreshLayout.setEnableRefresh(true)
-                    } else if (drlSSOMsgRefreshLayout.state.isOpening) {
-                        drlSSOMsgRefreshLayout.finishRefresh(true)
+                    when {
+                        srlRefreshLayout.isRefreshing -> {
+                            srlRefreshLayout.isRefreshing = false
+                            srlRefreshLayout.isEnabled = false
+                            drlSSOMsgRefreshLayout.setEnableRefresh(true)
+                        }
+                        drlSSOMsgRefreshLayout.state.isOpening -> {
+                            drlSSOMsgRefreshLayout.finishRefresh(true)
+                        }
+                        else -> {
+                            drlSSOMsgRefreshLayout.setEnableRefresh(true)
+                        }
                     }
 
                     dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
@@ -307,12 +314,18 @@ class ApplyMessageFragment : BaseFragment() {
                 }
 
                 LoadState.Status.SUCCESS_EMPTY -> {
-                    if (srlRefreshLayout.isRefreshing) {
-                        srlRefreshLayout.isRefreshing = false
-                    } else if (drlSSOMsgRefreshLayout.state.isOpening) {
-                        drlSSOMsgRefreshLayout.finishRefresh(true)
-                        drlSSOMsgRefreshLayout.setEnableRefresh(false)
-                        srlRefreshLayout.isEnabled = true
+                    when {
+                        srlRefreshLayout.isRefreshing -> {
+                            srlRefreshLayout.isRefreshing = false
+                        }
+                        drlSSOMsgRefreshLayout.state.isOpening -> {
+                            drlSSOMsgRefreshLayout.finishRefresh(true)
+                            drlSSOMsgRefreshLayout.setEnableRefresh(false)
+                            srlRefreshLayout.isEnabled = true
+                        }
+                        else -> {
+                            srlRefreshLayout.isEnabled = true
+                        }
                     }
 
                     dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
@@ -324,12 +337,18 @@ class ApplyMessageFragment : BaseFragment() {
                 }
 
                 LoadState.Status.FAILURE -> {
-                    if (srlRefreshLayout.isRefreshing) {
-                        srlRefreshLayout.isRefreshing = false
-                    } else if (drlSSOMsgRefreshLayout.state.isOpening) {
-                        drlSSOMsgRefreshLayout.finishRefresh(
-                            300, false, false
-                        )
+                    when {
+                        srlRefreshLayout.isRefreshing -> {
+                            srlRefreshLayout.isRefreshing = false
+                        }
+                        drlSSOMsgRefreshLayout.state.isOpening -> {
+                            drlSSOMsgRefreshLayout.finishRefresh(
+                                300, false, false
+                            )
+                        }
+                        else -> {
+                            srlRefreshLayout.isEnabled = true
+                        }
                     }
 
                     if (mSSOMsgViewAdapter.itemCount > 0) {
