@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:background="@color/def_page_bg_light_secondary"
-    tools:context="com.violas.wallet.ui.applyForMint.ApplyForMintActivity">
+    tools:context=".ui.governorMint.GovernorMintActivity">
 
     <FrameLayout
         android:layout_width="match_parent"

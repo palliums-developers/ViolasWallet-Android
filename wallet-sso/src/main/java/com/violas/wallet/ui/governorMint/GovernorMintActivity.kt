@@ -14,7 +14,7 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.EXTRA_KEY_SSO_MSG
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.governorMint.GovernorMintViewModel.Companion.ACTION_LOAD_APPLICATION_DETAILS
-import com.violas.wallet.ui.governorMint.GovernorMintViewModel.Companion.ACTION_MINT_TOKEN
+import com.violas.wallet.ui.governorMint.GovernorMintViewModel.Companion.ACTION_MINT_TOKEN_TO_SSO_ACCOUNT
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
 import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.utils.showPwdInputDialog
@@ -93,7 +93,7 @@ class GovernorMintActivity : BaseAppActivity() {
             showPwdInputDialog(
                 mViewModel.mAccountLD.value!!,
                 accountMnemonicCallback = { account, mnemonics ->
-                    mintToken(account, mnemonics)
+                    mintTokenToSSOAccount(account, mnemonics)
                 })
         }
 
@@ -147,13 +147,13 @@ class GovernorMintActivity : BaseAppActivity() {
             })
     }
 
-    private fun mintToken(
+    private fun mintTokenToSSOAccount(
         account: Account,
         mnemonics: List<String>
     ) {
         mViewModel.execute(
             account, mnemonics,
-            action = ACTION_MINT_TOKEN,
+            action = ACTION_MINT_TOKEN_TO_SSO_ACCOUNT,
             failureCallback = {
                 dismissProgress()
             },

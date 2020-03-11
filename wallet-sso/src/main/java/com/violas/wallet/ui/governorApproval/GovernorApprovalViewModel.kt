@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.GovernorManager
-import com.violas.wallet.biz.applysso.ApplySSOManager
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
@@ -44,7 +43,6 @@ class GovernorApprovalViewModel(
     val mSSOApplicationDetailsLD = MutableLiveData<SSOApplicationDetailsDTO?>()
 
     private val mGovernorManager by lazy { GovernorManager() }
-    private val mApplySSOManager by lazy { ApplySSOManager() }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -69,14 +67,14 @@ class GovernorApprovalViewModel(
         val pass = params[0] as Boolean
         if (pass) {
             // 审批通过
-            mApplySSOManager.apply(
+            mGovernorManager.passSSOApplication(
+                ssoWalletAddress = mSSOApplicationDetailsLD.value!!.ssoWalletAddress,
                 account = params[1] as Account,
-                mnemonic = params[2] as List<String>,
-                applySSOWalletAddress = mSSOApplicationDetailsLD.value!!.ssoWalletAddress
+                mnemonics = params[2] as List<String>
             )
         } else {
             // 审批不通过
-            mGovernorManager.approvalSSOApplicationNotPass(
+            mGovernorManager.rejectSSOApplication(
                 mSSOApplicationDetailsLD.value!!.ssoWalletAddress
             )
         }

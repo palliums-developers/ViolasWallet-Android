@@ -359,9 +359,11 @@
     <string name="tips_not_found_sso_application_details">找不到申请详情</string>
     <string name="action_approval_pass">审核通过</string>
     <string name="action_approval_not_pass">审核不通过</string>
-    <string name="tips_governor_approval_pass_success">已通过%1$s发币申请</string>
-    <string name="tips_governor_approval_not_pass_success">已拒绝%1$s发币申请</string>
-    <string name="tips_governor_mint_token_success">已完成%1$s铸币请求</string>
+    <string name="tips_governor_approval_pass_success">已通过%1$s的发币申请</string>
+    <string name="tips_governor_approval_not_pass_success">已拒绝%1$s的发币申请</string>
+    <string name="tips_governor_approval_fail">审核失败，请稍后重试</string>
+    <string name="tips_governor_mint_token_success">已完成%1$s的铸币请求</string>
+    <string name="tips_governor_mint_token_fail">铸币失败，请稍后重试</string>
     <string name="desc_governor_application_not_application">未申请州长</string>
     <string name="desc_governor_application_not_approved">认证中</string>
     <string name="desc_governor_application_pass">未申请牌照</string>

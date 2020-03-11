@@ -10,6 +10,7 @@ import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
+import com.violas.wallet.biz.applysso.ApplySSOManager
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.SSOApplicationMsgDO
@@ -37,6 +38,9 @@ class GovernorManager {
     }
     private val mSSOApplicationMsgStorage by lazy {
         DataRepository.getSSOApplicationMsgStorage()
+    }
+    private val mApplySSOManager by lazy {
+        ApplySSOManager()
     }
 
     private var mNextMockGovernorApplicationStatus = -1
@@ -279,9 +283,13 @@ class GovernorManager {
         // test code =========> end
 
         if (response.data != null) {
-            if (response.data!!.applicationStatus == 1 || response.data!!.applicationStatus >= 3) {
+            if (response.data!!.applicationStatus == 1
+                || response.data!!.applicationStatus >= 3
+            ) {
                 if (response.data!!.tokenAddress.isNullOrEmpty()) {
-                    throw RequestException.responseDataException("module address cannot be null")
+                    throw RequestException.responseDataException(
+                        "module address cannot be null"
+                    )
                 } else if (response.data!!.walletLayersNumber <= 0) {
                     throw RequestException.responseDataException(
                         "Incorrect module depth(${response.data!!.walletLayersNumber})"
@@ -302,9 +310,38 @@ class GovernorManager {
     }
 
     /**
+     * 审批SSO申请通过
+     */
+    suspend fun passSSOApplication(
+        ssoWalletAddress: String,
+        account: Account,
+        mnemonics: List<String>
+    ) {
+        var result = mApplySSOManager.apply(
+            applySSOWalletAddress = ssoWalletAddress,
+            account = account,
+            mnemonic = mnemonics
+        )
+
+        if (BuildConfig.MOCK_GOVERNOR_DATA) {
+            result = true
+        }
+
+        if (!result) {
+            throw if (!isNetworkConnected())
+                RequestException.networkUnavailable()
+            else
+                RequestException(
+                    RequestException.ERROR_CODE_UNKNOWN_ERROR,
+                    getString(R.string.tips_governor_approval_fail)
+                )
+        }
+    }
+
+    /**
      * 审批SSO申请不通过
      */
-    suspend fun approvalSSOApplicationNotPass(ssoWalletAddress: String) {
+    suspend fun rejectSSOApplication(ssoWalletAddress: String) {
         try {
             mGovernorService.approvalSSOApplication(
                 pass = false,
@@ -316,6 +353,38 @@ class GovernorManager {
             if (!BuildConfig.MOCK_GOVERNOR_DATA) {
                 throw e
             }
+        }
+    }
+
+    /**
+     * 给SSO账户铸币
+     */
+    suspend fun mintTokenToSSOAccount(
+        ssoApplicationDetails: SSOApplicationDetailsDTO,
+        account: Account,
+        mnemonics: List<String>
+    ) {
+        var result = mApplySSOManager.mint(
+            account = account,
+            mnemonic = mnemonics,
+            walletLayersNumber = ssoApplicationDetails.walletLayersNumber,
+            tokenAddress = ssoApplicationDetails.tokenAddress!!,
+            receiveAddress = ssoApplicationDetails.ssoWalletAddress,
+            receiveAmount = ssoApplicationDetails.tokenAmount.toLong()
+        )
+
+        if (BuildConfig.MOCK_GOVERNOR_DATA) {
+            result = true
+        }
+
+        if (!result) {
+            throw if (!isNetworkConnected())
+                RequestException.networkUnavailable()
+            else
+                RequestException(
+                    RequestException.ERROR_CODE_UNKNOWN_ERROR,
+                    getString(R.string.tips_governor_mint_token_fail)
+                )
         }
     }
 

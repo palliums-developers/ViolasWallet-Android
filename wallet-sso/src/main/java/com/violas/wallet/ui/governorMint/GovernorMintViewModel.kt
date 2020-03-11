@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.GovernorManager
-import com.violas.wallet.biz.applysso.ApplySSOManager
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
@@ -37,14 +36,13 @@ class GovernorMintViewModel(
 
     companion object {
         const val ACTION_LOAD_APPLICATION_DETAILS = 0x01
-        const val ACTION_MINT_TOKEN = 0x02
+        const val ACTION_MINT_TOKEN_TO_SSO_ACCOUNT = 0x02
     }
 
     val mAccountLD = MutableLiveData<AccountDO>()
     val mSSOApplicationDetailsLD = MutableLiveData<SSOApplicationDetailsDTO?>()
 
     private val mGovernorManager by lazy { GovernorManager() }
-    private val mApplySSOManager by lazy { ApplySSOManager() }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -65,14 +63,11 @@ class GovernorMintViewModel(
             return
         }
 
-        // 给SSO申请者铸币
-        mApplySSOManager.mint(
+        // 给SSO账户铸币
+        mGovernorManager.mintTokenToSSOAccount(
+            ssoApplicationDetails = mSSOApplicationDetailsLD.value!!,
             account = params[0] as Account,
-            mnemonic = params[1] as List<String>,
-            walletLayersNumber = mSSOApplicationDetailsLD.value!!.walletLayersNumber,
-            tokenAddress = mSSOApplicationDetailsLD.value!!.tokenAddress!!,
-            receiveAddress = mSSOApplicationDetailsLD.value!!.ssoWalletAddress,
-            receiveAmount = mSSOApplicationDetailsLD.value!!.tokenAmount.toLong()
+            mnemonics = params[1] as List<String>
         )
 
         // 铸币成功后更新本地消息状态
