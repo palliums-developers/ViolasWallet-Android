@@ -217,7 +217,7 @@ class MeFragment : BaseFragment() {
             tvNickname.text = account.walletNickname
             tvNickname.setTextColor(getColor(R.color.white))
             tvNickname.visibility = View.VISIBLE
-            nivAvatar.setImageResource(R.drawable.ic_governor_default)
+            nivAvatar.setImageResource(R.drawable.ic_avatar_governor_default)
             nivAvatar.visibility = View.VISIBLE
             return
         }
@@ -254,7 +254,7 @@ class MeFragment : BaseFragment() {
         tvNickname.text = "SSO"
         tvNickname.setTextColor(getColor(R.color.white))
         tvNickname.visibility = View.VISIBLE
-        nivAvatar.setImageResource(R.drawable.ic_logo)
+        nivAvatar.setImageResource(R.drawable.ic_avatar_sso_default)
         nivAvatar.visibility = View.VISIBLE
     }
 

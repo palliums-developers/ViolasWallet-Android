@@ -37,7 +37,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvWalletTypeName"
-        tools:src="@drawable/ic_governor_default"
+        tools:src="@drawable/ic_avatar_governor_default"
         tools:visibility="visible" />
     <!--app:is_circle="true"
     app:border_color="@color/white"
