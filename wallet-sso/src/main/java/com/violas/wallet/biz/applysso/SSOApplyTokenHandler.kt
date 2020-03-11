@@ -15,6 +15,7 @@ import org.palliums.violascore.wallet.WalletConfig
     SSOApplyTokenHandler.Registered,
     SSOApplyTokenHandler.ReadyApproval,
     SSOApplyTokenHandler.Approval,
+    SSOApplyTokenHandler.MintPublishSuccess,
     SSOApplyTokenHandler.MintSuccess
 )
 annotation class SSOApplyTokenStatus
@@ -75,9 +76,14 @@ class SSOApplyTokenHandler(
         const val Approval = 5
 
         /**
+         * publish publish 成功
+         */
+        const val MintPublishSuccess = 6
+
+        /**
          * Mint 成功
          */
-        const val MintSuccess = 6
+        const val MintSuccess = 7
     }
 
 

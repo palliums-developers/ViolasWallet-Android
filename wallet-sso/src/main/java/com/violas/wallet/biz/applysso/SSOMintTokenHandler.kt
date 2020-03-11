@@ -2,6 +2,7 @@ package com.violas.wallet.biz.applysso
 
 import androidx.annotation.WorkerThread
 import com.violas.wallet.biz.applysso.handler.MintTokenHandler
+import com.violas.wallet.biz.applysso.handler.PublishTokenHandler
 import com.violas.wallet.biz.applysso.handler.SendMintTokenSuccessHandler
 import com.violas.wallet.repository.DataRepository
 import org.palliums.violascore.wallet.Account
@@ -26,17 +27,22 @@ class SSOMintTokenHandler(
     private val walletLayersNumber: Long
 ) {
 
-    private val mGovernorService by lazy {
-        DataRepository.getGovernorService()
-    }
-
     @WorkerThread
     suspend fun exec(): Boolean {
         val applyEngine = ApplyEngine()
-        val findUnDoneRecord = applyEngine.getUnMintRecord(mintTokenAddress,SSOApplyWalletAddress)
+        val findUnDoneRecord = applyEngine.getUnMintRecord(mintTokenAddress, SSOApplyWalletAddress)
         val layerWallet = findUnDoneRecord?.childNumber ?: walletLayersNumber
 
         val mintAccount = LibraWallet(WalletConfig(mnemonics)).generateAccount(layerWallet)
+
+        applyEngine.addApplyHandle(
+            PublishTokenHandler(
+                account.getAddress().toHex(),
+                layerWallet,
+                mintTokenAddress,
+                mintAccount
+            )
+        )
 
         applyEngine.addApplyHandle(
             MintTokenHandler(

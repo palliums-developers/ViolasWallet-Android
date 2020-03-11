@@ -63,7 +63,7 @@ class ApplyEngine {
     fun execMint(status: Int? = SSOApplyTokenHandler.Approval): Boolean {
         val currentStatus = status ?: SSOApplyTokenHandler.Approval
         var isSuccess = false
-        for (index in SSOApplyTokenHandler.None until currentStatus) {
+        for (index in SSOApplyTokenHandler.Approval until currentStatus) {
             mApplyHandles.removeAt(0)
         }
         for (item in mApplyHandles) {
