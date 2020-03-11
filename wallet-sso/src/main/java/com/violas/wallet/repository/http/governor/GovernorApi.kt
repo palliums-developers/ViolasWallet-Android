@@ -35,7 +35,7 @@ interface GovernorApi {
      * 获取vstake地址
      */
     @GET("/1.0/violas/governor/vstake/address")
-    suspend fun getVStakeAddress(): Response<String>
+    suspend fun getVStakeAddress(): Response<VstakeAddressDTO>
 
     /**
      * 获取SSO申请消息

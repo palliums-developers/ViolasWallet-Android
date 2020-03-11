@@ -102,7 +102,7 @@ class GovernorManager {
         account: Account
     ) = withContext(Dispatchers.IO) {
         val vStakeAddress = try {
-            mGovernorService.getVStakeAddress().data!!
+            mGovernorService.getVStakeAddress().data?.address!!
         } catch (e: Exception) {
             if (BuildConfig.MOCK_GOVERNOR_DATA) {
                 account.getAddress().toHex()

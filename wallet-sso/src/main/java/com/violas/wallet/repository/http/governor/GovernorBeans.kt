@@ -85,3 +85,8 @@ data class SSOApplicationDetailsDTO(
     @SerializedName("subaccount_number")
     val walletLayersNumber: Long = -1               // 铸币账户的钱包层数，在申请状态为pass之后才有
 )
+
+data class VstakeAddressDTO(
+    @SerializedName("address")
+    val address: String
+)
