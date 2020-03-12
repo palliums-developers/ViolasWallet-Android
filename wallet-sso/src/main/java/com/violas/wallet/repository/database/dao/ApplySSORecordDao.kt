@@ -32,8 +32,8 @@ interface ApplySSORecordDao : BaseDao<ApplySSORecordDo> {
         @SSOApplyTokenStatus status: Int
     )
 
-    @Query("SELECT * FROM apply_sso_record WHERE status >= 5 AND token_address = :mintTokenAddress AND sso_wallet_address = :SSOApplyWalletAddress")
-    fun findUnMintRecord(mintTokenAddress: String, SSOApplyWalletAddress: String): ApplySSORecordDo?
+    @Query("SELECT * FROM apply_sso_record WHERE status >= 5 AND wallet_address = :walletAddress AND token_address = :mintTokenAddress AND sso_wallet_address = :SSOApplyWalletAddress")
+    fun findUnMintRecord(walletAddress: String,mintTokenAddress: String, SSOApplyWalletAddress: String): ApplySSORecordDo?
 
     @Query("DELETE from apply_sso_record WHERE child_number = :layerWallet AND wallet_address = :accountAddress")
     fun remove(accountAddress: String, layerWallet: Long)

@@ -30,7 +30,11 @@ class SSOMintTokenHandler(
     @WorkerThread
     suspend fun exec(): Boolean {
         val applyEngine = ApplyEngine()
-        val findUnDoneRecord = applyEngine.getUnMintRecord(mintTokenAddress, SSOApplyWalletAddress)
+        val findUnDoneRecord = applyEngine.getUnMintRecord(
+            account.getAddress().toHex(),
+            mintTokenAddress,
+            SSOApplyWalletAddress
+        )
         val layerWallet = findUnDoneRecord?.childNumber ?: walletLayersNumber
 
         val mintAccount = LibraWallet(WalletConfig(mnemonics)).generateAccount(layerWallet)

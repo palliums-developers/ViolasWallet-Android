@@ -18,8 +18,8 @@ class PublishTokenHandler(
         val countDownLatch = CountDownLatch(1)
         var isSuccess = false
 
-        isSuccess =
-            DataRepository.getViolasService().checkTokenRegister(accountAddress, tokenAddress)
+        isSuccess = DataRepository.getViolasService()
+            .checkTokenRegister(mintAccount.getAddress().toHex(), tokenAddress)
 
         if (!isSuccess) {
             DataRepository.getViolasService().publishToken(
