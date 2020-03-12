@@ -1,6 +1,7 @@
 package com.violas.wallet.biz.applysso.handler
 
 import com.palliums.content.ContextProvider
+import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.applysso.SSOApplyTokenHandler
 import com.violas.wallet.repository.DataRepository
 import org.palliums.violascore.wallet.Account
@@ -16,13 +17,19 @@ class PublishTokenHandler(
     override fun handler(): Boolean {
         val countDownLatch = CountDownLatch(1)
         var isSuccess = false
-        DataRepository.getViolasService().publishToken(
-            ContextProvider.getContext(),
-            mintAccount,
-            tokenAddress
-        ) {
-            isSuccess = it
-            countDownLatch.countDown()
+
+        isSuccess =
+            DataRepository.getViolasService().checkTokenRegister(accountAddress, tokenAddress)
+
+        if (!isSuccess) {
+            DataRepository.getViolasService().publishToken(
+                ContextProvider.getContext(),
+                mintAccount,
+                tokenAddress
+            ) {
+                isSuccess = it
+                countDownLatch.countDown()
+            }
         }
         if (isSuccess) {
             getServiceProvider()!!.getApplySsoRecordDao()
