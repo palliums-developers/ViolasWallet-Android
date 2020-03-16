@@ -24,7 +24,7 @@ class ApplyEngine {
 
     fun execSSOApply(status: Int? = SSOApplyTokenHandler.None): Boolean {
         val currentStatus = status ?: SSOApplyTokenHandler.None
-        var isSuccess = false
+        var isSuccess = true
         for (index in SSOApplyTokenHandler.None until currentStatus) {
             mApplyHandles.removeAt(0)
         }
