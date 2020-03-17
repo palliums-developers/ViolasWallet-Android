@@ -144,4 +144,21 @@ class GovernorRepository(private val api: GovernorApi) {
 }""".toRequestBody("application/json".toMediaTypeOrNull())
             api.changeSSOApplicationToMinted(requestBody)
         }
+
+    /**
+     * 登录桌面端钱包
+     */
+    suspend fun loginDesktop(
+        walletAddress: String,
+        type: Int,
+        signedSessionId: String
+    ) =
+        checkResponse {
+            val requestBody = """{
+    "address":"$walletAddress",
+    "type":$type,
+    "session_id":"$signedSessionId"
+}""".toRequestBody("application/json".toMediaTypeOrNull())
+            api.loginDesktop(requestBody)
+        }
 }

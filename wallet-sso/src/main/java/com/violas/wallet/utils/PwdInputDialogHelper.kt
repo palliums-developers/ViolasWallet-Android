@@ -2,6 +2,7 @@ package com.violas.wallet.utils
 
 import com.palliums.base.BaseActivity
 import com.palliums.base.BaseFragment
+import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -252,4 +253,74 @@ fun BaseActivity.showPwdInputDialog(
             }
         }
         .show(supportFragmentManager)
+}
+
+fun BaseActivity.decryptAccount(
+    accountDO: AccountDO,
+    pwd: String,
+    showLoadingWhenVerifyPwd: Boolean = true,
+    pwdErrorCallback: () -> Unit,
+    accountCallback: (account: Account) -> Unit
+) {
+    if (pwd.isEmpty()) {
+        showToast(getString(R.string.hint_please_input_password))
+        return
+    }
+
+    try {
+        PasswordCheckUtil.check(pwd)
+    } catch (e: Throwable) {
+        showToast(
+            when (e) {
+                is PasswordLengthShortException ->
+                    R.string.hint_please_minimum_password_length
+                is PasswordLengthLongException ->
+                    R.string.hint_please_maxmum_password_length
+                is PasswordSpecialFailsException ->
+                    R.string.hint_please_cannot_contain_special_characters
+                is PasswordValidationFailsException ->
+                    R.string.hint_please_password_rules_are_wrong
+                is PasswordEmptyException ->
+                    R.string.hint_please_password_not_empty
+                else ->
+                    R.string.hint_please_password_not_empty
+            }
+        )
+
+        pwdErrorCallback.invoke()
+        return
+    }
+
+    launch(Dispatchers.Main) {
+        if (showLoadingWhenVerifyPwd) {
+            showProgress()
+        }
+
+        val account: Account? = withContext(Dispatchers.IO) {
+            val simpleSecurity =
+                SimpleSecurity.instance(applicationContext)
+
+            val privateKeyBytes = simpleSecurity.decrypt(
+                pwd.toByteArray(), accountDO.privateKey
+            )
+
+            if (privateKeyBytes != null) {
+                return@withContext Account(KeyPair.fromSecretKey(privateKeyBytes))
+            }
+
+            delay(500)
+            return@withContext null
+        }
+
+        if (account != null) {
+            accountCallback.invoke(account)
+        } else {
+            if (showLoadingWhenVerifyPwd) {
+                dismissProgress()
+            }
+
+            pwdErrorCallback.invoke()
+            showToast(getString(R.string.hint_password_error))
+        }
+    }
 }

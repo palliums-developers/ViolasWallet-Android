@@ -72,4 +72,10 @@ interface GovernorApi {
      */
     @PUT("/1.0/violas/sso/token/minted")
     suspend fun changeSSOApplicationToMinted(@Body body: RequestBody): Response<Any>
+
+    /**
+     * 登录桌面端钱包
+     */
+    @POST("/1.0/violas/governor/singin")
+    suspend fun loginDesktop(@Body body: RequestBody): Response<Any>
 }

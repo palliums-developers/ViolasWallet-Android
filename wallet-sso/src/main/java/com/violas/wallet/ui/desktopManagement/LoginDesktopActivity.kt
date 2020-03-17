@@ -1,13 +1,17 @@
 package com.violas.wallet.ui.desktopManagement
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewModel
+import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
+import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.utils.decryptAccount
 import kotlinx.android.synthetic.main.activity_login_desktop.*
 
 /**
@@ -18,8 +22,18 @@ import kotlinx.android.synthetic.main.activity_login_desktop.*
  */
 class LoginDesktopActivity : BaseViewModelActivity() {
 
+    companion object {
+        fun start(context: Context, sessionId: String) {
+            Intent(context, LoginDesktopActivity::class.java)
+                .apply { putExtra(KEY_ONE, sessionId) }
+                .start(context)
+        }
+    }
+
+    private lateinit var mSessionId: String
     private val mViewModel by lazy {
-        ViewModelProvider(this).get(LoginDesktopViewModel::class.java)
+        ViewModelProvider(this, LoginDesktopViewModelFactory(mSessionId))
+            .get(LoginDesktopViewModel::class.java)
     }
 
     override fun getLayoutResId(): Int {
@@ -33,31 +47,49 @@ class LoginDesktopActivity : BaseViewModelActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val sessionId = intent?.getStringExtra(KEY_ONE)
+        if (sessionId.isNullOrEmpty()) {
+            close()
+            return
+        }
+
+        mSessionId = sessionId
+
         btnConfirmLogin.setOnClickListener {
             login()
         }
-
         tvCancelLogin.setOnClickListener {
             close()
         }
-
         etLoginPwd.doAfterTextChanged {
-            if (mViewModel.mLoginPwdErrorLD.value == true) {
-                mViewModel.mLoginPwdErrorLD.value = false
+            if (tvLoginPwdErrorTips.visibility == View.VISIBLE) {
+                tvLoginPwdErrorTips.visibility = View.GONE
             }
         }
-
-        mViewModel.mLoginPwdErrorLD.observe(this, Observer {
-            tvLoginPwdErrorTips.visibility = if (it) View.VISIBLE else View.GONE
-        })
     }
 
     private fun login() {
-        // TODO 登录逻辑
-        mViewModel.execute(
-            etLoginPwd.text.toString().trim(),
-            successCallback = {
-                // 登录成功后的处理
+        val accountDO = mViewModel.mAccountLD.value ?: return
+
+        val pwd = etLoginPwd.text.toString().trim()
+        if (pwd.isEmpty()) {
+            showToast(R.string.hint_input_login_pwd)
+            return
+        }
+
+        decryptAccount(
+            accountDO = accountDO,
+            pwd = pwd,
+            pwdErrorCallback = {
+                if (tvLoginPwdErrorTips.visibility != View.VISIBLE) {
+                    tvLoginPwdErrorTips.visibility = View.VISIBLE
+                }
+            },
+            accountCallback = {
+                mViewModel.execute(it, successCallback = {
+                    // 登录成功后的处理
+                    close()
+                })
             }
         )
     }

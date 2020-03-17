@@ -1,14 +1,17 @@
 package com.violas.wallet.ui.desktopManagement
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
-import com.palliums.utils.getString
-import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.palliums.violascore.serialization.toHex
+import org.palliums.violascore.wallet.Account
 
 /**
  * Created by elephant on 2020/3/16 16:21.
@@ -16,10 +19,25 @@ import kotlinx.coroutines.launch
  * <p>
  * desc:
  */
-class LoginDesktopViewModel : BaseViewModel() {
+class LoginDesktopViewModelFactory(
+    private val mSessionId: String
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return modelClass
+            .getConstructor(String::class.java)
+            .newInstance(mSessionId)
+    }
+}
+
+class LoginDesktopViewModel(
+    private val mSessionId: String
+) : BaseViewModel() {
 
     val mAccountLD = MutableLiveData<AccountDO>()
-    val mLoginPwdErrorLD = MutableLiveData<Boolean>(false)
+
+    private val mGovernorService by lazy {
+        DataRepository.getGovernorService()
+    }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -29,17 +47,18 @@ class LoginDesktopViewModel : BaseViewModel() {
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        // TODO 登录逻辑
+        val account = params[0] as Account
+        val signedSessionId = account.keyPair.sign(mSessionId.toByteArray()).toHex()
+
+        mGovernorService.loginDesktop(
+            walletAddress = mAccountLD.value!!.address,
+            type = 1,
+            signedSessionId = signedSessionId
+        )
     }
 
     override fun checkParams(action: Int, vararg params: Any): Boolean {
         if (params.isEmpty() || mAccountLD.value == null) {
-            return false
-        }
-
-        val pwd = params[0] as String
-        if (pwd.isEmpty()) {
-            tipsMessage.postValueSupport(getString(R.string.hint_input_login_pwd))
             return false
         }
 
