@@ -32,6 +32,7 @@ class ApplyEngine {
             val handler = item.handler()
             if (!handler) {
                 isSuccess = false
+                Log.e("ApplyEngine", "ApplyEngine error ${item.javaClass.simpleName}")
                 break
             }
         }
@@ -70,7 +71,7 @@ class ApplyEngine {
 
     fun execMint(status: Int? = SSOApplyTokenHandler.Approval): Boolean {
         val currentStatus = status ?: SSOApplyTokenHandler.Approval
-        var isSuccess = false
+        var isSuccess = true
         for (index in SSOApplyTokenHandler.Approval until currentStatus) {
             mApplyHandles.removeAt(0)
         }
