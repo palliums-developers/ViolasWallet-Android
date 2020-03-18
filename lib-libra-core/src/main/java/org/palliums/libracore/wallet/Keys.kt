@@ -138,4 +138,24 @@ class KeyPair(
         edDSAEngine.update(sha3256.digest())
         return edDSAEngine.sign()
     }
+
+    fun signSimple(data: ByteArray): ByteArray {
+        val sha3256 = SHA3.Digest256()
+        sha3256.update(data)
+
+        val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
+        edDSAEngine.initSign(mEdDSAPrivateKey)
+        edDSAEngine.update(sha3256.digest())
+        return edDSAEngine.sign()
+    }
+
+    fun verifySimple(data: ByteArray, signedData: ByteArray): Boolean {
+        val sha3256 = SHA3.Digest256()
+        sha3256.update(data)
+
+        val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
+        edDSAEngine.initVerify(mEdDSAPublicKey)
+        edDSAEngine.update(sha3256.digest())
+        return edDSAEngine.verify(signedData)
+    }
 }
