@@ -259,7 +259,7 @@ fun BaseActivity.decryptAccount(
     accountDO: AccountDO,
     pwd: String,
     showLoadingWhenVerifyPwd: Boolean = true,
-    pwdErrorCallback: () -> Unit,
+    pwdErrorCallback: (() -> Unit)? = null,
     accountCallback: (account: Account) -> Unit
 ) {
     if (pwd.isEmpty()) {
@@ -287,7 +287,7 @@ fun BaseActivity.decryptAccount(
             }
         )
 
-        pwdErrorCallback.invoke()
+        pwdErrorCallback?.invoke()
         return
     }
 
@@ -319,7 +319,7 @@ fun BaseActivity.decryptAccount(
                 dismissProgress()
             }
 
-            pwdErrorCallback.invoke()
+            pwdErrorCallback?.invoke()
             showToast(getString(R.string.hint_password_error))
         }
     }

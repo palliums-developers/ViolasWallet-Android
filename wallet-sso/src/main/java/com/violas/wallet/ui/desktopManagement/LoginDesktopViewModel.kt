@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.SCAN_ACTION_LOGIN_DESKTOP
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import kotlinx.coroutines.Dispatchers
@@ -48,11 +49,11 @@ class LoginDesktopViewModel(
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
         val account = params[0] as Account
-        val signedSessionId = account.keyPair.sign(mSessionId.toByteArray()).toHex()
+        val signedSessionId = account.keyPair.signSimple(mSessionId.toByteArray()).toHex()
 
         mGovernorService.loginDesktop(
             walletAddress = mAccountLD.value!!.address,
-            type = 1,
+            type = SCAN_ACTION_LOGIN_DESKTOP,
             signedSessionId = signedSessionId
         )
     }

@@ -53,7 +53,13 @@ class GovernorManager {
         txid: String,
         toxid: String = ""
     ) {
-        mGovernorService.signUpGovernor(accountDO.address, accountDO.walletNickname, txid, toxid)
+        mGovernorService.signUpGovernor(
+            accountDO.address,
+            accountDO.publicKey,
+            accountDO.walletNickname,
+            txid,
+            toxid
+        )
     }
 
     /**

@@ -18,11 +18,8 @@ import com.takusemba.spotlight.Spotlight
 import com.takusemba.spotlight.Target
 import com.takusemba.spotlight.shape.RoundedRectangle
 import com.violas.wallet.R
-import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.TokenManager
-import com.violas.wallet.biz.WalletType
+import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertToken
-import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.event.BackupMnemonicEvent
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
@@ -32,9 +29,11 @@ import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.collection.CollectionActivity
+import com.violas.wallet.ui.desktopManagement.LoginDesktopActivity
 import com.violas.wallet.ui.identity.IdentityActivity
 import com.violas.wallet.ui.record.TransactionRecordActivity
 import com.violas.wallet.ui.scan.ScanActivity
+import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
@@ -461,19 +460,30 @@ class WalletFragment : BaseFragment() {
             }
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { coinType, address, amount, tokenName ->
-                        Log.e(
-                            "====",
-                            "coinType:$coinType address:$address amount:$amount tokenName:$tokenName"
-                        )
-                        activity?.let {
-                            TransferActivity.start(
-                                it,
-                                coinType,
-                                address,
-                                amount,
-                                tokenName
-                            )
+                    decodeScanQRCode(msg) { scanType, scanBean ->
+                        when (scanType) {
+                            ScanCodeType.Address -> {
+                                scanBean as ScanTranBean
+                                activity?.let {
+                                    TransferActivity.start(
+                                        it,
+                                        scanBean.coinType,
+                                        scanBean.address,
+                                        scanBean.amount,
+                                        scanBean.tokenName
+                                    )
+                                }
+                            }
+                            ScanCodeType.Text -> {
+                                activity?.let {
+                                    ScanResultActivity.start(it, scanBean.msg)
+                                }
+                            }
+                            ScanCodeType.LoginDesktop -> {
+                                activity?.let {
+                                    LoginDesktopActivity.start(it, scanBean.msg)
+                                }
+                            }
                         }
                     }
                 }

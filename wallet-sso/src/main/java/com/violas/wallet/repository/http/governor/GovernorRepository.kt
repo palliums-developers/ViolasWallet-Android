@@ -17,6 +17,7 @@ class GovernorRepository(private val api: GovernorApi) {
      */
     suspend fun signUpGovernor(
         walletAddress: String,
+        publicKey: String,
         name: String,
         txid: String,
         toxid: String = ""
@@ -24,6 +25,7 @@ class GovernorRepository(private val api: GovernorApi) {
         checkResponse {
             val requestBody = """{
     "wallet_address":"$walletAddress",
+    "public_key":"$publicKey",
     "name":"$name",
     "txid":"$txid",
     "toxid":"$toxid"

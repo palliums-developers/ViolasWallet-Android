@@ -17,3 +17,5 @@ const val EXTRA_KEY_SSO_MSG = "EXTRA_KEY_SSO_MSG"
 const val  KEY_ONE = "KEY_ONE"
 const val  KEY_TWO = "KEY_TWO"
 const val  KEY_THREE = "KEY_THREE"
+
+const val SCAN_ACTION_LOGIN_DESKTOP = 1

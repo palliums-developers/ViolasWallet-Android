@@ -106,7 +106,7 @@ abstract class BaseAppActivity : BaseActivity() {
             }
 
             PAGE_STYLE_CUSTOM -> {
-                setTitleBarVisibility(View.GONE)
+
             }
         }
     }

@@ -22,6 +22,14 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+    <style name="AppTheme.Main">
+        <item name="android:windowAnimationStyle">@style/MainWindowAnimation</item>
+    </style>
+
+    <style name="AppTheme.ScanLogin">
+        <item name="android:windowAnimationStyle">@style/ScanLoginWindowAnimation</item>
+    </style>
+
     <style name="AppWindowAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/activity_right_in</item>
         <item name="android:activityOpenExitAnimation">@anim/activity_left_out</item>
@@ -31,9 +39,23 @@
 
     <style name="LauncherWindowAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/activity_fade_in</item>
+        <item name="android:activityOpenExitAnimation">@null</item>
+        <item name="android:activityCloseEnterAnimation">@null</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_fade_out</item>
+    </style>
+
+    <style name="MainWindowAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_fade_in</item>
         <item name="android:activityOpenExitAnimation">@anim/activity_fade_out</item>
         <item name="android:activityCloseEnterAnimation">@null</item>
         <item name="android:activityCloseExitAnimation">@null</item>
+    </style>
+
+    <style name="ScanLoginWindowAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_bottom_in</item>
+        <item name="android:activityOpenExitAnimation">@null</item>
+        <item name="android:activityCloseEnterAnimation">@null</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_bottom_out</item>
     </style>
 
     <style name="BaseButton" parent="Widget.AppCompat.Button.Borderless">
