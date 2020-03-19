@@ -104,21 +104,29 @@ class ApplyForMintActivity
                         showToast(R.string.hint_password_error)
                         return@launch
                     }
-                    DataRepository.getViolasService()
-                        .publishToken(
-                            applicationContext,
-                            Account(KeyPair.fromSecretKey(decrypt)),
-                            assertToken.tokenAddress
-                        ) {
-                            dismissProgress()
-                            if (!it) {
-                                showToast(getString(R.string.hint_mint_condition_error))
-                            } else {
-                                EventBus.getDefault().post(RefreshBalanceEvent())
-                                mTokenManager.insert(true, assertToken)
-                                success.invoke()
+                    val checkTokenRegister = DataRepository.getViolasService().checkTokenRegister(
+                        Account(KeyPair.fromSecretKey(decrypt)).getAddress().toHex(),
+                        assertToken.tokenAddress
+                    )
+                    if (checkTokenRegister) {
+                        success.invoke()
+                    } else {
+                        DataRepository.getViolasService()
+                            .publishToken(
+                                applicationContext,
+                                Account(KeyPair.fromSecretKey(decrypt)),
+                                assertToken.tokenAddress
+                            ) {
+                                dismissProgress()
+                                if (!it) {
+                                    showToast(getString(R.string.hint_mint_condition_error))
+                                } else {
+                                    EventBus.getDefault().post(RefreshBalanceEvent())
+                                    mTokenManager.insert(true, assertToken)
+                                    success.invoke()
+                                }
                             }
-                        }
+                    }
                 }
             }
             .show(supportFragmentManager)
