@@ -119,17 +119,19 @@ class GovernorRepository(private val api: GovernorApi) {
      * 审批SSO申请
      */
     suspend fun approvalSSOApplication(
-        pass: Boolean,
-        newTokenAddress: String,
+        ssoApplicationId: String,
         ssoWalletAddress: String,
-        walletLayersNumber: Long
+        newTokenAddress: String,
+        walletLayersNumber: Long,
+        pass: Boolean
     ) =
         checkResponse {
             val requestBody = """{
-    "approval_status":${if (pass) 1 else 2},
-    "module_address":"${if (pass) newTokenAddress else ""}",
+    "id":"$ssoApplicationId",
     "wallet_address":"$ssoWalletAddress",
-    "subaccount_number":$walletLayersNumber
+    "module_address":"${if (pass) newTokenAddress else ""}",
+    "subaccount_number":$walletLayersNumber,
+    "approval_status":${if (pass) 1 else 2}
 }""".toRequestBody("application/json".toMediaTypeOrNull())
             api.approvalSSOApplication(requestBody)
         }
@@ -138,10 +140,12 @@ class GovernorRepository(private val api: GovernorApi) {
      * 改变SSO申请状态为已铸币
      */
     suspend fun changeSSOApplicationToMinted(
+        ssoApplicationId: String,
         ssoWalletAddress: String
     ) =
         checkResponse {
             val requestBody = """{
+    "id":"$ssoApplicationId",
     "wallet_address":"$ssoWalletAddress"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
             api.changeSSOApplicationToMinted(requestBody)

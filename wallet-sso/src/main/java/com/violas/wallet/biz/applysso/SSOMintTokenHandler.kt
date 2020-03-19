@@ -21,10 +21,11 @@ import org.palliums.violascore.wallet.WalletConfig
 class SSOMintTokenHandler(
     private val account: Account,
     private val mnemonics: List<String>,
-    private val SSOApplyWalletAddress: String,
-    private val SSOApplyAmount: Long,
+    private val ssoApplyWalletAddress: String,
+    private val ssoApplyAmount: Long,
     private val mintTokenAddress: String,
-    private val walletLayersNumber: Long
+    private val walletLayersNumber: Long,
+    private val ssoApplicationId: String
 ) {
 
     @WorkerThread
@@ -33,7 +34,7 @@ class SSOMintTokenHandler(
         val findUnDoneRecord = applyEngine.getUnMintRecord(
             account.getAddress().toHex(),
             mintTokenAddress,
-            SSOApplyWalletAddress
+            ssoApplyWalletAddress
         )
         val layerWallet = findUnDoneRecord?.childNumber ?: walletLayersNumber
 
@@ -54,8 +55,8 @@ class SSOMintTokenHandler(
                 layerWallet,
                 mintTokenAddress,
                 mintAccount,
-                SSOApplyWalletAddress,
-                SSOApplyAmount
+                ssoApplyWalletAddress,
+                ssoApplyAmount
             )
         )
 
@@ -63,7 +64,8 @@ class SSOMintTokenHandler(
             SendMintTokenSuccessHandler(
                 account.getAddress().toHex(),
                 layerWallet,
-                SSOApplyWalletAddress
+                ssoApplyWalletAddress,
+                ssoApplicationId
             )
         )
 

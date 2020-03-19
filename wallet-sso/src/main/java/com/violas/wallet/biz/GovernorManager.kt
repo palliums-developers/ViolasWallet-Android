@@ -319,14 +319,15 @@ class GovernorManager {
      * 审批SSO申请通过
      */
     suspend fun passSSOApplication(
-        ssoWalletAddress: String,
+        ssoApplicationDetails: SSOApplicationDetailsDTO,
         account: Account,
         mnemonics: List<String>
     ) {
         var result = mApplySSOManager.apply(
-            applySSOWalletAddress = ssoWalletAddress,
             account = account,
-            mnemonic = mnemonics
+            mnemonic = mnemonics,
+            applySSOWalletAddress = ssoApplicationDetails.ssoWalletAddress,
+            ssoApplicationId = ssoApplicationDetails.applicationId
         )
 
         if (BuildConfig.MOCK_GOVERNOR_DATA) {
@@ -347,13 +348,14 @@ class GovernorManager {
     /**
      * 审批SSO申请不通过
      */
-    suspend fun rejectSSOApplication(ssoWalletAddress: String) {
+    suspend fun rejectSSOApplication(ssoApplicationDetails: SSOApplicationDetailsDTO) {
         try {
             mGovernorService.approvalSSOApplication(
-                pass = false,
+                ssoApplicationId = ssoApplicationDetails.applicationId,
+                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
                 newTokenAddress = "",
-                ssoWalletAddress = ssoWalletAddress,
-                walletLayersNumber = -1
+                walletLayersNumber = -1,
+                pass = false
             )
         } catch (e: Exception) {
             if (!BuildConfig.MOCK_GOVERNOR_DATA) {
@@ -376,7 +378,8 @@ class GovernorManager {
             walletLayersNumber = ssoApplicationDetails.walletLayersNumber,
             tokenAddress = ssoApplicationDetails.tokenAddress!!,
             receiveAddress = ssoApplicationDetails.ssoWalletAddress,
-            receiveAmount = ssoApplicationDetails.tokenAmount.toLong()
+            receiveAmount = ssoApplicationDetails.tokenAmount.toLong(),
+            ssoApplicationId = ssoApplicationDetails.applicationId
         )
 
         if (BuildConfig.MOCK_GOVERNOR_DATA) {

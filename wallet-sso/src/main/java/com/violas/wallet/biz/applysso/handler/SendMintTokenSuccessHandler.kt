@@ -5,14 +5,15 @@ import kotlinx.coroutines.runBlocking
 class SendMintTokenSuccessHandler(
     private val accountAddress: String,
     private val layerWallet: Long,
-    private val ssoApplyAddress: String
+    private val ssoApplyAddress: String,
+    private val ssoApplicationId: String
 ) : ApplyHandle() {
 
     override fun handler(): Boolean {
         return runBlocking {
             try {
                 getServiceProvider()!!.getGovernorService()
-                    .changeSSOApplicationToMinted(ssoApplyAddress)
+                    .changeSSOApplicationToMinted(ssoApplicationId, ssoApplyAddress)
                 getServiceProvider()!!.getApplySsoRecordDao()
                     .remove(
                         accountAddress,

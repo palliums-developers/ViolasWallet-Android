@@ -7,7 +7,8 @@ class SendApplySSOHandle(
     private val accountAddress: String,
     private val layerWallet: Long,
     private val mintTokenAddress: String,
-    private val SSOApplyWalletAddress: String,
+    private val ssoApplyWalletAddress: String,
+    private val ssoApplicationId: String,
     private val pass: Boolean = true
 ) : ApplyHandle() {
     override fun handler(): Boolean {
@@ -16,10 +17,11 @@ class SendApplySSOHandle(
             try {
                 getServiceProvider()!!.getGovernorService()
                     .approvalSSOApplication(
-                        pass,
+                        ssoApplicationId,
+                        ssoApplyWalletAddress,
                         mintTokenAddress,
-                        SSOApplyWalletAddress,
-                        layerWallet
+                        layerWallet,
+                        pass
                     )
                 if (pass) {
                     getServiceProvider()?.getApplySsoRecordDao()?.updateRecordStatus(

@@ -42,7 +42,8 @@ annotation class SSOApplyTokenStatus
 class SSOApplyTokenHandler(
     private val account: Account,
     private val mnemonics: List<String>,
-    private var SSOApplyWalletAddress: String
+    private val ssoApplyWalletAddress: String,
+    private val ssoApplicationId: String
 ) {
     companion object {
         /**
@@ -96,7 +97,7 @@ class SSOApplyTokenHandler(
         val applyEngine = ApplyEngine()
 
         val findUnDoneRecord =
-            applyEngine.getUnDoneRecord(account.getAddress().toHex(), SSOApplyWalletAddress)
+            applyEngine.getUnDoneRecord(account.getAddress().toHex(), ssoApplyWalletAddress)
         val layerWallet = if (findUnDoneRecord == null) {
             //todo net work error
             mGovernorService.getGovernorInfo(
@@ -138,7 +139,7 @@ class SSOApplyTokenHandler(
                 account.getAddress().toHex(),
                 layerWallet,
                 account,
-                SSOApplyWalletAddress,
+                ssoApplyWalletAddress,
                 100 * 1000000,
                 mintAccount.getAddress().toHex()
             )
@@ -148,7 +149,8 @@ class SSOApplyTokenHandler(
                 account.getAddress().toHex(),
                 layerWallet,
                 mintAccount.getAddress().toHex(),
-                SSOApplyWalletAddress
+                ssoApplyWalletAddress,
+                ssoApplicationId
             )
         )
 

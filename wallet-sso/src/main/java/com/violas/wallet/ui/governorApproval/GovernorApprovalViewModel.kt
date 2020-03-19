@@ -68,15 +68,13 @@ class GovernorApprovalViewModel(
         if (pass) {
             // 审批通过
             mGovernorManager.passSSOApplication(
-                ssoWalletAddress = mSSOApplicationDetailsLD.value!!.ssoWalletAddress,
+                ssoApplicationDetails = mSSOApplicationDetailsLD.value!!,
                 account = params[1] as Account,
                 mnemonics = params[2] as List<String>
             )
         } else {
             // 审批不通过
-            mGovernorManager.rejectSSOApplication(
-                mSSOApplicationDetailsLD.value!!.ssoWalletAddress
-            )
+            mGovernorManager.rejectSSOApplication(mSSOApplicationDetailsLD.value!!)
         }
 
         // 审批操作成功后更新本地消息状态
