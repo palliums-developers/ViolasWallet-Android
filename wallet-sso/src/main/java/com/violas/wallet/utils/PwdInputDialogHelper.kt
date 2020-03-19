@@ -61,7 +61,9 @@ fun BaseFragment.showPwdInputDialog(
                             if (privateKeyBytes != null) {
                                 account = Account(KeyPair.fromSecretKey(privateKeyBytes))
                             } else {
-                                delay(500)
+                                if (showLoadingWhenVerifyPwd) {
+                                    delay(500)
+                                }
                             }
                         }
 
@@ -76,7 +78,9 @@ fun BaseFragment.showPwdInputDialog(
                                     .split(",")
                                     .map { it.trim() }
                             } else {
-                                delay(500)
+                                if (showLoadingWhenVerifyPwd) {
+                                    delay(500)
+                                }
                             }
                         }
 
@@ -96,7 +100,9 @@ fun BaseFragment.showPwdInputDialog(
                                     .split(",")
                                     .map { it.trim() }
                             } else {
-                                delay(500)
+                                if (showLoadingWhenVerifyPwd) {
+                                    delay(500)
+                                }
                             }
                         }
                     }
@@ -178,7 +184,9 @@ fun BaseActivity.showPwdInputDialog(
                             if (privateKeyBytes != null) {
                                 account = Account(KeyPair.fromSecretKey(privateKeyBytes))
                             } else {
-                                delay(500)
+                                if (showLoadingWhenVerifyPwd) {
+                                    delay(500)
+                                }
                             }
                         }
 
@@ -193,7 +201,9 @@ fun BaseActivity.showPwdInputDialog(
                                     .split(",")
                                     .map { it.trim() }
                             } else {
-                                delay(500)
+                                if (showLoadingWhenVerifyPwd) {
+                                    delay(500)
+                                }
                             }
                         }
 
@@ -213,7 +223,9 @@ fun BaseActivity.showPwdInputDialog(
                                     .split(",")
                                     .map { it.trim() }
                             } else {
-                                delay(500)
+                                if (showLoadingWhenVerifyPwd) {
+                                    delay(500)
+                                }
                             }
                         }
                     }
@@ -308,7 +320,9 @@ fun BaseActivity.decryptAccount(
                 return@withContext Account(KeyPair.fromSecretKey(privateKeyBytes))
             }
 
-            delay(500)
+            if (showLoadingWhenVerifyPwd) {
+                delay(500)
+            }
             return@withContext null
         }
 
