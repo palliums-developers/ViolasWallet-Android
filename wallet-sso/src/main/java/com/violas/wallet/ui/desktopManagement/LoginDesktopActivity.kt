@@ -40,13 +40,15 @@ class LoginDesktopActivity : BaseViewModelActivity() {
         return R.layout.activity_login_desktop
     }
 
+    override fun getPageStyle(): Int {
+        return PAGE_STYLE_CUSTOM
+    }
+
     override fun getViewModel(): BaseViewModel {
         return mViewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
         val sessionId = intent?.getStringExtra(KEY_ONE)
         if (sessionId.isNullOrEmpty()) {
             close()
@@ -54,6 +56,11 @@ class LoginDesktopActivity : BaseViewModelActivity() {
         }
 
         mSessionId = sessionId
+        super.onCreate(savedInstanceState)
+
+        setStatusBarMode(true)
+        setRootBackgroundColor(R.color.def_page_bg_light_secondary)
+        setTitleLeftViewVisibility(View.GONE)
 
         btnConfirmLogin.setOnClickListener {
             login()
@@ -84,13 +91,12 @@ class LoginDesktopActivity : BaseViewModelActivity() {
                 if (tvLoginPwdErrorTips.visibility != View.VISIBLE) {
                     tvLoginPwdErrorTips.visibility = View.VISIBLE
                 }
-            },
-            accountCallback = {
-                mViewModel.execute(it, successCallback = {
-                    // 登录成功后的处理
-                    close()
-                })
             }
-        )
+        ) {
+            mViewModel.execute(it) {
+                showToast(R.string.tips_scan_login_success)
+                close()
+            }
+        }
     }
 }

@@ -378,10 +378,13 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
     override fun showProgress(msg: String?) {
         try {
             launch {
-                mLoadingDialog?.dismiss()
-                mLoadingDialog = LoadingDialog()
-                    .setMessage(msg)
-                mLoadingDialog?.show(supportFragmentManager, "load")
+                if(mLoadingDialog == null){
+                    mLoadingDialog = LoadingDialog()
+                        .setMessage(msg)
+                    mLoadingDialog!!.show(supportFragmentManager, "load")
+                }else{
+                    mLoadingDialog!!.setMessage(msg)
+                }
             }
         } catch (e: Throwable) {
             e.printStackTrace()

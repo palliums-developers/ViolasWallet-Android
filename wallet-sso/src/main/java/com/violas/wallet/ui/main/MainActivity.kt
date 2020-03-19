@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.WorkerThread
 import com.palliums.utils.DensityUtility
@@ -66,6 +67,7 @@ class MainActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTitleBarVisibility(View.GONE)
         EventBus.getDefault().register(this)
         showProgress()
         launch(Dispatchers.IO) {

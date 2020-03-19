@@ -382,4 +382,6 @@
     <string name="tips_login_pwd_error">密码错误，请重新输入</string>
     <string name="action_confirm_login">确认登录</string>
     <string name="action_cancel_login">取消登录</string>
+    <string name="tips_scan_login_success">董事长桌面钱包已登录</string>
+    <string name="title_scan_result">Scan Result</string>
 </resources>

@@ -95,6 +95,24 @@ class WalletTest {
         )
     }
 
+    @Test
+    fun testSignSimpleAndVerifySimple() {
+        val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
+        val account = libraWallet.newAccount()
+
+        val data = "session_id_123"
+        val signedData = account.keyPair.signSimple(data.toByteArray())
+        println()
+        println("data sign simple: ${Hex.toHexString(signedData)}")
+
+        val result = account.keyPair.verifySimple(data.toByteArray(), signedData)
+
+        Assert.assertEquals(
+            result,
+            true
+        )
+    }
+
     private fun generateMnemonic(): List<String> {
         //         val mnemonicWords1 = LibraWallet.generateMnemonic()
         //         println()
