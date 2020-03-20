@@ -156,6 +156,7 @@ class ApplySubmitFragment : BaseFragment() {
     }
 
     private fun submitData(phone: String, email: String) {
+        showProgress()
         launch(Dispatchers.IO) {
             try {
                 val applyForIssuing = mApplyManager.applyForIssuing(
@@ -171,6 +172,7 @@ class ApplySubmitFragment : BaseFragment() {
                     phone,
                     email
                 )
+                dismissProgress()
                 if (applyForIssuing != null) {
                     when {
                         applyForIssuing.errorCode == 2000 -> {
@@ -189,6 +191,7 @@ class ApplySubmitFragment : BaseFragment() {
                     showToast(getString(R.string.hint_net_work_error))
                 }
             } catch (e: Exception) {
+                dismissProgress()
                 showToast(getString(R.string.hint_net_work_error))
                 e.printStackTrace()
             }
