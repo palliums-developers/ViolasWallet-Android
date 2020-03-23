@@ -3,10 +3,7 @@ package com.violas.wallet.ui.addressBook.add
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import cn.bertsir.zbar.Qr.Symbol.scanType
-import com.lxj.xpopup.XPopup
 import com.palliums.utils.start
-import com.palliums.widget.popup.AttachListPopupViewSupport
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity

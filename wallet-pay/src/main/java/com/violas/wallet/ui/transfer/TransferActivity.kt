@@ -167,14 +167,12 @@ abstract class TransferActivity : BaseAppActivity() {
                     decodeScanQRCode(msg) { scanType, scanBean ->
                         launch {
                             account?.let {
-                                when (scanType) {
-                                    ScanCodeType.Address -> {
-                                        scanBean as ScanTranBean
-                                        onScanAddressQr(scanBean.address)
-                                    }
-                                    ScanCodeType.Text -> {
-                                        onScanAddressQr(scanBean.msg)
-                                    }
+                                if (scanType == ScanCodeType.Address) {
+                                    scanBean as ScanTranBean
+                                    onScanAddressQr(scanBean.address)
+                                }
+                                else if (scanType == ScanCodeType.Text) {
+                                    onScanAddressQr(scanBean.msg)
                                 }
                             }
                         }

@@ -1,5 +1,7 @@
 package com.violas.wallet.biz
 
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
 import kotlinx.coroutines.Dispatchers
@@ -8,7 +10,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 enum class ScanCodeType {
-    Address, Text
+    Address, Text, Login
 }
 
 open class ScanBean(
@@ -24,20 +26,34 @@ class ScanTranBean(
     val tokenName: String? = null
 ) : ScanBean(msg)
 
+class ScanLoginBean(
+    msg: String,
+    val loginType: Int,
+    val sessionId: String
+) : ScanBean(msg)
+
 /**
  * 解析扫码内容
  * @param callback 回掉
- * @param msg 消息
+ * @param msg 二维码
  */
 fun decodeScanQRCode(
     msg: String,
-    callback: (scanType: ScanCodeType, msg: ScanBean) -> Unit
+    callback: (scanType: ScanCodeType, content: ScanBean) -> Unit
 ) {
     GlobalScope.launch(Dispatchers.IO) {
+        val loginQRCode = decodeLoginQRCode(msg)
+        if (loginQRCode != null) {
+            callback.invoke(
+                ScanCodeType.Login,
+                ScanLoginBean(msg, loginQRCode.type, loginQRCode.sessionId)
+            )
+            return@launch
+        }
 
-        val splitMsg = splitMsg(msg)
+        val tranQRCode = decodeTranQRCode(msg)
         var scanType = ScanCodeType.Address
-        val coinType = when (splitMsg.coinType?.toLowerCase(Locale.CHINA)) {
+        val coinType = when (tranQRCode.coinType?.toLowerCase(Locale.CHINA)) {
             CoinTypes.Bitcoin.fullName().toLowerCase(Locale.CHINA) -> {
                 if (Vm.TestNet) {
                     CoinTypes.BitcoinTest.coinType()
@@ -63,16 +79,16 @@ fun decodeScanQRCode(
                     ScanBean(msg)
                 )
             }
-            ScanCodeType.Address -> {
+            else -> {
                 callback.invoke(
                     scanType,
                     ScanTranBean(
                         msg,
                         coinType,
-                        splitMsg.address,
-                        splitMsg.amount,
-                        splitMsg.label,
-                        splitMsg.tokenName
+                        tranQRCode.address,
+                        tranQRCode.amount,
+                        tranQRCode.label,
+                        tranQRCode.tokenName
                     )
                 )
             }
@@ -80,7 +96,7 @@ fun decodeScanQRCode(
     }
 }
 
-data class QRCodeMsg(
+private data class TranQRCode(
     val coinType: String?,
     val address: String,
     var amount: Long = 0,
@@ -88,9 +104,9 @@ data class QRCodeMsg(
     val tokenName: String? = null
 )
 
-fun splitMsg(msg: String): QRCodeMsg {
+private fun decodeTranQRCode(msg: String): TranQRCode {
     if (!msg.contains(":")) {
-        return QRCodeMsg(null, msg)
+        return TranQRCode(null, msg)
     }
     var tokenName: String? = null
     val coinTypeSplit = msg.split(":")
@@ -127,5 +143,24 @@ fun splitMsg(msg: String): QRCodeMsg {
                 }
             }
     }
-    return QRCodeMsg(coinType, addressSplit[0], amount, label, tokenName)
+    return TranQRCode(coinType, addressSplit[0], amount, label, tokenName)
+}
+
+private data class LoginQRCode(
+    @SerializedName("type")
+    val type: Int,
+    @SerializedName("session_id")
+    val sessionId: String
+)
+
+private fun decodeLoginQRCode(content: String): LoginQRCode? {
+    return try {
+        val bean = Gson().fromJson(content, LoginQRCode::class.java)
+        if (bean.type > 0 && bean.sessionId.isNotEmpty())
+            bean
+        else
+            null
+    } catch (ignore: Exception) {
+        null
+    }
 }

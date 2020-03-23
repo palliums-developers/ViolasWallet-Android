@@ -31,6 +31,8 @@ import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
 import com.violas.wallet.ui.transfer.TransferActivity
+import com.violas.wallet.ui.webManagement.LoginWebActivity
+import com.violas.wallet.ui.webManagement.LoginWebActivity.Companion.SCAN_LOGIN_TYPE_WEB
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
@@ -399,9 +401,21 @@ class WalletFragment : BaseFragment() {
                                     )
                                 }
                             }
+
                             ScanCodeType.Text -> {
                                 activity?.let {
                                     ScanResultActivity.start(it, scanBean.msg)
+                                }
+                            }
+
+                            ScanCodeType.Login -> {
+                                scanBean as ScanLoginBean
+                                activity?.let {
+                                    if (scanBean.loginType == SCAN_LOGIN_TYPE_WEB) {
+                                        LoginWebActivity.start(it, scanBean.sessionId)
+                                    } else {
+                                        ScanResultActivity.start(it, scanBean.msg)
+                                    }
                                 }
                             }
                         }

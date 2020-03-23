@@ -31,7 +31,8 @@
         <activity
             android:name=".ui.main.MainActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Main" />
         <activity
             android:name=".ui.identity.createIdentity.CreateIdentityActivity"
             android:screenOrientation="portrait" />
@@ -40,7 +41,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.identity.IdentityActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Main" />
         <activity
             android:name=".ui.backup.BackupPromptActivity"
             android:screenOrientation="portrait" />
@@ -134,6 +136,10 @@
         <activity
             android:name=".ui.outsideExchange.orders.MappingExchangeOrdersActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.webManagement.LoginWebActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.ScanLogin" />
 
         <!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data
