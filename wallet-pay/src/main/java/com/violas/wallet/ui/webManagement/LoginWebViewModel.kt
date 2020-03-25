@@ -6,10 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.ui.webManagement.LoginWebActivity.Companion.SCAN_LOGIN_TYPE_WEB
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.palliums.violascore.wallet.Account
 
 /**
  * Created by elephant on 2020/3/23 14:21.
@@ -33,6 +34,9 @@ class LoginWebViewModel(
 
     val mAccountLD = MutableLiveData<AccountDO>()
 
+    private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
+    private val mViolasService by lazy { DataRepository.getViolasService() }
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             val currentAccount = AccountManager().currentAccount()
@@ -41,16 +45,11 @@ class LoginWebViewModel(
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        val account = params[0] as Account
-
-        // TODO 登录网页端逻辑
+        val accounts = mAccountStorage.loadAll()
+        mViolasService.loginWeb(SCAN_LOGIN_TYPE_WEB, mSessionId, accounts)
     }
 
     override fun checkParams(action: Int, vararg params: Any): Boolean {
-        if (params.isEmpty() || mAccountLD.value == null) {
-            return false
-        }
-
-        return true
+        return mAccountLD.value != null
     }
 }

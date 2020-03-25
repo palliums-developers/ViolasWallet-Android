@@ -411,11 +411,7 @@ class WalletFragment : BaseFragment() {
                             ScanCodeType.Login -> {
                                 scanBean as ScanLoginBean
                                 activity?.let {
-                                    if (scanBean.loginType == SCAN_LOGIN_TYPE_WEB) {
-                                        LoginWebActivity.start(it, scanBean.sessionId)
-                                    } else {
-                                        ScanResultActivity.start(it, scanBean.msg)
-                                    }
+                                    LoginWebActivity.start(it, scanBean)
                                 }
                             }
                         }

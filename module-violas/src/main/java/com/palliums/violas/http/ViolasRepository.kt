@@ -32,6 +32,21 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
             mViolasApi.getSupportToken()
         }
 
+    /**
+     * 登录网页端钱包
+     */
+    suspend fun loginWeb(
+        loginType: Int,
+        sessionId: String,
+        walletAccounts: List<WalletAccountDTO>
+    ) =
+        checkResponse {
+            val requestBody = Gson()
+                .toJson(LoginWebDTO(loginType, sessionId, walletAccounts))
+                .toRequestBody("application/json".toMediaTypeOrNull())
+            mViolasApi.loginWeb(requestBody)
+        }
+
     fun getBalance(
         address: String,
         tokenAddressList: List<String>? = null

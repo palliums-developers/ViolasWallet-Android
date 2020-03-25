@@ -3,12 +3,11 @@ package com.violas.wallet.repository.http.violas
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import com.palliums.violas.http.ModuleDTO
-import com.palliums.violas.http.SupportCurrencyDTO
-import com.palliums.violas.http.ViolasRepository
+import com.palliums.violas.http.*
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
 import io.reactivex.disposables.Disposable
@@ -282,6 +281,26 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             }, {
                 call.invoke(0)
             })
+    }
+
+    suspend fun loginWeb(
+        loginType: Int,
+        sessionId: String,
+        accounts: List<AccountDO>
+    ): Response<Any> {
+        val walletAccounts = accounts.map {
+            WalletAccountDTO(
+                walletType = it.walletType,
+                coinType = when (it.coinNumber) {
+                    CoinTypes.Violas.coinType() -> "violas"
+                    CoinTypes.Libra.coinType() -> "libra"
+                    else -> "bitcoin"
+                },
+                walletName = it.walletNickname,
+                walletAddress = it.address
+            )
+        }
+        return mViolasRepository.loginWeb(loginType, sessionId, walletAccounts)
     }
 
     override suspend fun getTransactionRecord(

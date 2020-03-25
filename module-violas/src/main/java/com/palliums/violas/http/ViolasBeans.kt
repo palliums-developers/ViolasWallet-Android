@@ -91,3 +91,23 @@ data class SupportCurrencyDTO(
 data class SignedTxnDTO(
     var signedtxn: String = ""
 )
+
+data class LoginWebDTO(
+    @SerializedName("type")
+    val loginType: Int,
+    @SerializedName("session_id")
+    val sessionId: String,
+    @SerializedName("wallets")
+    val walletList: List<WalletAccountDTO>
+)
+
+data class WalletAccountDTO(
+    @SerializedName("identity")
+    val walletType: Int,
+    @SerializedName("type")
+    val coinType: String,
+    @SerializedName("name")
+    val walletName: String,
+    @SerializedName("address")
+    val walletAddress: String
+)

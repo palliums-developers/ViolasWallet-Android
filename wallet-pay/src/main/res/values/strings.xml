@@ -266,4 +266,6 @@
     <string name="action_confirm_login">确认登录</string>
     <string name="action_cancel_login">取消登录</string>
     <string name="tips_scan_login_success">网页ViolasPay已登录</string>
+    <string name="tips_scan_login_desktop">请在州长SSO钱包上操作扫码登录</string>
+    <string name="tips_scan_login_not_support">不支持该扫码登录操作</string>
 </resources>
