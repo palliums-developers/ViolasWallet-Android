@@ -1,12 +1,17 @@
 package org.palliums.libracore.admissioncontrol
 
+import android.util.Log
 import org.palliums.libracore.serialization.LCSInputStream
+import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.SignedTransaction
 import org.palliums.libracore.utils.HexUtils
 import types.GetWithProof.GetAccountTransactionBySequenceNumberResponse
 import types.GetWithProof.GetAccountStateResponse
 
 object DecodeHelper {
+    /**
+     * see https://github.com/libra/libra/blob/testnet/types/src/account_config.rs#L164
+     */
     fun readAccountStates(getAccountStateResponse: GetAccountStateResponse): List<AccountStateBean> {
         val accountStates = ArrayList<AccountStateBean>()
 
@@ -23,10 +28,13 @@ object DecodeHelper {
             states.add(value)
         }
 
-        states.forEach { state ->
-            val lcsInputStream = LCSInputStream(state)
-            val address = lcsInputStream.readBytes()
-            val balance = lcsInputStream.readLong()
+        val iterator = states.iterator()
+
+        while (iterator.hasNext()){
+            val next = iterator.next()
+            val lcsInputStream = LCSInputStream(next)
+            val authenticationKey = lcsInputStream.readBytes()
+//            val balance = lcsInputStream.readLong()
             val delegatedKeyRotationCapability = lcsInputStream.readBool()
             val delegatedWithdrawalCapability = lcsInputStream.readBool()
             val receivedEventsCount = lcsInputStream.readLong()
@@ -34,10 +42,14 @@ object DecodeHelper {
             val sentEventsCount = lcsInputStream.readLong()
             val sentEvents = EventHandle(lcsInputStream.readBytes(), sentEventsCount)
             val sequenceNumber = lcsInputStream.readLong()
+            val eventGenerator = lcsInputStream.readLong()
 
+            val next1 = iterator.next()
+            val lcsInputStream1 = LCSInputStream(next1)
+            val balance = lcsInputStream1.readLong()
             accountStates.add(
                 AccountStateBean(
-                    HexUtils.toHex(address),
+                    HexUtils.toHex(authenticationKey),
                     balance,
                     receivedEvents,
                     sentEvents,

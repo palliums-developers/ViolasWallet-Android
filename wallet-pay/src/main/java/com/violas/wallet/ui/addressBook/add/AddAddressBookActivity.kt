@@ -16,6 +16,7 @@ import com.violas.wallet.repository.database.entity.AddressBookDo
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
+import com.violas.wallet.utils.validationViolasAddress
 import kotlinx.android.synthetic.main.activity_add_address_book.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -86,7 +87,9 @@ class AddAddressBookActivity : BaseAppActivity() {
                 CoinTypes.Bitcoin.coinType() -> {
                     validationBTCAddress(address)
                 }
-                CoinTypes.Violas.coinType(),
+                CoinTypes.Violas.coinType()->{
+                    validationViolasAddress(address)
+                }
                 CoinTypes.Libra.coinType() -> {
                     validationLibraAddress(address)
                 }

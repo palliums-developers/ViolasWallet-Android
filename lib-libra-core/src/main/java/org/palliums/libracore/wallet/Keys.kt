@@ -159,3 +159,5 @@ class KeyPair(
         return edDSAEngine.verify(signedData)
     }
 }
+
+class MultiEd25519PublicKey(publicKeys: List<ByteArray>, threshold: Int)

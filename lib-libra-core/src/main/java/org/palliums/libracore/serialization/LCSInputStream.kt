@@ -39,6 +39,12 @@ class LCSInputStream(array: ByteArray) : ByteArrayInputStream(array) {
         return value
     }
 
+    fun readAddress(): ByteArray {
+        val value = ByteArray(16)
+        read(value)
+        return value
+    }
+
     fun readBytesList(): List<ByteArray> {
         val listSize = readInt()
         val listValue = ArrayList<ByteArray>(listSize)

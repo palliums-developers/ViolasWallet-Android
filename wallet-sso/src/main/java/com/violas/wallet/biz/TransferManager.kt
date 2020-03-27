@@ -10,6 +10,7 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
+import com.violas.wallet.utils.validationViolasAddress
 import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 
@@ -195,9 +196,13 @@ class TransferManager {
 
     private fun checkAddress(address: String, coinNumber: Int): Boolean {
         when (coinNumber) {
-            CoinTypes.Libra.coinType(),
-            CoinTypes.Violas.coinType() -> {
+            CoinTypes.Libra.coinType()->{
                 if (!validationLibraAddress(address)) {
+                    return false
+                }
+            }
+            CoinTypes.Violas.coinType() -> {
+                if (!validationViolasAddress(address)) {
                     return false
                 }
             }

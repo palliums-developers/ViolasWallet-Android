@@ -2,6 +2,7 @@ package org.palliums.libracore.wallet
 
 import org.junit.Assert
 import org.junit.Test
+import org.palliums.libracore.serialization.toHex
 import org.spongycastle.crypto.digests.SHA3Digest
 import org.spongycastle.util.encoders.Hex
 
@@ -79,6 +80,7 @@ class WalletTest {
 
         val account1 = libraWallet.newAccount()
         val account2 = libraWallet.newAccount()
+//        val address1 = account1.getAddress().toHex()
         val address1 = account1.getAddress().toHex()
         val address2 = account2.getAddress().toHex()
         println()
@@ -87,11 +89,11 @@ class WalletTest {
 
         Assert.assertEquals(
             address1,
-            "3bc6a5ae944984ac296b72b69f5fbbcbfd4088c446e0958f400517462106154d"
+            "d040ad00457129ecf5ead5d299627a44"
         )
         Assert.assertEquals(
             address2,
-            "46b4cf163e34090dc8e482a5def71d259fc6eaf2f59884abddc38f05f30f715a"
+            "5a79e96c3105aabbfb6c5c027a0ef821"
         )
     }
 
@@ -120,6 +122,8 @@ class WalletTest {
 
         val mnemonic =
             "school problem vibrant royal invite that never key thunder pizza mesh punch"
+//        val mnemonic =
+//            "key shoulder focus dish donate inmate move weekend hold regret peanut link"
         val mnemonicWords = mnemonic.split(" ")
 
         return mnemonicWords
