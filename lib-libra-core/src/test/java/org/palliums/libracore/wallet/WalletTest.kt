@@ -126,10 +126,10 @@ class WalletTest {
         //         println()
         //         println("generated mnemonic words: ${mnemonicWords1.joinToString(" ")}")
 
-//        val mnemonic =
-//            "school problem vibrant royal invite that never key thunder pizza mesh punch"
         val mnemonic =
-            "key shoulder focus dish donate inmate move weekend hold regret peanut link"
+            "school problem vibrant royal invite that never key thunder pizza mesh punch"
+//        val mnemonic =
+//            "key shoulder focus dish donate inmate move weekend hold regret peanut link"
         val mnemonicWords = mnemonic.split(" ")
 
         return mnemonicWords

@@ -6,6 +6,10 @@ import android.os.Bundle
 import android.util.Log
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.base.BaseAppActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.palliums.libracore.wallet.LibraWallet
+import org.palliums.libracore.wallet.WalletConfig
 
 /**
  * Created by elephant on 2019-10-21 17:47.
@@ -44,6 +48,19 @@ abstract class BaseBackupMnemonicActivity : BaseAppActivity() {
                 this.javaClass.simpleName,
                 "mnemonic words => ${mnemonicWords!!.joinToString(" ")}"
             )
+
+            launch(Dispatchers.IO) {
+                val libraWallet = LibraWallet(WalletConfig(mnemonicWords))
+
+                val account = libraWallet.newAccount()
+                val authenticationKey = account.getAuthenticationKey().toHex()
+                val address = account.getAddress().toHex()
+
+                Log.e(
+                    this.javaClass.simpleName,
+                    "AuthenticationKey => $authenticationKey \nAddress => $address"
+                )
+            }
         }
     }
 
