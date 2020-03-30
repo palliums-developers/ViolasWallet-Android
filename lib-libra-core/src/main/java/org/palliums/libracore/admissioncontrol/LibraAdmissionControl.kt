@@ -9,9 +9,11 @@ import android.util.Log
 import com.google.protobuf.ByteString
 import com.smallraw.libardemo.grpcResponse.DecodeResponse
 import io.grpc.Channel
+import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.*
 import org.palliums.libracore.utils.HexUtils
 import org.palliums.libracore.wallet.Account
+import org.palliums.libracore.wallet.TransactionSignAuthenticator
 import types.GetWithProof
 import types.TransactionOuterClass
 import java.math.BigDecimal
@@ -67,9 +69,13 @@ class LibraAdmissionControl(private val mChannel: Channel) {
     ) {
         val signedTransaction = SignedTransaction(
             rawTransaction,
-            publicKey,
-            signed
+            TransactionSignAuthenticator(
+                publicKey,
+                signed
+            )
         )
+
+        Log.e("signTransaction", signedTransaction.toByteArray().toHex())
 
         val signedTransactionGrpc = TransactionOuterClass.SignedTransaction.newBuilder()
             .setTxnBytes(ByteString.copyFrom(signedTransaction.toByteArray()))

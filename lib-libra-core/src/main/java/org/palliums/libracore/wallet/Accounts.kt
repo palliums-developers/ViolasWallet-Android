@@ -1,5 +1,7 @@
 package org.palliums.libracore.wallet
 
+import org.palliums.libracore.serialization.LCSInputStream
+import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.serialization.toHex
 import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.util.encoders.Hex
@@ -87,6 +89,7 @@ class AuthenticationKey {
     }
 }
 
+
 class AccountAddress {
 
     private val addressBytes: ByteArray
@@ -101,5 +104,53 @@ class AccountAddress {
 
     fun toHex(): String {
         return Hex.toHexString(this.addressBytes)
+    }
+}
+
+interface TransactionAuthenticator {
+    companion object {
+        fun decode(input: LCSInputStream): TransactionAuthenticator {
+            return when (input.readInt().toByte()) {
+                AuthenticationKey.Scheme.Ed25519.value -> {
+                    TransactionSignAuthenticator(input.readBytes(), input.readBytes())
+                }
+                AuthenticationKey.Scheme.MultiEd25519.value -> {
+                    // todo
+                    val xx = MultiEd25519PublicKey(arrayListOf(), 0)
+                    TransactionMultiSignAuthenticator(xx, input.readBytes())
+                }
+                else -> {
+                    TransactionSignAuthenticator(input.readBytes(), input.readBytes())
+                }
+            }
+        }
+    }
+
+    fun toByteArray(): ByteArray
+}
+
+class TransactionSignAuthenticator(
+    val publicKey: ByteArray,
+    val signature: ByteArray
+) : TransactionAuthenticator {
+    override fun toByteArray(): ByteArray {
+        val stream = LCSOutputStream()
+        stream.writeInt(AuthenticationKey.Scheme.Ed25519.value.toInt())
+        stream.writeBytes(publicKey)
+        stream.writeBytes(signature)
+        return stream.toByteArray()
+    }
+}
+
+class TransactionMultiSignAuthenticator(
+    val publicKey: MultiEd25519PublicKey,
+    val signature: ByteArray
+) : TransactionAuthenticator {
+    override fun toByteArray(): ByteArray {
+        val stream = LCSOutputStream()
+//        stream.writeByte(AuthenticationKey.Scheme.MultiEd25519.value)
+//        stream.writeBytes(publicKey)
+//        stream.writeBytes(signature)
+        return stream.toByteArray()
     }
 }

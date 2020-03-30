@@ -81,8 +81,11 @@ class WalletTest {
         val account1 = libraWallet.newAccount()
         val account2 = libraWallet.newAccount()
 //        val address1 = account1.getAddress().toHex()
+        val authenticationKey = account1.getAuthenticationKey().toHex()
         val address1 = account1.getAddress().toHex()
         val address2 = account2.getAddress().toHex()
+        println()
+        println("AuthenticationKey: $authenticationKey")
         println()
         println("Account 1 address: $address1")
         println("Account 2 address: $address2")
@@ -120,10 +123,10 @@ class WalletTest {
         //         println()
         //         println("generated mnemonic words: ${mnemonicWords1.joinToString(" ")}")
 
-        val mnemonic =
-            "school problem vibrant royal invite that never key thunder pizza mesh punch"
 //        val mnemonic =
-//            "key shoulder focus dish donate inmate move weekend hold regret peanut link"
+//            "school problem vibrant royal invite that never key thunder pizza mesh punch"
+        val mnemonic =
+            "key shoulder focus dish donate inmate move weekend hold regret peanut link"
         val mnemonicWords = mnemonic.split(" ")
 
         return mnemonicWords

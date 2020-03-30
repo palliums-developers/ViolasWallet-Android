@@ -5,7 +5,12 @@ import org.palliums.libracore.serialization.LCS
 import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.serialization.toHex
+import org.palliums.libracore.transaction.storage.StructTag
+import org.palliums.libracore.transaction.storage.TypeTag
+import org.palliums.libracore.transaction.storage.TypeTagEnum
 import org.palliums.libracore.utils.HexUtils
+import org.palliums.libracore.wallet.AuthenticationKey
+import org.palliums.libracore.wallet.TransactionAuthenticator
 import types.AccessPathOuterClass.AccessPath
 
 
@@ -15,6 +20,7 @@ data class RawTransaction(
     val payload: TransactionPayload?,
     val max_gas_amount: Long,
     val gas_unit_price: Long,
+    val gas_specifier: TypeTag,
     val expiration_time: Long
 ) {
     fun toByteArray(): ByteArray {
@@ -26,6 +32,7 @@ data class RawTransaction(
         }
         stream.writeLong(max_gas_amount)
         stream.writeLong(gas_unit_price)
+        stream.write(gas_specifier.toByteArray())
         stream.writeLong(expiration_time)
         return stream.toByteArray()
     }
@@ -38,6 +45,7 @@ data class RawTransaction(
                 TransactionPayload.decode(input),
                 input.readLong(),
                 input.readLong(),
+                TypeTag.decode(input),
                 input.readLong()
             )
         }
@@ -46,8 +54,7 @@ data class RawTransaction(
 
 data class SignedTransaction(
     val rawTxn: RawTransaction,
-    val publicKey: ByteArray,
-    val signature: ByteArray
+    val authenticator: TransactionAuthenticator
 ) {
     val transactionLength: Long
 
@@ -56,12 +63,11 @@ data class SignedTransaction(
     }
 
     fun toByteArray(): ByteArray {
-        println("public key size:${publicKey.size} hex:${LCS.encodeInt(publicKey.size).toHex()}")
-        println("signature size:${signature.size} hex:${LCS.encodeInt(signature.size).toHex()}")
+//        println("public key size:${publicKey.size} hex:${LCS.encodeInt(publicKey.size).toHex()}")
+//        println("signature size:${signature.size} hex:${LCS.encodeInt(signature.size).toHex()}")
         val stream = LCSOutputStream()
         stream.write(rawTxn.toByteArray())
-        stream.writeBytes(publicKey)
-        stream.writeBytes(signature)
+        stream.write(authenticator.toByteArray())
         return stream.toByteArray()
     }
 
@@ -70,8 +76,7 @@ data class SignedTransaction(
             LCSInputStream(array).use {
                 return SignedTransaction(
                     RawTransaction.decode(it),
-                    it.readBytes(),
-                    it.readBytes()
+                    TransactionAuthenticator.decode(it)
                 )
             }
         }
@@ -359,6 +364,8 @@ data class AccountAddress(val byte: ByteArray) {
     }
 
     companion object {
+        val DEFAULT = AccountAddress(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+
         fun decode(input: LCSInputStream): AccountAddress {
             val value = ByteArray(32)
             input.read(value)

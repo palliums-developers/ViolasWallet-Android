@@ -31,10 +31,10 @@ object DecodeHelper {
         val iterator = states.iterator()
 
         while (iterator.hasNext()){
-            val next = iterator.next()
-            val lcsInputStream = LCSInputStream(next)
+            val state = iterator.next()
+            val lcsInputStream = LCSInputStream(state)
             val authenticationKey = lcsInputStream.readBytes()
-//            val balance = lcsInputStream.readLong()
+
             val delegatedKeyRotationCapability = lcsInputStream.readBool()
             val delegatedWithdrawalCapability = lcsInputStream.readBool()
             val receivedEventsCount = lcsInputStream.readLong()
@@ -44,8 +44,8 @@ object DecodeHelper {
             val sequenceNumber = lcsInputStream.readLong()
             val eventGenerator = lcsInputStream.readLong()
 
-            val next1 = iterator.next()
-            val lcsInputStream1 = LCSInputStream(next1)
+            val balanceState = iterator.next()
+            val lcsInputStream1 = LCSInputStream(balanceState)
             val balance = lcsInputStream1.readLong()
             accountStates.add(
                 AccountStateBean(
