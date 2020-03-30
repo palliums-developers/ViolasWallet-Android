@@ -8,8 +8,6 @@ import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.*
 import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.wallet.KeyPair
-import org.palliums.libracore.wallet.TransactionAuthenticator
-import org.palliums.libracore.wallet.TransactionSignAuthenticator
 
 class TransferUnitTest {
     @Test

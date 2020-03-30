@@ -43,7 +43,7 @@ fun validationLibraAddress(address: String): Boolean {
     } catch (e: Exception) {
         return false
     }
-    if (address.length == 64) {
+    if (address.length == 32 || address.length == 64) {
         return true
     }
     return false

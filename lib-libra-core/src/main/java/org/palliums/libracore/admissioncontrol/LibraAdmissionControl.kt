@@ -13,7 +13,6 @@ import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.*
 import org.palliums.libracore.utils.HexUtils
 import org.palliums.libracore.wallet.Account
-import org.palliums.libracore.wallet.TransactionSignAuthenticator
 import types.GetWithProof
 import types.TransactionOuterClass
 import java.math.BigDecimal

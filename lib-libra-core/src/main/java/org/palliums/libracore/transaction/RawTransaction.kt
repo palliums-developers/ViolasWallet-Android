@@ -3,8 +3,8 @@ package org.palliums.libracore.transaction
 import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.transaction.storage.TypeTag
-import org.palliums.libracore.wallet.TransactionAuthenticator
 import types.AccessPathOuterClass.AccessPath
+import java.lang.RuntimeException
 
 
 data class RawTransaction(
@@ -88,6 +88,26 @@ data class AccountAddress(val byte: ByteArray) {
             return AccountAddress(
                 value
             )
+        }
+
+        /**
+         * data: 数据
+         *@return Pair first: Address,second：AuthenticationKeyPrefix
+         */
+        fun convert(date: String): Pair<String, String> {
+            return when (date.length) {
+                32 -> {
+                    Pair(date, "")
+                }
+                64 -> {
+                    val address = date.substring(date.length / 2)
+                    val authenticationKeyPrefix = date.substring(0, date.length / 2)
+                    Pair(address, authenticationKeyPrefix)
+                }
+                else -> {
+                    throw RuntimeException()
+                }
+            }
         }
     }
 }
