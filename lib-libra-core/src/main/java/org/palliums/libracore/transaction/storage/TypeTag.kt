@@ -4,9 +4,6 @@ import org.palliums.libracore.serialization.LCS
 import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.transaction.AccountAddress
-import org.palliums.libracore.transaction.RawTransaction
-import org.palliums.libracore.transaction.SignedTransaction
-import org.palliums.libracore.transaction.TransactionArgument
 
 enum class TypeTagEnum(val value: Int) {
     Bool(0),
@@ -33,77 +30,131 @@ enum class TypeTagEnum(val value: Int) {
     }
 }
 
-class TypeTag(
-    val argType: TypeTagEnum,
-    val data: ByteArray
-) {
+interface TypeTag {
     companion object {
-        fun newBool(boolean: Boolean): TypeTag {
-            return TypeTag(TypeTagEnum.Bool, LCS.encodeBool(boolean))
-        }
-
-        fun newU8(value: Short): TypeTag {
-            return TypeTag(TypeTagEnum.U8, LCS.encodeShort(value))
-        }
-
-        fun newU64(value: Long): TypeTag {
-            return TypeTag(TypeTagEnum.U64, LCS.encodeLong(value))
-        }
-
-//       todo
-//        fun newU128(value: Boolean): TypeTag {
-//            return TypeTag(TypeTagEnum.U128,LCS.encodeBool(boolean))
-//        }
-
-        fun newAddress(value: AccountAddress): TypeTag {
-            return TypeTag(TypeTagEnum.Bool, value.toByteArray())
-        }
-
-        fun newListTypeTag(value: List<TypeTag>): TypeTag {
-            val output = LCSOutputStream()
-            output.write(value.size)
-            value.forEach {
-                output.writeBytes(it.toByteArray())
-            }
-            return TypeTag(TypeTagEnum.ListTypeTag, output.toByteArray())
-        }
-
-        fun newStructTag(value: StructTag): TypeTag {
-            return TypeTag(TypeTagEnum.StructTag, value.toByteArray())
-        }
-
         fun decode(input: LCSInputStream): TypeTag {
-            val typeTagType = input.readInt()
-            when (typeTagType) {
-                TypeTagEnum.Bool.value -> input.readBool()
-                TypeTagEnum.U8.value -> input.readShort()
-                TypeTagEnum.U64.value -> input.readLong()
+            return when (input.readInt()) {
+                TypeTagEnum.Bool.value -> TypeTagBool(input.readBool())
+                TypeTagEnum.U8.value -> TypeTagU8(input.readShort())
+                TypeTagEnum.U64.value -> TypeTagU64(input.readLong())
                 TypeTagEnum.U128.value -> {
                     // todo
                     input.readLong()
-                    input.readLong()
+                    TypeTagU128(input.readLong())
                 }
-                TypeTagEnum.Address.value -> input.readAddress()
+                TypeTagEnum.Address.value -> TypeTagAddress(AccountAddress(input.readAddress()))
                 TypeTagEnum.ListTypeTag.value -> {
                     val size = input.readInt()
                     val list = ArrayList<TypeTag>(size)
                     for (i in 0 until size) {
                         list.add(TypeTag.decode(input))
                     }
+                    TypeTagListTypeTag(list)
                 }
                 TypeTagEnum.StructTag.value -> {
-                    val structTag = StructTag.decode(input)
+                    TypeTagStructTag(StructTag.decode(input))
+                }
+                else -> {
+                    TypeTagBool(false)
                 }
             }
-            // todo
-            return TypeTag(TypeTagEnum.convert(typeTagType), byteArrayOf())
+        }
+
+        fun newBool(value: Boolean): TypeTag {
+            return TypeTagBool(value)
+        }
+
+        fun newU8(value: Short): TypeTag {
+            return TypeTagU8(value)
+        }
+
+        fun newU64(value: Long): TypeTag {
+            return TypeTagU64(value)
+        }
+
+        fun newU128(value: Long): TypeTag {
+            return TypeTagU128(value)
+        }
+
+        fun newAddress(value: AccountAddress): TypeTag {
+            return TypeTagAddress(value)
+        }
+
+        fun newListTypeTag(value: List<TypeTag>): TypeTag {
+            return TypeTagListTypeTag(value)
+        }
+
+        fun newStructTag(value: StructTag): TypeTag {
+            return TypeTagStructTag(value)
         }
     }
 
-    fun toByteArray(): ByteArray {
+    fun toByteArray(): ByteArray
+}
+
+class TypeTagBool(val value: Boolean) : TypeTag {
+    override fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
-        output.writeInt(argType.value)
-        output.write(data)
+        output.writeInt(TypeTagEnum.Bool.value)
+        output.write(LCS.encodeBool(value))
+        return output.toByteArray()
+    }
+}
+
+class TypeTagU8(val value: Short) : TypeTag {
+    override fun toByteArray(): ByteArray {
+        val output = LCSOutputStream()
+        output.writeInt(TypeTagEnum.U8.value)
+        output.write(LCS.encodeShort(value))
+        return output.toByteArray()
+    }
+}
+
+class TypeTagU64(val value: Long) : TypeTag {
+    override fun toByteArray(): ByteArray {
+        val output = LCSOutputStream()
+        output.writeInt(TypeTagEnum.U64.value)
+        output.write(LCS.encodeLong(value))
+        return output.toByteArray()
+    }
+}
+
+// todo
+class TypeTagU128(val value: Long) : TypeTag {
+    override fun toByteArray(): ByteArray {
+        val output = LCSOutputStream()
+        output.writeInt(TypeTagEnum.U128.value)
+//        output.write(LCS.encodeShort(value))
+        return output.toByteArray()
+    }
+}
+
+class TypeTagAddress(val value: AccountAddress) : TypeTag {
+    override fun toByteArray(): ByteArray {
+        val output = LCSOutputStream()
+        output.writeInt(TypeTagEnum.Address.value)
+        output.write(value.toByteArray())
+        return output.toByteArray()
+    }
+}
+
+class TypeTagListTypeTag(val value: List<TypeTag>) : TypeTag {
+    override fun toByteArray(): ByteArray {
+        val output = LCSOutputStream()
+        output.writeInt(TypeTagEnum.ListTypeTag.value)
+        output.write(value.size)
+        value.forEach {
+            output.writeBytes(it.toByteArray())
+        }
+        return output.toByteArray()
+    }
+}
+
+class TypeTagStructTag(val value: StructTag) : TypeTag {
+    override fun toByteArray(): ByteArray {
+        val output = LCSOutputStream()
+        output.writeInt(TypeTagEnum.StructTag.value)
+        output.write(value.toByteArray())
         return output.toByteArray()
     }
 }
