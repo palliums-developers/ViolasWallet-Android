@@ -5,7 +5,7 @@ import com.palliums.violas.http.ViolasApi
 import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
-import com.violas.wallet.common.BaseBizUrl.getDefaultBaseUrl
+import com.violas.wallet.common.BaseBizUrl.getViolasBaseUrl
 import com.violas.wallet.repository.database.AppDatabase
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.repository.http.bitcoin.BitmainApi
@@ -61,7 +61,7 @@ object DataRepository {
     private val retrofit by lazy {
         Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl(getDefaultBaseUrl())
+            .baseUrl(getViolasBaseUrl())
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()

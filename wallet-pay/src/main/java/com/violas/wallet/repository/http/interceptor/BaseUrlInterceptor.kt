@@ -1,9 +1,10 @@
 package com.violas.wallet.repository.http.interceptor
 
-import com.violas.wallet.common.BaseBizUrl.getDefaultBaseUrl
-import com.violas.wallet.common.BaseBizUrl.getDexBaseUrl
-import com.violas.wallet.common.BaseBrowserUrl.getBitmainBaseUrl
-import com.violas.wallet.common.BaseBrowserUrl.getLibexplorerBaseUrl
+import com.violas.wallet.common.BaseBizUrl.getBitmainBaseUrl
+import com.violas.wallet.common.BaseBizUrl.getViolasBaseUrl
+import com.violas.wallet.common.BaseBizUrl.getViolasDexBaseUrl
+import com.violas.wallet.common.BaseBizUrl.getLibexplorerBaseUrl
+import com.violas.wallet.common.BaseBizUrl.getLibraBaseUrl
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -20,14 +21,16 @@ class BaseUrlInterceptor : Interceptor {
 
     companion object {
         const val HEADER_KEY_URLNAME = "urlname"
+        const val HEADER_VALUE_VIOLAS_DEX = "violas_dex"
+        const val HEADER_VALUE_LIBRA = "libra"
         const val HEADER_VALUE_BITMAIN = "bitmain"
         const val HEADER_VALUE_LIBEXPLORER = "libexplorer"
-        const val HEADER_VALUE_DEX = "dex"
     }
 
     private val baseUrls: Map<String, String> by lazy {
         mutableMapOf<String, String>().apply {
-            this[HEADER_VALUE_DEX] = getDexBaseUrl()
+            this[HEADER_VALUE_VIOLAS_DEX] = getViolasDexBaseUrl()
+            this[HEADER_VALUE_LIBRA] = getLibraBaseUrl()
             this[HEADER_VALUE_BITMAIN] = getBitmainBaseUrl()
             this[HEADER_VALUE_LIBEXPLORER] = getLibexplorerBaseUrl()
         }
@@ -51,7 +54,7 @@ class BaseUrlInterceptor : Interceptor {
             newUrlBuilder.removePathSegment(0)
         }
 
-        val baseUrl = getDefaultBaseUrl().toHttpUrl()
+        val baseUrl = getViolasBaseUrl().toHttpUrl()
         originalRequest.url.pathSegments.forEach { originalPathSegment ->
             baseUrl.pathSegments.forEach { basePathSegment ->
                 if (originalPathSegment == basePathSegment) {

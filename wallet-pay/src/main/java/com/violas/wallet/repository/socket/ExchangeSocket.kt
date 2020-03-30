@@ -43,7 +43,7 @@ object ExchangeSocket {
         IO.setDefaultOkHttpWebSocketFactory(okHttpClient)
         IO.setDefaultOkHttpCallFactory(okHttpClient)
         val options = IO.Options()
-        IO.socket(BaseBizUrl.getDexSocketBaseUrl(), options)
+        IO.socket(BaseBizUrl.getViolasDexSocketBaseUrl(), options)
     }
 
     init {
