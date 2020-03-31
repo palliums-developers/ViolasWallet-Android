@@ -1,7 +1,7 @@
 package org.palliums.libracore.http
 
-import okhttp3.RequestBody
 import retrofit2.http.Body
+import retrofit2.http.Headers
 import retrofit2.http.POST
 
 /**
@@ -12,9 +12,11 @@ import retrofit2.http.POST
  */
 interface LibraApi {
 
-    @POST()
-    suspend fun getAccountState(@Body body: RequestBody): ListResponse<AccountStateDTO>
+    @Headers(value = ["urlname: libra", "Content-Type: application/json"])
+    @POST("/")
+    suspend fun getAccountState(@Body body: RequestDTO): Response<AccountStateDTO>
 
-    @POST()
-    suspend fun submitTransaction(@Body body: RequestBody): Response<Any>
+    @Headers(value = ["urlname: libra", "Content-Type: application/json"])
+    @POST("/")
+    suspend fun submitTransaction(@Body body: RequestDTO): Response<Any>
 }

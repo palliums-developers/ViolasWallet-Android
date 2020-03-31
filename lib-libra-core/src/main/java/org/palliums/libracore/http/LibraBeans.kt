@@ -20,7 +20,7 @@ open class Response<T> : ApiResponse {
     var jsonRPC: String? = null
 
     @SerializedName(value = "error")
-    var errors: List<ResponseError>? = null
+    var error: ResponseError? = null
 
     @SerializedName(value = "result")
     var data: T? = null
@@ -30,11 +30,11 @@ open class Response<T> : ApiResponse {
     }
 
     override fun getErrorCode(): Any {
-        return errors.isNullOrEmpty()
+        return if (error == null) true else error!!.code
     }
 
     override fun getErrorMsg(): Any? {
-        return errors
+        return if (error == null) null else error!!.message
     }
 
     override fun getResponseData(): Any? {
@@ -48,8 +48,8 @@ class ListResponse<T> : Response<List<T>>()
 @Keep
 data class ResponseError(
     var code: String,
-    var data: Long,
-    var message: Boolean
+    var data: Any?,
+    var message: String
 )
 
 @Keep
