@@ -25,7 +25,9 @@ import com.violas.wallet.repository.http.violas.ViolasService
 import io.grpc.ManagedChannelBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.palliums.libracore.admissioncontrol.LibraAdmissionControl
+import org.palliums.libracore.http.LibraApi
+import org.palliums.libracore.http.LibraRepository
+import org.palliums.libracore.http.LibraService
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -75,11 +77,11 @@ object DataRepository {
 
     fun getBitcoinService() = BitcoinChainApi.get()
 
-    fun getLibraService() = LibraAdmissionControl(mChannel)
+    fun getLibraService() =
+        LibraService(LibraRepository(retrofit.create(LibraApi::class.java)))
 
-    fun getViolasService(): ViolasService {
-        return ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
-    }
+    fun getViolasService() =
+        ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
     fun getTransactionService(coinTypes: CoinTypes): TransactionService {
         return when (coinTypes) {
@@ -97,9 +99,8 @@ object DataRepository {
         }
     }
 
-    fun getDexService(): DexRepository {
-        return DexRepository(retrofit.create(DexApi::class.java))
-    }
+    fun getDexService() =
+        DexRepository(retrofit.create(DexApi::class.java))
 
     fun getMappingExchangeService() =
         MappingExchangeRepository(retrofit.create(MappingExchangeApi::class.java))

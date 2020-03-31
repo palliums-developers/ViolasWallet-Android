@@ -382,16 +382,18 @@ class AccountManager : CoroutineScope by IOScope() {
 
         when (account.coinNumber) {
             CoinTypes.Violas.coinType() -> {
-                DataRepository.getViolasService()
-                    .getBalanceInMicroLibras(account.address) { balance, success ->
-                        callback.invoke(balance, success)
-                    }
+                DataRepository.getViolasService().getBalanceInMicroLibras(
+                    account.address
+                ) { balance, success ->
+                    callback.invoke(balance, success)
+                }
             }
             CoinTypes.Libra.coinType() -> {
-                DataRepository.getLibraService()
-                    .getBalanceInMicroLibras(account.address) { balance, success ->
-                        callback.invoke(balance, success)
-                    }
+                DataRepository.getLibraService().getBalanceInMicroLibraWithCallback(
+                    account.address
+                ) { amount, exception ->
+                    callback.invoke(amount, exception == null)
+                }
             }
             CoinTypes.Bitcoin.coinType(),
             CoinTypes.BitcoinTest.coinType() -> {

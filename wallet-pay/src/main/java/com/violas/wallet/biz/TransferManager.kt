@@ -204,7 +204,7 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        DataRepository.getLibraService().sendCoin(
+        DataRepository.getLibraService().sendCoinWithCallback(
             context,
             org.palliums.libracore.wallet.Account(
                 KeyPair(decryptPrivateKey)
@@ -212,7 +212,7 @@ class TransferManager {
             address,
             (amount * 1000000L).toLong()
         ) {
-            if (it) {
+            if (it == null) {
                 success.invoke("")
             } else {
                 error.invoke(TransferUnknownException())
@@ -248,7 +248,7 @@ class TransferManager {
     companion object {
         fun checkAddress(address: String, coinNumber: Int): Boolean {
             when (coinNumber) {
-                CoinTypes.Libra.coinType()->{
+                CoinTypes.Libra.coinType() -> {
                     if (!validationLibraAddress(address)) {
                         return false
                     }

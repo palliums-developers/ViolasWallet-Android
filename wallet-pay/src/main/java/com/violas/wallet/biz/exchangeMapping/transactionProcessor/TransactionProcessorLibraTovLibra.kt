@@ -21,8 +21,8 @@ import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
 
-class TransactionProcessorLibraTovLibra() :
-    TransactionProcessor {
+class TransactionProcessorLibraTovLibra() : TransactionProcessor {
+
     private val mViolasService by lazy {
         DataRepository.getViolasService()
     }
@@ -50,8 +50,12 @@ class TransactionProcessorLibraTovLibra() :
 
         var balance = BigDecimal(0)
         val getBalanceCountDownLatch = CountDownLatch(1)
-        mLibraService.getBalance(sendAccount.getAddress().toHex()) {
-            balance = BigDecimal(it)
+        mLibraService.getBalanceWithCallback(
+            sendAccount.getAddress().toHex()
+        ) { amount, exception ->
+            if (exception == null) {
+                balance = BigDecimal(amount)
+            }
             getBalanceCountDownLatch.countDown()
         }
         getBalanceCountDownLatch.await()
@@ -98,15 +102,18 @@ class TransactionProcessorLibraTovLibra() :
             )
 
         var sequenceNumber = 0L
-
         val sequenceNumberCountDownLatch = CountDownLatch(1)
-        mLibraService.getSequenceNumber(sendAccount.getAddress().toHex(), {
-            sequenceNumber = it
-            sequenceNumberCountDownLatch.countDown()
-        }, {
-            sequenceNumberCountDownLatch.count
-            throw it
-        })
+        mLibraService.getSequenceNumberWithCallback(
+            sendAccount.getAddress().toHex()
+        ) { _sequenceNumber, exception ->
+            if (exception == null) {
+                sequenceNumber = _sequenceNumber
+                sequenceNumberCountDownLatch.countDown()
+            } else {
+                sequenceNumberCountDownLatch.countDown()
+                throw exception
+            }
+        }
         sequenceNumberCountDownLatch.await()
 
         val rawTransaction = RawTransaction.optionTransaction(
@@ -120,12 +127,12 @@ class TransactionProcessorLibraTovLibra() :
 
         var result: Boolean = false
         val countDownLatch = CountDownLatch(1)
-        mLibraService.sendTransaction(
+        mLibraService.submitTransactionWithCallback(
             rawTransaction,
             keyPair.getPublicKey(),
             keyPair.sign(rawTransaction.toByteArray())
         ) {
-            result = it
+            result = it == null
             countDownLatch.countDown()
         }
         countDownLatch.await()

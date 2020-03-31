@@ -32,7 +32,6 @@ import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
-import com.violas.wallet.ui.webManagement.LoginWebActivity.Companion.SCAN_LOGIN_TYPE_WEB
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
