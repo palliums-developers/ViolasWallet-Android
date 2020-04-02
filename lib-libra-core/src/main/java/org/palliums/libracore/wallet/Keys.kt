@@ -10,6 +10,7 @@ import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec
 import org.palliums.libracore.mnemonic.English
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.serialization.LCS
+import org.palliums.libracore.serialization.LCSOutputStream
 import org.spongycastle.crypto.digests.SHA3Digest
 import org.spongycastle.crypto.generators.HKDFBytesGenerator
 import org.spongycastle.crypto.generators.PKCS5S2ParametersGenerator
@@ -160,4 +161,106 @@ class KeyPair(
     }
 }
 
-class MultiEd25519PublicKey(publicKeys: List<ByteArray>, threshold: Int)
+private const val MAX_NUM_OF_KEYS = 32
+private const val BITMAP_NUM_OF_BYTES = 4
+
+class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val threshold: Int) {
+    init {
+        if (threshold == 0 || publicKeys.size < threshold) {
+            throw CryptoMaterialError.ValidationError()
+        } else if (publicKeys.size > MAX_NUM_OF_KEYS) {
+            throw CryptoMaterialError.WrongLengthError()
+        }
+    }
+
+    fun toByteArray(): ByteArray {
+        val output = LCSOutputStream()
+        output.writeInt(publicKeys.size)
+        publicKeys.forEach {
+            output.writeBytes(it)
+        }
+        output.writeInt(threshold)
+        return output.toByteArray()
+    }
+}
+
+class MultiEd25519PrivateKey(private val privateKeys: List<ByteArray>, private val threshold: Int) {
+    init {
+        if (threshold == 0 || privateKeys.size < threshold) {
+            throw CryptoMaterialError.ValidationError()
+        } else if (privateKeys.size > MAX_NUM_OF_KEYS) {
+            throw CryptoMaterialError.WrongLengthError()
+        }
+    }
+
+    fun signMessage(message: ByteArray): MultiEd25519Signature {
+        val bitmap = ByteArray(BITMAP_NUM_OF_BYTES) { 0.toByte() }
+        val signatures = ArrayList<ByteArray>()
+
+        privateKeys.asIterable()
+            .take(threshold)
+            .mapIndexed { index, bytes ->
+                bitmapSetBit(bitmap, index)
+                signatures.add(KeyPair(bytes).sign(message))
+            }
+
+        return MultiEd25519Signature(signatures, bitmap)
+    }
+}
+
+class MultiEd25519Signature(
+    private val signatures: List<ByteArray>,
+    private val bitmap: ByteArray
+) {
+
+    companion object {
+//        fun new(signatures: List<ByteArray>, bitmap: Array<Byte>): MultiEd25519Signature {
+//            val numOfSigSize = signatures.size
+//            if (numOfSigSize == 0 || numOfSigSize > MAX_NUM_OF_KEYS) {
+//                throw CryptoMaterialError.ValidationError()
+//            }
+//            val signatures = signatures.sortedBy {
+//                it[1]
+//            }
+//            val bitmap = Array(BITMAP_NUM_OF_BYTES) { 0.toByte() }
+//            for (i in 0 until bitmap.size) {
+//                if (i < MAX_NUM_OF_KEYS) {
+//                    if (bitmapGetBit(bitmap, i)) {
+//                        throw CryptoMaterialError.BitVecError(
+//                            "Duplicate signature index"
+//                        )
+//                    } else {
+//                        bitmapSetBit(bitmap, i)
+//                    }
+//                } else {
+//                    throw CryptoMaterialError.BitVecError("Signature index is out of range")
+//                }
+//            }
+//            return MultiEd25519Signature(signatures, bitmap)
+//        }
+    }
+
+    fun toByteArray(): ByteArray {
+        val output = LCSOutputStream()
+        output.writeInt(signatures.size)
+        signatures.forEach {
+            output.writeBytes(it)
+        }
+        output.writeBytes(bitmap)
+        return output.toByteArray()
+    }
+}
+
+fun bitmapSetBit(bitmap: ByteArray, index: Int) {
+    val bucket = index // 8
+    // It's always invoked with index < 32, thus there is no need to check range.
+    val bucketPos = index - (bucket * 8)
+    bitmap[bucket] = (bitmap[bucket].toInt() or 128.shr(bucketPos)).toByte()
+}
+
+fun bitmapGetBit(bitmap: ByteArray, index: Int): Boolean {
+    val bucket = index // 8
+    // It's always invoked with index < 32, thus there is no need to check range.
+    val bucketPos = index - (bucket * 8)
+    return bitmap[bucket].toInt() and 128.shr(bucketPos) != 0
+}
