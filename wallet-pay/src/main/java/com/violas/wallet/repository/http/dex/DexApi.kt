@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.dex
 
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URLNAME
-import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_DEX
+import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_VIOLAS_DEX
 import okhttp3.RequestBody
 import retrofit2.http.*
 
@@ -23,7 +23,7 @@ interface DexApi {
      * @param tokenGiveAddress 提供的代币地址（若拿A换B，则A为此参数）
      * @param tokenGetAddress 换取的代币地址（若拿A换B，则B为此参数）
      */
-    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_DEX}"])
+    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_VIOLAS_DEX}"])
     @GET("/v1/orders")
     suspend fun getMyOrders(
         @Query("user") accountAddress: String,
@@ -34,7 +34,7 @@ interface DexApi {
         @Query("get") tokenGetAddress: String? = null
     ): ListResponse<DexOrderDTO>
 
-    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_DEX}"])
+    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_VIOLAS_DEX}"])
     @GET("/v1/tokens")
     suspend fun getTokens(): List<DexTokenDTO>
 
@@ -44,7 +44,7 @@ interface DexApi {
      * @param pageSize 分页大小
      * @param pageNumber 页码，从1开始
      */
-    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_DEX}"])
+    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_VIOLAS_DEX}"])
     @GET("/v1/trades")
     suspend fun getOrderTrades(
         @Query("version") version: String,
@@ -55,7 +55,7 @@ interface DexApi {
     /**
      * 撤销订单
      */
-    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_DEX}"])
+    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_VIOLAS_DEX}"])
     @POST("/v1/cancelOrder")
     suspend fun revokeOrder(@Body requestBody: RequestBody): Response<String>
 }
