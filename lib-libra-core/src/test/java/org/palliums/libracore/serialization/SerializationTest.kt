@@ -1,8 +1,11 @@
 package org.palliums.libracore.serialization
 
+import okhttp3.internal.toHexString
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.palliums.libracore.utils.HexUtils
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 
 class SerializationTest {
     @Test
@@ -67,6 +70,33 @@ class SerializationTest {
     }
 
     @Test
+    fun test_intAsULEB128() {
+        val lcsULong1 = LCS.encodeIntAsULEB128(1)
+        assertEquals(lcsULong1.toHex(), "01".toLowerCase())
+        assertEquals(LCS.decodeIntAsULEB128(ByteArrayInputStream(lcsULong1)), 1)
+
+        val lcsULong2 = LCS.encodeIntAsULEB128(128)
+        assertEquals(lcsULong2.toHex(), "8001".toLowerCase())
+        assertEquals(LCS.decodeIntAsULEB128(ByteArrayInputStream(lcsULong2)), 128)
+
+        val lcsULong3 = LCS.encodeIntAsULEB128(16384)
+        assertEquals(lcsULong3.toHex(), "808001".toLowerCase())
+        assertEquals(LCS.decodeIntAsULEB128(ByteArrayInputStream(lcsULong3)), 16384)
+
+        val lcsULong4 = LCS.encodeIntAsULEB128(2097152)
+        assertEquals(lcsULong4.toHex(), "80808001".toLowerCase())
+        assertEquals(LCS.decodeIntAsULEB128(ByteArrayInputStream(lcsULong4)), 2097152)
+
+        val lcsULong5 = LCS.encodeIntAsULEB128(268435456)
+        assertEquals(lcsULong5.toHex(), "8080808001".toLowerCase())
+        assertEquals(LCS.decodeIntAsULEB128(ByteArrayInputStream(lcsULong5)), 268435456)
+
+        val lcsULong6 = LCS.encodeIntAsULEB128(9487)
+        assertEquals(lcsULong6.toHex(), "8f4a".toLowerCase())
+        assertEquals(LCS.decodeIntAsULEB128(ByteArrayInputStream(lcsULong6)), 9487)
+    }
+
+    @Test
     fun test_ulong() {
         val lcsInt = LCS.encodeLong(1311768467750121216)
         assertEquals(lcsInt.toHex(), "00EFCDAB78563412".toLowerCase())
@@ -93,12 +123,12 @@ class SerializationTest {
     @Test
     fun test_bytes() {
         val res1 = LCS.encodeBytes(byteArrayOf(0x11, 0x22, 0x33, 0x44, 0x55))
-        assertEquals(res1.toHex(), "05000000 11 22 33 44 55".replace(" ", ""))
+        assertEquals(res1.toHex(), "05 11 22 33 44 55".replace(" ", ""))
 
         val byteArray = ByteArray(6)
         byteArray.putAll(byteArrayOf(0x11, 0x22, 0x33, 0x44, 0x55))
         val res2 = LCS.encodeBytes(byteArray).toHex()
-        assertEquals(res2, "06000000 11 22 33 44 55 00".replace(" ", ""))
+        assertEquals(res2, "06 11 22 33 44 55 00".replace(" ", ""))
     }
 
     @Test
@@ -118,7 +148,7 @@ class SerializationTest {
         val res1 = LCS.encodeString("ሰማይ አይታረስ ንጉሥ አይከሰስ።").toHex()
         assertEquals(
             res1,
-            "36000000E188B0E1889BE18BAD20E18AA0E18BADE189B3E188A8E188B520E18A95E18C89E188A520E18AA0E18BADE18AA8E188B0E188B5E18DA2".toLowerCase()
+            "36 E188B0E1889BE18BAD20E18AA0E18BADE189B3E188A8E188B520E18A95E18C89E188A520E18AA0E18BADE18AA8E188B0E188B5E18DA2".toLowerCase().replace(" ", "")
         )
     }
 
@@ -129,7 +159,7 @@ class SerializationTest {
         val res1 = LCS.encodeByteArrayList(arrayListOf).toHex()
         assertEquals(
             res1,
-            "03000000 02000000 0102 03000000 111213 01000000 21".replace(" ", "")
+            "03 02 0102 03 111213 01 21".replace(" ", "")
         )
     }
 
@@ -139,7 +169,7 @@ class SerializationTest {
         val res1 = LCS.encodeStrings(arrayListOf).toHex()
         assertEquals(
             res1,
-            "02000000 05000000 68656c6c6f 05000000 776f726c64".replace(" ", "")
+            "02 05 68656c6c6f 05 776f726c64".replace(" ", "")
         )
     }
 }

@@ -20,6 +20,10 @@ class LCSInputStream(array: ByteArray) : ByteArrayInputStream(array) {
         return LCS.decodeInt(value)
     }
 
+    fun readIntAsLEB128(): Int {
+        return LCS.decodeIntAsULEB128(this)
+    }
+
     fun readLong(): Long {
         val value = ByteArray(8)
         read(value)
@@ -33,7 +37,7 @@ class LCSInputStream(array: ByteArray) : ByteArrayInputStream(array) {
     }
 
     fun readBytes(): ByteArray {
-        val readInt = readInt()
+        val readInt = readIntAsLEB128()
         val value = ByteArray(readInt)
         read(value)
         return value
@@ -46,10 +50,10 @@ class LCSInputStream(array: ByteArray) : ByteArrayInputStream(array) {
     }
 
     fun readBytesList(): List<ByteArray> {
-        val listSize = readInt()
+        val listSize = readIntAsLEB128()
         val listValue = ArrayList<ByteArray>(listSize)
         for (i in 0 until listSize) {
-            val valueSize = readInt()
+            val valueSize = readIntAsLEB128()
             val value = ByteArray(valueSize)
             read(value)
             listValue.add(value)
@@ -58,7 +62,7 @@ class LCSInputStream(array: ByteArray) : ByteArrayInputStream(array) {
     }
 
     fun readString(): String {
-        val readInt = readInt()
+        val readInt = readIntAsLEB128()
         val value = ByteArray(readInt)
         read(value)
         return String(value)

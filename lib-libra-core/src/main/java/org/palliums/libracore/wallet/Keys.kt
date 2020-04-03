@@ -175,7 +175,7 @@ class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val
 
     fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
-        output.writeInt(publicKeys.size)
+        output.writeIntAsLEB128(publicKeys.size)
         publicKeys.forEach {
             output.writeBytes(it)
         }
@@ -242,7 +242,7 @@ class MultiEd25519Signature(
 
     fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
-        output.writeInt(signatures.size)
+        output.writeIntAsLEB128(signatures.size)
         signatures.forEach {
             output.writeBytes(it)
         }

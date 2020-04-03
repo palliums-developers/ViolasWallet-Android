@@ -1,6 +1,6 @@
 package org.palliums.libracore.serialization
 
-import java.nio.Buffer
+import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder.LITTLE_ENDIAN
 
@@ -34,12 +34,12 @@ object LCS {
     }
 
     fun encodeBytes(byteArrayOf: ByteArray): ByteArray {
-        return encodeInt(byteArrayOf.size).plus(byteArrayOf)
+        return encodeIntIndex(byteArrayOf.size).plus(byteArrayOf)
     }
 
     fun encodeShorts(shortArrayOf: ShortArray): ByteArray {
         val byteArray = ByteArray(shortArrayOf.size * 2 + 4)
-        byteArray.putAll(encodeInt(shortArrayOf.size))
+        byteArray.putAll(encodeIntIndex(shortArrayOf.size))
         var i = 4
         shortArrayOf.forEach {
             byteArray.putAll(encodeShort(it), i)
@@ -50,11 +50,11 @@ object LCS {
 
     fun encodeString(str: String): ByteArray {
         val toByteArray = str.toByteArray()
-        return encodeInt(toByteArray.size).plus(toByteArray)
+        return encodeIntIndex(toByteArray.size).plus(toByteArray)
     }
 
     fun encodeByteArrayList(byteArrays: List<ByteArray>): ByteArray {
-        var result = encodeInt(byteArrays.size)
+        var result = encodeIntIndex(byteArrays.size)
         byteArrays.forEach {
             result = result.plus(encodeBytes(it))
         }
@@ -62,11 +62,27 @@ object LCS {
     }
 
     fun encodeStrings(arrayListOf: Array<String>): ByteArray {
-        var result = encodeInt(arrayListOf.size)
+        var result = encodeIntIndex(arrayListOf.size)
         arrayListOf.forEach {
             result = result.plus(encodeString(it))
         }
         return result
+    }
+
+    fun encodeIntAsULEB128(value: Int): ByteArray {
+        var handleValue = value
+        val result = mutableListOf<Byte>()
+        while (handleValue >= 0x80) {
+            val byte = handleValue.and(0X7F).or(0x80).toByte()
+            result.add(byte)
+            handleValue = handleValue.shr(7)
+        }
+        result.add(handleValue.toByte())
+        return result.toByteArray()
+    }
+
+    fun encodeIntIndex(value: Int): ByteArray {
+        return encodeIntAsULEB128(value)
     }
 
     fun decodeBool(value: ByteArray): Boolean {
@@ -93,4 +109,24 @@ object LCS {
         return ByteBuffer.wrap(value).order(LITTLE_ENDIAN).long
     }
 
+    fun decodeIntAsULEB128(value: InputStream): Int {
+        var result = 0
+        var cur: Int
+        var index = 0
+
+        do {
+            cur = value.read() and 0xff
+            result = result or (cur and 0x7f shl index * 7)
+            index++
+        } while (cur and 0x80 == 0x80 && index < 5)
+
+        if (cur and 0x80 == 0x80) {
+            return 0
+        }
+        return result
+    }
+
+    fun decodeIntIndex(value: InputStream): Int {
+        return decodeIntAsULEB128(value)
+    }
 }

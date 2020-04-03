@@ -30,4 +30,8 @@ class LCSOutputStream : ByteArrayOutputStream() {
     fun writeString(value: String) {
         write(LCS.encodeString(value))
     }
+
+    fun writeIntAsLEB128(value: Int){
+        write(LCS.encodeIntAsULEB128(value))
+    }
 }

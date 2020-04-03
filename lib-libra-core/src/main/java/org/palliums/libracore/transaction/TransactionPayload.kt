@@ -52,7 +52,7 @@ data class TransactionPayload(val payload: Payload) {
         override fun toByteArray(): ByteArray {
             val stream = LCSOutputStream()
             stream.writeBytes(code)
-            stream.writeInt(args.size)
+            stream.writeIntAsLEB128(args.size)
             args.forEach {
                 stream.write(it.toByteArray())
             }
@@ -63,7 +63,7 @@ data class TransactionPayload(val payload: Payload) {
         companion object {
             fun decode(input: LCSInputStream): Program {
                 val code = input.readBytes()
-                val size = input.readInt()
+                val size = input.readIntAsLEB128()
                 val args = ArrayList<TransactionArgument>(size)
                 for (i in 0 until size) {
                     args.add(TransactionArgument.decode(input))
@@ -84,7 +84,7 @@ data class TransactionPayload(val payload: Payload) {
         override fun toByteArray(): ByteArray {
             val stream = LCSOutputStream()
             stream.writeBytes(code)
-            stream.writeInt(args.size)
+            stream.writeIntAsLEB128(args.size)
             args.forEach {
                 stream.write(it.toByteArray())
             }
@@ -94,7 +94,7 @@ data class TransactionPayload(val payload: Payload) {
         companion object {
             fun decode(input: LCSInputStream): Script {
                 val code = input.readBytes()
-                val size = input.readInt()
+                val size = input.readIntAsLEB128()
                 val args = ArrayList<TransactionArgument>(size)
                 for (i in 0 until size) {
                     args.add(TransactionArgument.decode(input))
@@ -128,7 +128,7 @@ data class TransactionPayload(val payload: Payload) {
     ) : Payload(1) {
         override fun toByteArray(): ByteArray {
             val stream = LCSOutputStream()
-            stream.writeInt(writeSet.size)
+            stream.writeIntAsLEB128(writeSet.size)
             writeSet.forEach {
                 stream.write(it.toByteArray())
             }
@@ -137,7 +137,7 @@ data class TransactionPayload(val payload: Payload) {
 
         companion object {
             fun decode(input: LCSInputStream): WriteSet {
-                val size = input.readInt()
+                val size = input.readIntAsLEB128()
                 val args = ArrayList<WriteOp>(size)
                 for (i in 0 until size) {
                     args.add(WriteOp.decode(input))
