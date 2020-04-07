@@ -44,7 +44,7 @@ interface TypeTag {
                 }
                 TypeTagEnum.Address.value -> TypeTagAddress(AccountAddress(input.readAddress()))
                 TypeTagEnum.ListTypeTag.value -> {
-                    val size = input.readInt()
+                    val size = input.readIntAsLEB128()
                     val list = ArrayList<TypeTag>(size)
                     for (i in 0 until size) {
                         list.add(TypeTag.decode(input))
@@ -123,7 +123,7 @@ class TypeTagU64(val value: Long) : TypeTag {
 class TypeTagU128(val value: Long) : TypeTag {
     override fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
-        output.writeInt(TypeTagEnum.U128.value)
+        output.writeIntAsLEB128(TypeTagEnum.U128.value)
 //        output.write(LCS.encodeShort(value))
         return output.toByteArray()
     }
@@ -132,7 +132,7 @@ class TypeTagU128(val value: Long) : TypeTag {
 class TypeTagAddress(val value: AccountAddress) : TypeTag {
     override fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
-        output.writeInt(TypeTagEnum.Address.value)
+        output.writeIntAsLEB128(TypeTagEnum.Address.value)
         output.write(value.toByteArray())
         return output.toByteArray()
     }
@@ -141,8 +141,8 @@ class TypeTagAddress(val value: AccountAddress) : TypeTag {
 class TypeTagListTypeTag(val value: List<TypeTag>) : TypeTag {
     override fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
-        output.writeInt(TypeTagEnum.ListTypeTag.value)
-        output.write(value.size)
+        output.writeIntAsLEB128(TypeTagEnum.ListTypeTag.value)
+        output.writeIntAsLEB128(value.size)
         value.forEach {
             output.writeBytes(it.toByteArray())
         }
@@ -153,7 +153,7 @@ class TypeTagListTypeTag(val value: List<TypeTag>) : TypeTag {
 class TypeTagStructTag(val value: StructTag) : TypeTag {
     override fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
-        output.writeInt(TypeTagEnum.StructTag.value)
+        output.writeIntAsLEB128(TypeTagEnum.StructTag.value)
         output.write(value.toByteArray())
         return output.toByteArray()
     }
@@ -171,10 +171,10 @@ data class StructTag(
             val accountAddress = AccountAddress.decode(input)
             val module = input.readString()
             val name = input.readString()
-            val size = input.readInt()
+            val size = input.readIntAsLEB128()
             val args = ArrayList<TypeTagEnum>(size)
             for (i in 0 until size) {
-                val value = input.readInt()
+                val value = input.readIntAsLEB128()
                 args.add(TypeTagEnum.convert(value))
             }
             return StructTag(
@@ -191,9 +191,9 @@ data class StructTag(
         stream.write(address.toByteArray())
         stream.writeString(module)
         stream.writeString(name)
-        stream.writeInt(type_params.size)
+        stream.writeIntAsLEB128(type_params.size)
         type_params.forEach {
-            stream.writeInt(it.value)
+            stream.writeIntAsLEB128(it.value)
         }
         return stream.toByteArray()
     }

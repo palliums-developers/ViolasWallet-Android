@@ -66,7 +66,7 @@ class AuthenticationKey {
 interface TransactionAuthenticator {
     companion object {
         fun decode(input: LCSInputStream): TransactionAuthenticator {
-            return when (input.readInt().toByte()) {
+            return when (input.readIntAsLEB128().toByte()) {
                 AuthenticationKey.Scheme.Ed25519.value -> {
                     TransactionSignAuthenticator(input.readBytes(), input.readBytes())
                 }
@@ -96,7 +96,7 @@ class TransactionSignAuthenticator(
         println("signature size:${signature.size} hex:${LCS.encodeInt(signature.size).toHex()}")
 
         val stream = LCSOutputStream()
-        stream.writeInt(AuthenticationKey.Scheme.Ed25519.value.toInt())
+        stream.writeIntAsLEB128(AuthenticationKey.Scheme.Ed25519.value.toInt())
         stream.writeBytes(publicKey)
         stream.writeBytes(signature)
         return stream.toByteArray()
@@ -109,7 +109,7 @@ class TransactionMultiSignAuthenticator(
 ) : TransactionAuthenticator {
     override fun toByteArray(): ByteArray {
         val stream = LCSOutputStream()
-        stream.writeByte(AuthenticationKey.Scheme.MultiEd25519.value)
+        stream.writeIntAsLEB128(AuthenticationKey.Scheme.MultiEd25519.value.toInt())
         stream.writeBytes(multiPublicKey.toByteArray())
         stream.writeBytes(signature)
         return stream.toByteArray()

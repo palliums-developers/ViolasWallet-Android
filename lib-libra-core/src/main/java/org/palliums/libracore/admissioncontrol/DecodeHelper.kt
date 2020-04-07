@@ -18,7 +18,7 @@ object DecodeHelper {
         val blobBytes = getAccountStateResponse.accountStateWithProof.blob.blob.toByteArray()
 
         val inputStream = LCSInputStream(blobBytes)
-        val dataSize = inputStream.readInt()
+        val dataSize = inputStream.readIntAsLEB128()
 
         val states = LinkedHashSet<ByteArray>()
 

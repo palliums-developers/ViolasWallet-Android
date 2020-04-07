@@ -14,14 +14,14 @@ data class TransactionPayload(val payload: Payload) {
 
     fun toByteArray(): ByteArray {
         val stream = LCSOutputStream()
-        stream.writeInt(payload.type)
+        stream.writeIntAsLEB128(payload.type)
         stream.write(payload.toByteArray())
         return stream.toByteArray()
     }
 
     companion object {
         fun decode(input: LCSInputStream): TransactionPayload {
-            val readInt = input.readInt()
+            val readInt = input.readIntAsLEB128()
             return TransactionPayload(
                 when (readInt) {
                     0 -> {
@@ -215,7 +215,7 @@ data class TransactionArgument(
 
     fun toByteArray(): ByteArray {
         val stream = LCSOutputStream()
-        stream.writeInt(argType.number)
+        stream.writeIntAsLEB128(argType.number)
         stream.write(data)
         return stream.toByteArray()
     }
@@ -259,7 +259,7 @@ data class TransactionArgument(
         }
 
         fun decode(input: LCSInputStream): TransactionArgument {
-            val readInt = input.readInt()
+            val readInt = input.readIntAsLEB128()
             return when (readInt) {
                 ArgType.U64.number -> {
                     newU64(input.readLong())
