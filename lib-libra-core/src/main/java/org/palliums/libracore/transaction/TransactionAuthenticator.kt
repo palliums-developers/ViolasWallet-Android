@@ -20,7 +20,7 @@ class AuthenticationKey {
         }
 
         fun multi_ed25519(MultiEd25519PublicKey: MultiEd25519PublicKey): AuthenticationKey {
-            return AuthenticationKey(MultiEd25519PublicKey, Scheme.Ed25519)
+            return AuthenticationKey(MultiEd25519PublicKey, Scheme.MultiEd25519)
         }
     }
 
@@ -71,9 +71,10 @@ interface TransactionAuthenticator {
                     TransactionSignAuthenticator(input.readBytes(), input.readBytes())
                 }
                 AuthenticationKey.Scheme.MultiEd25519.value -> {
-                    // todo
-                    val xx = MultiEd25519PublicKey(arrayListOf(), 0)
-                    TransactionMultiSignAuthenticator(xx, input.readBytes())
+                    TransactionMultiSignAuthenticator(
+                        MultiEd25519PublicKey.decode(input),
+                        input.readBytes()
+                    )
                 }
                 else -> {
                     TransactionSignAuthenticator(input.readBytes(), input.readBytes())

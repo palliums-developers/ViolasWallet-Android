@@ -10,6 +10,7 @@ import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec
 import org.palliums.libracore.mnemonic.English
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.serialization.LCS
+import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
 import org.spongycastle.crypto.digests.SHA3Digest
 import org.spongycastle.crypto.generators.HKDFBytesGenerator
@@ -162,9 +163,22 @@ class KeyPair(
 }
 
 private const val MAX_NUM_OF_KEYS = 32
-private const val BITMAP_NUM_OF_BYTES = 4
+const val BITMAP_NUM_OF_BYTES = 4
 
 class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val threshold: Int) {
+    companion object {
+        fun decode(input: LCSInputStream): MultiEd25519PublicKey {
+            val publicKeySize = input.readIntAsLEB128()
+            val publicKeys = ArrayList<ByteArray>(publicKeySize)
+
+            for (i in 0 until publicKeySize) {
+                publicKeys.add(input.readBytes())
+            }
+            val threshold = input.readIntAsLEB128()
+            return MultiEd25519PublicKey(publicKeys, threshold)
+        }
+    }
+
     init {
         if (threshold == 0 || publicKeys.size < threshold) {
             throw CryptoMaterialError.ValidationError()
@@ -179,7 +193,7 @@ class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val
         publicKeys.forEach {
             output.writeBytes(it)
         }
-        output.writeInt(threshold)
+        output.writeIntAsLEB128(threshold)
         return output.toByteArray()
     }
 }
@@ -252,15 +266,36 @@ class MultiEd25519Signature(
 }
 
 fun bitmapSetBit(bitmap: ByteArray, index: Int) {
-    val bucket = index // 8
-    // It's always invoked with index < 32, thus there is no need to check range.
-    val bucketPos = index - (bucket * 8)
-    bitmap[bucket] = (bitmap[bucket].toInt() or 128.shr(bucketPos)).toByte()
+    val bucketIndex = index / 8
+    val innerIndex = index % 8
+    bitmap[bucketIndex] = (128.ushr(innerIndex) or bitmap[bucketIndex].toInt()).toByte()
 }
 
 fun bitmapGetBit(bitmap: ByteArray, index: Int): Boolean {
-    val bucket = index // 8
-    // It's always invoked with index < 32, thus there is no need to check range.
-    val bucketPos = index - (bucket * 8)
-    return bitmap[bucket].toInt() and 128.shr(bucketPos) != 0
+    val bucketIndex = index / 8
+    val innerIndex = index % 8
+    return (128.ushr(innerIndex) and bitmap[bucketIndex].toInt()) != 0
+}
+
+fun bitmapLastGetBit(bitmap: ByteArray): Int {
+    for (i in BITMAP_NUM_OF_BYTES - 1 downTo 0) {
+        for (j in 0..7) {
+            if (bitmap[i].toInt().ushr(j) and 0b1 == 1) {
+                return i * 8 + (8 - j) - 1
+            }
+        }
+    }
+    return 0
+}
+
+fun bitmapCountOnes(bitmap: ByteArray): Int {
+    var count = 0
+    for (i in BITMAP_NUM_OF_BYTES - 1 downTo 0) {
+        for (j in 0..7) {
+            if (bitmap[i].toInt().ushr(j) and 0b1 == 1) {
+                count++
+            }
+        }
+    }
+    return count
 }
