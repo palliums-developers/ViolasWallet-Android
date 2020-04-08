@@ -65,24 +65,6 @@ class AuthenticationKey {
 }
 
 interface TransactionAuthenticator {
-    companion object {
-        fun decode(input: LCSInputStream): TransactionAuthenticator {
-            return when (input.readIntAsLEB128().toByte()) {
-                AuthenticationKey.Scheme.Ed25519.value -> {
-                    TransactionSignAuthenticator(input.readBytes(), input.readBytes())
-                }
-                AuthenticationKey.Scheme.MultiEd25519.value -> {
-                    TransactionMultiSignAuthenticator(
-                        MultiEd25519PublicKey.decode(input),
-                        MultiEd25519Signature.decode(input)
-                    )
-                }
-                else -> {
-                    TransactionSignAuthenticator(input.readBytes(), input.readBytes())
-                }
-            }
-        }
-    }
 
     fun toByteArray(): ByteArray
 }
@@ -98,7 +80,7 @@ class TransactionSignAuthenticator(
         println("signature size:${signature.size} hex:${LCS.encodeInt(signature.size).toHex()}")
 
         val stream = LCSOutputStream()
-        stream.writeIntAsLEB128(AuthenticationKey.Scheme.Ed25519.value.toInt())
+        stream.writeU8(AuthenticationKey.Scheme.Ed25519.value.toInt())
         stream.writeBytes(publicKey)
         stream.writeBytes(signature)
         return stream.toByteArray()
@@ -111,11 +93,9 @@ class TransactionMultiSignAuthenticator(
 ) : TransactionAuthenticator {
     override fun toByteArray(): ByteArray {
         val stream = LCSOutputStream()
-        stream.writeIntAsLEB128(AuthenticationKey.Scheme.MultiEd25519.value.toInt())
-//        stream.writeBytes(multiPublicKey.toByteArray())
-//        stream.writeBytes(signature.toByteArray())
-        stream.write(multiPublicKey.toByteArray())
-        stream.write(signature.toByteArray())
+        stream.writeU8(AuthenticationKey.Scheme.MultiEd25519.value.toInt())
+        stream.writeBytes(multiPublicKey.toByteArray())
+        stream.writeBytes(signature.toByteArray())
         return stream.toByteArray()
     }
 }

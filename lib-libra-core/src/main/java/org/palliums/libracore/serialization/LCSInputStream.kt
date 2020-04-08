@@ -8,6 +8,12 @@ class LCSInputStream(array: ByteArray) : ByteArrayInputStream(array) {
         return LCS.decodeBool(readByte())
     }
 
+    fun readU8():Int{
+        val value = ByteArray(1)
+        read(value)
+        return LCS.decodeU8(value)
+    }
+
     fun readShort(): Short {
         val value = ByteArray(2)
         read(value)

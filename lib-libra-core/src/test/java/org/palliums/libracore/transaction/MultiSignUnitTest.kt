@@ -56,7 +56,7 @@ class MultiSignUnitTest {
     }
 
     @Test
-    fun tran_multi() {
+    fun test_tran_multi() {
         val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
         val account1 = libraWallet.newAccount()
         val account2 = libraWallet.newAccount()
@@ -79,7 +79,7 @@ class MultiSignUnitTest {
             AuthenticationKey.multi_ed25519(multiEd25519PublicKey).getShortAddress().toHex()
 
         val address = "7f4644ae2b51b65bd3c9d414aa853407"
-        val amount = (1.01 * 1000000L).toLong()
+        val amount = (1.02 * 1000000L).toLong()
 
         val publishTokenPayload = TransactionPayload.optionTransactionPayload(
             null, address, amount
@@ -88,7 +88,7 @@ class MultiSignUnitTest {
         val rawTransaction = RawTransaction.optionTransaction(
             senderAddress,
             publishTokenPayload,
-            0
+            2
         )
 
         val signedTransaction = SignedTransaction(

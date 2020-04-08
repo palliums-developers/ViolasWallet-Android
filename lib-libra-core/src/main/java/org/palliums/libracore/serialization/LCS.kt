@@ -29,6 +29,10 @@ object LCS {
         return ByteBuffer.allocate(2).order(LITTLE_ENDIAN).putShort(value).array()
     }
 
+    fun encodeU8(value: Int): ByteArray{
+        return ByteBuffer.allocate(1).order(LITTLE_ENDIAN).put(value.and(0xFF).toByte()).array()
+    }
+
     fun encodeByte(value: Byte): ByteArray {
         return byteArrayOf(value)
     }
@@ -107,6 +111,10 @@ object LCS {
 
     fun decodeLong(value: ByteArray): Long {
         return ByteBuffer.wrap(value).order(LITTLE_ENDIAN).long
+    }
+
+    fun decodeU8(value: ByteArray): Int{
+        return ByteBuffer.wrap(value).order(LITTLE_ENDIAN).int
     }
 
     fun decodeIntAsULEB128(value: InputStream): Int {

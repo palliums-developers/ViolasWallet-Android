@@ -70,17 +70,6 @@ data class SignedTransaction(
         stream.write(authenticator.toByteArray())
         return stream.toByteArray()
     }
-
-    companion object {
-        fun decode(array: ByteArray): SignedTransaction {
-            LCSInputStream(array).use {
-                return SignedTransaction(
-                    RawTransaction.decode(it),
-                    TransactionAuthenticator.decode(it)
-                )
-            }
-        }
-    }
 }
 
 data class AccountAddress(val byte: ByteArray) {

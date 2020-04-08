@@ -173,18 +173,6 @@ private const val MAX_NUM_OF_KEYS = 32
 const val BITMAP_NUM_OF_BYTES = 4
 
 class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val threshold: Int) {
-    companion object {
-        fun decode(input: LCSInputStream): MultiEd25519PublicKey {
-            val publicKeySize = input.readIntAsLEB128()
-            val publicKeys = ArrayList<ByteArray>(publicKeySize)
-
-            for (i in 0 until publicKeySize) {
-                publicKeys.add(input.readBytes())
-            }
-            val threshold = input.readByte().toInt()
-            return MultiEd25519PublicKey(publicKeys, threshold)
-        }
-    }
 
     init {
         if (threshold == 0 || publicKeys.size < threshold) {
@@ -196,12 +184,10 @@ class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val
 
     fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
-        output.writeIntAsLEB128(publicKeys.size)
         publicKeys.forEach {
-            output.writeBytes(it)
+            output.write(it)
         }
-//        output.writeIntAsLEB128(threshold)
-        output.writeByte((threshold.and(0xFF).toByte()))
+        output.writeU8(threshold)
         return output.toByteArray()
     }
 }
@@ -260,26 +246,14 @@ class MultiEd25519Signature(
 //            }
 //            return MultiEd25519Signature(signatures, bitmap)
 //        }
-
-        fun decode(input: LCSInputStream): MultiEd25519Signature {
-            val signatureSize = input.readIntAsLEB128()
-            val signatures = ArrayList<ByteArray>(signatureSize)
-
-            for (i in 0 until signatureSize) {
-                signatures.add(input.readBytes())
-            }
-            val bitmap = input.readBytes()
-            return MultiEd25519Signature(signatures, bitmap)
-        }
     }
 
     fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
-        output.writeIntAsLEB128(signatures.size)
         signatures.forEach {
-            output.writeBytes(it)
+            output.write(it)
         }
-        output.writeBytes(bitmap)
+        output.write(bitmap)
         return output.toByteArray()
     }
 }
