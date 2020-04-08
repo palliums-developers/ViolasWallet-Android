@@ -13,9 +13,7 @@ import org.palliums.violascore.transaction.SignedTransaction
 import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.utils.HexUtils
 import org.palliums.violascore.wallet.LibraWallet
-import org.palliums.violascore.wallet.RAW_TRANSACTION_HASH_SALT
 import org.palliums.violascore.wallet.WalletConfig
-import org.spongycastle.jcajce.provider.digest.SHA3
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -70,7 +68,7 @@ class ExampleInstrumentedTest {
         println("code ${HexUtils.toHex(moveEncode)}")
 
         val begin = System.currentTimeMillis()
-        val value = account.keyPair.sign(rawTransaction.toByteArray())
+        val value = account.keyPair.signRawTransaction(rawTransaction.toByteArray())
         val end = System.currentTimeMillis()
 
         println(

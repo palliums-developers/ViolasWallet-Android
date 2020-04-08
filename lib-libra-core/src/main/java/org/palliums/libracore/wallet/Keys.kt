@@ -130,7 +130,7 @@ class KeyPair(
         return mEdDSAPublicKey.abyte
     }
 
-    fun sign(message: ByteArray): ByteArray {
+    fun signRawTransaction(message: ByteArray): ByteArray {
         val sha3256 = SHA3.Digest256()
         sha3256.update(SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()))
         sha3256.update(message)
@@ -138,6 +138,13 @@ class KeyPair(
         val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
         edDSAEngine.initSign(mEdDSAPrivateKey)
         edDSAEngine.update(sha3256.digest())
+        return edDSAEngine.sign()
+    }
+
+    fun signMessage(message: ByteArray): ByteArray {
+        val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
+        edDSAEngine.initSign(mEdDSAPrivateKey)
+        edDSAEngine.update(message)
         return edDSAEngine.sign()
     }
 
@@ -215,7 +222,7 @@ class MultiEd25519PrivateKey(private val privateKeys: List<ByteArray>, private v
             .take(threshold)
             .mapIndexed { index, bytes ->
                 bitmapSetBit(bitmap, index)
-                signatures.add(KeyPair(bytes).sign(message))
+                signatures.add(KeyPair(bytes).signMessage(message))
             }
 
         return MultiEd25519Signature(signatures, bitmap)

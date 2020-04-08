@@ -137,7 +137,7 @@ class LibraAdmissionControl(private val mChannel: Channel) {
             sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.sign(rawTransaction.toByteArray()),
+                account.keyPair.signRawTransaction(rawTransaction.toByteArray()),
                 call
             )
         }, {

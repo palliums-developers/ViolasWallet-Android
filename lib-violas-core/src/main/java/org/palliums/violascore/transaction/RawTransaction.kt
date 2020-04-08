@@ -1,11 +1,13 @@
 package org.palliums.violascore.transaction
 
 import com.google.protobuf.ByteString
+import org.palliums.libracore.wallet.RAW_TRANSACTION_HASH_SALT
 import org.palliums.violascore.serialization.LCS
 import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.LCSOutputStream
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.utils.HexUtils
+import org.spongycastle.jcajce.provider.digest.SHA3
 import types.AccessPathOuterClass.AccessPath
 
 
@@ -28,6 +30,13 @@ data class RawTransaction(
         stream.writeLong(gas_unit_price)
         stream.writeLong(expiration_time)
         return stream.toByteArray()
+    }
+
+    fun hashByteArray(): ByteArray {
+        val sha3256 = SHA3.Digest256()
+        sha3256.update(SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()))
+        sha3256.update(toByteArray())
+        return sha3256.digest()
     }
 
     companion object {

@@ -37,7 +37,7 @@ class TransferUnitTest {
             rawTransaction,
             TransactionSignAuthenticator(
                 account.keyPair.getPublicKey(),
-                account.keyPair.sign(rawTransaction.toByteArray())
+                account.keyPair.signRawTransaction(rawTransaction.toByteArray())
             )
         )
 
