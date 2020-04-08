@@ -130,7 +130,7 @@ class KeyPair(
         return mEdDSAPublicKey.abyte
     }
 
-    fun sign(message: ByteArray): ByteArray {
+    fun signRawTransaction(message: ByteArray): ByteArray {
         val sha3256 = SHA3.Digest256()
         sha3256.update(SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()))
         sha3256.update(message)
@@ -138,6 +138,13 @@ class KeyPair(
         val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
         edDSAEngine.initSign(mEdDSAPrivateKey)
         edDSAEngine.update(sha3256.digest())
+        return edDSAEngine.sign()
+    }
+
+    fun signMessage(message: ByteArray): ByteArray {
+        val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
+        edDSAEngine.initSign(mEdDSAPrivateKey)
+        edDSAEngine.update(message)
         return edDSAEngine.sign()
     }
 
@@ -166,18 +173,6 @@ private const val MAX_NUM_OF_KEYS = 32
 const val BITMAP_NUM_OF_BYTES = 4
 
 class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val threshold: Int) {
-    companion object {
-        fun decode(input: LCSInputStream): MultiEd25519PublicKey {
-            val publicKeySize = input.readIntAsLEB128()
-            val publicKeys = ArrayList<ByteArray>(publicKeySize)
-
-            for (i in 0 until publicKeySize) {
-                publicKeys.add(input.readBytes())
-            }
-            val threshold = input.readIntAsLEB128()
-            return MultiEd25519PublicKey(publicKeys, threshold)
-        }
-    }
 
     init {
         if (threshold == 0 || publicKeys.size < threshold) {
@@ -189,11 +184,10 @@ class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val
 
     fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
-        output.writeIntAsLEB128(publicKeys.size)
         publicKeys.forEach {
-            output.writeBytes(it)
+            output.write(it)
         }
-        output.writeIntAsLEB128(threshold)
+        output.writeU8(threshold)
         return output.toByteArray()
     }
 }
@@ -215,7 +209,7 @@ class MultiEd25519PrivateKey(private val privateKeys: List<ByteArray>, private v
             .take(threshold)
             .mapIndexed { index, bytes ->
                 bitmapSetBit(bitmap, index)
-                signatures.add(KeyPair(bytes).sign(message))
+                signatures.add(KeyPair(bytes).signMessage(message))
             }
 
         return MultiEd25519Signature(signatures, bitmap)
@@ -256,11 +250,10 @@ class MultiEd25519Signature(
 
     fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
-        output.writeIntAsLEB128(signatures.size)
         signatures.forEach {
-            output.writeBytes(it)
+            output.write(it)
         }
-        output.writeBytes(bitmap)
+        output.write(bitmap)
         return output.toByteArray()
     }
 }

@@ -4,7 +4,6 @@ import org.junit.Assert
 import org.junit.Test
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.AuthenticationKey
-import org.spongycastle.crypto.digests.SHA3Digest
 import org.spongycastle.util.encoders.Hex
 
 /**
@@ -65,7 +64,7 @@ class WalletTest {
     fun testSign() {
         val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
         val account = libraWallet.newAccount()
-        val signHexStr = Hex.toHexString(account.keyPair.sign(Hex.decode("1234567890")))
+        val signHexStr = Hex.toHexString(account.keyPair.signRawTransaction(Hex.decode("1234567890")))
         println()
         println("message sign: $signHexStr")
 
@@ -134,27 +133,5 @@ class WalletTest {
         val mnemonicWords = mnemonic.split(" ")
 
         return mnemonicWords
-    }
-    
-    @Test
-    fun test_multi_ed25519_bytes(){
-        val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
-        val account1 = libraWallet.newAccount()
-        val account2 = libraWallet.newAccount()
-
-        println(account1.keyPair.getPublicKey().toHex())
-        println(account2.keyPair.getPublicKey().toHex())
-
-        val multiEd25519PublicKey = MultiEd25519PublicKey(
-            arrayListOf(
-                account1.keyPair.getPublicKey(),
-                account2.keyPair.getPublicKey()
-            ), 1
-        )
-
-        val toHex = AuthenticationKey.multi_ed25519(multiEd25519PublicKey).getShortAddress().toHex()
-
-        println(multiEd25519PublicKey.toByteArray().toHex())
-        println(toHex)
     }
 }

@@ -63,7 +63,7 @@ class WalletTest {
     fun testSign() {
         val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
         val account = libraWallet.newAccount()
-        val signHexStr = Hex.toHexString(account.keyPair.sign(Hex.decode("1234567890")))
+        val signHexStr = Hex.toHexString(account.keyPair.signRawTransaction(Hex.decode("1234567890")))
         println()
         println("message sign: $signHexStr")
 

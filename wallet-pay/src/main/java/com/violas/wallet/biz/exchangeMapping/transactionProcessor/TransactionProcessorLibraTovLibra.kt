@@ -130,7 +130,7 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
         mLibraService.submitTransactionWithCallback(
             rawTransaction,
             keyPair.getPublicKey(),
-            keyPair.sign(rawTransaction.toByteArray())
+            keyPair.signRawTransaction(rawTransaction.toByteArray())
         ) {
             result = it == null
             countDownLatch.countDown()

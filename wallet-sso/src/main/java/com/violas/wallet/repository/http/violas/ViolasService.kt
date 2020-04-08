@@ -117,7 +117,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.sign(rawTransaction.toByteArray()),
+                account.keyPair.signRawTransaction(rawTransaction.toByteArray()),
                 call
             )
         }, {
@@ -175,7 +175,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.sign(rawTransaction.toByteArray()),
+                account.keyPair.signRawTransaction(rawTransaction.toByteArray()),
                 call
             )
         }, {
@@ -211,7 +211,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.sign(rawTransaction.toByteArray()),
+                account.keyPair.signRawTransaction(rawTransaction.toByteArray()),
                 call
             )
         }, {
@@ -251,7 +251,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.sign(rawTransaction.toByteArray()),
+                account.keyPair.signRawTransaction(rawTransaction.toByteArray()),
                 call
             )
         }, {
@@ -282,7 +282,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.sign(rawTransaction.toByteArray()),
+                account.keyPair.signRawTransaction(rawTransaction.toByteArray()),
                 call
             )
         }, {

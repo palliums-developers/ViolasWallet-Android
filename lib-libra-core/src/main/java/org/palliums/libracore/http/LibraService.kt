@@ -39,7 +39,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         submitTransaction(
             rawTransaction,
             account.keyPair.getPublicKey(),
-            account.keyPair.sign(rawTransaction.toByteArray())
+            account.keyPair.signRawTransaction(rawTransaction.toByteArray())
         )
     }
 

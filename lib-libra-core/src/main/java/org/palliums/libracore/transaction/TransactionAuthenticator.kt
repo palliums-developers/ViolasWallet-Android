@@ -5,6 +5,7 @@ import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.wallet.MultiEd25519PublicKey
+import org.palliums.libracore.wallet.MultiEd25519Signature
 import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.util.encoders.Hex
 
@@ -64,24 +65,6 @@ class AuthenticationKey {
 }
 
 interface TransactionAuthenticator {
-    companion object {
-        fun decode(input: LCSInputStream): TransactionAuthenticator {
-            return when (input.readIntAsLEB128().toByte()) {
-                AuthenticationKey.Scheme.Ed25519.value -> {
-                    TransactionSignAuthenticator(input.readBytes(), input.readBytes())
-                }
-                AuthenticationKey.Scheme.MultiEd25519.value -> {
-                    TransactionMultiSignAuthenticator(
-                        MultiEd25519PublicKey.decode(input),
-                        input.readBytes()
-                    )
-                }
-                else -> {
-                    TransactionSignAuthenticator(input.readBytes(), input.readBytes())
-                }
-            }
-        }
-    }
 
     fun toByteArray(): ByteArray
 }
@@ -97,7 +80,7 @@ class TransactionSignAuthenticator(
         println("signature size:${signature.size} hex:${LCS.encodeInt(signature.size).toHex()}")
 
         val stream = LCSOutputStream()
-        stream.writeIntAsLEB128(AuthenticationKey.Scheme.Ed25519.value.toInt())
+        stream.writeU8(AuthenticationKey.Scheme.Ed25519.value.toInt())
         stream.writeBytes(publicKey)
         stream.writeBytes(signature)
         return stream.toByteArray()
@@ -106,13 +89,13 @@ class TransactionSignAuthenticator(
 
 class TransactionMultiSignAuthenticator(
     private val multiPublicKey: MultiEd25519PublicKey,
-    val signature: ByteArray
+    val signature: MultiEd25519Signature
 ) : TransactionAuthenticator {
     override fun toByteArray(): ByteArray {
         val stream = LCSOutputStream()
-        stream.writeIntAsLEB128(AuthenticationKey.Scheme.MultiEd25519.value.toInt())
+        stream.writeU8(AuthenticationKey.Scheme.MultiEd25519.value.toInt())
         stream.writeBytes(multiPublicKey.toByteArray())
-        stream.writeBytes(signature)
+        stream.writeBytes(signature.toByteArray())
         return stream.toByteArray()
     }
 }
