@@ -7,7 +7,6 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.BaseBizUrl.getDefaultBaseUrl
 import com.violas.wallet.repository.database.AppDatabase
-import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.repository.http.bitcoin.BitmainApi
 import com.violas.wallet.repository.http.bitcoin.BitmainRepository
 import com.violas.wallet.repository.http.bitcoin.BitmainService
@@ -23,10 +22,11 @@ import com.violas.wallet.repository.http.sso.SSOApi
 import com.violas.wallet.repository.http.sso.SSORepository
 import com.violas.wallet.repository.http.violas.ViolasService
 import com.violas.wallet.repository.local.user.LocalUserService
-import io.grpc.ManagedChannelBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.palliums.libracore.admissioncontrol.LibraAdmissionControl
+import org.palliums.libracore.http.LibraApi
+import org.palliums.libracore.http.LibraRepository
+import org.palliums.libracore.http.LibraService
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -35,12 +35,6 @@ import java.util.concurrent.TimeUnit
 object DataRepository {
     private val appDatabase by lazy {
         AppDatabase.getInstance(getContext())
-    }
-
-    private val mChannel by lazy {
-        ManagedChannelBuilder.forAddress("ac.testnet.libra.org", 8000)
-            .usePlaintext()
-            .build()
     }
 
     private val okHttpClient by lazy {
@@ -78,13 +72,14 @@ object DataRepository {
 
     fun getBitcoinService() = BitcoinChainApi.get()
 
-    fun getLibraService() = LibraAdmissionControl(mChannel)
+    fun getLibraService() =
+        LibraService(LibraRepository(retrofit.create(LibraApi::class.java)))
 
     fun getViolasService() =
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
-    fun getTransactionService(coinTypes: CoinTypes): TransactionService {
-        return when (coinTypes) {
+    fun getTransactionService(coinTypes: CoinTypes) =
+        when (coinTypes) {
             CoinTypes.Violas -> {
                 getViolasService()
             }
@@ -97,11 +92,8 @@ object DataRepository {
                 BitmainService(BitmainRepository(retrofit.create(BitmainApi::class.java)))
             }
         }
-    }
 
-    fun getLocalUserService() =
-        LocalUserService()
-
+    fun getLocalUserService() = LocalUserService()
 
     fun getSSOService() =
         SSORepository(retrofit.create(SSOApi::class.java))

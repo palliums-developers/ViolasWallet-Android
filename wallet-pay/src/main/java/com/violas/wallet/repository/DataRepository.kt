@@ -7,7 +7,6 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.BaseBizUrl.getViolasBaseUrl
 import com.violas.wallet.repository.database.AppDatabase
-import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.repository.http.bitcoin.BitmainApi
 import com.violas.wallet.repository.http.bitcoin.BitmainRepository
 import com.violas.wallet.repository.http.bitcoin.BitmainService
@@ -22,7 +21,6 @@ import com.violas.wallet.repository.http.libra.LibexplorerService
 import com.violas.wallet.repository.http.mappingExchange.MappingExchangeApi
 import com.violas.wallet.repository.http.mappingExchange.MappingExchangeRepository
 import com.violas.wallet.repository.http.violas.ViolasService
-import io.grpc.ManagedChannelBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.palliums.libracore.http.LibraApi
@@ -36,12 +34,6 @@ import java.util.concurrent.TimeUnit
 object DataRepository {
     private val appDatabase by lazy {
         AppDatabase.getInstance(getContext())
-    }
-
-    private val mChannel by lazy {
-        ManagedChannelBuilder.forAddress("ac.testnet.libra.org", 8000)
-            .usePlaintext()
-            .build()
     }
 
     private val okHttpClient by lazy {
@@ -83,8 +75,8 @@ object DataRepository {
     fun getViolasService() =
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
-    fun getTransactionService(coinTypes: CoinTypes): TransactionService {
-        return when (coinTypes) {
+    fun getTransactionService(coinTypes: CoinTypes) =
+        when (coinTypes) {
             CoinTypes.Violas -> {
                 getViolasService()
             }
@@ -97,7 +89,6 @@ object DataRepository {
                 BitmainService(BitmainRepository(retrofit.create(BitmainApi::class.java)))
             }
         }
-    }
 
     fun getDexService() =
         DexRepository(retrofit.create(DexApi::class.java))

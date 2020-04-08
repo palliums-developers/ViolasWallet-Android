@@ -432,10 +432,11 @@ class AccountManager : CoroutineScope by IOScope() {
                     }
             }
             CoinTypes.Libra.coinType() -> {
-                DataRepository.getLibraService()
-                    .getBalanceInMicroLibras(account.address) { balance, success ->
-                        callback.invoke(balance, success)
-                    }
+                DataRepository.getLibraService().getBalanceInMicroLibraWithCallback(
+                    account.address
+                ) { amount, exception ->
+                    callback.invoke(amount, exception == null)
+                }
             }
             CoinTypes.Bitcoin.coinType(),
             CoinTypes.BitcoinTest.coinType() -> {
