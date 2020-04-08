@@ -3,6 +3,8 @@ package org.palliums.libracore.transaction
 import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.transaction.storage.TypeTag
+import org.palliums.libracore.wallet.RAW_TRANSACTION_HASH_SALT
+import org.spongycastle.jcajce.provider.digest.SHA3
 import types.AccessPathOuterClass.AccessPath
 import java.lang.RuntimeException
 
@@ -28,6 +30,13 @@ data class RawTransaction(
         stream.write(gas_specifier.toByteArray())
         stream.writeLong(expiration_time)
         return stream.toByteArray()
+    }
+
+    fun hashByteArray(): ByteArray {
+        val sha3256 = SHA3.Digest256()
+        sha3256.update(SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()))
+        sha3256.update(toByteArray())
+        return sha3256.digest()
     }
 
     companion object {

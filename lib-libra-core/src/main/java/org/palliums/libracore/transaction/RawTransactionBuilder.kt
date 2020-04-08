@@ -35,7 +35,7 @@ fun RawTransaction.Companion.optionTransaction(
  * 创建 Token 转账 payload
  */
 fun TransactionPayload.Companion.optionTransactionPayload(
-    context: Context,
+    context: Context?,
     address: String,
     amount: Long
 ): TransactionPayload {

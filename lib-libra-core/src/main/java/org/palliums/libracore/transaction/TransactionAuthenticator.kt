@@ -5,6 +5,7 @@ import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.wallet.MultiEd25519PublicKey
+import org.palliums.libracore.wallet.MultiEd25519Signature
 import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.util.encoders.Hex
 
@@ -73,7 +74,7 @@ interface TransactionAuthenticator {
                 AuthenticationKey.Scheme.MultiEd25519.value -> {
                     TransactionMultiSignAuthenticator(
                         MultiEd25519PublicKey.decode(input),
-                        input.readBytes()
+                        MultiEd25519Signature.decode(input)
                     )
                 }
                 else -> {
@@ -106,13 +107,15 @@ class TransactionSignAuthenticator(
 
 class TransactionMultiSignAuthenticator(
     private val multiPublicKey: MultiEd25519PublicKey,
-    val signature: ByteArray
+    val signature: MultiEd25519Signature
 ) : TransactionAuthenticator {
     override fun toByteArray(): ByteArray {
         val stream = LCSOutputStream()
         stream.writeIntAsLEB128(AuthenticationKey.Scheme.MultiEd25519.value.toInt())
-        stream.writeBytes(multiPublicKey.toByteArray())
-        stream.writeBytes(signature)
+//        stream.writeBytes(multiPublicKey.toByteArray())
+//        stream.writeBytes(signature.toByteArray())
+        stream.write(multiPublicKey.toByteArray())
+        stream.write(signature.toByteArray())
         return stream.toByteArray()
     }
 }
