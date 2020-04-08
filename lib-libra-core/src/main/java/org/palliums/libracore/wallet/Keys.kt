@@ -1,6 +1,5 @@
 package org.palliums.libracore.wallet
 
-import com.google.common.primitives.Bytes
 import net.i2p.crypto.eddsa.EdDSAEngine
 import net.i2p.crypto.eddsa.EdDSAPrivateKey
 import net.i2p.crypto.eddsa.EdDSAPublicKey
@@ -12,6 +11,7 @@ import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.serialization.LCS
 import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
+import org.palliums.libracore.utils.ByteUtility
 import org.spongycastle.crypto.digests.SHA3Digest
 import org.spongycastle.crypto.generators.HKDFBytesGenerator
 import org.spongycastle.crypto.generators.PKCS5S2ParametersGenerator
@@ -92,7 +92,7 @@ class KeyFactory {
     }
 
     fun generateKey(childDepth: Long): KeyPair {
-        val info: ByteArray = Bytes.concat(DERIVED_KEY.toByteArray(), LCS.encodeLong(childDepth))
+        val info: ByteArray = ByteUtility.concat(DERIVED_KEY.toByteArray(), LCS.encodeLong(childDepth))
 
         val hkdfBytesGenerator = HKDFBytesGenerator(SHA3Digest(256))
         hkdfBytesGenerator.init(HKDFParameters.skipExtractParameters(this.masterPrk, info))

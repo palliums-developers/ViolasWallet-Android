@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.google.protobuf'
+//apply plugin: 'com.google.protobuf'
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -45,15 +45,16 @@ dependencies {
     api libraries.spongycastle_prov
 
     api libraries.protobuf_java
-    api libraries.grpc_okhttp
+    /*api libraries.grpc_okhttp
     api libraries.grpc_protobuf
-    api libraries.grpc_stub
+    api libraries.grpc_stub*/
     api libraries.javax_annotation
 
     implementation libraries.crypto_eddsa
     //implementation libraries.novacrypto_BIP39
 }
 
+/*
 protobuf {
     protoc {
         artifact = libraries.protobuf_protoc
@@ -78,4 +79,4 @@ protobuf {
             }
         }
     }
-}
+}*/

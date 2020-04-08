@@ -1,12 +1,12 @@
 package org.palliums.violascore.wallet
 
-import com.google.common.primitives.Bytes
 import net.i2p.crypto.eddsa.EdDSAEngine
 import net.i2p.crypto.eddsa.EdDSAPrivateKey
 import net.i2p.crypto.eddsa.EdDSAPublicKey
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec
+import org.palliums.libracore.utils.ByteUtility
 import org.palliums.violascore.mnemonic.English
 import org.palliums.violascore.mnemonic.Mnemonic
 import org.palliums.violascore.serialization.LCS
@@ -90,7 +90,7 @@ class KeyFactory {
     }
 
     fun generateKey(childDepth: Long): org.palliums.libracore.wallet.KeyPair {
-        val info: ByteArray = Bytes.concat(DERIVED_KEY.toByteArray(), LCS.encodeLong(childDepth))
+        val info: ByteArray = ByteUtility.concat(DERIVED_KEY.toByteArray(), LCS.encodeLong(childDepth))
 
         val hkdfBytesGenerator = HKDFBytesGenerator(SHA3Digest(256))
         hkdfBytesGenerator.init(HKDFParameters.skipExtractParameters(this.masterPrk, info))
