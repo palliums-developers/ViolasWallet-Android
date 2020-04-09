@@ -101,7 +101,7 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
         mViolasService.sendTransaction(
             rawTransaction,
             keyPair.getPublicKey(),
-            keyPair.signRawTransaction(rawTransaction.toByteArray())
+            keyPair.signMessage(rawTransaction.toHashByteArray())
         ) {
             result = it
             countDownLatch.countDown()

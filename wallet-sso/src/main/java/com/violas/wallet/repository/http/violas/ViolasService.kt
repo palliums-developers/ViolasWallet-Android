@@ -117,7 +117,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.signRawTransaction(rawTransaction.toByteArray()),
+                account.keyPair.signMessage(rawTransaction.toHashByteArray()),
                 call
             )
         }, {
@@ -175,7 +175,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.signRawTransaction(rawTransaction.toByteArray()),
+                account.keyPair.signMessage(rawTransaction.toHashByteArray()),
                 call
             )
         }, {
@@ -211,7 +211,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.signRawTransaction(rawTransaction.toByteArray()),
+                account.keyPair.signMessage(rawTransaction.toHashByteArray()),
                 call
             )
         }, {
@@ -251,7 +251,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.signRawTransaction(rawTransaction.toByteArray()),
+                account.keyPair.signMessage(rawTransaction.toHashByteArray()),
                 call
             )
         }, {
@@ -282,7 +282,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             sendTransaction(
                 rawTransaction,
                 account.keyPair.getPublicKey(),
-                account.keyPair.signRawTransaction(rawTransaction.toByteArray()),
+                account.keyPair.signMessage(rawTransaction.toHashByteArray()),
                 call
             )
         }, {

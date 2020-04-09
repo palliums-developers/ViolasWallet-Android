@@ -1,8 +1,9 @@
 package org.palliums.libracore.transaction
 
-import android.content.Context
-import android.util.Log
+import org.junit.Assert
 import org.junit.Test
+import org.palliums.libracore.crypto.MultiEd25519PrivateKey
+import org.palliums.libracore.crypto.MultiEd25519PublicKey
 import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.wallet.*
@@ -29,6 +30,10 @@ class MultiSignUnitTest {
         val signMessage = multiEd25519PrivateKey.signMessage("010203".hexToBytes())
 
         println(signMessage.toByteArray().toHex())
+        Assert.assertEquals(
+            signMessage.toByteArray().toHex(),
+            "c2a4f12f0dd956c1c9c735c48375d378063a995f7f1217cc5345248ddfdbca0f58a5c1bbd4e1109d8111f1775445861ab0b1688281ffd2a408fa5868acd6200a80000000"
+        )
     }
 
     @Test
@@ -47,12 +52,25 @@ class MultiSignUnitTest {
             ), 1
         )
 
-        val toHex = AuthenticationKey.multi_ed25519(multiEd25519PublicKey).getShortAddress().toHex()
-        val toHex1 = AuthenticationKey.multi_ed25519(multiEd25519PublicKey).toHex()
+        val multiAddress =
+            AuthenticationKey.multi_ed25519(multiEd25519PublicKey).getShortAddress().toHex()
+        val multiAuthenticationKey = AuthenticationKey.multi_ed25519(multiEd25519PublicKey).toHex()
 
         println(multiEd25519PublicKey.toByteArray().toHex())
-        println(toHex)
-        println(toHex1)
+        Assert.assertEquals(
+            multiEd25519PublicKey.toByteArray().toHex(),
+            "c413ea446039d0cd07715ddedb8169393e456b03d05ce67d50a4446ba5e067b0005c135145c60db0253e164a6f9fa396ae7e376761538ac55b40747690e757de01"
+        )
+        println(multiAddress)
+        Assert.assertEquals(
+            multiAddress,
+            "cd35f1a78093554f5dc9c61301f204e4"
+        )
+        println(multiAuthenticationKey)
+        Assert.assertEquals(
+            multiAuthenticationKey,
+            "7aa0e0507bd766b7a81d250cc6d7d25bcd35f1a78093554f5dc9c61301f204e4"
+        )
     }
 
     @Test
@@ -88,14 +106,14 @@ class MultiSignUnitTest {
         val rawTransaction = RawTransaction.optionTransaction(
             senderAddress,
             publishTokenPayload,
-            2
+            3
         )
 
         val signedTransaction = SignedTransaction(
             rawTransaction,
             TransactionMultiSignAuthenticator(
                 multiEd25519PublicKey,
-                multiEd25519PrivateKey.signMessage(rawTransaction.hashByteArray())
+                multiEd25519PrivateKey.signMessage(rawTransaction.toHashByteArray())
             )
         )
 

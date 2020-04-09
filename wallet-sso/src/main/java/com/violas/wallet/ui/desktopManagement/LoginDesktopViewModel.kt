@@ -11,6 +11,7 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.palliums.libracore.crypto.sha3
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.wallet.Account
 
@@ -49,7 +50,7 @@ class LoginDesktopViewModel(
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
         val account = params[0] as Account
-        val signedSessionId = account.keyPair.signSimple(mSessionId.toByteArray()).toHex()
+        val signedSessionId = account.keyPair.signMessage(mSessionId.toByteArray().sha3()).toHex()
 
         mGovernorService.loginDesktop(
             walletAddress = mAccountLD.value!!.address,

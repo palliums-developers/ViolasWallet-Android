@@ -5,6 +5,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.Pair;
 
+import androidx.annotation.Nullable;
+
 import com.palliums.content.ContextProvider;
 import com.quincysx.crypto.Transaction;
 import com.quincysx.crypto.bitcoin.BTCTransaction;
@@ -21,8 +23,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;

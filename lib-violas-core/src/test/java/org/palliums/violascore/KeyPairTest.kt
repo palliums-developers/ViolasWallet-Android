@@ -49,10 +49,10 @@ class KeyPairTest {
         val keyPair =
             KeyPair(HexUtils.fromHex("ed7cc526bc39db7c754f1f90fbb5b7f7ce3499bee04e7525c3c599fcaa46aaea"))
         val message = byteArrayOf(0x1)
-        val messageSign = keyPair.signRawTransaction(message)
+        val messageSign = keyPair.signMessage(message)
         assertEquals(
             HexUtils.toHex(messageSign),
-            "e62313d4966a73578bf89aef7b6c22ae92a113ded00ea9b0957e5e06719d00881af3d35dee1404ca1a74f6b3e47f23a9f016ebd6a717a77eea0f59fca6f86b0b"
+            "738ef56acbc0b13fe9c6acb6c300abc03da5554e7eda7b2fde0eff01095ade9b68038703bb7019e747a75d3f03308cc22c72cb27ea85b9e1080168b384b04f05"
         )
     }
 }

@@ -32,7 +32,7 @@ data class RawTransaction(
         return stream.toByteArray()
     }
 
-    fun hashByteArray(): ByteArray {
+    fun toHashByteArray(): ByteArray {
         val sha3256 = SHA3.Digest256()
         sha3256.update(SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()))
         sha3256.update(toByteArray())

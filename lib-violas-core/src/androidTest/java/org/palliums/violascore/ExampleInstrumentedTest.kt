@@ -68,7 +68,7 @@ class ExampleInstrumentedTest {
         println("code ${HexUtils.toHex(moveEncode)}")
 
         val begin = System.currentTimeMillis()
-        val value = account.keyPair.signRawTransaction(rawTransaction.toByteArray())
+        val value = account.keyPair.signMessage(rawTransaction.toHashByteArray())
         val end = System.currentTimeMillis()
 
         println(

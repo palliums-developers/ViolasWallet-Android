@@ -63,13 +63,13 @@ class WalletTest {
     fun testSign() {
         val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
         val account = libraWallet.newAccount()
-        val signHexStr = Hex.toHexString(account.keyPair.signRawTransaction(Hex.decode("1234567890")))
+        val signHexStr = Hex.toHexString(account.keyPair.signMessage(Hex.decode("1234567890")))
         println()
         println("message sign: $signHexStr")
 
         Assert.assertEquals(
             signHexStr,
-            "f8ee0efcdd875e0779e6baa8b07604ec7820d01a9cf7d16771bbe1496cae2a6c30bcbb03176e3fea23e147a2d1740568218bd112e070791138a4ad78190d4a0d"
+            "7233bd1e6ab55c720a8e5e9cfc90a34ab7cbe60580a3721d35bcf3a44d7cab666f10f6eb1bb669c92bbfd017210e2ce336b56a36ca1feefcca78d6718cdec109"
         )
     }
 

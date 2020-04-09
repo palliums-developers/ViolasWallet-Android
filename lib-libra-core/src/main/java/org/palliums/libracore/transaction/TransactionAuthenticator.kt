@@ -1,11 +1,11 @@
 package org.palliums.libracore.transaction
 
+import org.palliums.libracore.crypto.MultiEd25519PublicKey
+import org.palliums.libracore.crypto.MultiEd25519Signature
 import org.palliums.libracore.serialization.LCS
 import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.serialization.toHex
-import org.palliums.libracore.wallet.MultiEd25519PublicKey
-import org.palliums.libracore.wallet.MultiEd25519Signature
 import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.util.encoders.Hex
 

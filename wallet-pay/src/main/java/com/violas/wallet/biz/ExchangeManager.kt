@@ -54,7 +54,7 @@ class ExchangeManager {
         val signedTransaction = SignedTransaction(
             rawTransaction,
             account.keyPair.getPublicKey(),
-            account.keyPair.signRawTransaction(rawTransaction.toByteArray())
+            account.keyPair.signMessage(rawTransaction.toHashByteArray())
         )
         val signedtxn = signedTransaction.toByteArray().toHex()
 
@@ -99,7 +99,7 @@ class ExchangeManager {
         mViolasService.sendTransaction(
             rawTransaction,
             account.keyPair.getPublicKey(),
-            account.keyPair.signRawTransaction(rawTransaction.toByteArray())
+            account.keyPair.signMessage(rawTransaction.toHashByteArray())
         ) {
             GlobalScope.launch {
                 channel.send(it)
@@ -138,7 +138,7 @@ class ExchangeManager {
         mViolasService.sendTransaction(
             rawTransaction,
             account.keyPair.getPublicKey(),
-            account.keyPair.signRawTransaction(rawTransaction.toByteArray())
+            account.keyPair.signMessage(rawTransaction.toHashByteArray())
         ) {
             GlobalScope.launch {
                 channel.send(it)
