@@ -41,7 +41,7 @@ fun TransactionPayload.Companion.optionTransactionPayload(
 ): TransactionPayload {
 //    val moveEncode = Move.decode(context.assets.open("move/libra_peer_to_peer_transfer.json"))
     val moveEncode =
-        "a11ceb0b010008014f000000060000000255000000040000000359000000060000000c5f000000110000000d700000000b000000057b0000002f00000004aa0000001000000007ba0000001300000000000001000201030200020400000501020003050a02030101020003050a0203000303050a02030301080000063c53454c463e034c42520c4c696272614163636f756e7401540f7061795f66726f6d5f73656e646572046d61696e00000000000000000000000000000000010000ffff030005000a000b010a0212000102".hexToBytes()
+        "a11ceb0b010007014600000004000000034a0000000c000000045600000002000000055800000009000000076100000029000000068a00000010000000099a0000001200000000000001010200010101000300010101000203050a020300010900063c53454c463e0c4c696272614163636f756e740f7061795f66726f6d5f73656e646572046d61696e00000000000000000000000000000000010000ffff030005000a000b010a023e0002".hexToBytes()
     val convert = AccountAddress.convert(address)
     val addressArgument = TransactionArgument.newAddress(convert.first)
     val authenticationKeyPrefixArgument =
@@ -51,6 +51,7 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
+            arrayListOf(lbrStructTag()),
             arrayListOf(addressArgument, authenticationKeyPrefixArgument, amountArgument)
         )
     )
@@ -76,6 +77,7 @@ fun TransactionPayload.Companion.optionWithDataPayload(
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
+            arrayListOf(lbrStructTag()),
             arrayListOf(addressArgument, amountArgument, dateArgument)
         )
     )
