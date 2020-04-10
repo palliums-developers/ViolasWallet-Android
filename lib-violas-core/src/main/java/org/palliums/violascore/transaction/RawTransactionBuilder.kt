@@ -4,8 +4,21 @@ import android.content.Context
 import org.json.JSONObject
 import org.palliums.violascore.move.Move
 import org.palliums.violascore.serialization.hexToBytes
+import org.palliums.violascore.transaction.storage.StructTag
+import org.palliums.violascore.transaction.storage.TypeTag
 import org.palliums.violascore.utils.HexUtils
 import java.util.*
+
+fun lbrStructTag(): TypeTag {
+    return TypeTag.newStructTag(
+        StructTag(
+            AccountAddress.DEFAULT,
+            "LBR",
+            "T",
+            arrayListOf()
+        )
+    )
+}
 
 /**
  * 创建交易
@@ -14,7 +27,7 @@ fun RawTransaction.Companion.optionTransaction(
     senderAddress: String,
     payload: TransactionPayload,
     sequenceNumber: Long,
-    maxGasAmount: Long = 280_000,
+    maxGasAmount: Long = 400_000,
     gasUnitPrice: Long = 0,
     delayed: Long = 1000
 ): RawTransaction {
@@ -24,6 +37,7 @@ fun RawTransaction.Companion.optionTransaction(
         payload,
         maxGasAmount,
         gasUnitPrice,
+        lbrStructTag(),
         (Date().time / 1000) + delayed
     )
     println("rawTransaction ${HexUtils.toHex(rawTransaction.toByteArray())}")

@@ -1,7 +1,5 @@
 package org.palliums.violascore.wallet
 
-import org.palliums.violascore.wallet.KeyFactory
-import org.palliums.violascore.wallet.KeyPair
 import org.palliums.violascore.mnemonic.English
 import org.palliums.violascore.mnemonic.Mnemonic
 import org.palliums.violascore.mnemonic.WordCount

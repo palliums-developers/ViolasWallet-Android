@@ -53,8 +53,10 @@ class ExchangeManager {
 
         val signedTransaction = SignedTransaction(
             rawTransaction,
-            account.keyPair.getPublicKey(),
-            account.keyPair.signMessage(rawTransaction.toHashByteArray())
+            TransactionSignAuthenticator(
+                account.keyPair.getPublicKey(),
+                account.keyPair.signMessage(rawTransaction.toHashByteArray())
+            )
         )
         val signedtxn = signedTransaction.toByteArray().toHex()
 

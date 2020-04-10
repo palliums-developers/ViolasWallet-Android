@@ -3,22 +3,31 @@ package org.palliums.violascore.move
 import org.json.JSONObject
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.utils.sundaySearch
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.InputStreamReader
 
 object Move {
     val defaultTokenAddress by lazy {
-        "7257c2417e4d1038e1817c8f283ace2e1041b3396cdbb099eb357bbee024d614".hexToBytes()
+        "7257c2417e4d1038e1817c8f283ace2e".hexToBytes()
     }
 
     fun decode(inputStream: InputStream): ByteArray {
-        InputStreamReader(inputStream).use {
-            val moveJson = it.readText()
-            return decode(moveJson)
+        val buffer = ByteArrayOutputStream()
+        buffer.use { output ->
+            inputStream.use { input ->
+                var nRead: Int = -1
+                val data = ByteArray(16384)
+
+                while (input.read(data, 0, data.size).also { nRead = it } != -1) {
+                    output.write(data, 0, nRead)
+                }
+            }
+            return buffer.toByteArray()
         }
     }
 
-    fun decode(moveJson: String): ByteArray {
+    fun decodeJson(moveJson: String): ByteArray {
         val jsonObject = JSONObject(moveJson)
         if (jsonObject.has("code")) {
             val jsonArray = jsonObject.getJSONArray("code")

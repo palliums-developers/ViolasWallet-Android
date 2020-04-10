@@ -1,7 +1,7 @@
 package org.palliums.violascore.wallet
 
 import org.palliums.violascore.serialization.toHex
-import org.spongycastle.jcajce.provider.digest.SHA3
+import org.palliums.violascore.transaction.AuthenticationKey
 import org.spongycastle.util.encoders.Hex
 
 /**
@@ -15,25 +15,33 @@ class Account {
 
     val keyPair: KeyPair
     private var address: AccountAddress? = null
+    private var authenticationKey: AuthenticationKey? = null
 
     constructor(keyPair: KeyPair) {
         this.keyPair = keyPair
     }
 
     fun getAddress(): AccountAddress {
-        if (this.address == null) {
-            val sha3256 = SHA3.Digest256()
-            sha3256.update(this.keyPair.getPublicKey())
-            this.address = AccountAddress(sha3256.digest())
+        if (address == null) {
+            val authenticationKey = authenticationKey ?: getAuthenticationKey()
+            this.address = AccountAddress(authenticationKey.getShortAddress())
         }
 
         return this.address!!
+    }
+
+    fun getAuthenticationKey(): AuthenticationKey {
+        if (this.authenticationKey == null) {
+            this.authenticationKey = AuthenticationKey.ed25519(this.keyPair.getPublicKey())
+        }
+        return this.authenticationKey!!
     }
 
     fun getPublicKey(): String {
         return keyPair.getPublicKey().toHex()
     }
 }
+
 
 class AccountAddress {
 

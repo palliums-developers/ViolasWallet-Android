@@ -1,25 +1,18 @@
 package org.palliums.violascore.wallet
 
-import net.i2p.crypto.eddsa.EdDSAEngine
-import net.i2p.crypto.eddsa.EdDSAPrivateKey
-import net.i2p.crypto.eddsa.EdDSAPublicKey
-import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable
-import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec
-import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec
-import org.palliums.violascore.utils.ByteUtility
+import org.palliums.violascore.crypto.Ed25519KeyPair
 import org.palliums.violascore.mnemonic.English
 import org.palliums.violascore.mnemonic.Mnemonic
 import org.palliums.violascore.serialization.LCS
+import org.palliums.violascore.utils.ByteUtility
 import org.spongycastle.crypto.digests.SHA3Digest
 import org.spongycastle.crypto.generators.HKDFBytesGenerator
 import org.spongycastle.crypto.generators.PKCS5S2ParametersGenerator
 import org.spongycastle.crypto.macs.HMac
 import org.spongycastle.crypto.params.HKDFParameters
 import org.spongycastle.crypto.params.KeyParameter
-import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.jce.provider.BouncyCastleProvider
 import org.spongycastle.util.Strings
-import java.security.MessageDigest
 import java.security.Security
 import java.text.Normalizer
 
@@ -90,7 +83,8 @@ class KeyFactory {
     }
 
     fun generateKey(childDepth: Long): KeyPair {
-        val info: ByteArray = ByteUtility.combine(DERIVED_KEY.toByteArray(), LCS.encodeLong(childDepth))
+        val info: ByteArray =
+            ByteUtility.combine(DERIVED_KEY.toByteArray(), LCS.encodeLong(childDepth))
 
         val hkdfBytesGenerator = HKDFBytesGenerator(SHA3Digest(256))
         hkdfBytesGenerator.init(HKDFParameters.skipExtractParameters(this.masterPrk, info))
@@ -104,11 +98,9 @@ class KeyFactory {
 class KeyPair(
     private val secretKey: ByteArray
 ) {
-    private val mDsaNamedCurveSpec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519)
-    private val mEdDSAPrivateKey =
-        EdDSAPrivateKey(EdDSAPrivateKeySpec(secretKey, mDsaNamedCurveSpec))
-    private val mEdDSAPublicKey =
-        EdDSAPublicKey(EdDSAPublicKeySpec(mEdDSAPrivateKey.a, mEdDSAPrivateKey.params))
+    private val mEd25519KeyPair: Ed25519KeyPair by lazy {
+        Ed25519KeyPair(secretKey)
+    }
 
     companion object {
         fun fromSecretKey(secretKey: ByteArray): KeyPair {
@@ -125,13 +117,14 @@ class KeyPair(
     }
 
     fun getPublicKey(): ByteArray {
-        return mEdDSAPublicKey.abyte
+        return mEd25519KeyPair.getPublicKey()
     }
 
     fun signMessage(message: ByteArray): ByteArray {
-        val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
-        edDSAEngine.initSign(mEdDSAPrivateKey)
-        edDSAEngine.update(message)
-        return edDSAEngine.sign()
+        return mEd25519KeyPair.signMessage(message)
+    }
+
+    fun verify(message: ByteArray, signed: ByteArray): Boolean {
+        return mEd25519KeyPair.verify(signed, message)
     }
 }

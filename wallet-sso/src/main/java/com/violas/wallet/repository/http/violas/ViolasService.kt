@@ -133,8 +133,10 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
     ) {
         val signedTransaction = SignedTransaction(
             rawTransaction,
-            publicKey,
-            signed
+            TransactionSignAuthenticator(
+                publicKey,
+                signed
+            )
         )
 
         val subscribe =
