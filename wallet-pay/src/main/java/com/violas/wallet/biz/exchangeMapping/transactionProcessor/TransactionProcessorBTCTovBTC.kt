@@ -12,8 +12,8 @@ import com.violas.wallet.biz.exchangeMapping.MappingAccount
 import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
-import org.palliums.libracore.serialization.toHex
-import org.palliums.libracore.wallet.KeyPair
+import org.palliums.violascore.serialization.toHex
+import org.palliums.violascore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch

@@ -1,6 +1,6 @@
 package org.palliums.violascore.transaction
 
-import org.palliums.libracore.wallet.RAW_TRANSACTION_HASH_SALT
+import org.palliums.violascore.wallet.RAW_TRANSACTION_HASH_SALT
 import org.palliums.violascore.serialization.LCS
 import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.LCSOutputStream

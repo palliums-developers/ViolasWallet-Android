@@ -6,7 +6,7 @@ import net.i2p.crypto.eddsa.EdDSAPublicKey
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec
-import org.palliums.libracore.utils.ByteUtility
+import org.palliums.violascore.utils.ByteUtility
 import org.palliums.violascore.mnemonic.English
 import org.palliums.violascore.mnemonic.Mnemonic
 import org.palliums.violascore.serialization.LCS
@@ -34,7 +34,7 @@ import java.text.Normalizer
 class Seed {
 
     companion object {
-        fun fromMnemonic(mnemonic: List<String>, salt: String = MNEMONIC_SALT_DEFAULT): org.palliums.libracore.wallet.Seed {
+        fun fromMnemonic(mnemonic: List<String>, salt: String = MNEMONIC_SALT_DEFAULT): Seed {
             require(mnemonic.isNotEmpty() && mnemonic.size % 6 == 0) {
                 "Mnemonic must have a word count divisible with 6"
             }
@@ -55,7 +55,7 @@ class Seed {
 
             val keyParameter: KeyParameter =
                 generator.generateDerivedMacParameters(256) as KeyParameter
-            return org.palliums.libracore.wallet.Seed(keyParameter.key)
+            return Seed(keyParameter.key)
         }
     }
 
@@ -76,10 +76,10 @@ class KeyFactory {
         }
     }
 
-    private val seed: org.palliums.libracore.wallet.Seed
+    private val seed: Seed
     val masterPrk: ByteArray // master private key
 
-    constructor(seed: org.palliums.libracore.wallet.Seed) {
+    constructor(seed: Seed) {
         this.seed = seed
 
         val hMac = HMac(SHA3Digest(256))
@@ -89,8 +89,8 @@ class KeyFactory {
         hMac.doFinal(this.masterPrk, 0)
     }
 
-    fun generateKey(childDepth: Long): org.palliums.libracore.wallet.KeyPair {
-        val info: ByteArray = ByteUtility.concat(DERIVED_KEY.toByteArray(), LCS.encodeLong(childDepth))
+    fun generateKey(childDepth: Long): KeyPair {
+        val info: ByteArray = ByteUtility.combine(DERIVED_KEY.toByteArray(), LCS.encodeLong(childDepth))
 
         val hkdfBytesGenerator = HKDFBytesGenerator(SHA3Digest(256))
         hkdfBytesGenerator.init(HKDFParameters.skipExtractParameters(this.masterPrk, info))
@@ -111,11 +111,11 @@ class KeyPair(
         EdDSAPublicKey(EdDSAPublicKeySpec(mEdDSAPrivateKey.a, mEdDSAPrivateKey.params))
 
     companion object {
-        fun fromSecretKey(secretKey: ByteArray): org.palliums.libracore.wallet.KeyPair {
-            return org.palliums.libracore.wallet.KeyPair(secretKey)
+        fun fromSecretKey(secretKey: ByteArray): KeyPair {
+            return KeyPair(secretKey)
         }
 
-        fun fromMnemonic(mnemonics: List<String>): org.palliums.libracore.wallet.KeyPair {
+        fun fromMnemonic(mnemonics: List<String>): KeyPair {
             return fromSecretKey(Seed.fromMnemonic(mnemonics).data)
         }
     }
@@ -128,14 +128,10 @@ class KeyPair(
         return mEdDSAPublicKey.abyte
     }
 
-    fun sign(message: ByteArray): ByteArray {
-        val sha3256 = SHA3.Digest256()
-        sha3256.update(SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()))
-        sha3256.update(message)
-
+    fun signMessage(message: ByteArray): ByteArray {
         val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
         edDSAEngine.initSign(mEdDSAPrivateKey)
-        edDSAEngine.update(sha3256.digest())
+        edDSAEngine.update(message)
         return edDSAEngine.sign()
     }
 }

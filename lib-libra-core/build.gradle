@@ -43,12 +43,6 @@ dependencies {
     api libraries.spongycastle_core
     api libraries.spongycastle_prov
 
-    api libraries.protobuf_java
-    /*api libraries.grpc_okhttp
-    api libraries.grpc_protobuf
-    api libraries.grpc_stub*/
-    api libraries.javax_annotation
-
     api libraries.okhttp3
     api libraries.retrofit2
     api libraries.retrofit2_converter_gson

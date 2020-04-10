@@ -11,7 +11,7 @@ import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
 import com.violas.wallet.utils.validationViolasAddress
-import org.palliums.libracore.wallet.KeyPair
+import org.palliums.violascore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 
 class ToTheirException : RuntimeException(getString(R.string.hint_to_their_error))
@@ -156,7 +156,7 @@ class TransferManager {
         DataRepository.getLibraService().sendCoinWithCallback(
             context,
             org.palliums.libracore.wallet.Account(
-                KeyPair(decryptPrivateKey)
+                org.palliums.libracore.wallet.KeyPair(decryptPrivateKey)
             ),
             address,
             (amount * 1000000L).toLong()

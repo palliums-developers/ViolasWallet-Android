@@ -16,7 +16,7 @@ import org.palliums.libracore.transaction.RawTransaction
 import org.palliums.libracore.transaction.TransactionPayload
 import org.palliums.libracore.transaction.optionTransaction
 import org.palliums.libracore.transaction.optionWithDataPayload
-import org.palliums.libracore.wallet.KeyPair
+import org.palliums.violascore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch

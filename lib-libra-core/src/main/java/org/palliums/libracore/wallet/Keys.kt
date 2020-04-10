@@ -84,7 +84,7 @@ class KeyFactory {
 
     fun generateKey(childDepth: Long): KeyPair {
         val info: ByteArray =
-            ByteUtility.concat(DERIVED_KEY.toByteArray(), LCS.encodeLong(childDepth))
+            ByteUtility.combine(DERIVED_KEY.toByteArray(), LCS.encodeLong(childDepth))
 
         val hkdfBytesGenerator = HKDFBytesGenerator(SHA3Digest(256))
         hkdfBytesGenerator.init(HKDFParameters.skipExtractParameters(this.masterPrk, info))

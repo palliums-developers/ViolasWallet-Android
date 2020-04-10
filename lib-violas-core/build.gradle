@@ -34,8 +34,6 @@ dependencies {
     androidTestImplementation libraries.androidTest_runner
     androidTestImplementation libraries.androidTest_espresso
 
-    implementation project(':lib-libra-core')
-
     implementation libraries.kotlin_stdlib_jdk8
 
     implementation libraries.androidx_appcompat
@@ -43,12 +41,6 @@ dependencies {
 
     api libraries.spongycastle_core
     api libraries.spongycastle_prov
-
-    api libraries.protobuf_java
-    /*api libraries.grpc_okhttp
-    api libraries.grpc_protobuf
-    api libraries.grpc_stub*/
-    api libraries.javax_annotation
 
     implementation libraries.crypto_eddsa
     //implementation libraries.novacrypto_BIP39

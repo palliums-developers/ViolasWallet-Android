@@ -1,6 +1,5 @@
 package org.palliums.violascore.wallet
 
-import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.serialization.toHex
 import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.util.encoders.Hex
