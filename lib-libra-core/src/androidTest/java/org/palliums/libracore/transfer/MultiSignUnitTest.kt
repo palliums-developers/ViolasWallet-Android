@@ -1,11 +1,13 @@
-package org.palliums.libracore.transaction
+package org.palliums.libracore.transfer
 
+import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert
 import org.junit.Test
 import org.palliums.libracore.crypto.MultiEd25519PrivateKey
 import org.palliums.libracore.crypto.MultiEd25519PublicKey
 import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
+import org.palliums.libracore.transaction.*
 import org.palliums.libracore.wallet.*
 
 class MultiSignUnitTest {
@@ -53,8 +55,12 @@ class MultiSignUnitTest {
         )
 
         val multiAddress =
-            AuthenticationKey.multi_ed25519(multiEd25519PublicKey).getShortAddress().toHex()
-        val multiAuthenticationKey = AuthenticationKey.multi_ed25519(multiEd25519PublicKey).toHex()
+            AuthenticationKey.multi_ed25519(
+                multiEd25519PublicKey
+            ).getShortAddress().toHex()
+        val multiAuthenticationKey = AuthenticationKey.multi_ed25519(
+            multiEd25519PublicKey
+        ).toHex()
 
         println(multiEd25519PublicKey.toByteArray().toHex())
         Assert.assertEquals(
@@ -94,13 +100,16 @@ class MultiSignUnitTest {
         )
 
         val senderAddress =
-            AuthenticationKey.multi_ed25519(multiEd25519PublicKey).getShortAddress().toHex()
+            AuthenticationKey.multi_ed25519(
+                multiEd25519PublicKey
+            ).getShortAddress().toHex()
 
         val address = "7f4644ae2b51b65bd3c9d414aa853407"
         val amount = (1.02 * 1000000L).toLong()
 
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         val publishTokenPayload = TransactionPayload.optionTransactionPayload(
-            null, address, amount
+            appContext, address, amount
         )
 
         val rawTransaction = RawTransaction.optionTransaction(
@@ -109,13 +118,14 @@ class MultiSignUnitTest {
             3
         )
 
-        val signedTransaction = SignedTransaction(
-            rawTransaction,
-            TransactionMultiSignAuthenticator(
-                multiEd25519PublicKey,
-                multiEd25519PrivateKey.signMessage(rawTransaction.toHashByteArray())
+        val signedTransaction =
+            SignedTransaction(
+                rawTransaction,
+                TransactionMultiSignAuthenticator(
+                    multiEd25519PublicKey,
+                    multiEd25519PrivateKey.signMessage(rawTransaction.toHashByteArray())
+                )
             )
-        )
 
         println("signTransaction ${signedTransaction.toByteArray().toHex()}")
     }

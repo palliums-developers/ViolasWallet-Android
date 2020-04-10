@@ -1,18 +1,27 @@
 package org.palliums.libracore.move
 
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
-import java.io.InputStreamReader
+
 
 object Move {
     fun decode(inputStream: InputStream): ByteArray {
-        InputStreamReader(inputStream).use {
-            val moveJson = it.readText()
-            return decode(moveJson)
+        val buffer = ByteArrayOutputStream()
+        buffer.use { output ->
+            inputStream.use { input ->
+                var nRead: Int = -1
+                val data = ByteArray(16384)
+
+                while (input.read(data, 0, data.size).also { nRead = it } != -1) {
+                    output.write(data, 0, nRead)
+                }
+            }
+            return buffer.toByteArray()
         }
     }
 
-    fun decode(moveJson: String): ByteArray {
+    fun decodeJson(moveJson: String): ByteArray {
         val jsonObject = JSONObject(moveJson)
         if (jsonObject.has("code")) {
             val jsonArray = jsonObject.getJSONArray("code")
