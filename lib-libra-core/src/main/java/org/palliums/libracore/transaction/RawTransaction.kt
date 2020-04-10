@@ -72,6 +72,8 @@ data class SignedTransaction(
 }
 
 data class AccountAddress(val byte: ByteArray) {
+    class Pair(val address: String, val authenticationKeyPrefix: String)
+
     fun toByteArray(): ByteArray {
         return byte
     }
@@ -91,7 +93,7 @@ data class AccountAddress(val byte: ByteArray) {
          * data: 数据
          *@return Pair first: Address,second：AuthenticationKeyPrefix
          */
-        fun convert(date: String): Pair<String, String> {
+        fun convert(date: String): Pair {
             return when (date.length) {
                 32 -> {
                     Pair(date, "")

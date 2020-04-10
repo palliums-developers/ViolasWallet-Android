@@ -40,12 +40,29 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     address: String,
     amount: Long
 ): TransactionPayload {
-    val moveEncode = Move.decode(context.assets.open("move/libra_peer_to_peer.mv"))
-
     val convert = AccountAddress.convert(address)
-    val addressArgument = TransactionArgument.newAddress(convert.first)
+    return optionTransactionPayload(
+        context,
+        convert.address,
+        convert.authenticationKeyPrefix,
+        amount
+    )
+}
+
+/**
+ * 创建 Token 转账 payload
+ */
+fun TransactionPayload.Companion.optionTransactionPayload(
+    context: Context,
+    address: String,
+    authenticationKeyPrefix: String,
+    amount: Long
+): TransactionPayload {
+    val moveEncode = Move.decode(context.assets.open("move/violas_peer_to_peer.mv"))
+
+    val addressArgument = TransactionArgument.newAddress(address)
     val authenticationKeyPrefixArgument =
-        TransactionArgument.newByteArray(convert.second.hexToBytes())
+        TransactionArgument.newByteArray(authenticationKeyPrefix.hexToBytes())
     val amountArgument = TransactionArgument.newU64(amount)
 
     return TransactionPayload(

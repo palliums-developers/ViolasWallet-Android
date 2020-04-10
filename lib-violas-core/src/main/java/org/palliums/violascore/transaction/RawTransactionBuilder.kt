@@ -52,15 +52,36 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     address: String,
     amount: Long
 ): TransactionPayload {
-    val moveEncode = Move.decode(context.assets.open("move/peer_to_peer_transfer.json"))
+    val convert = AccountAddress.convert(address)
+    return optionTransactionPayload(
+        context,
+        convert.address,
+        convert.authenticationKeyPrefix,
+        amount
+    )
+}
+
+/**
+ * 创建 Token 转账 payload
+ */
+fun TransactionPayload.Companion.optionTransactionPayload(
+    context: Context,
+    address: String,
+    authenticationKeyPrefix: String,
+    amount: Long
+): TransactionPayload {
+    val moveEncode = Move.decode(context.assets.open("move/violas_peer_to_peer.mv"))
 
     val addressArgument = TransactionArgument.newAddress(address)
+    val authenticationKeyPrefixArgument =
+        TransactionArgument.newByteArray(authenticationKeyPrefix.hexToBytes())
     val amountArgument = TransactionArgument.newU64(amount)
 
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
-            arrayListOf(addressArgument, amountArgument)
+            arrayListOf(lbrStructTag()),
+            arrayListOf(addressArgument, authenticationKeyPrefixArgument, amountArgument)
         )
     )
 }
@@ -75,7 +96,7 @@ fun TransactionPayload.Companion.optionTokenTransactionPayload(
     amount: Long
 ): TransactionPayload {
     val moveEncode = Move.violasTokenEncode(
-        context.assets.open("move/token_transfer.json"),
+        context.assets.open("move/violas_transfer.mv"),
         tokenAddress.hexToBytes()
     )
 
@@ -85,6 +106,7 @@ fun TransactionPayload.Companion.optionTokenTransactionPayload(
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
+            arrayListOf(lbrStructTag()),
             arrayListOf(addressArgument, amountArgument)
         )
     )
@@ -105,6 +127,7 @@ fun TransactionPayload.Companion.optionPublishTokenPayload(
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
+            arrayListOf(lbrStructTag()),
             arrayListOf()
         )
     )
@@ -142,6 +165,7 @@ fun TransactionPayload.Companion.optionExchangePayload(
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
+            arrayListOf(lbrStructTag()),
             arrayListOf(addressArgument, amountArgument, dateArgument)
         )
     )
@@ -173,6 +197,7 @@ fun TransactionPayload.Companion.optionUndoExchangePayload(
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
+            arrayListOf(lbrStructTag()),
             arrayListOf(addressArgument, amountArgument, dateArgument)
         )
     )
@@ -196,6 +221,7 @@ fun TransactionPayload.Companion.optionWithDataPayload(
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
+            arrayListOf(lbrStructTag()),
             arrayListOf(addressArgument, amountArgument, dateArgument)
         )
     )
@@ -221,6 +247,7 @@ fun TransactionPayload.Companion.optionTokenWithDataPayload(
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
+            arrayListOf(lbrStructTag()),
             arrayListOf(addressArgument, amountArgument, dateArgument)
         )
     )
@@ -273,6 +300,7 @@ fun TransactionPayload.Companion.optionTokenMintPayload(
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
+            arrayListOf(lbrStructTag()),
             arrayListOf(addressArgument, amountArgument)
         )
     )

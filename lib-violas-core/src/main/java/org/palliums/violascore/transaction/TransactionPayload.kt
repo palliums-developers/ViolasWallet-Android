@@ -3,6 +3,7 @@ package org.palliums.violascore.transaction
 import org.palliums.violascore.serialization.LCS
 import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.LCSOutputStream
+import org.palliums.violascore.transaction.storage.TypeTag
 import org.palliums.violascore.utils.HexUtils
 
 data class TransactionPayload(val payload: Payload) {
@@ -77,11 +78,16 @@ data class TransactionPayload(val payload: Payload) {
 
     data class Script(
         val code: ByteArray,
+        val tyArgs: List<TypeTag>,
         val args: List<TransactionArgument>
     ) : TransactionPayload.Payload(2) {
         override fun toByteArray(): ByteArray {
             val stream = LCSOutputStream()
             stream.writeBytes(code)
+            stream.writeIntAsLEB128(tyArgs.size)
+            tyArgs.forEach {
+                stream.write(it.toByteArray())
+            }
             stream.writeIntAsLEB128(args.size)
             args.forEach {
                 stream.write(it.toByteArray())
@@ -92,6 +98,11 @@ data class TransactionPayload(val payload: Payload) {
         companion object {
             fun decode(input: LCSInputStream): Script {
                 val code = input.readBytes()
+                val tyArgsSize = input.readIntAsLEB128()
+                val tyArgs = ArrayList<TypeTag>(tyArgsSize)
+                for (i in 0 until tyArgsSize) {
+                    tyArgs.add(TypeTag.decode(input))
+                }
 
                 val size = input.readIntAsLEB128()
                 val args = ArrayList<TransactionArgument>(size)
@@ -100,6 +111,7 @@ data class TransactionPayload(val payload: Payload) {
                 }
                 return Script(
                     code,
+                    tyArgs,
                     args
                 )
             }
