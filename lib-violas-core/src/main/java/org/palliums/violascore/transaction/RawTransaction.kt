@@ -1,6 +1,5 @@
 package org.palliums.violascore.transaction
 
-import com.google.protobuf.ByteString
 import org.palliums.libracore.wallet.RAW_TRANSACTION_HASH_SALT
 import org.palliums.violascore.serialization.LCS
 import org.palliums.violascore.serialization.LCSInputStream
@@ -8,7 +7,6 @@ import org.palliums.violascore.serialization.LCSOutputStream
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.utils.HexUtils
 import org.spongycastle.jcajce.provider.digest.SHA3
-import types.AccessPathOuterClass.AccessPath
 
 
 data class RawTransaction(
@@ -245,7 +243,7 @@ data class TransactionPayload(val payload: Payload) {
 
         fun toByteArray(): ByteArray {
             val stream = LCSOutputStream()
-            stream.write(accessPath.toLcsBytes())
+            stream.write(accessPath.toByteArray())
             stream.writeInt(type.ordinal)
             if (type == WriteOpType.Value && value != null) {
                 stream.writeBytes(value)
@@ -256,10 +254,7 @@ data class TransactionPayload(val payload: Payload) {
         companion object {
             fun decode(input: LCSInputStream): WriteOp {
 
-                val accessPath = AccessPath.newBuilder()
-                    .setAddress(ByteString.copyFrom(input.readBytes()))
-                    .setPath(ByteString.copyFrom(input.readBytes()))
-                    .build()
+                val accessPath = AccessPath.decode(input)
 
                 val type = input.readInt()
                 if (type == WriteOpType.Value.ordinal) {
@@ -378,9 +373,23 @@ data class AccountAddress(val byte: ByteArray) {
     }
 }
 
-fun AccessPath.toLcsBytes(): ByteArray {
-    val stream = LCSOutputStream()
-    stream.writeBytes(this.address.toByteArray())
-    stream.writeBytes(this.path.toByteArray())
-    return stream.toByteArray()
+data class AccessPath(
+    val address: AccountAddress,
+    val path: ByteArray
+) {
+    companion object {
+        fun decode(input: LCSInputStream): AccessPath {
+            return AccessPath(
+                AccountAddress.decode(input),
+                input.readBytes()
+            )
+        }
+    }
+
+    fun toByteArray(): ByteArray {
+        val stream = LCSOutputStream()
+        stream.writeBytes(this.address.toByteArray())
+        stream.writeBytes(this.path)
+        return stream.toByteArray()
+    }
 }

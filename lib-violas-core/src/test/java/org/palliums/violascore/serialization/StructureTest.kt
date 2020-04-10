@@ -1,10 +1,9 @@
 package org.palliums.violascore.serialization
 
-import com.google.protobuf.ByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.violascore.transaction.*
-import types.AccessPathOuterClass
 
 class StructureTest {
     @Test
@@ -107,12 +106,12 @@ class StructureTest {
 
     @Test
     fun test_accessPath() {
-        val accessPath = AccessPathOuterClass.AccessPath.newBuilder()
-            .setAddress(ByteString.copyFrom("9a1ad09742d1ffc62e659e9a7797808b206f956f131d07509449c01ad8220ad4".hexToBytes()))
-            .setPath(ByteString.copyFrom("01217da6c6b3e19f1825cfb2676daecce3bf3de03cf26647c78df00b371b25cc97".hexToBytes()))
-            .build()
+        val accessPath = AccessPath(
+            AccountAddress("9a1ad09742d1ffc62e659e9a7797808b206f956f131d07509449c01ad8220ad4".hexToBytes()),
+            "01217da6c6b3e19f1825cfb2676daecce3bf3de03cf26647c78df00b371b25cc97".hexToBytes()
+        )
         assertEquals(
-            accessPath.toLcsBytes().toHex(),
+            accessPath.toByteArray().toHex(),
             "200000009A1AD09742D1FFC62E659E9A7797808B206F956F131D07509449C01AD8220AD42100000001217DA6C6B3E19F1825CFB2676DAECCE3BF3DE03CF26647C78DF00B371B25CC97".toLowerCase()
         )
     }
@@ -120,16 +119,16 @@ class StructureTest {
     @Test
     fun test_WriteSet() {
         val writeOp1 = TransactionPayload.WriteOp(
-            AccessPathOuterClass.AccessPath.newBuilder()
-                .setAddress(ByteString.copyFrom("a71d76faa2d2d5c3224ec3d41deb293973564a791e55c6782ba76c2bf0495f9a".hexToBytes()))
-                .setPath(ByteString.copyFrom("01217da6c6b3e19f1825cfb2676daecce3bf3de03cf26647c78df00b371b25cc97".hexToBytes()))
-                .build()
+            AccessPath(
+                AccountAddress("a71d76faa2d2d5c3224ec3d41deb293973564a791e55c6782ba76c2bf0495f9a".hexToBytes()),
+                "01217da6c6b3e19f1825cfb2676daecce3bf3de03cf26647c78df00b371b25cc97".hexToBytes()
+            )
         )
         val writeOp2 = TransactionPayload.WriteOp(
-            AccessPathOuterClass.AccessPath.newBuilder()
-                .setAddress(ByteString.copyFrom("c4c63f80c74b11263e421ebf8486a4e398d0dbc09fa7d4f62ccdb309f3aea81f".hexToBytes()))
-                .setPath(ByteString.copyFrom("01217da6c6b3e19f18".hexToBytes()))
-                .build()
+            AccessPath(
+                AccountAddress("c4c63f80c74b11263e421ebf8486a4e398d0dbc09fa7d4f62ccdb309f3aea81f".hexToBytes()),
+                "01217da6c6b3e19f18".hexToBytes()
+            )
             , "cafed00d".hexToBytes()
         )
 
@@ -144,16 +143,16 @@ class StructureTest {
     @Test
     fun test_transactionPayload_writeSet() {
         val writeOp1 = TransactionPayload.WriteOp(
-            AccessPathOuterClass.AccessPath.newBuilder()
-                .setAddress(ByteString.copyFrom("a71d76faa2d2d5c3224ec3d41deb293973564a791e55c6782ba76c2bf0495f9a".hexToBytes()))
-                .setPath(ByteString.copyFrom("01217da6c6b3e19f1825cfb2676daecce3bf3de03cf26647c78df00b371b25cc97".hexToBytes()))
-                .build()
+            AccessPath(
+                AccountAddress("a71d76faa2d2d5c3224ec3d41deb293973564a791e55c6782ba76c2bf0495f9a".hexToBytes()),
+                "01217da6c6b3e19f1825cfb2676daecce3bf3de03cf26647c78df00b371b25cc97".hexToBytes()
+            )
         )
         val writeOp2 = TransactionPayload.WriteOp(
-            AccessPathOuterClass.AccessPath.newBuilder()
-                .setAddress(ByteString.copyFrom("c4c63f80c74b11263e421ebf8486a4e398d0dbc09fa7d4f62ccdb309f3aea81f".hexToBytes()))
-                .setPath(ByteString.copyFrom("01217da6c6b3e19f18".hexToBytes()))
-                .build()
+            AccessPath(
+                AccountAddress("c4c63f80c74b11263e421ebf8486a4e398d0dbc09fa7d4f62ccdb309f3aea81f".hexToBytes()),
+                "01217da6c6b3e19f18".hexToBytes()
+            )
             , "cafed00d".hexToBytes()
         )
 

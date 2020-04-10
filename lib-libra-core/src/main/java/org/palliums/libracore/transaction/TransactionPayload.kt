@@ -1,12 +1,10 @@
 package org.palliums.libracore.transaction
 
-import com.google.protobuf.ByteString
 import org.palliums.libracore.serialization.LCS
 import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.transaction.storage.TypeTag
 import org.palliums.libracore.utils.HexUtils
-import types.AccessPathOuterClass
 
 data class TransactionPayload(val payload: Payload) {
     abstract class Payload(val type: Int) {
@@ -163,7 +161,7 @@ data class TransactionPayload(val payload: Payload) {
     }
 
     data class WriteOp(
-        val accessPath: AccessPathOuterClass.AccessPath,
+        val accessPath: AccessPath,
         val value: ByteArray? = null
     ) {
         val type: WriteOpType
@@ -178,7 +176,7 @@ data class TransactionPayload(val payload: Payload) {
 
         fun toByteArray(): ByteArray {
             val stream = LCSOutputStream()
-            stream.write(accessPath.toLcsBytes())
+            stream.write(accessPath.toByteArray())
             stream.writeInt(type.ordinal)
             if (type == WriteOpType.Value && value != null) {
                 stream.writeBytes(value)
@@ -189,10 +187,7 @@ data class TransactionPayload(val payload: Payload) {
         companion object {
             fun decode(input: LCSInputStream): WriteOp {
 
-                val accessPath = AccessPathOuterClass.AccessPath.newBuilder()
-                    .setAddress(ByteString.copyFrom(input.readBytes()))
-                    .setPath(ByteString.copyFrom(input.readBytes()))
-                    .build()
+                val accessPath = AccessPath.decode(input)
 
                 val type = input.readInt()
                 if (type == WriteOpType.Value.ordinal) {

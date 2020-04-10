@@ -5,7 +5,6 @@ import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.transaction.storage.TypeTag
 import org.palliums.libracore.wallet.RAW_TRANSACTION_HASH_SALT
 import org.spongycastle.jcajce.provider.digest.SHA3
-import types.AccessPathOuterClass.AccessPath
 import java.lang.RuntimeException
 
 
@@ -110,9 +109,23 @@ data class AccountAddress(val byte: ByteArray) {
     }
 }
 
-fun AccessPath.toLcsBytes(): ByteArray {
-    val stream = LCSOutputStream()
-    stream.writeBytes(this.address.toByteArray())
-    stream.writeBytes(this.path.toByteArray())
-    return stream.toByteArray()
+data class AccessPath(
+    val address: AccountAddress,
+    val path: ByteArray
+) {
+    companion object {
+        fun decode(input: LCSInputStream): AccessPath {
+            return AccessPath(
+                AccountAddress.decode(input),
+                input.readBytes()
+            )
+        }
+    }
+
+    fun toByteArray(): ByteArray {
+        val stream = LCSOutputStream()
+        stream.writeBytes(this.address.toByteArray())
+        stream.writeBytes(this.path)
+        return stream.toByteArray()
+    }
 }
