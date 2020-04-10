@@ -51,37 +51,39 @@ class MultiEd25519PrivateKey(private val privateKeys: List<ByteArray>, private v
     }
 }
 
+class MultiEd25519PrivateKeyIndex(
+    private val privateKeys: List<Pair<ByteArray, Int>>,
+    private val threshold: Int
+) {
+    init {
+        if (threshold == 0 || privateKeys.size < threshold) {
+            throw CryptoMaterialError.ValidationError()
+        } else if (privateKeys.size > MAX_NUM_OF_KEYS) {
+            throw CryptoMaterialError.WrongLengthError()
+        }
+    }
+
+    fun signMessage(message: ByteArray): MultiEd25519Signature {
+        val bitmap = Bitmap()
+        val signatures = ArrayList<ByteArray>()
+
+        privateKeys
+            .sortedBy { it.second }
+            .asIterable()
+            .take(threshold)
+            .mapIndexed { _, bytes ->
+                bitmap.setBit(bytes.second)
+                signatures.add(KeyPair(bytes.first).signMessage(message))
+            }
+
+        return MultiEd25519Signature(signatures, bitmap)
+    }
+}
+
 class MultiEd25519Signature(
     private val signatures: List<ByteArray>,
     private val bitmap: Bitmap
 ) {
-
-//    companion object {
-//        fun new(signatures: List<ByteArray>, bitmap: Array<Byte>): MultiEd25519Signature {
-//            val numOfSigSize = signatures.size
-//            if (numOfSigSize == 0 || numOfSigSize > MAX_NUM_OF_KEYS) {
-//                throw CryptoMaterialError.ValidationError()
-//            }
-//            val signatures = signatures.sortedBy {
-//                it[1]
-//            }
-//            val bitmap = Array(BITMAP_NUM_OF_BYTES) { 0.toByte() }
-//            for (i in 0 until bitmap.size) {
-//                if (i < MAX_NUM_OF_KEYS) {
-//                    if (bitmapGetBit(bitmap, i)) {
-//                        throw CryptoMaterialError.BitVecError(
-//                            "Duplicate signature index"
-//                        )
-//                    } else {
-//                        bitmapSetBit(bitmap, i)
-//                    }
-//                } else {
-//                    throw CryptoMaterialError.BitVecError("Signature index is out of range")
-//                }
-//            }
-//            return MultiEd25519Signature(signatures, bitmap)
-//        }
-//    }
 
     fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
@@ -90,6 +92,43 @@ class MultiEd25519Signature(
         }
         output.write(bitmap.toByteArray())
         return output.toByteArray()
+    }
+
+    class Builder {
+        private val mSignaturesMap = mutableMapOf<Int, ByteArray>()
+
+        fun addSignature(index: Int, signature: ByteArray): Builder {
+            mSignaturesMap[index] = signature
+            return this
+        }
+
+        fun build(): MultiEd25519Signature {
+            val signatures = mutableListOf<ByteArray>()
+            val bitmap = Bitmap()
+
+            val numOfSigSize = mSignaturesMap.size
+            if (numOfSigSize == 0 || numOfSigSize > MAX_NUM_OF_KEYS) {
+                throw CryptoMaterialError.ValidationError()
+            }
+
+            mSignaturesMap.keys.sorted().forEach { index ->
+                if (index < MAX_NUM_OF_KEYS) {
+                    mSignaturesMap[index]?.let {
+                        if (bitmap.getBit(index)) {
+                            throw CryptoMaterialError.BitVecError(
+                                "Duplicate signature index"
+                            )
+                        } else {
+                            bitmap.setBit(index)
+                            signatures.add(it)
+                        }
+                    }
+                } else {
+                    throw CryptoMaterialError.BitVecError("Signature index is out of range")
+                }
+            }
+            return MultiEd25519Signature(signatures, bitmap)
+        }
     }
 }
 

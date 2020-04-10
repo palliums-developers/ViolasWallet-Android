@@ -58,7 +58,7 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     authenticationKeyPrefix: String,
     amount: Long
 ): TransactionPayload {
-    val moveEncode = Move.decode(context.assets.open("move/violas_peer_to_peer.mv"))
+    val moveEncode = Move.decode(context.assets.open("move/libra_peer_to_peer.mv"))
 
     val addressArgument = TransactionArgument.newAddress(address)
     val authenticationKeyPrefixArgument =

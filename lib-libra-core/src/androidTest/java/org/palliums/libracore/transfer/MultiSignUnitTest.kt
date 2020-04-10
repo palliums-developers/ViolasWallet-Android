@@ -4,7 +4,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert
 import org.junit.Test
 import org.palliums.libracore.crypto.MultiEd25519PrivateKey
+import org.palliums.libracore.crypto.MultiEd25519PrivateKeyIndex
 import org.palliums.libracore.crypto.MultiEd25519PublicKey
+import org.palliums.libracore.crypto.MultiEd25519Signature
 import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.*
@@ -116,6 +118,81 @@ class MultiSignUnitTest {
             senderAddress,
             publishTokenPayload,
             3
+        )
+
+        val signedTransaction =
+            SignedTransaction(
+                rawTransaction,
+                TransactionMultiSignAuthenticator(
+                    multiEd25519PublicKey,
+                    multiEd25519PrivateKey.signMessage(rawTransaction.toHashByteArray())
+                )
+            )
+
+        println("signTransaction ${signedTransaction.toByteArray().toHex()}")
+    }
+
+    @Test
+    fun test_multi_sign_build() {
+        val multiEd25519Signature = MultiEd25519Signature.Builder()
+            .addSignature(1, "01".hexToBytes())
+            .addSignature(5, "05".hexToBytes())
+            .addSignature(2, "02".hexToBytes())
+            .build()
+
+        Assert.assertEquals(multiEd25519Signature.toByteArray().toHex(), "01020564000000")
+    }
+
+    @Test
+    fun test_tran_multi1() {
+        val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
+        val account1 = libraWallet.generateAccount(0)
+        val account2 = libraWallet.generateAccount(1)
+        val account3 = libraWallet.generateAccount(2)
+
+        val multiEd25519PrivateKey = MultiEd25519PrivateKeyIndex(
+            arrayListOf(
+                Pair(account3.keyPair.getPrivateKey(), 2),
+                Pair(account1.keyPair.getPrivateKey(), 0)
+            ), 2
+        )
+
+//        val multiEd25519PrivateKey = MultiEd25519PrivateKey(
+//            arrayListOf(
+//                account1.keyPair.getPrivateKey(),
+//                account3.keyPair.getPrivateKey()
+//                //, Pair(account2.keyPair.getPrivateKey(), 1)
+//            ), 2
+//        )
+
+        val multiEd25519PublicKey = MultiEd25519PublicKey(
+            arrayListOf(
+                account1.keyPair.getPublicKey(),
+                account2.keyPair.getPublicKey(),
+                account3.keyPair.getPublicKey()
+            ), 2
+        )
+
+        val multiAuthenticationKey = AuthenticationKey.multi_ed25519(
+            multiEd25519PublicKey
+        )
+        val senderAddress = multiAuthenticationKey.getShortAddress().toHex()
+
+        println("multi public address : $senderAddress")
+        println("multi authenticationKey : ${multiAuthenticationKey.toHex()}")
+
+        val address = "7f4644ae2b51b65bd3c9d414aa853407"
+        val amount = (1.00 * 1000000L).toLong()
+
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        val publishTokenPayload = TransactionPayload.optionTransactionPayload(
+            appContext, address, amount
+        )
+
+        val rawTransaction = RawTransaction.optionTransaction(
+            senderAddress,
+            publishTokenPayload,
+            0
         )
 
         val signedTransaction =
