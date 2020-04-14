@@ -89,6 +89,9 @@ class WalletTest {
         val authenticationKey2 = account2.getAuthenticationKey().toHex()
         val address2 = account2.getAddress().toHex()
         println()
+        println("Account 1 private key: ${account1.keyPair.getPrivateKey().toHex()}")
+        println("Account 2 private key: ${account2.keyPair.getPrivateKey().toHex()}")
+        println()
         println("Account 1 AuthenticationKey: $authenticationKey1")
         println("Account 2 AuthenticationKey: $authenticationKey2")
         println()
@@ -128,8 +131,10 @@ class WalletTest {
         //         println()
         //         println("generated mnemonic words: ${mnemonicWords1.joinToString(" ")}")
 
+//        val mnemonic =
+//            "school problem vibrant royal invite that never key thunder pizza mesh punch"
         val mnemonic =
-            "school problem vibrant royal invite that never key thunder pizza mesh punch"
+            "velvet version sea near truly open blanket exchange leaf cupboard shine poem"
 //        val mnemonic =
 //            "key shoulder focus dish donate inmate move weekend hold regret peanut link"
         val mnemonicWords = mnemonic.split(" ")

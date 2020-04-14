@@ -77,6 +77,19 @@ object Move {
         return mvCode
     }
 
+    fun violasMultiReplaceAddress(mvCode: ByteArray, tokenAddress: ByteArray): ByteArray {
+        var exists = true
+        do {
+            val findAddressIndex = findAddressIndex(mvCode, defaultTokenAddress)
+            if (findAddressIndex != -1) {
+                System.arraycopy(tokenAddress, 0, mvCode, findAddressIndex, tokenAddress.size)
+            } else {
+                exists = false
+            }
+        } while (exists)
+        return mvCode
+    }
+
     fun findAddressIndex(moveCode: ByteArray, tokenAddress: ByteArray): Int {
         return sundaySearch(moveCode, tokenAddress)
     }

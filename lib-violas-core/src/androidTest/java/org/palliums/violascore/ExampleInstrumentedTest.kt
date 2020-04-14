@@ -7,10 +7,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.palliums.violascore.move.Move
 import org.palliums.violascore.serialization.hexToBytes
-import org.palliums.violascore.transaction.AccountAddress
-import org.palliums.violascore.transaction.RawTransaction
-import org.palliums.violascore.transaction.SignedTransaction
-import org.palliums.violascore.transaction.TransactionPayload
+import org.palliums.violascore.transaction.*
 import org.palliums.violascore.utils.HexUtils
 import org.palliums.violascore.wallet.LibraWallet
 import org.palliums.violascore.wallet.WalletConfig
@@ -46,6 +43,7 @@ class ExampleInstrumentedTest {
         val program = TransactionPayload(
             TransactionPayload.Script(
                 moveEncode,
+                arrayListOf(lbrStructTag()),
                 arrayListOf()
             )
         )
@@ -56,6 +54,7 @@ class ExampleInstrumentedTest {
             program,
             280000,
             0,
+            lbrStructTag(),
             0
         )
 
@@ -77,8 +76,10 @@ class ExampleInstrumentedTest {
 
         val signedTransaction = SignedTransaction(
             rawTransaction,
-            account.keyPair.getPublicKey(),
-            value
+            TransactionSignAuthenticator(
+                account.keyPair.getPublicKey(),
+                value
+            )
         )
 
         Assert.assertEquals(
