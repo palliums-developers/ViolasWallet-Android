@@ -4,7 +4,7 @@ import org.junit.Test
 import org.junit.Assert.assertEquals
 import org.palliums.violascore.utils.HexUtils
 import org.palliums.violascore.wallet.Account
-import org.palliums.libracore.wallet.KeyPair
+import org.palliums.violascore.wallet.KeyPair
 
 
 class KeyPairTest {

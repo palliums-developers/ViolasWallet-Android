@@ -2,7 +2,6 @@ package org.palliums.violascore.serialization
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.violascore.transaction.*
 
 class StructureTest {
@@ -183,6 +182,7 @@ class StructureTest {
             transactionPayload,
             10000,
             20000,
+            lbrStructTag(),
             86400
         )
 
