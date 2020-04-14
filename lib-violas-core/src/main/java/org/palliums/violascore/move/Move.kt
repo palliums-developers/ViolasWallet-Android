@@ -69,6 +69,14 @@ object Move {
         return decode
     }
 
+    fun violasReplaceAddress(mvCode: ByteArray, tokenAddress: ByteArray): ByteArray {
+        val findAddressIndex = findAddressIndex(mvCode, defaultTokenAddress)
+        if (findAddressIndex != -1) {
+            System.arraycopy(tokenAddress, 0, mvCode, findAddressIndex, tokenAddress.size)
+        }
+        return mvCode
+    }
+
     fun findAddressIndex(moveCode: ByteArray, tokenAddress: ByteArray): Int {
         return sundaySearch(moveCode, tokenAddress)
     }
