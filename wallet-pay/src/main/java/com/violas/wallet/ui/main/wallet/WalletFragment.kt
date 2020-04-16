@@ -269,7 +269,7 @@ class WalletFragment : BaseFragment() {
             }
 
             mEnableTokens.forEachIndexed { index, assertToken ->
-                if (assertToken.tokenAddress == event.tokenAddress) {
+                if (assertToken.tokenIdx == event.tokenIdx) {
                     withContext(Dispatchers.Main) {
                         assertToken.amount = event.tokenBalance
                         mAssertAdapter.notifyItemChanged(index)

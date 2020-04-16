@@ -123,8 +123,8 @@ class ExchangeManager {
         val optionExchangePayload = TransactionPayload.optionExchangePayload(
             context,
             receiveAddress,
-            fromCoin.tokenAddress(),
-            toCoin.tokenAddress(),
+            fromCoin.tokenIdx().toString(),
+            toCoin.tokenIdx().toString(),
             fromCoinAmount.multiply(BigDecimal("1000000")).toLong(),
             toCoinAmount.multiply(BigDecimal("1000000")).toLong()
         )

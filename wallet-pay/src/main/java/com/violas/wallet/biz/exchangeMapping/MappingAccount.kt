@@ -15,7 +15,7 @@ interface LibraAccount {
 interface ViolasAccount {
     fun getAddress(): ByteArray
     fun getTokenName(): String
-    fun getTokenAddress(): ByteArray
+    fun getTokenIdx(): Long
 }
 
 abstract class MappingAccount(private val sendPrivateKey: ByteArray? = null) {
@@ -47,12 +47,12 @@ class LibraMappingAccount(
 class ViolasMappingAccount(
     private val address: String,
     private val tokenName: String,
-    private val tokenAddress: String,
+    private val tokenIdx: Long,
     privateKey: ByteArray? = null
 ) : MappingAccount(privateKey),
     ViolasAccount {
     override fun getAddress() = address.hexToBytes()
     override fun getTokenName() = tokenName
 
-    override fun getTokenAddress() = tokenAddress.hexToBytes()
+    override fun getTokenIdx() = tokenIdx
 }

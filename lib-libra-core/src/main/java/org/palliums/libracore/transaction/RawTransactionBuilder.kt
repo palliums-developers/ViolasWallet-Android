@@ -25,7 +25,7 @@ fun RawTransaction.Companion.optionTransaction(
         payload,
         maxGasAmount,
         gasUnitPrice,
-        lbrStructTag(),
+        LBR_NAME,
         (Date().time / 1000) + delayed
     )
     println("rawTransaction ${HexUtils.toHex(rawTransaction.toByteArray())}")
@@ -58,18 +58,24 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     authenticationKeyPrefix: String,
     amount: Long
 ): TransactionPayload {
-    val moveEncode = Move.decode(context.assets.open("move/libra_peer_to_peer.mv"))
+    val moveEncode = Move.decode(context.assets.open("move/libra_peer_to_peer_with_metadata.mv"))
 
     val addressArgument = TransactionArgument.newAddress(address)
     val authenticationKeyPrefixArgument =
         TransactionArgument.newByteArray(authenticationKeyPrefix.hexToBytes())
     val amountArgument = TransactionArgument.newU64(amount)
+    val metadataArgument = TransactionArgument.newByteArray(byteArrayOf())
 
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
             arrayListOf(lbrStructTag()),
-            arrayListOf(addressArgument, authenticationKeyPrefixArgument, amountArgument)
+            arrayListOf(
+                addressArgument,
+                authenticationKeyPrefixArgument,
+                amountArgument,
+                metadataArgument
+            )
         )
     )
 }
@@ -98,6 +104,7 @@ fun TransactionPayload.Companion.optionWithDataPayload(
     )
 }
 
+const val LBR_NAME = "LBR"
 
 fun lbrStructTag(): TypeTag {
     return TypeTag.newStructTag(

@@ -1,6 +1,5 @@
-package org.palliums.violascore.smartcontract.multitoken
+package com.palliums.violas.smartcontract.multitoken
 
-import android.content.Context
 import org.palliums.violascore.move.Move
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.transaction.TransactionArgument
@@ -8,8 +7,7 @@ import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.transaction.lbrStructTag
 
 open class MultiTokenContract(
-    private val contractAddress: String,
-    private val multiContractRpcApi: MultiContractRpcApi?
+    private val contractAddress: String
 ) {
     companion object {
         private const val mTransferContract =
@@ -26,10 +24,6 @@ open class MultiTokenContract(
 
         private const val mCreateTokenContract =
             "a11ceb0b010006013d0000000400000003410000000a000000054b00000007000000075200000025000000067700000010000000098700000011000000000000010102000100000300020002050a02010300063c53454c463e0b56696f6c6173546f6b656e0c6372656174655f746f6b656e046d61696e7257c2417e4d1038e1817c8f283ace2e010000ffff030005000a000b0112000102"
-    }
-
-    fun getBalance(tokenIndex: Long): Long {
-        return multiContractRpcApi?.getBalance(tokenIndex) ?: 0
     }
 
     /**

@@ -6,7 +6,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
-import org.palliums.violascore.smartcontract.ViolasMultiTokenContract
+import com.palliums.violas.smartcontract.multitoken.MultiTokenContract
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.SignedTransaction
 import org.palliums.violascore.transaction.TransactionSignAuthenticator
@@ -21,12 +21,16 @@ class MoveHandlerTest {
         return Account(KeyPair.fromSecretKey("a65111b2a22a1874f0f532f6b1a0991fbf1fedb9df8ce55a49b3e35be73ff228".hexToBytes()))
     }
 
+    private fun getViolasMultiTokenContract(): MultiTokenContract {
+        return MultiTokenContract("e1be1ab8360a35a0259f1c93e3eac736")
+    }
+
     @Test
     fun test_release_token_move() {
         val account = getSendAccount()
 
         val optionPublishTransactionPayload =
-            ViolasMultiTokenContract().optionReleaseTokenPayload()
+            getViolasMultiTokenContract().optionReleaseTokenPayload()
 
         val rawTransaction = RawTransaction.optionTransaction(
             account.getAddress().toHex(),
@@ -51,7 +55,7 @@ class MoveHandlerTest {
         val account = getSendAccount()
 
         val optionPublishTransactionPayload =
-            ViolasMultiTokenContract().optionPublishTransactionPayload()
+            getViolasMultiTokenContract().optionPublishTransactionPayload()
 
         val rawTransaction = RawTransaction.optionTransaction(
             account.getAddress().toHex(),
@@ -76,7 +80,7 @@ class MoveHandlerTest {
         val account = getSendAccount()
 
         val optionTokenTransactionPayload =
-            ViolasMultiTokenContract().optionTokenTransactionPayload(
+            getViolasMultiTokenContract().optionTokenTransactionPayload(
                 0,
                 "1409fc67d04cddf259240703809b6d12",
                 100,
@@ -106,7 +110,7 @@ class MoveHandlerTest {
         val account = getSendAccount()
 
         val optionTokenTransactionPayload =
-            ViolasMultiTokenContract().optionMintTransactionPayload(
+            getViolasMultiTokenContract().optionMintTransactionPayload(
                 0,
                 "1409fc67d04cddf259240703809b6d12",
                 10 * 1000000,

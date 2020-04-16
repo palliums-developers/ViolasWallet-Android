@@ -3,6 +3,7 @@ package com.violas.wallet.repository
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.violas.http.ViolasApi
 import com.palliums.violas.http.ViolasRepository
+import com.palliums.violas.smartcontract.multitoken.MultiContractRpcApi
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.BaseBizUrl.getViolasBaseUrl
@@ -95,4 +96,8 @@ object DataRepository {
 
     fun getMappingExchangeService() =
         MappingExchangeRepository(retrofit.create(MappingExchangeApi::class.java))
+
+    fun getMultiTokenContractService(): MultiContractRpcApi {
+        return retrofit.create(MultiContractRpcApi::class.java)
+    }
 }

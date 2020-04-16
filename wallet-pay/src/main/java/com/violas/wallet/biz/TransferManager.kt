@@ -179,7 +179,7 @@ class TransferManager {
         token?.let {
             DataRepository.getViolasService().sendViolasToken(
                 context,
-                token.tokenAddress,
+                token.tokenIdx.toString(),
                 Account(
                     KeyPair(decryptPrivateKey)
                 ),

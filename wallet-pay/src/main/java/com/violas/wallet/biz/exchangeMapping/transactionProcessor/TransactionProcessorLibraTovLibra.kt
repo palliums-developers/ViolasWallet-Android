@@ -66,7 +66,8 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
 
         val checkTokenRegister = mViolasService.checkTokenRegister(
             receiveAccount.getAddress().toHex(),
-            receiveAccount.getTokenAddress().toHex()
+            //receiveAccount.getTokenAddress().toHex()
+            0
         )
 
         if (!checkTokenRegister) {
@@ -76,7 +77,8 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
                         receiveAccount.getPrivateKey()!!
                     )
                 ),
-                receiveAccount.getTokenAddress().toHex()
+                //receiveAccount.getTokenAddress().toHex()
+                ""
             )
             if (!publishToken) {
                 throw RuntimeException(

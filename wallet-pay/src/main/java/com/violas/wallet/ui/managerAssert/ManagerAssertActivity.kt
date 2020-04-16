@@ -75,19 +75,19 @@ class ManagerAssertActivity : BaseAppActivity() {
     }
 
     private fun openToken(checkbox: SwitchButton, checked: Boolean, assertToken: AssertToken) {
-        launch {
-            if (assertToken.netEnable) {
-                withContext(Dispatchers.IO) {
-                    mTokenManager.insert(checked, assertToken)
-                }
+        launch(Dispatchers.IO) {
+            if (mTokenManager.isPublish(mAccount.address)) {
+                mTokenManager.insert(checked, assertToken)
                 checkbox.isChecked = true
             } else {
-                PublishTokenDialog().setConfirmListener {
-                    showPasswordDialog(assertToken, checkbox, checked)
-                    it.dismiss()
-                }.setCancelListener {
-                    checkbox.isChecked = false
-                }.show(supportFragmentManager)
+                withContext(Dispatchers.Main) {
+                    PublishTokenDialog().setConfirmListener {
+                        showPasswordDialog(assertToken, checkbox, checked)
+                        it.dismiss()
+                    }.setCancelListener {
+                        checkbox.isChecked = false
+                    }.show(supportFragmentManager)
+                }
             }
         }
     }
@@ -113,29 +113,24 @@ class ManagerAssertActivity : BaseAppActivity() {
                         }
                         return@launch
                     }
-                    DataRepository.getViolasService()
-                        .publishToken(
-                            applicationContext,
-                            Account(KeyPair.fromSecretKey(decrypt)),
-                            assertToken.tokenAddress
-                        ) {
-                            dismissProgress()
-                            if (!it) {
-                                this@ManagerAssertActivity.runOnUiThread {
-                                    checkbox.isChecked = false
-                                    Toast.makeText(
-                                        this@ManagerAssertActivity, String.format(
-                                            getString(R.string.hint_not_none_coin_or_net_error),
-                                            CoinTypes.Violas.coinName()
-                                        ), Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                            } else {
-                                EventBus.getDefault().post(TokenPublishEvent())
-                                EventBus.getDefault().post(RefreshBalanceEvent())
-                                mTokenManager.insert(checked, assertToken)
+                    mTokenManager.publishToken(Account(KeyPair.fromSecretKey(decrypt))) {
+                        dismissProgress()
+                        if (!it) {
+                            this@ManagerAssertActivity.runOnUiThread {
+                                checkbox.isChecked = false
+                                Toast.makeText(
+                                    this@ManagerAssertActivity, String.format(
+                                        getString(R.string.hint_not_none_coin_or_net_error),
+                                        CoinTypes.Violas.coinName()
+                                    ), Toast.LENGTH_LONG
+                                ).show()
                             }
+                        } else {
+                            EventBus.getDefault().post(TokenPublishEvent())
+                            EventBus.getDefault().post(RefreshBalanceEvent())
+                            mTokenManager.insert(checked, assertToken)
                         }
+                    }
                 }
             }
             .setCancelListener {

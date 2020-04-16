@@ -52,14 +52,14 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         return registerToken
     }
 
-    fun checkTokenRegister(address: String, tokenAddress: String): Boolean {
+    fun checkTokenRegister(address: String, tokenIdx: Long): Boolean {
         var isRegister: Boolean = false
         mViolasRepository.getRegisterToken(address)
             .subscribe({
-                if (it.data != null && it.data!!.contains(tokenAddress)) {
-                    isRegister = true
-                    return@subscribe
-                }
+//                if (it.data != null && it.data!!.contains(tokenIdx)) {
+//                    isRegister = true
+//                    return@subscribe
+//                }
             }, {
             })
         return isRegister
@@ -135,6 +135,31 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             val rawTransaction = RawTransaction.optionTransaction(
                 senderAddress,
                 publishTokenPayload,
+                sequenceNumber
+            )
+
+            sendTransaction(
+                rawTransaction,
+                account.keyPair.getPublicKey(),
+                account.keyPair.signMessage(rawTransaction.toHashByteArray()),
+                call
+            )
+        }, {
+            call.invoke(false)
+        })
+    }
+
+    fun sendTransaction(
+        payload: TransactionPayload,
+        account: Account,
+        call: (success: Boolean) -> Unit
+    ) {
+        val senderAddress = account.getAddress().toHex()
+        getSequenceNumber(senderAddress, { sequenceNumber ->
+
+            val rawTransaction = RawTransaction.optionTransaction(
+                senderAddress,
+                payload,
                 sequenceNumber
             )
 

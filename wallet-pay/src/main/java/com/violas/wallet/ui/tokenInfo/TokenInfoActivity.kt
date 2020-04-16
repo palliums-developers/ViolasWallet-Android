@@ -121,7 +121,8 @@ class TokenInfoActivity : BaseAppActivity() {
             TransactionRecordFragment.newInstance(
                 mAccountDO.address,
                 CoinTypes.Violas,
-                mTokenDo.tokenAddress,
+//                mTokenDo.tokenIdx,
+                "",
                 mTokenDo.name
             )
         )
@@ -199,7 +200,7 @@ class TokenInfoActivity : BaseAppActivity() {
                     EventBus.getDefault().post(
                         TokenBalanceUpdateEvent(
                             mAccountDO.address,
-                            mTokenDo.tokenAddress,
+                            mTokenDo.tokenIdx,
                             tokenBalance
                         )
                     )

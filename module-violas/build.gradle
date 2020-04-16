@@ -48,6 +48,7 @@ dependencies {
     androidTestImplementation libraries.androidTest_junit
     androidTestImplementation libraries.androidTest_espresso
 
+    api project(':lib-violas-core')
     implementation project(':lib-common')
 
     api libraries.okhttp3

@@ -48,13 +48,14 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
         val getBalanceCountDownLatch = CountDownLatch(1)
         mViolasService.getBalance(
             sendAccount.getAddress().toHex(),
-            arrayListOf(sendAccount.getTokenAddress().toHex())
+//            arrayListOf(sendAccount.getTokenIdx())
+            arrayListOf()
         ) { _, tokens, result ->
             if (result) {
                 tokens?.forEach {
-                    if (it.address == sendAccount.getTokenAddress().toHex()) {
-                        balance = BigDecimal(it.balance)
-                    }
+//                    if (it.address == sendAccount.getTokenIdx()) {
+//                        balance = BigDecimal(it.balance)
+//                    }
                 }
             }
             getBalanceCountDownLatch.countDown()
@@ -81,7 +82,8 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
             ContextProvider.getContext(),
             receiveAddress,
             sendAmount.multiply(BigDecimal("1000000")).toLong(),
-            sendAccount.getTokenAddress().toHex(),
+//            sendAccount.getTokenAddress().toHex(),
+            "",
             subExchangeDate.toString().toByteArray()
         )
 

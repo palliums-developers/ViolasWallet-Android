@@ -10,19 +10,19 @@ interface IToken {
     fun isNetEnable(): Boolean = false
     fun setNetEnable(enable: Boolean)
     fun isEnable(): Boolean = false
-    fun tokenAddress(): String
+    fun tokenIdx(): Long
     fun tokenName(): String
     fun tokenUnit(): String = tokenName()
     fun tokenPrice(): BigDecimal
 }
 
 class ExchangeToken(
-    private val address: String,
+    private val address: Long,
     private val name: String,
     private var localEnable: Boolean = false,
     private var remoteEnable: Boolean = false
 ) : IToken {
-    override fun tokenAddress() = address
+    override fun tokenIdx() = address
 
     override fun tokenName() = name
 

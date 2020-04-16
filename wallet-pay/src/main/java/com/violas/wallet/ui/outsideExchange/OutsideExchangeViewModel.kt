@@ -248,7 +248,7 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
                         true,
                         receivingAccount.id,
                         receiveAccount.getTokenName(),
-                        receiveAccount.getTokenAddress().toHex()
+                        receiveAccount.getTokenIdx()
                     )
                 }
                 EventBus.getDefault().post(RefreshBalanceEvent())

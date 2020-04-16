@@ -43,7 +43,7 @@ class TransactionProcessorBTCTovBTC :
 
         val checkTokenRegister = mViolasService.checkTokenRegister(
             receiveAccount.getAddress().toHex(),
-            receiveAccount.getTokenAddress().toHex()
+            receiveAccount.getTokenIdx()
         )
 
         if (!checkTokenRegister) {
@@ -53,7 +53,7 @@ class TransactionProcessorBTCTovBTC :
                         receiveAccount.getPrivateKey()!!
                     )
                 ),
-                receiveAccount.getTokenAddress().toHex()
+                receiveAccount.getTokenIdx()
             )
             if (!publishToken) {
                 throw RuntimeException(
@@ -83,7 +83,8 @@ class TransactionProcessorBTCTovBTC :
             sendAccount.getAddress(),
             violasOutputScript.requestExchange(
                 receiveAccount.getAddress(),
-                receiveAccount.getTokenAddress()
+                //receiveAccount.getTokenIdx()
+                byteArrayOf()
             )
         ).flatMap {
             try {
@@ -100,6 +101,11 @@ class TransactionProcessorBTCTovBTC :
         }, {
         })
         return result ?: ""
+    }
+
+    //todo delete
+    private fun publishToken(mAccount: Account, tokenAddress: Long): Boolean {
+        return true
     }
 
     private fun publishToken(mAccount: Account, tokenAddress: String): Boolean {

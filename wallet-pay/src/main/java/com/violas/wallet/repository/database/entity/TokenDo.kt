@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = TokenDo.TABLE_NAME,
     indices = [
-        Index(unique = true, value = ["account_id", "tokenAddress"])
+        Index(unique = true, value = ["account_id", "tokenIdx"])
     ]
 )
 data class TokenDo(
@@ -19,8 +19,8 @@ data class TokenDo(
     var id: Long? = null,
     @ColumnInfo(name = "account_id")
     var account_id: Long = 0,
-    @ColumnInfo(name = "tokenAddress")
-    var tokenAddress: String = "",
+    @ColumnInfo(name = "tokenIdx")
+    var tokenIdx: Long = 0,
     @ColumnInfo(name = "name")
     var name: String = "Libra",
     @ColumnInfo(name = "enable")
@@ -32,7 +32,7 @@ data class TokenDo(
     constructor(source: Parcel) : this(
         source.readValue(Long::class.java.classLoader) as Long?,
         source.readLong(),
-        source.readString()!!,
+        source.readLong(),
         source.readString()!!,
         1 == source.readInt(),
         source.readLong()
@@ -43,7 +43,7 @@ data class TokenDo(
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeValue(id)
         writeLong(account_id)
-        writeString(tokenAddress)
+        writeLong(tokenIdx)
         writeString(name)
         writeInt((if (enable) 1 else 0))
         writeLong(amount)

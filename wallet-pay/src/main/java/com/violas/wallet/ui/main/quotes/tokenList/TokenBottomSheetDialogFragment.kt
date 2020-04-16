@@ -84,11 +84,11 @@ class TokenBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
 val diffUtil = object : DiffUtil.ItemCallback<IToken>() {
     override fun areContentsTheSame(oldItem: IToken, newItem: IToken): Boolean {
-        return oldItem.tokenAddress() > newItem.tokenAddress()
+        return oldItem.tokenIdx() > newItem.tokenIdx()
     }
 
     override fun areItemsTheSame(oldItem: IToken, newItem: IToken): Boolean {
-        return oldItem.tokenAddress() == newItem.tokenAddress()
+        return oldItem.tokenIdx() == newItem.tokenIdx()
     }
 
 }

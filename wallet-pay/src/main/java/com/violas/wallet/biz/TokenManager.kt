@@ -2,6 +2,8 @@ package com.violas.wallet.biz
 
 import androidx.collection.ArrayMap
 import com.palliums.utils.coroutineExceptionHandler
+import com.palliums.violas.http.ViolasMultiTokenRepository
+import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.repository.DataRepository
@@ -13,7 +15,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.CountDownLatch
+import org.palliums.violascore.wallet.Account
 import java.util.concurrent.Executors
 
 class TokenManager {
@@ -22,26 +24,34 @@ class TokenManager {
 
     private val mTokenStorage by lazy { DataRepository.getTokenStorage() }
 
+    private val mViolasService by lazy {
+        DataRepository.getViolasService()
+    }
+
+    private val mViolasMultiTokenService by lazy {
+        ViolasMultiTokenRepository(
+            DataRepository.getMultiTokenContractService(),
+            // todo 不同环境合约地址可能会不同
+            ViolasMultiTokenContract()
+        )
+    }
+
     /**
      * 本地兼容的币种
      */
     private fun loadSupportToken(): List<AssertToken> {
-        val countDownLatch = CountDownLatch(1)
         val list = mutableListOf<AssertToken>()
-        DataRepository.getViolasService().getSupportCurrency {
-            it.forEach { item ->
-                list.add(
-                    AssertToken(
-                        fullName = item.description,
-                        name = item.name,
-                        tokenAddress = item.address,
-                        isToken = true
-                    )
+        val supportCurrency = mViolasMultiTokenService.getSupportCurrency()
+        supportCurrency?.forEach { item ->
+            list.add(
+                AssertToken(
+                    fullName = item.name,
+                    name = item.name,
+                    tokenIdx = item.tokenIdentity,
+                    isToken = true
                 )
-            }
-            countDownLatch.countDown()
+            )
         }
-        countDownLatch.await()
         return list
     }
 
@@ -53,29 +63,17 @@ class TokenManager {
     fun loadSupportToken(account: AccountDO): List<AssertToken> {
         val loadSupportToken = loadSupportToken()
 
-        val onlineTokenMap = ArrayMap<String, Int>()
-        DataRepository.getViolasService().checkTokenRegister(
-            account.address
-        ) {
-            it.forEach { item ->
-                onlineTokenMap[item] = 0
-            }
-        }
-
         val supportTokenMap = HashMap<String, TokenDo>(loadSupportToken.size)
         val localToken = mTokenStorage.findByAccountId(account.id)
         localToken.map {
             supportTokenMap[it.name] = it
         }
 
-        val localSupportTokenMap = ArrayMap<String, Int>()
+        val localSupportTokenMap = ArrayMap<Long, Int>()
 
         loadSupportToken.forEach { token ->
-            if (onlineTokenMap.contains(token.tokenAddress)) {
-                token.netEnable = true
-            }
 
-            localSupportTokenMap[token.tokenAddress] = 0
+            localSupportTokenMap[token.tokenIdx] = 0
             token.account_id = account.id
             supportTokenMap[token.name]?.let {
                 token.enable = it.enable
@@ -99,12 +97,12 @@ class TokenManager {
         }
 
         localToken.map {
-            if (it.enable && !localSupportTokenMap.contains(it.tokenAddress)) {
+            if (it.enable && !localSupportTokenMap.contains(it.tokenIdx)) {
                 mutableList.add(
                     AssertToken(
                         account_id = account.id,
                         enable = true,
-                        tokenAddress = it.tokenAddress,
+                        tokenIdx = it.tokenIdx,
                         isToken = true,
                         name = it.name,
                         fullName = "",
@@ -127,7 +125,7 @@ class TokenManager {
                     coinType = account.coinNumber,
                     enable = it.enable,
                     isToken = true,
-                    tokenAddress = it.tokenAddress,
+                    tokenIdx = it.tokenIdx,
                     name = it.name,
                     fullName = "",
                     amount = it.amount
@@ -151,13 +149,13 @@ class TokenManager {
         return mutableList
     }
 
-    fun insert(checked: Boolean, accountId: Long, tokenName: String, tokenAddress: String) {
+    fun insert(checked: Boolean, accountId: Long, tokenName: String, tokenIdx: Long) {
         mTokenStorage.insert(
             TokenDo(
                 enable = checked,
                 account_id = accountId,
                 name = tokenName,
-                tokenAddress = tokenAddress
+                tokenIdx = tokenIdx
             )
         )
     }
@@ -168,7 +166,7 @@ class TokenManager {
                 enable = checked,
                 account_id = assertToken.account_id,
                 name = assertToken.name,
-                tokenAddress = assertToken.tokenAddress
+                tokenIdx = assertToken.tokenIdx
             )
         )
     }
@@ -178,48 +176,58 @@ class TokenManager {
         tokenDo: TokenDo,
         call: (tokenBalance: Long, result: Boolean) -> Unit
     ): Disposable {
-        val tokenAddressList = arrayListOf(tokenDo.tokenAddress)
-        return DataRepository.getViolasService()
-            .getBalance(address, tokenAddressList) { accountBalance, tokens, result ->
+        return mViolasMultiTokenService.getBalance(address, arrayListOf(tokenDo.tokenIdx))
+            .subscribe({
+                val accountBalance = it.data?.balance
+                val tokens = it.data?.modules
+
                 var amount = 0L
-                tokens?.forEach {
-                    if (it.address == tokenDo.tokenAddress) {
-                        amount = it.balance
+                tokens?.forEach { token ->
+                    if (token.id == tokenDo.tokenIdx) {
+                        amount = token.balance
                         return@forEach
                     }
                 }
-
-                if (result) {
-                    mExecutor.submit {
-                        tokenDo.amount = amount
-                        mTokenStorage.update(tokenDo)
-                    }
+                mExecutor.submit {
+                    tokenDo.amount = amount
+                    mTokenStorage.update(tokenDo)
                 }
 
-                call.invoke(amount, result)
-            }
+                call.invoke(amount, true)
+            }, {
+                call.invoke(0, false)
+            })
     }
 
     suspend fun getTokenBalance(
         address: String,
-        tokenAddress: String
+        tokenIdx: Long
     ): Long {
         val channel = Channel<Long>()
         withContext(Dispatchers.IO + coroutineExceptionHandler()) {
-            val tokenAddressList = arrayListOf(tokenAddress)
-            DataRepository.getViolasService()
-                .getBalance(address, tokenAddressList) { accountBalance, tokens, result ->
+
+            mViolasMultiTokenService.getBalance(address, arrayListOf(tokenIdx))
+                .subscribe({
+                    val accountBalance = it.data?.balance
+                    val tokens = it.data?.modules
+
                     var amount = 0L
-                    tokens?.forEach {
-                        if (it.address == tokenAddress) {
-                            amount = it.balance
+                    tokens?.forEach { token ->
+                        if (token.id == tokenIdx) {
+                            amount = token.balance
                             return@forEach
                         }
                     }
+
                     GlobalScope.launch {
                         channel.send(amount)
                     }
-                }
+                }, {
+                    GlobalScope.launch {
+                        channel.send(0)
+                    }
+                })
+
         }
         return channel.receive()
     }
@@ -229,29 +237,27 @@ class TokenManager {
         enableTokens: List<AssertToken>,
         call: (accountBalance: Long, assertTokens: List<AssertToken>) -> Unit
     ): Disposable {
-        val tokenAddressList = arrayListOf<String>()
+        val tokenAddressList = arrayListOf<Long>()
         enableTokens.forEach {
             if (it.isToken) {
-                tokenAddressList.add(it.tokenAddress)
+                tokenAddressList.add(it.tokenIdx)
             }
         }
-        return DataRepository.getViolasService()
-            .getBalance(address, tokenAddressList) { accountBalance, tokens, result ->
-                if (!result) {
-                    call.invoke(enableTokens[0].amount, enableTokens)
-                    return@getBalance
-                }
+        return mViolasMultiTokenService.getBalance(address, tokenAddressList)
+            .subscribe({
+                val accountBalance = it.data?.balance ?: 0
+                val tokens = it.data?.modules
 
-                val tokenMap = mutableMapOf<String, Long>()
-                tokens?.forEach {
-                    tokenMap[it.address] = it.balance
+                val tokenMap = mutableMapOf<Long, Long>()
+                tokens?.forEach { token ->
+                    tokenMap[token.id] = token.balance
                 }
 
                 enableTokens.forEach {
                     if (!it.isToken) {
                         it.amount = accountBalance
-                    } else if (tokenMap.contains(it.tokenAddress)) {
-                        it.amount = tokenMap[it.tokenAddress]!!
+                    } else if (tokenMap.contains(it.tokenIdx)) {
+                        it.amount = tokenMap[it.tokenIdx]!!
                     } else {
                         it.amount = 0
                     }
@@ -266,7 +272,7 @@ class TokenManager {
                             TokenDo(
                                 id = it.id,
                                 account_id = it.account_id,
-                                tokenAddress = it.tokenAddress,
+                                tokenIdx = it.tokenIdx,
                                 name = it.name,
                                 enable = it.enable,
                                 amount = it.amount
@@ -276,6 +282,24 @@ class TokenManager {
                 }
 
                 call.invoke(accountBalance, enableTokens)
-            }
+            }, {
+                call.invoke(enableTokens[0].amount, enableTokens)
+            })
+    }
+
+    fun publishToken(account: Account, call: (success: Boolean) -> Unit) {
+        val publishTokenPayload = mViolasMultiTokenService.publishTokenPayload()
+        mViolasService.sendTransaction(publishTokenPayload, account, call)
+    }
+
+    fun isPublish(address: String): Boolean {
+        var isPublish = false
+        mViolasMultiTokenService.getRegisterToken(address)
+            .subscribe({
+                isPublish = it.data?.isPublished == 1
+            }, {
+                isPublish = false
+            })
+        return isPublish
     }
 }

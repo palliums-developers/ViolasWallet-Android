@@ -8,6 +8,6 @@ package com.violas.wallet.event
  */
 class TokenBalanceUpdateEvent(
     val accountAddress: String,
-    val tokenAddress: String,
+    val tokenIdx: Long,
     val tokenBalance: Long
 )

@@ -15,17 +15,17 @@ interface ExchangeCoin : ExchangeAssert {
 }
 
 interface ExchangeToken : ExchangeAssert {
-    fun getTokenAddress(): String
+    fun getTokenIdx(): Long
 }
 
 class ExchangeTokenImpl(
     private val coinTypes: CoinTypes,
     private val tokenName: String,
-    private val tokenAddress: String
+    private val tokenIdx: Long
 ) :
     ExchangeToken {
-    override fun getTokenAddress(): String {
-        return tokenAddress
+    override fun getTokenIdx(): Long {
+        return tokenIdx
     }
 
     override fun getCoinType(): CoinTypes {
