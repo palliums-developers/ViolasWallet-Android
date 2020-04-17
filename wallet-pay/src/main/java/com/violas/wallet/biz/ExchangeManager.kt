@@ -150,18 +150,7 @@ class ExchangeManager {
         return channel.receive()
     }
 
-    private suspend fun getSequenceNumber(address: String): Long {
-        val channel = Channel<Long>()
-        mViolasService.getSequenceNumber(address, { sequenceNumber ->
-            GlobalScope.launch {
-                channel.send(sequenceNumber)
-            }
-        }, {
-            GlobalScope.launch {
-                channel.send(0L)
-                channel.close()
-            }
-        })
-        return channel.receive()
+    private fun getSequenceNumber(address: String): Long {
+        return mViolasService.getSequenceNumber(address)
     }
 }

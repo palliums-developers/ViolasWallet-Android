@@ -1,6 +1,5 @@
 package com.palliums.violas.error
 
-import com.palliums.net.checkResponseWithResult
 import com.palliums.violas.http.Response
 import java.lang.RuntimeException
 

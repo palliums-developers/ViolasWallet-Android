@@ -1,15 +1,14 @@
 package com.violas.wallet.repository.http.violas
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.WorkerThread
-import com.palliums.net.checkResponseWithResult
 import com.palliums.violas.error.TransactionException
 import com.palliums.violas.http.*
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.BaseBrowserUrl
-import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
@@ -18,7 +17,6 @@ import io.reactivex.schedulers.Schedulers
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
-import java.lang.RuntimeException
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -29,22 +27,8 @@ import java.lang.RuntimeException
 class ViolasService(private val mViolasRepository: ViolasRepository) : TransactionService {
     private val mMainHandler by lazy { Handler(Looper.getMainLooper()) }
 
-    private val mTokenStorage by lazy { DataRepository.getTokenStorage() }
-
-    fun checkTokenRegister(address: String, call: (list: List<String>) -> Unit) {
-        val subscribe = mViolasRepository.getRegisterToken(address)
-            .subscribe({
-                if (it.data != null) {
-                    call.invoke(it.data!!)
-                } else {
-                    call.invoke(arrayListOf())
-                }
-            }, {
-                call.invoke(arrayListOf())
-            })
-    }
-
-    suspend fun getRegisterToken(address: String): List<String>? {
+    @Deprecated("获取链上已经有的 Token 列表应该使用 TokenManager")
+    fun getRegisterToken(address: String): List<String>? {
         var registerToken: List<String>? = null
         val subscribe = mViolasRepository.getRegisterToken(address)
             .subscribe({
@@ -56,6 +40,8 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         return registerToken
     }
 
+    @SuppressLint("CheckResult")
+    @Deprecated("检查 Token 注册应该使用 TokenManager")
     fun checkTokenRegister(address: String, tokenIdx: Long): Boolean {
         var isRegister: Boolean = false
         mViolasRepository.getRegisterToken(address)
@@ -69,20 +55,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         return isRegister
     }
 
-    fun getSupportCurrency(call: (list: List<SupportCurrencyDTO>) -> Unit) {
-        val subscribe = mViolasRepository.getSupportCurrency()
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                if (it.data == null) {
-                    call.invoke(arrayListOf())
-                } else {
-                    call.invoke(it.data!!)
-                }
-            }, {
-                call.invoke(arrayListOf())
-            })
-    }
-
+    @Deprecated("普通查询将不再支持 Token 余额查询")
     fun getBalance(
         address: String,
         tokenAddressList: List<String>,
@@ -123,6 +96,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             })
     }
 
+    @Deprecated("注册 Token 注册应该使用 TokenManager")
     fun publishToken(
         context: Context,
         account: Account,
@@ -181,6 +155,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         )
     }
 
+    @SuppressLint("CheckResult")
     @WorkerThread
     fun sendTransaction(
         signedTransaction: SignedTransaction
@@ -235,38 +210,6 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             })
     }
 
-    fun sendViolasToken(
-        context: Context,
-        tokenAddress: String,
-        account: Account,
-        address: String,
-        amount: Long,
-        call: (success: Boolean) -> Unit
-    ) {
-        val senderAddress = account.getAddress().toHex()
-        getSequenceNumber(senderAddress, { sequenceNumber ->
-
-            val publishTokenPayload = TransactionPayload.optionTokenTransactionPayload(
-                context, tokenAddress, address, amount
-            )
-
-            val rawTransaction = RawTransaction.optionTransaction(
-                senderAddress,
-                publishTokenPayload,
-                sequenceNumber
-            )
-
-            sendTransaction(
-                rawTransaction,
-                account.keyPair.getPublicKey(),
-                account.keyPair.signMessage(rawTransaction.toHashByteArray()),
-                call
-            )
-        }, {
-            call.invoke(false)
-        })
-    }
-
     fun sendCoin(
         context: Context,
         account: Account,
@@ -311,6 +254,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         return sequenceNumber
     }
 
+    @Deprecated("准备弃用")
     fun getSequenceNumber(
         address: String,
         call: (sequenceNumber: Long) -> Unit,
