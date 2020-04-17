@@ -92,19 +92,16 @@ class LibraTransferActivity : TransferActivity() {
             showProgress()
             if (isToken) {
                 mTokenDo?.apply {
-                    mTokenManager.getTokenBalance(it.address, this) { tokenAmount, result ->
-                        launch {
-                            val displayAmount = convertViolasTokenUnit(
-                                if (result) tokenAmount else amount
-                            )
-                            tvCoinAmount.text = String.format(
-                                getString(R.string.hint_transfer_amount),
-                                displayAmount,
-                                name
-                            )
-                            mBalance = BigDecimal(displayAmount)
-                            dismissProgress()
-                        }
+                    val tokenAmount = mTokenManager.getTokenBalance(it.address, this)
+                    launch {
+                        val displayAmount = convertViolasTokenUnit(tokenAmount)
+                        tvCoinAmount.text = String.format(
+                            getString(R.string.hint_transfer_amount),
+                            displayAmount,
+                            name
+                        )
+                        mBalance = BigDecimal(displayAmount)
+                        dismissProgress()
                     }
                 }
             } else {
@@ -131,7 +128,10 @@ class LibraTransferActivity : TransferActivity() {
         when (account?.coinNumber) {
             CoinTypes.Libra.coinType(),
             CoinTypes.Violas.coinType() -> {
-                if (BigDecimal(editAmountInput.text.toString().trim()) > mBalance ?: BigDecimal("0")) {
+                if (BigDecimal(
+                        editAmountInput.text.toString().trim()
+                    ) > mBalance ?: BigDecimal("0")
+                ) {
                     LackOfBalanceException().message?.let { showToast(it) }
                     return false
                 }

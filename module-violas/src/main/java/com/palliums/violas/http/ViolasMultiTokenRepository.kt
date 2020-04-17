@@ -6,7 +6,9 @@ import com.palliums.violas.smartcontract.multitoken.BalanceDTO
 import com.palliums.violas.smartcontract.multitoken.SupportCurrencyDTO
 import io.reactivex.Single
 import org.palliums.violascore.transaction.TransactionPayload
+import retrofit2.Call
 import java.lang.Exception
+import java.lang.RuntimeException
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -18,38 +20,26 @@ class ViolasMultiTokenRepository(
     private val mMultiContractApi: MultiContractRpcApi,
     private val multiTokenContract: MultiTokenContract
 ) {
-    suspend fun getSupportToken() =
-        checkResponse {
-            mMultiContractApi.getSupportCurrency()
-        }
 
     fun getBalance(
         address: String,
         tokenIdx: List<Long>? = null
-    ): Single<Response<BalanceDTO>> {
+    ): BalanceDTO? {
         val tokenIdxArr: String? = tokenIdx?.joinToString(",")
         return if (tokenIdxArr == null) {
             mMultiContractApi.getBalance(address)
         } else {
             mMultiContractApi.getBalance(address, tokenIdxArr)
-        }
+        }.syncCallResponse()
     }
 
     fun getSupportCurrency(): List<SupportCurrencyDTO>? {
-        try {
-            val execute = mMultiContractApi.getSupportCurrency().execute()
-            if (execute.isSuccessful) {
-                return execute.body()?.data?.currencies
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
+        return mMultiContractApi.getSupportCurrency().syncCallResponse()?.currencies
     }
 
 
     fun getRegisterToken(address: String) =
-        mMultiContractApi.getRegisterToken(address)
+        mMultiContractApi.getRegisterToken(address).syncCallResponse()?.isPublished == 1
 
     fun publishTokenPayload(data: ByteArray = byteArrayOf()): TransactionPayload {
         return multiTokenContract.optionPublishTransactionPayload()

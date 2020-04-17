@@ -65,6 +65,7 @@ class AuthenticationKey {
 }
 
 interface TransactionAuthenticator {
+    fun getAddress(): ByteArray
 
     fun toByteArray(): ByteArray
 }
@@ -73,6 +74,10 @@ class TransactionSignAuthenticator(
     val publicKey: ByteArray,
     val signature: ByteArray
 ) : TransactionAuthenticator {
+    override fun getAddress(): ByteArray {
+        return AuthenticationKey.ed25519(publicKey).getShortAddress()
+    }
+
     override fun toByteArray(): ByteArray {
         println(
             "public key size:${publicKey.size} hex:${LCS.encodeInt(publicKey.size).toHex()}"
@@ -91,6 +96,10 @@ class TransactionMultiSignAuthenticator(
     private val multiPublicKey: MultiEd25519PublicKey,
     val signature: MultiEd25519Signature
 ) : TransactionAuthenticator {
+    override fun getAddress(): ByteArray {
+        return AuthenticationKey.multi_ed25519(multiPublicKey).getShortAddress()
+    }
+
     override fun toByteArray(): ByteArray {
         val stream = LCSOutputStream()
         stream.writeU8(AuthenticationKey.Scheme.MultiEd25519.value.toInt())

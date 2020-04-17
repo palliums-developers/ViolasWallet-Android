@@ -189,11 +189,12 @@ class TokenInfoActivity : BaseAppActivity() {
         refreshBalanceJob?.cancel()
 
         refreshBalanceJob = launch(Dispatchers.IO) {
-            mTokenManager.getTokenBalance(
+            val tokenBalance = mTokenManager.getTokenBalance(
                 mAccountDO.address,
                 mTokenDo
-            ) { tokenBalance, result ->
-                if (result) {
+            )
+            if (tokenBalance != 0L) {
+                withContext(Dispatchers.Main) {
                     setAmount(tokenBalance)
 
                     // 通知钱包首页更新当前币种余额UI

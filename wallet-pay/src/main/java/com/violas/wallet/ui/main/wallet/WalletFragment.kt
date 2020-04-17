@@ -337,25 +337,24 @@ class WalletFragment : BaseFragment() {
 
         val currentAccount = accountDO ?: mAccountManager.currentAccount()
         val enableTokens = tokens ?: mTokenManger.loadEnableToken(currentAccount)
-        mTokenManger.refreshBalance(
+        val (accountBalance, assertTokens) = mTokenManger.refreshBalance(
             currentAccount.address,
             enableTokens
-        ) { accountBalance, assertTokens ->
-            recyclerAssert?.post {
-                if (swipeRefreshLayout.isRefreshing) {
-                    swipeRefreshLayout.isRefreshing = false
-                }
-
-                // 刷新当前钱包的信息
-                currentAccount.amount = accountBalance
-                mAccountManager.updateAccount(currentAccount)
-                updateWalletInfo(currentAccount)
-
-                // 刷新当前平台的资产
-                mEnableTokens.clear()
-                mEnableTokens.addAll(assertTokens)
-                mAssertAdapter.notifyDataSetChanged()
+        )
+        recyclerAssert?.post {
+            if (swipeRefreshLayout.isRefreshing) {
+                swipeRefreshLayout.isRefreshing = false
             }
+
+            // 刷新当前钱包的信息
+            currentAccount.amount = accountBalance
+            mAccountManager.updateAccount(currentAccount)
+            updateWalletInfo(currentAccount)
+
+            // 刷新当前平台的资产
+            mEnableTokens.clear()
+            mEnableTokens.addAll(assertTokens)
+            mAssertAdapter.notifyDataSetChanged()
         }
     }
 

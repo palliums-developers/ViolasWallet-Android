@@ -113,24 +113,23 @@ class ManagerAssertActivity : BaseAppActivity() {
                         }
                         return@launch
                     }
-                    mTokenManager.publishToken(Account(KeyPair.fromSecretKey(decrypt))) {
-                        dismissProgress()
-                        if (!it) {
-                            this@ManagerAssertActivity.runOnUiThread {
-                                checkbox.isChecked = false
-                                Toast.makeText(
-                                    this@ManagerAssertActivity, String.format(
-                                        getString(R.string.hint_not_none_coin_or_net_error),
-                                        CoinTypes.Violas.coinName()
-                                    ), Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        } else {
-                            EventBus.getDefault().post(TokenPublishEvent())
-                            EventBus.getDefault().post(RefreshBalanceEvent())
-                            mTokenManager.insert(checked, assertToken)
+                    try {
+                        mTokenManager.publishToken(Account(KeyPair.fromSecretKey(decrypt)))
+                        EventBus.getDefault().post(TokenPublishEvent())
+                        EventBus.getDefault().post(RefreshBalanceEvent())
+                        mTokenManager.insert(checked, assertToken)
+                    } catch (e: Exception) {
+                        this@ManagerAssertActivity.runOnUiThread {
+                            checkbox.isChecked = false
+                            Toast.makeText(
+                                this@ManagerAssertActivity, String.format(
+                                    getString(R.string.hint_not_none_coin_or_net_error),
+                                    CoinTypes.Violas.coinName()
+                                ), Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
+                    dismissProgress()
                 }
             }
             .setCancelListener {

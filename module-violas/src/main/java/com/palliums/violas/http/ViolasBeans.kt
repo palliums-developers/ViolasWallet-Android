@@ -3,6 +3,10 @@ package com.palliums.violas.http
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
+import retrofit2.Call
+import java.io.IOException
+import java.lang.Exception
+import java.lang.RuntimeException
 
 /**
  * Created by elephant on 2019-11-11 15:41.
@@ -35,6 +39,22 @@ open class Response<T> : ApiResponse {
 
     override fun getResponseData(): Any? {
         return data
+    }
+}
+
+class NetWorkErrorException : RuntimeException()
+
+fun <T> Call<Response<T>>.syncCallResponse(): T? {
+    try {
+        val response = this.execute()
+        if (response.isSuccessful) {
+            return response.body()?.data
+        } else {
+            throw NetWorkErrorException()
+        }
+    } catch (e: IOException) {
+        e.printStackTrace()
+        throw NetWorkErrorException()
     }
 }
 

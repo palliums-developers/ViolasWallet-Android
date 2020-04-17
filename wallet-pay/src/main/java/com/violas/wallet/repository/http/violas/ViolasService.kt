@@ -3,6 +3,9 @@ package com.violas.wallet.repository.http.violas
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.WorkerThread
+import com.palliums.net.checkResponseWithResult
+import com.palliums.violas.error.TransactionException
 import com.palliums.violas.http.*
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.BaseBrowserUrl
@@ -15,6 +18,7 @@ import io.reactivex.schedulers.Schedulers
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
+import java.lang.RuntimeException
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -149,29 +153,44 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         })
     }
 
+    @WorkerThread
     fun sendTransaction(
         payload: TransactionPayload,
-        account: Account,
-        call: (success: Boolean) -> Unit
+        account: Account
     ) {
+
         val senderAddress = account.getAddress().toHex()
-        getSequenceNumber(senderAddress, { sequenceNumber ->
 
-            val rawTransaction = RawTransaction.optionTransaction(
-                senderAddress,
-                payload,
-                sequenceNumber
-            )
+        val sequenceNumber = getSequenceNumber(senderAddress)
+        val rawTransaction = RawTransaction.optionTransaction(
+            senderAddress,
+            payload,
+            sequenceNumber
+        )
 
-            sendTransaction(
+        val authenticator = TransactionSignAuthenticator(
+            account.keyPair.getPublicKey(),
+            account.keyPair.signMessage(rawTransaction.toHashByteArray())
+        )
+
+        sendTransaction(
+            SignedTransaction(
                 rawTransaction,
-                account.keyPair.getPublicKey(),
-                account.keyPair.signMessage(rawTransaction.toHashByteArray()),
-                call
+                authenticator
             )
-        }, {
-            call.invoke(false)
-        })
+        )
+    }
+
+    @WorkerThread
+    fun sendTransaction(
+        signedTransaction: SignedTransaction
+    ) {
+        mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
+            .subscribe({
+                TransactionException.checkViolasTransactionException(it)
+            }, {
+                throw TransactionException(it)
+            })
     }
 
     fun sendTransaction(
@@ -306,7 +325,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
                     call.invoke(it.data!!)
                 }
             }, {
-                call.invoke(0)
+                error.invoke(java.lang.Exception(it))
             })
     }
 

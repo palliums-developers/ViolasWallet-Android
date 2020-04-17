@@ -17,22 +17,24 @@ interface MultiContractRpcApi {
     fun getBalance(
         @Query("addr") address: String,
         @Query("modu") tokenIdxs: String
-    ): Single<Response<BalanceDTO>>
+    ): Call<Response<BalanceDTO>>
 
     @GET("/1.0/violas/balance")
     fun getBalance(
         @Query("addr") address: String
-    ): Single<Response<BalanceDTO>>
+    ): Call<Response<BalanceDTO>>
 
     @GET("/1.0/violas/currency")
     fun getSupportCurrency(): Call<Response<SupportCurrencyListDTO>>//Single<ListResponse<SupportCurrencyDTO>>
 
     @GET("/1.0/violas/module")
-    fun getRegisterToken(@Query("addr") address: String): Single<Response<PublishDTO>>
+    fun getRegisterToken(@Query("addr") address: String): Call<Response<PublishDTO>>
 }
+
 data class SupportCurrencyListDTO(
     var currencies: List<SupportCurrencyDTO>
 )
+
 data class SupportCurrencyDTO(
     @SerializedName(value = "id")
     var tokenIdentity: Long = 0,

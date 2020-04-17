@@ -1,5 +1,6 @@
 package com.violas.wallet.biz
 
+import androidx.annotation.WorkerThread
 import androidx.collection.ArrayMap
 import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.violas.http.ViolasMultiTokenRepository
@@ -39,6 +40,7 @@ class TokenManager {
     /**
      * 本地兼容的币种
      */
+    @WorkerThread
     private fun loadSupportToken(): List<AssertToken> {
         val list = mutableListOf<AssertToken>()
         val supportCurrency = mViolasMultiTokenService.getSupportCurrency()
@@ -55,11 +57,14 @@ class TokenManager {
         return list
     }
 
+    @WorkerThread
     fun findTokenById(tokenId: Long) = mTokenStorage.findById(tokenId)
 
+    @WorkerThread
     fun findTokenByName(accountId: Long, tokenName: String) =
         mTokenStorage.findByName(accountId, tokenName)
 
+    @WorkerThread
     fun loadSupportToken(account: AccountDO): List<AssertToken> {
         val loadSupportToken = loadSupportToken()
 
@@ -115,6 +120,7 @@ class TokenManager {
         return mutableList
     }
 
+    @WorkerThread
     fun loadEnableToken(account: AccountDO): List<AssertToken> {
         val enableToken = mTokenStorage
             .findEnableTokenByAccountId(account.id)
@@ -149,6 +155,7 @@ class TokenManager {
         return mutableList
     }
 
+    @WorkerThread
     fun insert(checked: Boolean, accountId: Long, tokenName: String, tokenIdx: Long) {
         mTokenStorage.insert(
             TokenDo(
@@ -160,6 +167,7 @@ class TokenManager {
         )
     }
 
+    @WorkerThread
     fun insert(checked: Boolean, assertToken: AssertToken) {
         mTokenStorage.insert(
             TokenDo(
@@ -171,151 +179,116 @@ class TokenManager {
         )
     }
 
+    @WorkerThread
     fun getTokenBalance(
         address: String,
-        tokenDo: TokenDo,
-        call: (tokenBalance: Long, result: Boolean) -> Unit
-    ): Disposable {
-        return mViolasMultiTokenService.getBalance(address, arrayListOf(tokenDo.tokenIdx))
-            .subscribe({
-                val accountBalance = it.data?.balance
-                val tokens = it.data?.modules
+        tokenDo: TokenDo
+    ): Long {
+        val amount = getTokenBalance(address, tokenDo.tokenIdx)
 
-                var amount = 0L
-                tokens?.forEach { token ->
-                    if (token.id == tokenDo.tokenIdx) {
-                        amount = token.balance
-                        return@forEach
-                    }
-                }
-                mExecutor.submit {
-                    tokenDo.amount = amount
-                    mTokenStorage.update(tokenDo)
-                }
-                GlobalScope.launch(Dispatchers.Main) {
-                    call.invoke(amount, true)
-                }
-            }, {
-                GlobalScope.launch(Dispatchers.Main) {
-                    call.invoke(0, false)
-                }
-            })
+        mExecutor.submit {
+            tokenDo.amount = amount
+            mTokenStorage.update(tokenDo)
+        }
+        return amount
     }
 
-    suspend fun getTokenBalance(
+    @WorkerThread
+    fun getTokenBalance(
         address: String,
         tokenIdx: Long
     ): Long {
-        val channel = Channel<Long>()
-        withContext(Dispatchers.IO + coroutineExceptionHandler()) {
+        val tokens =
+            mViolasMultiTokenService.getBalance(address, arrayListOf(tokenIdx))?.modules
 
-            mViolasMultiTokenService.getBalance(address, arrayListOf(tokenIdx))
-                .subscribe({
-                    val accountBalance = it.data?.balance
-                    val tokens = it.data?.modules
-
-                    var amount = 0L
-                    tokens?.forEach { token ->
-                        if (token.id == tokenIdx) {
-                            amount = token.balance
-                            return@forEach
-                        }
-                    }
-
-                    GlobalScope.launch {
-                        channel.send(amount)
-                    }
-                }, {
-                    GlobalScope.launch {
-                        channel.send(0)
-                    }
-                })
-
+        var amount = 0L
+        tokens?.forEach { token ->
+            if (token.id == tokenIdx) {
+                amount = token.balance
+                return@forEach
+            }
         }
-        return channel.receive()
+        return amount
     }
 
+    data class RefreshBalanceResult(
+        var accountBalance: Long,
+        var assertTokens: List<AssertToken>
+    )
+
+    @WorkerThread
     fun refreshBalance(
         address: String,
-        enableTokens: List<AssertToken>,
-        call: (accountBalance: Long, assertTokens: List<AssertToken>) -> Unit
-    ): Disposable {
+        enableTokens: List<AssertToken>
+    ): RefreshBalanceResult {
         val tokenAddressList = arrayListOf<Long>()
         enableTokens.forEach {
             if (it.isToken) {
                 tokenAddressList.add(it.tokenIdx)
             }
         }
-        return mViolasMultiTokenService.getBalance(address, tokenAddressList)
-            .subscribe({
-                val accountBalance = it.data?.balance ?: 0
-                val tokens = it.data?.modules
+        val tokenBalance = mViolasMultiTokenService.getBalance(address, tokenAddressList)
 
-                val tokenMap = mutableMapOf<Long, Long>()
-                tokens?.forEach { token ->
-                    tokenMap[token.id] = token.balance
+        val accountBalance = tokenBalance?.balance ?: 0
+        val tokens = tokenBalance?.modules
+
+        val tokenMap = mutableMapOf<Long, Long>()
+        tokens?.forEach { token ->
+            tokenMap[token.id] = token.balance
+        }
+
+        enableTokens.forEach {
+            if (!it.isToken) {
+                it.amount = accountBalance
+            } else if (tokenMap.contains(it.tokenIdx)) {
+                it.amount = tokenMap[it.tokenIdx]!!
+            } else {
+                it.amount = 0
+            }
+        }
+
+        // 更新本地token资产余额，钱包资产余额交由AccountManager更新
+        mExecutor.submit {
+            val tokens = enableTokens
+                .filter {
+                    it.isToken
+                }.map {
+                    TokenDo(
+                        id = it.id,
+                        account_id = it.account_id,
+                        tokenIdx = it.tokenIdx,
+                        name = it.name,
+                        enable = it.enable,
+                        amount = it.amount
+                    )
                 }
+            mTokenStorage.update(*tokens.toTypedArray())
+        }
 
-                enableTokens.forEach {
-                    if (!it.isToken) {
-                        it.amount = accountBalance
-                    } else if (tokenMap.contains(it.tokenIdx)) {
-                        it.amount = tokenMap[it.tokenIdx]!!
-                    } else {
-                        it.amount = 0
-                    }
-                }
-
-                // 更新本地token资产余额，钱包资产余额交由AccountManager更新
-                mExecutor.submit {
-                    val tokens = enableTokens
-                        .filter {
-                            it.isToken
-                        }.map {
-                            TokenDo(
-                                id = it.id,
-                                account_id = it.account_id,
-                                tokenIdx = it.tokenIdx,
-                                name = it.name,
-                                enable = it.enable,
-                                amount = it.amount
-                            )
-                        }
-                    mTokenStorage.update(*tokens.toTypedArray())
-                }
-
-                call.invoke(accountBalance, enableTokens)
-            }, {
-                call.invoke(enableTokens[0].amount, enableTokens)
-            })
+        return RefreshBalanceResult(accountBalance, enableTokens)
     }
 
-    fun publishToken(account: Account, call: (success: Boolean) -> Unit) {
+    @WorkerThread
+    fun publishToken(account: Account) {
         val publishTokenPayload = mViolasMultiTokenService.publishTokenPayload()
-        mViolasService.sendTransaction(publishTokenPayload, account, call)
+        mViolasService.sendTransaction(publishTokenPayload, account)
     }
 
+    @WorkerThread
     fun isPublish(address: String): Boolean {
-        var isPublish = false
-        mViolasMultiTokenService.getRegisterToken(address)
-            .subscribe({
-                isPublish = it.data?.isPublished == 1
-            }, {
-                isPublish = false
-            })
-        return isPublish
+        return mViolasMultiTokenService.getRegisterToken(address)
     }
 
+    @WorkerThread
     fun sendViolasToken(
         tokenIdx: Long,
         account: Account,
         address: String,
-        amount: Long,
-        function: (Boolean) -> Unit
+        amount: Long
     ) {
         val publishTokenPayload = mViolasMultiTokenService.transferTokenPayload(
             tokenIdx, address, amount, byteArrayOf()
         )
-        mViolasService.sendTransaction(publishTokenPayload, account, function)
+        mViolasService.sendTransaction(publishTokenPayload, account)
     }
 }

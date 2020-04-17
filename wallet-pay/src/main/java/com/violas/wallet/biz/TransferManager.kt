@@ -181,19 +181,18 @@ class TransferManager {
     ) {
         val token = DataRepository.getTokenStorage().findById(tokenId)
         token?.let {
-            mTokenManager.sendViolasToken(
-                token.tokenIdx,
-                Account(
-                    KeyPair(decryptPrivateKey)
-                ),
-                address,
-                (amount * 1000000L).toLong()
-            ) {
-                if (it) {
-                    success.invoke("")
-                } else {
-                    error.invoke(TransferUnknownException())
-                }
+            try {
+                mTokenManager.sendViolasToken(
+                    token.tokenIdx,
+                    Account(
+                        KeyPair(decryptPrivateKey)
+                    ),
+                    address,
+                    (amount * 1000000L).toLong()
+                )
+                success.invoke("")
+            } catch (e: java.lang.Exception) {
+                error.invoke(TransferUnknownException())
             }
         }
     }
