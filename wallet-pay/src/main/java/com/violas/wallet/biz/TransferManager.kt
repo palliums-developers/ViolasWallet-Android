@@ -27,6 +27,10 @@ class LackOfBalanceException :
     RuntimeException(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
 
 class TransferManager {
+    private val mTokenManager by lazy {
+        TokenManager()
+    }
+
     @Throws(AddressFaultException::class, RuntimeException::class, ToTheirException::class)
     fun checkTransferParam(
         amountStr: String,
@@ -177,9 +181,8 @@ class TransferManager {
     ) {
         val token = DataRepository.getTokenStorage().findById(tokenId)
         token?.let {
-            DataRepository.getViolasService().sendViolasToken(
-                context,
-                token.tokenIdx.toString(),
+            mTokenManager.sendViolasToken(
+                token.tokenIdx,
                 Account(
                     KeyPair(decryptPrivateKey)
                 ),

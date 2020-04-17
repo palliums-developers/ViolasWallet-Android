@@ -192,10 +192,13 @@ class TokenManager {
                     tokenDo.amount = amount
                     mTokenStorage.update(tokenDo)
                 }
-
-                call.invoke(amount, true)
+                GlobalScope.launch(Dispatchers.Main) {
+                    call.invoke(amount, true)
+                }
             }, {
-                call.invoke(0, false)
+                GlobalScope.launch(Dispatchers.Main) {
+                    call.invoke(0, false)
+                }
             })
     }
 
@@ -301,5 +304,18 @@ class TokenManager {
                 isPublish = false
             })
         return isPublish
+    }
+
+    fun sendViolasToken(
+        tokenIdx: Long,
+        account: Account,
+        address: String,
+        amount: Long,
+        function: (Boolean) -> Unit
+    ) {
+        val publishTokenPayload = mViolasMultiTokenService.transferTokenPayload(
+            tokenIdx, address, amount, byteArrayOf()
+        )
+        mViolasService.sendTransaction(publishTokenPayload, account, function)
     }
 }

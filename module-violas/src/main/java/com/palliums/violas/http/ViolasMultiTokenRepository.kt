@@ -54,5 +54,14 @@ class ViolasMultiTokenRepository(
     fun publishTokenPayload(data: ByteArray = byteArrayOf()): TransactionPayload {
         return multiTokenContract.optionPublishTransactionPayload()
     }
+
+    fun transferTokenPayload(
+        tokenIdx: Long,
+        address: String,
+        amount: Long,
+        data: ByteArray
+    ): TransactionPayload {
+        return multiTokenContract.optionTokenTransactionPayload(tokenIdx, address, amount, data)
+    }
 }
 

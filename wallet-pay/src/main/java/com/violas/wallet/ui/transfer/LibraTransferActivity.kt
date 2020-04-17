@@ -89,6 +89,7 @@ class LibraTransferActivity : TransferActivity() {
 
     private fun refreshCurrentAmount() {
         account?.let {
+            showProgress()
             if (isToken) {
                 mTokenDo?.apply {
                     mTokenManager.getTokenBalance(it.address, this) { tokenAmount, result ->
@@ -102,6 +103,7 @@ class LibraTransferActivity : TransferActivity() {
                                 name
                             )
                             mBalance = BigDecimal(displayAmount)
+                            dismissProgress()
                         }
                     }
                 }
@@ -118,6 +120,7 @@ class LibraTransferActivity : TransferActivity() {
                             amountUnit.second
                         )
                         mBalance = BigDecimal(amountUnit.first)
+                        dismissProgress()
                     }
                 }
             }

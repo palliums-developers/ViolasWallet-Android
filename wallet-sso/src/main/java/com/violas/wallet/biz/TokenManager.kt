@@ -6,6 +6,9 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.TokenDo
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 
@@ -164,8 +167,9 @@ class TokenManager {
                         mTokenStorage.update(tokenDo)
                     }
                 }
-
-                call.invoke(amount, result)
+                GlobalScope.launch(Dispatchers.Main) {
+                    call.invoke(amount, result)
+                }
             }
     }
 
