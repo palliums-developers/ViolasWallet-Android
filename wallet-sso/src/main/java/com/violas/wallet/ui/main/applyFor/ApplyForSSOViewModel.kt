@@ -230,7 +230,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
     }
 
     private fun refreshAssert(account: AccountDO, applyToken: ApplyForStatusDTO) {
-        applyToken.token_address?.let {
+        applyToken.tokenIdx.let {
             if (mTokenManager.findTokenByTokenAddress(account.id, it) != null) {
                 return
             }
@@ -239,7 +239,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                 true,
                 AssertToken(
                     account_id = account.id,
-                    tokenAddress = it,
+                    tokenIdx = it,
                     name = applyToken.token_name,
                     fullName = applyToken.token_name,
                     enable = true

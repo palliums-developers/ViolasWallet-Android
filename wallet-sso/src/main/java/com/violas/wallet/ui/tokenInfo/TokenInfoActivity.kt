@@ -121,7 +121,7 @@ class TokenInfoActivity : BaseAppActivity() {
             TransactionRecordFragment.newInstance(
                 mAccountDO.address,
                 CoinTypes.Violas,
-                mTokenDo.tokenAddress,
+                mTokenDo.tokenIdx.toString(),
                 mTokenDo.name
             )
         )
@@ -187,24 +187,24 @@ class TokenInfoActivity : BaseAppActivity() {
     private fun refreshTokenBalance() {
         refreshBalanceJob?.cancel()
 
-        refreshBalanceJob = launch(Dispatchers.IO) {
-            mTokenManager.getTokenBalance(
-                mAccountDO.address,
-                mTokenDo
-            ) { tokenBalance, result ->
-                if (result) {
-                    setAmount(tokenBalance)
-
-                    // 通知钱包首页更新当前币种余额UI
-                    EventBus.getDefault().post(
-                        TokenBalanceUpdateEvent(
-                            mAccountDO.address,
-                            mTokenDo.tokenAddress,
-                            tokenBalance
-                        )
-                    )
-                }
+        refreshBalanceJob = launch(Dispatchers.Main) {
+            val tokenBalance = withContext(Dispatchers.IO) {
+                mTokenManager.getTokenBalance(
+                    mAccountDO.address,
+                    mTokenDo
+                )
             }
+
+            setAmount(tokenBalance)
+
+            // 通知钱包首页更新当前币种余额UI
+            EventBus.getDefault().post(
+                TokenBalanceUpdateEvent(
+                    mAccountDO.address,
+                    mTokenDo.tokenIdx,
+                    tokenBalance
+                )
+            )
         }
     }
 

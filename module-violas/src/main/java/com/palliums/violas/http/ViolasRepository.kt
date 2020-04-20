@@ -55,8 +55,10 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         return mViolasApi.getBalance(address, tokenAddressArr)
     }
 
-    fun getSequenceNumber(address: String) =
-        mViolasApi.getSequenceNumber(address)
+    suspend fun getSequenceNumber(address: String) =
+        checkResponse {
+            mViolasApi.getSequenceNumber(address)
+        }.data ?: 0
 
     @Throws()
     suspend fun pushTx(tx: String): Response<Any> {
