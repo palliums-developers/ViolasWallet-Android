@@ -58,12 +58,12 @@ class ApplyForMintActivity
                         ).stripTrailingZeros().toPlainString()
                     )
 
-                    status.token_address?.let {
+                    status.tokenIdx?.let {
                         val assertToken = AssertToken(
                             account_id = mAccount.id,
                             fullName = status.token_name,
                             name = status.token_name,
-                            tokenAddress = it,
+                            tokenIdx = it,
                             enable = true
                         )
                         btnMint.setOnClickListener {
@@ -106,7 +106,7 @@ class ApplyForMintActivity
                     }
                     val checkTokenRegister = DataRepository.getViolasService().checkTokenRegister(
                         Account(KeyPair.fromSecretKey(decrypt)).getAddress().toHex(),
-                        assertToken.tokenAddress
+                        assertToken.tokenIdx.toString()
                     )
                     if (checkTokenRegister) {
                         success.invoke()
@@ -115,7 +115,7 @@ class ApplyForMintActivity
                             .publishToken(
                                 applicationContext,
                                 Account(KeyPair.fromSecretKey(decrypt)),
-                                assertToken.tokenAddress
+                                assertToken.tokenIdx.toString()
                             ) {
                                 dismissProgress()
                                 if (!it) {

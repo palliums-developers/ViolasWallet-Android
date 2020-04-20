@@ -52,7 +52,7 @@ interface ViolasApi {
     ): Single<Response<BalanceDTO>>
 
     @GET("/1.0/violas/seqnum")
-    fun getSequenceNumber(@Query("addr") address: String): Single<Response<Long>>
+    suspend fun getSequenceNumber(@Query("addr") address: String): Response<Long>
 
     @POST("/1.0/violas/transaction")
     suspend fun pushTx(@Body requestBody: RequestBody): Response<Any>

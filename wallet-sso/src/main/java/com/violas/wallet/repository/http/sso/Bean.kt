@@ -9,7 +9,8 @@ data class ApplyForStatusDTO(
     val approval_status: Int,
     val token_name: String,
     @SerializedName("module_address")
-    val token_address: String?
+    //val token_address: String?,
+    val tokenIdx: Long
 )
 
 data class UserInfoDTO(

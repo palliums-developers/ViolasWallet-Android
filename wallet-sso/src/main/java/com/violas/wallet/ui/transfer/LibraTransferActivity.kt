@@ -87,22 +87,19 @@ class LibraTransferActivity : TransferActivity() {
         }
     }
 
-    private fun refreshCurrentAmount() {
+    private suspend fun refreshCurrentAmount() {
         account?.let {
             if (isToken) {
                 mTokenDo?.apply {
-                    mTokenManager.getTokenBalance(it.address, this) { tokenAmount, result ->
-                        launch {
-                            val displayAmount = convertViolasTokenUnit(
-                                if (result) tokenAmount else amount
-                            )
-                            tvCoinAmount.text = String.format(
-                                getString(R.string.hint_transfer_amount),
-                                displayAmount,
-                                name
-                            )
-                            mBalance = BigDecimal(displayAmount)
-                        }
+                    val tokenAmount = mTokenManager.getTokenBalance(it.address, this)
+                    launch {
+                        val displayAmount = convertViolasTokenUnit(tokenAmount)
+                        tvCoinAmount.text = String.format(
+                            getString(R.string.hint_transfer_amount),
+                            displayAmount,
+                            name
+                        )
+                        mBalance = BigDecimal(displayAmount)
                     }
                 }
             } else {

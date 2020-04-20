@@ -1,15 +1,14 @@
 package com.violas.wallet.biz
 
+import androidx.collection.ArrayMap
+import com.palliums.violas.http.ViolasMultiTokenRepository
+import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.TokenDo
-import io.reactivex.disposables.Disposable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.util.concurrent.CountDownLatch
+import org.palliums.violascore.wallet.Account
 import java.util.concurrent.Executors
 
 class TokenManager {
@@ -18,37 +17,47 @@ class TokenManager {
 
     private val mTokenStorage by lazy { DataRepository.getTokenStorage() }
 
+    val mViolasService by lazy {
+        DataRepository.getViolasService()
+    }
+
+    private val mViolasMultiTokenService by lazy {
+        ViolasMultiTokenRepository(
+            DataRepository.getMultiTokenContractService(),
+            // todo 不同环境合约地址可能会不同
+            ViolasMultiTokenContract()
+        )
+    }
+
     /**
      * 本地兼容的币种
      */
-    private fun loadSupportToken(): List<AssertToken> {
-        val countDownLatch = CountDownLatch(1)
+    private suspend fun loadSupportToken(): List<AssertToken> {
         val list = mutableListOf<AssertToken>()
-        DataRepository.getViolasService().getSupportCurrency {
-            it.forEach { item ->
-                list.add(
-                    AssertToken(
-                        fullName = item.description,
-                        name = item.name,
-                        tokenAddress = item.address,
-                        isToken = true
-                    )
+        val supportCurrency = mViolasMultiTokenService.getSupportCurrency()
+        supportCurrency?.forEach { item ->
+            list.add(
+                AssertToken(
+                    fullName = item.name,
+                    name = item.name,
+                    tokenIdx = item.tokenIdentity,
+                    isToken = true
                 )
-            }
-            countDownLatch.countDown()
+            )
         }
-        countDownLatch.await()
         return list
     }
 
-    fun findTokenById(tokenId: Long) = mTokenStorage.findById(tokenId)
+    fun findTokenById(tokenId: Long) =
+        mTokenStorage.findById(tokenId)
+
     fun findTokenByName(accountId: Long, tokenName: String) =
         mTokenStorage.findByName(accountId, tokenName)
 
-    fun findTokenByTokenAddress(accountId: Long, tokenAddress: String) =
-        mTokenStorage.findByTokenAddress(accountId, tokenAddress)
+    fun findTokenByTokenAddress(accountId: Long, tokenIdx: Long) =
+        mTokenStorage.findByTokenAddress(accountId, tokenIdx)
 
-    fun loadSupportToken(account: AccountDO): List<AssertToken> {
+    suspend fun loadSupportToken(account: AccountDO): List<AssertToken> {
         val loadSupportToken = loadSupportToken()
 
         val supportTokenMap = HashMap<String, TokenDo>(loadSupportToken.size)
@@ -57,37 +66,40 @@ class TokenManager {
             supportTokenMap[it.name] = it
         }
 
-        val localSupportTokenMap = HashMap<String, Int>()
+        val localSupportTokenMap = ArrayMap<Long, Int>()
 
         loadSupportToken.forEach { token ->
-            localSupportTokenMap[token.tokenAddress] = 0
+
+            localSupportTokenMap[token.tokenIdx] = 0
             token.account_id = account.id
             supportTokenMap[token.name]?.let {
                 token.enable = it.enable
             }
         }
 
-        val mutableList = mutableListOf<AssertToken>()
-        mutableList.add(
-            0, AssertToken(
-                id = 0,
-                account_id = account.id,
-                enable = true,
-                isToken = false,
-                name = CoinTypes.parseCoinType(account.coinNumber).coinName(),
-                fullName = "",
-                amount = 0
+        val mutableList = mutableListOf<AssertToken>().also {
+            val coinTypes = CoinTypes.parseCoinType(account.coinNumber)
+            it.add(
+                0, AssertToken(
+                    id = 0,
+                    account_id = account.id,
+                    enable = true,
+                    isToken = false,
+                    name = coinTypes.coinName(),
+                    fullName = coinTypes.fullName(),
+                    amount = 0
+                )
             )
-        )
-        mutableList.addAll(loadSupportToken)
+            it.addAll(loadSupportToken)
+        }
 
         localToken.map {
-            if (it.enable && !localSupportTokenMap.contains(it.tokenAddress)) {
+            if (it.enable && !localSupportTokenMap.contains(it.tokenIdx)) {
                 mutableList.add(
                     AssertToken(
                         account_id = account.id,
                         enable = true,
-                        tokenAddress = it.tokenAddress,
+                        tokenIdx = it.tokenIdx,
                         isToken = true,
                         name = it.name,
                         fullName = "",
@@ -110,7 +122,7 @@ class TokenManager {
                     coinType = account.coinNumber,
                     enable = it.enable,
                     isToken = true,
-                    tokenAddress = it.tokenAddress,
+                    tokenIdx = it.tokenIdx,
                     name = it.name,
                     fullName = "",
                     amount = it.amount
@@ -140,91 +152,111 @@ class TokenManager {
                 enable = checked,
                 account_id = assertToken.account_id,
                 name = assertToken.name,
-                tokenAddress = assertToken.tokenAddress
+                tokenIdx = assertToken.tokenIdx
             )
         )
     }
 
-    fun getTokenBalance(
+    suspend fun getTokenBalance(
         address: String,
-        tokenDo: TokenDo,
-        call: (tokenBalance: Long, Boolean) -> Unit
-    ): Disposable {
-        val tokenAddressList = arrayListOf(tokenDo.tokenAddress)
-        return DataRepository.getViolasService()
-            .getBalance(address, tokenAddressList) { accountBalance, tokens, result ->
-                var amount = 0L
-                tokens?.forEach {
-                    if (it.address == tokenDo.tokenAddress) {
-                        amount = it.balance
-                        return@forEach
-                    }
-                }
+        tokenDo: TokenDo
+    ): Long {
+        val amount = getTokenBalance(address, tokenDo.tokenIdx)
 
-                if (result) {
-                    mExecutor.submit {
-                        tokenDo.amount = amount
-                        mTokenStorage.update(tokenDo)
-                    }
-                }
-                GlobalScope.launch(Dispatchers.Main) {
-                    call.invoke(amount, result)
-                }
-            }
+        mExecutor.submit {
+            tokenDo.amount = amount
+            mTokenStorage.update(tokenDo)
+        }
+        return amount
     }
 
-    fun refreshBalance(
+    suspend fun getTokenBalance(
         address: String,
-        enableTokens: List<AssertToken>,
-        call: (accountBalance: Long, assertTokens: List<AssertToken>) -> Unit
-    ): Disposable {
-        val tokenAddressList = arrayListOf<String>()
-        enableTokens.forEach {
-            if (it.isToken) {
-                tokenAddressList.add(it.tokenAddress)
+        tokenIdx: Long
+    ): Long {
+        val tokens =
+            mViolasMultiTokenService.getBalance(address, arrayListOf(tokenIdx))?.modules
+
+        var amount = 0L
+        tokens?.forEach { token ->
+            if (token.id == tokenIdx) {
+                amount = token.balance
+                return@forEach
             }
         }
-        return DataRepository.getViolasService()
-            .getBalance(address, tokenAddressList) { accountBalance, tokens, result ->
-                if (!result) {
-                    call.invoke(enableTokens[0].amount, enableTokens)
-                    return@getBalance
-                }
+        return amount
+    }
 
-                val tokenMap = mutableMapOf<String, Long>()
-                tokens?.forEach {
-                    tokenMap[it.address] = it.balance
-                }
-
-                enableTokens.forEach {
-                    if (!it.isToken) {
-                        it.amount = accountBalance
-                    } else if (tokenMap.contains(it.tokenAddress)) {
-                        it.amount = tokenMap[it.tokenAddress]!!
-                    } else {
-                        it.amount = 0
-                    }
-                }
-
-                // 更新本地token资产余额，钱包资产余额交由AccountManager更新
-                mExecutor.submit {
-                    val tokens = enableTokens
-                        .filter {
-                            it.isToken
-                        }.map {
-                            TokenDo(
-                                id = it.id,
-                                account_id = it.account_id,
-                                tokenAddress = it.tokenAddress,
-                                name = it.name,
-                                enable = it.enable,
-                                amount = it.amount
-                            )
-                        }
-                    mTokenStorage.update(*tokens.toTypedArray())
-                }
-
-                call.invoke(accountBalance, enableTokens)
+    suspend fun refreshBalance(
+        address: String,
+        enableTokens: List<AssertToken>
+    ): Pair<Long, List<AssertToken>> {
+        val tokenAddressList = arrayListOf<Long>()
+        enableTokens.forEach {
+            if (it.isToken) {
+                tokenAddressList.add(it.tokenIdx)
             }
+        }
+        val tokenBalance = mViolasMultiTokenService.getBalance(address, tokenAddressList)
+
+        val accountBalance = tokenBalance?.balance ?: 0
+        val tokens = tokenBalance?.modules
+
+        val tokenMap = mutableMapOf<Long, Long>()
+        tokens?.forEach { token ->
+            tokenMap[token.id] = token.balance
+        }
+
+        enableTokens.forEach {
+            if (!it.isToken) {
+                it.amount = accountBalance
+            } else if (tokenMap.contains(it.tokenIdx)) {
+                it.amount = tokenMap[it.tokenIdx]!!
+            } else {
+                it.amount = 0
+            }
+        }
+
+        // 更新本地token资产余额，钱包资产余额交由AccountManager更新
+        mExecutor.submit {
+            val tokens = enableTokens
+                .filter {
+                    it.isToken
+                }.map {
+                    TokenDo(
+                        id = it.id,
+                        account_id = it.account_id,
+                        tokenIdx = it.tokenIdx,
+                        name = it.name,
+                        enable = it.enable,
+                        amount = it.amount
+                    )
+                }
+            mTokenStorage.update(*tokens.toTypedArray())
+        }
+
+        return Pair(accountBalance, enableTokens)
+    }
+
+    suspend fun publishToken(account: Account) {
+        val publishTokenPayload = mViolasMultiTokenService.publishTokenPayload()
+        mViolasService.sendTransaction(publishTokenPayload, account)
+    }
+
+    suspend fun isPublish(address: String): Boolean {
+        return mViolasMultiTokenService.getRegisterToken(address)
+    }
+
+    suspend fun sendViolasToken(
+        tokenIdx: Long,
+        account: Account,
+        address: String,
+        amount: Long,
+        date: ByteArray = byteArrayOf()
+    ) {
+        val publishTokenPayload = mViolasMultiTokenService.transferTokenPayload(
+            tokenIdx, address, amount, date
+        )
+        mViolasService.sendTransaction(publishTokenPayload, account)
     }
 }

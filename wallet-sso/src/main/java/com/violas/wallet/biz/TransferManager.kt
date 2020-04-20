@@ -11,8 +11,8 @@ import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
 import com.violas.wallet.utils.validationViolasAddress
-import org.palliums.violascore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
+import org.palliums.violascore.wallet.KeyPair
 
 class ToTheirException : RuntimeException(getString(R.string.hint_to_their_error))
 class WrongPasswordException : RuntimeException(getString(R.string.hint_password_error))
@@ -22,6 +22,10 @@ class LackOfBalanceException :
     RuntimeException(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
 
 class TransferManager {
+    private val mTokenManager by lazy {
+        TokenManager()
+    }
+
     @Throws(AddressFaultException::class, RuntimeException::class)
     fun checkTransferParam(
         amountStr: String,
@@ -51,7 +55,7 @@ class TransferManager {
     }
 
     @Throws(AddressFaultException::class, WrongPasswordException::class)
-    fun transfer(
+    suspend fun transfer(
         context: Context,
         address: String,
         amount: Double,
@@ -114,7 +118,7 @@ class TransferManager {
         }
     }
 
-    private fun transferViolasToken(
+    private suspend fun transferViolasToken(
         context: Context,
         address: String,
         amount: Double,
@@ -126,20 +130,18 @@ class TransferManager {
     ) {
         val token = DataRepository.getTokenStorage().findById(tokenId)
         token?.let {
-            DataRepository.getViolasService().sendViolasToken(
-                context,
-                token.tokenAddress,
-                Account(
-                    KeyPair(decryptPrivateKey)
-                ),
-                address,
-                (amount * 1000000L).toLong()
-            ) {
-                if (it) {
-                    success.invoke("")
-                } else {
-                    error.invoke(TransferUnknownException())
-                }
+            try {
+                mTokenManager.sendViolasToken(
+                    token.tokenIdx,
+                    Account(
+                        KeyPair(decryptPrivateKey)
+                    ),
+                    address,
+                    (amount * 1000000L).toLong()
+                )
+                success.invoke("")
+            } catch (e: java.lang.Exception) {
+                error.invoke(TransferUnknownException())
             }
         }
     }
@@ -169,7 +171,7 @@ class TransferManager {
         }
     }
 
-    private fun transferViolas(
+    private suspend fun transferViolas(
         context: Context,
         address: String,
         amount: Double,
@@ -178,19 +180,19 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        DataRepository.getViolasService().sendCoin(
-            context,
-            Account(
-                KeyPair(decryptPrivateKey)
-            ),
-            address,
-            (amount * 1000000L).toLong()
-        ) {
-            if (it) {
-                success.invoke("")
-            } else {
-                error.invoke(TransferUnknownException())
-            }
+        try {
+            mTokenManager.mViolasService.sendCoin(
+                context,
+                Account(
+                    KeyPair(decryptPrivateKey)
+                ),
+                address,
+                (amount * 1000000L).toLong()
+            )
+            success.invoke("")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            error.invoke(e)
         }
     }
 

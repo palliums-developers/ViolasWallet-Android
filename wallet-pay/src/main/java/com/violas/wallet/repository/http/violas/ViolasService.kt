@@ -121,8 +121,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
     ) {
         sendTransaction(
             rawTransaction,
-            publicKey,
-            signed
+            TransactionSignAuthenticator(publicKey, signed)
         )
     }
 
@@ -154,17 +153,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
     }
 
     suspend fun getSequenceNumber(address: String): Long =
-        suspendCancellableCoroutine { coroutine ->
-            val subscribe = mViolasRepository.getSequenceNumber(address)
-                .subscribe({
-                    coroutine.resume(it.data ?: 0)
-                }, {
-                    coroutine.resumeWithException(it)
-                })
-            coroutine.invokeOnCancellation {
-                subscribe.dispose()
-            }
-        }
+        mViolasRepository.getSequenceNumber(address)
 
     suspend fun loginWeb(
         loginType: Int,

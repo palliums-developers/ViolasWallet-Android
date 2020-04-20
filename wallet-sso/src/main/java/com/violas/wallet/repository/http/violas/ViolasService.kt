@@ -4,12 +4,11 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import com.palliums.net.checkResponse
+import com.palliums.violas.error.TransactionException
 import com.palliums.violas.http.ModuleDTO
-import com.palliums.violas.http.SupportCurrencyDTO
 import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.BaseBrowserUrl
-import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
 import io.reactivex.disposables.Disposable
@@ -19,7 +18,6 @@ import kotlinx.coroutines.launch
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
-import java.lang.Exception
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -29,25 +27,7 @@ import java.lang.Exception
  */
 class ViolasService(private val mViolasRepository: ViolasRepository) : TransactionService {
     private val mMainHandler by lazy { Handler(Looper.getMainLooper()) }
-
-    private val mTokenStorage by lazy { DataRepository.getTokenStorage() }
-
-    @Deprecated("准备迁移到 TokenManager")
-    fun getSupportCurrency(call: (list: List<SupportCurrencyDTO>) -> Unit) {
-        val subscribe = mViolasRepository.getSupportCurrency()
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                if (it.data == null) {
-                    call.invoke(arrayListOf())
-                } else {
-                    call.invoke(it.data!!)
-                }
-            }, {
-                call.invoke(arrayListOf())
-            })
-    }
-
-    @Deprecated("准备移除稳定币相关的余额查询")
+    
     fun getBalance(
         address: String,
         tokenAddressList: List<String>,
@@ -113,62 +93,6 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
 
             val publishTokenPayload = TransactionPayload.optionPublishTokenPayload(
                 context, tokenAddress
-            )
-
-            val rawTransaction = RawTransaction.optionTransaction(
-                senderAddress,
-                publishTokenPayload,
-                sequenceNumber
-            )
-
-            sendTransaction(
-                rawTransaction,
-                account.keyPair.getPublicKey(),
-                account.keyPair.signMessage(rawTransaction.toHashByteArray()),
-                call
-            )
-        }, {
-            call.invoke(false)
-        })
-    }
-
-    private fun sendTransaction(
-        rawTransaction: RawTransaction,
-        publicKey: ByteArray,
-        signed: ByteArray,
-        call: (success: Boolean) -> Unit
-    ) {
-        val signedTransaction = SignedTransaction(
-            rawTransaction,
-            TransactionSignAuthenticator(
-                publicKey,
-                signed
-            )
-        )
-
-        GlobalScope.launch {
-            try {
-                checkResponse { mViolasRepository.pushTx(signedTransaction.toByteArray().toHex()) }
-                call.invoke(true)
-            } catch (e: Exception) {
-                call.invoke(false)
-            }
-        }
-    }
-
-    fun sendViolasToken(
-        context: Context,
-        tokenAddress: String,
-        account: Account,
-        address: String,
-        amount: Long,
-        call: (success: Boolean) -> Unit
-    ) {
-        val senderAddress = account.getAddress().toHex()
-        getSequenceNumber(senderAddress, { sequenceNumber ->
-
-            val publishTokenPayload = TransactionPayload.optionTokenTransactionPayload(
-                context, tokenAddress, address, amount
             )
 
             val rawTransaction = RawTransaction.optionTransaction(
@@ -265,6 +189,51 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         })
     }
 
+    @Deprecated("准备删除")
+    private fun getSequenceNumber(
+        address: String,
+        call: (sequenceNumber: Long) -> Unit,
+        error: (Throwable) -> Unit
+    ) {
+        /*val subscribe = mViolasRepository.getSequenceNumber(address)
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                if (it.data == null) {
+                    call.invoke(0)
+                } else {
+                    call.invoke(it.data!!)
+                }
+            }, {
+                error.invoke(it)
+            })*/
+    }
+
+    @Deprecated("准备删除")
+    private fun sendTransaction(
+        rawTransaction: RawTransaction,
+        publicKey: ByteArray,
+        signed: ByteArray,
+        call: (success: Boolean) -> Unit
+    ) {
+        val signedTransaction = SignedTransaction(
+            rawTransaction,
+            TransactionSignAuthenticator(
+                publicKey,
+                signed
+            )
+        )
+
+        GlobalScope.launch {
+            try {
+                checkResponse { mViolasRepository.pushTx(signedTransaction.toByteArray().toHex()) }
+                call.invoke(true)
+            } catch (e: Exception) {
+                call.invoke(false)
+            }
+        }
+    }
+
+    @Deprecated("准备删除")
     fun sendCoin(
         context: Context,
         account: Account,
@@ -296,23 +265,62 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         })
     }
 
-    private fun getSequenceNumber(
+    suspend fun sendCoin(
+        context: Context,
+        account: Account,
         address: String,
-        call: (sequenceNumber: Long) -> Unit,
-        error: (Throwable) -> Unit
+        amount: Long
     ) {
-        val subscribe = mViolasRepository.getSequenceNumber(address)
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                if (it.data == null) {
-                    call.invoke(0)
-                } else {
-                    call.invoke(it.data!!)
-                }
-            }, {
-                error.invoke(it)
-            })
+        val senderAddress = account.getAddress().toHex()
+        val sequenceNumber = getSequenceNumber(address)
+        val transactionPayload =
+            TransactionPayload.optionTransactionPayload(context, address, amount)
+
+        val rawTransaction =
+            RawTransaction.optionTransaction(senderAddress, transactionPayload, sequenceNumber)
+        sendTransaction(rawTransaction, account)
     }
+
+    suspend fun sendTransaction(
+        payload: TransactionPayload,
+        account: Account
+    ) {
+        val senderAddress = account.getAddress().toHex()
+        val sequenceNumber = getSequenceNumber(senderAddress)
+
+        val rawTransaction =
+            RawTransaction.optionTransaction(senderAddress, payload, sequenceNumber)
+        sendTransaction(rawTransaction, account)
+    }
+
+    @Throws(TransactionException::class)
+    suspend fun sendTransaction(
+        rawTransaction: RawTransaction,
+        account: Account
+    ) {
+        val signedTransaction = SignedTransaction(
+            rawTransaction,
+            TransactionSignAuthenticator(
+                account.keyPair.getPublicKey(),
+                account.keyPair.signMessage(rawTransaction.toHashByteArray())
+            )
+        )
+
+        sendTransaction(signedTransaction)
+    }
+
+    suspend fun sendTransaction(signedTransaction: SignedTransaction) {
+        try {
+            val pushTx = mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
+            TransactionException.checkViolasTransactionException(pushTx)
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            throw TransactionException()
+        }
+    }
+
+    suspend fun getSequenceNumber(address: String) =
+        mViolasRepository.getSequenceNumber(address)
 
     override suspend fun getTransactionRecord(
         address: String,
