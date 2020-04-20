@@ -143,36 +143,40 @@ object ExchangeSocket {
         }
     }
 
-    fun unSubscribe(tokenBase: String?, tokenQuote: String?) {
-        if (tokenBase?.isNotEmpty() == true && tokenQuote?.isNotEmpty() == true) {
+    fun unSubscribe(tokenBase: Long?, tokenQuote: Long?) {
+        if (tokenBase != null && tokenQuote != null) {
             Log.e(
                 "Socket.io",
-                """unsubscribe: {"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote"}"""
+//                """unsubscribe: {"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote"}"""
+                """unsubscribe: {"tokenBase":$tokenBase,"tokenQuote":$tokenQuote}"""
             )
             mSocket.emit(
                 "unsubscribe",
-                """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote"}"""
+//                """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote"}"""
+                """{"tokenBase":$tokenBase,"tokenQuote":$tokenQuote}"""
             )
         }
     }
 
-    fun getMark(tokenBase: String, tokenQuote: String, userAddress: String) {
+    fun getMark(tokenBase: Long, tokenQuote: Long, userAddress: String) {
         Log.e(
             "Socket.io",
-            """getMarket: {"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote" ,"user":"0x$userAddress"}"""
+            """getMarket: {"tokenBase":$tokenBase,"tokenQuote":$tokenQuote,"user":"0x$userAddress"}"""
         )
         Log.e(
             "Socket.io",
-            """subscribe: {"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote"}"""
+            """subscribe: {"tokenBase":$tokenBase,"tokenQuote":$tokenQuote}"""
         )
         mSocket.emit(
             "getMarket",
-            """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote" ,"user":"0x$userAddress"}"""
+            """{"tokenBase":$tokenBase,"tokenQuote":$tokenQuote ,"user":"0x$userAddress"}"""
+//            """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote" ,"user":"0x$userAddress"}"""
 //            """{"tokenBase":"0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095","tokenQuote":"0x4ce68dd6e81b400a4edf4146307b10e5030a372414fd49b1accecc0767753070" ,"user":"0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095"}"""
         )
         mSocket.emit(
             "subscribe",
-            """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote"}"""
+            """{"tokenBase":$tokenBase,"tokenQuote":$tokenQuote}"""
+//            """{"tokenBase":"0x$tokenBase","tokenQuote":"0x$tokenQuote"}"""
 //            """{"tokenBase":"0x07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095","tokenQuote":"0x4ce68dd6e81b400a4edf4146307b10e5030a372414fd49b1accecc0767753070"}"""
         )
     }

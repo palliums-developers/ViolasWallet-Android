@@ -414,6 +414,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
     }
 
     val handler = CoroutineExceptionHandler { _, exception ->
+        dismissProgress()
         System.err.println("Caught $exception")
     }
 }

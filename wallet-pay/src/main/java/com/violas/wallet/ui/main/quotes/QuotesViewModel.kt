@@ -203,19 +203,19 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             allDisplayOrdersLiveData.postValue(listOf())
             allOrdersLiveData.postValue(listOf())
 
-//            val baseToken: Long
-//            val tokenQuote: Long
-//            if (isPositiveChangeLiveData.value == true) {
-//                baseToken = currentFormCoinLiveData.value!!.tokenIdx()
-//                tokenQuote = currentToCoinLiveData.value!!.tokenIdx()
-//            } else {
-//                baseToken = currentToCoinLiveData.value!!.tokenIdx()
-//                tokenQuote = currentFormCoinLiveData.value!!.tokenIdx()
-//            }
-//            ExchangeSocket.unSubscribe(oldBaseToken, oldTokenQuote)
-//            oldBaseToken = baseToken
-//            oldTokenQuote = tokenQuote
-//            ExchangeSocket.getMark(baseToken, tokenQuote, mAccount!!.address)
+            val baseToken: Long
+            val tokenQuote: Long
+            if (isPositiveChangeLiveData.value == true) {
+                baseToken = currentFormCoinLiveData.value!!.tokenIdx()
+                tokenQuote = currentToCoinLiveData.value!!.tokenIdx()
+            } else {
+                baseToken = currentToCoinLiveData.value!!.tokenIdx()
+                tokenQuote = currentFormCoinLiveData.value!!.tokenIdx()
+            }
+            ExchangeSocket.unSubscribe(oldBaseToken, oldTokenQuote)
+            oldBaseToken = baseToken
+            oldTokenQuote = tokenQuote
+            ExchangeSocket.getMark(baseToken, tokenQuote, mAccount!!.address)
 
             mHandler.sendMessageDelayed(
                 Message.obtain(mHandler, mDelayRefreshMark),
@@ -264,30 +264,23 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
 
                 val localEnableToken =
                     viewModelScope.async(Dispatchers.IO) { TokenManager().loadEnableToken(it) }
-                val remoteEnableToken =
-                    viewModelScope.async(Dispatchers.IO) {
-                        TokenManager().loadSupportToken(it)
-                    }
 
-                val localEnableTokenSet =
-                    localEnableToken.await().map { it.tokenIdx }.toHashSet()
-                val remoteEnableTokenSet = remoteEnableToken.await()?.toHashSet()
+                val localEnableTokenSet = localEnableToken.await().map { it.tokenIdx }.toHashSet()
                 // todo network 异常
                 mTokenList.clear()
-//                tokenPrices.await()?.forEach {
-//                    val address = it.address.replace("0x", "")
-//                    val localEnable = true// localEnableTokenSet.contains(it.address)
-//                    val remoteEnable = remoteEnableTokenSet.contains(address)
-//                    mTokenList.add(
-//                        ExchangeToken(
-////                            address
-//                            0,
-//                            it.name,
-//                            localEnable,
-//                            remoteEnable
-//                        )
-//                    )
-//                }
+                tokenPrices.await()?.forEach {
+                    val address = it.address.replace("0x", "")
+                    val localEnable = localEnableTokenSet.contains(it.address.toLong())
+                    mTokenList.add(
+                        ExchangeToken(
+//                            address
+                            0,
+                            it.name,
+                            localEnable,
+                            true
+                        )
+                    )
+                }
                 if (mTokenList.size > 0) {
                     currentFormCoinLiveData.postValue(mTokenList[0])
                 } else {
@@ -433,14 +426,13 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     private fun orderFilter(order: IOrder): Boolean {
-//        return if (isPositiveChangeLiveData.value == true) {
-//            order.tokenGet() == currentToCoinLiveData.value?.tokenIdx() &&
-//                    order.tokenGive() == currentFormCoinLiveData.value?.tokenIdx()
-//        } else {
-//            order.tokenGet() == currentFormCoinLiveData.value?.tokenIdx() &&
-//                    order.tokenGive() == currentToCoinLiveData.value?.tokenIdx()
-//        }
-        return true
+        return if (isPositiveChangeLiveData.value == true) {
+            order.tokenGet() == currentToCoinLiveData.value?.tokenIdx() &&
+                    order.tokenGive() == currentFormCoinLiveData.value?.tokenIdx()
+        } else {
+            order.tokenGet() == currentFormCoinLiveData.value?.tokenIdx() &&
+                    order.tokenGive() == currentToCoinLiveData.value?.tokenIdx()
+        }
     }
 
     override fun onMarkCall(
@@ -520,26 +512,26 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     override fun onReconnect() {
-//        viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler()) {
-//            if (mAccount != null
-//                && currentFormCoinLiveData.value != null
-//                && currentToCoinLiveData.value != null
-//                && isPositiveChangeLiveData.value != null
-//            ) {
-//                val baseToken: String
-//                val tokenQuote: String
-//                if (isPositiveChangeLiveData.value == true) {
-//                    baseToken = currentFormCoinLiveData.value!!.tokenIdx()
-//                    tokenQuote = currentToCoinLiveData.value!!.tokenIdx()
-//                } else {
-//                    baseToken = currentToCoinLiveData.value!!.tokenIdx()
-//                    tokenQuote = currentFormCoinLiveData.value!!.tokenIdx()
-//                }
-//                oldBaseToken = baseToken
-//                oldTokenQuote = tokenQuote
-//                ExchangeSocket.getMark(baseToken, tokenQuote, mAccount!!.address)
-//            }
-//        }
+        viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler()) {
+            if (mAccount != null
+                && currentFormCoinLiveData.value != null
+                && currentToCoinLiveData.value != null
+                && isPositiveChangeLiveData.value != null
+            ) {
+                val baseToken: Long
+                val tokenQuote: Long
+                if (isPositiveChangeLiveData.value == true) {
+                    baseToken = currentFormCoinLiveData.value!!.tokenIdx()
+                    tokenQuote = currentToCoinLiveData.value!!.tokenIdx()
+                } else {
+                    baseToken = currentToCoinLiveData.value!!.tokenIdx()
+                    tokenQuote = currentFormCoinLiveData.value!!.tokenIdx()
+                }
+                oldBaseToken = baseToken
+                oldTokenQuote = tokenQuote
+                ExchangeSocket.getMark(baseToken, tokenQuote, mAccount!!.address)
+            }
+        }
     }
 
     override fun onCleared() {
@@ -658,7 +650,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             ?: throw WrongPasswordException()
 
         val account = Account(KeyPair.fromSecretKey(decryptPrivateKey))
-        val currentUnPublishToken = getCurrentUnPublishToken()
+        val isPublish = mTokenManager.isPublish(account.getAddress().toHex())
 
         // exchange
         val fromCoin: IToken
@@ -672,25 +664,13 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             toCoin = currentFormCoinLiveData.value!!
         }
 
-        // publish
-//        currentUnPublishToken.forEach {
-//            val publishToken = publishToken(account, it.tokenIdx())
-//            if (publishToken) {
-//                it.setNetEnable(true)
-//                mTokenManager.insert(
-//                    true, AssertToken(
-//                        tokenAddress = it.tokenIdx(),
-//                        fullName = it.tokenName(),
-//                        account_id = mAccount!!.id,
-//                        name = it.tokenName(),
-//                        enable = true,
-//                        netEnable = true
-//                    )
-//                )
-//            } else {
-//                throw TransferUnknownException()
-//            }
-//        }
+        if (!isPublish) {
+            try {
+                publishToken(account)
+            } catch (e: Exception) {
+                throw TransferUnknownException()
+            }
+        }
 
         Log.e("==exchange==", "${fromCoin.tokenName()}   ${toCoin.tokenName()}")
         val exchangeToken = mExchangeManager.exchangeToken(
@@ -706,8 +686,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         exchangeToken
     }
 
-    // todo
-    private fun publishToken(mAccount: Account, tokenAddress: Long): Boolean {
+    private suspend fun publishToken(mAccount: Account): Boolean {
+        mTokenManager.publishToken(mAccount)
         return true
     }
 

@@ -61,6 +61,7 @@ class ManagerAssertActivity : BaseAppActivity() {
     private val mTokenManager by lazy {
         TokenManager()
     }
+    private var isPublish = false
     private val mSupportTokens = mutableListOf<AssertToken>()
     private val mAdapter by lazy {
         MyAdapter(mSupportTokens) { checkbox, checked, assertToken ->
@@ -74,19 +75,33 @@ class ManagerAssertActivity : BaseAppActivity() {
         }
     }
 
+    private suspend fun isPublish(): Boolean {
+        return mTokenManager.isPublish(mAccount.address)
+    }
+
     private fun openToken(checkbox: SwitchButton, checked: Boolean, assertToken: AssertToken) {
         launch(Dispatchers.IO) {
-            if (mTokenManager.isPublish(mAccount.address)) {
-                mTokenManager.insert(checked, assertToken)
-                checkbox.isChecked = true
-            } else {
+            try {
+                if (isPublish || isPublish()) {
+                    mTokenManager.insert(checked, assertToken)
+                    checkbox.isChecked = true
+                } else {
+                    withContext(Dispatchers.Main) {
+                        PublishTokenDialog().setConfirmListener {
+                            showPasswordDialog(assertToken, checkbox, checked)
+                            it.dismiss()
+                        }.setCancelListener {
+                            checkbox.isChecked = false
+                        }.show(supportFragmentManager)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    PublishTokenDialog().setConfirmListener {
-                        showPasswordDialog(assertToken, checkbox, checked)
-                        it.dismiss()
-                    }.setCancelListener {
-                        checkbox.isChecked = false
-                    }.show(supportFragmentManager)
+                    checkbox.isChecked = false
+                    e.message?.let {
+                        showToast(it)
+                    }
                 }
             }
         }
@@ -115,6 +130,7 @@ class ManagerAssertActivity : BaseAppActivity() {
                     }
                     try {
                         mTokenManager.publishToken(Account(KeyPair.fromSecretKey(decrypt)))
+                        isPublish = true
                         EventBus.getDefault().post(TokenPublishEvent())
                         EventBus.getDefault().post(RefreshBalanceEvent())
                         mTokenManager.insert(checked, assertToken)

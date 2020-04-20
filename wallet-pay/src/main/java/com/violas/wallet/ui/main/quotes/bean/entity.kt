@@ -51,10 +51,10 @@ interface IOrder {
     fun updateVersion(): Long
     fun userAddress(): String
     fun tokenGetSymbol(): String
-    fun tokenGet(): String
+    fun tokenGet(): Long
     fun tokenGetPrice(): BigDecimal
     fun tokenGiveSymbol(): String
-    fun tokenGive(): String
+    fun tokenGive(): Long
     fun tokenGivePrice(): BigDecimal
     fun type(): IOrderType
     fun state(): IOrderStatus
@@ -71,10 +71,10 @@ class ExchangeOrder(
     private val version: Long,
     private val updateVersion: Long,
     private val tokenGetSymbol: String,
-    private val tokenGet: String,
+    private val tokenGet: Long,
     private val tokenGetPrice: BigDecimal,
     private val tokenGiveSymbol: String,
-    private val tokenGive: String,
+    private val tokenGive: Long,
     private val tokenGivePrice: BigDecimal,
     private var type: IOrderType,
     private var state: IOrderStatus,
@@ -95,10 +95,12 @@ class ExchangeOrder(
                         any.getString("version").toLong(),
                         any.getString("update_version").toLong(),
                         any.getString("tokenGetSymbol"),
-                        any.getString("tokenGet").replace("0x", ""),
+//                        any.getString("tokenGet").replace("0x", ""),
+                        any.getLong("tokenGet"),
                         BigDecimal(any.getDouble("tokenGetPrice").toString()),
                         any.getString("tokenGiveSymbol"),
-                        any.getString("tokenGive").replace("0x", ""),
+//                        any.getString("tokenGive").replace("0x", ""),
+                        any.getLong("tokenGive"),
                         BigDecimal(any.getDouble("tokenGivePrice").toString()),
                         type,
                         when (any.getString("state")) {
@@ -152,8 +154,8 @@ class ExchangeOrder(
 
     override fun date() = date
 
-    override fun tokenGet(): String {
-        return tokenGet.replace("0x", "")
+    override fun tokenGet(): Long {
+        return tokenGet
     }
 
     override fun tokenGetPrice(): BigDecimal {
@@ -168,8 +170,8 @@ class ExchangeOrder(
         this.price = price
     }
 
-    override fun tokenGive(): String {
-        return tokenGive.replace("0x", "")
+    override fun tokenGive(): Long {
+        return tokenGive
     }
 
     override fun toString(): String {
