@@ -222,7 +222,7 @@ class TransferManager {
         }
     }
 
-    private fun transferViolas(
+    private suspend fun transferViolas(
         context: Context,
         address: String,
         amount: Double,
@@ -231,19 +231,19 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        DataRepository.getViolasService().sendCoin(
-            context,
-            Account(
-                KeyPair(decryptPrivateKey)
-            ),
-            address,
-            (amount * 1000000L).toLong()
-        ) {
-            if (it) {
-                success.invoke("")
-            } else {
-                error.invoke(TransferUnknownException())
-            }
+        try {
+            DataRepository.getViolasService().sendCoin(
+                context,
+                Account(
+                    KeyPair(decryptPrivateKey)
+                ),
+                address,
+                (amount * 1000000L).toLong()
+            )
+            success.invoke("")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            error.invoke(e)
         }
     }
 

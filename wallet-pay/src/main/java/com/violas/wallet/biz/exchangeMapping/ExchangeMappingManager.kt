@@ -91,7 +91,7 @@ class ExchangeMappingManager {
         return dispenseTransfer(sendAccount, receiveAccount, sendAmount, receiveAddress)
     }
 
-    private fun dispenseTransfer(
+    private suspend fun dispenseTransfer(
         sendAccount: MappingAccount,
         receiveAccount: MappingAccount,
         sendAmount: BigDecimal,

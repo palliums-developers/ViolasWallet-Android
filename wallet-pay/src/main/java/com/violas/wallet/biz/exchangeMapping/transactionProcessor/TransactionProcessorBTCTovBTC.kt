@@ -4,6 +4,7 @@ import com.palliums.content.ContextProvider
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
+import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.TransferUnknownException
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.btc.outputScript.ViolasOutputScript
@@ -12,16 +13,18 @@ import com.violas.wallet.biz.exchangeMapping.MappingAccount
 import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
-import org.palliums.violascore.serialization.toHex
+import kotlinx.coroutines.suspendCancellableCoroutine
+import org.palliums.libracore.serialization.toHex
 import org.palliums.violascore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
-import java.util.concurrent.CountDownLatch
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class TransactionProcessorBTCTovBTC :
     TransactionProcessor {
-    private val mViolasService by lazy {
-        DataRepository.getViolasService()
+    private val mTokenManager by lazy {
+        TokenManager()
     }
 
     override fun dispense(sendAccount: MappingAccount, receiveAccount: MappingAccount): Boolean {
@@ -32,7 +35,7 @@ class TransactionProcessorBTCTovBTC :
     }
 
     @Throws(Exception::class)
-    override fun handle(
+    override suspend fun handle(
         sendAccount: MappingAccount,
         receiveAccount: MappingAccount,
         sendAmount: BigDecimal,
@@ -41,26 +44,16 @@ class TransactionProcessorBTCTovBTC :
         val sendAccount = sendAccount as BTCMappingAccount
         val receiveAccount = receiveAccount as ViolasMappingAccount
 
-//        val checkTokenRegister = mViolasService.checkTokenRegister(
-//            receiveAccount.getAddress().toHex(),
-//            receiveAccount.getTokenIdx()
-//        )
+        val checkTokenRegister = mTokenManager.isPublish(receiveAccount.getAddress().toHex())
 
-        val checkTokenRegister = true
         if (!checkTokenRegister) {
-            val publishToken = publishToken(
-                Account(
-                    KeyPair(
-                        receiveAccount.getPrivateKey()!!
-                    )
-                ),
-                receiveAccount.getTokenIdx()
-            )
-            if (!publishToken) {
+            try {
+                publishToken(
+                    Account(KeyPair(receiveAccount.getPrivateKey()!!))
+                )
+            } catch (e: Exception) {
                 throw RuntimeException(
-                    getString(
-                        R.string.hint_exchange_error
-                    )
+                    getString(R.string.hint_exchange_error)
                 )
             }
         }
@@ -75,37 +68,38 @@ class TransactionProcessorBTCTovBTC :
             throw LackOfBalanceException()
         }
 
-        var result: String? = ""
-        mTransactionManager.obtainTransaction(
-            sendAccount.getPrivateKey(),
-            sendAccount.getPublicKey(),
-            checkBalance,
-            receiveAddress,
-            sendAccount.getAddress(),
-            violasOutputScript.requestExchange(
-                receiveAccount.getAddress(),
-                //receiveAccount.getTokenIdx()
-                byteArrayOf()
-            )
-        ).flatMap {
-            try {
-                BitcoinChainApi.get()
-                    .pushTx(it.signBytes.toHex())
-            } catch (e: Exception) {
-                e.printStackTrace()
-                throw TransferUnknownException()
+        return suspendCancellableCoroutine { coroutin ->
+            val subscribe = mTransactionManager.obtainTransaction(
+                sendAccount.getPrivateKey(),
+                sendAccount.getPublicKey(),
+                checkBalance,
+                receiveAddress,
+                sendAccount.getAddress(),
+                violasOutputScript.requestExchange(
+                    receiveAccount.getAddress(),
+                    //receiveAccount.getTokenIdx()
+                    byteArrayOf()
+                )
+            ).flatMap {
+                try {
+                    BitcoinChainApi.get()
+                        .pushTx(it.signBytes.toHex())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    throw TransferUnknownException()
+                }
+            }.subscribe({
+                coroutin.resume(it)
+            }, {
+                coroutin.resumeWithException(it)
+            })
+            coroutin.invokeOnCancellation {
+                subscribe.dispose()
             }
-        }.subscribe({
-            result = it
-        }, {
-            throw it
-        }, {
-        })
-        return result ?: ""
+        }
     }
 
-    //todo
-    private fun publishToken(mAccount: Account, tokenAddress: Long): Boolean {
-        return true
+    private suspend fun publishToken(mAccount: Account) {
+        return mTokenManager.publishToken(mAccount)
     }
 }

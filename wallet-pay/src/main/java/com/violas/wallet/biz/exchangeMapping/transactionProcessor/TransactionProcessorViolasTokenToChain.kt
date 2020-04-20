@@ -36,7 +36,7 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
                 && ((receiveAccount is BTCMappingAccount) or (receiveAccount is LibraMappingAccount))
     }
 
-    override fun handle(
+    override suspend fun handle(
         sendAccount: MappingAccount,
         receiveAccount: MappingAccount,
         sendAmount: BigDecimal,
@@ -44,25 +44,10 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
     ): String {
         val sendAccount = sendAccount as ViolasMappingAccount
 
-        var balance = BigDecimal(0)
-
-        // todo 待修改
-//        val getBalanceCountDownLatch = CountDownLatch(1)
-//        mViolasService.getBalance(
-//            sendAccount.getAddress().toHex(),
-////            arrayListOf(sendAccount.getTokenIdx())
-//            arrayListOf()
-//        ) { _, tokens, result ->
-//            if (result) {
-//                tokens?.forEach {
-////                    if (it.address == sendAccount.getTokenIdx()) {
-////                        balance = BigDecimal(it.balance)
-////                    }
-//                }
-//            }
-//            getBalanceCountDownLatch.countDown()
-//        }
-//        getBalanceCountDownLatch.await()
+        var balance = mTokenManager.getTokenBalance(
+            sendAccount.getAddress().toHex(),
+            sendAccount.getTokenIdx()
+        ).let { BigDecimal(it) }
 
         if (sendAmount.multiply(BigDecimal("1000000")) > balance) {
             throw LackOfBalanceException()
@@ -80,12 +65,10 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
         subExchangeDate.put("state", "start")
 
 
-        val transactionPayload = TransactionPayload.optionTokenWithDataPayload(
-            ContextProvider.getContext(),
+        val transactionPayload = mTokenManager.transferTokenPayload(
+            sendAccount.getTokenIdx(),
             receiveAddress,
             sendAmount.multiply(BigDecimal("1000000")).toLong(),
-//            sendAccount.getTokenAddress().toHex(),
-            "",
             subExchangeDate.toString().toByteArray()
         )
 
@@ -99,21 +82,12 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
 
         val keyPair =
             KeyPair(sendAccount.getPrivateKey()!!)
-
-        var result: Boolean = false
-        val countDownLatch = CountDownLatch(1)
+        
         mViolasService.sendTransaction(
             rawTransaction,
             keyPair.getPublicKey(),
             keyPair.signMessage(rawTransaction.toHashByteArray())
-        ) {
-            result = it
-            countDownLatch.countDown()
-        }
-        countDownLatch.await()
-        if (!result) {
-            throw TransferUnknownException()
-        }
+        )
         return ""
     }
 }

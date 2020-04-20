@@ -5,6 +5,7 @@ import com.palliums.content.ContextProvider
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
+import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.TransferUnknownException
 import com.violas.wallet.biz.exchangeMapping.LibraMappingAccount
 import com.violas.wallet.biz.exchangeMapping.MappingAccount
@@ -22,9 +23,8 @@ import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
 
 class TransactionProcessorLibraTovLibra() : TransactionProcessor {
-
-    private val mViolasService by lazy {
-        DataRepository.getViolasService()
+    private val mTokenManager by lazy {
+        TokenManager()
     }
     private val mLibraService by lazy {
         DataRepository.getLibraService()
@@ -39,7 +39,7 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
 
     @WorkerThread
     @Throws(Exception::class)
-    override fun handle(
+    override suspend fun handle(
         sendAccount: MappingAccount,
         receiveAccount: MappingAccount,
         sendAmount: BigDecimal,
@@ -48,43 +48,23 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
         val sendAccount = sendAccount as LibraMappingAccount
         val receiveAccount = receiveAccount as ViolasMappingAccount
 
-        var balance = BigDecimal(0)
-        val getBalanceCountDownLatch = CountDownLatch(1)
-        mLibraService.getBalanceWithCallback(
+        var balance = mLibraService.getBalance(
             sendAccount.getAddress().toHex()
-        ) { amount, exception ->
-            if (exception == null) {
-                balance = BigDecimal(amount)
-            }
-            getBalanceCountDownLatch.countDown()
-        }
-        getBalanceCountDownLatch.await()
+        ).let { BigDecimal(it) }
 
         if (sendAmount > balance) {
             throw LackOfBalanceException()
         }
-        val checkTokenRegister=true
-//        val checkTokenRegister = mViolasService.checkTokenRegister(
-//            receiveAccount.getAddress().toHex(),
-//            receiveAccount.getTokenAddress().toHex()
-//            0
-//        )
+        val checkTokenRegister = mTokenManager.isPublish(receiveAccount.getAddress().toHex())
 
         if (!checkTokenRegister) {
-            val publishToken = publishToken(
-                Account(
-                    KeyPair(
-                        receiveAccount.getPrivateKey()!!
-                    )
-                ),
-                //receiveAccount.getTokenAddress().toHex()
-                0
-            )
-            if (!publishToken) {
+            try {
+                publishToken(
+                    Account(KeyPair(receiveAccount.getPrivateKey()!!))
+                )
+            } catch (e: Exception) {
                 throw RuntimeException(
-                    getString(
-                        R.string.hint_exchange_error
-                    )
+                    getString(R.string.hint_exchange_error)
                 )
             }
         }
@@ -103,20 +83,7 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
                 subExchangeDate.toString().toByteArray()
             )
 
-        var sequenceNumber = 0L
-        val sequenceNumberCountDownLatch = CountDownLatch(1)
-        mLibraService.getSequenceNumberWithCallback(
-            sendAccount.getAddress().toHex()
-        ) { _sequenceNumber, exception ->
-            if (exception == null) {
-                sequenceNumber = _sequenceNumber
-                sequenceNumberCountDownLatch.countDown()
-            } else {
-                sequenceNumberCountDownLatch.countDown()
-                throw exception
-            }
-        }
-        sequenceNumberCountDownLatch.await()
+        var sequenceNumber = mLibraService.getSequenceNumber(sendAccount.getAddress().toHex())
 
         val rawTransaction = RawTransaction.optionTransaction(
             sendAccount.getAddress().toHex(),
@@ -127,24 +94,15 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
         val keyPair =
             KeyPair(sendAccount.getPrivateKey()!!)
 
-        var result: Boolean = false
-        val countDownLatch = CountDownLatch(1)
-        mLibraService.submitTransactionWithCallback(
+        mLibraService.submitTransaction(
             rawTransaction,
             keyPair.getPublicKey(),
             keyPair.signMessage(rawTransaction.toHashByteArray())
-        ) {
-            result = it == null
-            countDownLatch.countDown()
-        }
-        countDownLatch.await()
-        if (!result) {
-            throw TransferUnknownException()
-        }
+        )
         return ""
     }
 
-    private fun publishToken(mAccount: Account, tokenAddress: Long): Boolean {
-        return true
+    private suspend fun publishToken(mAccount: Account) {
+        return mTokenManager.publishToken(mAccount)
     }
 }

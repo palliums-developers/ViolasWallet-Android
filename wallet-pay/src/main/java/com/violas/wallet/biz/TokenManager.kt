@@ -16,6 +16,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.wallet.Account
 import java.util.concurrent.Executors
 
@@ -276,11 +277,23 @@ class TokenManager {
         tokenIdx: Long,
         account: Account,
         address: String,
-        amount: Long
+        amount: Long,
+        date: ByteArray = byteArrayOf()
     ) {
         val publishTokenPayload = mViolasMultiTokenService.transferTokenPayload(
-            tokenIdx, address, amount, byteArrayOf()
+            tokenIdx, address, amount, date
         )
         mViolasService.sendTransaction(publishTokenPayload, account)
+    }
+
+    fun transferTokenPayload(
+        tokenIdx: Long,
+        address: String,
+        amount: Long,
+        date: ByteArray = byteArrayOf()
+    ): TransactionPayload {
+        return mViolasMultiTokenService.transferTokenPayload(
+            tokenIdx, address, amount, date
+        )
     }
 }

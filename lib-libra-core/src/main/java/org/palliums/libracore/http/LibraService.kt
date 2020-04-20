@@ -90,6 +90,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
 
 
     /************************ 以下方法是为了最小改动现有功能代码而增加，不建议再使用 ************************/
+    @Deprecated("准备删除")
     fun sendCoinWithCallback(
         context: Context,
         account: Account,
@@ -108,6 +109,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         }
     }
 
+    @Deprecated("准备删除")
     fun getBalanceWithCallback(
         address: String,
         callback: (amount: String, exception: Exception?) -> Unit
@@ -123,6 +125,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         }
     }
 
+    @Deprecated("准备删除")
     fun getBalanceInMicroLibraWithCallback(
         address: String,
         callback: (amount: Long, exception: Exception?) -> Unit
@@ -138,6 +141,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         }
     }
 
+    @Deprecated("准备删除")
     fun getSequenceNumberWithCallback(
         address: String,
         callback: (sequenceNumber: Long, exception: Exception?) -> Unit
@@ -153,6 +157,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         }
     }
 
+    @Deprecated("准备删除")
     fun submitTransactionWithCallback(
         rawTransaction: RawTransaction,
         publicKey: ByteArray,
@@ -170,6 +175,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         }
     }
 
+    @Deprecated("准备删除")
     fun getAccountStateWithCallback(
         address: String,
         callback: (accountState: AccountStateDTO?, exception: Exception?) -> Unit

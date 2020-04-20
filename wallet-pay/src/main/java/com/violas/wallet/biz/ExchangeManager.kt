@@ -79,7 +79,7 @@ class ExchangeManager {
         account: Account,
         giveTokenAddress: String,
         version: Long
-    ): Boolean {
+    ) {
         val sequenceNumber = GlobalScope.async { getSequenceNumber(account.getAddress().toHex()) }
         val optionExchangePayload = TransactionPayload.optionUndoExchangePayload(
             ContextProvider.getContext(),
@@ -98,18 +98,11 @@ class ExchangeManager {
                 sequenceNumber.await()
             )
 
-        val channel = Channel<Boolean>()
         mViolasService.sendTransaction(
             rawTransaction,
             account.keyPair.getPublicKey(),
             account.keyPair.signMessage(rawTransaction.toHashByteArray())
-        ) {
-            GlobalScope.launch {
-                channel.send(it)
-                channel.close()
-            }
-        }
-        return channel.receive()
+        )
     }
 
     suspend fun exchangeToken(
@@ -137,21 +130,15 @@ class ExchangeManager {
                 sequenceNumber.await()
             )
 
-        val channel = Channel<Boolean>()
         mViolasService.sendTransaction(
             rawTransaction,
             account.keyPair.getPublicKey(),
             account.keyPair.signMessage(rawTransaction.toHashByteArray())
-        ) {
-            GlobalScope.launch {
-                channel.send(it)
-                channel.close()
-            }
-        }
-        return channel.receive()
+        )
+        return true
     }
 
-    private fun getSequenceNumber(address: String): Long {
+    private suspend fun getSequenceNumber(address: String): Long {
         return mViolasService.getSequenceNumber(address)
     }
 }

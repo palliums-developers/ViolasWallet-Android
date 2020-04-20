@@ -7,7 +7,7 @@ interface TransactionProcessor {
     fun dispense(sendAccount: MappingAccount, receiveAccount: MappingAccount): Boolean
 
     @Throws(Exception::class)
-    fun handle(
+    suspend fun handle(
         sendAccount: MappingAccount,
         receiveAccount: MappingAccount,
         sendAmount: BigDecimal,

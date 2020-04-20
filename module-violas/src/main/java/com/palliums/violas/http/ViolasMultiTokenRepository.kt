@@ -40,7 +40,7 @@ class ViolasMultiTokenRepository(
     }
 
     suspend fun getRegisterToken(address: String) =
-        checkResponse { mMultiContractApi.getRegisterToken(address) }?.data?.isPublished == 1
+        checkResponse { mMultiContractApi.getRegisterToken(address) }.data?.isPublished == 1
 
     fun publishTokenPayload(data: ByteArray = byteArrayOf()): TransactionPayload {
         return multiTokenContract.optionPublishTransactionPayload()

@@ -101,88 +101,70 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
     }
 
     @Throws(TransactionException::class)
-    fun sendTransaction(
+    suspend fun sendTransaction(
         rawTransaction: RawTransaction,
-        publicKey: ByteArray,
-        signed: ByteArray,
-        call: (success: Boolean) -> Unit
+        authenticator: TransactionSignAuthenticator
     ) {
         val signedTransaction = SignedTransaction(
             rawTransaction,
-            TransactionSignAuthenticator(
-                publicKey,
-                signed
-            )
+            authenticator
         )
 
-        GlobalScope.launch {
-            sendTransaction(signedTransaction)
-            call.invoke(true)
-        }
+        sendTransaction(signedTransaction)
     }
 
-    fun sendCoin(
+    @Throws(TransactionException::class)
+    suspend fun sendTransaction(
+        rawTransaction: RawTransaction,
+        publicKey: ByteArray,
+        signed: ByteArray
+    ) {
+        sendTransaction(
+            rawTransaction,
+            publicKey,
+            signed
+        )
+    }
+
+    suspend fun sendCoin(
         context: Context,
         account: Account,
         address: String,
-        amount: Long,
-        call: (success: Boolean) -> Unit
+        amount: Long
     ) {
         val senderAddress = account.getAddress().toHex()
-        getSequenceNumber(senderAddress, { sequenceNumber ->
+        val sequenceNumber = getSequenceNumber(senderAddress)
 
-            val publishTokenPayload = TransactionPayload.optionTransactionPayload(
-                context, address, amount
-            )
+        val publishTokenPayload = TransactionPayload.optionTransactionPayload(
+            context, address, amount
+        )
 
-            val rawTransaction = RawTransaction.optionTransaction(
-                senderAddress,
-                publishTokenPayload,
-                sequenceNumber
-            )
+        val rawTransaction = RawTransaction.optionTransaction(
+            senderAddress,
+            publishTokenPayload,
+            sequenceNumber
+        )
 
-            sendTransaction(
-                rawTransaction,
-                account.keyPair.getPublicKey(),
-                account.keyPair.signMessage(rawTransaction.toHashByteArray()),
-                call
-            )
-        }, {
-            call.invoke(false)
-        })
+        sendTransaction(
+            rawTransaction,
+
+            account.keyPair.getPublicKey(),
+            account.keyPair.signMessage(rawTransaction.toHashByteArray())
+        )
     }
 
-    fun getSequenceNumber(address: String): Long {
-        var sequenceNumber = 0L
-        val subscribe = mViolasRepository.getSequenceNumber(address)
-            .subscribe({
-                if (it.data != null) {
-                    sequenceNumber = it.data!!
-                }
-            }, {
-
-            })
-        return sequenceNumber
-    }
-
-    @Deprecated("准备弃用")
-    fun getSequenceNumber(
-        address: String,
-        call: (sequenceNumber: Long) -> Unit,
-        error: (Exception) -> Unit
-    ) {
-        val subscribe = mViolasRepository.getSequenceNumber(address)
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                if (it.data == null) {
-                    call.invoke(0)
-                } else {
-                    call.invoke(it.data!!)
-                }
-            }, {
-                error.invoke(java.lang.Exception(it))
-            })
-    }
+    suspend fun getSequenceNumber(address: String): Long =
+        suspendCancellableCoroutine { coroutine ->
+            val subscribe = mViolasRepository.getSequenceNumber(address)
+                .subscribe({
+                    coroutine.resume(it.data ?: 0)
+                }, {
+                    coroutine.resumeWithException(it)
+                })
+            coroutine.invokeOnCancellation {
+                subscribe.dispose()
+            }
+        }
 
     suspend fun loginWeb(
         loginType: Int,
