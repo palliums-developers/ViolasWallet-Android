@@ -37,7 +37,6 @@ class DexRepository(private val dexApi: DexApi) {
 
     @Throws(RequestException::class)
     suspend fun getTokens(): List<DexTokenDTO> {
-
         return try {
             dexApi.getTokens()
         } catch (e: Exception) {
