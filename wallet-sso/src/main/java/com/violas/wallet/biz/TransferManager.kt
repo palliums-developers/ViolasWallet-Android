@@ -131,11 +131,9 @@ class TransferManager {
         val token = DataRepository.getTokenStorage().findById(tokenId)
         token?.let {
             try {
-                mTokenManager.sendViolasToken(
+                mTokenManager.sendToken(
+                    Account(KeyPair(decryptPrivateKey)),
                     token.tokenIdx,
-                    Account(
-                        KeyPair(decryptPrivateKey)
-                    ),
                     address,
                     (amount * 1000000L).toLong()
                 )

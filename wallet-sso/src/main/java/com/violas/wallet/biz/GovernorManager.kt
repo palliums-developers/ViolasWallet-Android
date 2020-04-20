@@ -1,6 +1,5 @@
 package com.violas.wallet.biz
 
-import android.content.Context
 import com.palliums.net.RequestException
 import com.palliums.utils.getDistinct
 import com.palliums.utils.getString
@@ -23,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.palliums.violascore.wallet.Account
-import java.util.concurrent.CountDownLatch
 
 /**
  * Created by elephant on 2020/3/9 11:13.
@@ -35,6 +33,9 @@ class GovernorManager {
 
     private val mGovernorService by lazy {
         DataRepository.getGovernorService()
+    }
+    private val mTokenManager by lazy {
+        TokenManager()
     }
     private val mSSOApplicationMsgStorage by lazy {
         DataRepository.getSSOApplicationMsgStorage()
@@ -105,50 +106,22 @@ class GovernorManager {
     }
 
     /**
-     * 注册VStake
+     * publish 合约
      */
-    suspend fun publishVStake(
-        context: Context,
+    suspend fun publishContract(
         account: Account
     ) = withContext(Dispatchers.IO) {
-        // 1.获取VStake address
-        val vStakeAddress = try {
-            mGovernorService.getVStakeAddress().data?.address!!
-        } catch (e: Exception) {
-            if (BuildConfig.MOCK_GOVERNOR_DATA) {
-                account.getAddress().toHex()
-            } else {
-                throw e
-            }
-        }
-
-        // 2.publish VStake
-        var result = false
-        val countDownLatch = CountDownLatch(1)
-        DataRepository.getViolasService()
-            .publishToken(context, account, vStakeAddress) {
-                result = it
-                countDownLatch.countDown()
-            }
-        countDownLatch.await()
-
-        if (BuildConfig.MOCK_GOVERNOR_DATA) {
-            result = true
-        }
-
-        if (!result) {
-            throw if (!isNetworkConnected())
-                RequestException.networkUnavailable()
-            else
-                RequestException(
-                    RequestException.ERROR_CODE_UNKNOWN_ERROR,
-                    getString(R.string.tips_apply_for_licence_fail)
-                )
-        }
-
-        // 3.通知服务器州长已publish VStake
         try {
-            mGovernorService.updateGovernorApplicationToPublished(account.getAddress().toHex())
+            val accountAddress = account.getAddress().toHex()
+
+            // 1.检测合约是否publish，没有则先publish
+            val published = mTokenManager.isPublish(accountAddress)
+            if (!published) {
+                mTokenManager.publishToken(account)
+            }
+
+            // 2.通知服务器州长已publish合约
+            mGovernorService.updateGovernorApplicationToPublished(accountAddress)
         } catch (e: Exception) {
             if (BuildConfig.MOCK_GOVERNOR_DATA) {
             } else {
@@ -273,7 +246,7 @@ class GovernorManager {
                 tokenAmount = "100000000000000",
                 tokenName = "DTY",
                 tokenValue = 2,
-                tokenAddress = accountDO.address,
+                tokenIdx = 1,
                 reservePhotoUrl = "",
                 bankChequePhotoPositiveUrl = "",
                 bankChequePhotoBackUrl = "",
@@ -292,7 +265,7 @@ class GovernorManager {
             if (response.data!!.applicationStatus == 1
                 || response.data!!.applicationStatus >= 3
             ) {
-                if (response.data!!.tokenAddress.isNullOrEmpty()) {
+                if (response.data!!.tokenIdx == null) {
                     throw RequestException.responseDataException(
                         "module address cannot be null"
                     )
@@ -320,15 +293,21 @@ class GovernorManager {
      */
     suspend fun passSSOApplication(
         ssoApplicationDetails: SSOApplicationDetailsDTO,
-        account: Account,
-        mnemonics: List<String>
+        account: Account
     ) {
-        var result = mApplySSOManager.apply(
-            account = account,
-            mnemonic = mnemonics,
-            applySSOWalletAddress = ssoApplicationDetails.ssoWalletAddress,
-            ssoApplicationId = ssoApplicationDetails.applicationId
-        )
+        // TODO 审批通过时，先向董事长申请发行币种，待董事长发行币种完成后，州长在通过SSO申请
+        var result = try {
+            mApplySSOManager.apply(
+                account = account,
+                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
+                ssoApplicationId = ssoApplicationDetails.applicationId,
+                newTokenIdx = 1
+            )
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
 
         if (BuildConfig.MOCK_GOVERNOR_DATA) {
             result = true
@@ -353,8 +332,7 @@ class GovernorManager {
             mGovernorService.approvalSSOApplication(
                 ssoApplicationId = ssoApplicationDetails.applicationId,
                 ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
-                newTokenAddress = "",
-                walletLayersNumber = -1,
+                newTokenIdx = -1,
                 pass = false
             )
         } catch (e: Exception) {
@@ -369,18 +347,21 @@ class GovernorManager {
      */
     suspend fun mintTokenToSSOAccount(
         ssoApplicationDetails: SSOApplicationDetailsDTO,
-        account: Account,
-        mnemonics: List<String>
+        account: Account
     ) {
-        var result = mApplySSOManager.mint(
-            account = account,
-            mnemonic = mnemonics,
-            walletLayersNumber = ssoApplicationDetails.walletLayersNumber,
-            tokenAddress = ssoApplicationDetails.tokenAddress!!,
-            receiveAddress = ssoApplicationDetails.ssoWalletAddress,
-            receiveAmount = ssoApplicationDetails.tokenAmount.toLong(),
-            ssoApplicationId = ssoApplicationDetails.applicationId
-        )
+        var result = try {
+            mApplySSOManager.mint(
+                account = account,
+                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
+                ssoApplyAmount = ssoApplicationDetails.tokenAmount.toLong(),
+                ssoApplicationId = ssoApplicationDetails.applicationId,
+                newTokenIdx = ssoApplicationDetails.tokenIdx!!
+            )
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
 
         if (BuildConfig.MOCK_GOVERNOR_DATA) {
             result = true

@@ -96,8 +96,8 @@ class GovernorApprovalActivity : BaseAppActivity() {
         btnApprovalPass.setOnClickListener {
             showPwdInputDialog(
                 mViewModel.mAccountLD.value!!,
-                accountMnemonicCallback = { account, mnemonics ->
-                    approvalApplication(true, account, mnemonics)
+                accountCallback = {
+                    approvalApplication(true, it)
                 })
         }
         tvApprovalNotPass.setOnClickListener {
@@ -160,11 +160,10 @@ class GovernorApprovalActivity : BaseAppActivity() {
 
     private fun approvalApplication(
         pass: Boolean,
-        account: Account? = null,
-        mnemonics: List<String>? = null
+        account: Account? = null
     ) {
         val params = if (pass) {
-            arrayOf(pass, account!!, mnemonics!!)
+            arrayOf(pass, account!!)
         } else {
             arrayOf(pass)
         }

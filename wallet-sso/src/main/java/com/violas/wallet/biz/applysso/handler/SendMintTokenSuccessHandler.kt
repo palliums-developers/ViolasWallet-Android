@@ -1,29 +1,22 @@
 package com.violas.wallet.biz.applysso.handler
 
-import kotlinx.coroutines.runBlocking
-
 class SendMintTokenSuccessHandler(
     private val accountAddress: String,
-    private val layerWallet: Long,
-    private val ssoApplyAddress: String,
+    private val ssoWalletAddress: String,
     private val ssoApplicationId: String
 ) : ApplyHandle() {
 
-    override fun handler(): Boolean {
-        return runBlocking {
-            try {
-                getServiceProvider()!!.getGovernorService()
-                    .changeSSOApplicationToMinted(ssoApplicationId, ssoApplyAddress)
-                getServiceProvider()!!.getApplySsoRecordDao()
-                    .remove(
-                        accountAddress,
-                        layerWallet
-                    )
-                return@runBlocking true
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return@runBlocking false
-            }
-        }
+    override suspend fun handler() {
+        getServiceProvider()!!.getGovernorService()
+            .changeSSOApplicationToMinted(
+                ssoApplicationId,
+                ssoWalletAddress
+            )
+
+        getServiceProvider()!!.getApplySsoRecordDao()
+            .remove(
+                accountAddress,
+                ssoApplicationId
+            )
     }
 }

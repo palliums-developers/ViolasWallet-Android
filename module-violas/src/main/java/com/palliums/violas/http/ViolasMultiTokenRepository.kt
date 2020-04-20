@@ -43,7 +43,7 @@ class ViolasMultiTokenRepository(
         checkResponse { mMultiContractApi.getRegisterToken(address) }.data?.isPublished == 1
 
     fun publishTokenPayload(data: ByteArray = byteArrayOf()): TransactionPayload {
-        return multiTokenContract.optionPublishTransactionPayload()
+        return multiTokenContract.optionPublishTransactionPayload(data)
     }
 
     fun transferTokenPayload(
@@ -53,6 +53,15 @@ class ViolasMultiTokenRepository(
         data: ByteArray
     ): TransactionPayload {
         return multiTokenContract.optionTokenTransactionPayload(tokenIdx, address, amount, data)
+    }
+
+    fun mintTokenPayload(
+        tokenIdx: Long,
+        address: String,
+        amount: Long,
+        data: ByteArray
+    ): TransactionPayload {
+        return multiTokenContract.optionMintTransactionPayload(tokenIdx, address, amount, data)
     }
 }
 

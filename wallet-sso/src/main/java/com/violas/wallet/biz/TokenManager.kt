@@ -247,16 +247,35 @@ class TokenManager {
         return mViolasMultiTokenService.getRegisterToken(address)
     }
 
-    suspend fun sendViolasToken(
-        tokenIdx: Long,
+    suspend fun sendToken(
         account: Account,
+        tokenIdx: Long,
         address: String,
         amount: Long,
-        date: ByteArray = byteArrayOf()
+        data: ByteArray = byteArrayOf()
     ) {
-        val publishTokenPayload = mViolasMultiTokenService.transferTokenPayload(
-            tokenIdx, address, amount, date
-        )
+        val publishTokenPayload =
+            mViolasMultiTokenService.transferTokenPayload(tokenIdx, address, amount, data)
         mViolasService.sendTransaction(publishTokenPayload, account)
+    }
+
+    /**
+     * 铸币
+     * @param account 铸币账户
+     * @param tokenIdx 稳定币索引
+     * @param address 接收地址
+     * @param amount 铸造数量
+     * @param data 额外数据
+     */
+    suspend fun mintToken(
+        account: Account,
+        tokenIdx: Long,
+        address: String,
+        amount: Long,
+        data: ByteArray = byteArrayOf()
+    ) {
+        val mintTokenPayload =
+            mViolasMultiTokenService.mintTokenPayload(tokenIdx, address, amount, data)
+        mViolasService.sendTransaction(mintTokenPayload, account)
     }
 }
