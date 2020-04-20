@@ -9,10 +9,10 @@ import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
-import com.violas.wallet.common.EXTRA_KEY_WALLET_ADDRESS
-import com.violas.wallet.common.EXTRA_KEY_COIN_TYPES
-import com.violas.wallet.common.EXTRA_KEY_TOKEN_ADDRESS
-import com.violas.wallet.common.EXTRA_KEY_TOKEN_NAME
+import com.violas.wallet.common.KEY_FOUR
+import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.KEY_THREE
+import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.ui.web.WebCommonActivity
 
 /**
@@ -23,23 +23,23 @@ import com.violas.wallet.ui.web.WebCommonActivity
  */
 class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
-    private var mTokenAddress: String? = null
-    private var mTokenName: String? = null
     private lateinit var mAccountAddress: String
     private lateinit var mCoinTypes: CoinTypes
+    private var mTokenIdx: Long? = null
+    private var mTokenName: String? = null
 
     companion object {
         fun newInstance(
-            walletAddress: String,
+            accountAddress: String,
             coinTypes: CoinTypes,
-            tokenAddress: String? = null,
+            tokenIdx: Long? = null,
             tokenName: String? = null
         ): TransactionRecordFragment {
             val args = Bundle().apply {
-                putString(EXTRA_KEY_WALLET_ADDRESS, walletAddress)
-                putSerializable(EXTRA_KEY_COIN_TYPES, coinTypes)
-                tokenAddress?.let { putString(EXTRA_KEY_TOKEN_ADDRESS, tokenAddress) }
-                tokenAddress?.let { putString(EXTRA_KEY_TOKEN_NAME, tokenName) }
+                putString(KEY_ONE, accountAddress)
+                putSerializable(KEY_TWO, coinTypes)
+                tokenIdx?.let { putLong(KEY_THREE, it) }
+                tokenName?.let { putString(KEY_FOUR, it) }
             }
 
             return TransactionRecordFragment().apply {
@@ -49,7 +49,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     }
 
     private val mViewModel by lazy {
-        TransactionRecordViewModel(mAccountAddress, mTokenAddress, mTokenName, mCoinTypes)
+        TransactionRecordViewModel(mAccountAddress, mTokenIdx, mTokenName, mCoinTypes)
     }
 
     private val mViewAdapter by lazy {
@@ -100,11 +100,14 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
                 return false
             }
 
-            mAccountAddress = arguments!!.getString(EXTRA_KEY_WALLET_ADDRESS, null)
-                ?: return false
-            mCoinTypes = arguments!!.getSerializable(EXTRA_KEY_COIN_TYPES) as CoinTypes
-            mTokenAddress = arguments!!.getString(EXTRA_KEY_TOKEN_ADDRESS, null)
-            mTokenName = arguments!!.getString(EXTRA_KEY_TOKEN_NAME, null)
+            mAccountAddress = arguments!!.getString(KEY_ONE, null) ?: return false
+            mCoinTypes = arguments!!.getSerializable(KEY_TWO) as CoinTypes
+            if (arguments!!.containsKey(KEY_THREE)) {
+                mTokenIdx = arguments!!.getLong(KEY_THREE)
+            }
+            if (arguments!!.containsKey(KEY_FOUR)) {
+                mTokenName = arguments!!.getString(KEY_FOUR)
+            }
 
             // code for test
             /*if (mCoinTypes == CoinTypes.Violas) {

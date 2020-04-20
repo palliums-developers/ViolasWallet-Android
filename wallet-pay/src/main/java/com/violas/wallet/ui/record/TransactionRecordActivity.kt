@@ -8,9 +8,9 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ID
-import com.violas.wallet.common.EXTRA_KEY_TOKEN_ADDRESS
-import com.violas.wallet.common.EXTRA_KEY_TOKEN_NAME
+import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.KEY_THREE
+import com.violas.wallet.common.KEY_TWO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -27,21 +27,21 @@ class TransactionRecordActivity : BaseAppActivity() {
         fun start(
             context: Context,
             accountId: Long,
-            tokenAddress: String? = null,
+            tokenIdx: Long? = null,
             tokenName: String? = null
         ) {
             Intent(context, TransactionRecordActivity::class.java)
                 .apply {
-                    putExtra(EXTRA_KEY_ACCOUNT_ID, accountId)
-                    tokenAddress?.let { putExtra(EXTRA_KEY_TOKEN_ADDRESS, it) }
-                    tokenName?.let { putExtra(EXTRA_KEY_TOKEN_NAME, it) }
+                    putExtra(KEY_ONE, accountId)
+                    tokenIdx?.let { putExtra(KEY_TWO, it) }
+                    tokenName?.let { putExtra(KEY_THREE, it) }
                 }
                 .start(context)
         }
     }
 
     private var mAccountId = -100L
-    private var mTokenAddress: String? = null
+    private var mTokenIdx: Long? = null
     private var mTokenName: String? = null
     private lateinit var mWalletAddress: String
     private lateinit var mCoinTypes: CoinTypes
@@ -62,7 +62,7 @@ class TransactionRecordActivity : BaseAppActivity() {
                         TransactionRecordFragment.newInstance(
                             mWalletAddress,
                             mCoinTypes,
-                            mTokenAddress,
+                            mTokenIdx,
                             mTokenName
                         )
                     )
@@ -80,20 +80,28 @@ class TransactionRecordActivity : BaseAppActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putLong(EXTRA_KEY_ACCOUNT_ID, mAccountId)
-        mTokenAddress?.let { outState.putString(EXTRA_KEY_TOKEN_ADDRESS, it) }
-        mTokenName?.let { outState.putString(EXTRA_KEY_TOKEN_NAME, it) }
+        outState.putLong(KEY_ONE, mAccountId)
+        mTokenIdx?.let { outState.putLong(KEY_TWO, it) }
+        mTokenName?.let { outState.putString(KEY_THREE, it) }
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
         if (savedInstanceState != null) {
-            mAccountId = savedInstanceState.getLong(EXTRA_KEY_ACCOUNT_ID, mAccountId)
-            mTokenAddress = savedInstanceState.getString(EXTRA_KEY_TOKEN_ADDRESS, null)
-            mTokenName = savedInstanceState.getString(EXTRA_KEY_TOKEN_NAME, null)
+            mAccountId = savedInstanceState.getLong(KEY_ONE, -100)
+            if (savedInstanceState.containsKey(KEY_TWO)) {
+                mTokenIdx = savedInstanceState.getLong(KEY_TWO)
+            }
+            if (savedInstanceState.containsKey(KEY_THREE)) {
+                mTokenName = savedInstanceState.getString(KEY_THREE)
+            }
         } else if (intent != null) {
-            mAccountId = intent.getLongExtra(EXTRA_KEY_ACCOUNT_ID, mAccountId)
-            mTokenAddress = intent.getStringExtra(EXTRA_KEY_TOKEN_ADDRESS)
-            mTokenName = intent.getStringExtra(EXTRA_KEY_TOKEN_NAME)
+            mAccountId = intent.getLongExtra(KEY_TWO, -100)
+            if (intent.hasExtra(KEY_TWO)) {
+                mTokenIdx = intent.getLongExtra(KEY_TWO, 0)
+            }
+            if (intent.hasExtra(KEY_THREE)) {
+                mTokenName = intent.getStringExtra(KEY_THREE)
+            }
         }
 
         if (mAccountId == -100L) {
