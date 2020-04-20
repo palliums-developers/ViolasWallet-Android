@@ -40,6 +40,7 @@ import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.CountDownLatch
+import kotlin.coroutines.suspendCoroutine
 
 class QuotesViewModel(application: Application) : AndroidViewModel(application), Subscriber,
     Handler.Callback {
@@ -81,8 +82,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     // 加载进度条状态
     val mLoadingLiveData = MutableLiveData<Boolean>(true)
 
-    private var oldBaseToken: Long? = null
-    private var oldTokenQuote: Long? = null
+    private var oldBaseToken: String? = null
+    private var oldTokenQuote: String? = null
 
     private val mTokenManager by lazy {
         TokenManager()
@@ -203,14 +204,14 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
             allDisplayOrdersLiveData.postValue(listOf())
             allOrdersLiveData.postValue(listOf())
 
-            val baseToken: Long
-            val tokenQuote: Long
+            val baseToken: String
+            val tokenQuote: String
             if (isPositiveChangeLiveData.value == true) {
-                baseToken = currentFormCoinLiveData.value!!.tokenIdx()
-                tokenQuote = currentToCoinLiveData.value!!.tokenIdx()
+                baseToken = currentFormCoinLiveData.value!!.tokenIdx().toString()
+                tokenQuote = currentToCoinLiveData.value!!.tokenIdx().toString()
             } else {
-                baseToken = currentToCoinLiveData.value!!.tokenIdx()
-                tokenQuote = currentFormCoinLiveData.value!!.tokenIdx()
+                baseToken = currentToCoinLiveData.value!!.tokenIdx().toString()
+                tokenQuote = currentFormCoinLiveData.value!!.tokenIdx().toString()
             }
             ExchangeSocket.unSubscribe(oldBaseToken, oldTokenQuote)
             oldBaseToken = baseToken
@@ -255,47 +256,44 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         if (isEnable.value == false) {
             return
         }
-        try {
-            mAccount?.let {
-                val tokenPrices =
-                    viewModelScope.async(Dispatchers.IO) {
-                        DataRepository.getDexService().getTokens()
-                    }
+        mAccount?.let {
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    val tokenPrices = async { DataRepository.getDexService().getTokens() }
+                    val localEnableToken = async { TokenManager().loadEnableToken(it) }
 
-                val localEnableToken =
-                    viewModelScope.async(Dispatchers.IO) { TokenManager().loadEnableToken(it) }
-
-                val localEnableTokenSet = localEnableToken.await().map { it.tokenIdx }.toHashSet()
-                // todo network 异常
-                mTokenList.clear()
-                tokenPrices.await()?.forEach {
-                    val address = it.address.replace("0x", "")
-                    val localEnable = localEnableTokenSet.contains(it.address.toLong())
-                    mTokenList.add(
-                        ExchangeToken(
-//                            address
-                            0,
-                            it.name,
-                            localEnable,
-                            true
+                    val localEnableTokenSet =
+                        localEnableToken.await().map { it.tokenIdx }.toHashSet()
+                    // todo network 异常
+                    mTokenList.clear()
+                    tokenPrices.await()?.forEach {
+                        val address = it.id
+                        val localEnable = localEnableTokenSet.contains(it.id.toLong())
+                        mTokenList.add(
+                            ExchangeToken(
+                                address.toLong(),
+                                it.name,
+                                localEnable,
+                                true
+                            )
                         )
-                    )
-                }
-                if (mTokenList.size > 0) {
-                    currentFormCoinLiveData.postValue(mTokenList[0])
-                } else {
+                    }
+                    if (mTokenList.size > 0) {
+                        currentFormCoinLiveData.postValue(mTokenList[0])
+                    } else {
+                        currentFormCoinLiveData.postValue(mDefToken)
+                    }
+                    if (mTokenList.size > 1) {
+                        currentToCoinLiveData.postValue(mTokenList[1])
+                    } else {
+                        currentToCoinLiveData.postValue(mDefToken)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                     currentFormCoinLiveData.postValue(mDefToken)
-                }
-                if (mTokenList.size > 1) {
-                    currentToCoinLiveData.postValue(mTokenList[1])
-                } else {
                     currentToCoinLiveData.postValue(mDefToken)
                 }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            currentFormCoinLiveData.postValue(mDefToken)
-            currentToCoinLiveData.postValue(mDefToken)
         }
     }
 
@@ -427,11 +425,11 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
 
     private fun orderFilter(order: IOrder): Boolean {
         return if (isPositiveChangeLiveData.value == true) {
-            order.tokenGet() == currentToCoinLiveData.value?.tokenIdx() &&
-                    order.tokenGive() == currentFormCoinLiveData.value?.tokenIdx()
+            order.tokenGet() == currentToCoinLiveData.value?.tokenIdx().toString() &&
+                    order.tokenGive() == currentFormCoinLiveData.value?.tokenIdx().toString()
         } else {
-            order.tokenGet() == currentFormCoinLiveData.value?.tokenIdx() &&
-                    order.tokenGive() == currentToCoinLiveData.value?.tokenIdx()
+            order.tokenGet() == currentFormCoinLiveData.value?.tokenIdx().toString() &&
+                    order.tokenGive() == currentToCoinLiveData.value?.tokenIdx().toString()
         }
     }
 
@@ -518,14 +516,14 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 && currentToCoinLiveData.value != null
                 && isPositiveChangeLiveData.value != null
             ) {
-                val baseToken: Long
-                val tokenQuote: Long
+                val baseToken: String
+                val tokenQuote: String
                 if (isPositiveChangeLiveData.value == true) {
-                    baseToken = currentFormCoinLiveData.value!!.tokenIdx()
-                    tokenQuote = currentToCoinLiveData.value!!.tokenIdx()
+                    baseToken = currentFormCoinLiveData.value!!.tokenIdx().toString()
+                    tokenQuote = currentToCoinLiveData.value!!.tokenIdx().toString()
                 } else {
-                    baseToken = currentToCoinLiveData.value!!.tokenIdx()
-                    tokenQuote = currentFormCoinLiveData.value!!.tokenIdx()
+                    baseToken = currentToCoinLiveData.value!!.tokenIdx().toString()
+                    tokenQuote = currentFormCoinLiveData.value!!.tokenIdx().toString()
                 }
                 oldBaseToken = baseToken
                 oldTokenQuote = tokenQuote
