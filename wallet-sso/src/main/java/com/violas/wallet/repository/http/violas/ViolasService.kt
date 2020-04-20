@@ -32,6 +32,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
 
     private val mTokenStorage by lazy { DataRepository.getTokenStorage() }
 
+    @Deprecated("准备迁移到 TokenManager")
     fun getSupportCurrency(call: (list: List<SupportCurrencyDTO>) -> Unit) {
         val subscribe = mViolasRepository.getSupportCurrency()
             .subscribeOn(Schedulers.io())
@@ -46,6 +47,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             })
     }
 
+    @Deprecated("准备移除稳定币相关的余额查询")
     fun getBalance(
         address: String,
         tokenAddressList: List<String>,
@@ -68,6 +70,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             })
     }
 
+    @Deprecated("准备迁移到 TokenManager")
     fun checkTokenRegister(address: String, tokenAddress: String): Boolean {
         var isRegister: Boolean = false
         mViolasRepository.getRegisterToken(address)
@@ -191,6 +194,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
      * @param tokenAddress 稳定币的 model address
      * @param account 发送交易的账户
      */
+    @Deprecated("准备迁移到 TokenManager")
     fun tokenRegister(
         context: Context,
         tokenAddress: String,

@@ -51,10 +51,10 @@ interface IOrder {
     fun updateVersion(): Long
     fun userAddress(): String
     fun tokenGetSymbol(): String
-    fun tokenGet(): Long
+    fun tokenGet(): String
     fun tokenGetPrice(): BigDecimal
     fun tokenGiveSymbol(): String
-    fun tokenGive(): Long
+    fun tokenGive(): String
     fun tokenGivePrice(): BigDecimal
     fun type(): IOrderType
     fun state(): IOrderStatus
@@ -71,10 +71,10 @@ class ExchangeOrder(
     private val version: Long,
     private val updateVersion: Long,
     private val tokenGetSymbol: String,
-    private val tokenGet: Long,
+    private val tokenGet: String,
     private val tokenGetPrice: BigDecimal,
     private val tokenGiveSymbol: String,
-    private val tokenGive: Long,
+    private val tokenGive: String,
     private val tokenGivePrice: BigDecimal,
     private var type: IOrderType,
     private var state: IOrderStatus,
@@ -95,12 +95,10 @@ class ExchangeOrder(
                         any.getString("version").toLong(),
                         any.getString("update_version").toLong(),
                         any.getString("tokenGetSymbol"),
-//                        any.getString("tokenGet").replace("0x", ""),
-                        any.getLong("tokenGet"),
+                        any.getString("tokenGet").replace("0x", ""),
                         BigDecimal(any.getDouble("tokenGetPrice").toString()),
                         any.getString("tokenGiveSymbol"),
-//                        any.getString("tokenGive").replace("0x", ""),
-                        any.getLong("tokenGive"),
+                        any.getString("tokenGive").replace("0x", ""),
                         BigDecimal(any.getDouble("tokenGivePrice").toString()),
                         type,
                         when (any.getString("state")) {
@@ -154,7 +152,7 @@ class ExchangeOrder(
 
     override fun date() = date
 
-    override fun tokenGet(): Long {
+    override fun tokenGet(): String {
         return tokenGet
     }
 
@@ -170,7 +168,7 @@ class ExchangeOrder(
         this.price = price
     }
 
-    override fun tokenGive(): Long {
+    override fun tokenGive(): String {
         return tokenGive
     }
 

@@ -43,6 +43,7 @@ class OutsideExchangeViewModelFactory(
 class OutsideExchangeViewModel(private val initException: OutsideExchangeInitException? = null) :
     ViewModel() {
     private lateinit var mAccount: AccountDO
+
     //    private lateinit var mMappingType: MappingType
     private val mAccountManager = AccountManager()
     private val mTokenManager = TokenManager()
@@ -55,10 +56,12 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
 
     private val exchangeRateLiveData = MutableLiveData<BigDecimal>(BigDecimal.valueOf(0))
     val exchangeRateValueLiveData = MutableLiveData<String>("... = ...")
+
     /**
      * 兑换的稳定币接收地址
      */
     val stableCurrencyReceivingAccountLiveData = MutableLiveData<AccountDO>()
+
     // 兑换数量
     val mFromCoinAmountLiveData = MutableLiveData<BigDecimal>()
     val mToCoinAmountLiveData = MutableLiveData<BigDecimal>()
@@ -75,6 +78,10 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
 
     private fun handlerInitException() {
         initException?.unsupportedTradingPair()
+    }
+
+    init {
+        viewModelScope.coroutineContext.plus(coroutineExceptionHandler())
     }
 
     @MainThread
@@ -100,7 +107,6 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
             }
 
             mCurrentExchangePairLiveData.postValue(exchangePair[0])
-
         }
     }
 

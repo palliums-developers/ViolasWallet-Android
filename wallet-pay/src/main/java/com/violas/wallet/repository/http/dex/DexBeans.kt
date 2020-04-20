@@ -94,8 +94,8 @@ data class DexOrderDTO(
 }
 
 data class DexTokenDTO(
-    @SerializedName(value = "addr")
-    val address: String,
+    @SerializedName(value = "id")
+    val id: String,
     val name: String
 )
 
