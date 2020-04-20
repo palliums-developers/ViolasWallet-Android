@@ -322,7 +322,7 @@ class WalletFragment : BaseFragment() {
         }
     }
 
-    private fun refreshViolasAssert(
+    private suspend fun refreshViolasAssert(
         accountDO: AccountDO? = null,
         tokens: List<AssertToken>? = null
     ) {
@@ -381,7 +381,9 @@ class WalletFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_ADD_ASSERT -> {
-                refreshViolasAssert()
+                refreshAssertJob = launch(Dispatchers.IO) {
+                    refreshViolasAssert()
+                }
             }
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->

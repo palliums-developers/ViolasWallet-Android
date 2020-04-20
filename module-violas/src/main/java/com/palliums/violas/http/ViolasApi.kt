@@ -55,7 +55,7 @@ interface ViolasApi {
     fun getSequenceNumber(@Query("addr") address: String): Single<Response<Long>>
 
     @POST("/1.0/violas/transaction")
-    fun pushTx(@Body requestBody: RequestBody): Single<Response<Any>>
+    suspend fun pushTx(@Body requestBody: RequestBody): Response<Any>
 
     @GET("/1.0/violas/currency")
     fun getSupportCurrency(): Single<ListResponse<SupportCurrencyDTO>>

@@ -14,9 +14,15 @@ import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -40,95 +46,21 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         return registerToken
     }
 
-    @SuppressLint("CheckResult")
-    @Deprecated("检查 Token 注册应该使用 TokenManager")
-    fun checkTokenRegister(address: String, tokenIdx: Long): Boolean {
-        var isRegister: Boolean = false
-        mViolasRepository.getRegisterToken(address)
-            .subscribe({
-//                if (it.data != null && it.data!!.contains(tokenIdx)) {
-//                    isRegister = true
-//                    return@subscribe
-//                }
-            }, {
-            })
-        return isRegister
-    }
+    suspend fun getBalanceInMicroLibras(address: String): Long =
+        suspendCancellableCoroutine { coroutine ->
+            val subscribe = mViolasRepository.getBalance(address)
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    coroutine.resume(it.data?.balance ?: 0)
+                }, {
+                    coroutine.resumeWithException(it)
+                })
+            coroutine.invokeOnCancellation {
+                subscribe.dispose()
+            }
+        }
 
-    @Deprecated("普通查询将不再支持 Token 余额查询")
-    fun getBalance(
-        address: String,
-        tokenAddressList: List<String>,
-        call: (accountBalance: Long, tokens: List<ModuleDTO>?, result: Boolean) -> Unit
-    ): Disposable {
-        return mViolasRepository.getBalance(address, tokenAddressList)
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                mMainHandler.post {
-                    if (it.data == null) {
-                        call.invoke(0, arrayListOf(), true)
-                    } else {
-                        call.invoke(it.data!!.balance, it.data!!.modules, true)
-                    }
-                }
-            }, {
-                mMainHandler.post {
-                    call.invoke(0, arrayListOf(), false)
-                }
-            })
-    }
-
-    fun getBalanceInMicroLibras(address: String, call: (amount: Long, success: Boolean) -> Unit) {
-        val subscribe = mViolasRepository.getBalance(address)
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                mMainHandler.post {
-                    if (it.data == null) {
-                        call.invoke(0, true)
-                    } else {
-                        call.invoke(it.data!!.balance, true)
-                    }
-                }
-            }, {
-                mMainHandler.post {
-                    call.invoke(0, false)
-                }
-            })
-    }
-
-    @Deprecated("注册 Token 注册应该使用 TokenManager")
-    fun publishToken(
-        context: Context,
-        account: Account,
-        tokenAddress: String,
-        call: (success: Boolean) -> Unit
-    ) {
-        val senderAddress = account.getAddress().toHex()
-        getSequenceNumber(senderAddress, { sequenceNumber ->
-
-            val publishTokenPayload = TransactionPayload.optionPublishTokenPayload(
-                context, tokenAddress
-            )
-
-            val rawTransaction = RawTransaction.optionTransaction(
-                senderAddress,
-                publishTokenPayload,
-                sequenceNumber
-            )
-
-            sendTransaction(
-                rawTransaction,
-                account.keyPair.getPublicKey(),
-                account.keyPair.signMessage(rawTransaction.toHashByteArray()),
-                call
-            )
-        }, {
-            call.invoke(false)
-        })
-    }
-
-    @WorkerThread
-    fun sendTransaction(
+    suspend fun sendTransaction(
         payload: TransactionPayload,
         account: Account
     ) {
@@ -155,19 +87,20 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         )
     }
 
-    @SuppressLint("CheckResult")
-    @WorkerThread
-    fun sendTransaction(
+    @Throws(TransactionException::class)
+    suspend fun sendTransaction(
         signedTransaction: SignedTransaction
     ) {
-        mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
-            .subscribe({
-                TransactionException.checkViolasTransactionException(it)
-            }, {
-                throw TransactionException(it)
-            })
+        try {
+            val pushTx = mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
+            TransactionException.checkViolasTransactionException(pushTx)
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            throw TransactionException()
+        }
     }
 
+    @Throws(TransactionException::class)
     fun sendTransaction(
         rawTransaction: RawTransaction,
         publicKey: ByteArray,
@@ -182,32 +115,10 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             )
         )
 
-        val subscribe =
-            mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
-                .subscribeOn(Schedulers.io())
-                .subscribe({
-                    if (it.errorCode == it.getSuccessCode()) {
-                        call.invoke(true)
-                    } else {
-                        call.invoke(false)
-                    }
-                }, {
-                    call.invoke(false)
-                })
-    }
-
-    fun sendTransaction(signedtxn: String, call: (success: Boolean) -> Unit) {
-        val subscribe = mViolasRepository.pushTx(signedtxn)
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                if (it.errorCode == it.getSuccessCode()) {
-                    call.invoke(true)
-                } else {
-                    call.invoke(false)
-                }
-            }, {
-                call.invoke(false)
-            })
+        GlobalScope.launch {
+            sendTransaction(signedTransaction)
+            call.invoke(true)
+        }
     }
 
     fun sendCoin(

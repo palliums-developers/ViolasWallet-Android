@@ -41,11 +41,12 @@ class TransactionProcessorBTCTovBTC :
         val sendAccount = sendAccount as BTCMappingAccount
         val receiveAccount = receiveAccount as ViolasMappingAccount
 
-        val checkTokenRegister = mViolasService.checkTokenRegister(
-            receiveAccount.getAddress().toHex(),
-            receiveAccount.getTokenIdx()
-        )
+//        val checkTokenRegister = mViolasService.checkTokenRegister(
+//            receiveAccount.getAddress().toHex(),
+//            receiveAccount.getTokenIdx()
+//        )
 
+        val checkTokenRegister = true
         if (!checkTokenRegister) {
             val publishToken = publishToken(
                 Account(
@@ -103,28 +104,8 @@ class TransactionProcessorBTCTovBTC :
         return result ?: ""
     }
 
-    //todo delete
+    //todo
     private fun publishToken(mAccount: Account, tokenAddress: Long): Boolean {
         return true
-    }
-
-    private fun publishToken(mAccount: Account, tokenAddress: String): Boolean {
-        val countDownLatch = CountDownLatch(1)
-        var exec = false
-        DataRepository.getViolasService()
-            .publishToken(
-                ContextProvider.getContext(),
-                mAccount,
-                tokenAddress
-            ) {
-                exec = it
-                countDownLatch.countDown()
-            }
-        try {
-            countDownLatch.await()
-        } catch (e: Exception) {
-            exec = false
-        }
-        return exec
     }
 }

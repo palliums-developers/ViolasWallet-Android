@@ -45,22 +45,24 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
         val sendAccount = sendAccount as ViolasMappingAccount
 
         var balance = BigDecimal(0)
-        val getBalanceCountDownLatch = CountDownLatch(1)
-        mViolasService.getBalance(
-            sendAccount.getAddress().toHex(),
-//            arrayListOf(sendAccount.getTokenIdx())
-            arrayListOf()
-        ) { _, tokens, result ->
-            if (result) {
-                tokens?.forEach {
-//                    if (it.address == sendAccount.getTokenIdx()) {
-//                        balance = BigDecimal(it.balance)
-//                    }
-                }
-            }
-            getBalanceCountDownLatch.countDown()
-        }
-        getBalanceCountDownLatch.await()
+
+        // todo 待修改
+//        val getBalanceCountDownLatch = CountDownLatch(1)
+//        mViolasService.getBalance(
+//            sendAccount.getAddress().toHex(),
+////            arrayListOf(sendAccount.getTokenIdx())
+//            arrayListOf()
+//        ) { _, tokens, result ->
+//            if (result) {
+//                tokens?.forEach {
+////                    if (it.address == sendAccount.getTokenIdx()) {
+////                        balance = BigDecimal(it.balance)
+////                    }
+//                }
+//            }
+//            getBalanceCountDownLatch.countDown()
+//        }
+//        getBalanceCountDownLatch.await()
 
         if (sendAmount.multiply(BigDecimal("1000000")) > balance) {
             throw LackOfBalanceException()

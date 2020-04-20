@@ -21,25 +21,26 @@ class ViolasMultiTokenRepository(
     private val multiTokenContract: MultiTokenContract
 ) {
 
-    fun getBalance(
+    suspend fun getBalance(
         address: String,
         tokenIdx: List<Long>? = null
     ): BalanceDTO? {
         val tokenIdxArr: String? = tokenIdx?.joinToString(",")
-        return if (tokenIdxArr == null) {
-            mMultiContractApi.getBalance(address)
-        } else {
-            mMultiContractApi.getBalance(address, tokenIdxArr)
-        }.syncCallResponse()
+        return checkResponse {
+            if (tokenIdxArr == null) {
+                mMultiContractApi.getBalance(address)
+            } else {
+                mMultiContractApi.getBalance(address, tokenIdxArr)
+            }
+        }.data
     }
 
-    fun getSupportCurrency(): List<SupportCurrencyDTO>? {
-        return mMultiContractApi.getSupportCurrency().syncCallResponse()?.currencies
+    suspend fun getSupportCurrency(): List<SupportCurrencyDTO>? {
+        return checkResponse { mMultiContractApi.getSupportCurrency() }.data?.currencies
     }
 
-
-    fun getRegisterToken(address: String) =
-        mMultiContractApi.getRegisterToken(address).syncCallResponse()?.isPublished == 1
+    suspend fun getRegisterToken(address: String) =
+        checkResponse { mMultiContractApi.getRegisterToken(address) }?.data?.isPublished == 1
 
     fun publishTokenPayload(data: ByteArray = byteArrayOf()): TransactionPayload {
         return multiTokenContract.optionPublishTransactionPayload()

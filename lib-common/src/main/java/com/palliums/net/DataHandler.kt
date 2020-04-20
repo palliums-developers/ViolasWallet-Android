@@ -63,6 +63,7 @@ suspend inline fun <T, R> T.checkResponse(
     }
 }
 
+@Deprecated("准备删除")
 suspend inline fun <T, R> T.checkResponseWithResult(
     crossinline func: suspend T.() -> R
 ): Result<R> {

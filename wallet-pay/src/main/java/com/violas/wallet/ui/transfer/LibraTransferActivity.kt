@@ -87,7 +87,7 @@ class LibraTransferActivity : TransferActivity() {
         }
     }
 
-    private fun refreshCurrentAmount() {
+    private suspend fun refreshCurrentAmount() {
         account?.let {
             showProgress()
             if (isToken) {

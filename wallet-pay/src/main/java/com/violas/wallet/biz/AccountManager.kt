@@ -14,15 +14,14 @@ import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.convertAmountToDisplayUnit
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount
 import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.wallet.KeyFactory
 import org.palliums.libracore.wallet.Seed
 import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
 class MnemonicException : RuntimeException()
 class AccountNotExistsException : RuntimeException()
@@ -382,10 +381,17 @@ class AccountManager : CoroutineScope by IOScope() {
 
         when (account.coinNumber) {
             CoinTypes.Violas.coinType() -> {
-                DataRepository.getViolasService().getBalanceInMicroLibras(
-                    account.address
-                ) { balance, success ->
-                    callback.invoke(balance, success)
+                GlobalScope.launch {
+                    try {
+                        val balance =
+                            DataRepository.getViolasService()
+                                .getBalanceInMicroLibras(account.address)
+                        callback.invoke(balance, true)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        callback.invoke(0, false)
+                    }
+
                 }
             }
             CoinTypes.Libra.coinType() -> {

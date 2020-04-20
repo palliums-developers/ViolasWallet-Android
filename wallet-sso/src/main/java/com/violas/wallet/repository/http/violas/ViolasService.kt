@@ -3,6 +3,7 @@ package com.violas.wallet.repository.http.violas
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.palliums.net.checkResponse
 import com.palliums.violas.http.ModuleDTO
 import com.palliums.violas.http.SupportCurrencyDTO
 import com.palliums.violas.http.ViolasRepository
@@ -13,9 +14,12 @@ import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
+import java.lang.Exception
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -139,18 +143,14 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
             )
         )
 
-        val subscribe =
-            mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
-                .subscribeOn(Schedulers.io())
-                .subscribe({
-                    if (it.getErrorCode() == it.getSuccessCode()) {
-                        call.invoke(true)
-                    } else {
-                        call.invoke(false)
-                    }
-                }, {
-                    call.invoke(false)
-                })
+        GlobalScope.launch {
+            try {
+                checkResponse { mViolasRepository.pushTx(signedTransaction.toByteArray().toHex()) }
+                call.invoke(true)
+            } catch (e: Exception) {
+                call.invoke(false)
+            }
+        }
     }
 
     fun sendViolasToken(

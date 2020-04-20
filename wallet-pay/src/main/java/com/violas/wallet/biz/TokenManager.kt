@@ -40,8 +40,7 @@ class TokenManager {
     /**
      * 本地兼容的币种
      */
-    @WorkerThread
-    private fun loadSupportToken(): List<AssertToken> {
+    private suspend fun loadSupportToken(): List<AssertToken> {
         val list = mutableListOf<AssertToken>()
         val supportCurrency = mViolasMultiTokenService.getSupportCurrency()
         supportCurrency?.forEach { item ->
@@ -64,8 +63,7 @@ class TokenManager {
     fun findTokenByName(accountId: Long, tokenName: String) =
         mTokenStorage.findByName(accountId, tokenName)
 
-    @WorkerThread
-    fun loadSupportToken(account: AccountDO): List<AssertToken> {
+    suspend fun loadSupportToken(account: AccountDO): List<AssertToken> {
         val loadSupportToken = loadSupportToken()
 
         val supportTokenMap = HashMap<String, TokenDo>(loadSupportToken.size)
@@ -179,8 +177,7 @@ class TokenManager {
         )
     }
 
-    @WorkerThread
-    fun getTokenBalance(
+    suspend fun getTokenBalance(
         address: String,
         tokenDo: TokenDo
     ): Long {
@@ -193,8 +190,7 @@ class TokenManager {
         return amount
     }
 
-    @WorkerThread
-    fun getTokenBalance(
+    suspend fun getTokenBalance(
         address: String,
         tokenIdx: Long
     ): Long {
@@ -216,8 +212,7 @@ class TokenManager {
         var assertTokens: List<AssertToken>
     )
 
-    @WorkerThread
-    fun refreshBalance(
+    suspend fun refreshBalance(
         address: String,
         enableTokens: List<AssertToken>
     ): RefreshBalanceResult {
@@ -268,19 +263,16 @@ class TokenManager {
         return RefreshBalanceResult(accountBalance, enableTokens)
     }
 
-    @WorkerThread
-    fun publishToken(account: Account) {
+    suspend fun publishToken(account: Account) {
         val publishTokenPayload = mViolasMultiTokenService.publishTokenPayload()
         mViolasService.sendTransaction(publishTokenPayload, account)
     }
 
-    @WorkerThread
-    fun isPublish(address: String): Boolean {
+    suspend fun isPublish(address: String): Boolean {
         return mViolasMultiTokenService.getRegisterToken(address)
     }
 
-    @WorkerThread
-    fun sendViolasToken(
+    suspend fun sendViolasToken(
         tokenIdx: Long,
         account: Account,
         address: String,

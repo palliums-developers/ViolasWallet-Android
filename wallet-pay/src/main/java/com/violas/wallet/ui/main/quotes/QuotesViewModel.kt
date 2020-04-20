@@ -266,7 +266,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     viewModelScope.async(Dispatchers.IO) { TokenManager().loadEnableToken(it) }
                 val remoteEnableToken =
                     viewModelScope.async(Dispatchers.IO) {
-                        DataRepository.getViolasService().getRegisterToken(it.address)
+                        TokenManager().loadSupportToken(it)
                     }
 
                 val localEnableTokenSet =
@@ -274,20 +274,20 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                 val remoteEnableTokenSet = remoteEnableToken.await()?.toHashSet()
                 // todo network 异常
                 mTokenList.clear()
-                tokenPrices.await()?.forEach {
-                    val address = it.address.replace("0x", "")
-                    val localEnable = true// localEnableTokenSet.contains(it.address)
-                    val remoteEnable = remoteEnableTokenSet?.contains(address) ?: false
-                    mTokenList.add(
-                        ExchangeToken(
-//                            address
-                            0,
-                            it.name,
-                            localEnable,
-                            remoteEnable
-                        )
-                    )
-                }
+//                tokenPrices.await()?.forEach {
+//                    val address = it.address.replace("0x", "")
+//                    val localEnable = true// localEnableTokenSet.contains(it.address)
+//                    val remoteEnable = remoteEnableTokenSet.contains(address)
+//                    mTokenList.add(
+//                        ExchangeToken(
+////                            address
+//                            0,
+//                            it.name,
+//                            localEnable,
+//                            remoteEnable
+//                        )
+//                    )
+//                }
                 if (mTokenList.size > 0) {
                     currentFormCoinLiveData.postValue(mTokenList[0])
                 } else {
@@ -706,24 +706,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         exchangeToken
     }
 
-    private fun publishToken(mAccount: Account, tokenAddress: String): Boolean {
-        val countDownLatch = CountDownLatch(1)
-        var exec = false
-        DataRepository.getViolasService()
-            .publishToken(
-                getApplication(),
-                mAccount,
-                tokenAddress
-            ) {
-                exec = it
-                countDownLatch.countDown()
-            }
-        try {
-            countDownLatch.await()
-        } catch (e: Exception) {
-            exec = false
-        }
-        return exec
+    // todo
+    private fun publishToken(mAccount: Account, tokenAddress: Long): Boolean {
+        return true
     }
 
     override fun handleMessage(msg: Message): Boolean {

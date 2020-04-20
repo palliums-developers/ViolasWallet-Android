@@ -58,7 +58,8 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
     fun getSequenceNumber(address: String) =
         mViolasApi.getSequenceNumber(address)
 
-    fun pushTx(tx: String): Single<Response<Any>> {
+    @Throws()
+    suspend fun pushTx(tx: String): Response<Any> {
         val requestBody = Gson().toJson(SignedTxnDTO(tx))
             .toRequestBody("application/json".toMediaTypeOrNull())
         return mViolasApi.pushTx(requestBody)

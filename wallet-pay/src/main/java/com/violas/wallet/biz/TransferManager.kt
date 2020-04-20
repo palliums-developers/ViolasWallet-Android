@@ -60,7 +60,7 @@ class TransferManager {
     }
 
     @Throws(AddressFaultException::class, WrongPasswordException::class)
-    fun transfer(
+    suspend fun transfer(
         context: Context,
         address: String,
         amountStr: String,
@@ -169,7 +169,7 @@ class TransferManager {
             })
     }
 
-    private fun transferViolasToken(
+    private suspend fun transferViolasToken(
         context: Context,
         address: String,
         amount: Double,

@@ -63,12 +63,12 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
         if (sendAmount > balance) {
             throw LackOfBalanceException()
         }
-
-        val checkTokenRegister = mViolasService.checkTokenRegister(
-            receiveAccount.getAddress().toHex(),
-            //receiveAccount.getTokenAddress().toHex()
-            0
-        )
+        val checkTokenRegister=true
+//        val checkTokenRegister = mViolasService.checkTokenRegister(
+//            receiveAccount.getAddress().toHex(),
+//            receiveAccount.getTokenAddress().toHex()
+//            0
+//        )
 
         if (!checkTokenRegister) {
             val publishToken = publishToken(
@@ -78,7 +78,7 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
                     )
                 ),
                 //receiveAccount.getTokenAddress().toHex()
-                ""
+                0
             )
             if (!publishToken) {
                 throw RuntimeException(
@@ -144,23 +144,7 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
         return ""
     }
 
-    private fun publishToken(mAccount: Account, tokenAddress: String): Boolean {
-        val countDownLatch = CountDownLatch(1)
-        var exec = false
-        DataRepository.getViolasService()
-            .publishToken(
-                ContextProvider.getContext(),
-                mAccount,
-                tokenAddress
-            ) {
-                exec = it
-                countDownLatch.countDown()
-            }
-        try {
-            countDownLatch.await()
-        } catch (e: Exception) {
-            exec = false
-        }
-        return exec
+    private fun publishToken(mAccount: Account, tokenAddress: Long): Boolean {
+        return true
     }
 }

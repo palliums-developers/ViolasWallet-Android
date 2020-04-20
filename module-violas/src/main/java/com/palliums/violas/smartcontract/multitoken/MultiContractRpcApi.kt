@@ -14,21 +14,21 @@ interface MultiContractRpcApi {
      * @param tokenAddressArr 稳定币地址，多个稳定币地址以逗号分开，为空时只返回平台币的余额
      */
     @GET("/1.0/violas/balance")
-    fun getBalance(
+    suspend fun getBalance(
         @Query("addr") address: String,
         @Query("modu") tokenIdxs: String
-    ): Call<Response<BalanceDTO>>
+    ): Response<BalanceDTO>
 
     @GET("/1.0/violas/balance")
-    fun getBalance(
+    suspend fun getBalance(
         @Query("addr") address: String
-    ): Call<Response<BalanceDTO>>
+    ): Response<BalanceDTO>
 
     @GET("/1.0/violas/currency")
-    fun getSupportCurrency(): Call<Response<SupportCurrencyListDTO>>//Single<ListResponse<SupportCurrencyDTO>>
+    suspend fun getSupportCurrency(): Response<SupportCurrencyListDTO>//Single<ListResponse<SupportCurrencyDTO>>
 
     @GET("/1.0/violas/module")
-    fun getRegisterToken(@Query("addr") address: String): Call<Response<PublishDTO>>
+    suspend fun getRegisterToken(@Query("addr") address: String): Response<PublishDTO>
 }
 
 data class SupportCurrencyListDTO(

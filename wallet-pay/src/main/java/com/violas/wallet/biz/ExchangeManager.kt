@@ -10,11 +10,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.palliums.violascore.wallet.KeyPair
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
+import kotlin.coroutines.suspendCoroutine
 
 class ExchangeManager {
     private val mViolasService by lazy {
@@ -64,14 +66,13 @@ class ExchangeManager {
         dexService.revokeOrder(dexOrder.version, signedtxn)
 
         // 3.撤销兑换token数据上链，只有上链后，交易中心扫区块扫到解析撤销订单才会更改订单状态为CANCELED
-        val channel = Channel<Boolean>()
-        mViolasService.sendTransaction(signedtxn) {
-            GlobalScope.launch {
-                channel.send(it)
-                channel.close()
-            }
+        return try {
+            mViolasService.sendTransaction(signedTransaction)
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
-        return channel.receive()
     }
 
     suspend fun undoExchangeToken(
