@@ -17,6 +17,15 @@ import retrofit2.http.Query
 interface ViolasApi {
 
     /**
+     * 获取平台币余额
+     * @param walletAddress 钱包地址
+     */
+    @GET("/1.0/violas/balance")
+    suspend fun getBalance(
+        @Query("addr") walletAddress: String
+    ): Response<BalanceDTO>
+
+    /**
      * 获取指定地址的交易记录，分页查询
      * @param address 地址
      * @param pageSize 分页大小

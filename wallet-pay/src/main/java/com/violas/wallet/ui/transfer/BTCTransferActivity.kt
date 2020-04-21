@@ -127,20 +127,15 @@ class BTCTransferActivity : TransferActivity() {
         }
     }
 
-    private fun refreshCurrentAmount() {
+    private suspend fun refreshCurrentAmount() {
         account?.let {
-            mAccountManager.getBalance(it) { amount, success ->
-                launch {
-                    val amountUnit = convertAmountToDisplayUnit(
-                        if (success) amount else it.amount,
-                        CoinTypes.parseCoinType(it.coinNumber)
-                    )
-                    tvCoinAmount.text = String.format(
-                        getString(R.string.hint_transfer_amount),
-                        amountUnit.first,
-                        amountUnit.second
-                    )
-                }
+            val balanceWithUnit = mAccountManager.getBalanceWithUnit(it)
+            withContext(Dispatchers.Main) {
+                tvCoinAmount.text = String.format(
+                    getString(R.string.hint_transfer_amount),
+                    balanceWithUnit.first,
+                    balanceWithUnit.second
+                )
             }
         }
     }

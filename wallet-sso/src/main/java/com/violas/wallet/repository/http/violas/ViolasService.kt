@@ -1,17 +1,12 @@
 package com.violas.wallet.repository.http.violas
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import com.palliums.violas.error.TransactionException
-import com.palliums.violas.http.ModuleDTO
 import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
@@ -23,47 +18,9 @@ import org.palliums.violascore.wallet.Account
  * desc: Violas service
  */
 class ViolasService(private val mViolasRepository: ViolasRepository) : TransactionService {
-    private val mMainHandler by lazy { Handler(Looper.getMainLooper()) }
 
-    fun getBalance(
-        address: String,
-        tokenAddressList: List<String>,
-        call: (accountBalance: Long, tokens: List<ModuleDTO>?, result: Boolean) -> Unit
-    ): Disposable {
-        return mViolasRepository.getBalance(address, tokenAddressList)
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                mMainHandler.post {
-                    if (it.data == null) {
-                        call.invoke(0, arrayListOf(), true)
-                    } else {
-                        call.invoke(it.data!!.balance, it.data!!.modules, true)
-                    }
-                }
-            }, {
-                mMainHandler.post {
-                    call.invoke(0, arrayListOf(), false)
-                }
-            })
-    }
-
-    fun getBalanceInMicroLibras(address: String, call: (amount: Long, success: Boolean) -> Unit) {
-        val subscribe = mViolasRepository.getBalance(address)
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                mMainHandler.post {
-                    if (it.data == null) {
-                        call.invoke(0, true)
-                    } else {
-                        call.invoke(it.data!!.balance, true)
-                    }
-                }
-            }, {
-                mMainHandler.post {
-                    call.invoke(0, false)
-                }
-            })
-    }
+    suspend fun getBalanceInMicroLibras(address: String) =
+        mViolasRepository.getBalance(address)
 
     suspend fun sendCoin(
         context: Context,

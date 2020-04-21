@@ -1,6 +1,7 @@
 package com.violas.wallet.biz
 
 import androidx.collection.ArrayMap
+import com.palliums.utils.toMap
 import com.palliums.violas.http.ViolasMultiTokenRepository
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.quincysx.crypto.CoinTypes
@@ -191,48 +192,46 @@ class TokenManager {
         address: String,
         enableTokens: List<AssertToken>
     ): Pair<Long, List<AssertToken>> {
-        val tokenAddressList = arrayListOf<Long>()
-        enableTokens.forEach {
-            if (it.isToken) {
-                tokenAddressList.add(it.tokenIdx)
-            }
-        }
-        val tokenBalance = mViolasMultiTokenService.getBalance(address, tokenAddressList)
+
+        val tokenIds = enableTokens
+            .filter { it.isToken }
+            .map { it.tokenIdx }
+        val tokenBalance =
+            mViolasMultiTokenService.getBalance(address, tokenIds)
 
         val accountBalance = tokenBalance?.balance ?: 0
-        val tokens = tokenBalance?.modules
-
-        val tokenMap = mutableMapOf<Long, Long>()
-        tokens?.forEach { token ->
-            tokenMap[token.id] = token.balance
+        val remoteTokens = tokenBalance?.modules
+        val remoteTokenMap = mutableMapOf<Long, Long>()
+        remoteTokens?.forEach { token ->
+            remoteTokenMap[token.id] = token.balance
         }
 
         enableTokens.forEach {
             if (!it.isToken) {
                 it.amount = accountBalance
-            } else if (tokenMap.contains(it.tokenIdx)) {
-                it.amount = tokenMap[it.tokenIdx]!!
+            } else if (remoteTokenMap.contains(it.tokenIdx)) {
+                it.amount = remoteTokenMap[it.tokenIdx]!!
             } else {
                 it.amount = 0
             }
         }
 
+        val localTokens = enableTokens
+            .filter { it.isToken }
+            .map {
+                TokenDo(
+                    id = it.id,
+                    account_id = it.account_id,
+                    tokenIdx = it.tokenIdx,
+                    name = it.name,
+                    enable = it.enable,
+                    amount = it.amount
+                )
+            }
+
         // 更新本地token资产余额，钱包资产余额交由AccountManager更新
         mExecutor.submit {
-            val tokens = enableTokens
-                .filter {
-                    it.isToken
-                }.map {
-                    TokenDo(
-                        id = it.id,
-                        account_id = it.account_id,
-                        tokenIdx = it.tokenIdx,
-                        name = it.name,
-                        enable = it.enable,
-                        amount = it.amount
-                    )
-                }
-            mTokenStorage.update(*tokens.toTypedArray())
+            mTokenStorage.update(*localTokens.toTypedArray())
         }
 
         return Pair(accountBalance, enableTokens)

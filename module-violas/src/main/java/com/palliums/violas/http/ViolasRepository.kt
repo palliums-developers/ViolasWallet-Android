@@ -15,6 +15,34 @@ import okhttp3.RequestBody.Companion.toRequestBody
  */
 class ViolasRepository(private val mViolasApi: ViolasApi) {
 
+    /**
+     * 获取平台币余额
+     */
+    @Throws(RequestException::class)
+    suspend fun getBalance(walletAddress: String) =
+        checkResponse {
+            mViolasApi.getBalance(walletAddress)
+        }.data?.balance ?: 0
+
+    /**
+     * 获取 sequence number
+     */
+    @Throws(RequestException::class)
+    suspend fun getSequenceNumber(address: String) =
+        checkResponse {
+            mViolasApi.getSequenceNumber(address)
+        }.data ?: 0
+
+    @Throws()
+    suspend fun pushTx(tx: String): Response<Any> {
+        val requestBody = Gson().toJson(SignedTxnDTO(tx))
+            .toRequestBody("application/json".toMediaTypeOrNull())
+        return mViolasApi.pushTx(requestBody)
+    }
+
+    /**
+     * 获取交易记录
+     */
     @Throws(RequestException::class)
     suspend fun getTransactionRecord(
         address: String,
@@ -26,11 +54,6 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
             mViolasApi.getTransactionRecord(address, pageSize, offset, tokenAddress)
         }
     }
-
-    suspend fun getSupportToken() =
-        checkResponse {
-            mViolasApi.getSupportToken()
-        }
 
     /**
      * 登录网页端钱包
@@ -54,18 +77,6 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
     ): Single<Response<BalanceDTO>> {
         val tokenAddressArr: String? = tokenAddressList?.joinToString(",")
         return mViolasApi.getBalance(address, tokenAddressArr)
-    }
-
-    suspend fun getSequenceNumber(address: String) =
-        checkResponse {
-            mViolasApi.getSequenceNumber(address)
-        }.data ?: 0
-
-    @Throws()
-    suspend fun pushTx(tx: String): Response<Any> {
-        val requestBody = Gson().toJson(SignedTxnDTO(tx))
-            .toRequestBody("application/json".toMediaTypeOrNull())
-        return mViolasApi.pushTx(requestBody)
     }
 
     @Deprecated("准备迁移到 MultiTokenContract")

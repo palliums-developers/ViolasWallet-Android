@@ -2,13 +2,15 @@ package com.violas.wallet.ui.main.wallet
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
+import com.palliums.net.RequestException
+import com.palliums.net.getErrorTipsMsg
 import com.palliums.utils.isFastMultiClick
-import com.palliums.utils.isMainThread
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -290,7 +292,7 @@ class WalletFragment : BaseFragment() {
 
             // 刷新当前钱包的信息和当前平台的资产
             if (switchWallet) {
-                recyclerAssert?.post {
+                withContext(Dispatchers.Main) {
                     mEnableTokens.clear()
                     mEnableTokens.addAll(enableTokens)
                     mAssertAdapter.notifyDataSetChanged()
@@ -301,21 +303,30 @@ class WalletFragment : BaseFragment() {
             if (violasAccount) {
                 refreshViolasAssert(currentAccount, enableTokens)
             } else {
+                val result = try {
+                    mAccountManager.refreshAccount(currentAccount)
+                    true
+                } catch (e: Exception) {
+                    if (!RequestException.isActiveCancellation(e)) {
+                        showToast(e.getErrorTipsMsg())
+                    }
+                    false
+                }
 
-                mAccountManager.refreshAccountAmount(currentAccount) {
-                    recyclerAssert?.post {
-                        if (swipeRefreshLayout.isRefreshing) {
-                            swipeRefreshLayout.isRefreshing = false
-                        }
+                withContext(Dispatchers.Main) {
+                    if (swipeRefreshLayout.isRefreshing) {
+                        swipeRefreshLayout.isRefreshing = false
+                    }
 
-                        // 刷新当前钱包的信息
-                        updateWalletInfo(it)
+                    if (!result) return@withContext
 
-                        // 刷新当前平台的资产
-                        if (mEnableTokens.size >= 1) {
-                            mEnableTokens[0].amount = it.amount
-                            mAssertAdapter.notifyItemChanged(0)
-                        }
+                    // 刷新当前钱包的信息
+                    updateWalletInfo(currentAccount)
+
+                    // 刷新当前平台的资产
+                    if (mEnableTokens.size >= 1) {
+                        mEnableTokens[0].amount = currentAccount.amount
+                        mAssertAdapter.notifyItemChanged(0)
                     }
                 }
             }
@@ -326,34 +337,37 @@ class WalletFragment : BaseFragment() {
         accountDO: AccountDO? = null,
         tokens: List<AssertToken>? = null
     ) {
-        if (isMainThread()) {
-            cancelRefreshAssertJob()
-
-            refreshAssertJob = launch(Dispatchers.IO) {
-                refreshViolasAssert(accountDO, tokens)
-            }
-            return
-        }
-
         val currentAccount = accountDO ?: mAccountManager.currentAccount()
         val enableTokens = tokens ?: mTokenManger.loadEnableToken(currentAccount)
-        val (accountBalance, assertTokens) = mTokenManger.refreshBalance(
-            currentAccount.address,
-            enableTokens
-        )
-        recyclerAssert?.post {
+        val balanceInfos =
+            try {
+                mTokenManger.refreshBalance(currentAccount.address, enableTokens)
+            } catch (e: Exception) {
+                if (!RequestException.isActiveCancellation(e)) {
+                    showToast(e.getErrorTipsMsg())
+                }
+                null
+            }
+
+        // 更新钱包余额
+        balanceInfos?.first?.let {
+            currentAccount.amount = it
+            mAccountManager.updateAccount(currentAccount)
+        }
+
+        withContext(Dispatchers.Main) {
             if (swipeRefreshLayout.isRefreshing) {
                 swipeRefreshLayout.isRefreshing = false
             }
 
+            if (balanceInfos == null) return@withContext
+
             // 刷新当前钱包的信息
-            currentAccount.amount = accountBalance
-            mAccountManager.updateAccount(currentAccount)
             updateWalletInfo(currentAccount)
 
             // 刷新当前平台的资产
             mEnableTokens.clear()
-            mEnableTokens.addAll(assertTokens)
+            mEnableTokens.addAll(balanceInfos.second)
             mAssertAdapter.notifyDataSetChanged()
         }
     }

@@ -2,8 +2,6 @@ package com.violas.wallet.biz
 
 import android.content.Context
 import com.palliums.content.ContextProvider.getContext
-import com.palliums.utils.IOScope
-import com.palliums.utils.isMainThread
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip32.ExtendedKey
 import com.quincysx.crypto.bip44.BIP44
@@ -14,9 +12,8 @@ import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.convertAmountToDisplayUnit
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.palliums.libracore.mnemonic.English
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount
@@ -24,6 +21,8 @@ import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.wallet.KeyFactory
 import org.palliums.libracore.wallet.Seed
 import java.util.concurrent.Executors
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class MnemonicException : RuntimeException()
 class AccountNotExistsException : RuntimeException()
@@ -48,7 +47,7 @@ enum class WalletType(val type: Int) {
     }
 }
 
-class AccountManager : CoroutineScope by IOScope() {
+class AccountManager {
     companion object {
         private const val CURRENT_ACCOUNT = "ab1"
         private const val GOVERNOR_MNEMONIC_BACKUP = "GOVERNOR_MNEMONIC_BACKUP"
@@ -56,10 +55,6 @@ class AccountManager : CoroutineScope by IOScope() {
         private const val FAST_INTO_WALLET = "ab2"
         private const val FAST_INTO_SSO_WALLET = "ab3"
         private const val FAST_INTO_GOVERNOR_WALLET = "ab4"
-    }
-
-    private val handler = CoroutineExceptionHandler { _, exception ->
-        println("Caught $exception")
     }
 
     private val mExecutor by lazy { Executors.newFixedThreadPool(2) }
@@ -70,22 +65,6 @@ class AccountManager : CoroutineScope by IOScope() {
 
     private val mAccountStorage by lazy {
         DataRepository.getAccountStorage()
-    }
-
-    fun refreshAccountAmount(currentAccount: AccountDO, callback: (AccountDO) -> Unit) {
-        getBalance(currentAccount) { amount, success ->
-            if (success) {
-                currentAccount.amount = amount
-                updateAccount(currentAccount)
-            }
-            callback.invoke(currentAccount)
-        }
-    }
-
-    fun updateAccount(account: AccountDO) {
-        mExecutor.submit {
-            mAccountStorage.update(account)
-        }
     }
 
     /**
@@ -117,6 +96,18 @@ class AccountManager : CoroutineScope by IOScope() {
 
     private fun getDefWallet(): Long {
         return mAccountStorage.loadByCoinType(CoinTypes.Violas.coinType())?.id ?: 1L
+    }
+
+    fun removeWallet(accountId: AccountDO) {
+        mAccountStorage.delete(accountId)
+    }
+
+    fun getIdentityByCoinType(coinType: Int): AccountDO? {
+        return mAccountStorage.loadByCoinType(coinType)
+    }
+
+    fun getIdentityByWalletType(walletType: Int): AccountDO? {
+        return mAccountStorage.findByCoinTypeAndWalletType(CoinTypes.Violas.coinType(), walletType)
     }
 
     /**
@@ -407,65 +398,49 @@ class AccountManager : CoroutineScope by IOScope() {
         return derive as BitCoinECKeyPair
     }
 
-    fun getBalanceWithUnit(account: AccountDO, callback: (String, String) -> Unit) {
-        getBalance(account) { amount, success ->
-            val parseCoinType = CoinTypes.parseCoinType(account.coinNumber)
-            val convertAmountToDisplayUnit =
-                convertAmountToDisplayUnit(amount, parseCoinType)
-            callback.invoke(convertAmountToDisplayUnit.first, convertAmountToDisplayUnit.second)
+    fun updateAccount(account: AccountDO) {
+        mExecutor.submit {
+            mAccountStorage.update(account)
         }
     }
 
-    fun getBalance(account: AccountDO, callback: (Long, Boolean) -> Unit) {
-        if (isMainThread()) {
-            launch(handler) {
-                getBalance(account, callback)
-            }
-            return
+    suspend fun refreshAccount(account: AccountDO) {
+        val balance = getBalance(account)
+        if (balance != account.amount) {
+            account.amount = balance
+            updateAccount(account)
         }
+    }
 
-        when (account.coinNumber) {
+    suspend fun getBalanceWithUnit(account: AccountDO): Pair<String, String> {
+        val balance = getBalance(account)
+        val coinType = CoinTypes.parseCoinType(account.coinNumber)
+        return convertAmountToDisplayUnit(balance, coinType)
+    }
+
+    suspend fun getBalance(account: AccountDO): Long {
+        return when (account.coinNumber) {
             CoinTypes.Violas.coinType() -> {
-                DataRepository.getViolasService()
-                    .getBalanceInMicroLibras(account.address) { balance, success ->
-                        callback.invoke(balance, success)
-                    }
+                DataRepository.getViolasService().getBalanceInMicroLibras(account.address)
             }
             CoinTypes.Libra.coinType() -> {
-                DataRepository.getLibraService().getBalanceInMicroLibraWithCallback(
-                    account.address
-                ) { amount, exception ->
-                    callback.invoke(amount, exception == null)
+                DataRepository.getLibraService().getBalanceInMicroLibra(account.address)
+            }
+            else -> {
+                suspendCancellableCoroutine { coroutine ->
+                    val subscribe = DataRepository.getBitcoinService()
+                        .getBalance(account.address)
+                        .subscribeOn(Schedulers.io())
+                        .subscribe({
+                            coroutine.resume(it.toLong())
+                        }, {
+                            coroutine.resumeWithException(it)
+                        })
+                    coroutine.invokeOnCancellation {
+                        subscribe.dispose()
+                    }
                 }
             }
-            CoinTypes.Bitcoin.coinType(),
-            CoinTypes.BitcoinTest.coinType() -> {
-                DataRepository.getBitcoinService().getBalance(account.address)
-                    .subscribe({
-                        try {
-                            callback.invoke(it.toLong(), true)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            callback.invoke(0, false)
-                        }
-                    }, {
-                        callback.invoke(0, false)
-                    }, {
-
-                    })
-            }
         }
-    }
-
-    fun removeWallet(accountId: AccountDO) {
-        mAccountStorage.delete(accountId)
-    }
-
-    fun getIdentityByCoinType(coinType: Int): AccountDO? {
-        return mAccountStorage.loadByCoinType(coinType)
-    }
-
-    fun getIdentityByWalletType(walletType: Int): AccountDO? {
-        return mAccountStorage.findByCoinTypeAndWalletType(CoinTypes.Violas.coinType(), walletType)
     }
 }
