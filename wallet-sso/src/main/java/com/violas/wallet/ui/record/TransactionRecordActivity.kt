@@ -95,7 +95,7 @@ class TransactionRecordActivity : BaseAppActivity() {
                 mTokenName = savedInstanceState.getString(KEY_THREE)
             }
         } else if (intent != null) {
-            mAccountId = intent.getLongExtra(KEY_TWO, -100)
+            mAccountId = intent.getLongExtra(KEY_ONE, -100)
             if (intent.hasExtra(KEY_TWO)) {
                 mTokenIdx = intent.getLongExtra(KEY_TWO, 0)
             }
