@@ -69,8 +69,7 @@ class GovernorApprovalViewModel(
             // 审批通过
             mGovernorManager.passSSOApplication(
                 ssoApplicationDetails = mSSOApplicationDetailsLD.value!!,
-                account = params[1] as Account,
-                mnemonics = params[2] as List<String>
+                account = params[1] as Account
             )
         } else {
             // 审批不通过

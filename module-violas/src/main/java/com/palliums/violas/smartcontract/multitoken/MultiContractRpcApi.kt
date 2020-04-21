@@ -1,11 +1,9 @@
 package com.palliums.violas.smartcontract.multitoken
 
 import com.google.gson.annotations.SerializedName
-import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
-import io.reactivex.Single
-import retrofit2.Call
-import retrofit2.http.*
+import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface MultiContractRpcApi {
     /**
@@ -19,13 +17,8 @@ interface MultiContractRpcApi {
         @Query("modu") tokenIdxs: String
     ): Response<BalanceDTO>
 
-    @GET("/1.0/violas/balance")
-    suspend fun getBalance(
-        @Query("addr") address: String
-    ): Response<BalanceDTO>
-
     @GET("/1.0/violas/currency")
-    suspend fun getSupportCurrency(): Response<SupportCurrencyListDTO>//Single<ListResponse<SupportCurrencyDTO>>
+    suspend fun getSupportCurrency(): Response<SupportCurrencyListDTO>
 
     @GET("/1.0/violas/module")
     suspend fun getRegisterToken(@Query("addr") address: String): Response<PublishDTO>

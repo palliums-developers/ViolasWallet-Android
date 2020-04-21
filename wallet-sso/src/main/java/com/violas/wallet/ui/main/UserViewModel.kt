@@ -1,6 +1,5 @@
 package com.violas.wallet.ui.main
 
-import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.lifecycle.*
@@ -44,7 +43,7 @@ class UserViewModel : BaseViewModel() {
 
     companion object {
         private const val ACTION_INIT = 0x123
-        const val ACTION_PUBLISH_VSTAKE = 0x124
+        const val ACTION_PUBLISH_CONTRACT = 0x124
     }
 
     val mCurrentAccountLD = MutableLiveData<AccountDO>()
@@ -274,9 +273,9 @@ class UserViewModel : BaseViewModel() {
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
 
-        // publish VStake
-        if (action == ACTION_PUBLISH_VSTAKE) {
-            mGovernorManager.publishVStake(params[0] as Context, params[1] as Account)
+        // publish 合约
+        if (action == ACTION_PUBLISH_CONTRACT) {
+            mGovernorManager.publishContract(params[0] as Account)
             return
         }
 
@@ -387,7 +386,7 @@ class UserViewModel : BaseViewModel() {
     }
 
     override fun checkParams(action: Int, vararg params: Any): Boolean {
-        if (action == ACTION_PUBLISH_VSTAKE) {
+        if (action == ACTION_PUBLISH_CONTRACT) {
             return true
         }
 

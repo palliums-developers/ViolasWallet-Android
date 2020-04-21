@@ -92,8 +92,8 @@ class GovernorMintActivity : BaseAppActivity() {
         btnMint.setOnClickListener {
             showPwdInputDialog(
                 mViewModel.mAccountLD.value!!,
-                accountMnemonicCallback = { account, mnemonics ->
-                    mintTokenToSSOAccount(account, mnemonics)
+                accountCallback = {
+                    mintTokenToSSOAccount(it)
                 })
         }
 
@@ -147,12 +147,9 @@ class GovernorMintActivity : BaseAppActivity() {
             })
     }
 
-    private fun mintTokenToSSOAccount(
-        account: Account,
-        mnemonics: List<String>
-    ) {
+    private fun mintTokenToSSOAccount(account: Account) {
         mViewModel.execute(
-            account, mnemonics,
+            account,
             action = ACTION_MINT_TOKEN_TO_SSO_ACCOUNT,
             failureCallback = {
                 dismissProgress()

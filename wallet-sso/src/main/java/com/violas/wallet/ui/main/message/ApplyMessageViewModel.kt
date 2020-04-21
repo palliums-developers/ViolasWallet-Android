@@ -87,15 +87,14 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
         }
     }
 
-    fun publishVStake(
-        context: Context,
+    fun publishContract(
         account: Account,
         failureCallback: ((error: Throwable) -> Unit)? = null,
         successCallback: (() -> Unit)? = null
     ) {
         viewModelScope.launch(Dispatchers.Main) {
             try {
-                mGovernorManager.publishVStake(context, account)
+                mGovernorManager.publishContract(account)
 
                 successCallback?.invoke()
                 mTipsMessageLD.postValueSupport(getString(R.string.tips_apply_for_licence_success))

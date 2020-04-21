@@ -93,7 +93,7 @@ class LibraTransferActivity : TransferActivity() {
             if (isToken) {
                 mTokenDo?.apply {
                     val tokenAmount = mTokenManager.getTokenBalance(it.address, this)
-                    launch {
+                    withContext(Dispatchers.Main) {
                         val displayAmount = convertViolasTokenUnit(tokenAmount)
                         tvCoinAmount.text = String.format(
                             getString(R.string.hint_transfer_amount),
@@ -105,20 +105,15 @@ class LibraTransferActivity : TransferActivity() {
                     }
                 }
             } else {
-                mAccountManager.getBalance(it) { amount, success ->
-                    launch {
-                        val amountUnit = convertAmountToDisplayUnit(
-                            if (success) amount else it.amount,
-                            CoinTypes.parseCoinType(it.coinNumber)
-                        )
-                        tvCoinAmount.text = String.format(
-                            getString(R.string.hint_transfer_amount),
-                            amountUnit.first,
-                            amountUnit.second
-                        )
-                        mBalance = BigDecimal(amountUnit.first)
-                        dismissProgress()
-                    }
+                val balanceWithUnit = mAccountManager.getBalanceWithUnit(it)
+                withContext(Dispatchers.Main) {
+                    tvCoinAmount.text = String.format(
+                        getString(R.string.hint_transfer_amount),
+                        balanceWithUnit.first,
+                        balanceWithUnit.second
+                    )
+                    mBalance = BigDecimal(balanceWithUnit.first)
+                    dismissProgress()
                 }
             }
         }

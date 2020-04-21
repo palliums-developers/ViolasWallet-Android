@@ -80,6 +80,7 @@ class ApplyForMintActivity
             launch(Dispatchers.IO) {
                 val changePublishStatus = mApplyManager.changePublishStatus(mAccount.address)
                 withContext(Dispatchers.Main) {
+                    dismissProgress()
                     if (changePublishStatus != null && changePublishStatus.errorCode == 2000) {
                         EventBus.getDefault().post(RefreshPageEvent())
                         EventBus.getDefault().post(SwitchAccountEvent())
@@ -104,28 +105,23 @@ class ApplyForMintActivity
                         showToast(R.string.hint_password_error)
                         return@launch
                     }
-                    val checkTokenRegister = DataRepository.getViolasService().checkTokenRegister(
-                        Account(KeyPair.fromSecretKey(decrypt)).getAddress().toHex(),
-                        assertToken.tokenIdx.toString()
-                    )
-                    if (checkTokenRegister) {
-                        success.invoke()
-                    } else {
-                        DataRepository.getViolasService()
-                            .publishToken(
-                                applicationContext,
-                                Account(KeyPair.fromSecretKey(decrypt)),
-                                assertToken.tokenIdx.toString()
-                            ) {
-                                dismissProgress()
-                                if (!it) {
-                                    showToast(getString(R.string.hint_mint_condition_error))
-                                } else {
-                                    EventBus.getDefault().post(RefreshBalanceEvent())
-                                    mTokenManager.insert(true, assertToken)
-                                    success.invoke()
-                                }
-                            }
+
+                    val account = Account(KeyPair.fromSecretKey(decrypt))
+                    val tokenManager = TokenManager()
+                    try {
+                        if (tokenManager.isPublish(account.getAddress().toHex())) {
+                            success.invoke()
+                        } else {
+                            tokenManager.publishToken(account)
+                            EventBus.getDefault().post(RefreshBalanceEvent())
+                            mTokenManager.insert(true, assertToken)
+                            success.invoke()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        withContext(Dispatchers.Main) {
+                            showToast(getString(R.string.hint_mint_condition_error))
+                        }
                     }
                 }
             }

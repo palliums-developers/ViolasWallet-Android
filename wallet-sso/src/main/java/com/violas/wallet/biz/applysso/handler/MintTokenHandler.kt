@@ -1,42 +1,31 @@
 package com.violas.wallet.biz.applysso.handler
 
-import com.palliums.content.ContextProvider
 import com.violas.wallet.biz.applysso.SSOApplyTokenHandler
-import com.violas.wallet.repository.DataRepository
 import org.palliums.violascore.wallet.Account
-import java.util.concurrent.CountDownLatch
 
 class MintTokenHandler(
-    private val accountAddress: String,
-    private val layerWallet: Long,
-    private val tokenAddress: String,
-    private val mintAccount: Account,
-    private val receiveAddress: String,
-    private val receiveAmount: Long
+    private val walletAddress: String,
+    private val account: Account,
+    private val ssoWalletAddress: String,
+    private val ssoApplyAmount: Long,
+    private val ssoApplicationId: String,
+    private val tokenIdx: Long
 ) : ApplyHandle() {
 
-    override fun handler(): Boolean {
-        val countDownLatch = CountDownLatch(1)
-        var isSuccess = false
-        DataRepository.getViolasService().tokenMint(
-            ContextProvider.getContext(),
-            tokenAddress,
-            mintAccount,
-            receiveAddress,
-            receiveAmount
-        ) {
-            isSuccess = it
-            countDownLatch.countDown()
-        }
-        if (isSuccess) {
-            getServiceProvider()!!.getApplySsoRecordDao()
-                .updateRecordStatus(
-                    accountAddress,
-                    layerWallet,
-                    SSOApplyTokenHandler.MintSuccess
-                )
-        }
-        countDownLatch.await()
-        return isSuccess
+    override suspend fun handler() {
+        getServiceProvider()!!.getTokenManager()
+            .mintToken(
+                account,
+                tokenIdx,
+                ssoWalletAddress,
+                ssoApplyAmount
+            )
+
+        getServiceProvider()!!.getApplySsoRecordDao()
+            .updateRecordStatus(
+                walletAddress,
+                ssoApplicationId,
+                SSOApplyTokenHandler.MintSuccess
+            )
     }
 }

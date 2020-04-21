@@ -277,16 +277,16 @@ class MeFragment : BaseFragment() {
                 showPwdInputDialog(
                     mViewModel.mCurrentAccountLD.value!!,
                     accountCallback = {
-                        publishVStake(it)
+                        publishContract(it)
                     })
             }
             .show()
     }
 
-    private fun publishVStake(account: Account) {
+    private fun publishContract(account: Account) {
         mViewModel.execute(
-            requireContext(), account,
-            action = UserViewModel.ACTION_PUBLISH_VSTAKE,
+            account,
+            action = UserViewModel.ACTION_PUBLISH_CONTRACT,
             failureCallback = {
                 dismissProgress()
             },

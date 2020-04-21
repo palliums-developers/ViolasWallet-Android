@@ -36,6 +36,8 @@ class RequestException : RuntimeException {
         private const val ERROR_CODE_DATA_EXCEPTION = "L106"
         /** 没有网络 */
         const val ERROR_CODE_NO_NETWORK = "L107"
+        /** 主动取消 */
+        const val ERROR_CODE_ACTIVE_CANCELLATION = "L108"
         /** 未知错误 */
         const val ERROR_CODE_UNKNOWN_ERROR = "L100"
 
@@ -61,6 +63,11 @@ class RequestException : RuntimeException {
             return error is RequestException
                     && error.errorCode == ERROR_CODE_NO_NETWORK
         }
+
+        fun isActiveCancellation(error: Throwable): Boolean {
+            return error is RequestException
+                    && error.errorCode == ERROR_CODE_ACTIVE_CANCELLATION
+        }
     }
 
     /**
@@ -72,7 +79,11 @@ class RequestException : RuntimeException {
     val errorMsg: String
 
     constructor(exception: Throwable) : super(exception) {
-        if (!isNetworkConnected()) {
+        if (exception.javaClass.name == "kotlinx.coroutines.JobCancellationException") {
+            errorCode = ERROR_CODE_ACTIVE_CANCELLATION
+            errorMsg = ""
+            return
+        } else if (!isNetworkConnected()) {
             errorCode = ERROR_CODE_NO_NETWORK
             errorMsg = getString(R.string.common_http_network_unavailable)
             return

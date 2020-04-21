@@ -16,7 +16,7 @@ import kotlin.random.Random
  */
 class TransactionRecordViewModel(
     private val mAddress: String,
-    private val mTokenAddress: String?,
+    private val mTokenIdx: Long?,
     private val mTokenName: String?,
     coinTypes: CoinTypes
 ) : PagingViewModel<TransactionRecordVO>() {
@@ -30,13 +30,13 @@ class TransactionRecordViewModel(
         pageKey: Any?,
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
-        if (pageNumber == 1 && !mTokenAddress.isNullOrEmpty()) {
+        if (pageNumber == 1 && mTokenIdx != null) {
             // 在币种信息页面刷新时，通知Activity刷新余额
             EventBus.getDefault().post(RefreshBalanceEvent(0))
         }
 
         mTransactionRepository.getTransactionRecord(
-            mAddress, mTokenAddress, mTokenName, pageSize, pageNumber, pageKey, onSuccess
+            mAddress, mTokenIdx?.toString(), mTokenName, pageSize, pageNumber, pageKey, onSuccess
         )
 
         //onSuccess.invoke(fakeData(mAddress, pageSize, pageNumber), null)

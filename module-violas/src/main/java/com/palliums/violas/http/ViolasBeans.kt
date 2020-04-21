@@ -3,8 +3,6 @@ package com.palliums.violas.http
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
-import java.io.IOException
-import java.lang.RuntimeException
 
 /**
  * Created by elephant on 2019-11-11 15:41.
@@ -75,19 +73,7 @@ data class TransactionRecordDTO(
 
 data class BalanceDTO(
     var address: String = "",
-    var balance: Long = 0,
-    var modules: List<ModuleDTO>? = null
-)
-
-data class ModuleDTO(
-    var address: String = "",
     var balance: Long = 0
-)
-
-data class SupportCurrencyDTO(
-    var description: String = "",
-    var address: String = "",
-    var name: String = ""
 )
 
 data class SignedTxnDTO(

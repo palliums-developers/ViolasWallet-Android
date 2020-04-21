@@ -121,7 +121,7 @@ class TokenInfoActivity : BaseAppActivity() {
             TransactionRecordFragment.newInstance(
                 mAccountDO.address,
                 CoinTypes.Violas,
-                mTokenDo.tokenIdx.toString(),
+                mTokenDo.tokenIdx,
                 mTokenDo.name
             )
         )

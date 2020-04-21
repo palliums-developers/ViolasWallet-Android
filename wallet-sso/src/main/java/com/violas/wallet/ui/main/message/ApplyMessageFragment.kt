@@ -265,8 +265,8 @@ class ApplyMessageFragment : BaseFragment() {
     }
 
     private fun publishVStake(account: Account) {
-        mViewModel.publishVStake(
-            requireContext(), account,
+        mViewModel.publishContract(
+            account,
             failureCallback = {
                 dismissProgress()
             },

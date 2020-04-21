@@ -67,7 +67,7 @@ data class SSOApplicationDetailsDTO(
     @SerializedName("token_value")
     val tokenValue: Int,                            // 稳定币价值（单位发币种类）
     @SerializedName("module_address")
-    val tokenAddress: String?,                      // 稳定币地址，即发行的module的address，在申请状态为pass之后才有
+    val tokenIdx: Long? = null,                     // 稳定币索引
     @SerializedName("reserve_photo_url")
     val reservePhotoUrl: String,                    // 储备金照片url
     @SerializedName("account_info_photo_positive_url")

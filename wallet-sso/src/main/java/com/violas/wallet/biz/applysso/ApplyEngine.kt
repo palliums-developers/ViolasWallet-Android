@@ -1,7 +1,7 @@
 package com.violas.wallet.biz.applysso
 
-import android.util.Log
 import com.palliums.content.ContextProvider
+import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.applysso.handler.ApplyHandle
 import com.violas.wallet.biz.applysso.handler.ServiceProvider
 import com.violas.wallet.repository.DataRepository
@@ -12,6 +12,7 @@ import com.violas.wallet.repository.http.governor.GovernorRepository
 import java.util.*
 
 class ApplyEngine {
+
     private val mApplyHandles = LinkedList<ApplyHandle>()
 
     private val mApplySsoRecordDao by lazy {
@@ -22,21 +23,8 @@ class ApplyEngine {
         DataRepository.getGovernorService()
     }
 
-    fun execSSOApply(status: Int? = SSOApplyTokenHandler.None): Boolean {
-        val currentStatus = status ?: SSOApplyTokenHandler.None
-        var isSuccess = true
-        for (index in SSOApplyTokenHandler.None until currentStatus) {
-            mApplyHandles.removeAt(0)
-        }
-        for (item in mApplyHandles) {
-            val handler = item.handler()
-            if (!handler) {
-                isSuccess = false
-                Log.e("ApplyEngine", "ApplyEngine error ${item.javaClass.simpleName}")
-                break
-            }
-        }
-        return isSuccess
+    private val mTokenManager by lazy {
+        TokenManager()
     }
 
     fun addApplyHandle(handle: ApplyHandle) {
@@ -48,41 +36,48 @@ class ApplyEngine {
             override fun getGovernorService(): GovernorRepository {
                 return mGovernorService
             }
+
+            override fun getTokenManager(): TokenManager {
+                return mTokenManager
+            }
         })
         mApplyHandles.add(handle)
     }
 
-    fun getUnDoneRecord(walletAddress: String, SSOApplyWalletAddress: String): ApplySSORecordDo? {
-        return mApplySsoRecordDao.findSSOWalletUnDoneRecord(walletAddress, SSOApplyWalletAddress)
+    fun getUnDoneRecord(walletAddress: String, ssoWalletAddress: String): ApplySSORecordDo? {
+        return mApplySsoRecordDao.findSSOWalletUnDoneRecord(walletAddress, ssoWalletAddress)
             ?: return mApplySsoRecordDao.findUnDoneRecord(walletAddress)
     }
 
     fun getUnMintRecord(
         walletAddress: String,
-        mintTokenAddress: String,
-        SSOApplyWalletAddress: String
+        tokenIdx: Long,
+        ssoWalletAddress: String
     ): ApplySSORecordDo? {
         return mApplySsoRecordDao.findUnMintRecord(
             walletAddress,
-            mintTokenAddress,
-            SSOApplyWalletAddress
+            tokenIdx,
+            ssoWalletAddress
         )
     }
 
-    fun execMint(status: Int? = SSOApplyTokenHandler.Approval): Boolean {
+    suspend fun execSSOApply(status: Int? = SSOApplyTokenHandler.None) {
+        val currentStatus = status ?: SSOApplyTokenHandler.None
+        for (index in SSOApplyTokenHandler.None until currentStatus) {
+            mApplyHandles.removeAt(0)
+        }
+        for (item in mApplyHandles) {
+            item.handler()
+        }
+    }
+
+    suspend fun execMint(status: Int? = SSOApplyTokenHandler.Approval) {
         val currentStatus = status ?: SSOApplyTokenHandler.Approval
-        var isSuccess = true
         for (index in SSOApplyTokenHandler.Approval until currentStatus) {
             mApplyHandles.removeAt(0)
         }
         for (item in mApplyHandles) {
-            val handler = item.handler()
-            if (!handler) {
-                isSuccess = false
-                Log.e("ApplyEngine", "ApplyEngine error ${item.javaClass.simpleName}")
-                break
-            }
+            item.handler()
         }
-        return isSuccess
     }
 }

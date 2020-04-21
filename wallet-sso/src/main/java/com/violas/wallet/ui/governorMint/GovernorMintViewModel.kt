@@ -66,8 +66,7 @@ class GovernorMintViewModel(
         // 给SSO账户铸币
         mGovernorManager.mintTokenToSSOAccount(
             ssoApplicationDetails = mSSOApplicationDetailsLD.value!!,
-            account = params[0] as Account,
-            mnemonics = params[1] as List<String>
+            account = params[0] as Account
         )
 
         // 铸币成功后更新本地消息状态

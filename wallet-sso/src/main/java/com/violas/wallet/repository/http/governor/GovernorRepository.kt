@@ -121,16 +121,14 @@ class GovernorRepository(private val api: GovernorApi) {
     suspend fun approvalSSOApplication(
         ssoApplicationId: String,
         ssoWalletAddress: String,
-        newTokenAddress: String,
-        walletLayersNumber: Long,
+        newTokenIdx: Long,
         pass: Boolean
     ) =
         checkResponse {
             val requestBody = """{
     "id":"$ssoApplicationId",
     "wallet_address":"$ssoWalletAddress",
-    "module_address":"${if (pass) newTokenAddress else ""}",
-    "subaccount_number":$walletLayersNumber,
+    "token_id":${if (pass) newTokenIdx else -1},
     "approval_status":${if (pass) 1 else 2}
 }""".toRequestBody("application/json".toMediaTypeOrNull())
             api.approvalSSOApplication(requestBody)

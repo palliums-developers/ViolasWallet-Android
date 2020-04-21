@@ -1,28 +1,18 @@
 package com.violas.wallet.repository.http.violas
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
-import androidx.annotation.WorkerThread
 import com.palliums.violas.error.TransactionException
-import com.palliums.violas.http.*
+import com.palliums.violas.http.Response
+import com.palliums.violas.http.ViolasRepository
+import com.palliums.violas.http.WalletAccountDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -31,34 +21,9 @@ import kotlin.coroutines.resumeWithException
  * desc: Violas service
  */
 class ViolasService(private val mViolasRepository: ViolasRepository) : TransactionService {
-    private val mMainHandler by lazy { Handler(Looper.getMainLooper()) }
-
-    @Deprecated("获取链上已经有的 Token 列表应该使用 TokenManager")
-    fun getRegisterToken(address: String): List<String>? {
-        var registerToken: List<String>? = null
-        val subscribe = mViolasRepository.getRegisterToken(address)
-            .subscribe({
-                if (it.data != null) {
-                    registerToken = it.data!!
-                }
-            }, {
-            })
-        return registerToken
-    }
 
     suspend fun getBalanceInMicroLibras(address: String): Long =
-        suspendCancellableCoroutine { coroutine ->
-            val subscribe = mViolasRepository.getBalance(address)
-                .subscribeOn(Schedulers.io())
-                .subscribe({
-                    coroutine.resume(it.data?.balance ?: 0)
-                }, {
-                    coroutine.resumeWithException(it)
-                })
-            coroutine.invokeOnCancellation {
-                subscribe.dispose()
-            }
-        }
+        mViolasRepository.getBalance(address)
 
     suspend fun sendTransaction(
         payload: TransactionPayload,
