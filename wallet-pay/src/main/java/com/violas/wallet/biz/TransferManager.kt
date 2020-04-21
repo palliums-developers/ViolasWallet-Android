@@ -191,13 +191,13 @@ class TransferManager {
                     (amount * 1000000L).toLong()
                 )
                 success.invoke("")
-            } catch (e: java.lang.Exception) {
-                error.invoke(TransferUnknownException())
+            } catch (e: Exception) {
+                error.invoke(e)
             }
         }
     }
 
-    private fun transferLibra(
+    private suspend fun transferLibra(
         context: Context,
         address: String,
         amount: Double,
@@ -206,19 +206,18 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        DataRepository.getLibraService().sendCoinWithCallback(
-            context,
-            org.palliums.libracore.wallet.Account(
-                org.palliums.libracore.wallet.KeyPair(decryptPrivateKey)
-            ),
-            address,
-            (amount * 1000000L).toLong()
-        ) {
-            if (it == null) {
-                success.invoke("")
-            } else {
-                error.invoke(TransferUnknownException())
-            }
+        try {
+            DataRepository.getLibraService().sendCoin(
+                context,
+                org.palliums.libracore.wallet.Account(
+                    org.palliums.libracore.wallet.KeyPair(decryptPrivateKey)
+                ),
+                address,
+                (amount * 1000000L).toLong()
+            )
+            success.invoke("")
+        } catch (e: Exception) {
+            error.invoke(e)
         }
     }
 
@@ -242,7 +241,6 @@ class TransferManager {
             )
             success.invoke("")
         } catch (e: Exception) {
-            e.printStackTrace()
             error.invoke(e)
         }
     }

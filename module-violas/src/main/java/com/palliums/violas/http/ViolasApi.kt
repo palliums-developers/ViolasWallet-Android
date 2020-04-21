@@ -40,9 +40,6 @@ interface ViolasApi {
         @Query("modu") tokenAddress: String?
     ): ListResponse<TransactionRecordDTO>
 
-    @GET("/1.0/violas/currency")
-    suspend fun getSupportToken(): ListResponse<SupportCurrencyDTO>
-
     /**
      * 登录网页端钱包
      */
@@ -66,9 +63,4 @@ interface ViolasApi {
     @POST("/1.0/violas/transaction")
     suspend fun pushTx(@Body requestBody: RequestBody): Response<Any>
 
-    @GET("/1.0/violas/currency")
-    fun getSupportCurrency(): Single<ListResponse<SupportCurrencyDTO>>
-
-    @GET("/1.0/violas/module")
-    fun getRegisterToken(@Query("addr") address: String): Single<ListResponse<String>>
 }

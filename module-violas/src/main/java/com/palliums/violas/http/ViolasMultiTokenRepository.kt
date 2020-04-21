@@ -1,14 +1,11 @@
 package com.palliums.violas.http
 
 import com.palliums.net.checkResponse
-import com.palliums.violas.smartcontract.multitoken.*
 import com.palliums.violas.smartcontract.multitoken.BalanceDTO
+import com.palliums.violas.smartcontract.multitoken.MultiContractRpcApi
+import com.palliums.violas.smartcontract.multitoken.MultiTokenContract
 import com.palliums.violas.smartcontract.multitoken.SupportCurrencyDTO
-import io.reactivex.Single
 import org.palliums.violascore.transaction.TransactionPayload
-import retrofit2.Call
-import java.lang.Exception
-import java.lang.RuntimeException
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -23,15 +20,11 @@ class ViolasMultiTokenRepository(
 
     suspend fun getBalance(
         address: String,
-        tokenIdx: List<Long>? = null
+        tokenIdx: List<Long>
     ): BalanceDTO? {
-        val tokenIdxArr: String? = tokenIdx?.joinToString(",")
         return checkResponse {
-            if (tokenIdxArr == null) {
-                mMultiContractApi.getBalance(address)
-            } else {
-                mMultiContractApi.getBalance(address, tokenIdxArr)
-            }
+            val tokenIdxArr: String = tokenIdx.joinToString(",")
+            mMultiContractApi.getBalance(address, tokenIdxArr)
         }.data
     }
 

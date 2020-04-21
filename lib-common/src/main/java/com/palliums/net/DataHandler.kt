@@ -62,23 +62,3 @@ suspend inline fun <T, R> T.checkResponse(
         throw if (e is RequestException) e else RequestException(e)
     }
 }
-
-@Deprecated("准备删除")
-suspend inline fun <T, R> T.checkResponseWithResult(
-    crossinline func: suspend T.() -> R
-): Result<R> {
-    return try {
-        val func1 = func()
-        if (func1 is ApiResponse) {
-            if (func1.getErrorCode() == func1.getSuccessCode()) {
-                Result.success<R>(func1)
-            } else {
-                Result.failure(RequestException(func1))
-            }
-        } else {
-            Result.failure(RequestException.responseDataException("response is not ApiResponse"))
-        }
-    } catch (e: Throwable) {
-        Result.failure(RequestException(e))
-    }
-}

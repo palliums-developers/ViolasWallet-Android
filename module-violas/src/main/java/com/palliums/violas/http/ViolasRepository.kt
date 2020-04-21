@@ -69,22 +69,4 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
                 .toRequestBody("application/json".toMediaTypeOrNull())
             mViolasApi.loginWeb(requestBody)
         }
-
-    @Deprecated("准备移除稳定币相关的余额查询")
-    fun getBalance(
-        address: String,
-        tokenAddressList: List<String>? = null
-    ): Single<Response<BalanceDTO>> {
-        val tokenAddressArr: String? = tokenAddressList?.joinToString(",")
-        return mViolasApi.getBalance(address, tokenAddressArr)
-    }
-
-    @Deprecated("准备迁移到 MultiTokenContract")
-    fun getSupportCurrency() =
-        mViolasApi.getSupportCurrency()
-
-    @Deprecated("准备迁移到 MultiTokenContract")
-    fun getRegisterToken(address: String) =
-        mViolasApi.getRegisterToken(address)
-
 }
