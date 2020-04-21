@@ -44,7 +44,7 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
     ): String {
         val sendAccount = sendAccount as ViolasMappingAccount
 
-        var balance = mTokenManager.getTokenBalance(
+        val balance = mTokenManager.getTokenBalance(
             sendAccount.getAddress().toHex(),
             sendAccount.getTokenIdx()
         ).let { BigDecimal(it) }
@@ -56,8 +56,9 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
         val subExchangeDate = JSONObject()
         subExchangeDate.put("flag", "violas")
         if (receiveAccount is LibraMappingAccount) {
+            val authKeyPrefix = byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             subExchangeDate.put("type", "v2l")
-            subExchangeDate.put("to_address", receiveAccount.getAddress().toHex())
+            subExchangeDate.put("to_address", (authKeyPrefix + receiveAccount.getAddress()).toHex())
         } else if (receiveAccount is BTCMappingAccount) {
             subExchangeDate.put("type", "v2b")
             subExchangeDate.put("to_address", receiveAccount.getAddress())
@@ -82,7 +83,7 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
 
         val keyPair =
             KeyPair(sendAccount.getPrivateKey()!!)
-        
+
         mViolasService.sendTransaction(
             rawTransaction,
             keyPair.getPublicKey(),

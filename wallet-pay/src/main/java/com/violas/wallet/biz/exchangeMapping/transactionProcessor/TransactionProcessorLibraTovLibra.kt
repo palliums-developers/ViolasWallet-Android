@@ -68,11 +68,11 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
                 )
             }
         }
-
+        val authKeyPrefix = byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         val subExchangeDate = JSONObject()
         subExchangeDate.put("flag", "libra")
         subExchangeDate.put("type", "l2v")
-        subExchangeDate.put("to_address", receiveAccount.getAddress().toHex())
+        subExchangeDate.put("to_address", (authKeyPrefix + receiveAccount.getAddress()).toHex())
         subExchangeDate.put("state", "start")
 
         val transactionPayload =
@@ -83,7 +83,7 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
                 subExchangeDate.toString().toByteArray()
             )
 
-        var sequenceNumber = mLibraService.getSequenceNumber(sendAccount.getAddress().toHex())
+        val sequenceNumber = mLibraService.getSequenceNumber(sendAccount.getAddress().toHex())
 
         val rawTransaction = RawTransaction.optionTransaction(
             sendAccount.getAddress().toHex(),

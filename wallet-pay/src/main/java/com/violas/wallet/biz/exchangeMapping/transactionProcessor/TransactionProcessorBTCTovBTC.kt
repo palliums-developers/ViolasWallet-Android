@@ -1,6 +1,5 @@
 package com.violas.wallet.biz.exchangeMapping.transactionProcessor
 
-import com.palliums.content.ContextProvider
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
@@ -11,7 +10,6 @@ import com.violas.wallet.biz.btc.outputScript.ViolasOutputScript
 import com.violas.wallet.biz.exchangeMapping.BTCMappingAccount
 import com.violas.wallet.biz.exchangeMapping.MappingAccount
 import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
-import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.palliums.libracore.serialization.toHex
@@ -77,8 +75,7 @@ class TransactionProcessorBTCTovBTC :
                 sendAccount.getAddress(),
                 violasOutputScript.requestExchange(
                     receiveAccount.getAddress(),
-                    //receiveAccount.getTokenIdx()
-                    byteArrayOf()
+                    receiveAccount.getAddress()
                 )
             ).flatMap {
                 try {

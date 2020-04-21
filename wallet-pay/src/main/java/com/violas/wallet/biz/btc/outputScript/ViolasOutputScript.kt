@@ -7,7 +7,7 @@ import java.nio.ByteOrder
 
 class ViolasOutputScript {
     companion object {
-        const val OP_VER: Int = 0x0000
+        const val OP_VER: Int = 0x0001
         val OP_TYPE_START: ByteArray = byteArrayOf(0x30, 0x00)
         val OP_TYPE_END: ByteArray = byteArrayOf(0x30, 0x01)
         val TYPE_CANCEL: ByteArray = byteArrayOf(0x30, 0x02)
@@ -23,13 +23,16 @@ class ViolasOutputScript {
         vtokenAddress: ByteArray,
         sequence: Long = System.currentTimeMillis()
     ): Script {
+        val authKeyPrefix = byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         val dataStream = BitcoinOutputStream()
         dataStream.write("violas".toByteArray())
         dataStream.writeInt16(OP_VER)
         dataStream.write(OP_TYPE_START)
-        dataStream.write(address)
-        dataStream.write(ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(sequence).array())
-        dataStream.write(vtokenAddress)
+        dataStream.write(authKeyPrefix + address)
+        dataStream.write(
+            ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(sequence).array()
+        )
+        dataStream.write(authKeyPrefix + vtokenAddress)
 
         val scriptStream = BitcoinOutputStream()
         scriptStream.write(Script.OP_RETURN.toInt())
@@ -43,7 +46,9 @@ class ViolasOutputScript {
         dataStream.writeInt16(OP_VER)
         dataStream.write(TYPE_CANCEL)
         dataStream.write(address)
-        dataStream.write(ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(sequence).array())
+        dataStream.write(
+            ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(sequence).array()
+        )
 
         val scriptStream = BitcoinOutputStream()
         scriptStream.write(Script.OP_RETURN.toInt())
