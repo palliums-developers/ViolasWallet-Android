@@ -10,6 +10,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.ContextProvider
+import com.palliums.utils.asyncException
 import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.getString
 import com.palliums.utils.toMutableMap
@@ -29,10 +30,7 @@ import com.violas.wallet.ui.main.quotes.bean.ExchangeToken
 import com.violas.wallet.ui.main.quotes.bean.IOrder
 import com.violas.wallet.ui.main.quotes.bean.IOrderStatus
 import com.violas.wallet.ui.main.quotes.bean.IToken
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.palliums.violascore.wallet.KeyPair
@@ -259,8 +257,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         mAccount?.let {
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val tokenPrices = async { DataRepository.getDexService().getTokens() }
-                    val localEnableToken = async { TokenManager().loadEnableToken(it) }
+                    val tokenPrices = asyncException { DataRepository.getDexService().getTokens() }
+                    val localEnableToken = asyncException { TokenManager().loadEnableToken(it) }
 
                     val localEnableTokenSet =
                         localEnableToken.await().map { it.tokenIdx }.toHashSet()
@@ -289,7 +287,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                         currentToCoinLiveData.postValue(mDefToken)
                     }
                 } catch (e: Exception) {
-                    e.printStackTrace()
+//                    e.printStackTrace()
                     currentFormCoinLiveData.postValue(mDefToken)
                     currentToCoinLiveData.postValue(mDefToken)
                 }

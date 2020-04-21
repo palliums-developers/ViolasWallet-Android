@@ -5,10 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Created by elephant on 2019-11-14 11:18.
@@ -19,6 +18,14 @@ import kotlinx.coroutines.SupervisorJob
 
 fun CustomMainScope(): CoroutineScope =
     CoroutineScope(SupervisorJob() + Dispatchers.Main + coroutineExceptionHandler())
+
+fun <T> CoroutineScope.asyncException(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> T
+): Deferred<T> {
+    return this.async(SupervisorJob() + context, start, block)
+}
 
 fun coroutineExceptionHandler() = CoroutineExceptionHandler { _, exception ->
     exception.printStackTrace()

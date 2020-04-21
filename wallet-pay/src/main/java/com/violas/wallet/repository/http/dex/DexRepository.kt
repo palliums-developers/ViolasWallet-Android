@@ -41,6 +41,7 @@ class DexRepository(private val dexApi: DexApi) {
             dexApi.getTokens()
         } catch (e: Exception) {
             throw RequestException(e)
+//            return arrayListOf()
         }
     }
 
