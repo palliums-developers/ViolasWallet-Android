@@ -57,18 +57,18 @@ interface TransactionAuthenticator {
 
 class TransactionSignAuthenticator(
     val publicKey: KeyPair.PublicKey,
-    val signature: ByteArray
+    val signature: Signature
 ) : TransactionAuthenticator {
     override fun toByteArray(): ByteArray {
         println(
             "public key size:${publicKey.toByteArray().size} hex:${LCS.encodeInt(publicKey.toByteArray().size).toHex()}"
         )
-        println("signature size:${signature.size} hex:${LCS.encodeInt(signature.size).toHex()}")
+        println("signature size:${signature.toByteArray().size} hex:${LCS.encodeInt(signature.toByteArray().size).toHex()}")
 
         val stream = LCSOutputStream()
         stream.writeU8(AuthenticationKey.Scheme.Ed25519.value.toInt())
         stream.writeBytes(publicKey.toByteArray())
-        stream.writeBytes(signature)
+        stream.writeBytes(signature.toByteArray())
         return stream.toByteArray()
     }
 }

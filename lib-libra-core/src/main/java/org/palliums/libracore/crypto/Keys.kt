@@ -137,11 +137,11 @@ class KeyPair(
         return mEd25519KeyPair.getPublicKey()
     }
 
-    fun signMessage(message: ByteArray): ByteArray {
+    fun signMessage(message: ByteArray): Signature {
         return mEd25519KeyPair.signMessage(message)
     }
 
-    fun verify(message: ByteArray, signed: ByteArray): Boolean {
+    fun verify(message: ByteArray, signed: Signature): Boolean {
         return mEd25519KeyPair.verify(signed, message)
     }
 }

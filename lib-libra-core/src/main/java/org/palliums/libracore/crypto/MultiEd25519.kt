@@ -43,7 +43,7 @@ class MultiEd25519PrivateKey(
 
     fun signMessage(message: ByteArray): MultiEd25519Signature {
         val bitmap = Bitmap()
-        val signatures = ArrayList<ByteArray>()
+        val signatures = ArrayList<Signature>()
 
         privateKeys.asIterable()
             .take(threshold)
@@ -72,7 +72,7 @@ class MultiEd25519PrivateKeyIndex(
 
     fun signMessage(message: ByteArray): MultiEd25519Signature {
         val bitmap = Bitmap()
-        val signatures = ArrayList<ByteArray>()
+        val signatures = ArrayList<Signature>()
 
         privateKeys
             .sortedBy { it.second }
@@ -88,29 +88,29 @@ class MultiEd25519PrivateKeyIndex(
 }
 
 class MultiEd25519Signature(
-    private val signatures: List<ByteArray>,
+    private val signatures: List<Signature>,
     private val bitmap: Bitmap
 ) {
 
     fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
         signatures.forEach {
-            output.write(it)
+            output.write(it.toByteArray())
         }
         output.write(bitmap.toByteArray())
         return output.toByteArray()
     }
 
     class Builder {
-        private val mSignaturesMap = mutableMapOf<Int, ByteArray>()
+        private val mSignaturesMap = mutableMapOf<Int, Signature>()
 
-        fun addSignature(index: Int, signature: ByteArray): Builder {
+        fun addSignature(index: Int, signature: Signature): Builder {
             mSignaturesMap[index] = signature
             return this
         }
 
         fun build(): MultiEd25519Signature {
-            val signatures = mutableListOf<ByteArray>()
+            val signatures = mutableListOf<Signature>()
             val bitmap = Bitmap()
 
             val numOfSigSize = mSignaturesMap.size

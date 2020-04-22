@@ -253,7 +253,7 @@ class AccountManager {
 
         return mAccountStorage.insert(
             AccountDO(
-                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
+                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
@@ -278,7 +278,7 @@ class AccountManager {
 
         return mAccountStorage.insert(
             AccountDO(
-                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
+                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
@@ -359,7 +359,7 @@ class AccountManager {
 
         val insertIds = mAccountStorage.insert(
             AccountDO(
-                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
+                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
