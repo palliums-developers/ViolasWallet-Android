@@ -65,8 +65,9 @@ class RequestException : RuntimeException {
         }
 
         fun isActiveCancellation(error: Throwable): Boolean {
-            return error is RequestException
-                    && error.errorCode == ERROR_CODE_ACTIVE_CANCELLATION
+            return (error is RequestException
+                    && error.errorCode == ERROR_CODE_ACTIVE_CANCELLATION)
+                    || error.javaClass.name == "kotlinx.coroutines.JobCancellationException"
         }
     }
 

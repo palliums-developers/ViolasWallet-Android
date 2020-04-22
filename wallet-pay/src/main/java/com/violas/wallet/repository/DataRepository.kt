@@ -19,6 +19,9 @@ import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.repository.http.libra.LibexplorerApi
 import com.violas.wallet.repository.http.libra.LibexplorerRepository
 import com.violas.wallet.repository.http.libra.LibexplorerService
+import com.violas.wallet.repository.http.libra.violas.LibraViolasApi
+import com.violas.wallet.repository.http.libra.violas.LibraViolasRepository
+import com.violas.wallet.repository.http.libra.violas.LibraViolasService
 import com.violas.wallet.repository.http.mappingExchange.MappingExchangeApi
 import com.violas.wallet.repository.http.mappingExchange.MappingExchangeRepository
 import com.violas.wallet.repository.http.violas.ViolasService
@@ -83,7 +86,7 @@ object DataRepository {
             }
 
             CoinTypes.Libra -> {
-                LibexplorerService(LibexplorerRepository(retrofit.create(LibexplorerApi::class.java)))
+                LibraViolasService(LibraViolasRepository(retrofit.create(LibraViolasApi::class.java)))
             }
 
             else -> {

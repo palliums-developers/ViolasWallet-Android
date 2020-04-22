@@ -382,9 +382,11 @@ class WalletFragment : BaseFragment() {
                     mAccountManager.refreshAccount(currentAccount)
                     true
                 } catch (e: Exception) {
-                    if (!RequestException.isActiveCancellation(e)) {
-                        showToast(e.getErrorTipsMsg())
+                    if (RequestException.isActiveCancellation(e)) {
+                        return@launch
                     }
+
+                    showToast(e.getErrorTipsMsg())
                     false
                 }
 
@@ -418,9 +420,11 @@ class WalletFragment : BaseFragment() {
             try {
                 mTokenManger.refreshBalance(currentAccount.address, enableTokens)
             } catch (e: Exception) {
-                if (!RequestException.isActiveCancellation(e)) {
-                    showToast(e.getErrorTipsMsg())
+                if (RequestException.isActiveCancellation(e)) {
+                    return
                 }
+
+                showToast(e.getErrorTipsMsg())
                 null
             }
 
