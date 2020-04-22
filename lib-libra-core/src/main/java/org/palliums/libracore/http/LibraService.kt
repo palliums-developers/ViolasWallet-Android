@@ -23,7 +23,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
     )
 
     /**
-     * 发起一笔转账，建议使用
+     * 发起一笔交易，建议使用
      */
     suspend fun sendTransaction(
         payload: TransactionPayload,
@@ -45,14 +45,18 @@ class LibraService(private val mLibraRepository: LibraRepository) {
             senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
         )
 
-        val publicKey = keyPair.getPublicKey()
-        val signature = keyPair.signMessage(rawTransaction.toHashByteArray())
         val transactionAuthenticator = when (keyPair) {
             is Ed25519KeyPair -> {
-                TransactionSignAuthenticator(publicKey, signature)
+                TransactionSignAuthenticator(
+                    keyPair.getPublicKey(),
+                    keyPair.signMessage(rawTransaction.toHashByteArray())
+                )
             }
             is MultiEd25519KeyPair -> {
-                TransactionSignAuthenticator(publicKey, signature)
+                TransactionMultiSignAuthenticator(
+                    keyPair.getPublicKey(),
+                    keyPair.signMessage(rawTransaction.toHashByteArray())
+                )
             }
             else -> {
                 TODO("更多类型")
