@@ -23,7 +23,14 @@ class LibraService(private val mLibraRepository: LibraRepository) {
     )
 
     /**
-     * 发起一笔交易，建议使用
+     * 发起一笔交易，建议用法
+     * 适用于有私钥的情况下使用该方法
+     *
+     * @param payload 交易内容，通常情况下一般使用 @{link TransactionPayload.Script}
+     * @param keyPair 公钥，单签使用 {@link Ed25519KeyPair}，多签使用{@link MultiEd25519KeyPair}
+     * @param maxGasAmount 该交易可使用的最大 gas 数量
+     * @param gasUnitPrice gas 的价格
+     * @param delayed 交易超时时间：当前时间的延迟，单位秒。例如当前时间延迟 1000 秒。
      */
     suspend fun sendTransaction(
         payload: TransactionPayload,
@@ -41,36 +48,57 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         }
         val senderAddress = authenticationKey.getShortAddress()
         val sequenceNumber = getSequenceNumber(senderAddress.toHex())
+
         val rawTransaction = RawTransaction.optionTransaction(
             senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
         )
+        sendTransaction(
+            rawTransaction.toByteArray().toHex(),
+            keyPair.getPublicKey(),
+            keyPair.signMessage(rawTransaction.toHashByteArray())
+        )
+        return TransactionResult(senderAddress.toHex(), sequenceNumber)
+    }
 
-        val transactionAuthenticator = when (keyPair) {
-            is Ed25519KeyPair -> {
+    /**
+     * 高端用法，不建议基础业务使用
+     * 适用于没有私钥的情况下使用该方法
+     * publicKey 与 signature 需要配套使用
+     *
+     * @param rawTransactionHex 未签名交易序列化后的 16 进制字符串
+     * @param publicKey 公钥，单签使用 {@link Ed25519PublicKey}，多签使用{@link MultiEd25519PublicKey}
+     * @param signature 签名，单签使用 {@link Ed25519Signature}，多签使用{@link MultiEd25519Signature}
+     */
+    suspend fun sendTransaction(
+        rawTransactionHex: String,
+        publicKey: KeyPair.PublicKey,
+        signature: Signature
+    ) {
+        val transactionAuthenticator = when {
+            publicKey is Ed25519PublicKey && signature is Ed25519Signature -> {
                 TransactionSignAuthenticator(
-                    keyPair.getPublicKey(),
-                    keyPair.signMessage(rawTransaction.toHashByteArray())
+                    publicKey,
+                    signature
                 )
             }
-            is MultiEd25519KeyPair -> {
+            publicKey is MultiEd25519PublicKey && signature is MultiEd25519Signature -> {
                 TransactionMultiSignAuthenticator(
-                    keyPair.getPublicKey(),
-                    keyPair.signMessage(rawTransaction.toHashByteArray())
+                    publicKey,
+                    signature
                 )
             }
             else -> {
-                TODO("更多类型")
+                throw IllegalArgumentException("Wrong type of publicKey and signature")
             }
         }
 
-        val signedTransaction = SignedTransaction(rawTransaction, transactionAuthenticator)
+        val signedTransaction = SignedTransactionHex(rawTransactionHex, transactionAuthenticator)
         val hexSignedTransaction = signedTransaction.toHex()
         if (BuildConfig.DEBUG) {
             Log.i(this.javaClass.name, "SignTransaction: $hexSignedTransaction")
         }
 
         mLibraRepository.submitTransaction(hexSignedTransaction)
-        return TransactionResult(senderAddress.toHex(), sequenceNumber)
     }
 
     suspend fun sendCoin(

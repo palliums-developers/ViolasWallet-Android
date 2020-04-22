@@ -2,6 +2,7 @@ package org.palliums.libracore.transaction
 
 import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
+import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.storage.TypeTag
 import org.palliums.libracore.wallet.RAW_TRANSACTION_HASH_SALT
@@ -54,24 +55,32 @@ data class RawTransaction(
     }
 }
 
-data class SignedTransaction(
-    val rawTxn: RawTransaction,
+data class SignedTransactionHex(
+    val rawTxn: String,
     val authenticator: TransactionAuthenticator
 ) {
-    val transactionLength: Long
-
-    init {
-        transactionLength = rawTxn.toByteArray().size.toLong()
-    }
+    val transactionLength = rawTxn.hexToBytes().size.toLong()
 
     fun toHex() = toByteArray().toHex()
 
     fun toByteArray(): ByteArray {
         val stream = LCSOutputStream()
-        stream.write(rawTxn.toByteArray())
+        stream.write(rawTxn.hexToBytes())
         stream.write(authenticator.toByteArray())
         return stream.toByteArray()
     }
+}
+
+data class SignedTransaction(
+    val rawTxn: RawTransaction,
+    val authenticator: TransactionAuthenticator
+) {
+    private val signedTransaction =
+        SignedTransactionHex(rawTxn.toByteArray().toHex(), authenticator)
+
+    fun toHex() = toByteArray().toHex()
+
+    fun toByteArray() = signedTransaction.toByteArray()
 }
 
 data class AccountAddress(val byte: ByteArray) {
