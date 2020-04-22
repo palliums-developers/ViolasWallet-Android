@@ -10,6 +10,7 @@ import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
+import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
@@ -75,7 +76,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
     @Throws(TransactionException::class)
     suspend fun sendTransaction(
         rawTransaction: RawTransaction,
-        publicKey: ByteArray,
+        publicKey: KeyPair.PublicKey,
         signed: ByteArray
     ) {
         sendTransaction(

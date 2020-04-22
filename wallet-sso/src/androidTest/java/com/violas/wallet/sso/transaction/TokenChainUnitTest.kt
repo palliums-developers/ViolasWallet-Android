@@ -7,7 +7,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.wallet.Account
-import org.palliums.violascore.wallet.KeyPair
+import org.palliums.violascore.crypto.KeyPair
 
 @RunWith(AndroidJUnit4::class)
 class TokenChainUnitTest {

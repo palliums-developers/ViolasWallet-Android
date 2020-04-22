@@ -10,14 +10,13 @@ import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.RefreshPageEvent
 import com.violas.wallet.event.SwitchAccountEvent
-import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_apply_for_mint.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
-import org.palliums.violascore.wallet.KeyPair
+import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode

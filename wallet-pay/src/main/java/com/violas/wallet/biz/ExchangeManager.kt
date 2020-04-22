@@ -8,17 +8,12 @@ import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexRepository
 import com.violas.wallet.ui.main.quotes.bean.IToken
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
-import org.palliums.violascore.wallet.KeyPair
+import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
-import kotlin.coroutines.suspendCoroutine
 
 class ExchangeManager {
     private val mViolasService by lazy {

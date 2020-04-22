@@ -11,7 +11,7 @@ import org.json.JSONObject
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.optionTransaction
-import org.palliums.violascore.wallet.KeyPair
+import org.palliums.violascore.crypto.KeyPair
 import java.math.BigDecimal
 
 /**

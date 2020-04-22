@@ -17,7 +17,6 @@ import org.palliums.libracore.transaction.RawTransaction
 import org.palliums.libracore.transaction.TransactionPayload
 import org.palliums.libracore.transaction.optionTransaction
 import org.palliums.libracore.transaction.optionWithDataPayload
-import org.palliums.libracore.wallet.Account
 import java.math.BigDecimal
 
 class TransactionProcessorLibraTovLibra() : TransactionProcessor {
@@ -58,7 +57,11 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
         if (!checkTokenRegister) {
             try {
                 publishToken(
-                    org.palliums.violascore.wallet.Account(org.palliums.violascore.wallet.KeyPair(receiveAccount.getPrivateKey()!!))
+                    org.palliums.violascore.wallet.Account(
+                        org.palliums.violascore.crypto.KeyPair(
+                            receiveAccount.getPrivateKey()!!
+                        )
+                    )
                 )
             } catch (e: Exception) {
                 throw RuntimeException(

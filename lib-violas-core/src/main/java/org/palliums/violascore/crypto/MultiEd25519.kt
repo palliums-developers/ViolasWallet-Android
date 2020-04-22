@@ -2,12 +2,11 @@ package org.palliums.violascore.crypto
 
 import org.palliums.violascore.serialization.LCSOutputStream
 import org.palliums.violascore.wallet.CryptoMaterialError
-import org.palliums.violascore.wallet.KeyPair
 import java.lang.RuntimeException
 
 private const val MAX_NUM_OF_KEYS = 32
 
-class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val threshold: Int) {
+class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val threshold: Int): KeyPair.PublicKey {
 
     init {
         if (threshold == 0 || publicKeys.size < threshold) {
@@ -17,7 +16,7 @@ class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val
         }
     }
 
-    fun toByteArray(): ByteArray {
+    override fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
         publicKeys.forEach {
             output.write(it)
@@ -27,7 +26,7 @@ class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val
     }
 }
 
-class MultiEd25519PrivateKey(private val privateKeys: List<ByteArray>, private val threshold: Int) {
+class MultiEd25519PrivateKey(private val privateKeys: List<ByteArray>, private val threshold: Int): KeyPair.PrivateKey {
     init {
         if (threshold == 0 || privateKeys.size < threshold) {
             throw CryptoMaterialError.ValidationError()
@@ -49,6 +48,8 @@ class MultiEd25519PrivateKey(private val privateKeys: List<ByteArray>, private v
 
         return MultiEd25519Signature(signatures, bitmap)
     }
+
+    override fun toByteArray(): ByteArray = byteArrayOf()
 }
 
 class MultiEd25519Signature(

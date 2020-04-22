@@ -6,7 +6,18 @@ import net.i2p.crypto.eddsa.EdDSAPublicKey
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec
+import org.palliums.violascore.serialization.toHex
 import java.security.MessageDigest
+
+class Ed25519PrivateKey(private val key: ByteArray) : KeyPair.PrivateKey {
+    override fun toByteArray(): ByteArray = key
+    fun toHex() = key.toHex()
+}
+
+class Ed25519PublicKey(private val key: ByteArray) : KeyPair.PublicKey {
+    override fun toByteArray(): ByteArray = key
+    fun toHex() = key.toHex()
+}
 
 class Ed25519KeyPair(secretKey: ByteArray) {
     companion object {
@@ -21,8 +32,8 @@ class Ed25519KeyPair(secretKey: ByteArray) {
         EdDSAPublicKey(EdDSAPublicKeySpec(mEdDSAPrivateKey.a, mEdDSAPrivateKey.params))
     }
 
-    fun getPublicKey(): ByteArray {
-        return mEdDSAPublicKey.abyte
+    fun getPublicKey(): Ed25519PublicKey {
+        return Ed25519PublicKey(mEdDSAPublicKey.abyte)
     }
 
     fun signMessage(message: ByteArray): ByteArray {

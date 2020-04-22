@@ -13,7 +13,7 @@ import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.palliums.libracore.serialization.toHex
-import org.palliums.violascore.wallet.KeyPair
+import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import kotlin.coroutines.resume

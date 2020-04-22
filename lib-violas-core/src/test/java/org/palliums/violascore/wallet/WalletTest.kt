@@ -2,6 +2,8 @@ package org.palliums.violascore.wallet
 
 import org.junit.Assert
 import org.junit.Test
+import org.palliums.violascore.crypto.KeyFactory
+import org.palliums.violascore.crypto.Seed
 import org.spongycastle.util.encoders.Hex
 
 /**
@@ -27,7 +29,12 @@ class WalletTest {
 
     @Test
     fun testMasterPrk() {
-        val keyFactory = KeyFactory(Seed.fromMnemonic(generateMnemonic(), "LIBRA"))
+        val keyFactory = KeyFactory(
+            Seed.fromMnemonic(
+                generateMnemonic(),
+                "LIBRA"
+            )
+        )
         val masterPrkStr = Hex.toHexString(keyFactory.masterPrk)
         println()
         println("Master Private Key: $masterPrkStr")

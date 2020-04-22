@@ -17,7 +17,7 @@ import com.violas.wallet.utils.validationLibraAddress
 import com.violas.wallet.utils.validationViolasAddress
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
-import org.palliums.violascore.wallet.KeyPair
+import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.wallet.Account
 
 class ToTheirException : RuntimeException(getString(R.string.hint_to_their_error))
