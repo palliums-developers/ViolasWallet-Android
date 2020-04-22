@@ -37,12 +37,12 @@ class MappingExchangeOrdersViewModel(
                 (pageNumber - 1) * pageSize
             )
 
-        if (response.data.isNullOrEmpty()) {
+        if (response.data == null || response.data!!.list.isNullOrEmpty()) {
             onSuccess.invoke(emptyList(), null)
             return
         }
 
-        val list = response.data!!.mapIndexed { index, dto ->
+        val list = response.data!!.list!!.mapIndexed { index, dto ->
 
             val coinType = if (!dto.coin.isNullOrEmpty()) {
                 when (dto.coin.toLowerCase(Locale.ENGLISH)) {

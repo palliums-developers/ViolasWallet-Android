@@ -1,6 +1,8 @@
 package com.violas.wallet.repository.http.mappingExchange
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
+import com.palliums.violas.http.Response
 
 /**
  * Created by elephant on 2020-02-14 11:46.
@@ -26,3 +28,16 @@ data class MappingExchangeOrderDTO(
     val coin: String?,
     val status: Int                     // 0：进行中；1：成功；2失败
 )
+
+@Keep
+class MappingExchangeOrdersResponse : Response<MappingExchangeOrdersResponse.Data>() {
+
+    @Keep
+    data class Data(
+        @SerializedName(value = "offset")
+        var offset: Int = 0,
+
+        @SerializedName(value = "infos")
+        var list: List<MappingExchangeOrderDTO>? = null
+    )
+}

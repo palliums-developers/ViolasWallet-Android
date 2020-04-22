@@ -44,5 +44,5 @@ interface MappingExchangeApi {
         @Query("type") walletType: Int,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
-    ): ListResponse<MappingExchangeOrderDTO>
+    ): MappingExchangeOrdersResponse
 }
