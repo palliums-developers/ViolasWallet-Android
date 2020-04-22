@@ -1,8 +1,10 @@
 package org.palliums.libracore.crypto
 
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable
 import org.palliums.libracore.mnemonic.English
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.serialization.LCS
+import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.utils.ByteUtility
 import org.palliums.libracore.wallet.DERIVED_KEY
 import org.palliums.libracore.wallet.MASTER_KEY_SALT
@@ -100,27 +102,19 @@ class KeyFactory {
     }
 }
 
-class KeyPair(
-    private val secretKey: ByteArray
-) {
-    interface PrivateKey {
-        fun toByteArray(): ByteArray
-    }
+interface Signature {
+    fun toByteArray(): ByteArray
 
-    interface PublicKey {
-        fun toByteArray(): ByteArray
-    }
+    fun toHex() = toByteArray().toHex()
+}
 
-    private val mEd25519KeyPair: Ed25519KeyPair by lazy {
-        Ed25519KeyPair(secretKey)
-    }
-
+interface KeyPair {
     companion object {
-        fun fromSecretKey(secretKey: ByteArray): KeyPair {
-            return KeyPair(secretKey)
+        fun fromSecretKey(secretKey: ByteArray): Ed25519KeyPair {
+            return Ed25519KeyPair(secretKey)
         }
 
-        fun fromMnemonic(mnemonics: List<String>): KeyPair {
+        fun fromMnemonic(mnemonics: List<String>): Ed25519KeyPair {
             return fromSecretKey(
                 Seed.fromMnemonic(
                     mnemonics
@@ -129,19 +123,23 @@ class KeyPair(
         }
     }
 
-    fun getPrivateKey(): Ed25519PrivateKey {
-        return Ed25519PrivateKey(secretKey)
+    interface PrivateKey {
+        fun toByteArray(): ByteArray
+
+        fun toHex() = toByteArray().toHex()
     }
 
-    fun getPublicKey(): Ed25519PublicKey {
-        return mEd25519KeyPair.getPublicKey()
+    interface PublicKey {
+        fun toByteArray(): ByteArray
+
+        fun toHex() = toByteArray().toHex()
     }
 
-    fun signMessage(message: ByteArray): Signature {
-        return mEd25519KeyPair.signMessage(message)
-    }
+    fun getPrivateKey(): PrivateKey
 
-    fun verify(message: ByteArray, signed: Signature): Boolean {
-        return mEd25519KeyPair.verify(signed, message)
-    }
+    fun getPublicKey(): PublicKey
+
+    fun signMessage(message: ByteArray): Signature
+
+    fun verify(signed: Signature, message: ByteArray): Boolean
 }

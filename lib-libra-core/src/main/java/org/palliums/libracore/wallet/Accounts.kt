@@ -1,6 +1,8 @@
 package org.palliums.libracore.wallet
 
+import org.palliums.libracore.crypto.Ed25519PublicKey
 import org.palliums.libracore.crypto.KeyPair
+import org.palliums.libracore.crypto.MultiEd25519PublicKey
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.AuthenticationKey
 import org.spongycastle.util.encoders.Hex
@@ -33,13 +35,19 @@ class Account {
 
     fun getAuthenticationKey(): AuthenticationKey {
         if (this.authenticationKey == null) {
-            this.authenticationKey = AuthenticationKey.ed25519(this.keyPair.getPublicKey())
+            this.authenticationKey = when (val publicKey = this.keyPair.getPublicKey()) {
+                is Ed25519PublicKey -> AuthenticationKey.ed25519(publicKey)
+                is MultiEd25519PublicKey -> AuthenticationKey.multiEd25519(publicKey)
+                else -> {
+                    TODO("error")
+                }
+            }
         }
         return this.authenticationKey!!
     }
 
     fun getPublicKey(): String {
-        return keyPair.getPublicKey().toHex()
+        return keyPair.getPublicKey().toByteArray().toHex()
     }
 }
 

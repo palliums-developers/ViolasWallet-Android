@@ -93,7 +93,7 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
         )
 
         val keyPair =
-            KeyPair(sendAccount.getPrivateKey()!!)
+            KeyPair.fromSecretKey(sendAccount.getPrivateKey()!!)
 
         mLibraService.submitTransaction(
             rawTransaction,
