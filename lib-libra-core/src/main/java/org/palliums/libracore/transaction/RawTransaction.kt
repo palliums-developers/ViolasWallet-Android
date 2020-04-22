@@ -2,6 +2,7 @@ package org.palliums.libracore.transaction
 
 import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
+import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.storage.TypeTag
 import org.palliums.libracore.wallet.RAW_TRANSACTION_HASH_SALT
 import org.spongycastle.jcajce.provider.digest.SHA3
@@ -63,6 +64,8 @@ data class SignedTransaction(
         transactionLength = rawTxn.toByteArray().size.toLong()
     }
 
+    fun toHex() = toByteArray().toHex()
+
     fun toByteArray(): ByteArray {
         val stream = LCSOutputStream()
         stream.write(rawTxn.toByteArray())
@@ -77,6 +80,8 @@ data class AccountAddress(val byte: ByteArray) {
     fun toByteArray(): ByteArray {
         return byte
     }
+
+    fun toHex() = toByteArray().toHex()
 
     companion object {
         val DEFAULT = AccountAddress(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))

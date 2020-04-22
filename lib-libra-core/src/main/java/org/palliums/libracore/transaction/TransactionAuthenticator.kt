@@ -37,8 +37,8 @@ class AuthenticationKey(publicKey: KeyPair.PublicKey, scheme: Scheme) {
         return authenticationKeyBytes.copyOfRange(0, 16)
     }
 
-    fun getShortAddress(): ByteArray {
-        return authenticationKeyBytes.copyOfRange(16, 32)
+    fun getShortAddress(): AccountAddress {
+        return AccountAddress(authenticationKeyBytes.copyOfRange(16, 32))
     }
 
     fun toBytes(): ByteArray {
@@ -61,9 +61,13 @@ class TransactionSignAuthenticator(
 ) : TransactionAuthenticator {
     override fun toByteArray(): ByteArray {
         println(
-            "public key size:${publicKey.toByteArray().size} hex:${LCS.encodeInt(publicKey.toByteArray().size).toHex()}"
+            "public key size:${publicKey.toByteArray().size} hex:${LCS.encodeInt(publicKey.toByteArray().size)
+                .toHex()}"
         )
-        println("signature size:${signature.toByteArray().size} hex:${LCS.encodeInt(signature.toByteArray().size).toHex()}")
+        println(
+            "signature size:${signature.toByteArray().size} hex:${LCS.encodeInt(signature.toByteArray().size)
+                .toHex()}"
+        )
 
         val stream = LCSOutputStream()
         stream.writeU8(AuthenticationKey.Scheme.Ed25519.value.toInt())

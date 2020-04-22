@@ -15,7 +15,7 @@ fun RawTransaction.Companion.optionTransaction(
     senderAddress: String,
     payload: TransactionPayload,
     sequenceNumber: Long,
-    maxGasAmount: Long = 400000,
+    maxGasAmount: Long = 400_000,
     gasUnitPrice: Long = 0,
     delayed: Long = 1000
 ): RawTransaction {

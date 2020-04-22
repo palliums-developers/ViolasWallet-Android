@@ -4,8 +4,8 @@ import org.palliums.libracore.crypto.Ed25519PublicKey
 import org.palliums.libracore.crypto.KeyPair
 import org.palliums.libracore.crypto.MultiEd25519PublicKey
 import org.palliums.libracore.serialization.toHex
+import org.palliums.libracore.transaction.AccountAddress
 import org.palliums.libracore.transaction.AuthenticationKey
-import org.spongycastle.util.encoders.Hex
 
 /**
  * Created by elephant on 2019-09-20 11:48.
@@ -27,7 +27,7 @@ class Account {
     fun getAddress(): AccountAddress {
         if (address == null) {
             val authenticationKey = authenticationKey ?: getAuthenticationKey()
-            this.address = AccountAddress(authenticationKey.getShortAddress())
+            this.address = authenticationKey.getShortAddress()
         }
 
         return this.address!!
@@ -48,23 +48,5 @@ class Account {
 
     fun getPublicKey(): String {
         return keyPair.getPublicKey().toByteArray().toHex()
-    }
-}
-
-
-class AccountAddress {
-
-    private val addressBytes: ByteArray
-
-    constructor(address: ByteArray) {
-        this.addressBytes = address
-    }
-
-    fun toBytes(): ByteArray {
-        return this.addressBytes
-    }
-
-    fun toHex(): String {
-        return Hex.toHexString(this.addressBytes)
     }
 }
