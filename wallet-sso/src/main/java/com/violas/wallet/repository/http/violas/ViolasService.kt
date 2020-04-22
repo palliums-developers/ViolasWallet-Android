@@ -66,14 +66,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         sendTransaction(signedTransaction)
     }
 
+    //todo 添加返回值 返回 sequence_number、sender
     suspend fun sendTransaction(signedTransaction: SignedTransaction) {
-        try {
-            val pushTx = mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
-            TransactionException.checkViolasTransactionException(pushTx)
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-            throw TransactionException()
-        }
+        mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
     }
 
     suspend fun getSequenceNumber(address: String) =

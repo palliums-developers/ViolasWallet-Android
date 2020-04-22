@@ -2,6 +2,7 @@ package com.violas.wallet.biz
 
 import android.content.Context
 import com.palliums.content.ContextProvider
+import com.palliums.utils.exceptionAsync
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexRepository
@@ -34,7 +35,7 @@ class ExchangeManager {
         // 1.获取撤销兑换token数据的签名字符
         val account = Account(KeyPair.fromSecretKey(privateKey))
 
-        val sequenceNumber = GlobalScope.async {
+        val sequenceNumber = GlobalScope.exceptionAsync {
             getSequenceNumber(account.getAddress().toHex())
         }
         val optionExchangePayload = TransactionPayload.optionUndoExchangePayload(
@@ -47,26 +48,27 @@ class ExchangeManager {
             dexOrder.version.toLong()
         )
 
-        val rawTransaction = RawTransaction.optionTransaction(
-            account.getAddress().toHex(),
-            optionExchangePayload,
-            sequenceNumber.await()
-        )
-
-        val signedTransaction = SignedTransaction(
-            rawTransaction,
-            TransactionSignAuthenticator(
-                account.keyPair.getPublicKey(),
-                account.keyPair.signMessage(rawTransaction.toHashByteArray())
-            )
-        )
-        val signedtxn = signedTransaction.toByteArray().toHex()
-
-        // 2.通知交易中心撤销订单，交易中心此时只会标记需要撤销订单的状态为CANCELLING并停止兑换，失败会抛异常
-        dexService.revokeOrder(dexOrder.version, signedtxn)
-
-        // 3.撤销兑换token数据上链，只有上链后，交易中心扫区块扫到解析撤销订单才会更改订单状态为CANCELED
         return try {
+            val rawTransaction = RawTransaction.optionTransaction(
+                account.getAddress().toHex(),
+                optionExchangePayload,
+                sequenceNumber.await()
+            )
+
+            val signedTransaction = SignedTransaction(
+                rawTransaction,
+                TransactionSignAuthenticator(
+                    account.keyPair.getPublicKey(),
+                    account.keyPair.signMessage(rawTransaction.toHashByteArray())
+                )
+            )
+            val signedtxn = signedTransaction.toByteArray().toHex()
+
+            // 2.通知交易中心撤销订单，交易中心此时只会标记需要撤销订单的状态为CANCELLING并停止兑换，失败会抛异常
+            dexService.revokeOrder(dexOrder.version, signedtxn)
+
+            // 3.撤销兑换token数据上链，只有上链后，交易中心扫区块扫到解析撤销订单才会更改订单状态为CANCELED
+
             mViolasService.sendTransaction(signedTransaction)
             true
         } catch (e: Exception) {
@@ -113,7 +115,7 @@ class ExchangeManager {
         toCoin: IToken,
         toCoinAmount: BigDecimal
     ): Boolean {
-        val sequenceNumber = GlobalScope.async { getSequenceNumber(account.getAddress().toHex()) }
+        val sequenceNumber = GlobalScope.exceptionAsync { getSequenceNumber(account.getAddress().toHex()) }
         val optionExchangePayload = TransactionPayload.optionExchangePayload(
             context,
             receiveAddress,
@@ -123,18 +125,22 @@ class ExchangeManager {
             toCoinAmount.multiply(BigDecimal("1000000")).toLong()
         )
 
-        val rawTransaction =
-            RawTransaction.optionTransaction(
-                account.getAddress().toHex(),
-                optionExchangePayload,
-                sequenceNumber.await()
-            )
+        try {
+            val rawTransaction =
+                RawTransaction.optionTransaction(
+                    account.getAddress().toHex(),
+                    optionExchangePayload,
+                    sequenceNumber.await()
+                )
 
-        mViolasService.sendTransaction(
-            rawTransaction,
-            account.keyPair.getPublicKey(),
-            account.keyPair.signMessage(rawTransaction.toHashByteArray())
-        )
+            mViolasService.sendTransaction(
+                rawTransaction,
+                account.keyPair.getPublicKey(),
+                account.keyPair.signMessage(rawTransaction.toHashByteArray())
+            )
+        }catch (e:Exception){
+            return false
+        }
         return true
     }
 

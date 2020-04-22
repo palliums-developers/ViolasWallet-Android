@@ -3,6 +3,7 @@ package com.palliums.violas.http
 import com.google.gson.Gson
 import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
+import com.palliums.violas.error.TransactionException
 import io.reactivex.Single
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -33,11 +34,13 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
             mViolasApi.getSequenceNumber(address)
         }.data ?: 0
 
-    @Throws()
+    @Throws(TransactionException::class)
     suspend fun pushTx(tx: String): Response<Any> {
         val requestBody = Gson().toJson(SignedTxnDTO(tx))
             .toRequestBody("application/json".toMediaTypeOrNull())
-        return mViolasApi.pushTx(requestBody)
+        val pushTx = mViolasApi.pushTx(requestBody)
+        TransactionException.checkViolasTransactionException(pushTx)
+        return pushTx
     }
 
     /**

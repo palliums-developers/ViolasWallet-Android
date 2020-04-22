@@ -56,13 +56,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
     suspend fun sendTransaction(
         signedTransaction: SignedTransaction
     ) {
-        try {
-            val pushTx = mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
-            TransactionException.checkViolasTransactionException(pushTx)
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-            throw TransactionException()
-        }
+        mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
     }
 
     @Throws(TransactionException::class)

@@ -80,15 +80,11 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
         initException?.unsupportedTradingPair()
     }
 
-    init {
-        viewModelScope.coroutineContext.plus(coroutineExceptionHandler())
-    }
-
     @MainThread
     fun init(accountId: Long) {
         observerExchangeRate()
         observerExchangeCoinType()
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             mAccount = mAccountManager.getAccountById(accountId)
             val exchangePair =
                 mExchangeMappingManager.getExchangePair()
@@ -122,7 +118,7 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
      * 处理处理交易币种切换的时候
      */
     private fun observerExchangeCoinType() = mCurrentExchangePairLiveData.observeForever {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
             val receiveAccountCoinType = if (isForward()) {
                 it.getLast().getCoinType().coinType()
             } else {
