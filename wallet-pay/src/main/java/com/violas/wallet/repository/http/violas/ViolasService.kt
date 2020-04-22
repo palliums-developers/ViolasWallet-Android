@@ -11,6 +11,7 @@ import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
 import org.palliums.violascore.crypto.KeyPair
+import org.palliums.violascore.crypto.Signature
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
@@ -77,7 +78,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
     suspend fun sendTransaction(
         rawTransaction: RawTransaction,
         publicKey: KeyPair.PublicKey,
-        signed: ByteArray
+        signed: Signature
     ) {
         sendTransaction(
             rawTransaction,
