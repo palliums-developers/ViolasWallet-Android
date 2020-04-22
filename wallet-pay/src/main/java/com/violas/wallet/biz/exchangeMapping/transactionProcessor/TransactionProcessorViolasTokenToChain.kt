@@ -8,10 +8,10 @@ import com.violas.wallet.biz.exchangeMapping.MappingAccount
 import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
 import com.violas.wallet.repository.DataRepository
 import org.json.JSONObject
-import org.palliums.libracore.serialization.toHex
-import org.palliums.libracore.wallet.KeyPair
+import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.optionTransaction
+import org.palliums.violascore.wallet.KeyPair
 import java.math.BigDecimal
 
 /**

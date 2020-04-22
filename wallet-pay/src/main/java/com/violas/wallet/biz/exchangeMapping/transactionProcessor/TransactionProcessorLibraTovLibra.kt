@@ -6,21 +6,19 @@ import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.TokenManager
-import com.violas.wallet.biz.TransferUnknownException
 import com.violas.wallet.biz.exchangeMapping.LibraMappingAccount
 import com.violas.wallet.biz.exchangeMapping.MappingAccount
 import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
 import com.violas.wallet.repository.DataRepository
 import org.json.JSONObject
+import org.palliums.libracore.crypto.KeyPair
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.RawTransaction
 import org.palliums.libracore.transaction.TransactionPayload
 import org.palliums.libracore.transaction.optionTransaction
 import org.palliums.libracore.transaction.optionWithDataPayload
-import org.palliums.violascore.wallet.KeyPair
-import org.palliums.violascore.wallet.Account
+import org.palliums.libracore.wallet.Account
 import java.math.BigDecimal
-import java.util.concurrent.CountDownLatch
 
 class TransactionProcessorLibraTovLibra() : TransactionProcessor {
     private val mTokenManager by lazy {
@@ -60,7 +58,7 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
         if (!checkTokenRegister) {
             try {
                 publishToken(
-                    Account(KeyPair(receiveAccount.getPrivateKey()!!))
+                    org.palliums.violascore.wallet.Account(org.palliums.violascore.wallet.KeyPair(receiveAccount.getPrivateKey()!!))
                 )
             } catch (e: Exception) {
                 throw RuntimeException(
@@ -102,7 +100,7 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
         return ""
     }
 
-    private suspend fun publishToken(mAccount: Account) {
+    private suspend fun publishToken(mAccount: org.palliums.violascore.wallet.Account) {
         return mTokenManager.publishToken(mAccount)
     }
 }

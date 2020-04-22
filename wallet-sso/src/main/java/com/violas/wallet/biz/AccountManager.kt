@@ -18,8 +18,8 @@ import org.palliums.libracore.mnemonic.English
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount
 import org.palliums.libracore.wallet.Account
-import org.palliums.libracore.wallet.KeyFactory
-import org.palliums.libracore.wallet.Seed
+import org.palliums.libracore.crypto.KeyFactory
+import org.palliums.libracore.crypto.Seed
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -383,7 +383,9 @@ class AccountManager {
     }
 
     private fun deriveLibra(wordList: List<String>): Account {
-        val keyFactory = KeyFactory(Seed.fromMnemonic(wordList))
+        val keyFactory = KeyFactory(
+            Seed.fromMnemonic(wordList)
+        )
         return Account(keyFactory.generateKey(0))
     }
 

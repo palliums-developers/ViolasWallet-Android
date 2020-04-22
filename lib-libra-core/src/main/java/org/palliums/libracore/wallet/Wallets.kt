@@ -1,5 +1,8 @@
 package org.palliums.libracore.wallet
 
+import org.palliums.libracore.crypto.KeyFactory
+import org.palliums.libracore.crypto.KeyPair
+import org.palliums.libracore.crypto.Seed
 import org.palliums.libracore.mnemonic.English
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount

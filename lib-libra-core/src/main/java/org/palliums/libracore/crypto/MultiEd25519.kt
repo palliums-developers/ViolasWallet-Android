@@ -2,12 +2,14 @@ package org.palliums.libracore.crypto
 
 import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.wallet.CryptoMaterialError
-import org.palliums.libracore.wallet.KeyPair
 import java.lang.RuntimeException
 
 private const val MAX_NUM_OF_KEYS = 32
 
-class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val threshold: Int) {
+class MultiEd25519PublicKey(
+    private val publicKeys: List<Ed25519PublicKey>,
+    private val threshold: Int
+) : KeyPair.PublicKey {
 
     init {
         if (threshold == 0 || publicKeys.size < threshold) {
@@ -17,17 +19,20 @@ class MultiEd25519PublicKey(private val publicKeys: List<ByteArray>, private val
         }
     }
 
-    fun toByteArray(): ByteArray {
+    override fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
         publicKeys.forEach {
-            output.write(it)
+            output.write(it.toByteArray())
         }
         output.writeU8(threshold)
         return output.toByteArray()
     }
 }
 
-class MultiEd25519PrivateKey(private val privateKeys: List<ByteArray>, private val threshold: Int) {
+class MultiEd25519PrivateKey(
+    private val privateKeys: List<Ed25519PrivateKey>,
+    private val threshold: Int
+) : KeyPair.PrivateKey {
     init {
         if (threshold == 0 || privateKeys.size < threshold) {
             throw CryptoMaterialError.ValidationError()
@@ -44,11 +49,13 @@ class MultiEd25519PrivateKey(private val privateKeys: List<ByteArray>, private v
             .take(threshold)
             .mapIndexed { index, bytes ->
                 bitmap.setBit(index)
-                signatures.add(KeyPair(bytes).signMessage(message))
+                signatures.add(KeyPair(bytes.toByteArray()).signMessage(message))
             }
 
         return MultiEd25519Signature(signatures, bitmap)
     }
+
+    override fun toByteArray(): ByteArray = byteArrayOf()
 }
 
 class MultiEd25519PrivateKeyIndex(

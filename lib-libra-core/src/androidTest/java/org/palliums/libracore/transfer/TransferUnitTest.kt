@@ -7,7 +7,7 @@ import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.*
 import org.palliums.libracore.wallet.Account
-import org.palliums.libracore.wallet.KeyPair
+import org.palliums.libracore.crypto.KeyPair
 
 class TransferUnitTest {
     @Test

@@ -224,7 +224,7 @@ class TransferManager {
             DataRepository.getLibraService().sendCoin(
                 context,
                 org.palliums.libracore.wallet.Account(
-                    org.palliums.libracore.wallet.KeyPair(decryptPrivateKey)
+                    org.palliums.libracore.crypto.KeyPair(decryptPrivateKey)
                 ),
                 address,
                 (amount * 1000000L).toLong()

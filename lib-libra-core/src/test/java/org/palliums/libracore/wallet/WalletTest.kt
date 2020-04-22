@@ -2,10 +2,10 @@ package org.palliums.libracore.wallet
 
 import org.junit.Assert
 import org.junit.Test
+import org.palliums.libracore.crypto.KeyFactory
+import org.palliums.libracore.crypto.Seed
 import org.palliums.libracore.crypto.sha3
 import org.palliums.libracore.serialization.toHex
-import org.palliums.libracore.transaction.AuthenticationKey
-import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.util.encoders.Hex
 
 /**
@@ -31,7 +31,12 @@ class WalletTest {
 
     @Test
     fun testMasterPrk() {
-        val keyFactory = KeyFactory(Seed.fromMnemonic(generateMnemonic(), "LIBRA"))
+        val keyFactory = KeyFactory(
+            Seed.fromMnemonic(
+                generateMnemonic(),
+                "LIBRA"
+            )
+        )
         val masterPrkStr = Hex.toHexString(keyFactory.masterPrk)
         println()
         println("Master Private Key: $masterPrkStr")
