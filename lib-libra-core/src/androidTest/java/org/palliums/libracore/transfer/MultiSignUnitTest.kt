@@ -3,10 +3,7 @@ package org.palliums.libracore.transfer
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert
 import org.junit.Test
-import org.palliums.libracore.crypto.MultiEd25519PrivateKey
-import org.palliums.libracore.crypto.MultiEd25519PrivateKeyIndex
-import org.palliums.libracore.crypto.MultiEd25519PublicKey
-import org.palliums.libracore.crypto.MultiEd25519Signature
+import org.palliums.libracore.crypto.*
 import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.*
@@ -26,8 +23,8 @@ class MultiSignUnitTest {
 
         val multiEd25519PrivateKey = MultiEd25519PrivateKey(
             arrayListOf(
-                account1.keyPair.getPrivateKey(),
-                account2.keyPair.getPrivateKey()
+                Ed25519PrivateKeyIndex(account1.keyPair.getPrivateKey() as Ed25519PrivateKey, 0),
+                Ed25519PrivateKeyIndex(account2.keyPair.getPrivateKey() as Ed25519PrivateKey, 1)
             ), 1
         )
 
@@ -51,8 +48,8 @@ class MultiSignUnitTest {
 
         val multiEd25519PublicKey = MultiEd25519PublicKey(
             arrayListOf(
-                account1.keyPair.getPublicKey(),
-                account2.keyPair.getPublicKey()
+                account1.keyPair.getPublicKey() as Ed25519PublicKey,
+                account2.keyPair.getPublicKey() as Ed25519PublicKey
             ), 1
         )
 
@@ -89,15 +86,15 @@ class MultiSignUnitTest {
 
         val multiEd25519PrivateKey = MultiEd25519PrivateKey(
             arrayListOf(
-                account1.keyPair.getPrivateKey(),
-                account2.keyPair.getPrivateKey()
+                Ed25519PrivateKeyIndex(account1.keyPair.getPrivateKey() as Ed25519PrivateKey, 0),
+                Ed25519PrivateKeyIndex(account2.keyPair.getPrivateKey() as Ed25519PrivateKey, 1)
             ), 1
         )
 
         val multiEd25519PublicKey = MultiEd25519PublicKey(
             arrayListOf(
-                account1.keyPair.getPublicKey(),
-                account2.keyPair.getPublicKey()
+                account1.keyPair.getPublicKey() as Ed25519PublicKey,
+                account2.keyPair.getPublicKey() as Ed25519PublicKey
             ), 1
         )
 
@@ -135,9 +132,9 @@ class MultiSignUnitTest {
     @Test
     fun test_multi_sign_build() {
         val multiEd25519Signature = MultiEd25519Signature.Builder()
-            .addSignature(1, "01".hexToBytes())
-            .addSignature(5, "05".hexToBytes())
-            .addSignature(2, "02".hexToBytes())
+            .addSignature(1, Ed25519Signature("01".hexToBytes()))
+            .addSignature(5, Ed25519Signature("05".hexToBytes()))
+            .addSignature(2, Ed25519Signature("02".hexToBytes()))
             .build()
 
         Assert.assertEquals(multiEd25519Signature.toByteArray().toHex(), "01020564000000")
@@ -150,10 +147,10 @@ class MultiSignUnitTest {
         val account2 = libraWallet.generateAccount(1)
         val account3 = libraWallet.generateAccount(2)
 
-        val multiEd25519PrivateKey = MultiEd25519PrivateKeyIndex(
+        val multiEd25519PrivateKey = MultiEd25519PrivateKey(
             arrayListOf(
-                Pair(account3.keyPair.getPrivateKey(), 2),
-                Pair(account1.keyPair.getPrivateKey(), 0)
+                Ed25519PrivateKeyIndex(account3.keyPair.getPrivateKey() as Ed25519PrivateKey, 2),
+                Ed25519PrivateKeyIndex(account1.keyPair.getPrivateKey() as Ed25519PrivateKey, 0)
             ), 2
         )
 
@@ -167,9 +164,9 @@ class MultiSignUnitTest {
 
         val multiEd25519PublicKey = MultiEd25519PublicKey(
             arrayListOf(
-                account1.keyPair.getPublicKey(),
-                account2.keyPair.getPublicKey(),
-                account3.keyPair.getPublicKey()
+                account1.keyPair.getPublicKey() as Ed25519PublicKey,
+                account2.keyPair.getPublicKey() as Ed25519PublicKey,
+                account3.keyPair.getPublicKey() as Ed25519PublicKey
             ), 2
         )
 

@@ -2,6 +2,7 @@ package org.palliums.libracore.wallet
 
 import org.junit.Assert
 import org.junit.Test
+import org.palliums.libracore.crypto.Ed25519Signature
 import org.palliums.libracore.crypto.KeyFactory
 import org.palliums.libracore.crypto.Seed
 import org.palliums.libracore.crypto.sha3
@@ -25,7 +26,7 @@ class WalletTest {
 
         Assert.assertEquals(
             seedHexStr,
-            "338d7f69773dd191683378dcd98897f505f3605d5746039bd9cc5aabf19d392f"
+            "9fca0ead4ba52cfe1514785ff0a808f575cb72b74e5cb1e0686c991f058874b0"
         )
     }
 
@@ -43,7 +44,7 @@ class WalletTest {
 
         Assert.assertEquals(
             masterPrkStr,
-            "a6ebf6ef1032e4a55ce94a13fd73cb7bf727f914e66734fb13ce64dfb5f02444"
+            "e3bffbac970f7eb023287346677051e8426d2c92d85b4b5edc99deac47952aed"
         )
     }
 
@@ -51,19 +52,19 @@ class WalletTest {
     fun testGenerateKey() {
         val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
         val account = libraWallet.newAccount()
-        val privateKey = Hex.toHexString(account.keyPair.getPrivateKey())
-        val publicKey = Hex.toHexString(account.keyPair.getPublicKey())
+        val privateKey = account.keyPair.getPrivateKey().toHex()
+        val publicKey = account.keyPair.getPublicKey().toHex()
         println()
         println("Private Key: $privateKey")
         println("Public Key: $publicKey")
 
         Assert.assertEquals(
             privateKey,
-            "f3cdd2183629867d6cfa24fb11c58ad515d5a4af014e96c00bb6ba13d3e5f80e"
+            "a65111b2a22a1874f0f532f6b1a0991fbf1fedb9df8ce55a49b3e35be73ff228"
         )
         Assert.assertEquals(
             publicKey,
-            "c413ea446039d0cd07715ddedb8169393e456b03d05ce67d50a4446ba5e067b0"
+            "b505dfc25dc69adffa72e6bc507f8cf1ad57ad442ff4bc86f5c2e41b522b8c46"
         )
     }
 
@@ -71,23 +72,32 @@ class WalletTest {
     fun testSign() {
         val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
         val account = libraWallet.newAccount()
-        val signHexStr = Hex.toHexString(account.keyPair.signMessage(Hex.decode("1234567890")))
+        val signHexStr = account.keyPair.signMessage(Hex.decode("1234567890")).toHex()
         println()
         println("message sign: $signHexStr")
 
         Assert.assertEquals(
             signHexStr,
-            "7233bd1e6ab55c720a8e5e9cfc90a34ab7cbe60580a3721d35bcf3a44d7cab666f10f6eb1bb669c92bbfd017210e2ce336b56a36ca1feefcca78d6718cdec109"
+            "0bcb5c73b6919a6074fb4dfdb01d6496e691ac107097da68ff3ffa7a7225a5d425ea1e06c429c5a504ce2a6240c59aa765d813f7f379118b2ece059d1e8c370f"
         )
     }
 
     @Test
     fun testNewAccount() {
-        val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
+        //        val mnemonic =
+//            "school problem vibrant royal invite that never key thunder pizza mesh punch"
+        val mnemonic =
+            "velvet version sea near truly open blanket exchange leaf cupboard shine poem"
+//        val mnemonic =
+//            "key shoulder focus dish donate inmate move weekend hold regret peanut link"
+
+        val mnemonicWords = mnemonic.split(" ")
+
+        val libraWallet = LibraWallet(WalletConfig(mnemonicWords))
 
         val account1 = libraWallet.newAccount()
         val account2 = libraWallet.newAccount()
-//        val address1 = account1.getAddress().toHex()
+
         val authenticationKey1 = account1.getAuthenticationKey().toHex()
         val address1 = account1.getAddress().toHex()
 
@@ -108,11 +118,11 @@ class WalletTest {
 
         Assert.assertEquals(
             address1,
-            "d040ad00457129ecf5ead5d299627a44"
+            "7f4644ae2b51b65bd3c9d414aa853407"
         )
         Assert.assertEquals(
             address2,
-            "5a79e96c3105aabbfb6c5c027a0ef821"
+            "41c30f54f4adfb37d2b16e6f245e8372"
         )
     }
 
@@ -124,9 +134,9 @@ class WalletTest {
         val data = "session_id_123"
         val signedData = account.keyPair.signMessage(data.toByteArray().sha3())
         println()
-        println("data sign simple: ${Hex.toHexString(signedData)}")
+        println("data sign simple: ${signedData.toHex()}")
 
-        val result = account.keyPair.verify(data.toByteArray().sha3(), signedData)
+        val result = account.keyPair.verify(signedData, data.toByteArray().sha3())
 
         Assert.assertEquals(
             result,
@@ -135,16 +145,8 @@ class WalletTest {
     }
 
     private fun generateMnemonic(): List<String> {
-        //         val mnemonicWords1 = LibraWallet.generateMnemonic()
-        //         println()
-        //         println("generated mnemonic words: ${mnemonicWords1.joinToString(" ")}")
-
-//        val mnemonic =
-//            "school problem vibrant royal invite that never key thunder pizza mesh punch"
         val mnemonic =
             "velvet version sea near truly open blanket exchange leaf cupboard shine poem"
-//        val mnemonic =
-//            "key shoulder focus dish donate inmate move weekend hold regret peanut link"
         val mnemonicWords = mnemonic.split(" ")
 
         return mnemonicWords
