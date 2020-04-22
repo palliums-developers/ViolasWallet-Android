@@ -10,14 +10,13 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.ContextProvider
-import com.palliums.utils.asyncException
+import com.palliums.utils.exceptionAsync
 import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.getString
 import com.palliums.utils.toMutableMap
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
-import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
@@ -37,8 +36,6 @@ import org.palliums.violascore.wallet.KeyPair
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.concurrent.CountDownLatch
-import kotlin.coroutines.suspendCoroutine
 
 class QuotesViewModel(application: Application) : AndroidViewModel(application), Subscriber,
     Handler.Callback {
@@ -257,8 +254,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         mAccount?.let {
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val tokenPrices = asyncException { DataRepository.getDexService().getTokens() }
-                    val localEnableToken = asyncException { TokenManager().loadEnableToken(it) }
+                    val tokenPrices = exceptionAsync { DataRepository.getDexService().getTokens() }
+                    val localEnableToken = exceptionAsync { TokenManager().loadEnableToken(it) }
 
                     val localEnableTokenSet =
                         localEnableToken.await().map { it.tokenIdx }.toHashSet()

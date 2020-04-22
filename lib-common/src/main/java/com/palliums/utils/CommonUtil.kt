@@ -19,7 +19,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 fun CustomMainScope(): CoroutineScope =
     CoroutineScope(SupervisorJob() + Dispatchers.Main + coroutineExceptionHandler())
 
-fun <T> CoroutineScope.asyncException(
+fun <T> CoroutineScope.exceptionAsync(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> T
