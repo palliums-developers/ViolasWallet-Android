@@ -57,10 +57,10 @@ class MultiSignUnitTest {
         )
 
         val multiAddress =
-            AuthenticationKey.multi_ed25519(
+            AuthenticationKey.multiEd25519(
                 multiEd25519PublicKey
             ).getShortAddress().toHex()
-        val multiAuthenticationKey = AuthenticationKey.multi_ed25519(
+        val multiAuthenticationKey = AuthenticationKey.multiEd25519(
             multiEd25519PublicKey
         ).toHex()
 
@@ -102,7 +102,7 @@ class MultiSignUnitTest {
         )
 
         val senderAddress =
-            AuthenticationKey.multi_ed25519(
+            AuthenticationKey.multiEd25519(
                 multiEd25519PublicKey
             ).getShortAddress().toHex()
 
@@ -173,7 +173,7 @@ class MultiSignUnitTest {
             ), 2
         )
 
-        val multiAuthenticationKey = AuthenticationKey.multi_ed25519(
+        val multiAuthenticationKey = AuthenticationKey.multiEd25519(
             multiEd25519PublicKey
         )
         val senderAddress = multiAuthenticationKey.getShortAddress().toHex()

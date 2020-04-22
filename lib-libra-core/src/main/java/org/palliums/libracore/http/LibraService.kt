@@ -3,6 +3,8 @@ package org.palliums.libracore.http
 import android.content.Context
 import android.util.Log
 import org.palliums.libracore.BuildConfig
+import org.palliums.libracore.crypto.KeyPair
+import org.palliums.libracore.crypto.Signature
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.*
 import org.palliums.libracore.wallet.Account
@@ -66,8 +68,8 @@ class LibraService(private val mLibraRepository: LibraRepository) {
 
     suspend fun submitTransaction(
         rawTransaction: RawTransaction,
-        publicKey: ByteArray,
-        signedRawTransaction: ByteArray
+        publicKey: KeyPair.PublicKey,
+        signedRawTransaction: Signature
     ) {
         val signedTransaction = SignedTransaction(
             rawTransaction,

@@ -8,23 +8,23 @@ import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexRepository
 import com.violas.wallet.ui.main.quotes.bean.IToken
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import org.palliums.violascore.wallet.KeyPair
+import org.json.JSONObject
+import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
-import kotlin.coroutines.suspendCoroutine
 
 class ExchangeManager {
     private val mViolasService by lazy {
         DataRepository.getViolasService()
     }
 
-    private val receiveAddress = "07e92f79c67fdd6b80ed9103636a49511363de8c873bc709966fffb2e3fcd095"
+    private val mTokenManager by lazy {
+        TokenManager()
+    }
+
+    private val receiveAddress = "c71caa520e123d122c310177c08fa0d2"
 
     @Throws(Exception::class)
     suspend fun revokeOrder(
@@ -38,14 +38,14 @@ class ExchangeManager {
         val sequenceNumber = GlobalScope.exceptionAsync {
             getSequenceNumber(account.getAddress().toHex())
         }
-        val optionExchangePayload = TransactionPayload.optionUndoExchangePayload(
+        val optionUndoExchangePayloadWithData =
+            optionUndoExchangePayloadWithData(dexOrder.version.toLong())
+
+        val optionExchangePayload = TransactionPayload.optionTransactionPayload(
             ContextProvider.getContext(),
             receiveAddress,
-            if (dexOrder.tokenGiveAddress.startsWith("0x"))
-                dexOrder.tokenGiveAddress.replace("0x", "")
-            else
-                dexOrder.tokenGiveAddress,
-            dexOrder.version.toLong()
+            0,
+            optionUndoExchangePayloadWithData
         )
 
         return try {
@@ -77,36 +77,6 @@ class ExchangeManager {
         }
     }
 
-    suspend fun undoExchangeToken(
-        account: Account,
-        giveTokenAddress: String,
-        version: Long
-    ) {
-        val sequenceNumber = GlobalScope.async { getSequenceNumber(account.getAddress().toHex()) }
-        val optionExchangePayload = TransactionPayload.optionUndoExchangePayload(
-            ContextProvider.getContext(),
-            receiveAddress,
-            if (giveTokenAddress.startsWith("0x"))
-                giveTokenAddress.replace("0x", "")
-            else
-                giveTokenAddress,
-            version
-        )
-
-        val rawTransaction =
-            RawTransaction.optionTransaction(
-                account.getAddress().toHex(),
-                optionExchangePayload,
-                sequenceNumber.await()
-            )
-
-        mViolasService.sendTransaction(
-            rawTransaction,
-            account.keyPair.getPublicKey(),
-            account.keyPair.signMessage(rawTransaction.toHashByteArray())
-        )
-    }
-
     suspend fun exchangeToken(
         context: Context,
         account: Account,
@@ -115,14 +85,18 @@ class ExchangeManager {
         toCoin: IToken,
         toCoinAmount: BigDecimal
     ): Boolean {
-        val sequenceNumber = GlobalScope.exceptionAsync { getSequenceNumber(account.getAddress().toHex()) }
-        val optionExchangePayload = TransactionPayload.optionExchangePayload(
-            context,
-            receiveAddress,
-            fromCoin.tokenIdx().toString(),
-            toCoin.tokenIdx().toString(),
-            fromCoinAmount.multiply(BigDecimal("1000000")).toLong(),
+        val sequenceNumber =
+            GlobalScope.exceptionAsync { getSequenceNumber(account.getAddress().toHex()) }
+
+        val optionExchangePayloadWithData = optionExchangePayloadWithData(
+            toCoin.tokenIdx(),
             toCoinAmount.multiply(BigDecimal("1000000")).toLong()
+        )
+        val optionExchangePayload = mTokenManager.transferTokenPayload(
+            fromCoin.tokenIdx(),
+            receiveAddress,
+            fromCoinAmount.multiply(BigDecimal("1000000")).toLong(),
+            optionExchangePayloadWithData
         )
 
         try {
@@ -138,7 +112,7 @@ class ExchangeManager {
                 account.keyPair.getPublicKey(),
                 account.keyPair.signMessage(rawTransaction.toHashByteArray())
             )
-        }catch (e:Exception){
+        } catch (e: Exception) {
             return false
         }
         return true
@@ -146,5 +120,27 @@ class ExchangeManager {
 
     private suspend fun getSequenceNumber(address: String): Long {
         return mViolasService.getSequenceNumber(address)
+    }
+
+    private fun optionExchangePayloadWithData(
+        exchangeTokenIdx: Long,
+        exchangeReceiveAmount: Long
+    ): ByteArray {
+        val subExchangeDate = JSONObject()
+        subExchangeDate.put("type", "sub_ex")
+        subExchangeDate.put("addr", "$exchangeTokenIdx")
+        subExchangeDate.put("amount", exchangeReceiveAmount)
+        subExchangeDate.put("fee", 0)
+        subExchangeDate.put("exp", 1000)
+        return subExchangeDate.toString().toByteArray()
+    }
+
+    private fun optionUndoExchangePayloadWithData(
+        version: Long
+    ): ByteArray {
+        val subExchangeDate = JSONObject()
+        subExchangeDate.put("type", "wd_ex")
+        subExchangeDate.put("ver", version)
+        return subExchangeDate.toString().toByteArray()
     }
 }

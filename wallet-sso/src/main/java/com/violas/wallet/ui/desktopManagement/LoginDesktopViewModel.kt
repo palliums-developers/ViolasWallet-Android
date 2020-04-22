@@ -50,7 +50,7 @@ class LoginDesktopViewModel(
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
         val account = params[0] as Account
-        val signedSessionId = account.keyPair.signMessage(mSessionId.toByteArray().sha3()).toHex()
+        val signedSessionId = account.keyPair.signMessage(mSessionId.toByteArray().sha3()).toByteArray().toHex()
 
         mGovernorService.loginDesktop(
             walletAddress = mAccountLD.value!!.address,

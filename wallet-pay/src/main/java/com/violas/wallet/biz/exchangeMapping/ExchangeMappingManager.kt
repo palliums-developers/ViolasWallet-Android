@@ -199,7 +199,7 @@ class ExchangeMappingManager {
                 "vBTC",
 //                "2236322cf1e35198302919c2c1b1e4bf5be07359c8995c6a13ec53c17579c768"
 //                BTCToVbtcInfo.tokenAddress
-                0
+                1
             )
 
             override fun getRate(): BigDecimal {

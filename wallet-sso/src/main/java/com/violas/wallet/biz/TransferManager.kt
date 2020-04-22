@@ -12,7 +12,7 @@ import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
 import com.violas.wallet.utils.validationViolasAddress
 import org.palliums.violascore.wallet.Account
-import org.palliums.violascore.wallet.KeyPair
+import org.palliums.violascore.crypto.KeyPair
 
 class ToTheirException : RuntimeException(getString(R.string.hint_to_their_error))
 class WrongPasswordException : RuntimeException(getString(R.string.hint_password_error))
@@ -132,7 +132,11 @@ class TransferManager {
         token?.let {
             try {
                 mTokenManager.sendToken(
-                    Account(KeyPair(decryptPrivateKey)),
+                    Account(
+                        KeyPair(
+                            decryptPrivateKey
+                        )
+                    ),
                     token.tokenIdx,
                     address,
                     (amount * 1000000L).toLong()
@@ -157,7 +161,7 @@ class TransferManager {
             DataRepository.getLibraService().sendCoin(
                 context,
                 org.palliums.libracore.wallet.Account(
-                    org.palliums.libracore.wallet.KeyPair(decryptPrivateKey)
+                    org.palliums.libracore.crypto.KeyPair(decryptPrivateKey)
                 ),
                 address,
                 (amount * 1000000L).toLong()

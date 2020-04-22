@@ -1,5 +1,6 @@
 package org.palliums.violascore.wallet
 
+import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.AuthenticationKey
 import org.spongycastle.util.encoders.Hex

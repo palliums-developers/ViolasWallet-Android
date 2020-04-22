@@ -38,14 +38,16 @@ fun RawTransaction.Companion.optionTransaction(
 fun TransactionPayload.Companion.optionTransactionPayload(
     context: Context,
     address: String,
-    amount: Long
+    amount: Long,
+    metaData: ByteArray = byteArrayOf()
 ): TransactionPayload {
     val convert = AccountAddress.convert(address)
     return optionTransactionPayload(
         context,
         convert.address,
         convert.authenticationKeyPrefix,
-        amount
+        amount,
+        metaData
     )
 }
 
@@ -56,7 +58,8 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     context: Context,
     address: String,
     authenticationKeyPrefix: String,
-    amount: Long
+    amount: Long,
+    metaData: ByteArray = byteArrayOf()
 ): TransactionPayload {
     val moveEncode = Move.decode(context.assets.open("move/libra_peer_to_peer_with_metadata.mv"))
 
@@ -64,7 +67,7 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     val authenticationKeyPrefixArgument =
         TransactionArgument.newByteArray(authenticationKeyPrefix.hexToBytes())
     val amountArgument = TransactionArgument.newU64(amount)
-    val metadataArgument = TransactionArgument.newByteArray(byteArrayOf())
+    val metadataArgument = TransactionArgument.newByteArray(metaData)
 
     return TransactionPayload(
         TransactionPayload.Script(

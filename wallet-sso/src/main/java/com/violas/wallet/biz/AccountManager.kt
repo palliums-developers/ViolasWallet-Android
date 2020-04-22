@@ -19,8 +19,8 @@ import org.palliums.libracore.mnemonic.English
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount
 import org.palliums.libracore.wallet.Account
-import org.palliums.libracore.wallet.KeyFactory
-import org.palliums.libracore.wallet.Seed
+import org.palliums.libracore.crypto.KeyFactory
+import org.palliums.libracore.crypto.Seed
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -254,7 +254,7 @@ class AccountManager {
 
         return mAccountStorage.insert(
             AccountDO(
-                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
+                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
@@ -279,7 +279,7 @@ class AccountManager {
 
         return mAccountStorage.insert(
             AccountDO(
-                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
+                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
@@ -360,7 +360,7 @@ class AccountManager {
 
         val insertIds = mAccountStorage.insert(
             AccountDO(
-                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey()),
+                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
@@ -384,7 +384,9 @@ class AccountManager {
     }
 
     private fun deriveLibra(wordList: List<String>): Account {
-        val keyFactory = KeyFactory(Seed.fromMnemonic(wordList))
+        val keyFactory = KeyFactory(
+            Seed.fromMnemonic(wordList)
+        )
         return Account(keyFactory.generateKey(0))
     }
 

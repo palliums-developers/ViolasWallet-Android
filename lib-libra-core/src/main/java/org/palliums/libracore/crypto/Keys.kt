@@ -1,10 +1,13 @@
-package org.palliums.violascore.wallet
+package org.palliums.libracore.crypto
 
-import org.palliums.violascore.crypto.Ed25519KeyPair
-import org.palliums.violascore.mnemonic.English
-import org.palliums.violascore.mnemonic.Mnemonic
-import org.palliums.violascore.serialization.LCS
-import org.palliums.violascore.utils.ByteUtility
+import org.palliums.libracore.mnemonic.English
+import org.palliums.libracore.mnemonic.Mnemonic
+import org.palliums.libracore.serialization.LCS
+import org.palliums.libracore.utils.ByteUtility
+import org.palliums.libracore.wallet.DERIVED_KEY
+import org.palliums.libracore.wallet.MASTER_KEY_SALT
+import org.palliums.libracore.wallet.MNEMONIC_SALT_DEFAULT
+import org.palliums.libracore.wallet.MNEMONIC_SALT_PREFIX
 import org.spongycastle.crypto.digests.SHA3Digest
 import org.spongycastle.crypto.generators.HKDFBytesGenerator
 import org.spongycastle.crypto.generators.PKCS5S2ParametersGenerator
@@ -91,13 +94,23 @@ class KeyFactory {
 
         val secretKey = ByteArray(32)
         hkdfBytesGenerator.generateBytes(secretKey, 0, 32)
-        return KeyPair.fromSecretKey(secretKey)
+        return KeyPair.fromSecretKey(
+            secretKey
+        )
     }
 }
 
 class KeyPair(
     private val secretKey: ByteArray
 ) {
+    interface PrivateKey {
+        fun toByteArray(): ByteArray
+    }
+
+    interface PublicKey {
+        fun toByteArray(): ByteArray
+    }
+
     private val mEd25519KeyPair: Ed25519KeyPair by lazy {
         Ed25519KeyPair(secretKey)
     }
@@ -108,23 +121,27 @@ class KeyPair(
         }
 
         fun fromMnemonic(mnemonics: List<String>): KeyPair {
-            return fromSecretKey(Seed.fromMnemonic(mnemonics).data)
+            return fromSecretKey(
+                Seed.fromMnemonic(
+                    mnemonics
+                ).data
+            )
         }
     }
 
-    fun getPrivateKey(): ByteArray {
-        return secretKey
+    fun getPrivateKey(): Ed25519PrivateKey {
+        return Ed25519PrivateKey(secretKey)
     }
 
-    fun getPublicKey(): ByteArray {
+    fun getPublicKey(): Ed25519PublicKey {
         return mEd25519KeyPair.getPublicKey()
     }
 
-    fun signMessage(message: ByteArray): ByteArray {
+    fun signMessage(message: ByteArray): Signature {
         return mEd25519KeyPair.signMessage(message)
     }
 
-    fun verify(message: ByteArray, signed: ByteArray): Boolean {
+    fun verify(message: ByteArray, signed: Signature): Boolean {
         return mEd25519KeyPair.verify(signed, message)
     }
 }

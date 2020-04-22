@@ -7,7 +7,7 @@ object BaseBizUrl {
     private const val VIOLAS_BASE_URL_TEST_NET = "http://52.27.228.84:4000"
 
     // Violas dex base url
-    private const val VIOLAS_DEX_BASE_URL_MAIN_NET = "http://18.220.66.235:38181"
+    private const val VIOLAS_DEX_BASE_URL_MAIN_NET = "https://dex.violas.com/"
     private const val VIOLAS_DEX_BASE_URL_TEST_NET = "http://18.220.66.235:38181"
 
     // Libra base url

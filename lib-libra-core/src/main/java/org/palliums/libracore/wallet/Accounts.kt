@@ -1,10 +1,8 @@
 package org.palliums.libracore.wallet
 
-import org.palliums.libracore.serialization.LCSInputStream
-import org.palliums.libracore.serialization.LCSOutputStream
+import org.palliums.libracore.crypto.KeyPair
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.AuthenticationKey
-import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.util.encoders.Hex
 
 /**
