@@ -27,7 +27,7 @@ fun RawTransaction.Companion.optionTransaction(
     senderAddress: String,
     payload: TransactionPayload,
     sequenceNumber: Long,
-    maxGasAmount: Long = 400_000,
+    maxGasAmount: Long = 1_000_000,
     gasUnitPrice: Long = 0,
     delayed: Long = 1000
 ): RawTransaction {
@@ -50,14 +50,16 @@ fun RawTransaction.Companion.optionTransaction(
 fun TransactionPayload.Companion.optionTransactionPayload(
     context: Context,
     address: String,
-    amount: Long
+    amount: Long,
+    metaData: ByteArray = byteArrayOf()
 ): TransactionPayload {
     val convert = AccountAddress.convert(address)
     return optionTransactionPayload(
         context,
         convert.address,
         convert.authenticationKeyPrefix,
-        amount
+        amount,
+        metaData
     )
 }
 
@@ -68,240 +70,27 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     context: Context,
     address: String,
     authenticationKeyPrefix: String,
-    amount: Long
+    amount: Long,
+    metaData: ByteArray = byteArrayOf()
 ): TransactionPayload {
-    val moveEncode = Move.decode(context.assets.open("move/violas_peer_to_peer.mv"))
+    val moveEncode = Move.decode(context.assets.open("move/violas_peer_to_peer_with_metadata.mv"))
 
     val addressArgument = TransactionArgument.newAddress(address)
     val authenticationKeyPrefixArgument =
         TransactionArgument.newByteArray(authenticationKeyPrefix.hexToBytes())
     val amountArgument = TransactionArgument.newU64(amount)
+    val metaDataArgument = TransactionArgument.newByteArray(metaData)
 
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
             arrayListOf(lbrStructTag()),
-            arrayListOf(addressArgument, authenticationKeyPrefixArgument, amountArgument)
-        )
-    )
-}
-
-/**
- * 创建 Token 转账 payload
- */
-fun TransactionPayload.Companion.optionTokenTransactionPayload(
-    context: Context,
-    tokenAddress: String,
-    address: String,
-    amount: Long
-): TransactionPayload {
-    val moveEncode = Move.violasTokenEncode(
-        context.assets.open("move/violas_transfer.mv"),
-        tokenAddress.hexToBytes()
-    )
-
-    val addressArgument = TransactionArgument.newAddress(address)
-    val amountArgument = TransactionArgument.newU64(amount)
-
-    return TransactionPayload(
-        TransactionPayload.Script(
-            moveEncode,
-            arrayListOf(lbrStructTag()),
-            arrayListOf(addressArgument, amountArgument)
-        )
-    )
-}
-
-/**
- * 注册 Token 的 payload
- */
-fun TransactionPayload.Companion.optionPublishTokenPayload(
-    context: Context,
-    tokenAddress: String
-): TransactionPayload {
-    val moveEncode = Move.violasTokenEncode(
-        context.assets.open("move/token_publish.json"),
-        tokenAddress.hexToBytes()
-    )
-
-    return TransactionPayload(
-        TransactionPayload.Script(
-            moveEncode,
-            arrayListOf(lbrStructTag()),
-            arrayListOf()
-        )
-    )
-}
-
-/**
- * 创建发起兑换交易 Payload
- */
-fun TransactionPayload.Companion.optionExchangePayload(
-    context: Context,
-    receiveAddress: String,
-    sendTokenAddress: String,
-    exchangeTokenAddress: String,
-    exchangeSendAmount: Long,
-    exchangeReceiveAmount: Long
-): TransactionPayload {
-
-    val subExchangeDate = JSONObject()
-    subExchangeDate.put("type", "sub_ex")
-    subExchangeDate.put("addr", exchangeTokenAddress)
-    subExchangeDate.put("amount", exchangeReceiveAmount)
-    subExchangeDate.put("fee", 0)
-    subExchangeDate.put("exp", 1000)
-
-    val addressArgument = TransactionArgument.newAddress(receiveAddress)
-    val amountArgument = TransactionArgument.newU64(exchangeSendAmount)
-    val dateArgument =
-        TransactionArgument.newByteArray(subExchangeDate.toString().toByteArray())
-
-    val moveEncode = Move.violasTokenEncode(
-        context.assets.open("move/violas_token_transfer_with_data.json"),
-        sendTokenAddress.hexToBytes()
-    )
-
-    return TransactionPayload(
-        TransactionPayload.Script(
-            moveEncode,
-            arrayListOf(lbrStructTag()),
-            arrayListOf(addressArgument, amountArgument, dateArgument)
-        )
-    )
-}
-
-/**
- * 创建撤销兑换交易 Payload
- */
-fun TransactionPayload.Companion.optionUndoExchangePayload(
-    context: Context,
-    receiveAddress: String,
-    sendTokenAddress: String,
-    version: Long
-): TransactionPayload {
-    val subExchangeDate = JSONObject()
-    subExchangeDate.put("type", "wd_ex")
-    subExchangeDate.put("ver", version)
-
-    val addressArgument = TransactionArgument.newAddress(receiveAddress)
-    val amountArgument = TransactionArgument.newU64(0)
-    val dateArgument =
-        TransactionArgument.newByteArray(subExchangeDate.toString().toByteArray())
-
-    val moveEncode = Move.violasTokenEncode(
-        context.assets.open("move/violas_token_transfer_with_data.json"),
-        sendTokenAddress.hexToBytes()
-    )
-
-    return TransactionPayload(
-        TransactionPayload.Script(
-            moveEncode,
-            arrayListOf(lbrStructTag()),
-            arrayListOf(addressArgument, amountArgument, dateArgument)
-        )
-    )
-}
-
-fun TransactionPayload.Companion.optionWithDataPayload(
-    context: Context,
-    receiveAddress: String,
-    exchangeSendAmount: Long,
-    data: ByteArray
-): TransactionPayload {
-
-    val addressArgument = TransactionArgument.newAddress(receiveAddress)
-    val amountArgument = TransactionArgument.newU64(exchangeSendAmount)
-    val dateArgument = TransactionArgument.newByteArray(data)
-
-    val moveEncode = Move.decode(
-        context.assets.open("move/violas_transfer_with_data.json")
-    )
-
-    return TransactionPayload(
-        TransactionPayload.Script(
-            moveEncode,
-            arrayListOf(lbrStructTag()),
-            arrayListOf(addressArgument, amountArgument, dateArgument)
-        )
-    )
-}
-
-fun TransactionPayload.Companion.optionTokenWithDataPayload(
-    context: Context,
-    receiveAddress: String,
-    exchangeSendAmount: Long,
-    tokenAddress: String,
-    data: ByteArray
-): TransactionPayload {
-
-    val addressArgument = TransactionArgument.newAddress(receiveAddress)
-    val amountArgument = TransactionArgument.newU64(exchangeSendAmount)
-    val dateArgument = TransactionArgument.newByteArray(data)
-
-    val moveEncode = Move.violasTokenEncode(
-        context.assets.open("move/violas_token_transfer_with_data.json"),
-        tokenAddress.hexToBytes()
-    )
-
-    return TransactionPayload(
-        TransactionPayload.Script(
-            moveEncode,
-            arrayListOf(lbrStructTag()),
-            arrayListOf(addressArgument, amountArgument, dateArgument)
-        )
-    )
-}
-
-/**
- * 生成链上注册稳定比交易 Payload
- *
- * @param tokenAddress 稳定币的 model address
- */
-fun TransactionPayload.Companion.optionTokenRegisterPayload(
-    context: Context,
-    tokenAddress: String
-): TransactionPayload {
-
-    val moveEncode = Move.violasTokenMultiEncode(
-        context.assets.open("move/violas_token.json"),
-        tokenAddress.hexToBytes()
-    )
-
-    return TransactionPayload(
-        TransactionPayload.Module(
-            moveEncode
-        )
-    )
-}
-
-/**
- * 生成铸币交易 Payload
- *
- * @param tokenAddress 稳定币的 model address
- * @param receiveAddress 稳定币接收地址
- * @param receiveAmount 铸币数量(最小单位)
- */
-fun TransactionPayload.Companion.optionTokenMintPayload(
-    context: Context,
-    tokenAddress: String,
-    receiveAddress: String,
-    receiveAmount: Long
-): TransactionPayload {
-
-    val addressArgument = TransactionArgument.newAddress(receiveAddress)
-    val amountArgument = TransactionArgument.newU64(receiveAmount)
-
-    val moveEncode = Move.violasTokenEncode(
-        context.assets.open("move/violas_token_mint.json"),
-        tokenAddress.hexToBytes()
-    )
-
-    return TransactionPayload(
-        TransactionPayload.Script(
-            moveEncode,
-            arrayListOf(lbrStructTag()),
-            arrayListOf(addressArgument, amountArgument)
+            arrayListOf(
+                addressArgument,
+                authenticationKeyPrefixArgument,
+                amountArgument,
+                metaDataArgument
+            )
         )
     )
 }

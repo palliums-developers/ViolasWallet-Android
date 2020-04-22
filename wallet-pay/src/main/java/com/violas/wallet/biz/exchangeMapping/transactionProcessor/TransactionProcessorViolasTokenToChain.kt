@@ -1,9 +1,7 @@
 package com.violas.wallet.biz.exchangeMapping.transactionProcessor
 
-import com.palliums.content.ContextProvider
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.TokenManager
-import com.violas.wallet.biz.TransferUnknownException
 import com.violas.wallet.biz.exchangeMapping.BTCMappingAccount
 import com.violas.wallet.biz.exchangeMapping.LibraMappingAccount
 import com.violas.wallet.biz.exchangeMapping.MappingAccount
@@ -13,11 +11,8 @@ import org.json.JSONObject
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.wallet.KeyPair
 import org.palliums.violascore.transaction.RawTransaction
-import org.palliums.violascore.transaction.TransactionPayload
-import org.palliums.violascore.transaction.optionTokenWithDataPayload
 import org.palliums.violascore.transaction.optionTransaction
 import java.math.BigDecimal
-import java.util.concurrent.CountDownLatch
 
 /**
  * Violas 代币交易为其他链的币种
