@@ -129,7 +129,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
 
     suspend fun getBalanceInMicroLibra(address: String): Long {
         val response = getAccountState(address)
-        return response.data?.balance ?: 0
+        return response.data?.balance?.amount ?: 0
     }
 
     suspend fun getSequenceNumber(address: String): Long {

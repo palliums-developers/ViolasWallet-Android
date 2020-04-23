@@ -65,7 +65,7 @@ data class AccountStateDTO(
     @SerializedName("authentication_key")
     val authenticationKey: String,
     @SerializedName("balance")
-    val balance: Long,
+    val balance: AccountBalance,
     @SerializedName("sequence_number")
     val sequenceNumber: Long,
     @SerializedName("sent_events_key")
@@ -76,4 +76,9 @@ data class AccountStateDTO(
     val delegatedWithdrawalCapability: Boolean,
     @SerializedName("delegated_key_rotation_capability")
     val delegatedKeyRotationCapability: Boolean
+)
+
+data class AccountBalance(
+    val amount: Long,
+    val currency: String
 )
