@@ -17,12 +17,12 @@ interface IToken {
 }
 
 class ExchangeToken(
-    private val address: Long,
+    private val tokenIdx: Long,
     private val name: String,
     private var localEnable: Boolean = false,
     private var remoteEnable: Boolean = false
 ) : IToken {
-    override fun tokenIdx() = address
+    override fun tokenIdx() = tokenIdx
 
     override fun tokenName() = name
 
