@@ -1,12 +1,16 @@
 package org.palliums.violascore.crypto
 
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable
 import org.palliums.violascore.serialization.LCSOutputStream
 import org.palliums.violascore.wallet.CryptoMaterialError
 import java.lang.RuntimeException
 
 private const val MAX_NUM_OF_KEYS = 32
 
-class MultiEd25519PublicKey(private val publicKeys: List<Ed25519PublicKey>, private val threshold: Int): KeyPair.PublicKey {
+class MultiEd25519PublicKey(
+    private val publicKeys: List<Ed25519PublicKey>,
+    private val threshold: Int
+) : KeyPair.PublicKey {
 
     init {
         if (threshold == 0 || publicKeys.size < threshold) {
@@ -26,7 +30,10 @@ class MultiEd25519PublicKey(private val publicKeys: List<Ed25519PublicKey>, priv
     }
 }
 
-class MultiEd25519PrivateKey(private val privateKeys: List<Ed25519PrivateKey>, private val threshold: Int): KeyPair.PrivateKey {
+class MultiEd25519PrivateKey(
+    private val privateKeys: List<Ed25519PrivateKeyIndex>,
+    private val threshold: Int
+) : KeyPair.PrivateKey {
     init {
         if (threshold == 0 || privateKeys.size < threshold) {
             throw CryptoMaterialError.ValidationError()
@@ -35,15 +42,25 @@ class MultiEd25519PrivateKey(private val privateKeys: List<Ed25519PrivateKey>, p
         }
     }
 
+    fun getPrivateKeys(): List<Ed25519PrivateKey> {
+        return privateKeys
+    }
+
+    fun getThreshold(): Int {
+        return threshold
+    }
+
     fun signMessage(message: ByteArray): MultiEd25519Signature {
         val bitmap = Bitmap()
         val signatures = ArrayList<Signature>()
 
-        privateKeys.asIterable()
+        privateKeys
+            .sortedBy { it.getIndex() }
+            .asIterable()
             .take(threshold)
-            .mapIndexed { index, bytes ->
-                bitmap.setBit(index)
-                signatures.add(KeyPair(bytes.toByteArray()).signMessage(message))
+            .mapIndexed { _, bytes ->
+                bitmap.setBit(bytes.getIndex())
+                signatures.add(Ed25519KeyPair(bytes.toByteArray()).signMessage(message))
             }
 
         return MultiEd25519Signature(signatures, bitmap)
@@ -55,36 +72,9 @@ class MultiEd25519PrivateKey(private val privateKeys: List<Ed25519PrivateKey>, p
 class MultiEd25519Signature(
     private val signatures: List<Signature>,
     private val bitmap: Bitmap
-) {
+) : Signature {
 
-//    companion object {
-//        fun new(signatures: List<ByteArray>, bitmap: Array<Byte>): MultiEd25519Signature {
-//            val numOfSigSize = signatures.size
-//            if (numOfSigSize == 0 || numOfSigSize > MAX_NUM_OF_KEYS) {
-//                throw CryptoMaterialError.ValidationError()
-//            }
-//            val signatures = signatures.sortedBy {
-//                it[1]
-//            }
-//            val bitmap = Array(BITMAP_NUM_OF_BYTES) { 0.toByte() }
-//            for (i in 0 until bitmap.size) {
-//                if (i < MAX_NUM_OF_KEYS) {
-//                    if (bitmapGetBit(bitmap, i)) {
-//                        throw CryptoMaterialError.BitVecError(
-//                            "Duplicate signature index"
-//                        )
-//                    } else {
-//                        bitmapSetBit(bitmap, i)
-//                    }
-//                } else {
-//                    throw CryptoMaterialError.BitVecError("Signature index is out of range")
-//                }
-//            }
-//            return MultiEd25519Signature(signatures, bitmap)
-//        }
-//    }
-
-    fun toByteArray(): ByteArray {
+    override fun toByteArray(): ByteArray {
         val output = LCSOutputStream()
         signatures.forEach {
             output.write(it.toByteArray())
@@ -92,8 +82,74 @@ class MultiEd25519Signature(
         output.write(bitmap.toByteArray())
         return output.toByteArray()
     }
+
+    class Builder {
+        private val mSignaturesMap = mutableMapOf<Int, Signature>()
+
+        fun addSignature(index: Int, signature: Signature): Builder {
+            mSignaturesMap[index] = signature
+            return this
+        }
+
+        fun build(): MultiEd25519Signature {
+            val signatures = mutableListOf<Signature>()
+            val bitmap = Bitmap()
+
+            val numOfSigSize = mSignaturesMap.size
+            if (numOfSigSize == 0 || numOfSigSize > MAX_NUM_OF_KEYS) {
+                throw CryptoMaterialError.ValidationError()
+            }
+
+            mSignaturesMap.keys.sorted().forEach { index ->
+                if (index < MAX_NUM_OF_KEYS) {
+                    mSignaturesMap[index]?.let {
+                        if (bitmap.getBit(index)) {
+                            throw CryptoMaterialError.BitVecError(
+                                "Duplicate signature index"
+                            )
+                        } else {
+                            bitmap.setBit(index)
+                            signatures.add(it)
+                        }
+                    }
+                } else {
+                    throw CryptoMaterialError.BitVecError("Signature index is out of range")
+                }
+            }
+            return MultiEd25519Signature(signatures, bitmap)
+        }
+    }
 }
 
+class MultiEd25519KeyPair(private val multiEd25519PrivateKey: MultiEd25519PrivateKey) : KeyPair {
+
+    companion object {
+        private val mDsaNamedCurveSpec =
+            EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519)
+    }
+
+    override fun getPrivateKey(): MultiEd25519PrivateKey {
+        return multiEd25519PrivateKey
+    }
+
+    override fun getPublicKey(): MultiEd25519PublicKey {
+        val privateKeys = multiEd25519PrivateKey.getPrivateKeys()
+        val publicKeys = ArrayList<Ed25519PublicKey>(privateKeys.size)
+        privateKeys.forEach {
+            publicKeys.add(KeyPair.fromSecretKey(it.toByteArray()).getPublicKey())
+        }
+        return MultiEd25519PublicKey(publicKeys, multiEd25519PrivateKey.getThreshold())
+    }
+
+    override fun signMessage(message: ByteArray): MultiEd25519Signature {
+        return multiEd25519PrivateKey.signMessage(message)
+    }
+
+    override fun verify(signed: Signature, message: ByteArray): Boolean {
+        // todo
+        return true
+    }
+}
 
 class Bitmap(private val bitmap: ByteArray = ByteArray(BITMAP_NUM_OF_BYTES) { 0.toByte() }) {
     companion object {

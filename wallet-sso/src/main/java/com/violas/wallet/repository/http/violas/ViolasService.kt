@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.violas
 
 import android.content.Context
-import com.palliums.violas.error.TransactionException
+import com.palliums.violas.error.ViolasException
 import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.BaseBrowserUrl
@@ -50,7 +50,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         sendTransaction(rawTransaction, account)
     }
 
-    @Throws(TransactionException::class)
+    @Throws(ViolasException::class)
     suspend fun sendTransaction(
         rawTransaction: RawTransaction,
         account: Account

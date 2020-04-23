@@ -1,9 +1,10 @@
 package org.palliums.violascore.wallet
 
+import org.palliums.violascore.crypto.Ed25519PublicKey
 import org.palliums.violascore.crypto.KeyPair
-import org.palliums.violascore.serialization.toHex
+import org.palliums.violascore.crypto.MultiEd25519PublicKey
+import org.palliums.violascore.transaction.AccountAddress
 import org.palliums.violascore.transaction.AuthenticationKey
-import org.spongycastle.util.encoders.Hex
 
 /**
  * Created by elephant on 2019-09-20 11:48.
@@ -25,38 +26,27 @@ class Account {
     fun getAddress(): AccountAddress {
         if (address == null) {
             val authenticationKey = authenticationKey ?: getAuthenticationKey()
-            this.address = AccountAddress(authenticationKey.getShortAddress())
+            this.address = authenticationKey.getShortAddress()
         }
 
         return this.address!!
     }
 
     fun getAuthenticationKey(): AuthenticationKey {
-        if (this.authenticationKey == null) {
-            this.authenticationKey = AuthenticationKey.ed25519(this.keyPair.getPublicKey())
+        return this.authenticationKey ?: synchronized(this) {
+            when (val publicKey = this.keyPair.getPublicKey()) {
+                is Ed25519PublicKey -> AuthenticationKey.ed25519(publicKey)
+                is MultiEd25519PublicKey -> AuthenticationKey.multiEd25519(publicKey)
+                else -> {
+                    TODO("error")
+                }
+            }.also {
+                this.authenticationKey = it
+            }
         }
-        return this.authenticationKey!!
     }
 
     fun getPublicKey(): String {
         return keyPair.getPublicKey().toHex()
-    }
-}
-
-
-class AccountAddress {
-
-    private val addressBytes: ByteArray
-
-    constructor(address: ByteArray) {
-        this.addressBytes = address
-    }
-
-    fun toBytes(): ByteArray {
-        return this.addressBytes
-    }
-
-    fun toHex(): String {
-        return Hex.toHexString(this.addressBytes)
     }
 }

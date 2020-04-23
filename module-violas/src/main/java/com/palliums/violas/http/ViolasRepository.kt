@@ -3,8 +3,7 @@ package com.palliums.violas.http
 import com.google.gson.Gson
 import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
-import com.palliums.violas.error.TransactionException
-import io.reactivex.Single
+import com.palliums.violas.error.ViolasException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
@@ -34,12 +33,12 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
             mViolasApi.getSequenceNumber(address)
         }.data ?: 0
 
-    @Throws(TransactionException::class)
+    @Throws(ViolasException::class)
     suspend fun pushTx(tx: String): Response<Any> {
         val requestBody = Gson().toJson(SignedTxnDTO(tx))
             .toRequestBody("application/json".toMediaTypeOrNull())
         val pushTx = mViolasApi.pushTx(requestBody)
-        TransactionException.checkViolasTransactionException(pushTx)
+        ViolasException.checkViolasTransactionException(pushTx)
         return pushTx
     }
 
@@ -55,6 +54,15 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
     ): ListResponse<TransactionRecordDTO> {
         return checkResponse {
             mViolasApi.getTransactionRecord(address, pageSize, offset, tokenAddress)
+        }
+    }
+
+    /**
+     * 获取账户信息
+     */
+    suspend fun getAccountState(address: String): Response<AccountStateDTO> {
+        return checkResponse {
+            mViolasApi.getAccountState(address)
         }
     }
 

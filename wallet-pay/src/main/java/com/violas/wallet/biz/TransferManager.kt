@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.utils.getString
-import com.palliums.violas.error.TransactionException
+import com.palliums.violas.error.ViolasException
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
@@ -35,10 +35,10 @@ class TransferManager {
     private fun convertViolasTransferException(e: Exception): Exception {
         e.printStackTrace()
         return when (e) {
-            is TransactionException.LackOfBalanceException -> {
+            is ViolasException.LackOfBalanceException -> {
                 LackOfBalanceException()
             }
-            is TransactionException.NodeResponseException -> {
+            is ViolasException.NodeResponseException -> {
                 LackOfBalanceException()
             }
             else -> TransferUnknownException()
@@ -199,7 +199,7 @@ class TransferManager {
                 mTokenManager.sendViolasToken(
                     token.tokenIdx,
                     Account(
-                        KeyPair(decryptPrivateKey)
+                        KeyPair.fromSecretKey(decryptPrivateKey)
                     ),
                     address,
                     (amount * 1000000L).toLong()
@@ -248,7 +248,7 @@ class TransferManager {
             DataRepository.getViolasService().sendCoin(
                 context,
                 Account(
-                    KeyPair(decryptPrivateKey)
+                    KeyPair.fromSecretKey(decryptPrivateKey)
                 ),
                 address,
                 (amount * 1000000L).toLong()

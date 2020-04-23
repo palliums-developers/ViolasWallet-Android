@@ -34,16 +34,17 @@ class Account {
     }
 
     fun getAuthenticationKey(): AuthenticationKey {
-        if (this.authenticationKey == null) {
-            this.authenticationKey = when (val publicKey = this.keyPair.getPublicKey()) {
+        return this.authenticationKey ?: synchronized(this) {
+            when (val publicKey = this.keyPair.getPublicKey()) {
                 is Ed25519PublicKey -> AuthenticationKey.ed25519(publicKey)
                 is MultiEd25519PublicKey -> AuthenticationKey.multiEd25519(publicKey)
                 else -> {
                     TODO("error")
                 }
+            }.also {
+                this.authenticationKey = it
             }
         }
-        return this.authenticationKey!!
     }
 
     fun getPublicKey(): String {

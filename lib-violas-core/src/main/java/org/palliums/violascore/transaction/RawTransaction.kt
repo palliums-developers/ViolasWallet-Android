@@ -3,6 +3,8 @@ package org.palliums.violascore.transaction
 import org.palliums.violascore.wallet.RAW_TRANSACTION_HASH_SALT
 import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.LCSOutputStream
+import org.palliums.violascore.serialization.hexToBytes
+import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.storage.TypeTag
 import org.spongycastle.jcajce.provider.digest.SHA3
 import java.lang.RuntimeException
@@ -53,6 +55,22 @@ data class RawTransaction(
     }
 }
 
+data class SignedTransactionHex(
+    val rawTxn: String,
+    val authenticator: TransactionAuthenticator
+) {
+    val transactionLength = rawTxn.hexToBytes().size.toLong()
+
+    fun toHex() = toByteArray().toHex()
+
+    fun toByteArray(): ByteArray {
+        val stream = LCSOutputStream()
+        stream.write(rawTxn.hexToBytes())
+        stream.write(authenticator.toByteArray())
+        return stream.toByteArray()
+    }
+}
+
 data class SignedTransaction(
     val rawTxn: RawTransaction,
     val authenticator: TransactionAuthenticator
@@ -77,6 +95,8 @@ data class AccountAddress(val byte: ByteArray) {
     fun toByteArray(): ByteArray {
         return byte
     }
+
+    fun toHex() = toByteArray().toHex()
 
     companion object {
         val DEFAULT = AccountAddress(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))

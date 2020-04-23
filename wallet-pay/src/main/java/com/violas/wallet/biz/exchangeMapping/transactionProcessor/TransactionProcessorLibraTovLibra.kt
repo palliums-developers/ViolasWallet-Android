@@ -59,7 +59,7 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
             try {
                 publishToken(
                     org.palliums.violascore.wallet.Account(
-                        org.palliums.violascore.crypto.KeyPair(
+                        org.palliums.violascore.crypto.KeyPair.fromSecretKey(
                             receiveAccount.getPrivateKey()!!
                         )
                     )

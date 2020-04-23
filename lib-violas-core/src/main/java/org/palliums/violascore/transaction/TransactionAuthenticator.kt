@@ -7,7 +7,7 @@ import org.palliums.violascore.serialization.toHex
 import org.spongycastle.jcajce.provider.digest.SHA3
 import org.spongycastle.util.encoders.Hex
 
-class AuthenticationKey {
+class AuthenticationKey(publicKey: KeyPair.PublicKey, scheme: Scheme) {
     enum class Scheme(val value: Byte) {
         Ed25519(0),
         MultiEd25519(1)
@@ -25,13 +25,10 @@ class AuthenticationKey {
 
     private val authenticationKeyBytes: ByteArray
 
-    constructor(publicKey: KeyPair.PublicKey, scheme: Scheme) {
-
+    init {
         val schemePublicKey = publicKey.toByteArray().plus(scheme.value)
-
         val sha3256 = SHA3.Digest256()
         sha3256.update(schemePublicKey)
-
         this.authenticationKeyBytes = sha3256.digest()
     }
 
@@ -39,8 +36,8 @@ class AuthenticationKey {
         return authenticationKeyBytes.copyOfRange(0, 16)
     }
 
-    fun getShortAddress(): ByteArray {
-        return authenticationKeyBytes.copyOfRange(16, 32)
+    fun getShortAddress(): AccountAddress {
+        return AccountAddress(authenticationKeyBytes.copyOfRange(16, 32))
     }
 
     fun toBytes(): ByteArray {
@@ -64,9 +61,13 @@ class TransactionSignAuthenticator(
 
     override fun toByteArray(): ByteArray {
         println(
-            "public key size:${publicKey.toByteArray().size} hex:${LCS.encodeInt(publicKey.toByteArray().size).toHex()}"
+            "public key size:${publicKey.toByteArray().size} hex:${LCS.encodeInt(publicKey.toByteArray().size)
+                .toHex()}"
         )
-        println("signature size:${signature.toByteArray().size} hex:${LCS.encodeInt(signature.toByteArray().size).toHex()}")
+        println(
+            "signature size:${signature.toByteArray().size} hex:${LCS.encodeInt(signature.toByteArray().size)
+                .toHex()}"
+        )
 
         val stream = LCSOutputStream()
         stream.writeU8(AuthenticationKey.Scheme.Ed25519.value.toInt())

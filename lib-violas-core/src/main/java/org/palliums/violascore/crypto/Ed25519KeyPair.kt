@@ -6,24 +6,25 @@ import net.i2p.crypto.eddsa.EdDSAPublicKey
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec
-import org.palliums.violascore.serialization.toHex
 import java.security.MessageDigest
 
-class Ed25519PrivateKey(private val key: ByteArray) : KeyPair.PrivateKey {
+open class Ed25519PrivateKey(private val key: ByteArray) : KeyPair.PrivateKey {
     override fun toByteArray(): ByteArray = key
-    fun toHex() = key.toHex()
+}
+
+class Ed25519PrivateKeyIndex(key: Ed25519PrivateKey, private val index: Int) : Ed25519PrivateKey(key.toByteArray()) {
+    fun getIndex() = index
 }
 
 class Ed25519PublicKey(private val key: ByteArray) : KeyPair.PublicKey {
     override fun toByteArray(): ByteArray = key
-    fun toHex() = key.toHex()
 }
 
-class Signature(private val signature: ByteArray) {
-    fun toByteArray(): ByteArray = signature
+open class Ed25519Signature(private val signature: ByteArray) : Signature {
+    override fun toByteArray(): ByteArray = signature
 }
 
-class Ed25519KeyPair(secretKey: ByteArray) {
+class Ed25519KeyPair(private val secretKey: ByteArray) :KeyPair{
     companion object {
         private val mDsaNamedCurveSpec =
             EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519)
@@ -36,18 +37,22 @@ class Ed25519KeyPair(secretKey: ByteArray) {
         EdDSAPublicKey(EdDSAPublicKeySpec(mEdDSAPrivateKey.a, mEdDSAPrivateKey.params))
     }
 
-    fun getPublicKey(): Ed25519PublicKey {
+    override fun getPrivateKey(): KeyPair.PrivateKey {
+        return Ed25519PrivateKey(secretKey)
+    }
+
+    override fun getPublicKey(): Ed25519PublicKey {
         return Ed25519PublicKey(mEdDSAPublicKey.abyte)
     }
 
-    fun signMessage(message: ByteArray): Signature {
+    override fun signMessage(message: ByteArray): Signature {
         val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
         edDSAEngine.initSign(mEdDSAPrivateKey)
         edDSAEngine.update(message)
-        return Signature(edDSAEngine.sign())
+        return Ed25519Signature(edDSAEngine.sign())
     }
 
-    fun verify(signed: Signature, message: ByteArray): Boolean {
+    override fun verify(signed: Signature, message: ByteArray): Boolean {
         val edDSAEngine = EdDSAEngine(MessageDigest.getInstance(mDsaNamedCurveSpec.hashAlgorithm))
         edDSAEngine.initVerify(mEdDSAPublicKey)
         edDSAEngine.update(message)

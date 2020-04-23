@@ -133,7 +133,7 @@ class TransferManager {
             try {
                 mTokenManager.sendToken(
                     Account(
-                        KeyPair(
+                        KeyPair.fromSecretKey(
                             decryptPrivateKey
                         )
                     ),
@@ -185,7 +185,7 @@ class TransferManager {
             mTokenManager.mViolasService.sendCoin(
                 context,
                 Account(
-                    KeyPair(decryptPrivateKey)
+                    KeyPair.fromSecretKey(decryptPrivateKey)
                 ),
                 address,
                 (amount * 1000000L).toLong()

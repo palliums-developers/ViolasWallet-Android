@@ -47,7 +47,7 @@ class TransactionProcessorBTCTovBTC :
         if (!checkTokenRegister) {
             try {
                 publishToken(
-                    Account(KeyPair(receiveAccount.getPrivateKey()!!))
+                    Account(KeyPair.fromSecretKey(receiveAccount.getPrivateKey()!!))
                 )
             } catch (e: Exception) {
                 throw RuntimeException(

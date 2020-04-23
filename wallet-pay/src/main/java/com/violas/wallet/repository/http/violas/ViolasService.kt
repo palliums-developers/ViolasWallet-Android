@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.violas
 
 import android.content.Context
-import com.palliums.violas.error.TransactionException
+import com.palliums.violas.error.ViolasException
 import com.palliums.violas.http.Response
 import com.palliums.violas.http.ViolasRepository
 import com.palliums.violas.http.WalletAccountDTO
@@ -54,14 +54,14 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         )
     }
 
-    @Throws(TransactionException::class)
+    @Throws(ViolasException::class)
     suspend fun sendTransaction(
         signedTransaction: SignedTransaction
     ) {
         mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
     }
 
-    @Throws(TransactionException::class)
+    @Throws(ViolasException::class)
     suspend fun sendTransaction(
         rawTransaction: RawTransaction,
         authenticator: TransactionSignAuthenticator
@@ -74,7 +74,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) : Transacti
         sendTransaction(signedTransaction)
     }
 
-    @Throws(TransactionException::class)
+    @Throws(ViolasException::class)
     suspend fun sendTransaction(
         rawTransaction: RawTransaction,
         publicKey: KeyPair.PublicKey,
