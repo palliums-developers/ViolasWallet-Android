@@ -128,7 +128,7 @@ class ExchangeManager {
     ): ByteArray {
         val subExchangeDate = JSONObject()
         subExchangeDate.put("type", "sub_ex")
-        subExchangeDate.put("addr", "$exchangeTokenIdx")
+        subExchangeDate.put("tokenid", exchangeTokenIdx)
         subExchangeDate.put("amount", exchangeReceiveAmount)
         subExchangeDate.put("fee", 0)
         subExchangeDate.put("exp", 1000)
