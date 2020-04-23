@@ -32,23 +32,24 @@ class LibraService(private val mLibraRepository: LibraRepository) {
      * @param gasUnitPrice gas 的价格
      * @param delayed 交易超时时间：当前时间的延迟，单位秒。例如当前时间延迟 1000 秒。
      */
+    @Throws(LibraException::class)
     suspend fun sendTransaction(
         payload: TransactionPayload,
-        keyPair: KeyPair,
+        account: Account,
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
         delayed: Long = 1000
     ): TransactionResult {
-        val authenticationKey = when (val publicKey = keyPair.getPublicKey()) {
-            is Ed25519PublicKey -> AuthenticationKey.ed25519(publicKey)
-            is MultiEd25519PublicKey -> AuthenticationKey.multiEd25519(publicKey)
-            else -> {
-                TODO("更多类型")
-            }
-        }
-        val senderAddress = authenticationKey.getShortAddress()
-        val sequenceNumber = getSequenceNumber(senderAddress.toHex())
+        val keyPair = account.keyPair
+        val senderAddress = account.getAddress()
+        val accountState = getAccountState(senderAddress.toHex())
+            ?: throw LibraException.AccountNoActivation()
 
+        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
+            throw LibraException.AccountNoControl()
+        }
+
+        val sequenceNumber = accountState.sequenceNumber
         val rawTransaction = RawTransaction.optionTransaction(
             senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
         )
@@ -69,6 +70,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
      * @param publicKey 公钥，单签使用 {@link Ed25519PublicKey}，多签使用{@link MultiEd25519PublicKey}
      * @param signature 签名，单签使用 {@link Ed25519Signature}，多签使用{@link MultiEd25519Signature}
      */
+    @Throws(LibraException::class)
     suspend fun sendTransaction(
         rawTransactionHex: String,
         publicKey: KeyPair.PublicKey,
@@ -112,7 +114,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
                 context, address, amount
             )
 
-        sendTransaction(transactionPayload, account.keyPair)
+        sendTransaction(transactionPayload, account)
     }
 
     suspend fun getBalance(address: String): String {
@@ -129,34 +131,11 @@ class LibraService(private val mLibraRepository: LibraRepository) {
 
     suspend fun getBalanceInMicroLibra(address: String): Long {
         val response = getAccountState(address)
-        return response.data?.balance?.amount ?: 0
-    }
-
-    suspend fun getSequenceNumber(address: String): Long {
-        val response = getAccountState(address)
-        return response.data?.sequenceNumber ?: 0
-    }
-
-    suspend fun submitTransaction(
-        rawTransaction: RawTransaction,
-        publicKey: KeyPair.PublicKey,
-        signedRawTransaction: Signature
-    ) {
-        val signedTransaction = SignedTransaction(
-            rawTransaction,
-            TransactionSignAuthenticator(publicKey, signedRawTransaction)
-        )
-
-        val hexSignedTransaction = signedTransaction.toByteArray().toHex()
-        if (BuildConfig.DEBUG) {
-            Log.i(this.javaClass.name, "SignTransaction: $hexSignedTransaction")
-        }
-
-        mLibraRepository.submitTransaction(hexSignedTransaction)
+        return response?.balance?.amount ?: 0
     }
 
     suspend fun getAccountState(
         address: String
     ) =
-        mLibraRepository.getAccountState(address)
+        mLibraRepository.getAccountState(address).data
 }

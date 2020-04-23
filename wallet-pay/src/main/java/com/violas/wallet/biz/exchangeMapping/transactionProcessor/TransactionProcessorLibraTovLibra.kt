@@ -17,6 +17,7 @@ import org.palliums.libracore.transaction.RawTransaction
 import org.palliums.libracore.transaction.TransactionPayload
 import org.palliums.libracore.transaction.optionTransaction
 import org.palliums.libracore.transaction.optionWithDataPayload
+import org.palliums.libracore.wallet.Account
 import java.math.BigDecimal
 
 class TransactionProcessorLibraTovLibra() : TransactionProcessor {
@@ -84,21 +85,9 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
                 subExchangeDate.toString().toByteArray()
             )
 
-        val sequenceNumber = mLibraService.getSequenceNumber(sendAccount.getAddress().toHex())
-
-        val rawTransaction = RawTransaction.optionTransaction(
-            sendAccount.getAddress().toHex(),
+        mLibraService.sendTransaction(
             transactionPayload,
-            sequenceNumber
-        )
-
-        val keyPair =
-            KeyPair.fromSecretKey(sendAccount.getPrivateKey()!!)
-
-        mLibraService.submitTransaction(
-            rawTransaction,
-            keyPair.getPublicKey(),
-            keyPair.signMessage(rawTransaction.toHashByteArray())
+            Account(KeyPair.fromSecretKey(sendAccount.getPrivateKey()!!))
         )
         return ""
     }
