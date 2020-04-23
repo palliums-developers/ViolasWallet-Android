@@ -15,6 +15,7 @@ import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
 import com.violas.wallet.utils.validationViolasAddress
+import org.palliums.libracore.http.LibraException
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.crypto.KeyPair
@@ -39,6 +40,19 @@ class TransferManager {
                 LackOfBalanceException()
             }
             is ViolasException.NodeResponseException -> {
+                LackOfBalanceException()
+            }
+            else -> TransferUnknownException()
+        }
+    }
+
+    private fun convertLibraTransferException(e: Exception): Exception {
+        e.printStackTrace()
+        return when (e) {
+            is LibraException.LackOfBalanceException -> {
+                LackOfBalanceException()
+            }
+            is LibraException.NodeResponseException -> {
                 LackOfBalanceException()
             }
             else -> TransferUnknownException()
@@ -231,7 +245,7 @@ class TransferManager {
             )
             success.invoke("")
         } catch (e: Exception) {
-            error.invoke(e)
+            error.invoke(convertLibraTransferException(e))
         }
     }
 
