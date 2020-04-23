@@ -12,6 +12,7 @@ import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.optionTransaction
 import org.palliums.violascore.crypto.KeyPair
+import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 
 /**
@@ -37,16 +38,6 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
         sendAmount: BigDecimal,
         receiveAddress: String
     ): String {
-        val sendAccount = sendAccount as ViolasMappingAccount
-
-        val balance = mTokenManager.getTokenBalance(
-            sendAccount.getAddress().toHex(),
-            sendAccount.getTokenIdx()
-        ).let { BigDecimal(it) }
-
-        if (sendAmount.multiply(BigDecimal("1000000")) > balance) {
-            throw LackOfBalanceException()
-        }
 
         val subExchangeDate = JSONObject()
         subExchangeDate.put("flag", "violas")
@@ -60,6 +51,16 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
         }
         subExchangeDate.put("state", "start")
 
+        val sendAccount = sendAccount as ViolasMappingAccount
+
+        val balance = mTokenManager.getTokenBalance(
+            sendAccount.getAddress().toHex(),
+            sendAccount.getTokenIdx()
+        ).let { BigDecimal(it) }
+
+        if (sendAmount.multiply(BigDecimal("1000000")) > balance) {
+            throw LackOfBalanceException()
+        }
 
         val transactionPayload = mTokenManager.transferTokenPayload(
             sendAccount.getTokenIdx(),
@@ -68,21 +69,9 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
             subExchangeDate.toString().toByteArray()
         )
 
-        val sequenceNumber = mViolasService.getSequenceNumber(sendAccount.getAddress().toHex())
-
-        val rawTransaction = RawTransaction.optionTransaction(
-            sendAccount.getAddress().toHex(),
-            transactionPayload,
-            sequenceNumber
-        )
-
-        val keyPair =
-            KeyPair.fromSecretKey(sendAccount.getPrivateKey()!!)
-
         mViolasService.sendTransaction(
-            rawTransaction,
-            keyPair.getPublicKey(),
-            keyPair.signMessage(rawTransaction.toHashByteArray())
+            transactionPayload,
+            Account(KeyPair.fromSecretKey(sendAccount.getPrivateKey()!!))
         )
         return ""
     }

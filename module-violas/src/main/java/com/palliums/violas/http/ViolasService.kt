@@ -12,6 +12,12 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 class ViolasService(private val mViolasRepository: ViolasRepository) {
+    data class GenerateTransactionResult(
+        val signTxn: String,
+        val sender: String,
+        val sequenceNumber: Long
+    )
+
     data class TransactionResult(
         val sender: String,
         val sequenceNumber: Long
@@ -35,25 +41,10 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         gasUnitPrice: Long = 0,
         delayed: Long = 1000
     ): TransactionResult {
-        val keyPair = account.keyPair
-        val senderAddress = account.getAddress()
-        val accountState = getAccountState(senderAddress.toHex())
-            ?: throw ViolasException.AccountNoActivation()
-
-        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
-            throw ViolasException.AccountNoControl()
-        }
-
-        val sequenceNumber = accountState.sequenceNumber
-        val rawTransaction = RawTransaction.optionTransaction(
-            senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
-        )
-        sendTransaction(
-            rawTransaction.toByteArray().toHex(),
-            keyPair.getPublicKey(),
-            keyPair.signMessage(rawTransaction.toHashByteArray())
-        )
-        return TransactionResult(senderAddress.toHex(), sequenceNumber)
+        val (signedTxn, sender, sequenceNumber) =
+            generateTransaction(payload, account, maxGasAmount, gasUnitPrice, delayed)
+        sendTransaction(signedTxn)
+        return TransactionResult(sender, sequenceNumber)
     }
 
     /**
@@ -71,6 +62,54 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         publicKey: KeyPair.PublicKey,
         signature: Signature
     ) {
+        val generateTransaction =
+            generateTransaction(rawTransactionHex, publicKey, signature)
+        sendTransaction(generateTransaction)
+    }
+
+    @Throws(ViolasException::class)
+    suspend fun sendTransaction(signTxn: String) {
+        mViolasRepository.pushTx(signTxn)
+    }
+
+    suspend fun generateTransaction(
+        payload: TransactionPayload,
+        account: Account,
+        maxGasAmount: Long = 1_000_000,
+        gasUnitPrice: Long = 0,
+        delayed: Long = 1000
+    ): GenerateTransactionResult {
+        val keyPair = account.keyPair
+        val senderAddress = account.getAddress()
+        // todo 等后台接口改造完成
+//        val accountState = getAccountState(senderAddress.toHex())
+//            ?: throw ViolasException.AccountNoActivation()
+//
+//        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
+//            throw ViolasException.AccountNoControl()
+//        }
+//
+//        val sequenceNumber = accountState.sequenceNumber
+
+        val sequenceNumber = getSequenceNumber(senderAddress.toHex())
+        val rawTransaction = RawTransaction.optionTransaction(
+            senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
+        )
+        return GenerateTransactionResult(
+            generateTransaction(
+                rawTransaction.toByteArray().toHex(),
+                keyPair.getPublicKey(),
+                keyPair.signMessage(rawTransaction.toHashByteArray())
+            ), senderAddress.toHex(), sequenceNumber
+        )
+    }
+
+    @Throws(ViolasException::class)
+    fun generateTransaction(
+        rawTransactionHex: String,
+        publicKey: KeyPair.PublicKey,
+        signature: Signature
+    ): String {
         val transactionAuthenticator = when {
             publicKey is Ed25519PublicKey && signature is Ed25519Signature -> {
                 TransactionSignAuthenticator(
@@ -95,7 +134,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             Log.i(this.javaClass.name, "SignTransaction: $hexSignedTransaction")
         }
 
-        mViolasRepository.pushTx(hexSignedTransaction)
+        return hexSignedTransaction
     }
 
     suspend fun sendCoin(
@@ -132,4 +171,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         address: String
     ) =
         mViolasRepository.getAccountState(address).data
+
+    suspend fun getSequenceNumber(
+        address: String
+    ) =
+        mViolasRepository.getSequenceNumber(address)
 }

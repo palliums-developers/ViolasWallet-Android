@@ -188,7 +188,10 @@ class AccountManager {
 
         return mAccountStorage.insert(
             AccountDO(
-                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
+                privateKey = security.encrypt(
+                    password,
+                    deriveLibra.keyPair.getPrivateKey().toByteArray()
+                ),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
@@ -213,7 +216,10 @@ class AccountManager {
 
         return mAccountStorage.insert(
             AccountDO(
-                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
+                privateKey = security.encrypt(
+                    password,
+                    deriveLibra.keyPair.getPrivateKey().toByteArray()
+                ),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
@@ -299,7 +305,10 @@ class AccountManager {
 
         val insertIds = mAccountStorage.insert(
             AccountDO(
-                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
+                privateKey = security.encrypt(
+                    password,
+                    deriveLibra.keyPair.getPrivateKey().toByteArray()
+                ),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
@@ -308,7 +317,10 @@ class AccountManager {
                 walletType = 0
             ),
             AccountDO(
-                privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
+                privateKey = security.encrypt(
+                    password,
+                    deriveLibra.keyPair.getPrivateKey().toByteArray()
+                ),
                 publicKey = deriveLibra.getPublicKey(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
@@ -376,7 +388,7 @@ class AccountManager {
     suspend fun getBalance(account: AccountDO): Long {
         return when (account.coinNumber) {
             CoinTypes.Violas.coinType() -> {
-                DataRepository.getViolasService().getBalanceInMicroLibras(account.address)
+                DataRepository.getViolasService().getBalanceInMicroLibra(account.address)
             }
 
             CoinTypes.Libra.coinType() -> {

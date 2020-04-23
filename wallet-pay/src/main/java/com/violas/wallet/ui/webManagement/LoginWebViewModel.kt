@@ -35,7 +35,7 @@ class LoginWebViewModel(
     val mAccountLD = MutableLiveData<AccountDO>()
 
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
-    private val mViolasService by lazy { DataRepository.getViolasService() }
+    private val mViolasService by lazy { DataRepository.getViolasBizService() }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

@@ -3,6 +3,7 @@ package com.violas.wallet.repository
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.violas.http.ViolasApi
 import com.palliums.violas.http.ViolasRepository
+import com.palliums.violas.http.ViolasService
 import com.palliums.violas.smartcontract.multitoken.MultiContractRpcApi
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
@@ -16,15 +17,12 @@ import com.violas.wallet.repository.http.dex.DexApi
 import com.violas.wallet.repository.http.dex.DexRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
-import com.violas.wallet.repository.http.libra.LibexplorerApi
-import com.violas.wallet.repository.http.libra.LibexplorerRepository
-import com.violas.wallet.repository.http.libra.LibexplorerService
 import com.violas.wallet.repository.http.libra.violas.LibraViolasApi
 import com.violas.wallet.repository.http.libra.violas.LibraViolasRepository
 import com.violas.wallet.repository.http.libra.violas.LibraViolasService
 import com.violas.wallet.repository.http.mappingExchange.MappingExchangeApi
 import com.violas.wallet.repository.http.mappingExchange.MappingExchangeRepository
-import com.violas.wallet.repository.http.violas.ViolasService
+import com.violas.wallet.repository.http.violas.ViolasBizService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.palliums.libracore.http.LibraApi
@@ -76,13 +74,16 @@ object DataRepository {
     fun getLibraService() =
         LibraService(LibraRepository(retrofit.create(LibraApi::class.java)))
 
+    fun getViolasBizService() =
+        ViolasBizService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
+
     fun getViolasService() =
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
     fun getTransactionService(coinTypes: CoinTypes) =
         when (coinTypes) {
             CoinTypes.Violas -> {
-                getViolasService()
+                getViolasBizService()
             }
 
             CoinTypes.Libra -> {
