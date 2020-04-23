@@ -7,6 +7,7 @@ import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.storage.TypeTag
 import org.palliums.libracore.wallet.RAW_TRANSACTION_HASH_SALT
 import org.spongycastle.jcajce.provider.digest.SHA3
+import java.lang.IllegalArgumentException
 import java.lang.RuntimeException
 
 
@@ -115,7 +116,7 @@ data class AccountAddress(val byte: ByteArray) {
                     Pair(address, authenticationKeyPrefix)
                 }
                 else -> {
-                    throw RuntimeException()
+                    throw IllegalArgumentException("The address parameter is incorrect")
                 }
             }
         }
