@@ -25,7 +25,6 @@ fun RawTransaction.Companion.optionTransaction(
         payload,
         maxGasAmount,
         gasUnitPrice,
-        LBR_NAME,
         (Date().time / 1000) + delayed
     )
     println("rawTransaction ${HexUtils.toHex(rawTransaction.toByteArray())}")
@@ -106,8 +105,6 @@ fun TransactionPayload.Companion.optionWithDataPayload(
         )
     )
 }
-
-const val LBR_NAME = "LBR"
 
 fun lbrStructTag(): TypeTag {
     return TypeTag.newStructTag(
