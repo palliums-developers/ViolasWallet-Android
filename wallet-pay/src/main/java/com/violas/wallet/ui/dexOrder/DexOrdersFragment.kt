@@ -150,7 +150,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             getString(
-                if (orderState == DexOrderState.OPEN)
+                if (orderState == DexOrderState.UNFINISHED)
                     R.string.tips_no_uncompleted_orders
                 else
                     R.string.tips_no_completed_orders
