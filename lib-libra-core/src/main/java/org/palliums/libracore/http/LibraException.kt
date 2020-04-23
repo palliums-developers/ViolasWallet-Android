@@ -14,6 +14,11 @@ abstract class LibraException : RuntimeException() {
     class AccountNoActivation() : LibraException()
 
     /**
+     * 提供的私钥无法控制账户
+     */
+    class AccountNoControl() : LibraException()
+
+    /**
      * 未知错误
      */
     class UnknownException : LibraException()

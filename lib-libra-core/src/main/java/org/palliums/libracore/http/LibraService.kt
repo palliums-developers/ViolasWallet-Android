@@ -45,6 +45,10 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         val accountState = getAccountState(senderAddress.toHex())
             ?: throw LibraException.AccountNoActivation()
 
+        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
+            throw LibraException.AccountNoControl()
+        }
+
         val sequenceNumber = accountState.sequenceNumber
         val rawTransaction = RawTransaction.optionTransaction(
             senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
