@@ -2,6 +2,8 @@ package com.violas.wallet.repository.http.libra.violas
 
 import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
+import com.palliums.violas.http.Response
+import retrofit2.http.Query
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -23,4 +25,13 @@ class LibraViolasRepository(private val mLibraViolasApi: LibraViolasApi) {
         checkResponse {
             mLibraViolasApi.getTransactionRecord(address, pageSize, offset)
         }
+
+    @Throws(RequestException::class)
+    suspend fun activateAccount(
+        address: String, authKeyPrefix: String
+    ): Response<Any> {
+        return checkResponse {
+            mLibraViolasApi.activateAccount(address, authKeyPrefix)
+        }
+    }
 }

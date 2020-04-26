@@ -74,6 +74,9 @@ object DataRepository {
     fun getLibraService() =
         LibraService(LibraRepository(retrofit.create(LibraApi::class.java)))
 
+    fun getLibraBizService() =
+        LibraViolasService(LibraViolasRepository(retrofit.create(LibraViolasApi::class.java)))
+
     fun getViolasBizService() =
         ViolasBizService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
