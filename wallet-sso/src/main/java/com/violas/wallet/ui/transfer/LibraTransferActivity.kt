@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.transfer
 
 import android.accounts.AccountsException
+import android.app.Activity
 import android.os.Bundle
 import android.text.AmountInputFilter
 import com.quincysx.crypto.CoinTypes
@@ -22,6 +23,7 @@ import org.greenrobot.eventbus.EventBus
 import java.math.BigDecimal
 
 class LibraTransferActivity : TransferActivity() {
+
     override fun getLayoutResId() = R.layout.activity_transfer
 
     private val mTokenManager by lazy {
@@ -34,19 +36,17 @@ class LibraTransferActivity : TransferActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_transfer)
+
         accountId = intent.getLongExtra(EXT_ACCOUNT_ID, 0)
         tokenId = intent.getLongExtra(EXT_TOKEN_ID, 0)
         isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
+        modifyable = intent.getBooleanExtra(EXT_MODIFYABLE, true)
+
         launch(Dispatchers.IO) {
             try {
                 account = mAccountManager.getAccountById(accountId)
                 mTokenDo = mTokenManager.findTokenById(tokenId)
-                refreshCurrentAmount()
-                val amount = intent.getLongExtra(
-                    EXT_AMOUNT,
-                    0
-                )
-
+                val amount = intent.getLongExtra(EXT_AMOUNT, 0)
                 val parseCoinType = CoinTypes.parseCoinType(account!!.coinNumber)
                 withContext(Dispatchers.Main) {
                     if (amount > 0) {
@@ -62,20 +62,34 @@ class LibraTransferActivity : TransferActivity() {
                         tvHintCoinName.text = parseCoinType.coinName()
                     }
                 }
+
+                refreshCurrentAmount()
             } catch (e: AccountsException) {
                 finish()
             }
         }
+
         initViewData()
         editAmountInput.filters = arrayOf(AmountInputFilter(12, 6))
+
+        if(!modifyable){
+            editAmountInput.isEnabled = false
+            editAddressInput.isEnabled = false
+        }
+
         ivScan.setOnClickListener {
+            if (!modifyable) return@setOnClickListener
+
             ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
         }
 
         btnConfirm.setOnClickListener {
             send()
         }
+
         tvAddressBook.setOnClickListener {
+            if (!modifyable) return@setOnClickListener
+
             account?.coinNumber?.let { it1 ->
                 AddressBookActivity.start(
                     this@LibraTransferActivity,
@@ -171,6 +185,7 @@ class LibraTransferActivity : TransferActivity() {
                                 dismissProgress()
                                 EventBus.getDefault().post(RefreshBalanceEvent())
                                 print(it)
+                                setResult(Activity.RESULT_OK)
                                 finish()
                             },
                             {

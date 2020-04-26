@@ -22,6 +22,7 @@ abstract class TransferActivity : BaseAppActivity() {
         const val EXT_AMOUNT = "2"
         const val EXT_IS_TOKEN = "3"
         const val EXT_TOKEN_ID = "4"
+        const val EXT_MODIFYABLE = "5"
 
         const val REQUEST_SELECTOR_ADDRESS = 1
         const val REQUEST_SCAN_QR_CODE = 2
@@ -40,7 +41,8 @@ abstract class TransferActivity : BaseAppActivity() {
             coinType: Int,
             address: String,
             amount: Long,
-            tokenName: String?
+            tokenName: String?,
+            modifyable: Boolean = true
         ) {
             val accountManager = AccountManager()
             val tokenManager = TokenManager()
@@ -62,7 +64,8 @@ abstract class TransferActivity : BaseAppActivity() {
                             address,
                             amount,
                             true,
-                            tokenDo.id!!
+                            tokenDo.id!!,
+                            modifyable
                         )
                     }
                 } else {
@@ -70,7 +73,8 @@ abstract class TransferActivity : BaseAppActivity() {
                         context,
                         currentAccount.id,
                         address,
-                        amount
+                        amount,
+                        modifyable = modifyable
                     )
                 }
             } else {
@@ -94,7 +98,8 @@ abstract class TransferActivity : BaseAppActivity() {
                             address,
                             amount,
                             true,
-                            tokenDo.id!!
+                            tokenDo.id!!,
+                            modifyable
                         )
                     }
                 } else {
@@ -102,7 +107,8 @@ abstract class TransferActivity : BaseAppActivity() {
                         context,
                         account.id,
                         address,
-                        amount
+                        amount,
+                        modifyable = modifyable
                     )
                 }
             }
@@ -115,7 +121,9 @@ abstract class TransferActivity : BaseAppActivity() {
             address: String = "",
             amount: Long = 0,
             isToken: Boolean = false,
-            tokenId: Long = 0
+            tokenId: Long = 0,
+            modifyable: Boolean = true,
+            requestCode: Int = Int.MIN_VALUE
         ) {
             Intent(context, LibraTransferActivity::class.java)
                 .apply {
@@ -124,7 +132,9 @@ abstract class TransferActivity : BaseAppActivity() {
                     putExtra(EXT_AMOUNT, amount)
                     putExtra(EXT_IS_TOKEN, isToken)
                     putExtra(EXT_TOKEN_ID, tokenId)
-                }.start(context)
+                    putExtra(EXT_MODIFYABLE, modifyable)
+                }
+                .start(context, requestCode)
         }
     }
 
@@ -132,6 +142,7 @@ abstract class TransferActivity : BaseAppActivity() {
     var tokenId = 0L
     var accountId = 0L
     var account: AccountDO? = null
+    var modifyable: Boolean = true
 
     val mAccountManager by lazy {
         AccountManager()
@@ -166,7 +177,7 @@ abstract class TransferActivity : BaseAppActivity() {
                                     ScanCodeType.Text -> {
                                         onScanAddressQr(scanBean.msg)
                                     }
-                                    else ->{
+                                    else -> {
                                         showToast(getString(R.string.hint_address_error))
                                     }
                                 }
