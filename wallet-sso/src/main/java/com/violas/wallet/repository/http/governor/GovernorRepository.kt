@@ -116,6 +116,18 @@ class GovernorRepository(private val api: GovernorApi) {
         }
 
     /**
+     * 申请铸币权
+     */
+    suspend fun applyForMintPower(
+        governorWalletAddress: String,
+        ssoApplicationId: String,
+        ssoWalletAddress: String
+    ) =
+        checkResponse {
+            api.applyForMintPower(governorWalletAddress, ssoApplicationId, ssoWalletAddress)
+        }
+
+    /**
      * 审批SSO申请
      */
     suspend fun approvalSSOApplication(

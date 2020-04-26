@@ -44,6 +44,16 @@ interface GovernorApi {
     suspend fun updateGovernorApplicationToPublished(@Body body: RequestBody): Response<Any>
 
     /**
+     * 向董事长申请铸币权（董事长创建币并指定铸币权为申请的州长）
+     */
+    @GET("/1.0/violas/governor/token/apply")
+    suspend fun applyForMintPower(
+        @Query("address") governorWalletAddress: String,
+        @Query("sso_apply_id") ssoApplicationId: String,
+        @Query("sso_address") ssoWalletAddress: String
+    ): Response<Any>
+
+    /**
      * 获取SSO申请消息
      */
     @GET("/1.1/violas/sso/token/approval")

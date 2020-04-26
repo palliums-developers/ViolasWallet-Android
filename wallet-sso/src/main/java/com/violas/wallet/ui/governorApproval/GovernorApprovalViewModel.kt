@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.governorApproval
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -10,6 +11,7 @@ import com.violas.wallet.biz.GovernorManager
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
+import com.violas.wallet.ui.transfer.TransferActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.palliums.violascore.wallet.Account
@@ -37,6 +39,7 @@ class GovernorApprovalViewModel(
     companion object {
         const val ACTION_LOAD_APPLICATION_DETAILS = 0x01
         const val ACTION_APPROVAL_APPLICATION = 0x02
+        const val ACTION_NOTIFY_SSO = 0x03
     }
 
     val mAccountLD = MutableLiveData<AccountDO>()
@@ -61,13 +64,22 @@ class GovernorApprovalViewModel(
                 mGovernorManager.getSSOApplicationDetails(mAccountLD.value!!, mSSOApplicationMsgVO)
             mSSOApplicationDetailsLD.postValue(ssoApplicationDetails)
             return
+        } else if (action == ACTION_NOTIFY_SSO) {
+            // 通知SSO发行商
+            mGovernorManager.notifySSOCanApplyForMint(
+                ssoApplicationDetails = mSSOApplicationDetailsLD.value!!,
+                account = params[1] as Account
+            )
+
+            // TODO 跟新本地消息状态
+            return
         }
 
         // 审批申请
-        val pass = params[0] as Boolean
-        if (pass) {
-            // 审批通过
-            mGovernorManager.passSSOApplication(
+        val passAndApply = params[0] as Boolean
+        if (passAndApply) {
+            // 审核通过，并申请铸币权
+            mGovernorManager.passSSOApplicationAndApplyForMintPower(
                 ssoApplicationDetails = mSSOApplicationDetailsLD.value!!,
                 account = params[1] as Account
             )
@@ -77,7 +89,24 @@ class GovernorApprovalViewModel(
         }
 
         // 审批操作成功后更新本地消息状态
-        mSSOApplicationMsgVO.applicationStatus = if (pass) 1 else 2
+        mSSOApplicationMsgVO.applicationStatus = if (passAndApply) 1 else 2
         mGovernorManager.updateSSOApplicationMsgStatus(mAccountLD.value!!.id, mSSOApplicationMsgVO)
+    }
+
+    fun transferVTokenToSSO(context: Context, requestCode: Int) {
+        val accountDO = mAccountLD.value
+        val ssoApplicationDetailsDTO = mSSOApplicationDetailsLD.value
+        if (accountDO == null || ssoApplicationDetailsDTO == null) {
+            return
+        }
+
+        TransferActivity.start(
+            context = context,
+            accountId = accountDO.id,
+            address = ssoApplicationDetailsDTO.ssoWalletAddress,
+            amount = 100 * 1000_000,
+            modifyable = false,
+            requestCode = requestCode
+        )
     }
 }

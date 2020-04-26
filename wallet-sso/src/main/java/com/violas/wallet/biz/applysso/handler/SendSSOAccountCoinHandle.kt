@@ -15,13 +15,13 @@ class SendSSOAccountCoinHandle(
 ) : ApplyHandle() {
 
     override suspend fun handler() {
-        getServiceProvider()!!.getTokenManager().mViolasService
+        /*getServiceProvider()!!.getTokenManager().mViolasService
             .sendCoin(
                 ContextProvider.getContext(),
                 account,
                 ssoWalletAddress,
                 amount
-            )
+            )*/
 
         getServiceProvider()!!.getApplySsoRecordDao()
             .insert(

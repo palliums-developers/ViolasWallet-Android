@@ -40,6 +40,9 @@ class GovernorManager {
     private val mSSOApplicationMsgStorage by lazy {
         DataRepository.getSSOApplicationMsgStorage()
     }
+    private val mSSOApplicationHandlerStorage by lazy {
+        DataRepository.getSSOApplicationHandlerStorage()
+    }
     private val mApplySSOManager by lazy {
         ApplySSOManager()
     }
@@ -289,39 +292,18 @@ class GovernorManager {
     }
 
     /**
-     * 审批SSO申请通过
+     * 审核SSO申请通过，并向董事长申请铸币权
+     * 审批通过时，先向董事长申请发行币种，待董事长发行币种完成后，州长在转账通知SSO发行商
      */
-    suspend fun passSSOApplication(
+    suspend fun passSSOApplicationAndApplyForMintPower(
         ssoApplicationDetails: SSOApplicationDetailsDTO,
         account: Account
     ) {
-        // TODO 审批通过时，先向董事长申请发行币种，待董事长发行币种完成后，州长在通过SSO申请
-        var result = try {
-            mApplySSOManager.apply(
-                account = account,
-                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
-                ssoApplicationId = ssoApplicationDetails.applicationId,
-                newTokenIdx = 1
-            )
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-
-        if (BuildConfig.MOCK_GOVERNOR_DATA) {
-            result = true
-        }
-
-        if (!result) {
-            throw if (!isNetworkConnected())
-                RequestException.networkUnavailable()
-            else
-                RequestException(
-                    RequestException.ERROR_CODE_UNKNOWN_ERROR,
-                    getString(R.string.tips_governor_approval_fail)
-                )
-        }
+        mGovernorService.applyForMintPower(
+            governorWalletAddress = account.getAddress().toHex(),
+            ssoApplicationId = ssoApplicationDetails.applicationId,
+            ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress
+        )
     }
 
     /**
@@ -340,6 +322,18 @@ class GovernorManager {
                 throw e
             }
         }
+    }
+
+    suspend fun notifySSOCanApplyForMint(
+        ssoApplicationDetails: SSOApplicationDetailsDTO,
+        account: Account
+    ) {
+        mApplySSOManager.apply(
+            account = account,
+            ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
+            ssoApplicationId = ssoApplicationDetails.applicationId,
+            newTokenIdx = ssoApplicationDetails.tokenIdx!!
+        )
     }
 
     /**

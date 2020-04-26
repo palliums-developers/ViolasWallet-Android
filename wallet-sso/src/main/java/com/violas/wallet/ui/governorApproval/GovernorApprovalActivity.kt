@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.governorApproval
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -18,6 +19,7 @@ import com.violas.wallet.image.GlideApp
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_APPROVAL_APPLICATION
 import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_LOAD_APPLICATION_DETAILS
+import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_NOTIFY_SSO
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
 import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.utils.showPwdInputDialog
@@ -33,6 +35,7 @@ import org.palliums.violascore.wallet.Account
 class GovernorApprovalActivity : BaseAppActivity() {
 
     companion object {
+        private const val TRANSFER_REQUEST_CODE = 100
 
         fun start(context: Context, msgVO: SSOApplicationMsgVO) {
             Intent(context, GovernorApprovalActivity::class.java)
@@ -131,6 +134,56 @@ class GovernorApprovalActivity : BaseAppActivity() {
         })
     }
 
+    private fun approvalApplication(
+        passAndApply: Boolean,
+        account: Account? = null
+    ) {
+        val params = if (passAndApply) {
+            arrayOf(passAndApply, account!!)
+        } else {
+            arrayOf(passAndApply)
+        }
+
+        mViewModel.execute(
+            params = *params,
+            action = ACTION_APPROVAL_APPLICATION,
+            failureCallback = { dismissProgress() }
+        ) {
+            dismissProgress()
+            showToast(
+                getString(
+                    if (passAndApply)
+                        R.string.tips_governor_approval_pass_success
+                    else
+                        R.string.tips_governor_approval_not_pass_success
+                    ,
+                    mSSOApplicationMsgVO.applicantIdName
+                )
+            )
+            close()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            TRANSFER_REQUEST_CODE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    // 转账成功，通知SSO发行商
+                    mViewModel.execute(
+                        action = ACTION_NOTIFY_SSO,
+                        failureCallback = {
+                            dismissProgress()
+                        }
+                    ) {
+                        // TODO 更新View
+                        dismissProgress()
+                    }
+                }
+            }
+        }
+    }
+
     private fun loadApplicationDetails() {
         mViewModel.execute(
             action = ACTION_LOAD_APPLICATION_DETAILS,
@@ -156,39 +209,6 @@ class GovernorApprovalActivity : BaseAppActivity() {
                 nsvContentLayout.visibility = View.VISIBLE
                 dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
             })
-    }
-
-    private fun approvalApplication(
-        pass: Boolean,
-        account: Account? = null
-    ) {
-        val params = if (pass) {
-            arrayOf(pass, account!!)
-        } else {
-            arrayOf(pass)
-        }
-
-        mViewModel.execute(
-            params = *params,
-            action = ACTION_APPROVAL_APPLICATION,
-            failureCallback = {
-                dismissProgress()
-            },
-            successCallback = {
-                dismissProgress()
-                showToast(
-                    getString(
-                        if (pass)
-                            R.string.tips_governor_approval_pass_success
-                        else
-                            R.string.tips_governor_approval_not_pass_success
-                        ,
-                        mSSOApplicationMsgVO.applicantIdName
-                    )
-                )
-                close()
-            }
-        )
     }
 
     private fun fillApplicationInfo(details: SSOApplicationDetailsDTO) {

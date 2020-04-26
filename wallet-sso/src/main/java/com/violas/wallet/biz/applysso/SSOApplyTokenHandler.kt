@@ -78,6 +78,7 @@ class SSOApplyTokenHandler(
                 100 * 1000_000
             )
         )
+
         applyEngine.addApplyHandle(
             SendApplySSOHandle(
                 walletAddress,
