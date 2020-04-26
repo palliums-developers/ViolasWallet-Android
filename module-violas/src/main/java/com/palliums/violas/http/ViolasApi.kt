@@ -53,4 +53,10 @@ interface ViolasApi {
 
     @GET("/1.0/violas/account")
     suspend fun getAccountState(@Query("addr") walletAddress: String):Response<AccountStateDTO>
+
+    @GET("/1.0/violas/mint")
+    suspend fun activateAccount(
+        @Query("address") address: String,
+        @Query("auth_key_perfix") authKeyPrefix: String
+    ): Response<Any>
 }

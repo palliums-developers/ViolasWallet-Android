@@ -172,8 +172,15 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     ) =
         mViolasRepository.getAccountState(address).data
 
-    suspend fun getSequenceNumber(
+    @Deprecated("等后台实现 getAccountState 然后删除该方法")
+    private suspend fun getSequenceNumber(
         address: String
     ) =
         mViolasRepository.getSequenceNumber(address)
+
+    suspend fun activateAccount(
+        address: String,
+        authKeyPrefix: String
+    ) =
+        mViolasRepository.activateAccount(address, authKeyPrefix)
 }

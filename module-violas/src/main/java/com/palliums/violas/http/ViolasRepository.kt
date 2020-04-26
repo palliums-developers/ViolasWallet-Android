@@ -67,6 +67,15 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
     }
 
     /**
+     * 获取账户信息
+     */
+    suspend fun activateAccount(address: String, authKeyPrefix: String): Response<Any> {
+        return checkResponse {
+            mViolasApi.activateAccount(address, authKeyPrefix)
+        }
+    }
+
+    /**
      * 登录网页端钱包
      */
     suspend fun loginWeb(
