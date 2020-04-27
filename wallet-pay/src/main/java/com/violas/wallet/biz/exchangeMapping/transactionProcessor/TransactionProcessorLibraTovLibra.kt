@@ -13,10 +13,7 @@ import com.violas.wallet.repository.DataRepository
 import org.json.JSONObject
 import org.palliums.libracore.crypto.KeyPair
 import org.palliums.libracore.serialization.toHex
-import org.palliums.libracore.transaction.RawTransaction
-import org.palliums.libracore.transaction.TransactionPayload
-import org.palliums.libracore.transaction.optionTransaction
-import org.palliums.libracore.transaction.optionWithDataPayload
+import org.palliums.libracore.transaction.*
 import org.palliums.libracore.wallet.Account
 import java.math.BigDecimal
 
@@ -78,7 +75,7 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
         subExchangeDate.put("state", "start")
 
         val transactionPayload =
-            TransactionPayload.optionWithDataPayload(
+            TransactionPayload.optionTransactionPayload(
                 ContextProvider.getContext(),
                 receiveAddress,
                 sendAmount.multiply(BigDecimal("1000000")).toLong(),
