@@ -90,3 +90,8 @@ data class VstakeAddressDTO(
     @SerializedName("address")
     val address: String
 )
+
+data class UnapproveReasonDTO(
+    val type: Int,                  // 原因类型 -1: 其他
+    val desc: String                // 原因描述
+)

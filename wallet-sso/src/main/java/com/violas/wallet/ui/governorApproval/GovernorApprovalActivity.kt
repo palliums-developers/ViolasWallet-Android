@@ -1,6 +1,5 @@
 package com.violas.wallet.ui.governorApproval
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -19,7 +18,6 @@ import com.violas.wallet.image.GlideApp
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_APPROVAL_APPLICATION
 import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_LOAD_APPLICATION_DETAILS
-import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_NOTIFY_SSO
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
 import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.utils.showPwdInputDialog
@@ -161,26 +159,6 @@ class GovernorApprovalActivity : BaseAppActivity() {
                 )
             )
             close()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            TRANSFER_REQUEST_CODE -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    // 转账成功，通知SSO发行商
-                    mViewModel.execute(
-                        action = ACTION_NOTIFY_SSO,
-                        failureCallback = {
-                            dismissProgress()
-                        }
-                    ) {
-                        // TODO 更新View
-                        dismissProgress()
-                    }
-                }
-            }
         }
     }
 

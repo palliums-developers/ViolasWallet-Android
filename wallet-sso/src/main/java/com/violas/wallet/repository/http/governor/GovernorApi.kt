@@ -32,26 +32,10 @@ interface GovernorApi {
     suspend fun updateGovernorInfo(@Body body: RequestBody): Response<Any>
 
     /**
-     * 获取vstake地址
-     */
-    @GET("/1.0/violas/governor/vstake/address")
-    suspend fun getVStakeAddress(): Response<VstakeAddressDTO>
-
-    /**
      * 更新州长申请状态为published
      */
     @PUT("/1.0/violas/governor/investment")
     suspend fun updateGovernorApplicationToPublished(@Body body: RequestBody): Response<Any>
-
-    /**
-     * 向董事长申请铸币权（董事长创建币并指定铸币权为申请的州长）
-     */
-    @GET("/1.0/violas/governor/token/apply")
-    suspend fun applyForMintPower(
-        @Query("address") governorWalletAddress: String,
-        @Query("sso_apply_id") ssoApplicationId: String,
-        @Query("sso_address") ssoWalletAddress: String
-    ): Response<Any>
 
     /**
      * 获取SSO申请消息
@@ -72,10 +56,22 @@ interface GovernorApi {
     ): Response<SSOApplicationDetailsDTO>
 
     /**
-     * 审批SSO申请
+     * 获取审核不通过SSO申请原因列表
+     */
+    @GET("/1.0/violas/governor/auditFailReasons")
+    suspend fun getUnapproveReasons(): ListResponse<UnapproveReasonDTO>
+
+    /**
+     * 审核SSO申请
      */
     @PUT("/1.1/violas/sso/token/approval")
     suspend fun approvalSSOApplication(@Body body: RequestBody): Response<Any>
+
+    /**
+     * 申请铸币权（董事长创建币并指定铸币权为申请的州长）
+     */
+    @GET("/1.0/violas/governor/mint/apply")
+    suspend fun applyForMintPower(@Body body: RequestBody): Response<Any>
 
     /**
      * 改变SSO申请状态为已铸币

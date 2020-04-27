@@ -11,11 +11,9 @@ class SendApplySSOHandle(
 
     override suspend fun handler() {
         getServiceProvider()!!.getGovernorService()
-            .approvalSSOApplication(
+            .approveSSOApplication(
                 ssoApplicationId,
-                ssoWalletAddress,
-                newTokenIdx,
-                true
+                ssoWalletAddress
             )
 
         getServiceProvider()!!.getApplySsoRecordDao()

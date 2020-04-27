@@ -292,10 +292,38 @@ class GovernorManager {
     }
 
     /**
-     * 审核SSO申请通过，并向董事长申请铸币权
-     * 审批通过时，先向董事长申请发行币种，待董事长发行币种完成后，州长在转账通知SSO发行商
+     * 获取审核不通过SSO申请原因列表
      */
-    suspend fun passSSOApplicationAndApplyForMintPower(
+    suspend fun getUnapproveReasons() =
+        mGovernorService.getUnapproveReasons()
+
+    /**
+     * 审核不通过SSO申请
+     */
+    suspend fun unapproveSSOApplication(
+        ssoApplicationDetails: SSOApplicationDetailsDTO,
+        reasonType: Int,
+        reasonRemark: String = ""
+    ) {
+        try {
+            mGovernorService.unapproveSSOApplication(
+                ssoApplicationId = ssoApplicationDetails.applicationId,
+                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
+                reasonType = reasonType,
+                reasonRemark = reasonRemark
+            )
+        } catch (e: Exception) {
+            if (!BuildConfig.MOCK_GOVERNOR_DATA) {
+                throw e
+            }
+        }
+    }
+
+    /**
+     * 申请铸币权
+     * 审核通过SSO申请时，州长先向董事长申请发行币种，待董事长发行币种完成后，州长在转账并通过SSO申请
+     */
+    suspend fun applyForMintPower(
         ssoApplicationDetails: SSOApplicationDetailsDTO,
         account: Account
     ) {
@@ -307,24 +335,9 @@ class GovernorManager {
     }
 
     /**
-     * 审批SSO申请不通过
+     * 审核通过SSO申请
      */
-    suspend fun rejectSSOApplication(ssoApplicationDetails: SSOApplicationDetailsDTO) {
-        try {
-            mGovernorService.approvalSSOApplication(
-                ssoApplicationId = ssoApplicationDetails.applicationId,
-                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
-                newTokenIdx = -1,
-                pass = false
-            )
-        } catch (e: Exception) {
-            if (!BuildConfig.MOCK_GOVERNOR_DATA) {
-                throw e
-            }
-        }
-    }
-
-    suspend fun notifySSOCanApplyForMint(
+    suspend fun approveSSOApplication(
         ssoApplicationDetails: SSOApplicationDetailsDTO,
         account: Account
     ) {
