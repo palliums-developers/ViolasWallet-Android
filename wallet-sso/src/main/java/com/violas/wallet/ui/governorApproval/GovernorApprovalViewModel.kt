@@ -42,7 +42,8 @@ class GovernorApprovalViewModel(
         const val ACTION_LOAD_UNAPPROVE_REASONS = 0x02          // 加载审核不通过SSO申请原因列表
         const val ACTION_UNAPPROVE_APPLICATION = 0x03           // 审核不通过SSO申请
         const val ACTION_APPLY_FOR_MINT_POWER = 0x04            // 申请铸币权
-        const val ACTION_APPROVAL_APPLICATION = 0x02
+        const val ACTION_APPROVE_APPLICATION = 0x05             // 审核通过SSO申请
+        const val ACTION_APPROVAL_APPLICATION = 0x10
     }
 
     val mAccountLD = MutableLiveData<AccountDO>()
@@ -108,6 +109,15 @@ class GovernorApprovalViewModel(
                 mGovernorManager.updateSSOApplicationMsgStatus(
                     mAccountLD.value!!.id,
                     mSSOApplicationMsgVO
+                )
+            }
+
+            ACTION_APPROVE_APPLICATION -> {
+                // 已向发行商转VToken，通知发行商可以申请铸币
+                mGovernorManager.approveSSOApplication(
+                    mSSOApplicationDetailsLD.value!!,
+                    null,
+                    mAccountLD.value!!.address
                 )
             }
 

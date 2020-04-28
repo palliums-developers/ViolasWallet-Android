@@ -108,6 +108,7 @@
     <dimen name="dp_90">90dp</dimen>
     <dimen name="dp_100">100dp</dimen>
     <dimen name="dp_105">105dp</dimen>
+    <dimen name="dp_106">106dp</dimen>
     <dimen name="dp_110">110dp</dimen>
     <dimen name="dp_111">111dp</dimen>
     <dimen name="dp_115">115dp</dimen>

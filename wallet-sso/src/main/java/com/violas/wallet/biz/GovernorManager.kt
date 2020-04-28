@@ -257,7 +257,6 @@ class GovernorManager {
                 applicationPeriod = 7,
                 expirationDate = System.currentTimeMillis(),
                 applicationStatus = msgVO.applicationStatus,
-                walletLayersNumber = 2,
                 applicationId = msgVO.applicationId
             )
             response.data = fakeDetails
@@ -271,10 +270,6 @@ class GovernorManager {
                 if (response.data!!.tokenIdx == null) {
                     throw RequestException.responseDataException(
                         "module address cannot be null"
-                    )
-                } else if (response.data!!.walletLayersNumber <= 0) {
-                    throw RequestException.responseDataException(
-                        "Incorrect module depth(${response.data!!.walletLayersNumber})"
                     )
                 }
             }
@@ -339,10 +334,12 @@ class GovernorManager {
      */
     suspend fun approveSSOApplication(
         ssoApplicationDetails: SSOApplicationDetailsDTO,
-        account: Account
+        account: Account? = null,
+        walletAddress: String
     ) {
         mApplySSOManager.apply(
             account = account,
+            walletAddress = walletAddress,
             ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
             ssoApplicationId = ssoApplicationDetails.applicationId,
             newTokenIdx = ssoApplicationDetails.tokenIdx!!

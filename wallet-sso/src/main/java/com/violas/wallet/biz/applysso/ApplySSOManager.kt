@@ -8,6 +8,7 @@ class ApplySSOManager {
      * 同意发币申请
      *
      * @param account 解密后的 Account 账户
+     * @param walletAddress 州长钱包地址
      * @param ssoWalletAddress 铸币接收账户地址
      * @param ssoApplicationId SSO发币申请id
      * @param newTokenIdx 新发型的稳定币索引
@@ -15,13 +16,15 @@ class ApplySSOManager {
      * @exception 暂时未定义
      */
     suspend fun apply(
-        account: Account,
+        account: Account? = null,
+        walletAddress: String,
         ssoWalletAddress: String,
         ssoApplicationId: String,
         newTokenIdx: Long
     ) {
         val applySSOHandler = SSOApplyTokenHandler(
             account,
+            walletAddress,
             ssoWalletAddress,
             ssoApplicationId,
             newTokenIdx
