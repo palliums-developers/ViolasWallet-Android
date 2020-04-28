@@ -24,7 +24,7 @@ object BitcoinChainApi {
 //        return BTCRequest(bitcoinChainVersionEnum)
 
         // todo 待修复
-        return BlockCypherRequest()
-//        return TrezorRequest(Vm.TestNet)
+//        return BlockCypherRequest()
+        return TrezorRequest(Vm.TestNet)
     }
 }

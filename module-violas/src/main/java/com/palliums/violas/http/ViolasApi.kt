@@ -51,8 +51,8 @@ interface ViolasApi {
     @POST("/1.0/violas/transaction")
     suspend fun pushTx(@Body requestBody: RequestBody): Response<Any>
 
-    @GET("/1.0/violas/account")
-    suspend fun getAccountState(@Query("addr") walletAddress: String):Response<AccountStateDTO>
+    @GET("/1.0/violas/account/info")
+    suspend fun getAccountState(@Query("address") walletAddress: String):Response<AccountStateDTO>
 
     @GET("/1.0/violas/mint")
     suspend fun activateAccount(

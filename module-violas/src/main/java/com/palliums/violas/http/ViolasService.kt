@@ -81,17 +81,15 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     ): GenerateTransactionResult {
         val keyPair = account.keyPair
         val senderAddress = account.getAddress()
-        // todo 等后台接口改造完成
-//        val accountState = getAccountState(senderAddress.toHex())
-//            ?: throw ViolasException.AccountNoActivation()
-//
-//        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
-//            throw ViolasException.AccountNoControl()
-//        }
-//
-//        val sequenceNumber = accountState.sequenceNumber
+        val accountState = getAccountState(senderAddress.toHex())
+            ?: throw ViolasException.AccountNoActivation()
 
-        val sequenceNumber = getSequenceNumber(senderAddress.toHex())
+        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
+            throw ViolasException.AccountNoControl()
+        }
+
+        val sequenceNumber = accountState.sequenceNumber ?: 0
+
         val rawTransaction = RawTransaction.optionTransaction(
             senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
         )
@@ -162,21 +160,15 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     }
 
     suspend fun getBalanceInMicroLibra(address: String): Long {
-//        val response = getAccountState(address)
+        val response = getAccountState(address)
 //        return response?.balance?.amount ?: 0
-        return mViolasRepository.getBalance(address)
+        return response?.balance?: 0
     }
 
     suspend fun getAccountState(
         address: String
     ) =
         mViolasRepository.getAccountState(address).data
-
-    @Deprecated("等后台实现 getAccountState 然后删除该方法")
-    private suspend fun getSequenceNumber(
-        address: String
-    ) =
-        mViolasRepository.getSequenceNumber(address)
 
     suspend fun activateAccount(
         address: String,
