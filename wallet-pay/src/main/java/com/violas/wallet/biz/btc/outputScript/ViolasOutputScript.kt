@@ -26,7 +26,10 @@ class ViolasOutputScript {
         val authKeyPrefix = byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         val dataStream = BitcoinOutputStream()
         dataStream.write("violas".toByteArray())
-        dataStream.writeInt16(OP_VER)
+        //dataStream.writeInt16(OP_VER)
+        // 此处非 BTC 小端字节规则，需要注意
+        writeInt16(OP_VER, dataStream)
+
         dataStream.write(OP_TYPE_START)
         dataStream.write(authKeyPrefix + address)
         dataStream.write(
@@ -43,7 +46,10 @@ class ViolasOutputScript {
     fun cancelExchange(address: ByteArray, sequence: Long = System.currentTimeMillis()): Script {
         val dataStream = BitcoinOutputStream()
         dataStream.write("violas".toByteArray())
-        dataStream.writeInt16(OP_VER)
+        //dataStream.writeInt16(OP_VER)
+        // 此处非 BTC 小端字节规则，需要注意
+        writeInt16(OP_VER, dataStream)
+
         dataStream.write(TYPE_CANCEL)
         dataStream.write(address)
         dataStream.write(
@@ -54,5 +60,11 @@ class ViolasOutputScript {
         scriptStream.write(Script.OP_RETURN.toInt())
         Script.writeBytes(dataStream.toByteArray(), scriptStream)
         return Script(scriptStream.toByteArray())
+    }
+
+    // 大端顺序 write Int16
+    private fun writeInt16(value: Int, output: BitcoinOutputStream) {
+        output.write(OP_VER shr 8 and 0xff)
+        output.write(OP_VER and 0xff)
     }
 }

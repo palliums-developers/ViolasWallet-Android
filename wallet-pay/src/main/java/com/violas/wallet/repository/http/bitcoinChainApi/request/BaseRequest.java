@@ -30,9 +30,9 @@ public abstract class BaseRequest<T> {
 
     private Retrofit getRetrofit() {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .callTimeout(30, TimeUnit.SECONDS)
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
+                .callTimeout(100, TimeUnit.SECONDS)
+                .connectTimeout(100, TimeUnit.SECONDS)
+                .readTimeout(100, TimeUnit.SECONDS)
 //                .addInterceptor(sChainInterceptor)
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build();

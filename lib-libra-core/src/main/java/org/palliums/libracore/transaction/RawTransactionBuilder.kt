@@ -82,6 +82,7 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     )
 }
 
+@Deprecated("看 Libra 的更新情况是否删除")
 fun TransactionPayload.Companion.optionWithDataPayload(
     context: Context,
     receiveAddress: String,

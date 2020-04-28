@@ -18,6 +18,8 @@ class ViolasMultiTokenRepository(
     private val multiTokenContract: MultiTokenContract
 ) {
 
+    fun getMultiTokenContract() =multiTokenContract
+
     suspend fun getBalance(
         address: String,
         tokenIdx: List<Long>

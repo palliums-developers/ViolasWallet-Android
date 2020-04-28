@@ -300,6 +300,14 @@ class WalletFragment : BaseFragment() {
                 }
             }
 
+            supervisorScope {
+                try {
+                    mAccountManager.activateAccount(currentAccount)
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            }
+
             if (violasAccount) {
                 refreshViolasAssert(currentAccount, enableTokens)
             } else {

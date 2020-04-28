@@ -67,7 +67,7 @@ public class BlockCypherRequest extends BaseRequest<BlockCypherRequest.Api> impl
                 .map(new Function<BalanceBlockCypherDTO, BigDecimal>() {
                     @Override
                     public BigDecimal apply(BalanceBlockCypherDTO balanceBlockCypher) throws Exception {
-                        return new BigDecimal(balanceBlockCypher.getBalance() + "").divide(new BigDecimal("100000000"), 8, BigDecimal.ROUND_HALF_DOWN);
+                        return new BigDecimal(balanceBlockCypher.getBalance() + "");//.divide(new BigDecimal("100000000"), 8, BigDecimal.ROUND_HALF_DOWN);
                     }
                 });
     }

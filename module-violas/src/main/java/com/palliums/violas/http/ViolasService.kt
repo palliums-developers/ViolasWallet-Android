@@ -81,17 +81,15 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     ): GenerateTransactionResult {
         val keyPair = account.keyPair
         val senderAddress = account.getAddress()
-        // todo 等后台接口改造完成
-//        val accountState = getAccountState(senderAddress.toHex())
-//            ?: throw ViolasException.AccountNoActivation()
-//
-//        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
-//            throw ViolasException.AccountNoControl()
-//        }
-//
-//        val sequenceNumber = accountState.sequenceNumber
+        val accountState = getAccountState(senderAddress.toHex())
+            ?: throw ViolasException.AccountNoActivation()
 
-        val sequenceNumber = getSequenceNumber(senderAddress.toHex())
+        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
+            throw ViolasException.AccountNoControl()
+        }
+
+        val sequenceNumber = accountState.sequenceNumber ?: 0
+
         val rawTransaction = RawTransaction.optionTransaction(
             senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
         )
@@ -162,9 +160,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     }
 
     suspend fun getBalanceInMicroLibra(address: String): Long {
-//        val response = getAccountState(address)
+        val response = getAccountState(address)
 //        return response?.balance?.amount ?: 0
-        return mViolasRepository.getBalance(address)
+        return response?.balance?: 0
     }
 
     suspend fun getAccountState(
@@ -172,8 +170,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     ) =
         mViolasRepository.getAccountState(address).data
 
-    suspend fun getSequenceNumber(
-        address: String
+    suspend fun activateAccount(
+        address: String,
+        authKeyPrefix: String
     ) =
-        mViolasRepository.getSequenceNumber(address)
+        mViolasRepository.activateAccount(address, authKeyPrefix)
 }

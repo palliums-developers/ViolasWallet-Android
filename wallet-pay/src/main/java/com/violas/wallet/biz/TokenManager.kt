@@ -31,6 +31,9 @@ class TokenManager {
         )
     }
 
+    fun getViolasMultiTokenContract() =
+        mViolasMultiTokenService.getMultiTokenContract()
+
     /**
      * 本地兼容的币种
      */

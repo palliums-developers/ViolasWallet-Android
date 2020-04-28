@@ -184,7 +184,7 @@ public class BTCRequest extends BaseRequest<BTCRequest.Api> implements BaseBitco
             e.printStackTrace();
         }
         if (transaction[0] == null) {
-            new RuntimeException();
+            throw new RuntimeException();
         }
         BigDecimal divide = new BigDecimal(bean.value + "").divide(new BigDecimal("100000000"), 8, BigDecimal.ROUND_HALF_UP);
         return new UTXO(address, bean.tx_hash, bean.tx_output_n, transaction[0].getVout().get(bean.tx_output_n).getScriptPubKey().getHex(), divide.doubleValue(), 0, bean.confirmations);
