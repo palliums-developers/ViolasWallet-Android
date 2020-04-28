@@ -12,6 +12,7 @@ import com.violas.wallet.biz.exchangeMapping.MappingAccount
 import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.wallet.Account
@@ -74,7 +75,7 @@ class TransactionProcessorBTCTovBTC :
                 sendAccount.getAddress(),
                 violasOutputScript.requestExchange(
                     receiveAccount.getAddress(),
-                    receiveAccount.getAddress()
+                    mTokenManager.getViolasMultiTokenContract().getContractAddress().hexToBytes()
                 )
             ).flatMap {
                 try {
