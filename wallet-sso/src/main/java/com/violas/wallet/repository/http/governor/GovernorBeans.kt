@@ -1,7 +1,9 @@
 package com.violas.wallet.repository.http.governor
 
+import android.os.Parcelable
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by elephant on 2020/2/26 18:16.
@@ -34,6 +36,7 @@ data class SSOApplicationMsgDTO(
     val applicantIdName: String                     // 申请人身份姓名
 )
 
+@Parcelize
 data class SSOApplicationDetailsDTO(
     @SerializedName("id")
     val applicationId: String,                      // 申请ID
@@ -84,14 +87,15 @@ data class SSOApplicationDetailsDTO(
     val applicationStatus: Int,                     // 申请发币状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
     @SerializedName("subaccount_number")
     val walletLayersNumber: Long = -1               // 铸币账户的钱包层数，在申请状态为pass之后才有
-)
+) : Parcelable
 
 data class VstakeAddressDTO(
     @SerializedName("address")
     val address: String
 )
 
+@Parcelize
 data class UnapproveReasonDTO(
     val type: Int,                  // 原因类型 -1: 其他
     val desc: String                // 原因描述
-)
+): Parcelable

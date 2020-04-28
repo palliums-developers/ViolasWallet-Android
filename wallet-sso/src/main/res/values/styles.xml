@@ -30,6 +30,10 @@
         <item name="android:windowAnimationStyle">@style/ScanLoginWindowAnimation</item>
     </style>
 
+    <style name="Style_Spinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@null</item>
+    </style>
+
     <style name="AppWindowAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/activity_right_in</item>
         <item name="android:activityOpenExitAnimation">@anim/activity_left_out</item>

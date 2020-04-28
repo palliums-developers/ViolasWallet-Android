@@ -384,4 +384,11 @@
     <string name="action_cancel_login">取消登录</string>
     <string name="tips_scan_login_success">董事长桌面钱包已登录</string>
     <string name="title_scan_result">Scan Result</string>
+
+    <string name="action_approve_and_apply_for_mint_power">审核通过，申请铸币权</string>
+    <string name="title_unapprove">审核未通过</string>
+    <string name="label_reason">原因</string>
+    <string name="hint_select_unapprove_reason">请选择未通过原因</string>
+    <string name="hint_remark_unapprove_reason">请备注其他原因</string>
+    <string name="action_confirm_unapprove">确&#160;定</string>
 </resources>

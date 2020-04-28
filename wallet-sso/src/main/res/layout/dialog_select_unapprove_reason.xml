@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="290dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_bg_select_unapprove_reason"
+        android:paddingBottom="@dimen/dp_25">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_22"
+            android:text="@string/title_unapprove"
+            android:textColor="@color/def_text_title"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RelativeLayout
+            android:id="@+id/rlClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_14"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:background="@drawable/bg_menu_item_circle"
+            android:padding="@dimen/dp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/ivClose"
+                android:layout_width="@dimen/dp_12"
+                android:layout_height="@dimen/dp_12"
+                android:background="@mipmap/ic_close_white"
+                android:backgroundTint="@color/color_9D9BA3"
+                android:scaleType="centerCrop"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_22"
+            android:text="@string/label_reason"
+            android:textColor="@color/def_text_title"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintBottom_toBottomOf="@id/spinnerReasons"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/spinnerReasons" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinnerReasons"
+            style="@style/Widget.AppCompat.Spinner"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_31"
+            android:layout_marginStart="@dimen/dp_11"
+            android:layout_marginTop="@dimen/dp_25"
+            android:layout_marginEnd="@dimen/dp_22"
+            android:background="@drawable/sel_edit_bg_select_unapprove_reason"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvLabel"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+        <EditText
+            android:id="@+id/etRemark"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_82"
+            android:layout_marginTop="@dimen/dp_5"
+            android:background="@drawable/sel_edit_bg_select_unapprove_reason"
+            android:gravity="start"
+            android:hint="@string/hint_remark_unapprove_reason"
+            android:padding="@dimen/dp_10"
+            android:textColorHint="@color/color_9D9BA3"
+            android:textSize="@dimen/sp_14"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/spinnerReasons"
+            app:layout_constraintStart_toStartOf="@id/spinnerReasons"
+            app:layout_constraintTop_toBottomOf="@id/spinnerReasons"
+            app:layout_goneMarginTop="@dimen/dp_0"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvTips"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_11"
+            android:layout_marginTop="@dimen/dp_6"
+            android:gravity="start"
+            android:textColor="@color/color_F55753"
+            android:textSize="@dimen/sp_12"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/spinnerReasons"
+            app:layout_constraintStart_toStartOf="@id/spinnerReasons"
+            app:layout_constraintTop_toBottomOf="@id/etRemark"
+            tools:text="@string/hint_select_unapprove_reason"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvConfirm"
+            android:layout_width="@dimen/dp_100"
+            android:layout_height="@dimen/dp_30"
+            android:layout_marginTop="@dimen/dp_38"
+            android:background="@drawable/sel_btn_bg_confirm_unapprove"
+            android:gravity="center"
+            android:text="@string/action_confirm_unapprove"
+            android:textColor="@color/sel_confirm_unapprove_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etRemark" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
