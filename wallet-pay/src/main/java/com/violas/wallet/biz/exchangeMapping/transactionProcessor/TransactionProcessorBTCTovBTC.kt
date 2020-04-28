@@ -59,8 +59,7 @@ class TransactionProcessorBTCTovBTC :
         val mTransactionManager: TransactionManager =
             TransactionManager(arrayListOf(sendAccount.getAddress()))
         val checkBalance = mTransactionManager.checkBalance(sendAmount.toDouble(), 3)
-        val violasOutputScript =
-            ViolasOutputScript()
+        val violasOutputScript = ViolasOutputScript()
 
         if (!checkBalance) {
             throw LackOfBalanceException()

@@ -77,7 +77,7 @@ public class TransactionBean {
         setVout(data);
     }
 
-    public TransactionBean(String blockhash, long blocktime, int confirmations, String hash, String hex, long locktime, int version) {
+    public TransactionBean(String blockhash, long blocktime, long confirmations, String hash, String hex, long locktime, int version) {
         this.blockhash = blockhash;
         this.blocktime = blocktime;
         this.confirmations = confirmations;

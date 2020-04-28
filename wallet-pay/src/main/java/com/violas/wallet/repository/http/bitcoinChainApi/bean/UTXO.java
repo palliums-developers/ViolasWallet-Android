@@ -49,13 +49,13 @@ public class UTXO {
     private int vout;
     private String scriptPubKey;
     private double amount;
-    private int height;
+    private long height;
     private long confirmations;
 
     public UTXO() {
     }
 
-    public UTXO(String address, String txid, int vout, String scriptPubKey, double amount, int height, long confirmations) {
+    public UTXO(String address, String txid, int vout, String scriptPubKey, double amount, long height, long confirmations) {
         this.address = address;
         this.txid = txid;
         this.vout = vout;
@@ -116,7 +116,7 @@ public class UTXO {
         this.amount = amount;
     }
 
-    public int getHeight() {
+    public long getHeight() {
         return height;
     }
 

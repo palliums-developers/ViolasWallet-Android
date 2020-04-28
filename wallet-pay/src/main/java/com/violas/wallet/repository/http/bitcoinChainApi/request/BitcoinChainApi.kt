@@ -2,6 +2,7 @@ package com.violas.wallet.repository.http.bitcoinChainApi.request
 
 
 import com.violas.wallet.BuildConfig
+import com.violas.wallet.common.Vm
 
 object BitcoinChainApi {
     fun get(): BaseBitcoinChainRequest {
@@ -24,5 +25,6 @@ object BitcoinChainApi {
 
         // todo 待修复
         return BlockCypherRequest()
+//        return TrezorRequest(Vm.TestNet)
     }
 }
