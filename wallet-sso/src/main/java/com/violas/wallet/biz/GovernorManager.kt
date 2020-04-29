@@ -40,6 +40,9 @@ class GovernorManager {
     private val mSSOApplicationMsgStorage by lazy {
         DataRepository.getSSOApplicationMsgStorage()
     }
+    private val mSSOApplicationHandlerStorage by lazy {
+        DataRepository.getSSOApplicationHandlerStorage()
+    }
     private val mApplySSOManager by lazy {
         ApplySSOManager()
     }
@@ -254,7 +257,6 @@ class GovernorManager {
                 applicationPeriod = 7,
                 expirationDate = System.currentTimeMillis(),
                 applicationStatus = msgVO.applicationStatus,
-                walletLayersNumber = 2,
                 applicationId = msgVO.applicationId
             )
             response.data = fakeDetails
@@ -268,10 +270,6 @@ class GovernorManager {
                 if (response.data!!.tokenIdx == null) {
                     throw RequestException.responseDataException(
                         "module address cannot be null"
-                    )
-                } else if (response.data!!.walletLayersNumber <= 0) {
-                    throw RequestException.responseDataException(
-                        "Incorrect module depth(${response.data!!.walletLayersNumber})"
                     )
                 }
             }
@@ -289,57 +287,63 @@ class GovernorManager {
     }
 
     /**
-     * 审批SSO申请通过
+     * 获取审核不通过SSO申请原因列表
      */
-    suspend fun passSSOApplication(
-        ssoApplicationDetails: SSOApplicationDetailsDTO,
-        account: Account
-    ) {
-        // TODO 审批通过时，先向董事长申请发行币种，待董事长发行币种完成后，州长在通过SSO申请
-        var result = try {
-            mApplySSOManager.apply(
-                account = account,
-                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
-                ssoApplicationId = ssoApplicationDetails.applicationId,
-                newTokenIdx = 1
-            )
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-
-        if (BuildConfig.MOCK_GOVERNOR_DATA) {
-            result = true
-        }
-
-        if (!result) {
-            throw if (!isNetworkConnected())
-                RequestException.networkUnavailable()
-            else
-                RequestException(
-                    RequestException.ERROR_CODE_UNKNOWN_ERROR,
-                    getString(R.string.tips_governor_approval_fail)
-                )
-        }
-    }
+    suspend fun getUnapproveReasons() =
+        mGovernorService.getUnapproveReasons()
 
     /**
-     * 审批SSO申请不通过
+     * 审核不通过SSO申请
      */
-    suspend fun rejectSSOApplication(ssoApplicationDetails: SSOApplicationDetailsDTO) {
+    suspend fun unapproveSSOApplication(
+        ssoApplicationDetails: SSOApplicationDetailsDTO,
+        reasonType: Int,
+        reasonRemark: String = ""
+    ) {
         try {
-            mGovernorService.approvalSSOApplication(
+            mGovernorService.unapproveSSOApplication(
                 ssoApplicationId = ssoApplicationDetails.applicationId,
                 ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
-                newTokenIdx = -1,
-                pass = false
+                reasonType = reasonType,
+                reasonRemark = reasonRemark
             )
         } catch (e: Exception) {
             if (!BuildConfig.MOCK_GOVERNOR_DATA) {
                 throw e
             }
         }
+    }
+
+    /**
+     * 申请铸币权
+     * 审核通过SSO申请时，州长先向董事长申请发行币种，待董事长发行币种完成后，州长在转账并通过SSO申请
+     */
+    suspend fun applyForMintPower(
+        ssoApplicationDetails: SSOApplicationDetailsDTO,
+        account: Account
+    ) {
+        mGovernorService.applyForMintPower(
+            governorWalletAddress = account.getAddress().toHex(),
+            ssoApplicationId = ssoApplicationDetails.applicationId,
+            ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress
+        )
+    }
+
+    /**
+     * 审核通过SSO申请
+     */
+    suspend fun approveSSOApplication(
+        ssoApplicationDetails: SSOApplicationDetailsDTO,
+        account: Account? = null,
+        walletAddress: String
+    ) {
+        mApplySSOManager.apply(
+            account = account,
+            walletAddress = walletAddress,
+            ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
+            ssoApplicationId = ssoApplicationDetails.applicationId,
+            newTokenIdx = ssoApplicationDetails.tokenIdx!!
+        )
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.governorApproval
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,7 +10,9 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.GovernorManager
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
+import com.violas.wallet.repository.http.governor.UnapproveReasonDTO
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
+import com.violas.wallet.ui.transfer.TransferActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.palliums.violascore.wallet.Account
@@ -35,12 +38,17 @@ class GovernorApprovalViewModel(
 ) : BaseViewModel() {
 
     companion object {
-        const val ACTION_LOAD_APPLICATION_DETAILS = 0x01
-        const val ACTION_APPROVAL_APPLICATION = 0x02
+        const val ACTION_LOAD_APPLICATION_DETAILS = 0x01        // 加载SSO申请详情
+        const val ACTION_LOAD_UNAPPROVE_REASONS = 0x02          // 加载审核不通过SSO申请原因列表
+        const val ACTION_UNAPPROVE_APPLICATION = 0x03           // 审核不通过SSO申请
+        const val ACTION_APPLY_FOR_MINT_POWER = 0x04            // 申请铸币权
+        const val ACTION_APPROVE_APPLICATION = 0x05             // 审核通过SSO申请
+        const val ACTION_APPROVAL_APPLICATION = 0x10
     }
 
     val mAccountLD = MutableLiveData<AccountDO>()
     val mSSOApplicationDetailsLD = MutableLiveData<SSOApplicationDetailsDTO?>()
+    val mUnapproveReasons = MutableLiveData<List<UnapproveReasonDTO>>()
 
     private val mGovernorManager by lazy { GovernorManager() }
 
@@ -55,29 +63,84 @@ class GovernorApprovalViewModel(
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        if (action == ACTION_LOAD_APPLICATION_DETAILS) {
-            // 加载申请详情
-            val ssoApplicationDetails =
-                mGovernorManager.getSSOApplicationDetails(mAccountLD.value!!, mSSOApplicationMsgVO)
-            mSSOApplicationDetailsLD.postValue(ssoApplicationDetails)
+        when (action) {
+            ACTION_LOAD_APPLICATION_DETAILS -> {
+                // 加载SSO申请详情
+                val ssoApplicationDetails =
+                    mGovernorManager.getSSOApplicationDetails(
+                        mAccountLD.value!!,
+                        mSSOApplicationMsgVO
+                    )
+                mSSOApplicationDetailsLD.postValue(ssoApplicationDetails)
+            }
+
+            ACTION_LOAD_UNAPPROVE_REASONS -> {
+                // 加载审核不通过SSO申请原因列表
+                val unapproveReasons =
+                    mGovernorManager.getUnapproveReasons()
+                mUnapproveReasons.postValue(unapproveReasons)
+            }
+
+            ACTION_UNAPPROVE_APPLICATION -> {
+                // 审核不通过SSO申请
+                mGovernorManager.unapproveSSOApplication(
+                    mSSOApplicationDetailsLD.value!!,
+                    params[0] as Int,
+                    params[1] as String
+                )
+
+                // 操作成功后更新本地消息状态
+                mSSOApplicationMsgVO.applicationStatus = 2
+                mGovernorManager.updateSSOApplicationMsgStatus(
+                    mAccountLD.value!!.id,
+                    mSSOApplicationMsgVO
+                )
+            }
+
+            ACTION_APPLY_FOR_MINT_POWER -> {
+                // 申请铸币权
+                mGovernorManager.applyForMintPower(
+                    mSSOApplicationDetailsLD.value!!,
+                    account = params[0] as Account
+                )
+
+                // 审批操作成功后更新本地消息状态
+                mSSOApplicationMsgVO.applicationStatus = 1
+                mGovernorManager.updateSSOApplicationMsgStatus(
+                    mAccountLD.value!!.id,
+                    mSSOApplicationMsgVO
+                )
+            }
+
+            ACTION_APPROVE_APPLICATION -> {
+                // 已向发行商转VToken，通知发行商可以申请铸币
+                mGovernorManager.approveSSOApplication(
+                    mSSOApplicationDetailsLD.value!!,
+                    null,
+                    mAccountLD.value!!.address
+                )
+            }
+
+            else -> {
+                throw IllegalArgumentException("Unrecognized action")
+            }
+        }
+    }
+
+    fun transferVTokenToSSO(context: Context, requestCode: Int) {
+        val accountDO = mAccountLD.value
+        val ssoApplicationDetailsDTO = mSSOApplicationDetailsLD.value
+        if (accountDO == null || ssoApplicationDetailsDTO == null) {
             return
         }
 
-        // 审批申请
-        val pass = params[0] as Boolean
-        if (pass) {
-            // 审批通过
-            mGovernorManager.passSSOApplication(
-                ssoApplicationDetails = mSSOApplicationDetailsLD.value!!,
-                account = params[1] as Account
-            )
-        } else {
-            // 审批不通过
-            mGovernorManager.rejectSSOApplication(mSSOApplicationDetailsLD.value!!)
-        }
-
-        // 审批操作成功后更新本地消息状态
-        mSSOApplicationMsgVO.applicationStatus = if (pass) 1 else 2
-        mGovernorManager.updateSSOApplicationMsgStatus(mAccountLD.value!!.id, mSSOApplicationMsgVO)
+        TransferActivity.start(
+            context = context,
+            accountId = accountDO.id,
+            address = ssoApplicationDetailsDTO.ssoWalletAddress,
+            amount = 100 * 1000_000,
+            modifyable = false,
+            requestCode = requestCode
+        )
     }
 }

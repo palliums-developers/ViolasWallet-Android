@@ -29,6 +29,16 @@ fun Intent.start(fragment: Fragment, requestCode: Int) {
     fragment.startActivityForResult(this, requestCode)
 }
 
+fun Intent.start(context: Context, requestCode: Int = Int.MIN_VALUE) {
+    if (requestCode != Int.MIN_VALUE && context is Activity) {
+        context.startActivityForResult(this, requestCode)
+    } else if (requestCode != Int.MIN_VALUE && context is Fragment) {
+        context.startActivityForResult(this, requestCode)
+    } else {
+        context.startActivity(this)
+    }
+}
+
 fun openEmailClient(
     activity: Activity,
     receiver: String = "",

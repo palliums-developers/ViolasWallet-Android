@@ -33,6 +33,7 @@ import org.palliums.violascore.wallet.Account
 class GovernorApprovalActivity : BaseAppActivity() {
 
     companion object {
+        private const val TRANSFER_REQUEST_CODE = 100
 
         fun start(context: Context, msgVO: SSOApplicationMsgVO) {
             Intent(context, GovernorApprovalActivity::class.java)
@@ -131,6 +132,36 @@ class GovernorApprovalActivity : BaseAppActivity() {
         })
     }
 
+    private fun approvalApplication(
+        passAndApply: Boolean,
+        account: Account? = null
+    ) {
+        val params = if (passAndApply) {
+            arrayOf(passAndApply, account!!)
+        } else {
+            arrayOf(passAndApply)
+        }
+
+        mViewModel.execute(
+            params = *params,
+            action = ACTION_APPROVAL_APPLICATION,
+            failureCallback = { dismissProgress() }
+        ) {
+            dismissProgress()
+            showToast(
+                getString(
+                    if (passAndApply)
+                        R.string.tips_governor_approval_pass_success
+                    else
+                        R.string.tips_governor_approval_not_pass_success
+                    ,
+                    mSSOApplicationMsgVO.applicantIdName
+                )
+            )
+            close()
+        }
+    }
+
     private fun loadApplicationDetails() {
         mViewModel.execute(
             action = ACTION_LOAD_APPLICATION_DETAILS,
@@ -156,39 +187,6 @@ class GovernorApprovalActivity : BaseAppActivity() {
                 nsvContentLayout.visibility = View.VISIBLE
                 dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
             })
-    }
-
-    private fun approvalApplication(
-        pass: Boolean,
-        account: Account? = null
-    ) {
-        val params = if (pass) {
-            arrayOf(pass, account!!)
-        } else {
-            arrayOf(pass)
-        }
-
-        mViewModel.execute(
-            params = *params,
-            action = ACTION_APPROVAL_APPLICATION,
-            failureCallback = {
-                dismissProgress()
-            },
-            successCallback = {
-                dismissProgress()
-                showToast(
-                    getString(
-                        if (pass)
-                            R.string.tips_governor_approval_pass_success
-                        else
-                            R.string.tips_governor_approval_not_pass_success
-                        ,
-                        mSSOApplicationMsgVO.applicantIdName
-                    )
-                )
-                close()
-            }
-        )
     }
 
     private fun fillApplicationInfo(details: SSOApplicationDetailsDTO) {

@@ -384,4 +384,19 @@
     <string name="action_cancel_login">取消登录</string>
     <string name="tips_scan_login_success">董事长桌面钱包已登录</string>
     <string name="title_scan_result">扫码结果</string>
+
+    <string name="action_approve_and_apply_for_mint_power">审核通过，申请铸币权</string>
+    <string name="title_unapprove">审核未通过</string>
+    <string name="label_reason">原因</string>
+    <string name="hint_select_unapprove_reason">请选择未通过原因</string>
+    <string name="hint_remark_unapprove_reason">请备注其他原因</string>
+    <string name="action_confirm_unapprove">确&#160;定</string>
+    <string name="apply_for_mintable_step_1">%1$s申请发行%2$s，州长审核已通过</string>
+    <string name="apply_for_mintable_step_2">铸币权申请中</string>
+    <string name="apply_for_mintable_step_3_1">铸币权申请通过</string>
+    <string name="apply_for_mintable_step_3_2">铸币权申请未通过</string>
+    <string name="apply_for_mintable_step_3_3">原因：%1$s</string>
+    <string name="apply_for_mintable_desc_1">是否向发行商转账vtoken，\n并通知可执行申请铸币？</string>
+    <string name="apply_for_mintable_action_1">转账并通知</string>
+    <string name="apply_for_mintable_action_2">已转账并通知</string>
 </resources>

@@ -74,6 +74,8 @@ object DataRepository {
 
     fun getSSOApplicationMsgStorage() = appDatabase.ssoApplicationMsgDao()
 
+    fun getSSOApplicationHandlerStorage() = appDatabase.applySsoRecordDao()
+
     fun getBitcoinService() = BitcoinChainApi.get()
 
     fun getLibraService() =

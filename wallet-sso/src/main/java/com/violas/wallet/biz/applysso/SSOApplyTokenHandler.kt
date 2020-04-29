@@ -28,7 +28,8 @@ annotation class SSOApplyTokenStatus
  * 本地记录主账户已经审批成功
  */
 class SSOApplyTokenHandler(
-    private val account: Account,
+    private val account: Account? = null,
+    private val walletAddress: String,
     private val ssoWalletAddress: String,
     private val ssoApplicationId: String,
     private val newTokenIdx: Long
@@ -63,7 +64,7 @@ class SSOApplyTokenHandler(
     @WorkerThread
     suspend fun exec() {
         val applyEngine = ApplyEngine()
-        val walletAddress = account.getAddress().toHex()
+        //val walletAddress = account.getAddress().toHex()
 
         val findUnDoneRecord =
             applyEngine.getUnDoneRecord(walletAddress, ssoWalletAddress)
@@ -78,6 +79,7 @@ class SSOApplyTokenHandler(
                 100 * 1000_000
             )
         )
+
         applyEngine.addApplyHandle(
             SendApplySSOHandle(
                 walletAddress,

@@ -22,12 +22,14 @@
     <dimen name="dp_0.5" tools:ignore="MissingDefaultResource">0.5dp</dimen>
     <dimen name="dp_0.7" tools:ignore="MissingDefaultResource">0.7dp</dimen>
     <dimen name="dp_1">1dp</dimen>
+    <dimen name="dp_1.5" tools:ignore="MissingDefaultResource">1.5dp</dimen>
     <dimen name="dp_2">2dp</dimen>
     <dimen name="dp_3">3dp</dimen>
     <dimen name="dp_4">4dp</dimen>
     <dimen name="dp_5">5dp</dimen>
     <dimen name="dp_6">6dp</dimen>
     <dimen name="dp_7">7dp</dimen>
+    <dimen name="dp_7.5" tools:ignore="MissingDefaultResource">7.5dp</dimen>
     <dimen name="dp_8">8dp</dimen>
     <dimen name="dp_9">9dp</dimen>
     <dimen name="dp_10">10dp</dimen>
@@ -97,6 +99,7 @@
     <dimen name="dp_79">79dp</dimen>
     <dimen name="dp_80">80dp</dimen>
     <dimen name="dp_81">81dp</dimen>
+    <dimen name="dp_82">82dp</dimen>
     <dimen name="dp_85">85dp</dimen>
     <dimen name="dp_86">86dp</dimen>
     <dimen name="dp_87">87dp</dimen>
@@ -105,6 +108,7 @@
     <dimen name="dp_90">90dp</dimen>
     <dimen name="dp_100">100dp</dimen>
     <dimen name="dp_105">105dp</dimen>
+    <dimen name="dp_106">106dp</dimen>
     <dimen name="dp_110">110dp</dimen>
     <dimen name="dp_111">111dp</dimen>
     <dimen name="dp_115">115dp</dimen>
@@ -124,6 +128,7 @@
     <dimen name="dp_196">196dp</dimen>
     <dimen name="dp_197">197dp</dimen>
     <dimen name="dp_200">200dp</dimen>
+    <dimen name="dp_201">201dp</dimen>
     <dimen name="dp_204">204dp</dimen>
     <dimen name="dp_205">205dp</dimen>
     <dimen name="dp_211">211dp</dimen>

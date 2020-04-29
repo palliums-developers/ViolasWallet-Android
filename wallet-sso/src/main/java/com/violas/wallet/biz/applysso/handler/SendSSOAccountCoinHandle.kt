@@ -7,7 +7,7 @@ import org.palliums.violascore.wallet.Account
 
 class SendSSOAccountCoinHandle(
     private val walletAddress: String,
-    private val account: Account,
+    private val account: Account? = null,
     private val ssoWalletAddress: String,
     private val ssoApplicationId: String,
     private val newTokenIdx: Long,
@@ -15,13 +15,13 @@ class SendSSOAccountCoinHandle(
 ) : ApplyHandle() {
 
     override suspend fun handler() {
-        getServiceProvider()!!.getTokenManager().mViolasService
+        /*getServiceProvider()!!.getTokenManager().mViolasService
             .sendCoin(
                 ContextProvider.getContext(),
                 account,
                 ssoWalletAddress,
                 amount
-            )
+            )*/
 
         getServiceProvider()!!.getApplySsoRecordDao()
             .insert(

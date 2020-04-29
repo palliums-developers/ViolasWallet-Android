@@ -44,21 +44,6 @@ class GovernorRepository(private val api: GovernorApi) {
         }
 
     /**
-     * 更新子账户个数
-     */
-    suspend fun updateSubAccountCount(
-        walletAddress: String,
-        subAccountCount: Long
-    ) =
-        checkResponse {
-            val requestBody = """{
-    "wallet_address":"$walletAddress",
-    "subaccount_count":$subAccountCount
-}""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.updateGovernorInfo(requestBody)
-        }
-
-    /**
      * 更新州长名称
      */
     suspend fun updateGovernorName(
@@ -88,14 +73,6 @@ class GovernorRepository(private val api: GovernorApi) {
         }
 
     /**
-     * 获取vstake地址
-     */
-    suspend fun getVStakeAddress() =
-        checkResponse(dataNullableOnSuccess = false) {
-            api.getVStakeAddress()
-        }
-
-    /**
      * 获取SSO申请消息
      */
     suspend fun getSSOApplicationMsgs(
@@ -116,20 +93,62 @@ class GovernorRepository(private val api: GovernorApi) {
         }
 
     /**
-     * 审批SSO申请
+     * 获取审核SSO申请不通过原因列表
      */
-    suspend fun approvalSSOApplication(
+    suspend fun getUnapproveReasons() =
+        checkResponse(dataNullableOnSuccess = false) {
+            api.getUnapproveReasons()
+        }.data!!
+
+    /**
+     * 审核不通过SSO申请
+     */
+    suspend fun unapproveSSOApplication(
         ssoApplicationId: String,
         ssoWalletAddress: String,
-        newTokenIdx: Long,
-        pass: Boolean
+        reasonType: Int,
+        reasonRemark: String = ""
     ) =
         checkResponse {
             val requestBody = """{
     "id":"$ssoApplicationId",
     "wallet_address":"$ssoWalletAddress",
-    "token_id":${if (pass) newTokenIdx else -1},
-    "approval_status":${if (pass) 1 else 2}
+    "approval_status":2,
+    "reason_type":$reasonType,
+    "reason_remark":$reasonRemark
+}""".toRequestBody("application/json".toMediaTypeOrNull())
+            api.approvalSSOApplication(requestBody)
+        }
+
+    /**
+     * 申请铸币权
+     */
+    suspend fun applyForMintPower(
+        governorWalletAddress: String,
+        ssoApplicationId: String,
+        ssoWalletAddress: String
+    ) =
+        checkResponse {
+            val requestBody = """{
+    "wallet_address":"$governorWalletAddress",
+    "id":"$ssoApplicationId",
+    "sso_wallet_address":"$ssoWalletAddress"
+}""".toRequestBody("application/json".toMediaTypeOrNull())
+            api.applyForMintPower(requestBody)
+        }
+
+    /**
+     * 审核通过SSO申请
+     */
+    suspend fun approveSSOApplication(
+        ssoApplicationId: String,
+        ssoWalletAddress: String
+    ) =
+        checkResponse {
+            val requestBody = """{
+    "id":"$ssoApplicationId",
+    "wallet_address":"$ssoWalletAddress",
+    "approval_status":1
 }""".toRequestBody("application/json".toMediaTypeOrNull())
             api.approvalSSOApplication(requestBody)
         }
