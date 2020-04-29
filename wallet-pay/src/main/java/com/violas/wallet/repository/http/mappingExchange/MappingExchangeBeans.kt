@@ -14,8 +14,8 @@ import com.palliums.violas.http.Response
 data class MappingInfoDTO(
     @SerializedName("address")
     val receiveAddress: String,         // 接收地址
-    @SerializedName("module")
-    val tokenAddress: String,           // 映射币地址
+    @SerializedName("token_id")
+    val tokenIdx: Long,           // 映射币地址
     val name: String,                   // 映射币或平台币的名称
     @SerializedName("rate")
     val exchangeRate: Double            // 兑换比率
