@@ -10,12 +10,10 @@ import com.palliums.net.LoadState
 import com.palliums.utils.formatDate
 import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.image.GlideApp
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel
 import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModelFactory
-import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
 import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.layout_approval_issue_token_info.*
 

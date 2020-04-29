@@ -400,4 +400,10 @@
     <string name="apply_for_mintable_action_1">转账并通知</string>
     <string name="apply_for_mintable_action_2">已转账，通知</string>
     <string name="apply_for_mintable_action_3">已转账并通知</string>
+    <string name="token_application_status_desc_unapproved">未通过审核</string>
+    <string name="token_application_status_desc_timeout">审核超时,已关闭</string>
+    <string name="token_application_status_desc_approved">身份审核已通过</string>
+    <string name="token_application_status_desc_minted">铸币成功</string>
+    <string name="token_application_status_label_reason">失败原因：</string>
+    <string name="token_application_status_label_time">失效时间：</string>
 </resources>
