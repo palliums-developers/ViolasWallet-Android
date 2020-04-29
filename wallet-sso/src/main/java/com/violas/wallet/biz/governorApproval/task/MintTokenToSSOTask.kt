@@ -1,18 +1,18 @@
-package com.violas.wallet.biz.applysso.handler
+package com.violas.wallet.biz.governorApproval.task
 
-import com.violas.wallet.biz.applysso.SSOApplyTokenHandler
+import com.violas.wallet.biz.governorApproval.GovernorApprovalStatus
 import org.palliums.violascore.wallet.Account
 
-class MintTokenHandler(
-    private val walletAddress: String,
+class MintTokenToSSOTask(
     private val account: Account,
+    private val walletAddress: String,
+    private val ssoApplicationId: String,
     private val ssoWalletAddress: String,
     private val ssoApplyAmount: Long,
-    private val ssoApplicationId: String,
     private val tokenIdx: Long
-) : ApplyHandle() {
+) : ApprovalTask() {
 
-    override suspend fun handler() {
+    override suspend fun handle() {
         getServiceProvider()!!.getTokenManager()
             .mintToken(
                 account,
@@ -25,7 +25,7 @@ class MintTokenHandler(
             .updateRecordStatus(
                 walletAddress,
                 ssoApplicationId,
-                SSOApplyTokenHandler.MintSuccess
+                GovernorApprovalStatus.MintSuccess
             )
     }
 }

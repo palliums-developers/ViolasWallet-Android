@@ -3,10 +3,11 @@ package com.violas.wallet.ui.governorApproval.approvalIssueToken
 import android.app.Activity
 import android.content.Intent
 import android.view.View
+import androidx.lifecycle.Observer
 import com.palliums.utils.getColor
 import com.violas.wallet.R
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
-import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_APPROVE_APPLICATION
+import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_APPROVE_APPLICATION
 import kotlinx.android.synthetic.main.fragment_apply_for_mintable_progress.*
 
 /**
@@ -30,55 +31,75 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
 
         // 申请发币状态（负数为失败情况）：
         // 1：州长已审核通过，并申请铸币权；
-        // 2：董事长已发布新Token，并指定铸币权给州长；
-        // 3：州长已给发行商转VToken，并通知；
+        // 2：董事长已发布新稳定币，并指定铸币权给州长；
+        // 3：州长已给发行商转平台币，并通知；
         // -2：董事长审核未通过。
-        tvStep1.text =
+        tvStep1Desc.text =
             getString(R.string.apply_for_mintable_step_1, details.idName, details.tokenName)
         if (details.applicationStatus == 1) {
-            vStep2.setBackgroundResource(R.color.color_9D9BA3)
+            vStep2Line.setBackgroundResource(R.color.color_9D9BA3)
             return
         }
 
-        vStep2.setBackgroundResource(R.color.colorAccent)
-        ivStep3.visibility = View.VISIBLE
-        tvStep3.visibility = View.VISIBLE
+        vStep2Line.setBackgroundResource(R.color.colorAccent)
+        ivStep3Icon.visibility = View.VISIBLE
+        tvStep3Desc.visibility = View.VISIBLE
         if (details.applicationStatus == -2) {
-            vStep3.visibility = View.VISIBLE
+            vStep3Line.visibility = View.VISIBLE
             tvStep3Reason.visibility = View.VISIBLE
-            ivStep3.setBackgroundResource(R.drawable.ic_application_unpassed)
-            tvStep3.setText(R.string.apply_for_mintable_step_3_2)
+            ivStep3Icon.setBackgroundResource(R.drawable.ic_application_unpassed)
+            tvStep3Desc.setText(R.string.apply_for_mintable_step_3_2)
             tvStep3Reason.text =
                 getString(R.string.apply_for_mintable_step_3_3, details.unapproveReason)
             return
         }
 
-        ivStep3.setBackgroundResource(R.drawable.ic_application_passed)
-        tvStep3.text = getString(R.string.apply_for_mintable_step_3_1)
-        vLine.visibility = View.VISIBLE
-        tvDesc.visibility = View.VISIBLE
-        tvTransferAndNotify.visibility = View.VISIBLE
-        vBlank.visibility = View.GONE
-        if (details.applicationStatus == 2) {
-            tvTransferAndNotify.setText(R.string.apply_for_mintable_action_1)
-            tvTransferAndNotify.setTextColor(getColor(R.color.white))
-            tvTransferAndNotify.isEnabled = true
-        } else {
-            disableTransferAndNotifyBtn()
+        ivStep3Icon.setBackgroundResource(R.drawable.ic_application_passed)
+        tvStep3Desc.text = getString(R.string.apply_for_mintable_step_3_1)
+        vTransferAndNotifyLine.visibility = View.VISIBLE
+        tvTransferAndNotifyDesc.visibility = View.VISIBLE
+        tvTransferAndNotifyBtn.visibility = View.VISIBLE
+        vApplyingUnpassedBlank.visibility = View.GONE
+        if (details.applicationStatus == 3) {
+            refreshTransferAndNotifyBtn(3)
+            return
         }
+
+        mViewModel.mIsTransferredCoinToSSOLD.observe(this, Observer {
+            refreshTransferAndNotifyBtn(if (it) 2 else 1)
+        })
     }
 
-    private fun disableTransferAndNotifyBtn() {
-        tvTransferAndNotify.setText(R.string.apply_for_mintable_action_2)
-        tvTransferAndNotify.setTextColor(getColor(R.color.colorAccent))
-        tvTransferAndNotify.isEnabled = false
+    // 1: no transfer and notify; 2: transferred; 3: transferred and notified
+    private fun refreshTransferAndNotifyBtn(status: Int) {
+        when (status) {
+            1 -> {
+                tvTransferAndNotifyBtn.setText(R.string.apply_for_mintable_action_1)
+                tvTransferAndNotifyBtn.setTextColor(getColor(R.color.white))
+                tvTransferAndNotifyBtn.isEnabled = true
+            }
+            2 -> {
+                tvTransferAndNotifyBtn.setText(R.string.apply_for_mintable_action_2)
+                tvTransferAndNotifyBtn.setTextColor(getColor(R.color.white))
+                tvTransferAndNotifyBtn.isEnabled = true
+            }
+            else -> {
+                tvTransferAndNotifyBtn.setText(R.string.apply_for_mintable_action_3)
+                tvTransferAndNotifyBtn.setTextColor(getColor(R.color.colorAccent))
+                tvTransferAndNotifyBtn.isEnabled = false
+            }
+        }
     }
 
     override fun initEvent() {
         super.initEvent()
 
-        tvTransferAndNotify.setOnClickListener {
-            mViewModel.transferVTokenToSSO(context!!, TRANSFER_REQUEST_CODE)
+        tvTransferAndNotifyBtn.setOnClickListener {
+            if (mViewModel.mIsTransferredCoinToSSOLD.value == true) {
+                notifySSOCanApplyForMint()
+            } else {
+                mViewModel.transferCoinToSSO(context!!, TRANSFER_REQUEST_CODE)
+            }
         }
     }
 
@@ -87,12 +108,23 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
         when (requestCode) {
             TRANSFER_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    mViewModel.execute(action = ACTION_APPROVE_APPLICATION) {
-                        mSSOApplicationDetailsDTO.applicationStatus = 3
-                        disableTransferAndNotifyBtn()
-                    }
+                    notifySSOCanApplyForMint()
                 }
             }
+        }
+    }
+
+    private fun notifySSOCanApplyForMint() {
+        mViewModel.execute(
+            action = ACTION_APPROVE_APPLICATION,
+            failureCallback = {
+                if (mViewModel.mIsTransferredCoinToSSOLD.value != true) {
+                    mViewModel.mIsTransferredCoinToSSOLD.postValue(true)
+                }
+            }
+        ) {
+            mSSOApplicationDetailsDTO.applicationStatus = 3
+            refreshTransferAndNotifyBtn(3)
         }
     }
 }

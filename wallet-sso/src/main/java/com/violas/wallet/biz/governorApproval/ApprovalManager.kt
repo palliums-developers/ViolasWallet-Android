@@ -1,33 +1,30 @@
-package com.violas.wallet.biz.applysso
+package com.violas.wallet.biz.governorApproval
 
 import org.palliums.violascore.wallet.Account
 
-class ApplySSOManager {
+class ApprovalManager {
 
     /**
      * 同意发币申请
      *
      * @param account 解密后的 Account 账户
      * @param walletAddress 州长钱包地址
-     * @param ssoWalletAddress 铸币接收账户地址
      * @param ssoApplicationId SSO发币申请id
-     * @param newTokenIdx 新发型的稳定币索引
+     * @param ssoWalletAddress 铸币接收账户地址
      *
      * @exception 暂时未定义
      */
-    suspend fun apply(
+    suspend fun approve(
         account: Account? = null,
         walletAddress: String,
-        ssoWalletAddress: String,
         ssoApplicationId: String,
-        newTokenIdx: Long
+        ssoWalletAddress: String
     ) {
-        val applySSOHandler = SSOApplyTokenHandler(
+        val applySSOHandler = ApproveSSOIssueTokenHandler(
             account,
             walletAddress,
-            ssoWalletAddress,
             ssoApplicationId,
-            newTokenIdx
+            ssoWalletAddress
         )
         applySSOHandler.exec()
     }
@@ -36,24 +33,24 @@ class ApplySSOManager {
      * 铸币
      * @param account 解密后的 Account 账户
      * @param ssoWalletAddress 铸币接收账户地址
-     * @param ssoApplyAmount 铸币数量
      * @param ssoApplicationId SSO发币申请id
+     * @param ssoApplyAmount 铸币数量
      * @param newTokenIdx 新发型的稳定币索引
      *
      * * @exception 暂时未定义
      */
     suspend fun mint(
         account: Account,
+        ssoApplicationId: String,
         ssoWalletAddress: String,
         ssoApplyAmount: Long,
-        ssoApplicationId: String,
         newTokenIdx: Long
     ) {
-        val ssoMintTokenHandler = SSOMintTokenHandler(
+        val ssoMintTokenHandler = MintTokenToSSOHandler(
             account,
+            ssoApplicationId,
             ssoWalletAddress,
             ssoApplyAmount,
-            ssoApplicationId,
             newTokenIdx
         )
         ssoMintTokenHandler.exec()

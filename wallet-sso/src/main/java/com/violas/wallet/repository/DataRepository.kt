@@ -16,9 +16,6 @@ import com.violas.wallet.repository.http.governor.GovernorApi
 import com.violas.wallet.repository.http.governor.GovernorRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
-import com.violas.wallet.repository.http.libra.LibexplorerApi
-import com.violas.wallet.repository.http.libra.LibexplorerRepository
-import com.violas.wallet.repository.http.libra.LibexplorerService
 import com.violas.wallet.repository.http.libra.violas.LibraViolasApi
 import com.violas.wallet.repository.http.libra.violas.LibraViolasRepository
 import com.violas.wallet.repository.http.libra.violas.LibraViolasService
@@ -74,7 +71,7 @@ object DataRepository {
 
     fun getSSOApplicationMsgStorage() = appDatabase.ssoApplicationMsgDao()
 
-    fun getSSOApplicationHandlerStorage() = appDatabase.applySsoRecordDao()
+    fun getSSOApplicationRecordStorage() = appDatabase.ssoApplicationRecordDao()
 
     fun getBitcoinService() = BitcoinChainApi.get()
 

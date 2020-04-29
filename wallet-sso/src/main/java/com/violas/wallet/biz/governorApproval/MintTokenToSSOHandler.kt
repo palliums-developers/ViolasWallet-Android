@@ -1,9 +1,8 @@
-package com.violas.wallet.biz.applysso
+package com.violas.wallet.biz.governorApproval
 
-import androidx.annotation.WorkerThread
-import com.violas.wallet.biz.applysso.handler.MintTokenHandler
-import com.violas.wallet.biz.applysso.handler.PublishTokenHandler
-import com.violas.wallet.biz.applysso.handler.SendMintTokenSuccessHandler
+import com.violas.wallet.biz.governorApproval.task.MintTokenToSSOTask
+import com.violas.wallet.biz.governorApproval.task.PublishTokenTask
+import com.violas.wallet.biz.governorApproval.task.SendMintTokenSuccessTask
 import org.palliums.violascore.wallet.Account
 
 /**
@@ -15,49 +14,47 @@ import org.palliums.violascore.wallet.Account
  * 通知服务器铸币成功通过
  * 删除本地记录主账户的铸币记录
  */
-class SSOMintTokenHandler(
+class MintTokenToSSOHandler(
     private val account: Account,
+    private val ssoApplicationId: String,
     private val ssoWalletAddress: String,
     private val ssoApplyAmount: Long,
-    private val ssoApplicationId: String,
     private val newTokenIdx: Long
 ) {
 
-    @WorkerThread
     suspend fun exec() {
-        val applyEngine = ApplyEngine()
+        val applyEngine = ApprovalEngine()
         val walletAddress = account.getAddress().toHex()
 
         val findUnDoneRecord = applyEngine.getUnMintRecord(
             walletAddress,
-            newTokenIdx,
             ssoWalletAddress
         )
 
         applyEngine.addApplyHandle(
-            PublishTokenHandler(
-                walletAddress,
+            PublishTokenTask(
                 account,
+                walletAddress,
                 ssoApplicationId
             )
         )
 
         applyEngine.addApplyHandle(
-            MintTokenHandler(
-                walletAddress,
+            MintTokenToSSOTask(
                 account,
+                walletAddress,
+                ssoApplicationId,
                 ssoWalletAddress,
                 ssoApplyAmount,
-                ssoApplicationId,
                 newTokenIdx
             )
         )
 
         applyEngine.addApplyHandle(
-            SendMintTokenSuccessHandler(
+            SendMintTokenSuccessTask(
                 walletAddress,
-                ssoWalletAddress,
-                ssoApplicationId
+                ssoApplicationId,
+                ssoWalletAddress
             )
         )
 

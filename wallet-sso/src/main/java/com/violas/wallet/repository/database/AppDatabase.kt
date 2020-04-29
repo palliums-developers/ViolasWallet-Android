@@ -12,7 +12,7 @@ import com.violas.wallet.repository.database.dao.*
 import com.violas.wallet.repository.database.entity.*
 
 @Database(
-    entities = [AccountDO::class, TokenDo::class, AddressBookDo::class, ApplySSORecordDo::class, SSOApplicationMsgDO::class],
+    entities = [AccountDO::class, TokenDo::class, AddressBookDo::class, SSOApplicationRecordDo::class, SSOApplicationMsgDO::class],
     version = 5,
     exportSchema = false
 )
@@ -22,7 +22,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun tokenDao(): TokenDao
     abstract fun addressBookDao(): AddressBookDao
-    abstract fun applySsoRecordDao(): ApplySSORecordDao
+    abstract fun ssoApplicationRecordDao(): SSOApplicationRecorDao
     abstract fun ssoApplicationMsgDao(): SSOApplicationMsgDao
 
     companion object {

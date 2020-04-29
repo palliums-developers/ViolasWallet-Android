@@ -1,12 +1,12 @@
-package com.violas.wallet.biz.applysso.handler
+package com.violas.wallet.biz.governorApproval.task
 
-class SendMintTokenSuccessHandler(
-    private val accountAddress: String,
-    private val ssoWalletAddress: String,
-    private val ssoApplicationId: String
-) : ApplyHandle() {
+class SendMintTokenSuccessTask(
+    private val walletAddress: String,
+    private val ssoApplicationId: String,
+    private val ssoWalletAddress: String
+) : ApprovalTask() {
 
-    override suspend fun handler() {
+    override suspend fun handle() {
         getServiceProvider()!!.getGovernorService()
             .changeSSOApplicationToMinted(
                 ssoApplicationId,
@@ -15,7 +15,7 @@ class SendMintTokenSuccessHandler(
 
         getServiceProvider()!!.getApplySsoRecordDao()
             .remove(
-                accountAddress,
+                walletAddress,
                 ssoApplicationId
             )
     }

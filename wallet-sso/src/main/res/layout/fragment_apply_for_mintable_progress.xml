@@ -19,7 +19,7 @@
             android:paddingBottom="@dimen/dp_17">
 
             <ImageView
-                android:id="@+id/ivStep1"
+                android:id="@+id/ivStep1Icon"
                 android:layout_width="@dimen/dp_16"
                 android:layout_height="@dimen/dp_16"
                 android:layout_marginStart="@dimen/dp_2"
@@ -29,74 +29,74 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvStep1"
+                android:id="@+id/tvStep1Desc"
                 android:layout_width="@dimen/dp_0"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_13"
                 android:lineSpacingExtra="@dimen/dp_3"
                 android:textColor="@color/color_82808A"
                 android:textSize="@dimen/sp_14"
-                app:layout_constraintBottom_toBottomOf="@id/ivStep1"
+                app:layout_constraintBottom_toBottomOf="@id/ivStep1Icon"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/ivStep1"
-                app:layout_constraintTop_toTopOf="@id/ivStep1"
+                app:layout_constraintStart_toEndOf="@id/ivStep1Icon"
+                app:layout_constraintTop_toTopOf="@id/ivStep1Icon"
                 tools:text="@string/apply_for_mintable_step_1" />
 
             <View
-                android:id="@+id/vStep1"
+                android:id="@+id/vStep1Line"
                 android:layout_width="@dimen/dp_1"
                 android:layout_height="@dimen/dp_22"
                 android:layout_marginStart="@dimen/dp_8"
                 android:layout_marginTop="@dimen/dp_5"
                 android:background="@color/colorAccent"
-                app:layout_constraintStart_toStartOf="@id/ivStep1"
-                app:layout_constraintTop_toBottomOf="@id/ivStep1" />
+                app:layout_constraintStart_toStartOf="@id/ivStep1Icon"
+                app:layout_constraintTop_toBottomOf="@id/ivStep1Icon" />
 
             <ImageView
-                android:id="@+id/ivStep2"
+                android:id="@+id/ivStep2Icon"
                 android:layout_width="@dimen/dp_16"
                 android:layout_height="@dimen/dp_16"
                 android:layout_marginTop="@dimen/dp_5"
                 android:background="@drawable/ic_application_applying"
-                app:layout_constraintStart_toStartOf="@id/ivStep1"
-                app:layout_constraintTop_toBottomOf="@id/vStep1" />
+                app:layout_constraintStart_toStartOf="@id/ivStep1Icon"
+                app:layout_constraintTop_toBottomOf="@id/vStep1Line" />
 
             <TextView
-                android:id="@+id/tvStep2"
+                android:id="@+id/tvStep2Desc"
                 android:layout_width="@dimen/dp_0"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_13"
                 android:lineSpacingExtra="@dimen/dp_3"
                 android:textColor="@color/color_82808A"
                 android:textSize="@dimen/sp_14"
-                app:layout_constraintBottom_toBottomOf="@id/ivStep2"
+                app:layout_constraintBottom_toBottomOf="@id/ivStep2Icon"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/ivStep2"
-                app:layout_constraintTop_toTopOf="@id/ivStep2"
+                app:layout_constraintStart_toEndOf="@id/ivStep2Icon"
+                app:layout_constraintTop_toTopOf="@id/ivStep2Icon"
                 tools:text="@string/apply_for_mintable_step_2" />
 
             <View
-                android:id="@+id/vStep2"
+                android:id="@+id/vStep2Line"
                 android:layout_width="@dimen/dp_1"
                 android:layout_height="@dimen/dp_22"
                 android:layout_marginStart="@dimen/dp_8"
                 android:layout_marginTop="@dimen/dp_5"
-                app:layout_constraintStart_toStartOf="@id/ivStep1"
-                app:layout_constraintTop_toBottomOf="@id/ivStep2"
+                app:layout_constraintStart_toStartOf="@id/ivStep1Icon"
+                app:layout_constraintTop_toBottomOf="@id/ivStep2Icon"
                 tools:background="@color/color_9D9BA3" />
 
             <ImageView
-                android:id="@+id/ivStep3"
+                android:id="@+id/ivStep3Icon"
                 android:layout_width="@dimen/dp_16"
                 android:layout_height="@dimen/dp_16"
                 android:layout_marginTop="@dimen/dp_5"
                 android:visibility="gone"
-                app:layout_constraintStart_toStartOf="@id/ivStep1"
-                app:layout_constraintTop_toBottomOf="@id/vStep2"
+                app:layout_constraintStart_toStartOf="@id/ivStep1Icon"
+                app:layout_constraintTop_toBottomOf="@id/vStep2Line"
                 tools:background="@drawable/ic_application_unpassed" />
 
             <TextView
-                android:id="@+id/tvStep3"
+                android:id="@+id/tvStep3Desc"
                 android:layout_width="@dimen/dp_0"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_13"
@@ -105,10 +105,10 @@
                 android:textSize="@dimen/sp_14"
                 android:textStyle="bold"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/ivStep3"
+                app:layout_constraintBottom_toBottomOf="@id/ivStep3Icon"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/ivStep3"
-                app:layout_constraintTop_toTopOf="@id/ivStep3"
+                app:layout_constraintStart_toEndOf="@id/ivStep3Icon"
+                app:layout_constraintTop_toTopOf="@id/ivStep3Icon"
                 tools:text="@string/apply_for_mintable_step_3_2" />
 
             <TextView
@@ -120,13 +120,13 @@
                 android:textColor="@color/def_text_title"
                 android:textSize="@dimen/sp_12"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@id/tvStep3"
-                app:layout_constraintStart_toStartOf="@id/tvStep3"
-                app:layout_constraintTop_toBottomOf="@id/tvStep3"
+                app:layout_constraintEnd_toEndOf="@id/tvStep3Desc"
+                app:layout_constraintStart_toStartOf="@id/tvStep3Desc"
+                app:layout_constraintTop_toBottomOf="@id/tvStep3Desc"
                 tools:text="原因：信息不全 信息不全 信息不全 信息不全 信息不全 信息不全 信息不全 信息不全 信息不全 信息不全 信息不全 信息不全" />
 
             <View
-                android:id="@+id/vStep3"
+                android:id="@+id/vStep3Line"
                 android:layout_width="@dimen/dp_1"
                 android:layout_height="@dimen/dp_0"
                 android:layout_marginStart="@dimen/dp_8"
@@ -134,18 +134,18 @@
                 android:background="@color/colorAccent"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/tvStep3Reason"
-                app:layout_constraintStart_toStartOf="@id/ivStep1"
-                app:layout_constraintTop_toBottomOf="@id/ivStep3" />
+                app:layout_constraintStart_toStartOf="@id/ivStep1Icon"
+                app:layout_constraintTop_toBottomOf="@id/ivStep3Icon" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="vStep2,vStep3" />
+                app:constraint_referenced_ids="vStep2Line,vStep3Line" />
 
             <View
-                android:id="@+id/vBlank"
+                android:id="@+id/vApplyingUnpassedBlank"
                 android:layout_width="@dimen/dp_0"
                 android:layout_height="@dimen/dp_11"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -153,7 +153,7 @@
                 app:layout_constraintTop_toBottomOf="@id/barrier" />
 
             <View
-                android:id="@+id/vLine"
+                android:id="@+id/vTransferAndNotifyLine"
                 android:layout_width="@dimen/dp_0"
                 android:layout_height="@dimen/dp_0.5"
                 android:layout_marginTop="@dimen/dp_25"
@@ -161,10 +161,10 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ivStep3" />
+                app:layout_constraintTop_toBottomOf="@id/ivStep3Icon" />
 
             <TextView
-                android:id="@+id/tvDesc"
+                android:id="@+id/tvTransferAndNotifyDesc"
                 android:layout_width="@dimen/dp_0"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_15"
@@ -174,10 +174,10 @@
                 android:textSize="@dimen/sp_14"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/vLine" />
+                app:layout_constraintTop_toBottomOf="@id/vTransferAndNotifyLine" />
 
             <TextView
-                android:id="@+id/tvTransferAndNotify"
+                android:id="@+id/tvTransferAndNotifyBtn"
                 android:layout_width="@dimen/dp_106"
                 android:layout_height="@dimen/dp_30"
                 android:layout_marginBottom="@dimen/dp_3"
@@ -185,7 +185,7 @@
                 android:gravity="center"
                 android:textSize="@dimen/sp_14"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/tvDesc"
+                app:layout_constraintBottom_toBottomOf="@id/tvTransferAndNotifyDesc"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:enabled="false"
                 tools:text="@string/apply_for_mintable_action_2"

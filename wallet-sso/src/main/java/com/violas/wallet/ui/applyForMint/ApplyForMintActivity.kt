@@ -108,10 +108,10 @@ class ApplyForMintActivity
                     val account = Account(KeyPair.fromSecretKey(decrypt))
                     val tokenManager = TokenManager()
                     try {
-                        if (tokenManager.isPublish(account.getAddress().toHex())) {
+                        if (tokenManager.isPublishedContract(account.getAddress().toHex())) {
                             success.invoke()
                         } else {
-                            tokenManager.publishToken(account)
+                            tokenManager.publishContract(account)
                             EventBus.getDefault().post(RefreshBalanceEvent())
                             mTokenManager.insert(true, assertToken)
                             success.invoke()

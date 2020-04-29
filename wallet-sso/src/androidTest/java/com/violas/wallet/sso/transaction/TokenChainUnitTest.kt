@@ -28,7 +28,7 @@ class TokenChainUnitTest {
 
         val result = runBlocking {
             try {
-                mTokenManager.isPublish(tokenAddress)
+                mTokenManager.isPublishedContract(tokenAddress)
             } catch (e: Exception) {
                 e.printStackTrace()
                 false
@@ -43,7 +43,7 @@ class TokenChainUnitTest {
 
         val result = runBlocking {
             try {
-                mTokenManager.publishToken(account)
+                mTokenManager.publishContract(account)
                 true
             } catch (e: Exception) {
                 e.printStackTrace()

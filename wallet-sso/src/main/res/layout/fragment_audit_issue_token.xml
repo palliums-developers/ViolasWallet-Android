@@ -5,7 +5,7 @@
     android:id="@+id/srlRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.governorApproval.approvalIssueToken.GovernorAuditFragment">
+    tools:context=".ui.governorApproval.approvalIssueToken.AuditIssueTokenFragment">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nsvContentLayout"

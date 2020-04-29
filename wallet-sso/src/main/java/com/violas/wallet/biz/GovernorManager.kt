@@ -9,7 +9,8 @@ import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.R
-import com.violas.wallet.biz.applysso.ApplySSOManager
+import com.violas.wallet.biz.governorApproval.ApprovalManager
+import com.violas.wallet.biz.governorApproval.GovernorApprovalStatus
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.SSOApplicationMsgDO
@@ -40,11 +41,11 @@ class GovernorManager {
     private val mSSOApplicationMsgStorage by lazy {
         DataRepository.getSSOApplicationMsgStorage()
     }
-    private val mSSOApplicationHandlerStorage by lazy {
-        DataRepository.getSSOApplicationHandlerStorage()
+    private val mSSOApplicationRecordStorage by lazy {
+        DataRepository.getSSOApplicationRecordStorage()
     }
-    private val mApplySSOManager by lazy {
-        ApplySSOManager()
+    private val mApprovalManager by lazy {
+        ApprovalManager()
     }
 
     private var mNextMockGovernorApplicationStatus = -1
@@ -118,9 +119,9 @@ class GovernorManager {
             val accountAddress = account.getAddress().toHex()
 
             // 1.检测合约是否publish，没有则先publish
-            val published = mTokenManager.isPublish(accountAddress)
+            val published = mTokenManager.isPublishedContract(accountAddress)
             if (!published) {
-                mTokenManager.publishToken(account)
+                mTokenManager.publishContract(account)
             }
 
             // 2.通知服务器州长已publish合约
@@ -320,10 +321,10 @@ class GovernorManager {
      */
     suspend fun applyForMintPower(
         ssoApplicationDetails: SSOApplicationDetailsDTO,
-        account: Account
+        walletAddress: String
     ) {
         mGovernorService.applyForMintPower(
-            governorWalletAddress = account.getAddress().toHex(),
+            walletAddress = walletAddress,
             ssoApplicationId = ssoApplicationDetails.applicationId,
             ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress
         )
@@ -337,12 +338,11 @@ class GovernorManager {
         account: Account? = null,
         walletAddress: String
     ) {
-        mApplySSOManager.apply(
+        mApprovalManager.approve(
             account = account,
             walletAddress = walletAddress,
-            ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
             ssoApplicationId = ssoApplicationDetails.applicationId,
-            newTokenIdx = ssoApplicationDetails.tokenIdx!!
+            ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress
         )
     }
 
@@ -354,11 +354,11 @@ class GovernorManager {
         account: Account
     ) {
         var result = try {
-            mApplySSOManager.mint(
+            mApprovalManager.mint(
                 account = account,
+                ssoApplicationId = ssoApplicationDetails.applicationId,
                 ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
                 ssoApplyAmount = ssoApplicationDetails.tokenAmount.toLong(),
-                ssoApplicationId = ssoApplicationDetails.applicationId,
                 newTokenIdx = ssoApplicationDetails.tokenIdx!!
             )
             true
@@ -380,6 +380,11 @@ class GovernorManager {
                     getString(R.string.tips_governor_mint_token_fail)
                 )
         }
+    }
+
+    fun isTransferredCoinToSSO(walletAddress: String, applicationId: String): Boolean {
+        val record = mSSOApplicationRecordStorage.find(walletAddress, applicationId)
+        return record?.status ?: 0 >= GovernorApprovalStatus.ReadyApproval
     }
 
     fun getSSOApplicationMsgLiveData(

@@ -5,11 +5,11 @@ import androidx.lifecycle.Observer
 import com.violas.wallet.R
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.repository.http.governor.UnapproveReasonDTO
-import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_APPLY_FOR_MINT_POWER
-import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_LOAD_UNAPPROVE_REASONS
-import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_UNAPPROVE_APPLICATION
+import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_APPLY_FOR_MINT_POWER
+import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_LOAD_UNAPPROVE_REASONS
+import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_UNAPPROVE_APPLICATION
 import com.violas.wallet.utils.showPwdInputDialog
-import kotlinx.android.synthetic.main.fragment_governor_audit.*
+import kotlinx.android.synthetic.main.fragment_audit_issue_token.*
 
 /**
  * Created by elephant on 2020/4/27 18:47.
@@ -17,10 +17,10 @@ import kotlinx.android.synthetic.main.fragment_governor_audit.*
  * <p>
  * desc: 州长审核发币申请视图
  */
-class GovernorAuditFragment : BaseApprovalIssueTokenFragment() {
+class AuditIssueTokenFragment : BaseApprovalIssueTokenFragment() {
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_governor_audit
+        return R.layout.fragment_audit_issue_token
     }
 
     override fun setApplicationInfo(details: SSOApplicationDetailsDTO) {
@@ -43,7 +43,7 @@ class GovernorAuditFragment : BaseApprovalIssueTokenFragment() {
         }
 
         tvUnapprove.setOnClickListener {
-            val unapproveReasons = mViewModel.mUnapproveReasons.value
+            val unapproveReasons = mViewModel.mUnapproveReasonsLD.value
             if (unapproveReasons.isNullOrEmpty()) {
                 mViewModel.execute(action = ACTION_LOAD_UNAPPROVE_REASONS)
             } else {
@@ -51,15 +51,13 @@ class GovernorAuditFragment : BaseApprovalIssueTokenFragment() {
             }
         }
 
-        mViewModel.mUnapproveReasons.observe(this, Observer {
+        mViewModel.mUnapproveReasonsLD.observe(this, Observer {
             showSelectUnapproveReasonDialog(it)
         })
     }
 
     private fun showSelectUnapproveReasonDialog(unapproveReasons: List<UnapproveReasonDTO>) {
-        SelectUnapproveReasonDialog.newInstance(
-            unapproveReasons
-        )
+        SelectUnapproveReasonDialog.newInstance(unapproveReasons)
             .setOnConfirmCallback { reasonType, remark ->
                 mViewModel.execute(
                     reasonType, remark,
