@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
+import com.violas.wallet.utils.convertDisplayUnitToAmount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -56,24 +57,25 @@ fun decodeScanQRCode(
         val coinType = when (tranQRCode.coinType?.toLowerCase(Locale.CHINA)) {
             CoinTypes.Bitcoin.fullName().toLowerCase(Locale.CHINA) -> {
                 if (Vm.TestNet) {
-                    CoinTypes.BitcoinTest.coinType()
+                    CoinTypes.BitcoinTest
                 } else {
-                    CoinTypes.Bitcoin.coinType()
+                    CoinTypes.Bitcoin
                 }
             }
             CoinTypes.Libra.fullName().toLowerCase(Locale.CHINA) -> {
-                CoinTypes.Libra.coinType()
+                CoinTypes.Libra
             }
             CoinTypes.Violas.fullName().toLowerCase(Locale.CHINA) -> {
-                CoinTypes.Violas.coinType()
+                CoinTypes.Violas
             }
             else -> {
                 scanType = ScanCodeType.Text
-                -100
+                null
             }
         }
-        when (scanType) {
-            ScanCodeType.Text -> {
+        when {
+            coinType == null ||
+                    scanType == ScanCodeType.Text -> {
                 callback.invoke(
                     scanType,
                     ScanBean(msg)
@@ -84,7 +86,7 @@ fun decodeScanQRCode(
                     scanType,
                     ScanTranBean(
                         msg,
-                        coinType,
+                        coinType.coinType(),
                         tranQRCode.address,
                         tranQRCode.amount,
                         tranQRCode.label,

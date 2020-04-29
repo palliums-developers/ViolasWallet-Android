@@ -6,9 +6,7 @@ import org.palliums.violascore.transaction.TransactionArgument
 import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.transaction.lbrStructTag
 
-open class MultiTokenContract(
-    private val contractAddress: String
-) {
+abstract class MultiTokenContract {
     companion object {
         private const val mTransferContract =
             "a11ceb0b010006013d0000000400000003410000000a000000054b000000070000000752000000210000000673000000100000000983000000140000000000000101020001000003000100040305030a0200063c53454c463e0b56696f6c6173546f6b656e087472616e73666572046d61696e7257c2417e4d1038e1817c8f283ace2e010000ffff030006000a000a010a020b03120002"
@@ -26,7 +24,7 @@ open class MultiTokenContract(
             "a11ceb0b010006013d0000000400000003410000000a000000054b00000007000000075200000025000000067700000010000000098700000011000000000000010102000100000300020002050a02010300063c53454c463e0b56696f6c6173546f6b656e0c6372656174655f746f6b656e046d61696e7257c2417e4d1038e1817c8f283ace2e010000ffff030005000a000b0112000102"
     }
 
-    fun getContractAddress() = contractAddress
+    abstract fun getContractAddress(): String
 
     /**
      * 创建 Token 转账 payload
@@ -38,7 +36,7 @@ open class MultiTokenContract(
         data: ByteArray
     ): TransactionPayload {
         val moveEncode =
-            Move.violasReplaceAddress(mTransferContract.hexToBytes(), contractAddress.hexToBytes())
+            Move.violasReplaceAddress(mTransferContract.hexToBytes(), getContractAddress().hexToBytes())
 
         val tokenIdxArgument = TransactionArgument.newU64(tokenIdx)
         val addressArgument = TransactionArgument.newAddress(address)
@@ -61,7 +59,7 @@ open class MultiTokenContract(
         data: ByteArray = byteArrayOf()
     ): TransactionPayload {
         val moveEncode =
-            Move.violasReplaceAddress(mPublishContract.hexToBytes(), contractAddress.hexToBytes())
+            Move.violasReplaceAddress(mPublishContract.hexToBytes(), getContractAddress().hexToBytes())
 
         val dataArgument = TransactionArgument.newByteArray(data)
 
@@ -84,7 +82,7 @@ open class MultiTokenContract(
         data: ByteArray
     ): TransactionPayload {
         val moveEncode =
-            Move.violasReplaceAddress(mMintContract.hexToBytes(), contractAddress.hexToBytes())
+            Move.violasReplaceAddress(mMintContract.hexToBytes(), getContractAddress().hexToBytes())
 
         val tokenIdxArgument = TransactionArgument.newU64(tokenIdx)
         val addressArgument = TransactionArgument.newAddress(address)
@@ -109,7 +107,7 @@ open class MultiTokenContract(
         val moveEncode =
             Move.violasMultiReplaceAddress(
                 mTokenContract.hexToBytes(),
-                contractAddress.hexToBytes()
+                getContractAddress().hexToBytes()
             )
 
         return TransactionPayload(
@@ -128,7 +126,7 @@ open class MultiTokenContract(
         val moveEncode =
             Move.violasReplaceAddress(
                 mCreateTokenContract.hexToBytes(),
-                contractAddress.hexToBytes()
+                getContractAddress().hexToBytes()
             )
 
         val addressArgument = TransactionArgument.newAddress(owner)
