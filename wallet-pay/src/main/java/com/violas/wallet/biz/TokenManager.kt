@@ -6,6 +6,7 @@ import com.palliums.violas.http.ViolasMultiTokenRepository
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.bean.AssertToken
+import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.TokenDo
@@ -27,7 +28,7 @@ class TokenManager {
         ViolasMultiTokenRepository(
             DataRepository.getMultiTokenContractService(),
             // todo 不同环境合约地址可能会不同
-            ViolasMultiTokenContract()
+            ViolasMultiTokenContract(Vm.TestNet)
         )
     }
 
