@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/llContentLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.violas.wallet.widget.ApplySubmitItemView
+        android:id="@+id/asivSSOWalletAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:item_title="@string/label_wallet_address"
+        tools:item_content="dfjajkdjkfjklajfuwhidoefjc" />
+
+    <com.violas.wallet.widget.ApplySubmitItemView
+        android:id="@+id/asivTokenName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:item_title="@string/label_stable_currency_name"
+        tools:item_content="VXX" />
+
+    <com.violas.wallet.widget.ApplySubmitItemView
+        android:id="@+id/asivTokenAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:item_title="@string/label_number_types_issuing"
+        tools:item_content="100000" />
+
+</LinearLayout>

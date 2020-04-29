@@ -14,6 +14,7 @@ import com.violas.wallet.repository.http.governor.UnapproveReasonDTO
 import com.violas.wallet.ui.transfer.TransferActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.palliums.violascore.wallet.Account
 
 /**
  * Created by elephant on 2020/3/4 15:25.
@@ -40,7 +41,7 @@ class ApprovalFragmentViewModel(
         const val ACTION_UNAPPROVE_APPLICATION = 0x02           // 审核不通过发币申请
         const val ACTION_APPLY_FOR_MINT_POWER = 0x03            // 申请铸币权
         const val ACTION_APPROVE_APPLICATION = 0x04             // 审核通过发币申请
-        const val ACTION_MINT_TOKEN = 0x04                      // 铸币给发行商
+        const val ACTION_MINT_TOKEN_TO_SSO = 0x05               // 铸币给发行商
     }
 
     val mUnapproveReasonsLD by lazy {
@@ -100,6 +101,14 @@ class ApprovalFragmentViewModel(
                     mSSOApplicationDetails,
                     null,
                     mAccountLD.value!!.address
+                )
+            }
+
+            ACTION_MINT_TOKEN_TO_SSO -> {
+                // 铸币给发行商
+                mGovernorManager.mintTokenToSSOAccount(
+                    ssoApplicationDetails = mSSOApplicationDetails,
+                    account = params[0] as Account
                 )
             }
 

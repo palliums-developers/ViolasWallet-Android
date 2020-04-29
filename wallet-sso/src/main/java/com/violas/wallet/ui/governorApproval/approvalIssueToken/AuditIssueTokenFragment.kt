@@ -38,7 +38,9 @@ class AuditIssueTokenFragment : BaseApprovalIssueTokenFragment() {
             showPwdInputDialog(
                 mViewModel.mAccountLD.value!!,
                 accountCallback = {
-                    mViewModel.execute(action = ACTION_APPLY_FOR_MINT_POWER)
+                    mViewModel.execute(action = ACTION_APPLY_FOR_MINT_POWER) {
+                        // TODO 跳转处理
+                    }
                 })
         }
 
@@ -62,7 +64,9 @@ class AuditIssueTokenFragment : BaseApprovalIssueTokenFragment() {
                 mViewModel.execute(
                     reasonType, remark,
                     action = ACTION_UNAPPROVE_APPLICATION
-                )
+                ) {
+                    // TODO 跳转处理
+                }
             }
             .show(childFragmentManager, SelectUnapproveReasonDialog::javaClass.name)
     }
