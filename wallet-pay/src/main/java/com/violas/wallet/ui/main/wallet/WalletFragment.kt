@@ -247,7 +247,7 @@ class WalletFragment : BaseFragment() {
             }
 
             withContext(Dispatchers.Main) {
-                refreshAssert(true)
+                refreshAssert(false)
             }
         }
     }
