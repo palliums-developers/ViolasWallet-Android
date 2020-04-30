@@ -173,6 +173,8 @@
     <string name="transaction_record_receipt">Receive</string>
     <string name="transaction_record_transfer">Transfer</string>
     <string name="transaction_record_open">Open</string>
+    <string name="transaction_record_activation">Activation</string>
+    <string name="transaction_record_stablecoin">Stablecoin</string>
     <string name="transaction_record_new_coin">New Fiat Currency</string>
     <string name="transaction_record_query">Query</string>
     <string name="transaction_record_not_supported_query">Not Supported</string>
