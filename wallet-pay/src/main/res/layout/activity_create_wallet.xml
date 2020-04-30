@@ -10,13 +10,13 @@
 
     <ImageView
         android:id="@+id/ivLogo"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:layout_marginTop="70dp"
-        android:src="@drawable/icon_bitcoin_big"
+        android:layout_width="@dimen/dp_70"
+        android:layout_height="@dimen/dp_70"
+        android:layout_marginTop="@dimen/dp_56"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_bitcoin_big" />
 
     <TextView
         android:id="@+id/tvCreateHint"
@@ -35,10 +35,10 @@
         android:id="@+id/editName"
         android:layout_width="match_parent"
         android:layout_height="51dp"
-        android:maxLength="20"
         android:layout_marginTop="32dp"
         android:background="@drawable/selector_edit_bg_line"
         android:hint="@string/hint_input_nickname"
+        android:maxLength="20"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

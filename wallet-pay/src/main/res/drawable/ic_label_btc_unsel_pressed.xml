@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    android:src="@mipmap/ic_label_btc_unsel"
+    android:src="@drawable/ic_label_btc_unsel"
     android:tint="@color/view_pressed_tint"
-    android:tintMode="multiply">
-
-</bitmap>
+    android:tintMode="multiply" />

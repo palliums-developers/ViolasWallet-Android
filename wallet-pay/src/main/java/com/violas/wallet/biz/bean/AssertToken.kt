@@ -13,6 +13,6 @@ data class AssertToken(
     var name: String = "Libra",
     var enable: Boolean = false,
     var amount: Long = 0,
-    var logo: Int = R.drawable.icon_violas_big,
+    var logo: Int = R.drawable.ic_violas_big,
     var netEnable: Boolean = true
 )

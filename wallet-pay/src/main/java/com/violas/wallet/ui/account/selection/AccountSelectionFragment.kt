@@ -207,12 +207,12 @@ class AccountSelectionFragment : BaseFragment() {
                 rootView.setBackgroundResource(
                     when (it.accountDO.coinNumber) {
                         CoinTypes.Libra.coinType() ->
-                            R.drawable.selector_account_selection_bg_libra
+                            R.drawable.sel_bg_account_selection_libra
                         CoinTypes.Bitcoin.coinType(),
                         CoinTypes.BitcoinTest.coinType() ->
-                            R.drawable.selector_account_selection_bg_bitcoin
+                            R.drawable.sel_bg_account_selection_bitcoin
                         else ->
-                            R.drawable.selector_account_selection_bg_violas
+                            R.drawable.sel_bg_account_selection_violas
                     }
                 )
             }
