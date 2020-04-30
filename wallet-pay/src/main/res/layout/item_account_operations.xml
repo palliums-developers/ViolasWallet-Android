@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_account_management_bg_violas"
+    android:background="@drawable/sel_bg_account_management_violas"
     tools:layout_marginEnd="@dimen/page_spacing_end"
     tools:layout_marginStart="@dimen/page_spacing_start">
 

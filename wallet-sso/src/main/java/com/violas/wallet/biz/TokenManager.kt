@@ -237,12 +237,12 @@ class TokenManager {
         return Pair(accountBalance, enableTokens)
     }
 
-    suspend fun publishToken(account: Account) {
+    suspend fun publishContract(account: Account) {
         val publishTokenPayload = mViolasMultiTokenService.publishTokenPayload()
         mViolasService.sendTransaction(publishTokenPayload, account)
     }
 
-    suspend fun isPublish(address: String): Boolean {
+    suspend fun isPublishedContract(address: String): Boolean {
         return mViolasMultiTokenService.getRegisterToken(address)
     }
 

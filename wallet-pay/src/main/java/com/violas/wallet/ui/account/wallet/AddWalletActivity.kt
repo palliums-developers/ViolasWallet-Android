@@ -135,19 +135,19 @@ class AddWalletViewModel : ListingViewModel<AddWalletVo>() {
         return arrayListOf(
             AddWalletVo(
                 AccountType.VIOLAS,
-                R.mipmap.ic_label_violas,
+                R.drawable.ic_violas_big,
                 CoinTypes.Violas.coinName(),
                 CoinTypes.Violas.fullName()
             ),
             AddWalletVo(
                 AccountType.BTC,
-                R.mipmap.ic_label_btc,
+                R.drawable.ic_bitcoin_big,
                 if (Vm.TestNet) CoinTypes.BitcoinTest.coinName() else CoinTypes.Bitcoin.coinName(),
                 if (Vm.TestNet) CoinTypes.BitcoinTest.fullName() else CoinTypes.Bitcoin.fullName()
             ),
             AddWalletVo(
                 AccountType.LIBRA,
-                R.mipmap.ic_label_libra,
+                R.drawable.ic_libra_big,
                 CoinTypes.Libra.coinName(),
                 CoinTypes.Libra.fullName()
             )

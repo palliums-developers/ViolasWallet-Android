@@ -173,6 +173,8 @@
     <string name="transaction_record_receipt">收款</string>
     <string name="transaction_record_transfer">转账</string>
     <string name="transaction_record_open">开启</string>
+    <string name="transaction_record_activation">激活</string>
+    <string name="transaction_record_stablecoin">稳定币</string>
     <string name="transaction_record_new_coin">新币种</string>
     <string name="transaction_record_query">浏览器查询</string>
     <string name="transaction_record_not_supported_query">暂不支持</string>
@@ -398,5 +400,13 @@
     <string name="apply_for_mintable_step_3_3">原因：%1$s</string>
     <string name="apply_for_mintable_desc_1">是否向发行商转账vtoken，\n并通知可执行申请铸币？</string>
     <string name="apply_for_mintable_action_1">转账并通知</string>
-    <string name="apply_for_mintable_action_2">已转账并通知</string>
+    <string name="apply_for_mintable_action_2">已转账，通知</string>
+    <string name="apply_for_mintable_action_3">已转账并通知</string>
+    <string name="token_application_status_desc_unapproved">未通过审核</string>
+    <string name="token_application_status_desc_timeout">审核超时，已关闭</string>
+    <string name="token_application_status_desc_approved">身份审核已通过</string>
+    <string name="token_application_status_desc_minted">铸币成功</string>
+    <string name="token_application_status_label_reason">失败原因：</string>
+    <string name="token_application_status_label_time">失效时间：</string>
+    <string name="action_confirm_mint">确定铸币</string>
 </resources>

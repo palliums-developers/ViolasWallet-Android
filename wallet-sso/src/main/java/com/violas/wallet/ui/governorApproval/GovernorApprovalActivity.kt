@@ -16,8 +16,8 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.EXTRA_KEY_SSO_MSG
 import com.violas.wallet.image.GlideApp
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
-import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_APPROVAL_APPLICATION
-import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel.Companion.ACTION_LOAD_APPLICATION_DETAILS
+import com.violas.wallet.ui.governorApproval.ApprovalActivityViewModel.Companion.ACTION_APPROVAL_APPLICATION
+import com.violas.wallet.ui.governorApproval.ApprovalActivityViewModel.Companion.ACTION_LOAD_APPLICATION_DETAILS
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
 import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.utils.showPwdInputDialog
@@ -33,8 +33,6 @@ import org.palliums.violascore.wallet.Account
 class GovernorApprovalActivity : BaseAppActivity() {
 
     companion object {
-        private const val TRANSFER_REQUEST_CODE = 100
-
         fun start(context: Context, msgVO: SSOApplicationMsgVO) {
             Intent(context, GovernorApprovalActivity::class.java)
                 .apply { putExtra(EXTRA_KEY_SSO_MSG, msgVO) }
@@ -45,8 +43,8 @@ class GovernorApprovalActivity : BaseAppActivity() {
     private lateinit var mSSOApplicationMsgVO: SSOApplicationMsgVO
 
     private val mViewModel by lazy {
-        ViewModelProvider(this, GovernorApprovalViewModelFactory(mSSOApplicationMsgVO))
-            .get(GovernorApprovalViewModel::class.java)
+        ViewModelProvider(this, ApprovalActivityViewModelFactory(mSSOApplicationMsgVO))
+            .get(ApprovalActivityViewModel::class.java)
     }
 
     override fun getLayoutResId(): Int {

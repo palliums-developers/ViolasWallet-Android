@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.isFastMultiClick
@@ -228,12 +227,12 @@ class AccountOperationsActivity : BaseAppActivity() {
                 rootView.setBackgroundResource(
                     when (it.accountDO.coinNumber) {
                         CoinTypes.Libra.coinType() ->
-                            R.drawable.selector_account_management_bg_libra
+                            R.drawable.sel_bg_account_management_libra
                         CoinTypes.Bitcoin.coinType(),
                         CoinTypes.BitcoinTest.coinType() ->
-                            R.drawable.selector_account_management_bg_bitcoin
+                            R.drawable.sel_bg_account_management_bitcoin
                         else ->
-                            R.drawable.selector_account_management_bg_violas
+                            R.drawable.sel_bg_account_management_violas
                     }
                 )
             }

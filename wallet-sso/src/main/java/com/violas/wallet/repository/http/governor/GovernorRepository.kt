@@ -124,13 +124,13 @@ class GovernorRepository(private val api: GovernorApi) {
      * 申请铸币权
      */
     suspend fun applyForMintPower(
-        governorWalletAddress: String,
+        walletAddress: String,
         ssoApplicationId: String,
         ssoWalletAddress: String
     ) =
         checkResponse {
             val requestBody = """{
-    "wallet_address":"$governorWalletAddress",
+    "wallet_address":"$walletAddress",
     "id":"$ssoApplicationId",
     "sso_wallet_address":"$ssoWalletAddress"
 }""".toRequestBody("application/json".toMediaTypeOrNull())

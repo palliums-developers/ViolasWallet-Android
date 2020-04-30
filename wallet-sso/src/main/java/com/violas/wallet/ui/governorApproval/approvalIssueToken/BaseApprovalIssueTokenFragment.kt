@@ -10,12 +10,10 @@ import com.palliums.net.LoadState
 import com.palliums.utils.formatDate
 import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.image.GlideApp
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
-import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModel
-import com.violas.wallet.ui.governorApproval.GovernorApprovalViewModelFactory
-import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
+import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel
+import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModelFactory
 import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.layout_approval_issue_token_info.*
 
@@ -27,16 +25,13 @@ import kotlinx.android.synthetic.main.layout_approval_issue_token_info.*
  */
 abstract class BaseApprovalIssueTokenFragment : BaseFragment() {
 
-    protected lateinit var mSSOApplicationMsgVO: SSOApplicationMsgVO
     protected lateinit var mSSOApplicationDetailsDTO: SSOApplicationDetailsDTO
 
     protected val mViewModel by lazy {
-        ViewModelProvider(this,
-            GovernorApprovalViewModelFactory(
-                mSSOApplicationMsgVO
-            )
-        )
-            .get(GovernorApprovalViewModel::class.java)
+        ViewModelProvider(
+            this,
+            ApprovalFragmentViewModelFactory(mSSOApplicationDetailsDTO)
+        ).get(ApprovalFragmentViewModel::class.java)
     }
 
     override fun onLazyInitView(savedInstanceState: Bundle?) {
@@ -52,33 +47,28 @@ abstract class BaseApprovalIssueTokenFragment : BaseFragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_ONE, mSSOApplicationMsgVO)
-        outState.putParcelable(KEY_TWO, mSSOApplicationDetailsDTO)
+        outState.putParcelable(KEY_ONE, mSSOApplicationDetailsDTO)
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
-        var msgVO: SSOApplicationMsgVO? = null
         var detailsDTO: SSOApplicationDetailsDTO? = null
         if (savedInstanceState != null) {
-            msgVO = savedInstanceState.getParcelable(KEY_ONE)
-            detailsDTO = savedInstanceState.getParcelable(KEY_TWO)
+            detailsDTO = savedInstanceState.getParcelable(KEY_ONE)
         } else if (arguments != null) {
-            msgVO = arguments!!.getParcelable(KEY_ONE)
-            detailsDTO = arguments!!.getParcelable(KEY_TWO)
+            detailsDTO = arguments!!.getParcelable(KEY_ONE)
         }
 
-        if (msgVO == null || detailsDTO == null) {
+        if (detailsDTO == null) {
             return false
         }
 
-        mSSOApplicationMsgVO = msgVO
         mSSOApplicationDetailsDTO = detailsDTO
         return true
     }
 
     protected open fun initView() {
         (activity as? BaseActivity)?.title =
-            getString(R.string.title_sso_msg_issuing_token, mSSOApplicationMsgVO.applicantIdName)
+            getString(R.string.title_sso_msg_issuing_token, mSSOApplicationDetailsDTO.idName)
         setApplicationInfo(mSSOApplicationDetailsDTO)
     }
 

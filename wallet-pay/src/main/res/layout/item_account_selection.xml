@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_account_selection_bg_violas"
+    android:background="@drawable/sel_bg_account_selection_violas"
     tools:layout_marginEnd="@dimen/dp_14"
     tools:layout_marginStart="@dimen/dp_8">
 

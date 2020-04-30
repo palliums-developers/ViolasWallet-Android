@@ -172,6 +172,8 @@
     <string name="transaction_record_receipt">收款</string>
     <string name="transaction_record_transfer">转账</string>
     <string name="transaction_record_open">开启</string>
+    <string name="transaction_record_activation">激活</string>
+    <string name="transaction_record_stablecoin">稳定币</string>
     <string name="transaction_record_new_coin">新币种</string>
     <string name="transaction_record_query">浏览器查询</string>
     <string name="transaction_record_not_supported_query">暂不支持</string>

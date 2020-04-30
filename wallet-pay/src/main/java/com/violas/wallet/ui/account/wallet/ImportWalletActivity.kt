@@ -10,12 +10,7 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.event.WalletChangeEvent
-import kotlinx.android.synthetic.main.activity_create_wallet.*
-import kotlinx.android.synthetic.main.activity_import_identity.*
-import kotlinx.android.synthetic.main.activity_import_identity.btnConfirm
-import kotlinx.android.synthetic.main.activity_import_identity.editConfirmPassword
-import kotlinx.android.synthetic.main.activity_import_identity.editName
-import kotlinx.android.synthetic.main.activity_import_identity.editPassword
+import kotlinx.android.synthetic.main.activity_import_wallet.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,16 +53,16 @@ class ImportWalletActivity : BaseAppActivity() {
         ivLogo.setImageResource(
             when (mCurrentCoinType) {
                 CoinTypes.BitcoinTest, CoinTypes.Bitcoin -> {
-                    R.drawable.icon_bitcoin_big
+                    R.drawable.ic_bitcoin_big
                 }
                 CoinTypes.Libra -> {
-                    R.drawable.icon_libra_big
+                    R.drawable.ic_libra_big
                 }
                 CoinTypes.Violas -> {
-                    R.drawable.icon_violas_big
+                    R.drawable.ic_violas_big
                 }
                 else -> {
-                    R.drawable.icon_bitcoin_big
+                    R.drawable.ic_bitcoin_big
                 }
             }
         )

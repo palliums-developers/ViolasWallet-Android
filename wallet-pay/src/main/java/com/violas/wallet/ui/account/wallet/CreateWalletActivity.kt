@@ -52,16 +52,16 @@ class CreateWalletActivity : BaseAppActivity() {
         ivLogo.setImageResource(
             when (mCurrentCoinType) {
                 CoinTypes.BitcoinTest, CoinTypes.Bitcoin -> {
-                    R.drawable.icon_bitcoin_big
+                    R.drawable.ic_bitcoin_big
                 }
                 CoinTypes.Libra -> {
-                    R.drawable.icon_libra_big
+                    R.drawable.ic_libra_big
                 }
                 CoinTypes.Violas -> {
-                    R.drawable.icon_violas_big
+                    R.drawable.ic_violas_big
                 }
                 else -> {
-                    R.drawable.icon_bitcoin_big
+                    R.drawable.ic_bitcoin_big
                 }
             }
         )
