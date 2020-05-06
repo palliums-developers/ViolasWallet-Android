@@ -3,26 +3,26 @@ package com.violas.wallet.ui.governorApproval
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.palliums.net.RequestException
-import com.palliums.utils.formatDate
+import com.palliums.utils.isExpired
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.common.EXTRA_KEY_SSO_MSG
-import com.violas.wallet.image.GlideApp
+import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
-import com.violas.wallet.ui.governorApproval.ApprovalActivityViewModel.Companion.ACTION_APPROVAL_APPLICATION
 import com.violas.wallet.ui.governorApproval.ApprovalActivityViewModel.Companion.ACTION_LOAD_APPLICATION_DETAILS
+import com.violas.wallet.ui.governorApproval.approvalIssueToken.ApplyForMintableProgressFragment
+import com.violas.wallet.ui.governorApproval.approvalIssueToken.AuditExceptionFragment
+import com.violas.wallet.ui.governorApproval.approvalIssueToken.AuditIssueTokenFragment
+import com.violas.wallet.ui.governorApproval.approvalMintToken.MintTokenSuccessFragment
+import com.violas.wallet.ui.governorApproval.approvalMintToken.MintTokenToSSOFragment
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
-import com.violas.wallet.utils.convertViolasTokenUnit
-import com.violas.wallet.utils.showPwdInputDialog
 import kotlinx.android.synthetic.main.activity_governor_approval.*
-import org.palliums.violascore.wallet.Account
 
 /**
  * Created by elephant on 2020/3/4 14:50.
@@ -33,10 +33,25 @@ import org.palliums.violascore.wallet.Account
 class GovernorApprovalActivity : BaseAppActivity() {
 
     companion object {
+
         fun start(context: Context, msgVO: SSOApplicationMsgVO) {
             Intent(context, GovernorApprovalActivity::class.java)
                 .apply { putExtra(EXTRA_KEY_SSO_MSG, msgVO) }
                 .start(context)
+        }
+
+        fun start(context: Context, details: SSOApplicationDetailsDTO) {
+            start(
+                context,
+                SSOApplicationMsgVO(
+                    applicationId = details.applicationId,
+                    applicationStatus = details.applicationStatus,
+                    applicationDate = details.applicationDate,
+                    expirationDate = details.expirationDate,
+                    applicantIdName = details.idName,
+                    msgRead = true
+                )
+            )
         }
     }
 
@@ -83,28 +98,13 @@ class GovernorApprovalActivity : BaseAppActivity() {
     }
 
     private fun initView() {
-        title =
-            getString(R.string.title_sso_msg_issuing_token, mSSOApplicationMsgVO.applicantIdName)
+        /*title =
+            getString(R.string.title_sso_msg_issuing_token, mSSOApplicationMsgVO.applicantIdName)*/
 
         dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         srlRefreshLayout.isEnabled = false
         srlRefreshLayout.setOnRefreshListener {
             loadApplicationDetails()
-        }
-
-        btnApprovalPass.setOnClickListener {
-            showPwdInputDialog(
-                mViewModel.mAccountLD.value!!,
-                accountCallback = {
-                    approvalApplication(true, it)
-                })
-        }
-        tvApprovalNotPass.setOnClickListener {
-            showPwdInputDialog(
-                mViewModel.mAccountLD.value!!,
-                accountCallback = {
-                    approvalApplication(false)
-                })
         }
 
         mViewModel.tipsMessage.observe(this, Observer {
@@ -122,42 +122,12 @@ class GovernorApprovalActivity : BaseAppActivity() {
                 return@Observer
             }
 
-            fillApplicationInfo(it)
+            loadFragment(it)
         })
 
         mViewModel.mAccountLD.observe(this, Observer {
             loadApplicationDetails()
         })
-    }
-
-    private fun approvalApplication(
-        passAndApply: Boolean,
-        account: Account? = null
-    ) {
-        val params = if (passAndApply) {
-            arrayOf(passAndApply, account!!)
-        } else {
-            arrayOf(passAndApply)
-        }
-
-        mViewModel.execute(
-            params = *params,
-            action = ACTION_APPROVAL_APPLICATION,
-            failureCallback = { dismissProgress() }
-        ) {
-            dismissProgress()
-            showToast(
-                getString(
-                    if (passAndApply)
-                        R.string.tips_governor_approval_pass_success
-                    else
-                        R.string.tips_governor_approval_not_pass_success
-                    ,
-                    mSSOApplicationMsgVO.applicantIdName
-                )
-            )
-            close()
-        }
     }
 
     private fun loadApplicationDetails() {
@@ -182,118 +152,42 @@ class GovernorApprovalActivity : BaseAppActivity() {
                 }
                 srlRefreshLayout.isEnabled = false
 
-                nsvContentLayout.visibility = View.VISIBLE
                 dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
             })
     }
 
-    private fun fillApplicationInfo(details: SSOApplicationDetailsDTO) {
-        tvApplicationTitle.text =
-            getString(R.string.format_sso_application_title, details.idName, details.tokenName)
-        when (details.applicationStatus) {
-            0 -> {
-                tvApplicationStatus.visibility = View.GONE
-                llApprovalLayout.visibility = View.VISIBLE
+    private fun loadFragment(details: SSOApplicationDetailsDTO) {
+        val fragment = when (details.applicationStatus) {
+            SSOApplicationState.APPLYING_ISSUE_TOKEN -> {
+                if (isExpired(details.expirationDate)) {
+                    AuditExceptionFragment()
+                } else {
+                    AuditIssueTokenFragment()
+                }
             }
 
-            1 -> {
-                llApprovalLayout.visibility = View.GONE
-                tvApplicationStatus.visibility = View.VISIBLE
-                tvApplicationStatus.setText(R.string.state_passed)
+            SSOApplicationState.APPLYING_MINTABLE,
+            SSOApplicationState.GIVEN_MINTABLE,
+            SSOApplicationState.TRANSFERRED_AND_NOTIFIED,
+            SSOApplicationState.CHAIRMAN_UNAPPROVED -> {
+                ApplyForMintableProgressFragment()
             }
 
-            2 -> {
-                llApprovalLayout.visibility = View.GONE
-                tvApplicationStatus.visibility = View.VISIBLE
-                tvApplicationStatus.setText(R.string.state_rejected)
+            SSOApplicationState.APPLYING_MINT_TOKEN -> {
+                MintTokenToSSOFragment()
             }
 
-            3 -> {
-                tvApplicationStatus.visibility = View.GONE
-                llApprovalLayout.visibility = View.GONE
-            }
-
-            4 -> {
-                llApprovalLayout.visibility = View.GONE
-                tvApplicationStatus.visibility = View.VISIBLE
-                tvApplicationStatus.setText(R.string.state_minted)
+            SSOApplicationState.MINTED_TOKEN -> {
+                MintTokenSuccessFragment()
             }
 
             else -> {
-                llApprovalLayout.visibility = View.GONE
-                tvApplicationStatus.visibility = View.GONE
+                AuditExceptionFragment()
             }
+        }.apply {
+            arguments = Bundle().apply { putParcelable(KEY_ONE, details) }
         }
 
-        asivFiatCurrencyType.setContent(details.fiatCurrencyType)
-        asivTokenAmount.setContent(convertViolasTokenUnit(details.tokenAmount))
-        asivTokenValue.setContent("${details.tokenValue}${details.fiatCurrencyType}")
-        asivTokenName.setContent(details.tokenName)
-        asivSSOWalletAddress.setContent(details.ssoWalletAddress)
-        asivApplicationDate.setContent(
-            formatDate(details.applicationDate, pattern = "yyyy.MM.dd HH:mm")
-        )
-        asivApplicationPeriod.setContent(getString(R.string.format_days, details.applicationPeriod))
-        asivExpirationDate.setContent(
-            formatDate(details.expirationDate, pattern = "yyyy.MM.dd HH:mm")
-        )
-
-        asivIDName.setContent(details.idName)
-        asivNationality.setContent(details.countryName)
-        // TODO 证件类型没有区分
-        asivIDType.setContent(getString(R.string.id_card))
-        asivIDNumber.setContent(details.idNumber)
-
-        /*val phoneAreaCode = if (details.phoneAreaCode.startsWith("+"))
-            details.phoneAreaCode
-        else
-            "+${details.phoneAreaCode}"*/
-        val phoneEndIndex = if (details.phoneNumber.length > 7)
-            7
-        else
-            details.phoneNumber.length
-        val phoneStartIndex = if (phoneEndIndex >= 3) 3 else phoneEndIndex
-        var phoneReplacement = ""
-        for (index in phoneStartIndex until phoneEndIndex) {
-            phoneReplacement += "*"
-        }
-        val phoneNumber = details.phoneNumber.replaceRange(
-            phoneStartIndex, phoneEndIndex, phoneReplacement
-        )
-        //asivPhoneNumber.setContent("$phoneAreaCode $phoneNumber")
-        asivPhoneNumber.setContent(phoneNumber)
-
-        val emailEndIndex = details.emailAddress.indexOf("@")
-        val emailStartIndex = if (emailEndIndex >= 3) 3 else emailEndIndex
-        var emailReplacement = ""
-        for (index in emailStartIndex until emailEndIndex) {
-            emailReplacement += "*"
-        }
-        val emailAddress = details.emailAddress.replaceRange(
-            emailStartIndex, emailEndIndex, emailReplacement
-        )
-        asivEmail.setContent(emailAddress)
-
-        GlideApp.with(this)
-            .load(details.reservePhotoUrl)
-            .centerCrop()
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .placeholder(R.drawable.bg_id_card_front)
-            .error(R.drawable.bg_id_card_front)
-            .into(ivReservePhoto)
-        GlideApp.with(this)
-            .load(details.bankChequePhotoPositiveUrl)
-            .centerCrop()
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .placeholder(R.drawable.bg_id_card_front)
-            .error(R.drawable.bg_id_card_front)
-            .into(ivBankChequePhotoPositive)
-        GlideApp.with(this)
-            .load(details.bankChequePhotoBackUrl)
-            .centerCrop()
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .placeholder(R.drawable.bg_id_card_front)
-            .error(R.drawable.bg_id_card_front)
-            .into(ivBankChequePhotoBack)
+        loadRootFragment(R.id.flFragmentContainer, fragment)
     }
 }

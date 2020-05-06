@@ -67,13 +67,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_13"
                 android:lineSpacingExtra="@dimen/dp_3"
-                android:textColor="@color/color_82808A"
+                android:text="@string/apply_for_mintable_step_2"
                 android:textSize="@dimen/sp_14"
                 app:layout_constraintBottom_toBottomOf="@id/ivStep2Icon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ivStep2Icon"
                 app:layout_constraintTop_toTopOf="@id/ivStep2Icon"
-                tools:text="@string/apply_for_mintable_step_2" />
+                tools:textColor="@color/color_82808A" />
 
             <View
                 android:id="@+id/vStep2Line"

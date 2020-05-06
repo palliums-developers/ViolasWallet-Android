@@ -3,6 +3,7 @@ package com.violas.wallet.repository.http.governor
 import android.os.Parcelable
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.violas.wallet.biz.SSOApplicationState
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -26,6 +27,7 @@ data class GovernorInfoDTO(
 data class SSOApplicationMsgDTO(
     @SerializedName("id")
     val applicationId: String,                      // 申请ID
+    @SSOApplicationState
     @SerializedName("approval_status")
     val applicationStatus: Int,                     // 申请发币状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
     @SerializedName("application_date")
@@ -83,27 +85,13 @@ data class SSOApplicationDetailsDTO(
     val applicationPeriod: Int,                     // 申请有效期（单位天数）
     @SerializedName("expiration_date")
     val expirationDate: Long,                       // 申请失效日期
-
-    // 申请发币状态（负数为失败情况）：
-    // 0：发行商申请发币中；
-    // 1：州长已审核通过，并申请铸币权；
-    // 2：董事长已发布新稳定币，并指定铸币权给州长；
-    // 3：州长已给发行商转平台币，并通知；
-    // 4：发行商已publish合约，请求铸币中；
-    // 5：州长已铸币给发行商；
-    // -1：州长审核未通过；
-    // -2：董事长审核未通过。
+    @SSOApplicationState
     @SerializedName("approval_status")
-    var applicationStatus: Int,
+    var applicationStatus: Int,                     // 申请发币状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
 
-    @SerializedName("unapprove_reason")
-    val unapproveReason: String? = null
+    @SerializedName("unapproved_reason")
+    val unapprovedReason: String? = null
 ) : Parcelable
-
-data class VstakeAddressDTO(
-    @SerializedName("address")
-    val address: String
-)
 
 @Parcelize
 data class UnapproveReasonDTO(

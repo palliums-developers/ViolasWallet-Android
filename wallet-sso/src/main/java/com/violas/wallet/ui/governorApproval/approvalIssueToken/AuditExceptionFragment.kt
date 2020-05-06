@@ -32,7 +32,7 @@ class AuditExceptionFragment : BaseApprovalIssueTokenFragment() {
             ivIcon.setBackgroundResource(R.drawable.ic_application_unpassed)
             tvStatusDesc.setText(R.string.token_application_status_desc_unapproved)
             tvSubDescLabel.setText(R.string.token_application_status_label_reason)
-            tvSubDesc.text = details.unapproveReason
+            tvSubDesc.text = details.unapprovedReason
         } else {
             // TODO 1.超时计算的规则，是州长未审核前才计算超时，还是只要未成功铸币都计算超时; 2.替换超时图标
             ivIcon.setBackgroundResource(R.drawable.ic_application_unpassed)

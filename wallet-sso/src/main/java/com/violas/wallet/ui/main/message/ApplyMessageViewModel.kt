@@ -1,6 +1,5 @@
 package com.violas.wallet.ui.main.message
 
-import android.content.Context
 import androidx.lifecycle.*
 import com.palliums.net.getErrorTipsMsg
 import com.palliums.paging.PagingViewModel

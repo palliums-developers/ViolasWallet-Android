@@ -2,13 +2,10 @@ package com.violas.wallet.biz
 
 import com.palliums.net.RequestException
 import com.palliums.utils.getDistinct
-import com.palliums.utils.getString
-import com.palliums.utils.isNetworkConnected
 import com.palliums.utils.toMap
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
 import com.violas.wallet.BuildConfig
-import com.violas.wallet.R
 import com.violas.wallet.biz.governorApproval.ApprovalManager
 import com.violas.wallet.biz.governorApproval.GovernorApprovalStatus
 import com.violas.wallet.repository.DataRepository
@@ -17,6 +14,7 @@ import com.violas.wallet.repository.database.entity.SSOApplicationMsgDO
 import com.violas.wallet.repository.http.governor.GovernorInfoDTO
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.repository.http.governor.SSOApplicationMsgDTO
+import com.violas.wallet.repository.http.governor.UnapproveReasonDTO
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import kotlinx.coroutines.Dispatchers
@@ -58,13 +56,19 @@ class GovernorManager {
         txid: String,
         toxid: String = ""
     ) {
-        mGovernorService.signUpGovernor(
-            accountDO.address,
-            accountDO.publicKey,
-            accountDO.walletNickname,
-            txid,
-            toxid
-        )
+        try {
+            mGovernorService.signUpGovernor(
+                accountDO.address,
+                accountDO.publicKey,
+                accountDO.walletNickname,
+                txid,
+                toxid
+            )
+        } catch (e: Exception) {
+            if (!BuildConfig.MOCK_GOVERNOR_DATA) {
+                throw e
+            }
+        }
     }
 
     /**
@@ -116,16 +120,16 @@ class GovernorManager {
         account: Account
     ) = withContext(Dispatchers.IO) {
         try {
-            val accountAddress = account.getAddress().toHex()
+            val walletAddress = account.getAddress().toHex()
 
             // 1.检测合约是否publish，没有则先publish
-            val published = mTokenManager.isPublishedContract(accountAddress)
+            val published = mTokenManager.isPublishedContract(walletAddress)
             if (!published) {
                 mTokenManager.publishContract(account)
             }
 
             // 2.通知服务器州长已publish合约
-            mGovernorService.updateGovernorApplicationToPublished(accountAddress)
+            mGovernorService.updateGovernorApplicationToPublished(walletAddress)
         } catch (e: Exception) {
             if (BuildConfig.MOCK_GOVERNOR_DATA) {
             } else {
@@ -158,19 +162,31 @@ class GovernorManager {
         // test code =========> start
         if (BuildConfig.MOCK_GOVERNOR_DATA) {
             val fakeList = arrayListOf<SSOApplicationMsgDTO>()
-            for (index in 0..5) {
+            for (index in SSOApplicationState.CHAIRMAN_UNAPPROVED..SSOApplicationState.MINTED_TOKEN) {
                 delay(200)
                 val date = System.currentTimeMillis()
                 fakeList.add(
                     SSOApplicationMsgDTO(
                         applicationId = "apply_id_$date",
-                        applicationStatus = if (index > 4) 1 else index,
+                        applicationStatus = index,
                         applicationDate = date,
-                        expirationDate = if (index > 4) date - 1000 else date + 1000,
+                        expirationDate = date + 5 * 24 * 60 * 60 * 1000,
                         applicantIdName = "Name $date"
                     )
                 )
             }
+
+            val date = System.currentTimeMillis() - 2 * 60 * 1000
+            fakeList.add(
+                SSOApplicationMsgDTO(
+                    applicationId = "apply_id_$date",
+                    applicationStatus = SSOApplicationState.APPLYING_ISSUE_TOKEN,
+                    applicationDate = date - 5 * 24 * 60 * 60 * 1000,
+                    expirationDate = date,
+                    applicantIdName = "Name $date"
+                )
+            )
+
             response.data = fakeList
         }
         // test code =========> end
@@ -181,34 +197,33 @@ class GovernorManager {
 
         // 获取SSO发币申请本地记录
         val applicationIds = response.data!!.map { it.applicationId }.toTypedArray()
-        val localMsgs = mSSOApplicationMsgStorage
-            .loadMsgsFromApplicationIds(accountDO.id, *applicationIds)
-            .toMap { it.applicationId }
+        val localMsgs =
+            mSSOApplicationMsgStorage.loadMsgsFromApplicationIds(accountDO.id, *applicationIds)
+                .toMap { it.applicationId }
 
         // DTO 转换 VO
         return@withContext response.data!!.map {
-            val msgUnread = when (it.applicationStatus) {
-                0 -> { // not approved
-                    val ssoRecord = localMsgs[it.applicationId]
-                    ssoRecord == null || ssoRecord.issuingUnread
+            val msgRead = when (it.applicationStatus) {
+                SSOApplicationState.APPLYING_ISSUE_TOKEN -> {
+                    localMsgs[it.applicationId]?.issueRead ?: false
                 }
 
-                3 -> { // published
-                    val ssoRecord = localMsgs[it.applicationId]
-                    ssoRecord == null || ssoRecord.mintUnread
+                SSOApplicationState.APPLYING_MINT_TOKEN -> {
+                    localMsgs[it.applicationId]?.mintRead ?: false
                 }
 
                 else -> {
-                    false
+                    true
                 }
             }
 
             SSOApplicationMsgVO(
                 applicationId = it.applicationId,
-                applicationDate = it.applicationDate,
                 applicationStatus = it.applicationStatus,
+                applicationDate = it.applicationDate,
+                expirationDate = it.expirationDate,
                 applicantIdName = it.applicantIdName,
-                msgUnread = msgUnread
+                msgRead = msgRead
             )
         }
     }
@@ -237,7 +252,7 @@ class GovernorManager {
         // test code =========> start
         if (BuildConfig.MOCK_GOVERNOR_DATA) {
             val fakeDetails = SSOApplicationDetailsDTO(
-                ssoWalletAddress = accountDO.address,
+                ssoWalletAddress = "f4174e9eabcb2e968e22da4c75ac653b",
                 idName = msgVO.applicantIdName,
                 idNumber = "1234567890",
                 idPhotoPositiveUrl = "",
@@ -255,24 +270,37 @@ class GovernorManager {
                 bankChequePhotoPositiveUrl = "",
                 bankChequePhotoBackUrl = "",
                 applicationDate = msgVO.applicationDate,
-                applicationPeriod = 7,
-                expirationDate = System.currentTimeMillis(),
+                applicationPeriod = 5,
+                expirationDate = msgVO.expirationDate,
                 applicationStatus = msgVO.applicationStatus,
-                applicationId = msgVO.applicationId
+                applicationId = msgVO.applicationId,
+                unapprovedReason =
+                if (msgVO.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED
+                    || msgVO.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED
+                ) {
+                    "信息不完善"
+                } else {
+                    null
+                }
             )
             response.data = fakeDetails
         }
         // test code =========> end
 
         if (response.data != null) {
-            if (response.data!!.applicationStatus == 1
-                || response.data!!.applicationStatus >= 3
+            if (response.data!!.applicationStatus >= SSOApplicationState.GIVEN_MINTABLE
+                && response.data!!.tokenIdx == null
             ) {
-                if (response.data!!.tokenIdx == null) {
-                    throw RequestException.responseDataException(
-                        "module address cannot be null"
-                    )
-                }
+                throw RequestException.responseDataException(
+                    "token id cannot be null"
+                )
+            } else if ((response.data!!.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED
+                        || response.data!!.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED)
+                && response.data!!.unapprovedReason.isNullOrEmpty()
+            ) {
+                throw RequestException.responseDataException(
+                    "unapproved reason cannot be null"
+                )
             }
 
             val countryArea = getCountryArea(response.data!!.countryCode)
@@ -291,7 +319,19 @@ class GovernorManager {
      * 获取审核不通过SSO申请原因列表
      */
     suspend fun getUnapproveReasons() =
-        mGovernorService.getUnapproveReasons()
+        try {
+            mGovernorService.getUnapproveReasons()
+        } catch (e: Exception) {
+            if (BuildConfig.MOCK_GOVERNOR_DATA) {
+                arrayListOf(
+                    UnapproveReasonDTO(1, "信息不完善"),
+                    UnapproveReasonDTO(-1, "其他")
+                )
+
+            } else {
+                throw e
+            }
+        }
 
     /**
      * 审核不通过SSO申请
@@ -319,15 +359,21 @@ class GovernorManager {
      * 申请铸币权
      * 审核通过SSO申请时，州长先向董事长申请发行币种，待董事长发行币种完成后，州长在转账并通过SSO申请
      */
-    suspend fun applyForMintPower(
+    suspend fun applyForMintable(
         ssoApplicationDetails: SSOApplicationDetailsDTO,
         walletAddress: String
     ) {
-        mGovernorService.applyForMintPower(
-            walletAddress = walletAddress,
-            ssoApplicationId = ssoApplicationDetails.applicationId,
-            ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress
-        )
+        try {
+            mGovernorService.applyForMintable(
+                walletAddress = walletAddress,
+                ssoApplicationId = ssoApplicationDetails.applicationId,
+                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress
+            )
+        } catch (e: Exception) {
+            if (!BuildConfig.MOCK_GOVERNOR_DATA) {
+                throw e
+            }
+        }
     }
 
     /**
@@ -338,12 +384,18 @@ class GovernorManager {
         account: Account? = null,
         walletAddress: String
     ) {
-        mApprovalManager.approve(
-            account = account,
-            walletAddress = walletAddress,
-            ssoApplicationId = ssoApplicationDetails.applicationId,
-            ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress
-        )
+        try {
+            mApprovalManager.approve(
+                account = account,
+                walletAddress = walletAddress,
+                ssoApplicationId = ssoApplicationDetails.applicationId,
+                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress
+            )
+        } catch (e: Exception) {
+            if (!BuildConfig.MOCK_GOVERNOR_DATA) {
+                throw e
+            }
+        }
     }
 
     /**
@@ -353,7 +405,7 @@ class GovernorManager {
         ssoApplicationDetails: SSOApplicationDetailsDTO,
         account: Account
     ) {
-        var result = try {
+        try {
             mApprovalManager.mint(
                 account = account,
                 ssoApplicationId = ssoApplicationDetails.applicationId,
@@ -361,24 +413,10 @@ class GovernorManager {
                 ssoApplyAmount = ssoApplicationDetails.tokenAmount.toLong(),
                 newTokenIdx = ssoApplicationDetails.tokenIdx!!
             )
-            true
         } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-
-        if (BuildConfig.MOCK_GOVERNOR_DATA) {
-            result = true
-        }
-
-        if (!result) {
-            throw if (!isNetworkConnected())
-                RequestException.networkUnavailable()
-            else
-                RequestException(
-                    RequestException.ERROR_CODE_UNKNOWN_ERROR,
-                    getString(R.string.tips_governor_mint_token_fail)
-                )
+            if (!BuildConfig.MOCK_GOVERNOR_DATA) {
+                throw e
+            }
         }
     }
 
@@ -397,6 +435,50 @@ class GovernorManager {
     /**
      * 标记SSO申请消息为已读
      */
+    fun markSSOApplicationMsgAsRead(
+        accountId: Long,
+        applicationId: String,
+        @SSOApplicationState
+        applicationStatus: Int,
+        applicationDate: Long,
+        expirationDate: Long,
+        applicantIdName: String
+    ) {
+        try {
+            val msgDO =
+                mSSOApplicationMsgStorage.loadMsgFromApplicationId(
+                    accountId,
+                    applicationId
+                )
+
+            if (msgDO == null) {
+                mSSOApplicationMsgStorage.insert(
+                    SSOApplicationMsgDO(
+                        accountId = accountId,
+                        applicationId = applicationId,
+                        applicationStatus = applicationStatus,
+                        applicationDate = applicationDate,
+                        expirationDate = expirationDate,
+                        applicantIdName = applicantIdName,
+                        issueRead = true,
+                        mintRead = applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN
+                    )
+                )
+            } else if (applicationStatus != msgDO.applicationStatus) {
+                msgDO.applicationStatus = applicationStatus
+                if (applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN) {
+                    msgDO.mintRead = true
+                }
+                mSSOApplicationMsgStorage.update(msgDO)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * 标记SSO申请消息为已读
+     */
     fun markSSOApplicationMsgAsRead(accountId: Long, msgVO: SSOApplicationMsgVO) {
         try {
             val msgDO =
@@ -410,17 +492,18 @@ class GovernorManager {
                     SSOApplicationMsgDO(
                         accountId = accountId,
                         applicationId = msgVO.applicationId,
-                        applicationDate = msgVO.applicationDate,
                         applicationStatus = msgVO.applicationStatus,
+                        applicationDate = msgVO.applicationDate,
+                        expirationDate = msgVO.expirationDate,
                         applicantIdName = msgVO.applicantIdName,
-                        issuingUnread = false,
-                        mintUnread = msgVO.applicationStatus < 3
+                        issueRead = true,
+                        mintRead = msgVO.applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN
                     )
                 )
             } else if (msgVO.applicationStatus != msgDO.applicationStatus) {
                 msgDO.applicationStatus = msgVO.applicationStatus
-                if (msgVO.applicationStatus < 3) {
-                    msgDO.mintUnread = false
+                if (msgVO.applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN) {
+                    msgDO.mintRead = true
                 }
                 mSSOApplicationMsgStorage.update(msgDO)
             }
@@ -448,13 +531,14 @@ class GovernorManager {
                         applicationDate = msgVO.applicationDate,
                         applicationStatus = msgVO.applicationStatus,
                         applicantIdName = msgVO.applicantIdName,
-                        issuingUnread = false,
-                        mintUnread = msgVO.applicationStatus < 3
+                        expirationDate = msgVO.expirationDate,
+                        issueRead = true,
+                        mintRead = msgVO.applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN
                     )
                 )
             } else {
                 msgDO.applicationStatus = msgVO.applicationStatus
-                msgDO.mintUnread = msgVO.applicationStatus < 3
+                msgDO.mintRead = msgVO.applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN
                 mSSOApplicationMsgStorage.update(msgDO)
             }
         } catch (e: Exception) {

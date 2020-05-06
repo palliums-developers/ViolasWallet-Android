@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.GovernorManager
+import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.repository.http.governor.UnapproveReasonDTO
@@ -39,7 +40,7 @@ class ApprovalFragmentViewModel(
     companion object {
         const val ACTION_LOAD_UNAPPROVE_REASONS = 0x01          // 加载审核不通过发币申请的原因列表
         const val ACTION_UNAPPROVE_APPLICATION = 0x02           // 审核不通过发币申请
-        const val ACTION_APPLY_FOR_MINT_POWER = 0x03            // 申请铸币权
+        const val ACTION_APPLY_FOR_MINTABLE = 0x03              // 申请铸币权
         const val ACTION_APPROVE_APPLICATION = 0x04             // 审核通过发币申请
         const val ACTION_MINT_TOKEN_TO_SSO = 0x05               // 铸币给发行商
     }
@@ -59,7 +60,7 @@ class ApprovalFragmentViewModel(
             val currentAccount = AccountManager().currentAccount()
             mAccountLD.postValue(currentAccount)
 
-            if (mSSOApplicationDetails.applicationStatus == 2) {
+            if (mSSOApplicationDetails.applicationStatus == SSOApplicationState.GIVEN_MINTABLE) {
                 val transferred = mGovernorManager.isTransferredCoinToSSO(
                     walletAddress = currentAccount.address,
                     applicationId = mSSOApplicationDetails.applicationId
@@ -87,9 +88,9 @@ class ApprovalFragmentViewModel(
                 )
             }
 
-            ACTION_APPLY_FOR_MINT_POWER -> {
+            ACTION_APPLY_FOR_MINTABLE -> {
                 // 申请铸币权
-                mGovernorManager.applyForMintPower(
+                mGovernorManager.applyForMintable(
                     mSSOApplicationDetails,
                     mAccountLD.value!!.address
                 )
@@ -125,7 +126,7 @@ class ApprovalFragmentViewModel(
             context = context,
             accountId = accountDO.id,
             address = mSSOApplicationDetails.ssoWalletAddress,
-            amount = 100 * 1000_000,
+            amount = 2 * 1000_000,
             modifyable = false,
             requestCode = requestCode
         )

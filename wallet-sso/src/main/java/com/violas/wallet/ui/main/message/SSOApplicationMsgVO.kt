@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.main.message
 
 import android.os.Parcelable
+import com.violas.wallet.biz.SSOApplicationState
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -12,8 +13,10 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class SSOApplicationMsgVO(
     val applicationId: String,          // 申请ID
+    @SSOApplicationState
+    var applicationStatus: Int,         // 申请状态
     val applicationDate: Long,          // 申请日期
-    var applicationStatus: Int,         // 申请状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
+    val expirationDate: Long,           // 申请失效日期
     val applicantIdName: String,        // 申请人身份姓名
-    var msgUnread: Boolean              // 消息未读已读，true: 未读; false: 已读
+    var msgRead: Boolean                // 消息已读，true: 已读; false: 未读
 ) : Parcelable

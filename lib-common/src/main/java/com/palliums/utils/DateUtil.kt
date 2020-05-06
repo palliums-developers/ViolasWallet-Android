@@ -40,3 +40,7 @@ fun formatDate(
     return dateFormat.format(correctDateLength(date))
 }
 
+fun isExpired(expirationDate: Long): Boolean {
+    return System.currentTimeMillis() > correctDateLength(expirationDate)
+}
+

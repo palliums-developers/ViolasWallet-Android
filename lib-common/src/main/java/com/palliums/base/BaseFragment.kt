@@ -68,6 +68,10 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener, ViewContr
         (activity as? BaseActivity)?.showToast(msg, duration)
     }
 
+    fun close() {
+        (activity as? BaseActivity)?.close()
+    }
+
     fun finishActivity() {
         activity?.finish()
     }

@@ -9,7 +9,9 @@ import com.palliums.paging.PagingViewAdapter
 import com.palliums.utils.formatDate
 import com.palliums.utils.getColor
 import com.palliums.utils.getString
+import com.palliums.utils.isExpired
 import com.violas.wallet.R
+import com.violas.wallet.biz.SSOApplicationState
 import kotlinx.android.synthetic.main.item_sso_application_msg.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -60,44 +62,65 @@ private class ViewHolder(
     override fun onViewBind(itemPosition: Int, itemData: SSOApplicationMsgVO?) {
         itemData?.let {
             itemView.tvTime.text = formatDate(it.applicationDate, mDateFormat)
+            itemView.tvTitle.text =
+                if (it.applicationStatus <= SSOApplicationState.TRANSFERRED_AND_NOTIFIED) {
+                    getString(R.string.title_sso_msg_issuing_token, it.applicantIdName)
+                } else {
+                    getString(R.string.title_sso_msg_mint_token, it.applicantIdName)
+                }
+
             when (it.applicationStatus) {
-                0 -> {
-                    itemView.tvTitle.text =
-                        getString(R.string.title_sso_msg_issuing_token, it.applicantIdName)
-                    itemView.tvStatus.visibility = View.GONE
-                    itemView.vUnread.visibility = if (it.msgUnread) View.VISIBLE else View.GONE
+                SSOApplicationState.APPLYING_ISSUE_TOKEN -> {
+                    if (isExpired(it.expirationDate)) {
+                        itemView.vUnread.visibility = View.GONE
+                        itemView.tvStatus.visibility = View.VISIBLE
+                        itemView.tvStatus.text = getString(R.string.state_closed)
+                        itemView.tvStatus.setTextColor(getColor(R.color.def_text_title))
+                    } else {
+                        itemView.tvStatus.visibility = View.GONE
+                        itemView.vUnread.visibility = if (it.msgRead) View.GONE else View.VISIBLE
+                    }
                 }
 
-                1 -> {
-                    itemView.tvTitle.text =
-                        getString(R.string.title_sso_msg_issuing_token, it.applicantIdName)
+                SSOApplicationState.APPLYING_MINTABLE -> {
                     itemView.vUnread.visibility = View.GONE
-                    itemView.tvStatus.text = getString(R.string.state_passed)
+                    itemView.tvStatus.visibility = View.VISIBLE
+                    itemView.tvStatus.text = getString(R.string.state_applying_mintable)
+                    itemView.tvStatus.setTextColor(getColor(R.color.color_FAA030))
+                }
+
+                SSOApplicationState.GIVEN_MINTABLE,
+                SSOApplicationState.TRANSFERRED_AND_NOTIFIED -> {
+                    itemView.vUnread.visibility = View.GONE
+                    itemView.tvStatus.visibility = View.VISIBLE
+                    itemView.tvStatus.text = getString(R.string.state_given_mintable)
+                    itemView.tvStatus.setTextColor(getColor(R.color.color_00D1AF))
+                }
+
+                SSOApplicationState.APPLYING_MINT_TOKEN -> {
+                    itemView.tvStatus.visibility = View.GONE
+                    itemView.vUnread.visibility = if (it.msgRead) View.GONE else View.VISIBLE
+                }
+
+                SSOApplicationState.MINTED_TOKEN -> {
+                    itemView.vUnread.visibility = View.GONE
+                    itemView.tvStatus.visibility = View.VISIBLE
+                    itemView.tvStatus.text = getString(R.string.state_completed)
                     itemView.tvStatus.setTextColor(getColor(R.color.def_text_title))
-                    itemView.tvStatus.visibility = View.VISIBLE
                 }
 
-                2 -> {
-                    itemView.tvTitle.text =
-                        getString(R.string.title_sso_msg_issuing_token, it.applicantIdName)
+                SSOApplicationState.CHAIRMAN_UNAPPROVED -> {
                     itemView.vUnread.visibility = View.GONE
-                    itemView.tvStatus.text = getString(R.string.state_rejected)
-                    itemView.tvStatus.setTextColor(getColor(R.color.color_E54040))
                     itemView.tvStatus.visibility = View.VISIBLE
-                }
-
-                3 -> {
-                    itemView.tvTitle.text = getString(R.string.title_sso_msg_mint_token, it.applicantIdName)
-                    itemView.tvStatus.visibility = View.GONE
-                    itemView.vUnread.visibility = if (it.msgUnread) View.VISIBLE else View.GONE
+                    itemView.tvStatus.text = getString(R.string.state_chairman_unapproved)
+                    itemView.tvStatus.setTextColor(getColor(R.color.color_F55753))
                 }
 
                 else -> {
-                    itemView.tvTitle.text = getString(R.string.title_sso_msg_mint_token, it.applicantIdName)
                     itemView.vUnread.visibility = View.GONE
-                    itemView.tvStatus.text = getString(R.string.state_completed)
-                    itemView.tvStatus.setTextColor(getColor(R.color.def_text_title))
                     itemView.tvStatus.visibility = View.VISIBLE
+                    itemView.tvStatus.text = getString(R.string.state_governor_unapproved)
+                    itemView.tvStatus.setTextColor(getColor(R.color.def_text_title))
                 }
             }
         }

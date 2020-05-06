@@ -15,7 +15,6 @@ import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.event.RefreshGovernorApplicationProgressEvent
 import com.violas.wallet.ui.governorApproval.GovernorApprovalActivity
-import com.violas.wallet.ui.governorMint.GovernorMintActivity
 import com.violas.wallet.ui.signUpGovernor.SignUpGovernorActivity
 import com.violas.wallet.utils.showPwdInputDialog
 import kotlinx.android.synthetic.main.fragment_apply_message.*
@@ -50,11 +49,7 @@ class ApplyMessageFragment : BaseFragment() {
         SSOApplicationMsgViewAdapter(retryCallback = { mViewModel.retry() }) { msg ->
             activity?.let {
                 mViewModel.observeChangedSSOApplicationMsg(msg)
-                if (msg.applicationStatus == 3) {
-                    GovernorMintActivity.start(it, msg)
-                } else {
-                    GovernorApprovalActivity.start(it, msg)
-                }
+                GovernorApprovalActivity.start(it, msg)
             }
         }
     }
@@ -418,7 +413,7 @@ class ApplyMessageFragment : BaseFragment() {
                         it.forEachIndexed { index, msg ->
                             if (changedMsg.applicationId == msg.applicationId) {
                                 msg.applicationStatus = changedMsg.applicationStatus
-                                msg.msgUnread = false
+                                msg.msgRead = true
                                 return@withContext index
                             }
                         }

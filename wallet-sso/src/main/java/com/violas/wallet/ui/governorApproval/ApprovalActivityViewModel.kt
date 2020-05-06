@@ -9,7 +9,6 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.GovernorManager
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
-import com.violas.wallet.repository.http.governor.UnapproveReasonDTO
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,12 +40,6 @@ class ApprovalActivityViewModel(
 
     val mAccountLD = MutableLiveData<AccountDO>()
     val mSSOApplicationDetailsLD = MutableLiveData<SSOApplicationDetailsDTO?>()
-    val mUnapproveReasonsLD by lazy {
-        MutableLiveData<List<UnapproveReasonDTO>>()
-    }
-    val mIsTransferredCoinToSSOLD by lazy {
-        MutableLiveData<Boolean>()
-    }
 
     private val mGovernorManager by lazy { GovernorManager() }
 

@@ -6,6 +6,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import com.palliums.utils.getColor
 import com.violas.wallet.R
+import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_APPROVE_APPLICATION
 import kotlinx.android.synthetic.main.fragment_apply_for_mintable_progress.*
@@ -36,21 +37,23 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
         // -2：董事长审核未通过。
         tvStep1Desc.text =
             getString(R.string.apply_for_mintable_step_1, details.idName, details.tokenName)
-        if (details.applicationStatus == 1) {
+        if (details.applicationStatus == SSOApplicationState.APPLYING_MINTABLE) {
             vStep2Line.setBackgroundResource(R.color.color_9D9BA3)
+            tvStep2Desc.setTextColor(getColor(R.color.def_text_title))
             return
         }
 
         vStep2Line.setBackgroundResource(R.color.colorAccent)
+        tvStep2Desc.setTextColor(getColor(R.color.color_82808A))
         ivStep3Icon.visibility = View.VISIBLE
         tvStep3Desc.visibility = View.VISIBLE
-        if (details.applicationStatus == -2) {
+        if (details.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED) {
             vStep3Line.visibility = View.VISIBLE
             tvStep3Reason.visibility = View.VISIBLE
             ivStep3Icon.setBackgroundResource(R.drawable.ic_application_unpassed)
             tvStep3Desc.setText(R.string.apply_for_mintable_step_3_2)
             tvStep3Reason.text =
-                getString(R.string.apply_for_mintable_step_3_3, details.unapproveReason)
+                getString(R.string.apply_for_mintable_step_3_3, details.unapprovedReason)
             return
         }
 
@@ -60,7 +63,7 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
         tvTransferAndNotifyDesc.visibility = View.VISIBLE
         tvTransferAndNotifyBtn.visibility = View.VISIBLE
         vApplyingUnpassedBlank.visibility = View.GONE
-        if (details.applicationStatus == 3) {
+        if (details.applicationStatus == SSOApplicationState.TRANSFERRED_AND_NOTIFIED) {
             refreshTransferAndNotifyBtn(3)
             return
         }
@@ -123,7 +126,8 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
                 }
             }
         ) {
-            mSSOApplicationDetailsDTO.applicationStatus = 3
+            mSSOApplicationDetailsDTO.applicationStatus =
+                SSOApplicationState.TRANSFERRED_AND_NOTIFIED
             refreshTransferAndNotifyBtn(3)
         }
     }

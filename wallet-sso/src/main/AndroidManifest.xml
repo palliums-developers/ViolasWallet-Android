@@ -144,9 +144,6 @@
             android:name=".ui.governorApproval.GovernorApprovalActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.governorMint.GovernorMintActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".ui.desktopManagement.LoginDesktopActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.ScanLogin" />

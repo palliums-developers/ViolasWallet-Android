@@ -123,7 +123,7 @@ class GovernorRepository(private val api: GovernorApi) {
     /**
      * 申请铸币权
      */
-    suspend fun applyForMintPower(
+    suspend fun applyForMintable(
         walletAddress: String,
         ssoApplicationId: String,
         ssoWalletAddress: String
@@ -134,7 +134,7 @@ class GovernorRepository(private val api: GovernorApi) {
     "id":"$ssoApplicationId",
     "sso_wallet_address":"$ssoWalletAddress"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.applyForMintPower(requestBody)
+            api.applyForMintable(requestBody)
         }
 
     /**

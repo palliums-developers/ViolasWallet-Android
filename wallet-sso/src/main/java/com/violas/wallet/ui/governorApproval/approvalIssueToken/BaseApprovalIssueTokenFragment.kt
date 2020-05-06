@@ -14,8 +14,12 @@ import com.violas.wallet.image.GlideApp
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel
 import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModelFactory
+import com.violas.wallet.ui.governorApproval.GovernorApprovalActivity
 import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.layout_approval_issue_token_info.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Created by elephant on 2020/4/27 17:54.
@@ -165,5 +169,15 @@ abstract class BaseApprovalIssueTokenFragment : BaseFragment() {
             .placeholder(R.drawable.bg_id_card_front)
             .error(R.drawable.bg_id_card_front)
             .into(ivBankChequePhotoBack)
+    }
+
+    protected fun startNewApprovalActivity() {
+        context?.let {
+            GovernorApprovalActivity.start(it, mSSOApplicationDetailsDTO)
+            launch(Dispatchers.IO) {
+                delay(500)
+                close()
+            }
+        }
     }
 }

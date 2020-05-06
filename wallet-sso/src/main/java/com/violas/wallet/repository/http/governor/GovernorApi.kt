@@ -58,7 +58,7 @@ interface GovernorApi {
     /**
      * 获取审核不通过SSO申请原因列表
      */
-    @GET("/1.0/violas/governor/auditFailReasons")
+    @GET("/1.0/violas/governor/unapproveReasons")
     suspend fun getUnapproveReasons(): ListResponse<UnapproveReasonDTO>
 
     /**
@@ -70,8 +70,8 @@ interface GovernorApi {
     /**
      * 申请铸币权（董事长创建币并指定铸币权为申请的州长）
      */
-    @GET("/1.0/violas/governor/mint/apply")
-    suspend fun applyForMintPower(@Body body: RequestBody): Response<Any>
+    @GET("/1.0/violas/governor/mintable/apply")
+    suspend fun applyForMintable(@Body body: RequestBody): Response<Any>
 
     /**
      * 改变SSO申请状态为已铸币

@@ -351,6 +351,11 @@
     <string name="state_passed">已通过</string>
     <string name="state_rejected">已拒绝</string>
     <string name="state_completed">已完成</string>
+    <string name="state_closed">已关闭</string>
+    <string name="state_applying_mintable">铸币权申请中</string>
+    <string name="state_given_mintable">铸币权申请成功</string>
+    <string name="state_governor_unapproved">已审批</string>
+    <string name="state_chairman_unapproved">铸币权申请失败</string>
     <string name="tips_no_sso_msg">暂无SSO申请消息</string>
     <string name="format_sso_application_title">%1$s申请发行%2$s</string>
     <string name="state_minted">已铸币成功</string>
@@ -402,7 +407,7 @@
     <string name="apply_for_mintable_action_1">转账并通知</string>
     <string name="apply_for_mintable_action_2">已转账，通知</string>
     <string name="apply_for_mintable_action_3">已转账并通知</string>
-    <string name="token_application_status_desc_unapproved">未通过审核</string>
+    <string name="token_application_status_desc_unapproved">未通过州长审核</string>
     <string name="token_application_status_desc_timeout">审核超时，已关闭</string>
     <string name="token_application_status_desc_approved">身份审核已通过</string>
     <string name="token_application_status_desc_minted">铸币成功</string>

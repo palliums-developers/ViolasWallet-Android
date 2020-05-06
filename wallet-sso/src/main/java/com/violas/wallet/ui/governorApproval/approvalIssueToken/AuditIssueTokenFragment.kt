@@ -5,7 +5,7 @@ import androidx.lifecycle.Observer
 import com.violas.wallet.R
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.repository.http.governor.UnapproveReasonDTO
-import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_APPLY_FOR_MINT_POWER
+import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_APPLY_FOR_MINTABLE
 import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_LOAD_UNAPPROVE_REASONS
 import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_UNAPPROVE_APPLICATION
 import com.violas.wallet.utils.showPwdInputDialog
@@ -38,8 +38,8 @@ class AuditIssueTokenFragment : BaseApprovalIssueTokenFragment() {
             showPwdInputDialog(
                 mViewModel.mAccountLD.value!!,
                 accountCallback = {
-                    mViewModel.execute(action = ACTION_APPLY_FOR_MINT_POWER) {
-                        // TODO 跳转处理
+                    mViewModel.execute(action = ACTION_APPLY_FOR_MINTABLE) {
+                        startNewApprovalActivity()
                     }
                 })
         }
@@ -65,7 +65,7 @@ class AuditIssueTokenFragment : BaseApprovalIssueTokenFragment() {
                     reasonType, remark,
                     action = ACTION_UNAPPROVE_APPLICATION
                 ) {
-                    // TODO 跳转处理
+                    startNewApprovalActivity()
                 }
             }
             .show(childFragmentManager, SelectUnapproveReasonDialog::javaClass.name)

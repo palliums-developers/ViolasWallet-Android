@@ -5,6 +5,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.violas.wallet.biz.SSOApplicationState
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -23,19 +24,22 @@ data class SSOApplicationMsgDO(
     @ColumnInfo(name = "id")
     var id: Long? = null,                       // 自增id
     @ColumnInfo(name = "account_id")
-    var accountId: Long = 0,                    // 州长钱包账户id
+    var accountId: Long,                        // 州长钱包账户id
     @ColumnInfo(name = "application_id")
-    var applicationId: String = "",             // 申请id
-    @ColumnInfo(name = "application_date")
-    var applicationDate: Long = 0,              // 申请时间
+    var applicationId: String,                  // 申请id
+    @SSOApplicationState
     @ColumnInfo(name = "application_status")
-    var applicationStatus: Int = 0,             // 申请状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
+    var applicationStatus: Int,                 // 申请状态
+    @ColumnInfo(name = "application_date")
+    var applicationDate: Long,                  // 申请时间
+    @ColumnInfo(name = "expiration_date")
+    val expirationDate: Long,                   // 申请失效日期
     @ColumnInfo(name = "applicant_id_name")
     var applicantIdName: String,                // 申请人身份姓名
-    @ColumnInfo(name = "issuing_unread")
-    var issuingUnread: Boolean = true,          // 发币请求未读
-    @ColumnInfo(name = "mint_unread")
-    var mintUnread: Boolean = true              // 铸币请求未读
+    @ColumnInfo(name = "issue_read")
+    var issueRead: Boolean,                     // 发币请求已读
+    @ColumnInfo(name = "mint_read")
+    var mintRead: Boolean                       // 铸币请求已读
 ) : Parcelable {
     companion object {
         const val TABLE_NAME = "sso_application_msg"
