@@ -30,9 +30,8 @@ class AuditExceptionFragment : BaseApprovalIssueTokenFragment() {
             tvSubDescLabel.setText(R.string.token_application_status_label_reason)
             tvSubDesc.text = details.unapprovedReason
         } else {
-            // TODO 替换超时图标
             // 超时计算的规则: 州长未审核前才计算超时
-            ivIcon.setBackgroundResource(R.drawable.ic_application_unpassed)
+            ivIcon.setBackgroundResource(R.drawable.ic_application_timeout)
             tvStatusDesc.setText(R.string.token_application_status_desc_timeout)
             tvSubDescLabel.setText(R.string.token_application_status_label_time)
             tvSubDesc.text = formatDate(details.expirationDate, pattern = "yyyy/MM/dd HH:mm")

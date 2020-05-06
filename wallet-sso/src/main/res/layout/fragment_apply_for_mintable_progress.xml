@@ -46,9 +46,9 @@
                 android:id="@+id/vStep1Line"
                 android:layout_width="@dimen/dp_1"
                 android:layout_height="@dimen/dp_22"
-                android:layout_marginStart="@dimen/dp_8"
                 android:layout_marginTop="@dimen/dp_5"
                 android:background="@color/colorAccent"
+                app:layout_constraintEnd_toEndOf="@id/ivStep1Icon"
                 app:layout_constraintStart_toStartOf="@id/ivStep1Icon"
                 app:layout_constraintTop_toBottomOf="@id/ivStep1Icon" />
 
@@ -79,8 +79,8 @@
                 android:id="@+id/vStep2Line"
                 android:layout_width="@dimen/dp_1"
                 android:layout_height="@dimen/dp_22"
-                android:layout_marginStart="@dimen/dp_8"
                 android:layout_marginTop="@dimen/dp_5"
+                app:layout_constraintEnd_toEndOf="@id/ivStep1Icon"
                 app:layout_constraintStart_toStartOf="@id/ivStep1Icon"
                 app:layout_constraintTop_toBottomOf="@id/ivStep2Icon"
                 tools:background="@color/color_9D9BA3" />
@@ -129,11 +129,11 @@
                 android:id="@+id/vStep3Line"
                 android:layout_width="@dimen/dp_1"
                 android:layout_height="@dimen/dp_0"
-                android:layout_marginStart="@dimen/dp_8"
                 android:layout_marginTop="@dimen/dp_5"
                 android:background="@color/colorAccent"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/tvStep3Reason"
+                app:layout_constraintEnd_toEndOf="@id/ivStep1Icon"
                 app:layout_constraintStart_toStartOf="@id/ivStep1Icon"
                 app:layout_constraintTop_toBottomOf="@id/ivStep3Icon" />
 
