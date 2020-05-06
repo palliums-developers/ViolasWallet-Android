@@ -30,11 +30,6 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
     override fun setApplicationInfo(details: SSOApplicationDetailsDTO) {
         super.setApplicationInfo(details)
 
-        // 申请发币状态（负数为失败情况）：
-        // 1：州长已审核通过，并申请铸币权；
-        // 2：董事长已发布新稳定币，并指定铸币权给州长；
-        // 3：州长已给发行商转平台币，并通知；
-        // -2：董事长审核未通过。
         tvStep1Desc.text =
             getString(R.string.apply_for_mintable_step_1, details.idName, details.tokenName)
         if (details.applicationStatus == SSOApplicationState.APPLYING_MINTABLE) {
@@ -101,7 +96,7 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
             if (mViewModel.mIsTransferredCoinToSSOLD.value == true) {
                 notifySSOCanApplyForMint()
             } else {
-                mViewModel.transferCoinToSSO(context!!, TRANSFER_REQUEST_CODE)
+                mViewModel.transferCoinToSSO(this, TRANSFER_REQUEST_CODE)
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.violas.wallet.ui.governorApproval
 
-import android.content.Context
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -119,11 +119,11 @@ class ApprovalFragmentViewModel(
         }
     }
 
-    fun transferCoinToSSO(context: Context, requestCode: Int) {
+    fun transferCoinToSSO(fragment: Fragment, requestCode: Int) {
         val accountDO = mAccountLD.value ?: return
 
         TransferActivity.start(
-            context = context,
+            fragment = fragment,
             accountId = accountDO.id,
             address = mSSOApplicationDetails.ssoWalletAddress,
             amount = 2 * 1000_000,

@@ -22,10 +22,6 @@ class AuditExceptionFragment : BaseApprovalIssueTokenFragment() {
     override fun setApplicationInfo(details: SSOApplicationDetailsDTO) {
         super.setApplicationInfo(details)
 
-        // 申请发币状态（负数为失败情况）：
-        // -1：州长审核未通过；
-        // -2：董事长审核未通过；
-        // 其它为审核超时
         tvStatusDesc.setTextColor(getColor(R.color.color_F55753))
         llSubDesc.visibility = View.VISIBLE
         if (details.applicationStatus == -1) {
@@ -34,7 +30,8 @@ class AuditExceptionFragment : BaseApprovalIssueTokenFragment() {
             tvSubDescLabel.setText(R.string.token_application_status_label_reason)
             tvSubDesc.text = details.unapprovedReason
         } else {
-            // TODO 1.超时计算的规则，是州长未审核前才计算超时，还是只要未成功铸币都计算超时; 2.替换超时图标
+            // TODO 替换超时图标
+            // 超时计算的规则: 州长未审核前才计算超时
             ivIcon.setBackgroundResource(R.drawable.ic_application_unpassed)
             tvStatusDesc.setText(R.string.token_application_status_desc_timeout)
             tvSubDescLabel.setText(R.string.token_application_status_label_time)

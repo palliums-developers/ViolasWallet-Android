@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import androidx.annotation.WorkerThread
+import androidx.fragment.app.Fragment
 import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -122,8 +123,7 @@ abstract class TransferActivity : BaseAppActivity() {
             amount: Long = 0,
             isToken: Boolean = false,
             tokenId: Long = 0,
-            modifyable: Boolean = true,
-            requestCode: Int = Int.MIN_VALUE
+            modifyable: Boolean = true
         ) {
             Intent(context, LibraTransferActivity::class.java)
                 .apply {
@@ -134,7 +134,29 @@ abstract class TransferActivity : BaseAppActivity() {
                     putExtra(EXT_TOKEN_ID, tokenId)
                     putExtra(EXT_MODIFYABLE, modifyable)
                 }
-                .start(context, requestCode)
+                .start(context)
+        }
+
+        fun start(
+            fragment: Fragment,
+            accountId: Long,
+            address: String = "",
+            amount: Long = 0,
+            isToken: Boolean = false,
+            tokenId: Long = 0,
+            modifyable: Boolean = true,
+            requestCode: Int = Int.MIN_VALUE
+        ) {
+            Intent(fragment.activity, LibraTransferActivity::class.java)
+                .apply {
+                    putExtra(EXT_ACCOUNT_ID, accountId)
+                    putExtra(EXT_ADDRESS, address)
+                    putExtra(EXT_AMOUNT, amount)
+                    putExtra(EXT_IS_TOKEN, isToken)
+                    putExtra(EXT_TOKEN_ID, tokenId)
+                    putExtra(EXT_MODIFYABLE, modifyable)
+                }
+                .start(fragment, requestCode)
         }
     }
 

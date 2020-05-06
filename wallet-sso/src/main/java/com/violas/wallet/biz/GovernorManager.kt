@@ -327,7 +327,6 @@ class GovernorManager {
                     UnapproveReasonDTO(1, "信息不完善"),
                     UnapproveReasonDTO(-1, "其他")
                 )
-
             } else {
                 throw e
             }
