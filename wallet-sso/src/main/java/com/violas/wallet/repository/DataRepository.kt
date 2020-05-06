@@ -3,6 +3,7 @@ package com.violas.wallet.repository
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.violas.http.ViolasApi
 import com.palliums.violas.http.ViolasRepository
+import com.palliums.violas.http.ViolasService
 import com.palliums.violas.smartcontract.multitoken.MultiContractRpcApi
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
@@ -21,7 +22,7 @@ import com.violas.wallet.repository.http.libra.violas.LibraViolasRepository
 import com.violas.wallet.repository.http.libra.violas.LibraViolasService
 import com.violas.wallet.repository.http.sso.SSOApi
 import com.violas.wallet.repository.http.sso.SSORepository
-import com.violas.wallet.repository.http.violas.ViolasService
+import com.violas.wallet.repository.http.violas.ViolasBizService
 import com.violas.wallet.repository.local.user.LocalUserService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -81,10 +82,13 @@ object DataRepository {
     fun getViolasService() =
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
+    fun getViolasBizService() =
+        ViolasBizService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
+
     fun getTransactionService(coinTypes: CoinTypes) =
         when (coinTypes) {
             CoinTypes.Violas -> {
-                getViolasService()
+                getViolasBizService()
             }
 
             CoinTypes.Libra -> {

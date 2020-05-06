@@ -1,78 +1,18 @@
 package com.violas.wallet.repository.http.violas
 
-import android.content.Context
-import com.palliums.violas.error.ViolasException
 import com.palliums.violas.http.ViolasRepository
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
-import org.palliums.violascore.serialization.toHex
-import org.palliums.violascore.transaction.*
-import org.palliums.violascore.wallet.Account
 
 /**
  * Created by elephant on 2019-11-11 15:47.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: Violas service
+ * desc: Violas biz service
  */
-class ViolasService(private val mViolasRepository: ViolasRepository) : TransactionService {
-
-    suspend fun getBalanceInMicroLibras(address: String) =
-        mViolasRepository.getBalance(address)
-
-    suspend fun sendCoin(
-        context: Context,
-        account: Account,
-        address: String,
-        amount: Long
-    ) {
-        val senderAddress = account.getAddress().toHex()
-        val sequenceNumber = getSequenceNumber(address)
-        val transactionPayload =
-            TransactionPayload.optionTransactionPayload(context, address, amount)
-
-        val rawTransaction =
-            RawTransaction.optionTransaction(senderAddress, transactionPayload, sequenceNumber)
-        sendTransaction(rawTransaction, account)
-    }
-
-    suspend fun sendTransaction(
-        payload: TransactionPayload,
-        account: Account
-    ) {
-        val senderAddress = account.getAddress().toHex()
-        val sequenceNumber = getSequenceNumber(senderAddress)
-
-        val rawTransaction =
-            RawTransaction.optionTransaction(senderAddress, payload, sequenceNumber)
-        sendTransaction(rawTransaction, account)
-    }
-
-    @Throws(ViolasException::class)
-    suspend fun sendTransaction(
-        rawTransaction: RawTransaction,
-        account: Account
-    ) {
-        val signedTransaction = SignedTransaction(
-            rawTransaction,
-            TransactionSignAuthenticator(
-                account.keyPair.getPublicKey(),
-                account.keyPair.signMessage(rawTransaction.toHashByteArray())
-            )
-        )
-
-        sendTransaction(signedTransaction)
-    }
-
-    //todo 添加返回值 返回 sequence_number、sender
-    suspend fun sendTransaction(signedTransaction: SignedTransaction) {
-        mViolasRepository.pushTx(signedTransaction.toByteArray().toHex())
-    }
-
-    suspend fun getSequenceNumber(address: String) =
-        mViolasRepository.getSequenceNumber(address)
+class ViolasBizService(private val mViolasRepository: ViolasRepository) : TransactionService {
 
     override suspend fun getTransactionRecord(
         address: String,

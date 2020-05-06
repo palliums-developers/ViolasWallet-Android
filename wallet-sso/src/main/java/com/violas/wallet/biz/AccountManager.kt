@@ -424,7 +424,7 @@ class AccountManager {
     suspend fun getBalance(account: AccountDO): Long {
         return when (account.coinNumber) {
             CoinTypes.Violas.coinType() -> {
-                DataRepository.getViolasService().getBalanceInMicroLibras(account.address)
+                DataRepository.getViolasService().getBalanceInMicroLibra(account.address)
             }
             CoinTypes.Libra.coinType() -> {
                 DataRepository.getLibraService().getBalanceInMicroLibra(account.address)
