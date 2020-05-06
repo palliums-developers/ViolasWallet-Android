@@ -149,7 +149,8 @@ class ExchangeMappingManager {
 
             override fun getLast() = ExchangeTokenImpl(
                 CoinTypes.Violas,
-                "vLibra",
+//                "vLibra",
+                libraToVLibraInfo.name,
                 libraToVLibraInfo.tokenIdx
 //            3
             )
@@ -195,7 +196,8 @@ class ExchangeMappingManager {
 
             override fun getLast() = ExchangeTokenImpl(
                 CoinTypes.Violas,
-                "vBTC",
+//                "vBTC",
+                BTCToVbtcInfo.name,
                 BTCToVbtcInfo.tokenIdx
 //                2
             )

@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.outsideExchange.orders
 
+import androidx.annotation.Keep
 import com.palliums.paging.PagingViewModel
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
@@ -14,6 +15,7 @@ import java.util.*
  * <p>
  * desc:
  */
+@Keep
 class MappingExchangeOrdersViewModel(
     private val walletAddress: String,
     private val walletType: Int

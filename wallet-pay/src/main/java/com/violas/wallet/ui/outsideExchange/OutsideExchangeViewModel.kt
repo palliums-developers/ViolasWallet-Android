@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.outsideExchange
 
+import androidx.annotation.Keep
 import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
-import org.palliums.libracore.serialization.toHex
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -40,6 +40,8 @@ class OutsideExchangeViewModelFactory(
     }
 }
 
+//todo 后期优化，暂时不混淆该类
+@Keep
 class OutsideExchangeViewModel(private val initException: OutsideExchangeInitException? = null) :
     ViewModel() {
     private lateinit var mAccount: AccountDO

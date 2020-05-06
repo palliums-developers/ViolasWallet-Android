@@ -1,7 +1,7 @@
 ext {
     names = [
             payApplicationId: 'com.violas.wallet',
-            payVersionName  : '0.1.10',
+            payVersionName  : '0.1.11',
             ssoApplicationId: 'com.violas.wallet.sso',
             ssoVersionName  : '0.1.10',
     ]

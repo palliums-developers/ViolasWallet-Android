@@ -149,9 +149,9 @@
     <string name="web_load_failed_retry">Touch the screen to reload</string>
 
     <string name="service_agreement_title">Service Agreement</string>
-    <string name="service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service.html</string>
+    <string name="service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service</string>
     <string name="title_privacy_policy">Privacy Policy</string>
-    <string name="url_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy.html</string>
+    <string name="url_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy</string>
     <string name="feedback">Feedback</string>
     <string name="help_feedback_title">Help &amp; Feedback</string>
     <string name="help_feedback_menu">Question Feedback</string>

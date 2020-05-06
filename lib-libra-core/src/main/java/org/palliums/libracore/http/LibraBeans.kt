@@ -11,7 +11,7 @@ import kotlin.random.Random
  * <p>
  * desc:
  */
-
+@Keep
 open class Response<T> : ApiResponse {
 
     var id: String? = null
@@ -61,6 +61,7 @@ data class RequestDTO(
     val id: String = Random(10000).nextInt().toString()
 )
 
+@Keep
 data class AccountStateDTO(
     @SerializedName("authentication_key")
     val authenticationKey: String,
@@ -78,6 +79,7 @@ data class AccountStateDTO(
     val delegatedKeyRotationCapability: Boolean
 )
 
+@Keep
 data class AccountBalance(
     val amount: Long,
     val currency: String
