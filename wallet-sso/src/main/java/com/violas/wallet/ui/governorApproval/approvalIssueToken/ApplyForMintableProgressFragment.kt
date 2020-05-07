@@ -45,14 +45,14 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
         if (details.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED) {
             vStep3Line.visibility = View.VISIBLE
             tvStep3Reason.visibility = View.VISIBLE
-            ivStep3Icon.setBackgroundResource(R.drawable.ic_application_unpassed)
+            ivStep3Icon.setBackgroundResource(R.drawable.ic_application_failed)
             tvStep3Desc.setText(R.string.apply_for_mintable_step_3_2)
             tvStep3Reason.text =
                 getString(R.string.apply_for_mintable_step_3_3, details.unapprovedReason)
             return
         }
 
-        ivStep3Icon.setBackgroundResource(R.drawable.ic_application_passed)
+        ivStep3Icon.setBackgroundResource(R.drawable.ic_application_completed)
         tvStep3Desc.text = getString(R.string.apply_for_mintable_step_3_1)
         vTransferAndNotifyLine.visibility = View.VISIBLE
         tvTransferAndNotifyDesc.visibility = View.VISIBLE

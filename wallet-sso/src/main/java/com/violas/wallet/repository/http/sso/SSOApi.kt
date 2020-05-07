@@ -2,6 +2,7 @@ package com.violas.wallet.repository.http.sso
 
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
+import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
@@ -15,6 +16,14 @@ interface SSOApi {
 
     @GET("/1.0/violas/sso/token")
     suspend fun selectApplyForStatus(@Query("address") address: String): Response<ApplyForStatusDTO>
+
+    /**
+     * 获取SSO申请详情
+     */
+    @GET("/1.0/violas/sso/token")
+    suspend fun getSSOApplicationDetails(
+        @Query("address") address: String
+    ): Response<SSOApplicationDetailsDTO>
 
     @PUT("/1.0/violas/sso/token")
     suspend fun changePublishStatus(@Body body: RequestBody): Response<Any>

@@ -74,7 +74,7 @@ class ApplyForSSOFragment : BaseFragment() {
 
         mApplyForSSOViewModel.getApplyStatusLiveData().observe(viewLifecycleOwner, Observer {
             Log.e("====", "====监听状态==${it}")
-            val fragment = when (it) {
+            val fragment = when (it.approvalStatus) {
                 CODE_NETWORK_LOADING -> {
                     NetworkLoadingFragment()
                 }
@@ -82,16 +82,13 @@ class ApplyForSSOFragment : BaseFragment() {
                     NetworkStatusFragment()
                 }
                 CODE_VERIFICATION_SUCCESS -> {
-                    VerifySuccessFragment()
-                }
-                0, 1, 2, 3, 4 -> {
-                    ApplyStatusFragment.getInstance(it)
+                    SSOVerifySuccessFragment()
                 }
                 CODE_VERIFICATION_ACCOUNT -> {
-                    CheckVerifyFragment()
+                    SSOVerifyUserInfoFragment()
                 }
                 else -> {
-                    CheckVerifyFragment()
+                    SSOApplicationStatusFragment.getInstance(it)
                 }
             }
 

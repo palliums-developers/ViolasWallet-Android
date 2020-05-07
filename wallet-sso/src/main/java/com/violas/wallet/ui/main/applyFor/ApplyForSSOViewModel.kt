@@ -3,7 +3,8 @@ package com.violas.wallet.ui.main.applyFor
 import androidx.lifecycle.*
 import com.palliums.net.LoadState
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.ApplyManager
+import com.violas.wallet.biz.SSOApplicationState
+import com.violas.wallet.biz.SSOManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.event.RefreshBalanceEvent
@@ -18,26 +19,26 @@ import org.greenrobot.eventbus.Subscribe
 
 class ApplyForSSOViewModelFactory(
     private val userViewModel: UserViewModel
-) :
-    ViewModelProvider.NewInstanceFactory() {
+) : ViewModelProvider.NewInstanceFactory() {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ApplyForSSOViewModel(userViewModel) as T
     }
 }
 
-class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
-    ViewModel() {
+class ApplyForSSOViewModel(
+    private val userViewModel: UserViewModel
+) : ViewModel() {
 
     companion object {
-        const val CODE_NETWORK_ERROR = -1
-        const val CODE_VERIFICATION_ACCOUNT = -2
-        const val CODE_VERIFICATION_SUCCESS = -3
-        const val CODE_NETWORK_LOADING = -4
+        const val CODE_NETWORK_ERROR = Int.MIN_VALUE + 1
+        const val CODE_VERIFICATION_ACCOUNT = CODE_NETWORK_ERROR + 1
+        const val CODE_VERIFICATION_SUCCESS = CODE_VERIFICATION_ACCOUNT + 1
+        const val CODE_NETWORK_LOADING = CODE_VERIFICATION_SUCCESS + 1
     }
 
     private val mApplyManager by lazy {
-        ApplyManager()
+        SSOManager()
     }
 
     private val mAccountManager by lazy {
@@ -50,14 +51,14 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
 
     private var mAccount: AccountDO? = null
     // 0 1 2 3 4 业务状态
-    private val mApplyStatus = MediatorLiveData<Int>()
-    private val mNetWorkApplyStatus = EnhancedMutableLiveData<Int>()
+    private val mApplyStatus = MediatorLiveData<ApplyForStatusDTO>()
+    private val mNetWorkApplyStatus = EnhancedMutableLiveData<ApplyForStatusDTO>()
     private val mApplyStatusLoadState = EnhancedMutableLiveData<LoadState>()
     private val mLock: Any = Any()
 
     init {
         EventBus.getDefault().register(this)
-        mApplyStatus.value = CODE_NETWORK_LOADING
+        mApplyStatus.value = ApplyForStatusDTO(CODE_NETWORK_LOADING)
 
         // 监听SSO发币申请的状态
         mApplyStatus.addSource(mNetWorkApplyStatus) {
@@ -68,7 +69,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                     if (userInfoAllReady) {
                         mApplyStatus.value = it.peekData()
                     } else {
-                        mApplyStatus.value = CODE_VERIFICATION_ACCOUNT
+                        mApplyStatus.value = ApplyForStatusDTO(CODE_VERIFICATION_ACCOUNT)
                     }
                     return@addSource
                 }
@@ -77,7 +78,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                     userViewModel.loadState.value?.getDataIfNotHandled()
                 if (userInfoLoadState != null) {
                     if (userInfoLoadState.status == LoadState.Status.FAILURE) {
-                        mApplyStatus.value = CODE_NETWORK_ERROR
+                        mApplyStatus.value = ApplyForStatusDTO(CODE_NETWORK_ERROR)
                     }
                 }
             }
@@ -93,7 +94,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                 val userInfoAllReady =
                     userViewModel.getAllReadyLiveData().value?.peekData()
                 if (userInfoAllReady != null) {
-                    mApplyStatus.value = CODE_NETWORK_ERROR
+                    mApplyStatus.value = ApplyForStatusDTO(CODE_NETWORK_ERROR)
                     return@addSource
                 }
 
@@ -101,7 +102,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                     userViewModel.loadState.value?.getDataIfNotHandled()
                 if (userInfoLoadState != null) {
                     if (userInfoLoadState.status == LoadState.Status.FAILURE) {
-                        mApplyStatus.value = CODE_NETWORK_ERROR
+                        mApplyStatus.value = ApplyForStatusDTO(CODE_NETWORK_ERROR)
                     }
                 }
             }
@@ -116,7 +117,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                     if (it.peekData()) {
                         mApplyStatus.value = netWorkApplyStatus
                     } else {
-                        mApplyStatus.value = CODE_VERIFICATION_ACCOUNT
+                        mApplyStatus.value = ApplyForStatusDTO(CODE_VERIFICATION_ACCOUNT)
                     }
                     return@addSource
                 }
@@ -125,7 +126,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                     mApplyStatusLoadState.value?.getDataIfNotHandled()
                 if (applyStatusLoadState != null) {
                     if (applyStatusLoadState.status == LoadState.Status.FAILURE) {
-                        mApplyStatus.value = CODE_NETWORK_ERROR
+                        mApplyStatus.value = ApplyForStatusDTO(CODE_NETWORK_ERROR)
                     }
                 }
             }
@@ -141,7 +142,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                 val netWorkApplyStatus =
                     mNetWorkApplyStatus.value?.peekData()
                 if (netWorkApplyStatus != null) {
-                    mApplyStatus.value = CODE_NETWORK_ERROR
+                    mApplyStatus.value = ApplyForStatusDTO(CODE_NETWORK_ERROR)
                     return@addSource
                 }
 
@@ -149,7 +150,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                     mApplyStatusLoadState.value?.getDataIfNotHandled()
                 if (applyStatusLoadState != null) {
                     if (applyStatusLoadState.status == LoadState.Status.FAILURE) {
-                        mApplyStatus.value = CODE_NETWORK_ERROR
+                        mApplyStatus.value = ApplyForStatusDTO(CODE_NETWORK_ERROR)
                     }
                 }
             }
@@ -162,7 +163,7 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
         }
     }
 
-    fun getApplyStatusLiveData(): LiveData<Int> = synchronized(mLock) { mApplyStatus }
+    fun getApplyStatusLiveData(): LiveData<ApplyForStatusDTO> = synchronized(mLock) { mApplyStatus }
 
     @Subscribe
     fun onRefreshPage(event: RefreshPageEvent? = null) {
@@ -176,11 +177,11 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
 
         synchronized(mLock) {
             val applyStatue = mApplyStatus.value
-            if (applyStatue == null || applyStatue == CODE_NETWORK_LOADING) {
+            if (applyStatue == null || applyStatue.approvalStatus == CODE_NETWORK_LOADING) {
                 return
             }
 
-            mApplyStatus.postValue(CODE_NETWORK_LOADING)
+            mApplyStatus.postValue(ApplyForStatusDTO(CODE_NETWORK_LOADING))
         }
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -210,12 +211,11 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                 }
 
                 if (response.errorCode == 2006 || response.data == null) {
-                    mNetWorkApplyStatus.postValueSupport(CODE_VERIFICATION_SUCCESS)
+                    mNetWorkApplyStatus.postValueSupport(ApplyForStatusDTO(CODE_VERIFICATION_SUCCESS))
                 } else {
-                    val approvalStatus = response.data!!.approval_status
-                    mNetWorkApplyStatus.postValueSupport(approvalStatus)
+                    mNetWorkApplyStatus.postValueSupport(response.data!!)
 
-                    if (approvalStatus == 4) {
+                    if (response.data!!.approvalStatus == SSOApplicationState.MINTED_TOKEN) {
                         refreshAssert(account, response.data!!)
                     }
                 }
@@ -240,8 +240,8 @@ class ApplyForSSOViewModel(private val userViewModel: UserViewModel) :
                 AssertToken(
                     account_id = account.id,
                     tokenIdx = it,
-                    name = applyToken.token_name,
-                    fullName = applyToken.token_name,
+                    name = applyToken.tokenName,
+                    fullName = applyToken.tokenName,
                     enable = true
                 )
             )

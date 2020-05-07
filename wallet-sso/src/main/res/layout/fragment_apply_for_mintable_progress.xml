@@ -24,7 +24,7 @@
                 android:layout_height="@dimen/dp_16"
                 android:layout_marginStart="@dimen/dp_2"
                 android:layout_marginTop="@dimen/dp_19"
-                android:background="@drawable/ic_application_passed"
+                android:background="@drawable/ic_application_completed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -57,7 +57,7 @@
                 android:layout_width="@dimen/dp_16"
                 android:layout_height="@dimen/dp_16"
                 android:layout_marginTop="@dimen/dp_5"
-                android:background="@drawable/ic_application_applying"
+                android:background="@drawable/ic_application_processing"
                 app:layout_constraintStart_toStartOf="@id/ivStep1Icon"
                 app:layout_constraintTop_toBottomOf="@id/vStep1Line" />
 
@@ -93,7 +93,7 @@
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="@id/ivStep1Icon"
                 app:layout_constraintTop_toBottomOf="@id/vStep2Line"
-                tools:background="@drawable/ic_application_unpassed" />
+                tools:background="@drawable/ic_application_failed" />
 
             <TextView
                 android:id="@+id/tvStep3Desc"

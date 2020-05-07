@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.violas.wallet.ui.main.applyFor.ApplyFotSsoSubmitActivity">
+    tools:context="com.violas.wallet.ui.ssoApplication.ApplyForIssueTokenActivity">
 
     <fragment
         android:id="@+id/fragment"
-        android:name="com.violas.wallet.ui.main.applyFor.ApplySubmitFragment"
+        android:name="com.violas.wallet.ui.ssoApplication.issueToken.SSOApplyForIssueTokenFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

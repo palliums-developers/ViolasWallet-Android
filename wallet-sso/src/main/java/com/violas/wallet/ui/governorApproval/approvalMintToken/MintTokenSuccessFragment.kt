@@ -20,7 +20,7 @@ class MintTokenSuccessFragment : BaseApprovalMintTokenFragment() {
     override fun setApplicationInfo(details: SSOApplicationDetailsDTO) {
         super.setApplicationInfo(details)
 
-        ivIcon.setBackgroundResource(R.drawable.ic_application_passed)
+        ivIcon.setBackgroundResource(R.drawable.ic_application_completed)
         tvStatusDesc.setText(R.string.token_application_status_desc_minted)
         tvStatusDesc.setTextColor(getColor(R.color.color_00D1AF))
     }

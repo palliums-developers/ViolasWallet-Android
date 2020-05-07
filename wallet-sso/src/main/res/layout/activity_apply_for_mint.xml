@@ -46,4 +46,5 @@
         android:layout_gravity="center"
         android:layout_marginTop="40dp"
         android:text="@string/action_mint" />
+
 </LinearLayout>

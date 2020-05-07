@@ -414,4 +414,17 @@
     <string name="token_application_status_label_reason">失败原因：</string>
     <string name="token_application_status_label_time">失效时间：</string>
     <string name="action_confirm_mint">确定铸币</string>
+
+    <string name="sso_application_msg_status_1">审核中</string>
+    <string name="sso_application_msg_status_2">铸币中</string>
+    <string name="sso_application_msg_status_3">铸币完成</string>
+    <string name="sso_application_msg_status_4">审核失败</string>
+    <string name="sso_application_msg_status_5">审核超时</string>
+    <string name="sso_application_msg_status_6">审核通过，可申请铸币</string>
+    <string name="sso_application_details_status_1">审核中…</string>
+    <string name="sso_application_details_status_2">铸币审核中…</string>
+    <string name="sso_application_details_status_3_1">恭喜铸币成功</string>
+    <string name="sso_application_details_status_3_2">请在钱包首页查看</string>
+    <string name="sso_application_details_status_4">审核失败，请重新提交</string>
+    <string name="sso_application_details_status_5">审核超时，请重新提交</string>
 </resources>

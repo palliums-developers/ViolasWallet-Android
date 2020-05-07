@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.main.applyFor
+package com.violas.wallet.ui.ssoApplication.issueToken
 
 import android.app.Activity
 import android.content.Intent
@@ -15,7 +15,7 @@ import com.sl.utakephoto.manager.ITakePhotoResult
 import com.sl.utakephoto.manager.UTakePhoto
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.ApplyManager
+import com.violas.wallet.biz.SSOManager
 import com.violas.wallet.event.RefreshPageEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.sso.GovernorDTO
@@ -25,13 +25,17 @@ import com.violas.wallet.ui.selectGovernor.GovernorListActivity
 import com.violas.wallet.utils.getFilePathFromContentUri
 import com.violas.wallet.widget.dialog.EmailPhoneValidationDialog
 import com.violas.wallet.widget.dialog.TakePhotoPopup
-import kotlinx.android.synthetic.main.fragment_apply_submit.*
+import kotlinx.android.synthetic.main.fragment_sso_apply_for_issue_token.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 
-class ApplySubmitFragment : BaseFragment() {
+/**
+ * 发行商首次申请发币视图
+ */
+class SSOApplyForIssueTokenFragment : BaseFragment() {
+
     companion object {
         private const val REQUEST_CURRENCY_CODE = 0
         private const val REQUEST_GOVERNOR_CODE = 4
@@ -48,7 +52,7 @@ class ApplySubmitFragment : BaseFragment() {
     private var mCurrencyGovernorBean: GovernorDTO? = null
 
     private val mApplyManager by lazy {
-        ApplyManager()
+        SSOManager()
     }
 
     private val mAccountManager by lazy {
@@ -56,7 +60,7 @@ class ApplySubmitFragment : BaseFragment() {
     }
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_apply_submit
+        return R.layout.fragment_sso_apply_for_issue_token
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -89,10 +93,16 @@ class ApplySubmitFragment : BaseFragment() {
         })
 
         tvContent.setOnClickListener {
-            SelectCurrencyActivity.start(this@ApplySubmitFragment, REQUEST_CURRENCY_CODE)
+            SelectCurrencyActivity.start(
+                this@SSOApplyForIssueTokenFragment,
+                REQUEST_CURRENCY_CODE
+            )
         }
         tvGovernorContent.setOnClickListener {
-            GovernorListActivity.start(this@ApplySubmitFragment, REQUEST_GOVERNOR_CODE)
+            GovernorListActivity.start(
+                this@SSOApplyForIssueTokenFragment,
+                REQUEST_GOVERNOR_CODE
+            )
         }
 
         upLoadViewReserves.setOnClickListener {

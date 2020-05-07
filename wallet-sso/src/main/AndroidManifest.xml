@@ -131,10 +131,13 @@
             android:name=".ui.selectCurrency.SelectCurrencyActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.main.applyFor.ApplyFotSsoSubmitActivity"
+            android:name=".ui.ssoApplication.ApplyForIssueTokenActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.selectGovernor.GovernorListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.ssoApplication.SSOApplicationActivity"
             android:screenOrientation="portrait" />
 
         <activity

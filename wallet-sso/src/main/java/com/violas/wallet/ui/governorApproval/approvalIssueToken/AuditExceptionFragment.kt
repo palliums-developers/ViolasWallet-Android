@@ -4,6 +4,7 @@ import android.view.View
 import com.palliums.utils.formatDate
 import com.palliums.utils.getColor
 import com.violas.wallet.R
+import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import kotlinx.android.synthetic.main.layout_token_application_status.*
 
@@ -24,8 +25,8 @@ class AuditExceptionFragment : BaseApprovalIssueTokenFragment() {
 
         tvStatusDesc.setTextColor(getColor(R.color.color_F55753))
         llSubDesc.visibility = View.VISIBLE
-        if (details.applicationStatus == -1) {
-            ivIcon.setBackgroundResource(R.drawable.ic_application_unpassed)
+        if (details.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED) {
+            ivIcon.setBackgroundResource(R.drawable.ic_application_failed)
             tvStatusDesc.setText(R.string.token_application_status_desc_unapproved)
             tvSubDescLabel.setText(R.string.token_application_status_label_reason)
             tvSubDesc.text = details.unapprovedReason

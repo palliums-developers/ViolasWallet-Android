@@ -3,7 +3,7 @@ package com.violas.wallet.ui.applyForMint
 import android.os.Bundle
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.biz.ApplyManager
+import com.violas.wallet.biz.SSOManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.SimpleSecurity
@@ -26,7 +26,7 @@ class ApplyForMintActivity
     : BaseAppActivity() {
 
     private val mApplyManager by lazy {
-        ApplyManager()
+        SSOManager()
     }
 
     private val mAccountManager by lazy {
@@ -48,7 +48,7 @@ class ApplyForMintActivity
             withContext(Dispatchers.Main) {
                 applyStatus?.data?.let { status ->
                     itemWalletAddress.setContent(mAccount.address)
-                    itemTokenName.setContent(status.token_name)
+                    itemTokenName.setContent(status.tokenName)
                     itemTokenAmount.setContent(
                         BigDecimal(status.amount).divide(
                             BigDecimal("1000000"),
@@ -60,8 +60,8 @@ class ApplyForMintActivity
                     status.tokenIdx?.let {
                         val assertToken = AssertToken(
                             account_id = mAccount.id,
-                            fullName = status.token_name,
-                            name = status.token_name,
+                            fullName = status.tokenName,
+                            name = status.tokenName,
                             tokenIdx = it,
                             enable = true
                         )

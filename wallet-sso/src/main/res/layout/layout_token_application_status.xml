@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:background="@drawable/ic_application_unpassed" />
+        tools:background="@drawable/ic_application_failed" />
 
     <TextView
         android:id="@+id/tvStatusDesc"
@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lineSpacingExtra="@dimen/dp_3"
-            android:textColor="@color/def_text_font_black"
+            android:textColor="@color/color_3B3847_80"
             android:textSize="@dimen/sp_14"
             tools:text="this is reason, this is reason, this is reason, this is reason." />
 

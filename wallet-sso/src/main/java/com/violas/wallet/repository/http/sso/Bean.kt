@@ -3,15 +3,40 @@ package com.violas.wallet.repository.http.sso
 import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class ApplyForStatusDTO(
-    val amount: Long,
-    val approval_status: Int,
-    val token_name: String,
+    @SerializedName("approval_status")
+    val approvalStatus: Int,
+    @SerializedName("id")
+    val applicationId: String = "",                     // 申请ID
+    val amount: Long = -1,
+    @SerializedName("token_name")
+    val tokenName: String = "",
     @SerializedName("module_address")
     //val token_address: String?,
-    val tokenIdx: Long
-)
+    val tokenIdx: Long = -1,
+    @SerializedName("application_date")
+    val applicationDate: Long = 0,                      // 申请日期
+    @SerializedName("expiration_date")
+    val expirationDate: Long = 0                        // 申请失效日期
+) : Parcelable {
+
+    companion object {
+
+        fun newInstance(applicationDetails: SSOApplicationDetailsDTO): ApplyForStatusDTO {
+            return ApplyForStatusDTO(
+                approvalStatus = applicationDetails.applicationStatus,
+                applicationId = applicationDetails.applicationId,
+                tokenName = applicationDetails.tokenName,
+                applicationDate = applicationDetails.applicationDate,
+                expirationDate = applicationDetails.expirationDate
+            )
+        }
+    }
+}
 
 data class UserInfoDTO(
     @SerializedName("country")

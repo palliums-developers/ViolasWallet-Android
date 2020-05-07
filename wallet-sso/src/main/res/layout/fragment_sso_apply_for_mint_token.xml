@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/def_page_bg_light_secondary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include layout="@layout/layout_approval_mint_token_info" />
+
+        <Button
+            android:id="@+id/btnMint"
+            style="@style/BaseButtonPrimary"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/dp_40"
+            android:text="@string/action_mint" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

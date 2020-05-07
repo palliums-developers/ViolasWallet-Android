@@ -1,10 +1,10 @@
-package com.violas.wallet.ui.main.applyFor
+package com.violas.wallet.ui.ssoApplication
 
 import android.os.Bundle
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 
-class ApplyFotSsoSubmitActivity : BaseAppActivity() {
+class ApplyForIssueTokenActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

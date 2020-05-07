@@ -6,10 +6,16 @@ import com.violas.wallet.repository.http.sso.ApplyForStatusDTO
 import java.io.File
 import java.math.BigDecimal
 
-class ApplyManager {
+class SSOManager {
+
     private val mSSOService by lazy {
         getSSOService()
     }
+
+    suspend fun getSSOApplicationDetails(
+        address: String
+    ) =
+        mSSOService.getSSOApplicationDetails(address)
 
     suspend fun getApplyStatus(
         address: String,

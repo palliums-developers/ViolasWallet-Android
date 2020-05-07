@@ -4,6 +4,7 @@ import com.palliums.content.ContextProvider
 import com.palliums.net.checkResponse
 import com.palliums.utils.getImageName
 import com.palliums.violas.http.Response
+import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -49,6 +50,19 @@ class SSORepository(private val ssoApi: SSOApi) {
         return checkResponse(2004) {
             ssoApi.loadUserInfo(address)
         }
+    }
+
+    /**
+     * 获取SSO申请详情
+     */
+    suspend fun getSSOApplicationDetails(
+        address: String
+    ): SSOApplicationDetailsDTO? {
+        val response =
+            checkResponse(2005) {
+                ssoApi.getSSOApplicationDetails(address)
+            }
+        return if (response.errorCode == 2005) null else response.data
     }
 
     /**
