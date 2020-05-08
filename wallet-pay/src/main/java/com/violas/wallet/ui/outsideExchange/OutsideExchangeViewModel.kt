@@ -40,8 +40,6 @@ class OutsideExchangeViewModelFactory(
     }
 }
 
-//todo 后期优化，暂时不混淆该类
-@Keep
 class OutsideExchangeViewModel(private val initException: OutsideExchangeInitException? = null) :
     ViewModel() {
     private lateinit var mAccount: AccountDO
