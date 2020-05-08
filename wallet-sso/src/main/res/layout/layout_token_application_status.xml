@@ -28,7 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivIcon"
-        tools:text="@string/apply_for_mintable_step_2"
+        tools:text="@string/token_application_status_desc_unapproved"
         tools:textColor="@color/color_F55753" />
 
     <LinearLayout

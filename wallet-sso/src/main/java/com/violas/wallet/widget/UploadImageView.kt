@@ -7,7 +7,10 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.violas.wallet.R
+import com.violas.wallet.image.GlideApp
+import kotlinx.android.synthetic.main.layout_approval_issue_token_info.*
 import kotlinx.android.synthetic.main.view_upload_image.view.*
 
 class UploadImageView : LinearLayout {
@@ -61,18 +64,32 @@ class UploadImageView : LinearLayout {
         closeCallBack = call
     }
 
+    fun setContentImage(imageUrl: String) {
+        view?.ivClose?.visibility = View.VISIBLE
+        view?.ivAdd?.visibility = View.GONE
+        view?.tvDesc?.visibility = View.GONE
+        view?.ivContent?.background = null
+        view?.ivContent?.let {
+            GlideApp.with(this)
+                .load(imageUrl)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(it)
+        }
+    }
+
     fun setContentImage(drawable: Drawable?) {
         drawable?.let {
-            view?.ivContent?.background = drawable
+            view?.ivContent?.setImageDrawable(drawable)
             view?.ivClose?.visibility = View.VISIBLE
             view?.ivAdd?.visibility = View.GONE
+            view?.tvDesc?.visibility = View.GONE
         }
     }
 
     fun closeContentImage() {
-        view?.ivContent?.setBackgroundColor(Color.parseColor("#f8f9fa"))
         view?.ivClose?.visibility = View.GONE
         view?.ivAdd?.visibility = View.VISIBLE
+        view?.tvDesc?.visibility = View.VISIBLE
         view?.progress?.visibility = View.GONE
         closeCallBack?.invoke()
     }
@@ -80,6 +97,7 @@ class UploadImageView : LinearLayout {
     fun startLoadingImage() {
         view?.progress?.visibility = View.VISIBLE
         view?.ivAdd?.visibility = View.GONE
+        view?.tvDesc?.visibility = View.GONE
     }
 
     fun endLoadingImage() {

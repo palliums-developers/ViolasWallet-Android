@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/dp_20">
+
+        <TextView
+            android:id="@+id/tvGovernorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="54dp"
+            android:gravity="start|center"
+            android:text="@string/label_governor_issuing"
+            android:textColor="@color/color_3C3848_80"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvGovernorContent"
+            android:layout_width="0dp"
+            android:layout_height="54dp"
+            android:layout_marginEnd="6dp"
+            android:background="@null"
+            android:gravity="end|center"
+            android:text="@string/hint_select_governor"
+            android:textColor="@color/color_3C3848"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvGovernorTitle"
+            app:layout_constraintEnd_toStartOf="@+id/ivGovernorCoinArrow"
+            app:layout_constraintStart_toEndOf="@+id/tvGovernorTitle"
+            app:layout_constraintTop_toTopOf="@+id/tvGovernorTitle" />
+
+        <ImageView
+            android:id="@+id/ivGovernorCoinArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_right_arrow_gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="#E5E5E5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvGovernorTitle" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/dp_20">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="54dp"
+            android:gravity="start|center"
+            android:text="@string/label_types_issuing"
+            android:textColor="@color/color_3C3848_80"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvContent"
+            android:layout_width="0dp"
+            android:layout_height="54dp"
+            android:layout_marginEnd="6dp"
+            android:background="@null"
+            android:gravity="end|center"
+            android:text="@string/hint_select_types_issuing"
+            android:textColor="@color/color_3C3848"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
+            app:layout_constraintEnd_toStartOf="@+id/ivCoinArrow"
+            app:layout_constraintStart_toEndOf="@+id/tvTitle"
+            app:layout_constraintTop_toTopOf="@+id/tvTitle" />
+
+        <ImageView
+            android:id="@+id/ivCoinArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_right_arrow_gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="#E5E5E5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.violas.wallet.widget.ApplySubmitEditItemView
+        android:id="@+id/itemCoinNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:maxLength="12"
+        android:paddingHorizontal="@dimen/dp_20"
+        app:item_hint="@string/hint_fill_number_types_issuing"
+        app:item_title="@string/label_number_types_issuing" />
+
+    <com.violas.wallet.widget.ApplySubmitItemView
+        android:id="@+id/tvStableCurrencyValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:paddingHorizontal="@dimen/dp_20"
+        app:item_hint="@string/hint_fill_stable_currency_value"
+        app:item_title="@string/label_stable_currency_value" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/dp_20">
+
+        <TextView
+            android:id="@+id/tvCoinNameTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="54dp"
+            android:gravity="start|center"
+            android:text="@string/label_stable_currency_name"
+            android:textColor="@color/color_3C3848_80"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/tvCoinNameContent"
+            android:layout_width="0dp"
+            android:layout_height="54dp"
+            android:background="@null"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            android:gravity="end|center"
+            android:hint="@string/hint_three_capital_letters"
+            android:inputType="textAutoComplete"
+            android:maxLength="3"
+            android:textColor="#3C3848"
+            android:textColorHint="#C4C3C8"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvCoinNameTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvCoinNameTitle"
+            app:layout_constraintTop_toTopOf="@+id/tvCoinNameTitle" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="#E5E5E5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvCoinNameTitle" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.violas.wallet.widget.ApplySubmitItemView
+        android:id="@+id/itemWalletAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/dp_20"
+        app:item_title="@string/label_wallet_address"
+        tools:item_content="dfjajkdjkfjklajfuwhidoefjc" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_29"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/dp_14">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/dp_6"
+            android:text="@string/hine_upload_file1"
+            android:textColor="@color/color_3C3848_80"
+            android:textSize="12sp" />
+
+        <com.violas.wallet.widget.UploadImageView
+            android:id="@+id/upLoadViewReserves"
+            android:layout_width="@dimen/dp_167"
+            android:layout_height="@dimen/dp_167"
+            android:layout_marginTop="@dimen/dp_11" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_30"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/dp_14">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/dp_6"
+            android:text="@string/hint_upload_file2"
+            android:textColor="@color/color_3C3848_80"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_5"
+            android:layout_marginTop="@dimen/dp_8"
+            android:background="#fff8f9fa"
+            android:paddingStart="20dp"
+            android:paddingTop="9dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="9dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/hint_upload_file_hint"
+                android:textColor="#FF5555"
+                android:textSize="@dimen/sp_11" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_25">
+
+            <com.violas.wallet.widget.UploadImageView
+                android:id="@+id/upLoadViewAccountPositive"
+                android:layout_width="@dimen/dp_167"
+                android:layout_height="@dimen/dp_167" />
+
+            <com.violas.wallet.widget.UploadImageView
+                android:id="@+id/upLoadViewAccountReverse"
+                android:layout_width="@dimen/dp_167"
+                android:layout_height="@dimen/dp_167"
+                android:layout_marginStart="@dimen/dp_13" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

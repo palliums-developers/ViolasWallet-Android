@@ -20,11 +20,11 @@ import kotlinx.coroutines.launch
  * Created by elephant on 2020/5/7 18:16.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc:
+ * desc: 发行商申请发币流程 base fragment
  */
 abstract class BaseSSOIssueTokenFragment : BaseFragment() {
 
-    protected lateinit var mSSOApplicationDetails: SSOApplicationDetailsDTO
+    protected var mSSOApplicationDetails: SSOApplicationDetailsDTO? = null
 
     protected val mViewModel by lazy {
         ViewModelProvider(
@@ -46,10 +46,10 @@ abstract class BaseSSOIssueTokenFragment : BaseFragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_ONE, mSSOApplicationDetails)
+        mSSOApplicationDetails?.let { outState.putParcelable(KEY_ONE, it) }
     }
 
-    private fun initData(savedInstanceState: Bundle?): Boolean {
+    protected open fun initData(savedInstanceState: Bundle?): Boolean {
         var detailsDTO: SSOApplicationDetailsDTO? = null
         if (savedInstanceState != null) {
             detailsDTO = savedInstanceState.getParcelable(KEY_ONE)
@@ -93,7 +93,11 @@ abstract class BaseSSOIssueTokenFragment : BaseFragment() {
 
     protected fun startNewApplicationActivity() {
         context?.let {
-            SSOApplicationActivity.start(it, mSSOApplicationDetails)
+            if (mSSOApplicationDetails == null) {
+                SSOApplicationActivity.start(it)
+            } else {
+                SSOApplicationActivity.start(it, mSSOApplicationDetails!!)
+            }
             launch(Dispatchers.IO) {
                 delay(500)
                 close()

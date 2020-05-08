@@ -26,7 +26,7 @@ class SSOApplicationParentViewModelFactory(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass
-            .getConstructor(SSOApplicationParentViewModel::class.java)
+            .getConstructor(ApplyForStatusDTO::class.java)
             .newInstance(mSSOApplicationMsg)
     }
 }

@@ -22,7 +22,7 @@ class SSOIssueTokenAuditingFragment : BaseSSOIssueTokenFragment() {
 
     override fun initView() {
         super.initView()
-        setApplicationInfo(mSSOApplicationDetails)
+        mSSOApplicationDetails?.let { setApplicationInfo(it) }
     }
 
     private fun setApplicationInfo(details: SSOApplicationDetailsDTO) {

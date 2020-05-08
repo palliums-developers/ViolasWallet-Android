@@ -9,7 +9,6 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.SSOManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
-import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
@@ -17,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.palliums.violascore.wallet.Account
+import java.math.BigDecimal
 
 /**
  * Created by elephant on 2020/3/4 15:25.
@@ -25,7 +25,7 @@ import org.palliums.violascore.wallet.Account
  * desc:
  */
 class SSOApplicationChildViewModelFactory(
-    private val mSSOApplicationDetails: SSOApplicationDetailsDTO
+    private val mSSOApplicationDetails: SSOApplicationDetailsDTO?
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass
@@ -35,7 +35,7 @@ class SSOApplicationChildViewModelFactory(
 }
 
 class SSOApplicationChildViewModel(
-    private val mSSOApplicationDetails: SSOApplicationDetailsDTO
+    private val mSSOApplicationDetails: SSOApplicationDetailsDTO?
 ) : BaseViewModel() {
 
     companion object {
@@ -44,7 +44,7 @@ class SSOApplicationChildViewModel(
     }
 
     val mAccountLD = MutableLiveData<AccountDO>()
-    private val mSSOManager by lazy { SSOManager() }
+    val mSSOManager by lazy { SSOManager() }
     private val mTokenManager by lazy { TokenManager() }
 
     init {
@@ -57,7 +57,20 @@ class SSOApplicationChildViewModel(
     override suspend fun realExecute(action: Int, vararg params: Any) {
         when (action) {
             ACTION_APPLY_FOR_ISSUE_TOKEN -> {
-                //TODO 申请发币
+                // 申请发币
+                mSSOManager.applyForIssuing(
+                    walletAddress = mAccountLD.value!!.address,
+                    tokenType = params[0] as String,
+                    amount = params[1] as BigDecimal,
+                    tokenValue = params[2] as Float,
+                    tokenName = params[3] as String,
+                    reservePhotoUrl = params[4] as String,
+                    accountInfoPhotoPositiveUrl = params[5] as String,
+                    accountInfoPhotoBackUrl = params[6] as String,
+                    governorAddress = params[7] as String,
+                    phoneVerifyCode = params[8] as String,
+                    emailVerifyCode = params[9] as String
+                )
             }
 
             ACTION_APPLY_FOR_MINT_TOKEN -> {
@@ -73,7 +86,7 @@ class SSOApplicationChildViewModel(
                     // 本地记录新发行的token
                     val assertToken = AssertToken(
                         account_id = mAccountLD.value!!.id,
-                        fullName = mSSOApplicationDetails.tokenName,
+                        fullName = mSSOApplicationDetails!!.tokenName,
                         name = mSSOApplicationDetails.tokenName,
                         tokenIdx = mSSOApplicationDetails.tokenIdx!!,
                         enable = true

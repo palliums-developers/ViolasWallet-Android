@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
  * Created by elephant on 2020/5/7 18:26.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc:
+ * desc: 发行商申请铸币流程 base fragment
  */
 abstract class BaseSSOMintTokenFragment : BaseFragment() {
 
