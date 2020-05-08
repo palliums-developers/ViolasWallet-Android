@@ -58,39 +58,38 @@
 
             <include layout="@layout/layout_approval_issue_token_info" />
 
+            <LinearLayout
+                android:id="@+id/llApprovalLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/dp_20"
+                android:paddingBottom="@dimen/dp_20"
+                tools:background="@color/white">
+
+                <Button
+                    android:id="@+id/btnApproveAndApplyForMintPower"
+                    style="@style/BaseButtonPrimary"
+                    android:text="@string/action_approve_and_apply_for_mint_power" />
+
+                <TextView
+                    android:id="@+id/tvUnapprove"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_4"
+                    android:gravity="center"
+                    android:padding="@dimen/dp_10"
+                    android:text="@string/action_approval_not_pass"
+                    android:textAllCaps="true"
+                    android:textColor="@color/selector_text_gray"
+                    android:textSize="@dimen/sp_16" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-    <LinearLayout
-        android:id="@+id/llApprovalLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/white"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/dp_20"
-        android:paddingTop="@dimen/dp_10"
-        android:paddingBottom="@dimen/dp_5">
-
-        <Button
-            android:id="@+id/btnApproveAndApplyForMintPower"
-            style="@style/BaseButtonPrimary"
-            android:text="@string/action_approve_and_apply_for_mint_power" />
-
-        <TextView
-            android:id="@+id/tvUnapprove"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_4"
-            android:gravity="center"
-            android:padding="@dimen/dp_10"
-            android:text="@string/action_approval_not_pass"
-            android:textAllCaps="true"
-            android:textColor="@color/selector_text_gray"
-            android:textSize="@dimen/sp_16" />
-
-    </LinearLayout>
 
 </RelativeLayout>

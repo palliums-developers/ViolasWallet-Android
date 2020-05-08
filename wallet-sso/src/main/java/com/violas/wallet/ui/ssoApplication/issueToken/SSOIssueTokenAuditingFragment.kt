@@ -1,9 +1,7 @@
 package com.violas.wallet.ui.ssoApplication.issueToken
 
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.palliums.utils.formatDate
 import com.violas.wallet.R
-import com.violas.wallet.image.GlideApp
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.layout_approval_issue_token_info.*
@@ -75,26 +73,8 @@ class SSOIssueTokenAuditingFragment : BaseSSOIssueTokenFragment() {
         )
         asivEmail.setContent(emailAddress)
 
-        GlideApp.with(this)
-            .load(details.reservePhotoUrl)
-            .centerCrop()
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .placeholder(R.drawable.bg_id_card_front)
-            .error(R.drawable.bg_id_card_front)
-            .into(ivReservePhoto)
-        GlideApp.with(this)
-            .load(details.bankChequePhotoPositiveUrl)
-            .centerCrop()
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .placeholder(R.drawable.bg_id_card_front)
-            .error(R.drawable.bg_id_card_front)
-            .into(ivBankChequePhotoPositive)
-        GlideApp.with(this)
-            .load(details.bankChequePhotoBackUrl)
-            .centerCrop()
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .placeholder(R.drawable.bg_id_card_front)
-            .error(R.drawable.bg_id_card_front)
-            .into(ivBankChequePhotoBack)
+        uivReservePhoto.setContentImage(details.reservePhotoUrl, true)
+        uivBankChequePhotoPositive.setContentImage(details.bankChequePhotoPositiveUrl, true)
+        uivBankChequePhotoBack.setContentImage(details.bankChequePhotoBackUrl, true)
     }
 }

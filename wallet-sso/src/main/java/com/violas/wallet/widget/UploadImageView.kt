@@ -64,8 +64,8 @@ class UploadImageView : LinearLayout {
         closeCallBack = call
     }
 
-    fun setContentImage(imageUrl: String) {
-        view?.ivClose?.visibility = View.VISIBLE
+    fun setContentImage(imageUrl: String, onlyShow: Boolean = false) {
+        view?.ivClose?.visibility = if (onlyShow) View.GONE else View.VISIBLE
         view?.ivAdd?.visibility = View.GONE
         view?.tvDesc?.visibility = View.GONE
         view?.ivContent?.background = null
