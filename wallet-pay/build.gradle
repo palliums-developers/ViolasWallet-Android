@@ -33,7 +33,7 @@ android {
     signingConfigs {
         release {
             Properties properties = new Properties()
-            File configFile = project.rootProject.file('paySign.properties')
+            File configFile = project.rootProject.file('payDevelopSign.properties')
             if (!configFile.exists()) {
                 configFile = project.rootProject.file('testSign.properties')
             }
