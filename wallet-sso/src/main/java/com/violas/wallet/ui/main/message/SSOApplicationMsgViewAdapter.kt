@@ -9,7 +9,6 @@ import com.palliums.paging.PagingViewAdapter
 import com.palliums.utils.formatDate
 import com.palliums.utils.getColor
 import com.palliums.utils.getString
-import com.palliums.utils.isExpired
 import com.violas.wallet.R
 import com.violas.wallet.biz.SSOApplicationState
 import kotlinx.android.synthetic.main.item_sso_application_msg.view.*
@@ -71,15 +70,8 @@ private class ViewHolder(
 
             when (it.applicationStatus) {
                 SSOApplicationState.APPLYING_ISSUE_TOKEN -> {
-                    if (isExpired(it.expirationDate)) {
-                        itemView.vUnread.visibility = View.GONE
-                        itemView.tvStatus.visibility = View.VISIBLE
-                        itemView.tvStatus.text = getString(R.string.state_closed)
-                        itemView.tvStatus.setTextColor(getColor(R.color.def_text_title))
-                    } else {
-                        itemView.tvStatus.visibility = View.GONE
-                        itemView.vUnread.visibility = if (it.msgRead) View.GONE else View.VISIBLE
-                    }
+                    itemView.tvStatus.visibility = View.GONE
+                    itemView.vUnread.visibility = if (it.msgRead) View.GONE else View.VISIBLE
                 }
 
                 SSOApplicationState.APPLYING_MINTABLE -> {
@@ -109,6 +101,13 @@ private class ViewHolder(
                     itemView.tvStatus.setTextColor(getColor(R.color.def_text_title))
                 }
 
+                SSOApplicationState.GOVERNOR_UNAPPROVED -> {
+                    itemView.vUnread.visibility = View.GONE
+                    itemView.tvStatus.visibility = View.VISIBLE
+                    itemView.tvStatus.text = getString(R.string.state_governor_unapproved)
+                    itemView.tvStatus.setTextColor(getColor(R.color.def_text_title))
+                }
+
                 SSOApplicationState.CHAIRMAN_UNAPPROVED -> {
                     itemView.vUnread.visibility = View.GONE
                     itemView.tvStatus.visibility = View.VISIBLE
@@ -119,7 +118,7 @@ private class ViewHolder(
                 else -> {
                     itemView.vUnread.visibility = View.GONE
                     itemView.tvStatus.visibility = View.VISIBLE
-                    itemView.tvStatus.text = getString(R.string.state_governor_unapproved)
+                    itemView.tvStatus.text = getString(R.string.state_closed)
                     itemView.tvStatus.setTextColor(getColor(R.color.def_text_title))
                 }
             }

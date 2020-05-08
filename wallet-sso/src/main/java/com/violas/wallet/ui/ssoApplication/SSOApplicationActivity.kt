@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.net.RequestException
-import com.palliums.utils.isExpired
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
@@ -145,11 +144,7 @@ class SSOApplicationActivity : BaseAppActivity() {
 
         val fragment = when (details.applicationStatus) {
             SSOApplicationState.APPLYING_ISSUE_TOKEN -> {
-                if (isExpired(details.expirationDate)) {
-                    SSOReapplyForIssueTokenFragment()
-                } else {
                     SSOIssueTokenAuditingFragment()
-                }
             }
 
             SSOApplicationState.APPLYING_MINTABLE,

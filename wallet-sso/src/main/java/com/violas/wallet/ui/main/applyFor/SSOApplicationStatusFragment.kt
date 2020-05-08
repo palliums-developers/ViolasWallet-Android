@@ -5,7 +5,6 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.palliums.base.BaseFragment
 import com.palliums.utils.getColor
-import com.palliums.utils.isExpired
 import com.violas.wallet.R
 import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.common.KEY_ONE
@@ -68,16 +67,7 @@ class SSOApplicationStatusFragment : BaseFragment() {
     private fun initView() {
         tvTitle.text = getString(R.string.hint_mint_condition)
         when (mSSOApplicationMsg.approvalStatus) {
-            SSOApplicationState.APPLYING_ISSUE_TOKEN -> {
-                if (isExpired(mSSOApplicationMsg.expirationDate)) {
-                    tvContent.text = getString(R.string.sso_application_msg_status_5)
-                    tvContent.setTextColor(getColor(R.color.color_F55753))
-                } else {
-                    tvContent.text = getString(R.string.sso_application_msg_status_1)
-                    tvContent.setTextColor(getColor(R.color.color_FAA030))
-                }
-            }
-
+            SSOApplicationState.APPLYING_ISSUE_TOKEN,
             SSOApplicationState.APPLYING_MINTABLE,
             SSOApplicationState.GIVEN_MINTABLE -> {
                 tvContent.text = getString(R.string.sso_application_msg_status_1)
@@ -97,6 +87,11 @@ class SSOApplicationStatusFragment : BaseFragment() {
             SSOApplicationState.MINTED_TOKEN -> {
                 tvContent.text = getString(R.string.sso_application_msg_status_3)
                 tvContent.setTextColor(getColor(R.color.color_00D1AF))
+            }
+
+            SSOApplicationState.APPROVAL_TIMEOUT -> {
+                tvContent.text = getString(R.string.sso_application_msg_status_5)
+                tvContent.setTextColor(getColor(R.color.color_F55753))
             }
 
             else -> {

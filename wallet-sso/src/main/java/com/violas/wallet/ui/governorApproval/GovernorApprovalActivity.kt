@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.net.RequestException
-import com.palliums.utils.isExpired
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
@@ -15,7 +14,6 @@ import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.common.EXTRA_KEY_SSO_MSG
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
-import com.violas.wallet.ui.governorApproval.ApprovalActivityViewModel.Companion.ACTION_LOAD_APPLICATION_DETAILS
 import com.violas.wallet.ui.governorApproval.approvalIssueToken.ApplyForMintableProgressFragment
 import com.violas.wallet.ui.governorApproval.approvalIssueToken.AuditExceptionFragment
 import com.violas.wallet.ui.governorApproval.approvalIssueToken.AuditIssueTokenFragment
@@ -132,7 +130,6 @@ class GovernorApprovalActivity : BaseAppActivity() {
 
     private fun loadApplicationDetails() {
         mViewModel.execute(
-            action = ACTION_LOAD_APPLICATION_DETAILS,
             failureCallback = {
                 if (srlRefreshLayout.isRefreshing) {
                     srlRefreshLayout.isRefreshing = false
@@ -145,25 +142,20 @@ class GovernorApprovalActivity : BaseAppActivity() {
                     else
                         IStatusLayout.Status.STATUS_FAILURE
                 )
-            },
-            successCallback = {
-                if (srlRefreshLayout.isRefreshing) {
-                    srlRefreshLayout.isRefreshing = false
-                }
-                srlRefreshLayout.isEnabled = false
+            }) {
+            if (srlRefreshLayout.isRefreshing) {
+                srlRefreshLayout.isRefreshing = false
+            }
+            srlRefreshLayout.isEnabled = false
 
-                dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
-            })
+            dslStatusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
+        }
     }
 
     private fun loadFragment(details: SSOApplicationDetailsDTO) {
         val fragment = when (details.applicationStatus) {
             SSOApplicationState.APPLYING_ISSUE_TOKEN -> {
-                if (isExpired(details.expirationDate)) {
-                    AuditExceptionFragment()
-                } else {
-                    AuditIssueTokenFragment()
-                }
+                AuditIssueTokenFragment()
             }
 
             SSOApplicationState.APPLYING_MINTABLE,

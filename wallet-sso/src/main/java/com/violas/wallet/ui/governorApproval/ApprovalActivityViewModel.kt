@@ -33,11 +33,6 @@ class ApprovalActivityViewModel(
     private val mSSOApplicationMsgVO: SSOApplicationMsgVO
 ) : BaseViewModel() {
 
-    companion object {
-        const val ACTION_LOAD_APPLICATION_DETAILS = 0x01        // 加载SSO申请详情
-        const val ACTION_APPROVAL_APPLICATION = 0x10
-    }
-
     val mAccountLD = MutableLiveData<AccountDO>()
     val mSSOApplicationDetailsLD = MutableLiveData<SSOApplicationDetailsDTO?>()
 
@@ -48,37 +43,18 @@ class ApprovalActivityViewModel(
             val currentAccount = AccountManager().currentAccount()
             mAccountLD.postValue(currentAccount)
 
-            // 进入州长铸币页面自动标记本地消息为已读
+            // 进入消息详情页面自动标记本地消息为已读
             mGovernorManager.markSSOApplicationMsgAsRead(currentAccount.id, mSSOApplicationMsgVO)
         }
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        when (action) {
-            ACTION_LOAD_APPLICATION_DETAILS -> {
-                // 加载SSO申请详情
-                val ssoApplicationDetails =
-                    mGovernorManager.getSSOApplicationDetails(
-                        mAccountLD.value!!,
-                        mSSOApplicationMsgVO
-                    )
-                mSSOApplicationDetailsLD.postValue(ssoApplicationDetails)
-            }
-
-            ACTION_APPROVAL_APPLICATION -> {
-                // TODO 删除
-                // 审批操作成功后更新本地消息状态
-                //mSSOApplicationMsgVO.applicationStatus = 1
-                mSSOApplicationMsgVO.applicationStatus = 2
-                mGovernorManager.updateSSOApplicationMsgStatus(
-                    mAccountLD.value!!.id,
-                    mSSOApplicationMsgVO
-                )
-            }
-
-            else -> {
-                throw IllegalArgumentException("Unrecognized action")
-            }
-        }
+        // 加载SSO申请详情
+        val ssoApplicationDetails =
+            mGovernorManager.getSSOApplicationDetails(
+                mAccountLD.value!!,
+                mSSOApplicationMsgVO
+            )
+        mSSOApplicationDetailsLD.postValue(ssoApplicationDetails)
     }
 }

@@ -164,28 +164,25 @@ class GovernorManager {
             val fakeList = arrayListOf<SSOApplicationMsgDTO>()
             for (index in SSOApplicationState.CHAIRMAN_UNAPPROVED..SSOApplicationState.MINTED_TOKEN) {
                 delay(200)
-                val date = System.currentTimeMillis()
+                var applicationStatus = System.currentTimeMillis()
+                var expirationDate = applicationStatus
+                if (index == SSOApplicationState.APPROVAL_TIMEOUT) {
+                    expirationDate -= 2 * 60 * 1000
+                    applicationStatus = expirationDate - 5 * 24 * 60 * 60 * 1000
+                } else {
+                    expirationDate += 5 * 24 * 60 * 60 * 1000
+                }
+
                 fakeList.add(
                     SSOApplicationMsgDTO(
-                        applicationId = "apply_id_$date",
+                        applicationId = "apply_id_$applicationStatus",
                         applicationStatus = index,
-                        applicationDate = date,
-                        expirationDate = date + 5 * 24 * 60 * 60 * 1000,
-                        applicantIdName = "Name $date"
+                        applicationDate = applicationStatus,
+                        expirationDate = expirationDate,
+                        applicantIdName = "Name $applicationStatus"
                     )
                 )
             }
-
-            val date = System.currentTimeMillis() - 2 * 60 * 1000
-            fakeList.add(
-                SSOApplicationMsgDTO(
-                    applicationId = "apply_id_$date",
-                    applicationStatus = SSOApplicationState.APPLYING_ISSUE_TOKEN,
-                    applicationDate = date - 5 * 24 * 60 * 60 * 1000,
-                    expirationDate = date,
-                    applicantIdName = "Name $date"
-                )
-            )
 
             response.data = fakeList
         }
