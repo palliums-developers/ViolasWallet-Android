@@ -9,7 +9,6 @@ import androidx.lifecycle.Observer
 import com.palliums.base.BaseFragment
 import com.palliums.net.LoadState
 import com.palliums.utils.getColor
-import com.palliums.utils.isNetworkConnected
 import com.palliums.widget.MenuItemView
 import com.violas.wallet.R
 import com.violas.wallet.biz.WalletType
@@ -21,8 +20,6 @@ import com.violas.wallet.repository.local.user.IDAuthenticationStatus
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.authentication.IDAuthenticationActivity
 import com.violas.wallet.ui.authentication.IDInformationActivity
-import com.violas.wallet.ui.main.UserViewModel
-import com.violas.wallet.ui.main.provideUserViewModel
 import com.violas.wallet.ui.setting.SettingActivity
 import com.violas.wallet.ui.verification.EmailVerificationActivity
 import com.violas.wallet.ui.verification.PhoneVerificationActivity
@@ -61,8 +58,8 @@ class MeFragment : BaseFragment() {
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onLazyInitView(savedInstanceState: Bundle?) {
+        super.onLazyInitView(savedInstanceState)
 
         mivIDAuthentication.setOnClickListener(this)
         mivPhoneVerification.setOnClickListener(this)
@@ -80,21 +77,7 @@ class MeFragment : BaseFragment() {
                 showSSOHeaderView()
             }
 
-            /*
-             * 因为申请发行首页与我的首页共用UserViewModel，当先进入申请发行首页时，用户信息会开始同步，
-             * 当再切换进入我的首页时，若用户信息已同步结束，此时先添加对UserViewModel的LiveData观察
-             * 时，会立即返回相应结果，若用户信息同步失败会立即更新我的页面。此时应该判断UserViewModel
-             * 是否已初始化，若已初始化则判断是否重新同步用户信息
-             */
-            if (!mViewModel.init()) {
-                val loadState = mViewModel.loadState.value?.peekData()
-                if (loadState != null
-                    && loadState.status == LoadState.Status.FAILURE
-                    && isNetworkConnected()
-                ) {
-                    mViewModel.execute(checkNetworkBeforeExecute = false)
-                }
-            }
+            mViewModel.init()
         })
 
         mViewModel.mGovernorInfoLD.observe(viewLifecycleOwner, Observer {
@@ -289,12 +272,12 @@ class MeFragment : BaseFragment() {
             action = UserViewModel.ACTION_PUBLISH_CONTRACT,
             failureCallback = {
                 dismissProgress()
-            },
-            successCallback = {
-                EventBus.getDefault().post(RefreshGovernorApplicationProgressEvent())
-                dismissProgress()
-                showToast(R.string.tips_apply_for_licence_success)
-            })
+            }
+        ) {
+            EventBus.getDefault().post(RefreshGovernorApplicationProgressEvent())
+            dismissProgress()
+            showToast(R.string.tips_apply_for_licence_success)
+        }
     }
 
     override fun onViewClick(view: View) {

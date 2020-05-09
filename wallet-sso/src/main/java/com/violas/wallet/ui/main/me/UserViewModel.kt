@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.main
+package com.violas.wallet.ui.main.me
 
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
@@ -60,11 +60,6 @@ class UserViewModel : BaseViewModel() {
     private val idInfoLiveData = MutableLiveData<Pair<IDInfo, LoadState>>()
     private val emailInfoLiveData = MutableLiveData<Pair<EmailInfo, LoadState>>()
     private val phoneInfoLiveData = MutableLiveData<Pair<PhoneInfo, LoadState>>()
-
-    /**
-     * 表示身份已认证，邮箱已绑定，手机已绑定
-     */
-    private val allReadyLiveData = EnhancedMutableLiveData<Boolean>()
 
     private val initFlag = AtomicBoolean(false)
 
@@ -129,12 +124,6 @@ class UserViewModel : BaseViewModel() {
         }
     }
 
-    fun getAllReadyLiveData(): LiveData<DataWrapper<Boolean>> {
-        synchronized(lock) {
-            return allReadyLiveData
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onSwitchAccountEvent(event: SwitchAccountEvent) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -159,7 +148,7 @@ class UserViewModel : BaseViewModel() {
             if (emailInfo != null && emailInfo.isBoundEmail()
                 && phoneInfo != null && phoneInfo.isBoundPhone()
             ) {
-                allReadyLiveData.postValueSupport(true)
+                EventBus.getDefault().post(AuthenticationCompleteEvent())
             }
         }
     }
@@ -174,7 +163,7 @@ class UserViewModel : BaseViewModel() {
             if (idInfo != null && idInfo.isAuthenticatedID()
                 && phoneInfo != null && phoneInfo.isBoundPhone()
             ) {
-                allReadyLiveData.postValueSupport(true)
+                EventBus.getDefault().post(AuthenticationCompleteEvent())
             }
         }
     }
@@ -189,7 +178,7 @@ class UserViewModel : BaseViewModel() {
             if (idInfo != null && idInfo.isAuthenticatedID()
                 && emailInfo != null && emailInfo.isBoundEmail()
             ) {
-                allReadyLiveData.postValueSupport(true)
+                EventBus.getDefault().post(AuthenticationCompleteEvent())
             }
         }
     }
@@ -244,7 +233,6 @@ class UserViewModel : BaseViewModel() {
                 phoneInfoLiveData.postValue(Pair(phoneInfo, infoLoadState))
 
                 if (allReady) {
-                    allReadyLiveData.postValueSupport(true)
                     loadState.postValueSupport(LoadState.SUCCESS)
                     return@launch
                 }
@@ -356,13 +344,6 @@ class UserViewModel : BaseViewModel() {
             }
             localUserService.setPhoneInfo(phoneInfo)
             phoneInfoLiveData.postValue(Pair(phoneInfo, LoadState.SUCCESS))
-
-            // 分发申请发行准备进度
-            allReadyLiveData.postValueSupport(
-                idInfo.isAuthenticatedID()
-                        && emailInfo.isBoundEmail()
-                        && phoneInfo.isBoundPhone()
-            )
         }
     }
 

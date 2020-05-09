@@ -19,12 +19,12 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 
 /**
- * 发行商发行申请状态视图
+ * 发行商申请发行SSO状态视图
  */
 class SSOApplicationStatusFragment : BaseFragment() {
 
     companion object {
-        fun getInstance(applicationMsg: ApplyForStatusDTO): Fragment {
+        fun getInstance(applicationMsg: ApplyForStatusDTO): BaseFragment {
             val fragment = SSOApplicationStatusFragment()
             fragment.arguments = Bundle().apply {
                 putParcelable(KEY_ONE, applicationMsg)

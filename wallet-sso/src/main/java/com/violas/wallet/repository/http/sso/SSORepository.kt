@@ -108,21 +108,10 @@ class SSORepository(private val ssoApi: SSOApi) {
      * 查询审批状态
      */
     suspend fun selectApplyForStatus(
-        address: String,
-        handleException: Boolean = true
+        address: String
     ): Response<ApplyForStatusDTO>? {
-        return try {
-            checkResponse(2005) {
-                ssoApi.selectApplyForStatus(address)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-
-            if (handleException) {
-                null
-            } else {
-                throw e
-            }
+        return checkResponse(2005) {
+            ssoApi.selectApplyForStatus(address)
         }
     }
 

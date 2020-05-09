@@ -18,10 +18,9 @@ class SSOManager {
         mSSOService.getSSOApplicationDetails(address)
 
     suspend fun getApplyStatus(
-        address: String,
-        handleException: Boolean = true
+        address: String
     ): Response<ApplyForStatusDTO>? {
-        return mSSOService.selectApplyForStatus(address, handleException)
+        return mSSOService.selectApplyForStatus(address)
     }
 
     suspend fun uploadImage(file: File) =

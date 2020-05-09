@@ -8,4 +8,4 @@ import com.violas.wallet.repository.http.sso.ApplyForStatusDTO
  * <p>
  * desc:
  */
-class SSOApplicationChangeEvent(status: ApplyForStatusDTO?)
+class SSOApplicationChangeEvent(val status: ApplyForStatusDTO?)
