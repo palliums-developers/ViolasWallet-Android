@@ -20,6 +20,7 @@ import com.sl.utakephoto.manager.UTakePhoto
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
 import com.violas.wallet.common.EXTRA_KEY_COUNTRY_AREA
+import com.violas.wallet.image.viewImage
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.SelectCountryAreaActivity
 import com.violas.wallet.ui.selectCountryArea.isChinaMainland
@@ -73,20 +74,28 @@ class IDAuthenticationActivity : BaseViewModelActivity() {
             override fun onClickDelete() {
                 mViewModel.idPhotoFront.value = null
             }
-
-            override fun onClickPhotograph() {
-                showTakePhotoPopup(true)
-            }
         })
         iclIDCardBack.setOnViewClickListener(object : IDCardLayout.OnViewClickListener {
             override fun onClickDelete() {
                 mViewModel.idPhotoBack.value = null
             }
-
-            override fun onClickPhotograph() {
-                showTakePhotoPopup(false)
-            }
         })
+
+        iclIDCardFront.setOnClickListener {
+            if (mViewModel.idPhotoFront.value == null) {
+                showTakePhotoPopup(true)
+            } else {
+                iclIDCardFront.getIDCardImageView().viewImage(mViewModel.idPhotoFront.value!!)
+            }
+        }
+        iclIDCardBack.setOnClickListener {
+            if (mViewModel.idPhotoBack.value == null) {
+                showTakePhotoPopup(false)
+            } else {
+                iclIDCardBack.getIDCardImageView().viewImage(mViewModel.idPhotoBack.value!!)
+            }
+        }
+
 
         mViewModel.countryAreaVO.observe(this, Observer {
             tvCountryArea.text = it.countryName

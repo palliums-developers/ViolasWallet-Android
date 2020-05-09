@@ -70,12 +70,15 @@ class SSOReapplyForIssueTokenFragment : BaseSSOApplyForIssueTokenFragment() {
         tvCoinNameContent.setText(details.tokenName)
 
         reservesImage = getImageRelativeUrl(details.reservePhotoUrl)
+        reservesImageFullPath = details.reservePhotoUrl
         upLoadViewReserves.setContentImage(details.reservePhotoUrl)
 
         accountPositiveImage = getImageRelativeUrl(details.bankChequePhotoPositiveUrl)
+        accountPositiveImageFullPath = details.bankChequePhotoPositiveUrl
         upLoadViewAccountPositive.setContentImage(details.bankChequePhotoPositiveUrl)
 
         accountReverseImage = getImageRelativeUrl(details.bankChequePhotoBackUrl)
+        accountReverseImageFullPath = details.bankChequePhotoBackUrl
         upLoadViewAccountReverse.setContentImage(details.bankChequePhotoBackUrl)
     }
 

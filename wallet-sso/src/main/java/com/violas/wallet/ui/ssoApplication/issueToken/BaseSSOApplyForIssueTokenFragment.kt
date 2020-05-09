@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Bundle
 import android.text.Editable
 import androidx.lifecycle.Observer
 import com.lxj.xpopup.XPopup
@@ -13,6 +12,7 @@ import com.sl.utakephoto.exception.TakeException
 import com.sl.utakephoto.manager.ITakePhotoResult
 import com.sl.utakephoto.manager.UTakePhoto
 import com.violas.wallet.R
+import com.violas.wallet.image.viewImage
 import com.violas.wallet.repository.http.sso.GovernorDTO
 import com.violas.wallet.ui.selectCurrency.SelectCurrencyActivity
 import com.violas.wallet.ui.selectCurrency.bean.CurrencyBean
@@ -45,6 +45,10 @@ abstract class BaseSSOApplyForIssueTokenFragment : BaseSSOIssueTokenFragment() {
     protected var accountReverseImage: String? = null
     protected var mCurrencyBean: CurrencyBean? = null
     protected var mCurrencyGovernorBean: GovernorDTO? = null
+
+    protected var reservesImageFullPath: String? = null
+    protected var accountPositiveImageFullPath: String? = null
+    protected var accountReverseImageFullPath: String? = null
 
     override fun initView() {
         super.initView()
@@ -82,22 +86,44 @@ abstract class BaseSSOApplyForIssueTokenFragment : BaseSSOIssueTokenFragment() {
         }
 
         upLoadViewReserves.setOnClickListener {
-            showTakePhotoPopup(REQUEST_PHOTO_RESERVES)
+            if (reservesImageFullPath.isNullOrEmpty()) {
+                showTakePhotoPopup(REQUEST_PHOTO_RESERVES)
+            } else {
+                upLoadViewReserves.getContentImageView()?.let {
+                    it.viewImage(reservesImageFullPath!!)
+                }
+            }
         }
         upLoadViewAccountPositive.setOnClickListener {
-            showTakePhotoPopup(REQUEST_PHOTO_ACCOUNT_POSITIVE)
+            if (accountPositiveImageFullPath.isNullOrEmpty()) {
+                showTakePhotoPopup(REQUEST_PHOTO_ACCOUNT_POSITIVE)
+            } else {
+                upLoadViewAccountPositive.getContentImageView()?.let {
+                    it.viewImage(accountPositiveImageFullPath!!)
+                }
+            }
         }
         upLoadViewAccountReverse.setOnClickListener {
-            showTakePhotoPopup(REQUEST_PHOTO_ACCOUNT_REVERSE)
+            if (accountReverseImageFullPath.isNullOrEmpty()) {
+                showTakePhotoPopup(REQUEST_PHOTO_ACCOUNT_REVERSE)
+            } else {
+                upLoadViewAccountReverse.getContentImageView()?.let {
+                    it.viewImage(accountReverseImageFullPath!!)
+                }
+            }
         }
+
         upLoadViewReserves.setCloseContentCallback {
             reservesImage = null
+            reservesImageFullPath = null
         }
         upLoadViewAccountPositive.setCloseContentCallback {
             accountPositiveImage = null
+            accountPositiveImageFullPath = null
         }
         upLoadViewAccountReverse.setCloseContentCallback {
             accountReverseImage = null
+            accountReverseImageFullPath = null
         }
 
         btnSubmit.setOnClickListener {
@@ -223,12 +249,18 @@ abstract class BaseSSOApplyForIssueTokenFragment : BaseSSOIssueTokenFragment() {
                                 when (type) {
                                     REQUEST_PHOTO_RESERVES -> {
                                         reservesImage = uploadImage.data
+                                        reservesImageFullPath =
+                                            filePathFromContentUri.absolutePath
                                     }
                                     REQUEST_PHOTO_ACCOUNT_POSITIVE -> {
                                         accountPositiveImage = uploadImage.data
+                                        accountPositiveImageFullPath =
+                                            filePathFromContentUri.absolutePath
                                     }
                                     REQUEST_PHOTO_ACCOUNT_REVERSE -> {
                                         accountReverseImage = uploadImage.data
+                                        accountReverseImageFullPath =
+                                            filePathFromContentUri.absolutePath
                                     }
 
                                 }

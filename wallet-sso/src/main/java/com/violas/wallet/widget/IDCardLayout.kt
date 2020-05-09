@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.bumptech.glide.TransitionOptions
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.palliums.utils.isFastMultiClick
 import com.violas.wallet.R
@@ -68,8 +67,8 @@ class IDCardLayout : FrameLayout, View.OnClickListener {
         idCardDefault?.let { setIDCardDefault(it) }
         photographDesc?.let { setPhotographDesc(it) }
 
-        ivPhotograph.setOnClickListener(this)
         ivDelete.setOnClickListener(this)
+        ivDeleteBg.setOnClickListener(this)
 
         changeViewVisibility(false)
     }
@@ -77,16 +76,15 @@ class IDCardLayout : FrameLayout, View.OnClickListener {
     override fun onClick(view: View) {
         if (!isFastMultiClick(view)) {
             when (view.id) {
-                R.id.ivPhotograph -> {
-                    onViewClickListener?.onClickPhotograph()
-                }
-
-                R.id.ivDelete -> {
+                R.id.ivDelete,
+                R.id.ivDeleteBg -> {
                     onViewClickListener?.onClickDelete()
                 }
             }
         }
     }
+
+    fun getIDCardImageView() = ivIdCard
 
     fun setIDCardDefault(@DrawableRes resId: Int) {
         ivIdCard.setImageResource(resId)
@@ -145,7 +143,5 @@ class IDCardLayout : FrameLayout, View.OnClickListener {
     interface OnViewClickListener {
 
         fun onClickDelete()
-
-        fun onClickPhotograph()
     }
 }

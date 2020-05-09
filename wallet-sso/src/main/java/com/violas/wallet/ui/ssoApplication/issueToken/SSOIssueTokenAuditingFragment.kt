@@ -2,6 +2,7 @@ package com.violas.wallet.ui.ssoApplication.issueToken
 
 import com.palliums.utils.formatDate
 import com.violas.wallet.R
+import com.violas.wallet.image.viewImage
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.layout_approval_issue_token_info.*
@@ -21,6 +22,32 @@ class SSOIssueTokenAuditingFragment : BaseSSOIssueTokenFragment() {
     override fun initView() {
         super.initView()
         mSSOApplicationDetails?.let { setApplicationInfo(it) }
+    }
+
+    override fun initEvent() {
+        super.initEvent()
+
+        uivReservePhoto.setOnClickListener {
+            uivReservePhoto.getContentImageView()?.let {
+                mSSOApplicationDetails?.reservePhotoUrl?.let { url ->
+                    it.viewImage(url)
+                }
+            }
+        }
+        uivBankChequePhotoPositive.setOnClickListener {
+            uivBankChequePhotoPositive.getContentImageView()?.let {
+                mSSOApplicationDetails?.bankChequePhotoPositiveUrl?.let { url ->
+                    it.viewImage(url)
+                }
+            }
+        }
+        uivBankChequePhotoBack.setOnClickListener {
+            uivBankChequePhotoBack.getContentImageView()?.let {
+                mSSOApplicationDetails?.bankChequePhotoBackUrl?.let { url ->
+                    it.viewImage(url)
+                }
+            }
+        }
     }
 
     private fun setApplicationInfo(details: SSOApplicationDetailsDTO) {

@@ -45,7 +45,7 @@
         android:id="@+id/ivDeleteBg"
         android:layout_width="@dimen/dp_0"
         android:layout_height="@dimen/dp_31"
-        android:src="@drawable/bg_authentication_delete"
+        android:src="@drawable/sel_bg_authentication_delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

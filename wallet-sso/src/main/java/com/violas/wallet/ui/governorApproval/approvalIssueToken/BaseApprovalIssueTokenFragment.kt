@@ -9,6 +9,7 @@ import com.palliums.net.LoadState
 import com.palliums.utils.formatDate
 import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.image.viewImage
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel
 import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModelFactory
@@ -27,12 +28,12 @@ import kotlinx.coroutines.launch
  */
 abstract class BaseApprovalIssueTokenFragment : BaseFragment() {
 
-    protected lateinit var mSSOApplicationDetailsDTO: SSOApplicationDetailsDTO
+    protected lateinit var mSSOApplicationDetails: SSOApplicationDetailsDTO
 
     protected val mViewModel by lazy {
         ViewModelProvider(
             this,
-            ApprovalFragmentViewModelFactory(mSSOApplicationDetailsDTO)
+            ApprovalFragmentViewModelFactory(mSSOApplicationDetails)
         ).get(ApprovalFragmentViewModel::class.java)
     }
 
@@ -49,7 +50,7 @@ abstract class BaseApprovalIssueTokenFragment : BaseFragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_ONE, mSSOApplicationDetailsDTO)
+        outState.putParcelable(KEY_ONE, mSSOApplicationDetails)
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
@@ -64,14 +65,14 @@ abstract class BaseApprovalIssueTokenFragment : BaseFragment() {
             return false
         }
 
-        mSSOApplicationDetailsDTO = detailsDTO
+        mSSOApplicationDetails = detailsDTO
         return true
     }
 
     protected open fun initView() {
         (activity as? BaseActivity)?.title =
-            getString(R.string.title_sso_msg_issuing_token, mSSOApplicationDetailsDTO.idName)
-        setApplicationInfo(mSSOApplicationDetailsDTO)
+            getString(R.string.title_sso_msg_issuing_token, mSSOApplicationDetails.idName)
+        setApplicationInfo(mSSOApplicationDetails)
     }
 
     protected open fun initEvent() {
@@ -94,6 +95,22 @@ abstract class BaseApprovalIssueTokenFragment : BaseFragment() {
                 }
             }
         })
+
+        uivReservePhoto.setOnClickListener {
+            uivReservePhoto.getContentImageView()?.let {
+                it.viewImage(mSSOApplicationDetails.reservePhotoUrl)
+            }
+        }
+        uivBankChequePhotoPositive.setOnClickListener {
+            uivBankChequePhotoPositive.getContentImageView()?.let {
+                it.viewImage(mSSOApplicationDetails.bankChequePhotoPositiveUrl)
+            }
+        }
+        uivBankChequePhotoBack.setOnClickListener {
+            uivBankChequePhotoBack.getContentImageView()?.let {
+                it.viewImage(mSSOApplicationDetails.bankChequePhotoBackUrl)
+            }
+        }
     }
 
     protected open fun setApplicationInfo(details: SSOApplicationDetailsDTO) {
@@ -153,7 +170,7 @@ abstract class BaseApprovalIssueTokenFragment : BaseFragment() {
 
     protected fun startNewApprovalActivity() {
         context?.let {
-            GovernorApprovalActivity.start(it, mSSOApplicationDetailsDTO)
+            GovernorApprovalActivity.start(it, mSSOApplicationDetails)
             launch(Dispatchers.IO) {
                 delay(500)
                 close()

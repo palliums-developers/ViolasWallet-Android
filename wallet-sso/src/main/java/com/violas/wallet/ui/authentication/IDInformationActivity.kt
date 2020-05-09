@@ -1,10 +1,11 @@
 package com.violas.wallet.ui.authentication
 
 import android.os.Bundle
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.target.Target
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.image.GlideApp
+import com.violas.wallet.image.viewImage
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import com.violas.wallet.ui.selectCountryArea.isChinaMainland
@@ -55,7 +56,7 @@ class IDInformationActivity : BaseAppActivity() {
                 GlideApp.with(this@IDInformationActivity)
                     .load(idInfo.idPhotoFrontUrl)
                     .centerCrop()
-                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .override(Target.SIZE_ORIGINAL)
                     .placeholder(R.drawable.bg_id_card_front)
                     .error(R.drawable.bg_id_card_front)
                     .into(ivIDCardFront)
@@ -63,10 +64,17 @@ class IDInformationActivity : BaseAppActivity() {
                 GlideApp.with(this@IDInformationActivity)
                     .load(idInfo.idPhotoBackUrl)
                     .centerCrop()
-                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .override(Target.SIZE_ORIGINAL)
                     .placeholder(R.drawable.bg_id_card_back)
                     .error(R.drawable.bg_id_card_back)
                     .into(ivIDCardBack)
+
+                ivIDCardFront.setOnClickListener {
+                    ivIDCardFront.viewImage(idInfo.idPhotoFrontUrl)
+                }
+                ivIDCardBack.setOnClickListener {
+                    ivIDCardBack.viewImage(idInfo.idPhotoBackUrl)
+                }
             }
         }
     }

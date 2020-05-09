@@ -121,7 +121,7 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
                 }
             }
         ) {
-            mSSOApplicationDetailsDTO.applicationStatus =
+            mSSOApplicationDetails.applicationStatus =
                 SSOApplicationState.TRANSFERRED_AND_NOTIFIED
             refreshTransferAndNotifyBtn(3)
         }

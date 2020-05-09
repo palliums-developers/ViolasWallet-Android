@@ -1,16 +1,14 @@
 package com.violas.wallet.widget
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.target.Target
 import com.violas.wallet.R
 import com.violas.wallet.image.GlideApp
-import kotlinx.android.synthetic.main.layout_approval_issue_token_info.*
 import kotlinx.android.synthetic.main.view_upload_image.view.*
 
 class UploadImageView : LinearLayout {
@@ -60,6 +58,8 @@ class UploadImageView : LinearLayout {
 
     }
 
+    fun getContentImageView() = view?.ivContent
+
     fun setCloseContentCallback(call: () -> Unit) {
         closeCallBack = call
     }
@@ -72,7 +72,10 @@ class UploadImageView : LinearLayout {
         view?.ivContent?.let {
             GlideApp.with(this)
                 .load(imageUrl)
-                .transition(DrawableTransitionOptions.withCrossFade())
+                .centerCrop()
+                .override(Target.SIZE_ORIGINAL)
+                .placeholder(R.drawable.shape_bg_photo)
+                .error(R.drawable.shape_bg_photo)
                 .into(it)
         }
     }
