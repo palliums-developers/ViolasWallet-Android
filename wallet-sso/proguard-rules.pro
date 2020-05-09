@@ -25,6 +25,10 @@
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
 
+# ViewModel
+-keepnames class androidx.lifecycle.ViewModel
+-keepclassmembers public class * extends androidx.lifecycle.ViewModel { public <init>(...); }
+
 # Scan
 -keep class cn.bertsir.zbar.Qr.**{*;}
 

@@ -15,7 +15,6 @@ import java.util.*
  * <p>
  * desc:
  */
-@Keep
 class MappingExchangeOrdersViewModel(
     private val walletAddress: String,
     private val walletType: Int

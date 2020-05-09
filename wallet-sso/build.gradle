@@ -29,7 +29,7 @@ android {
     signingConfigs {
         release {
             Properties properties = new Properties()
-            File configFile = project.rootProject.file('sign.properties')
+            File configFile = project.rootProject.file('ssoDevelopSign.properties')
             if (!configFile.exists()) {
                 configFile = project.rootProject.file('testSign.properties')
             }
@@ -104,12 +104,13 @@ android {
     productFlavors {
         demo {
             dimension "local"
-            applicationIdSuffix ".beta"
+            applicationIdSuffix ".demo"
             resValue "string", "app_name", "ViolasSSO Demo"
         }
 
         googlePlay {
             dimension "local"
+            applicationIdSuffix ".beta"
             resValue "string", "app_name", "ViolasSSO"
         }
 
