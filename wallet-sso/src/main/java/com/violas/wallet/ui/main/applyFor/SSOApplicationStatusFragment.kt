@@ -2,21 +2,14 @@ package com.violas.wallet.ui.main.applyFor
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
 import com.palliums.base.BaseFragment
 import com.palliums.utils.getColor
 import com.violas.wallet.R
 import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.event.RefreshPageEvent
 import com.violas.wallet.repository.http.sso.ApplyForStatusDTO
 import com.violas.wallet.ui.ssoApplication.SSOApplicationActivity
 import kotlinx.android.synthetic.main.fragment_sso_application_status.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.greenrobot.eventbus.EventBus
 
 /**
  * 发行商申请发行SSO状态视图
@@ -102,16 +95,6 @@ class SSOApplicationStatusFragment : BaseFragment() {
     }
 
     private fun initEvent() {
-        swipeRefresh.setOnRefreshListener {
-            launch(Dispatchers.IO) {
-                EventBus.getDefault().post(RefreshPageEvent())
-                delay(800)
-                withContext(Dispatchers.Main) {
-                    swipeRefresh.isRefreshing = false
-                }
-            }
-        }
-
         layoutItem.setOnClickListener {
             activity?.let { it1 ->
                 SSOApplicationActivity.start(it1, mSSOApplicationMsg)

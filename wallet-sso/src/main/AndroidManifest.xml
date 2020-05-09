@@ -122,16 +122,7 @@
             android:name=".ui.authentication.IDInformationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.mintSuccess.MintSuccessActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.applyForMint.ApplyForMintActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".ui.selectCurrency.SelectCurrencyActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.ssoApplication.ApplyForIssueTokenActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.selectGovernor.GovernorListActivity"
