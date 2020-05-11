@@ -49,8 +49,8 @@ class UserViewModel : BaseViewModel() {
     val mCurrentAccountLD = MutableLiveData<AccountDO>()
     val mGovernorInfoLD = MutableLiveData<GovernorInfoDTO>()
 
-    private val ssoService by lazy {
-        DataRepository.getSSOService()
+    private val issuerService by lazy {
+        DataRepository.getIssuerService()
     }
     private val localUserService by lazy {
         DataRepository.getLocalUserService()
@@ -275,7 +275,7 @@ class UserViewModel : BaseViewModel() {
         // 从服务器获取用户信息
         val walletAddress = mCurrentAccountLD.value!!.address
         val userInfoDTO = try {
-            ssoService.loadUserInfo(walletAddress).data
+            issuerService.loadUserInfo(walletAddress).data
         } catch (e: Exception) {
 
             postStateIfNotReady(LoadState.failure(e))

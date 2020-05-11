@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.ssoApplication.issueToken
+package com.violas.wallet.ui.issuerApplication.issueToken
 
 import android.app.Activity
 import android.content.Intent
@@ -13,15 +13,15 @@ import com.sl.utakephoto.manager.ITakePhotoResult
 import com.sl.utakephoto.manager.UTakePhoto
 import com.violas.wallet.R
 import com.violas.wallet.image.viewImage
-import com.violas.wallet.repository.http.sso.GovernorDTO
+import com.violas.wallet.repository.http.issuer.GovernorDTO
 import com.violas.wallet.ui.selectCurrency.SelectCurrencyActivity
 import com.violas.wallet.ui.selectCurrency.bean.CurrencyBean
 import com.violas.wallet.ui.selectGovernor.GovernorListActivity
-import com.violas.wallet.ui.ssoApplication.SSOApplicationChildViewModel.Companion.ACTION_APPLY_FOR_ISSUE_TOKEN
+import com.violas.wallet.ui.issuerApplication.IssuerApplicationChildViewModel.Companion.ACTION_APPLY_FOR_ISSUE_TOKEN
 import com.violas.wallet.utils.getFilePathFromContentUri
 import com.violas.wallet.widget.dialog.EmailPhoneValidationDialog
 import com.violas.wallet.widget.dialog.TakePhotoPopup
-import kotlinx.android.synthetic.main.fragment_sso_apply_for_issue_token.*
+import kotlinx.android.synthetic.main.fragment_issuer_apply_for_issue_token.*
 import kotlinx.android.synthetic.main.layout_apply_for_issue_token.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,7 +30,7 @@ import kotlinx.coroutines.withContext
 /**
  * 发行商申请发币 base fragment
  */
-abstract class BaseSSOApplyForIssueTokenFragment : BaseSSOIssueTokenFragment() {
+abstract class BaseIssuerApplyForIssueTokenFragment : BaseIssuerIssueTokenFragment() {
 
     companion object {
         private const val REQUEST_CURRENCY_CODE = 0
@@ -53,7 +53,7 @@ abstract class BaseSSOApplyForIssueTokenFragment : BaseSSOIssueTokenFragment() {
     override fun initView() {
         super.initView()
 
-        mViewModel.mAccountLD.observe(this, Observer {
+        mViewModel.mAccountDOLiveData.observe(this, Observer {
             itemWalletAddress.setContent(it.address)
         })
     }
@@ -73,14 +73,14 @@ abstract class BaseSSOApplyForIssueTokenFragment : BaseSSOIssueTokenFragment() {
 
         tvContent.setOnClickListener {
             SelectCurrencyActivity.start(
-                this@BaseSSOApplyForIssueTokenFragment,
+                this@BaseIssuerApplyForIssueTokenFragment,
                 REQUEST_CURRENCY_CODE
             )
         }
 
         tvGovernorContent.setOnClickListener {
             GovernorListActivity.start(
-                this@BaseSSOApplyForIssueTokenFragment,
+                this@BaseIssuerApplyForIssueTokenFragment,
                 REQUEST_GOVERNOR_CODE
             )
         }
@@ -242,7 +242,7 @@ abstract class BaseSSOApplyForIssueTokenFragment : BaseSSOIssueTokenFragment() {
                                 }
 
                                 val uploadImage =
-                                    mViewModel.mSSOManager.uploadImage(filePathFromContentUri)
+                                    mViewModel.mIssuerManager.uploadImage(filePathFromContentUri)
                                 withContext(Dispatchers.Main) {
                                     uploadImageView.endLoadingImage()
                                 }

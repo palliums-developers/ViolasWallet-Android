@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.ssoApplication.issueToken
+package com.violas.wallet.ui.issuerApplication.issueToken
 
 import android.os.Bundle
 import androidx.lifecycle.Observer
@@ -9,9 +9,10 @@ import com.palliums.net.LoadState
 import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
-import com.violas.wallet.ui.ssoApplication.SSOApplicationActivity
-import com.violas.wallet.ui.ssoApplication.SSOApplicationChildViewModel
-import com.violas.wallet.ui.ssoApplication.SSOApplicationChildViewModelFactory
+import com.violas.wallet.repository.http.issuer.ApplyForSSODetailsDTO
+import com.violas.wallet.ui.issuerApplication.IssuerApplicationActivity
+import com.violas.wallet.ui.issuerApplication.IssuerApplicationChildViewModel
+import com.violas.wallet.ui.issuerApplication.IssuerApplicationChildViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -22,15 +23,15 @@ import kotlinx.coroutines.launch
  * <p>
  * desc: 发行商申请发币流程 base fragment
  */
-abstract class BaseSSOIssueTokenFragment : BaseFragment() {
+abstract class BaseIssuerIssueTokenFragment : BaseFragment() {
 
-    protected var mSSOApplicationDetails: SSOApplicationDetailsDTO? = null
+    protected var mApplyForSSODetails: ApplyForSSODetailsDTO? = null
 
     protected val mViewModel by lazy {
         ViewModelProvider(
             this,
-            SSOApplicationChildViewModelFactory(mSSOApplicationDetails)
-        ).get(SSOApplicationChildViewModel::class.java)
+            IssuerApplicationChildViewModelFactory(mApplyForSSODetails)
+        ).get(IssuerApplicationChildViewModel::class.java)
     }
 
     override fun onLazyInitView(savedInstanceState: Bundle?) {
@@ -46,22 +47,22 @@ abstract class BaseSSOIssueTokenFragment : BaseFragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mSSOApplicationDetails?.let { outState.putParcelable(KEY_ONE, it) }
+        mApplyForSSODetails?.let { outState.putParcelable(KEY_ONE, it) }
     }
 
     protected open fun initData(savedInstanceState: Bundle?): Boolean {
-        var detailsDTO: SSOApplicationDetailsDTO? = null
+        var details: ApplyForSSODetailsDTO? = null
         if (savedInstanceState != null) {
-            detailsDTO = savedInstanceState.getParcelable(KEY_ONE)
+            details = savedInstanceState.getParcelable(KEY_ONE)
         } else if (arguments != null) {
-            detailsDTO = arguments!!.getParcelable(KEY_ONE)
+            details = arguments!!.getParcelable(KEY_ONE)
         }
 
-        if (detailsDTO == null) {
+        if (details == null) {
             return false
         }
 
-        mSSOApplicationDetails = detailsDTO
+        mApplyForSSODetails = details
         return true
     }
 
@@ -93,11 +94,12 @@ abstract class BaseSSOIssueTokenFragment : BaseFragment() {
 
     protected fun startNewApplicationActivity() {
         context?.let {
-            if (mSSOApplicationDetails == null) {
-                SSOApplicationActivity.start(it)
+            if (mApplyForSSODetails == null) {
+                IssuerApplicationActivity.start(it)
             } else {
-                SSOApplicationActivity.start(it, mSSOApplicationDetails!!)
+                IssuerApplicationActivity.start(it, mApplyForSSODetails!!)
             }
+
             launch(Dispatchers.IO) {
                 delay(500)
                 close()

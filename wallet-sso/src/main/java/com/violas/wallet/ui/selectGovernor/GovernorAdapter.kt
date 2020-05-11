@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.violas.wallet.R
-import com.violas.wallet.repository.http.sso.GovernorDTO
+import com.violas.wallet.repository.http.issuer.GovernorDTO
 import com.violas.wallet.ui.selectCurrency.StickyHeaderAdapter
 import kotlinx.android.synthetic.main.item_support_currency.view.*
 import java.util.*

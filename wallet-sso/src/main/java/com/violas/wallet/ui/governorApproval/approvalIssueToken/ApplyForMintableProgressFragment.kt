@@ -32,7 +32,7 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
 
         tvStep1Desc.text =
             getString(R.string.apply_for_mintable_step_1, details.idName, details.tokenName)
-        if (details.applicationStatus == SSOApplicationState.APPLYING_MINTABLE) {
+        if (details.applicationStatus == SSOApplicationState.GOVERNOR_APPROVED) {
             vStep2Line.setBackgroundResource(R.color.color_9D9BA3)
             tvStep2Desc.setTextColor(getColor(R.color.def_text_title))
             return
@@ -58,7 +58,7 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
         tvTransferAndNotifyDesc.visibility = View.VISIBLE
         tvTransferAndNotifyBtn.visibility = View.VISIBLE
         vApplyingUnpassedBlank.visibility = View.GONE
-        if (details.applicationStatus == SSOApplicationState.TRANSFERRED_AND_NOTIFIED) {
+        if (details.applicationStatus == SSOApplicationState.GOVERNOR_TRANSFERRED) {
             refreshTransferAndNotifyBtn(3)
             return
         }
@@ -122,7 +122,7 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
             }
         ) {
             mSSOApplicationDetails.applicationStatus =
-                SSOApplicationState.TRANSFERRED_AND_NOTIFIED
+                SSOApplicationState.GOVERNOR_TRANSFERRED
             refreshTransferAndNotifyBtn(3)
         }
     }

@@ -128,7 +128,7 @@
             android:name=".ui.selectGovernor.GovernorListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.ssoApplication.SSOApplicationActivity"
+            android:name=".ui.issuerApplication.IssuerApplicationActivity"
             android:screenOrientation="portrait" />
 
         <activity

@@ -1,10 +1,12 @@
-package com.violas.wallet.repository.http.sso
+package com.violas.wallet.repository.http.issuer
 
 import com.palliums.content.ContextProvider
+import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
 import com.palliums.utils.getImageName
 import com.palliums.violas.http.Response
-import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
+import com.violas.wallet.biz.SSOApplicationState
+import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -16,7 +18,7 @@ import java.io.File
 
 class ImageCompressionFailedException : RuntimeException()
 
-class SSORepository(private val ssoApi: SSOApi) {
+class SSORepository(private val ssoApi: IssuerApi) {
 
     /**
      * 绑定身份证信息
@@ -53,22 +55,65 @@ class SSORepository(private val ssoApi: SSOApi) {
     }
 
     /**
-     * 获取SSO申请详情
+     * 查询发行商申请发行SSO的摘要信息
      */
-    suspend fun getSSOApplicationDetails(
-        address: String
-    ): SSOApplicationDetailsDTO? {
-        val response =
+    suspend fun queryApplyForIssueSSOSummary(
+        walletAddress: String
+    ): ApplyForSSOSummaryDTO? {
+        val summary =
             checkResponse(2005) {
-                ssoApi.getSSOApplicationDetails(address)
+                ssoApi.queryApplyForIssueSSOSummary(walletAddress)
+            }.data
+
+        summary?.let {
+            if (it.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
+                && it.tokenIdx == null
+            ) {
+                throw RequestException.responseDataException("token id cannot be null")
             }
-        return if (response.errorCode == 2005) null else response.data
+        }
+
+        return summary
+    }
+
+    /**
+     * 获取发行商申请发行SSO的详细信息
+     */
+    suspend fun getApplyForIssueSSODetails(
+        walletAddress: String,
+        ssoApplicationId: String
+    ): ApplyForSSODetailsDTO? {
+        val details =
+            checkResponse(2005) {
+                ssoApi.getApplyForIssueSSODetails(walletAddress, ssoApplicationId)
+            }.data
+
+        details?.let {
+            if (it.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
+                && it.tokenIdx == null
+            ) {
+                throw RequestException.responseDataException("Token id cannot be null")
+            } else if ((it.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED
+                        || it.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED)
+                && it.unapprovedReason.isNullOrEmpty()
+                && it.unapprovedRemarks.isNullOrEmpty()
+            ) {
+                throw RequestException.responseDataException(
+                    "Unapproved reasons and unapproved remarks cannot all be empty"
+                )
+            }
+
+            val countryArea = getCountryArea(it.countryCode)
+            it.countryName = countryArea.countryName
+        }
+
+        return details
     }
 
     /**
      * 申请发行稳定币
      */
-    suspend fun applyForIssuing(
+    suspend fun applyForIssueSSO(
         walletAddress: String,
         tokenType: String,
         amount: Long,
@@ -95,23 +140,8 @@ class SSORepository(private val ssoApi: SSOApi) {
     "governor_address":"$governorAddress"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
-        return try {
-            checkResponse(2003) {
-                ssoApi.applyForIssuing(toRequestBody)
-            }
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    /**
-     * 查询审批状态
-     */
-    suspend fun selectApplyForStatus(
-        address: String
-    ): Response<ApplyForStatusDTO>? {
-        return checkResponse(2005) {
-            ssoApi.selectApplyForStatus(address)
+        return checkResponse(2003) {
+            ssoApi.applyForIssueSSO(toRequestBody)
         }
     }
 
@@ -123,12 +153,8 @@ class SSORepository(private val ssoApi: SSOApi) {
     "address":"$address"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
-        return try {
-            checkResponse {
-                ssoApi.changePublishStatus(toRequestBody)
-            }
-        } catch (e: Exception) {
-            null
+        return checkResponse {
+            ssoApi.changePublishStatus(toRequestBody)
         }
     }
 
@@ -231,7 +257,9 @@ class SSORepository(private val ssoApi: SSOApi) {
     /**
      * 获取州长列表
      */
-    suspend fun getGovernorList(offset: Int = 0, limit: Int = 100) = withContext(Dispatchers.IO) {
+    suspend fun getGovernorList(
+        offset: Int = 0, limit: Int = 100
+    ) = withContext(Dispatchers.IO) {
         checkResponse {
             ssoApi.getGovernorList(offset, limit)
         }

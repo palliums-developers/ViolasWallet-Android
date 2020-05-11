@@ -162,11 +162,11 @@ class GovernorManager {
         // test code =========> start
         if (BuildConfig.MOCK_GOVERNOR_DATA) {
             val fakeList = arrayListOf<SSOApplicationMsgDTO>()
-            for (index in SSOApplicationState.CHAIRMAN_UNAPPROVED..SSOApplicationState.MINTED_TOKEN) {
+            for (index in SSOApplicationState.CHAIRMAN_UNAPPROVED..SSOApplicationState.GOVERNOR_MINTED) {
                 delay(200)
                 var applicationStatus = System.currentTimeMillis()
                 var expirationDate = applicationStatus
-                if (index == SSOApplicationState.APPROVAL_TIMEOUT) {
+                if (index == SSOApplicationState.AUDIT_TIMEOUT) {
                     expirationDate -= 2 * 60 * 1000
                     applicationStatus = expirationDate - 5 * 24 * 60 * 60 * 1000
                 } else {
@@ -201,11 +201,11 @@ class GovernorManager {
         // DTO 转换 VO
         return@withContext response.data!!.map {
             val msgRead = when (it.applicationStatus) {
-                SSOApplicationState.APPLYING_ISSUE_TOKEN -> {
+                SSOApplicationState.ISSUER_APPLYING -> {
                     localMsgs[it.applicationId]?.issueRead ?: false
                 }
 
-                SSOApplicationState.APPLYING_MINT_TOKEN -> {
+                SSOApplicationState.ISSUER_PUBLISHED -> {
                     localMsgs[it.applicationId]?.mintRead ?: false
                 }
 
@@ -285,7 +285,7 @@ class GovernorManager {
         // test code =========> end
 
         if (response.data != null) {
-            if (response.data!!.applicationStatus >= SSOApplicationState.GIVEN_MINTABLE
+            if (response.data!!.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
                 && response.data!!.tokenIdx == null
             ) {
                 throw RequestException.responseDataException(
@@ -457,12 +457,12 @@ class GovernorManager {
                         expirationDate = expirationDate,
                         applicantIdName = applicantIdName,
                         issueRead = true,
-                        mintRead = applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN
+                        mintRead = applicationStatus >= SSOApplicationState.ISSUER_PUBLISHED
                     )
                 )
             } else if (applicationStatus != msgDO.applicationStatus) {
                 msgDO.applicationStatus = applicationStatus
-                if (applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN) {
+                if (applicationStatus >= SSOApplicationState.ISSUER_PUBLISHED) {
                     msgDO.mintRead = true
                 }
                 mSSOApplicationMsgStorage.update(msgDO)
@@ -493,12 +493,12 @@ class GovernorManager {
                         expirationDate = msgVO.expirationDate,
                         applicantIdName = msgVO.applicantIdName,
                         issueRead = true,
-                        mintRead = msgVO.applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN
+                        mintRead = msgVO.applicationStatus >= SSOApplicationState.ISSUER_PUBLISHED
                     )
                 )
             } else if (msgVO.applicationStatus != msgDO.applicationStatus) {
                 msgDO.applicationStatus = msgVO.applicationStatus
-                if (msgVO.applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN) {
+                if (msgVO.applicationStatus >= SSOApplicationState.ISSUER_PUBLISHED) {
                     msgDO.mintRead = true
                 }
                 mSSOApplicationMsgStorage.update(msgDO)
@@ -529,12 +529,12 @@ class GovernorManager {
                         applicantIdName = msgVO.applicantIdName,
                         expirationDate = msgVO.expirationDate,
                         issueRead = true,
-                        mintRead = msgVO.applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN
+                        mintRead = msgVO.applicationStatus >= SSOApplicationState.ISSUER_PUBLISHED
                     )
                 )
             } else {
                 msgDO.applicationStatus = msgVO.applicationStatus
-                msgDO.mintRead = msgVO.applicationStatus >= SSOApplicationState.APPLYING_MINT_TOKEN
+                msgDO.mintRead = msgVO.applicationStatus >= SSOApplicationState.ISSUER_PUBLISHED
                 mSSOApplicationMsgStorage.update(msgDO)
             }
         } catch (e: Exception) {

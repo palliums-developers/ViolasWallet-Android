@@ -154,22 +154,22 @@ class GovernorApprovalActivity : BaseAppActivity() {
 
     private fun loadFragment(details: SSOApplicationDetailsDTO) {
         val fragment = when (details.applicationStatus) {
-            SSOApplicationState.APPLYING_ISSUE_TOKEN -> {
+            SSOApplicationState.ISSUER_APPLYING -> {
                 AuditIssueTokenFragment()
             }
 
-            SSOApplicationState.APPLYING_MINTABLE,
-            SSOApplicationState.GIVEN_MINTABLE,
-            SSOApplicationState.TRANSFERRED_AND_NOTIFIED,
+            SSOApplicationState.GOVERNOR_APPROVED,
+            SSOApplicationState.CHAIRMAN_APPROVED,
+            SSOApplicationState.GOVERNOR_TRANSFERRED,
             SSOApplicationState.CHAIRMAN_UNAPPROVED -> {
                 ApplyForMintableProgressFragment()
             }
 
-            SSOApplicationState.APPLYING_MINT_TOKEN -> {
+            SSOApplicationState.ISSUER_PUBLISHED -> {
                 MintTokenToSSOFragment()
             }
 
-            SSOApplicationState.MINTED_TOKEN -> {
+            SSOApplicationState.GOVERNOR_MINTED -> {
                 MintTokenSuccessFragment()
             }
 

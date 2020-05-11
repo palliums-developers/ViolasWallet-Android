@@ -33,8 +33,8 @@ class IDAuthenticationViewModel : BaseViewModel() {
 
     private lateinit var currentAccount: AccountDO
 
-    private val ssoService by lazy {
-        DataRepository.getSSOService()
+    private val issuerService by lazy {
+        DataRepository.getIssuerService()
     }
 
     private val localUserService by lazy {
@@ -66,7 +66,7 @@ class IDAuthenticationViewModel : BaseViewModel() {
             throw IOException(getString(R.string.hint_id_photo_front_unavailable))
         }
         val idPhotoFrontUrl = try {
-            ssoService.uploadImage(idPhotoFrontFile).data!!
+            issuerService.uploadImage(idPhotoFrontFile).data!!
         } catch (e: Exception) {
             e.printStackTrace()
 
@@ -85,7 +85,7 @@ class IDAuthenticationViewModel : BaseViewModel() {
             throw IOException(getString(R.string.hint_id_photo_back_unavailable))
         }
         val idPhotoBackUrl = try {
-            ssoService.uploadImage(idPhotoBackFile).data!!
+            issuerService.uploadImage(idPhotoBackFile).data!!
         } catch (e: Exception) {
             e.printStackTrace()
 
@@ -100,7 +100,7 @@ class IDAuthenticationViewModel : BaseViewModel() {
         val countryCode = countryAreaVO.value!!.countryCode
         val idName = params[0] as String
         val idNumber = params[1] as String
-        ssoService.bindIdNumber(
+        issuerService.bindIdNumber(
             walletAddress = walletAddress,
             name = idName,
             countryCode = countryCode,
@@ -110,7 +110,7 @@ class IDAuthenticationViewModel : BaseViewModel() {
         )
 
         // 上传图片时返回的图片url不是全路径，所以这里从服务器获取用户身份信息
-        val userInfoDTO = ssoService.loadUserInfo(walletAddress).data
+        val userInfoDTO = issuerService.loadUserInfo(walletAddress).data
         if (userInfoDTO == null
             || userInfoDTO.idName.isNullOrEmpty()
             || userInfoDTO.idNumber.isNullOrEmpty()

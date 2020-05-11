@@ -20,8 +20,8 @@ import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.repository.http.libra.violas.LibraViolasApi
 import com.violas.wallet.repository.http.libra.violas.LibraViolasRepository
 import com.violas.wallet.repository.http.libra.violas.LibraViolasService
-import com.violas.wallet.repository.http.sso.SSOApi
-import com.violas.wallet.repository.http.sso.SSORepository
+import com.violas.wallet.repository.http.issuer.IssuerApi
+import com.violas.wallet.repository.http.issuer.SSORepository
 import com.violas.wallet.repository.http.violas.ViolasBizService
 import com.violas.wallet.repository.local.user.LocalUserService
 import okhttp3.OkHttpClient
@@ -102,8 +102,8 @@ object DataRepository {
 
     fun getLocalUserService() = LocalUserService()
 
-    fun getSSOService() =
-        SSORepository(retrofit.create(SSOApi::class.java))
+    fun getIssuerService() =
+        SSORepository(retrofit.create(IssuerApi::class.java))
 
     fun getGovernorService() =
         GovernorRepository(retrofit.create(GovernorApi::class.java))

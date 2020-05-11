@@ -60,7 +60,7 @@ class ApprovalFragmentViewModel(
             val currentAccount = AccountManager().currentAccount()
             mAccountLD.postValue(currentAccount)
 
-            if (mSSOApplicationDetails.applicationStatus == SSOApplicationState.GIVEN_MINTABLE) {
+            if (mSSOApplicationDetails.applicationStatus == SSOApplicationState.CHAIRMAN_APPROVED) {
                 val transferred = mGovernorManager.isTransferredCoinToSSO(
                     walletAddress = currentAccount.address,
                     applicationId = mSSOApplicationDetails.applicationId

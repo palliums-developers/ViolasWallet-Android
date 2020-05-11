@@ -62,39 +62,39 @@ private class ViewHolder(
         itemData?.let {
             itemView.tvTime.text = formatDate(it.applicationDate, mDateFormat)
             itemView.tvTitle.text =
-                if (it.applicationStatus <= SSOApplicationState.TRANSFERRED_AND_NOTIFIED) {
+                if (it.applicationStatus <= SSOApplicationState.GOVERNOR_TRANSFERRED) {
                     getString(R.string.title_sso_msg_issuing_token, it.applicantIdName)
                 } else {
                     getString(R.string.title_sso_msg_mint_token, it.applicantIdName)
                 }
 
             when (it.applicationStatus) {
-                SSOApplicationState.APPLYING_ISSUE_TOKEN -> {
+                SSOApplicationState.ISSUER_APPLYING -> {
                     itemView.tvStatus.visibility = View.GONE
                     itemView.vUnread.visibility = if (it.msgRead) View.GONE else View.VISIBLE
                 }
 
-                SSOApplicationState.APPLYING_MINTABLE -> {
+                SSOApplicationState.GOVERNOR_APPROVED -> {
                     itemView.vUnread.visibility = View.GONE
                     itemView.tvStatus.visibility = View.VISIBLE
                     itemView.tvStatus.text = getString(R.string.state_applying_mintable)
                     itemView.tvStatus.setTextColor(getColor(R.color.color_FAA030))
                 }
 
-                SSOApplicationState.GIVEN_MINTABLE,
-                SSOApplicationState.TRANSFERRED_AND_NOTIFIED -> {
+                SSOApplicationState.CHAIRMAN_APPROVED,
+                SSOApplicationState.GOVERNOR_TRANSFERRED -> {
                     itemView.vUnread.visibility = View.GONE
                     itemView.tvStatus.visibility = View.VISIBLE
                     itemView.tvStatus.text = getString(R.string.state_given_mintable)
                     itemView.tvStatus.setTextColor(getColor(R.color.color_00D1AF))
                 }
 
-                SSOApplicationState.APPLYING_MINT_TOKEN -> {
+                SSOApplicationState.ISSUER_PUBLISHED -> {
                     itemView.tvStatus.visibility = View.GONE
                     itemView.vUnread.visibility = if (it.msgRead) View.GONE else View.VISIBLE
                 }
 
-                SSOApplicationState.MINTED_TOKEN -> {
+                SSOApplicationState.GOVERNOR_MINTED -> {
                     itemView.vUnread.visibility = View.GONE
                     itemView.tvStatus.visibility = View.VISIBLE
                     itemView.tvStatus.text = getString(R.string.state_completed)

@@ -6,16 +6,16 @@ import com.palliums.base.BaseFragment
 import com.violas.wallet.R
 import com.violas.wallet.event.HomePageModifyEvent
 import com.violas.wallet.event.HomePageType
-import kotlinx.android.synthetic.main.fragment_verify_user_info.*
+import kotlinx.android.synthetic.main.fragment_verify_issuer_account.*
 import org.greenrobot.eventbus.EventBus
 
 /**
- * 验证发行商用户信息视图
+ * 验证发行商账户视图
  */
-class SSOVerifyUserInfoFragment : BaseFragment() {
+class VerifyIssuerAccountFragment : BaseFragment() {
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_verify_user_info
+        return R.layout.fragment_verify_issuer_account
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
