@@ -1,8 +1,8 @@
 package com.violas.wallet.biz.governorApproval
 
-import com.violas.wallet.biz.governorApproval.task.MintTokenToSSOTask
-import com.violas.wallet.biz.governorApproval.task.PublishTokenTask
-import com.violas.wallet.biz.governorApproval.task.SendMintTokenSuccessTask
+import com.violas.wallet.biz.governorApproval.task.MintTokenTask
+import com.violas.wallet.biz.governorApproval.task.PublishContractTask
+import com.violas.wallet.biz.governorApproval.task.NotifyMintedTask
 import org.palliums.violascore.wallet.Account
 
 /**
@@ -14,7 +14,7 @@ import org.palliums.violascore.wallet.Account
  * 通知服务器铸币成功通过
  * 删除本地记录主账户的铸币记录
  */
-class MintTokenToSSOHandler(
+class MintTokenToIssuerHandler(
     private val account: Account,
     private val ssoApplicationId: String,
     private val ssoWalletAddress: String,
@@ -26,21 +26,21 @@ class MintTokenToSSOHandler(
         val applyEngine = ApprovalEngine()
         val walletAddress = account.getAddress().toHex()
 
-        val findUnDoneRecord = applyEngine.getUnMintRecord(
+        val unDoneRecord = applyEngine.getUnMintRecord(
             walletAddress,
             ssoWalletAddress
         )
 
-        applyEngine.addApplyHandle(
-            PublishTokenTask(
+        applyEngine.addApprovalTask(
+            PublishContractTask(
                 account,
                 walletAddress,
                 ssoApplicationId
             )
         )
 
-        applyEngine.addApplyHandle(
-            MintTokenToSSOTask(
+        applyEngine.addApprovalTask(
+            MintTokenTask(
                 account,
                 walletAddress,
                 ssoApplicationId,
@@ -50,14 +50,14 @@ class MintTokenToSSOHandler(
             )
         )
 
-        applyEngine.addApplyHandle(
-            SendMintTokenSuccessTask(
+        applyEngine.addApprovalTask(
+            NotifyMintedTask(
                 walletAddress,
                 ssoApplicationId,
                 ssoWalletAddress
             )
         )
 
-        applyEngine.execMint(findUnDoneRecord?.status)
+        applyEngine.execMint(unDoneRecord?.status)
     }
 }

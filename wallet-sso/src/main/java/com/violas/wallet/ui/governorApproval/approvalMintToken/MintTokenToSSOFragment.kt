@@ -3,7 +3,7 @@ package com.violas.wallet.ui.governorApproval.approvalMintToken
 import com.palliums.utils.getColor
 import com.violas.wallet.R
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
-import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_MINT_TOKEN_TO_SSO
+import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_MINT_TOKEN_TO_ISSUER
 import com.violas.wallet.utils.showPwdInputDialog
 import kotlinx.android.synthetic.main.fragment_mint_token_to_sso.*
 import kotlinx.android.synthetic.main.layout_token_application_status.*
@@ -36,7 +36,7 @@ class MintTokenToSSOFragment : BaseApprovalMintTokenFragment() {
             showPwdInputDialog(
                 accountDO,
                 accountCallback = {
-                    mViewModel.execute(it, action = ACTION_MINT_TOKEN_TO_SSO) {
+                    mViewModel.execute(it, action = ACTION_MINT_TOKEN_TO_ISSUER) {
                         startNewApprovalActivity()
                     }
                 })

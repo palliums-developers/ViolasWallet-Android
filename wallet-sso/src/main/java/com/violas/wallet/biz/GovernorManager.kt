@@ -1,6 +1,5 @@
 package com.violas.wallet.biz
 
-import com.palliums.net.RequestException
 import com.palliums.utils.getDistinct
 import com.palliums.utils.toMap
 import com.palliums.violas.http.ListResponse
@@ -16,7 +15,6 @@ import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.repository.http.governor.SSOApplicationMsgDTO
 import com.violas.wallet.repository.http.governor.UnapproveReasonDTO
 import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
-import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -232,84 +230,60 @@ class GovernorManager {
         accountDO: AccountDO,
         msgVO: SSOApplicationMsgVO
     ): SSOApplicationDetailsDTO? {
-        val response =
         // TODO delete test code
+        val details =
             // test code =========> start
             try {
-                mGovernorService.getSSOApplicationDetails(msgVO.applicationId)
+                mGovernorService.getSSOApplicationDetails(accountDO.address, msgVO.applicationId)
             } catch (e: Exception) {
                 if (BuildConfig.MOCK_GOVERNOR_DATA) {
-                    Response<SSOApplicationDetailsDTO>()
+                    SSOApplicationDetailsDTO(
+                        applicationId = msgVO.applicationId,
+                        applicationStatus = msgVO.applicationStatus,
+                        issuerWalletAddress = "f4174e9eabcb2e968e22da4c75ac653b",
+                        idName = msgVO.applicantIdName,
+                        idNumber = "1234567890",
+                        idPhotoPositiveUrl = "",
+                        idPhotoBackUrl = "",
+                        countryCode = "CN",
+                        countryName = "中国",
+                        emailAddress = "luckeast@163.com",
+                        phoneNumber = "18919025675",
+                        phoneAreaCode = "+86",
+                        fiatCurrencyType = "RMB",
+                        tokenAmount = "100000000000000",
+                        tokenName = "DTY",
+                        tokenValue = 2,
+                        tokenIdx = 1,
+                        reservePhotoUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005061016156252.jpeg",
+                        bankChequePhotoPositiveUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005090243496532.jpeg",
+                        bankChequePhotoBackUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005061016148281.jpeg",
+                        applicationDate = msgVO.applicationDate,
+                        applicationPeriod = 5,
+                        expirationDate = msgVO.expirationDate,
+                        unapprovedReason =
+                        if (msgVO.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED
+                            || msgVO.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED
+                        ) {
+                            "信息不完善"
+                        } else {
+                            null
+                        }
+                    )
                 } else {
                     throw e
                 }
             }
         // test code =========> end
 
-        // test code =========> start
-        if (BuildConfig.MOCK_GOVERNOR_DATA) {
-            val fakeDetails = SSOApplicationDetailsDTO(
-                ssoWalletAddress = "f4174e9eabcb2e968e22da4c75ac653b",
-                idName = msgVO.applicantIdName,
-                idNumber = "1234567890",
-                idPhotoPositiveUrl = "",
-                idPhotoBackUrl = "",
-                countryCode = "CN",
-                emailAddress = "luckeast@163.com",
-                phoneNumber = "18919025675",
-                phoneAreaCode = "+86",
-                fiatCurrencyType = "RMB",
-                tokenAmount = "100000000000000",
-                tokenName = "DTY",
-                tokenValue = 2,
-                tokenIdx = 1,
-                reservePhotoUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005061016156252.jpeg",
-                bankChequePhotoPositiveUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005090243496532.jpeg",
-                bankChequePhotoBackUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005061016148281.jpeg",
-                applicationDate = msgVO.applicationDate,
-                applicationPeriod = 5,
-                expirationDate = msgVO.expirationDate,
-                applicationStatus = msgVO.applicationStatus,
-                applicationId = msgVO.applicationId,
-                unapprovedReason =
-                if (msgVO.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED
-                    || msgVO.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED
-                ) {
-                    "信息不完善"
-                } else {
-                    null
-                }
-            )
-            response.data = fakeDetails
-        }
-        // test code =========> end
-
-        if (response.data != null) {
-            if (response.data!!.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
-                && response.data!!.tokenIdx == null
-            ) {
-                throw RequestException.responseDataException(
-                    "token id cannot be null"
-                )
-            } else if ((response.data!!.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED
-                        || response.data!!.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED)
-                && response.data!!.unapprovedReason.isNullOrEmpty()
-            ) {
-                throw RequestException.responseDataException(
-                    "unapproved reason cannot be null"
-                )
-            }
-
-            val countryArea = getCountryArea(response.data!!.countryCode)
-            response.data!!.countryName = countryArea.countryName
-
-            if (msgVO.applicationStatus != response.data!!.applicationStatus) {
-                msgVO.applicationStatus = response.data!!.applicationStatus
+        details?.let {
+            if (msgVO.applicationStatus != it.applicationStatus) {
+                msgVO.applicationStatus = it.applicationStatus
                 updateSSOApplicationMsgStatus(accountDO.id, msgVO)
             }
         }
 
-        return response.data
+        return details
     }
 
     /**
@@ -335,35 +309,14 @@ class GovernorManager {
     suspend fun unapproveSSOApplication(
         ssoApplicationDetails: SSOApplicationDetailsDTO,
         reasonType: Int,
-        reasonRemark: String = ""
+        reasonRemarks: String = ""
     ) {
         try {
             mGovernorService.unapproveSSOApplication(
                 ssoApplicationId = ssoApplicationDetails.applicationId,
-                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
+                issuerWalletAddress = ssoApplicationDetails.issuerWalletAddress,
                 reasonType = reasonType,
-                reasonRemark = reasonRemark
-            )
-        } catch (e: Exception) {
-            if (!BuildConfig.MOCK_GOVERNOR_DATA) {
-                throw e
-            }
-        }
-    }
-
-    /**
-     * 申请铸币权
-     * 审核通过SSO申请时，州长先向董事长申请发行币种，待董事长发行币种完成后，州长在转账并通过SSO申请
-     */
-    suspend fun applyForMintable(
-        ssoApplicationDetails: SSOApplicationDetailsDTO,
-        walletAddress: String
-    ) {
-        try {
-            mGovernorService.applyForMintable(
-                walletAddress = walletAddress,
-                ssoApplicationId = ssoApplicationDetails.applicationId,
-                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress
+                reasonRemarks = reasonRemarks
             )
         } catch (e: Exception) {
             if (!BuildConfig.MOCK_GOVERNOR_DATA) {
@@ -374,18 +327,16 @@ class GovernorManager {
 
     /**
      * 审核通过SSO申请
+     * 审核通过SSO申请时，州长先向董事长申请发行币种，待董事长发行币种完成后，州长在转账并通知发行商
      */
     suspend fun approveSSOApplication(
-        ssoApplicationDetails: SSOApplicationDetailsDTO,
-        account: Account? = null,
-        walletAddress: String
+        details: SSOApplicationDetailsDTO
     ) {
         try {
-            mApprovalManager.approve(
-                account = account,
-                walletAddress = walletAddress,
-                ssoApplicationId = ssoApplicationDetails.applicationId,
-                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress
+            mGovernorService.submitSSOApplicationApprovalResults(
+                ssoApplicationId = details.applicationId,
+                issuerWalletAddress = details.issuerWalletAddress,
+                approvalResults = SSOApplicationState.GOVERNOR_APPROVED
             )
         } catch (e: Exception) {
             if (!BuildConfig.MOCK_GOVERNOR_DATA) {
@@ -395,17 +346,39 @@ class GovernorManager {
     }
 
     /**
-     * 给SSO账户铸币
+     * 转平台币给发行商
      */
-    suspend fun mintTokenToSSOAccount(
+    suspend fun transferCoinToIssuer(
+        ssoApplicationDetails: SSOApplicationDetailsDTO,
+        account: Account? = null,
+        walletAddress: String
+    ) {
+        try {
+            mApprovalManager.transferCoinToIssuer(
+                account = account,
+                walletAddress = walletAddress,
+                ssoApplicationId = ssoApplicationDetails.applicationId,
+                ssoWalletAddress = ssoApplicationDetails.issuerWalletAddress
+            )
+        } catch (e: Exception) {
+            if (!BuildConfig.MOCK_GOVERNOR_DATA) {
+                throw e
+            }
+        }
+    }
+
+    /**
+     * 铸稳定币给发行商
+     */
+    suspend fun mintTokenToIssuer(
         ssoApplicationDetails: SSOApplicationDetailsDTO,
         account: Account
     ) {
         try {
-            mApprovalManager.mint(
+            mApprovalManager.mintTokenToIssuer(
                 account = account,
                 ssoApplicationId = ssoApplicationDetails.applicationId,
-                ssoWalletAddress = ssoApplicationDetails.ssoWalletAddress,
+                ssoWalletAddress = ssoApplicationDetails.issuerWalletAddress,
                 ssoApplyAmount = ssoApplicationDetails.tokenAmount.toLong(),
                 newTokenIdx = ssoApplicationDetails.tokenIdx!!
             )
@@ -416,9 +389,9 @@ class GovernorManager {
         }
     }
 
-    fun isTransferredCoinToSSO(walletAddress: String, applicationId: String): Boolean {
+    fun isTransferredCoinToIssuer(walletAddress: String, applicationId: String): Boolean {
         val record = mSSOApplicationRecordStorage.find(walletAddress, applicationId)
-        return record?.status ?: 0 >= GovernorApprovalStatus.ReadyApproval
+        return record?.status ?: GovernorApprovalStatus.NONE >= GovernorApprovalStatus.TRANSFERRED
     }
 
     fun getSSOApplicationMsgLiveData(

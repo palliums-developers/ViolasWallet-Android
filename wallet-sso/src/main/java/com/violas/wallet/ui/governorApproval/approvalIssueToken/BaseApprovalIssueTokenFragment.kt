@@ -118,7 +118,7 @@ abstract class BaseApprovalIssueTokenFragment : BaseFragment() {
         asivTokenAmount.setContent(convertViolasTokenUnit(details.tokenAmount))
         asivTokenValue.setContent("${details.tokenValue}${details.fiatCurrencyType}")
         asivTokenName.setContent(details.tokenName)
-        asivSSOWalletAddress.setContent(details.ssoWalletAddress)
+        asivSSOWalletAddress.setContent(details.issuerWalletAddress)
         asivApplicationDate.setContent(
             formatDate(details.applicationDate, pattern = "yyyy.MM.dd HH:mm")
         )

@@ -40,7 +40,7 @@ interface GovernorApi {
     /**
      * 获取SSO申请消息
      */
-    @GET("/1.1/violas/sso/token/approval")
+    @GET("/1.0/violas/governor/token/status")
     suspend fun getSSOApplicationMsgs(
         @Query("address") walletAddress: String,
         @Query("limit") pageSize: Int,
@@ -50,34 +50,23 @@ interface GovernorApi {
     /**
      * 获取SSO申请详情
      */
-    @GET("/1.0/violas/sso/token/approval/{id}")
+    @GET("/1.0/violas/governor/token")
     suspend fun getSSOApplicationDetails(
-        @Path("id") ssoApplicationId: String
+        @Query("address") walletAddress: String,
+        @Query("id") ssoApplicationId: String
     ): Response<SSOApplicationDetailsDTO>
 
     /**
      * 获取审核不通过SSO申请原因列表
      */
-    @GET("/1.0/violas/governor/unapproveReasons")
-    suspend fun getUnapproveReasons(): ListResponse<UnapproveReasonDTO>
+    @GET("/1.0/violas/governor/reason")
+    suspend fun getUnapproveReasons(): Response<Map<Int, String>>
 
     /**
-     * 审核SSO申请
+     * 提交SSO申请审批结果
      */
-    @PUT("/1.1/violas/sso/token/approval")
-    suspend fun approvalSSOApplication(@Body body: RequestBody): Response<Any>
-
-    /**
-     * 申请铸币权（董事长创建币并指定铸币权为申请的州长）
-     */
-    @GET("/1.0/violas/governor/mintable/apply")
-    suspend fun applyForMintable(@Body body: RequestBody): Response<Any>
-
-    /**
-     * 改变SSO申请状态为已铸币
-     */
-    @PUT("/1.0/violas/sso/token/minted")
-    suspend fun changeSSOApplicationToMinted(@Body body: RequestBody): Response<Any>
+    @PUT("/1.0/violas/governor/token/status")
+    suspend fun submitSSOApplicationApprovalResults(@Body body: RequestBody): Response<Any>
 
     /**
      * 登录桌面端钱包

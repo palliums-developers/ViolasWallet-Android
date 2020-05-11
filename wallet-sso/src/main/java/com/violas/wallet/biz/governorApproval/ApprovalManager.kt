@@ -5,7 +5,7 @@ import org.palliums.violascore.wallet.Account
 class ApprovalManager {
 
     /**
-     * 同意发币申请
+     * 转平台币给发行商
      *
      * @param account 解密后的 Account 账户
      * @param walletAddress 州长钱包地址
@@ -14,23 +14,24 @@ class ApprovalManager {
      *
      * @exception 暂时未定义
      */
-    suspend fun approve(
+    suspend fun transferCoinToIssuer(
         account: Account? = null,
         walletAddress: String,
         ssoApplicationId: String,
         ssoWalletAddress: String
     ) {
-        val applySSOHandler = ApproveSSOIssueTokenHandler(
+        val handler = TransferCoinToIssuerHandler(
             account,
             walletAddress,
             ssoApplicationId,
             ssoWalletAddress
         )
-        applySSOHandler.exec()
+        handler.exec()
     }
 
     /**
-     * 铸币
+     * 铸稳定币给发行商
+     *
      * @param account 解密后的 Account 账户
      * @param ssoWalletAddress 铸币接收账户地址
      * @param ssoApplicationId SSO发币申请id
@@ -39,20 +40,20 @@ class ApprovalManager {
      *
      * * @exception 暂时未定义
      */
-    suspend fun mint(
+    suspend fun mintTokenToIssuer(
         account: Account,
         ssoApplicationId: String,
         ssoWalletAddress: String,
         ssoApplyAmount: Long,
         newTokenIdx: Long
     ) {
-        val ssoMintTokenHandler = MintTokenToSSOHandler(
+        val handler = MintTokenToIssuerHandler(
             account,
             ssoApplicationId,
             ssoWalletAddress,
             ssoApplyAmount,
             newTokenIdx
         )
-        ssoMintTokenHandler.exec()
+        handler.exec()
     }
 }

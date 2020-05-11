@@ -24,12 +24,26 @@ data class GovernorInfoDTO(
     val subAccountCount: Long                       // 子账户个数（用于派生铸币账户注册新的module）
 )
 
+/**
+ * SSO申请消息
+ */
 data class SSOApplicationMsgDTO(
     @SerializedName("id")
     val applicationId: String,                      // 申请ID
+    /**
+     * -1: Audit timeout;
+     * -2: Governor unapproved;
+     * -3: Chairman unapproved;
+     * 0: Issuer applying;
+     * 1: Governor approved;
+     * 2: Chairman approved;
+     * 3: Governor transferred;
+     * 4: Issuer published;
+     * 5: Governor minted;
+     */
     @SSOApplicationState
     @SerializedName("approval_status")
-    val applicationStatus: Int,                     // 申请发币状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
+    val applicationStatus: Int,                     // 申请状态
     @SerializedName("application_date")
     val applicationDate: Long,                      // 申请日期
     @SerializedName("expiration_date")
@@ -38,12 +52,20 @@ data class SSOApplicationMsgDTO(
     val applicantIdName: String                     // 申请人身份姓名
 )
 
+/**
+ * SSO申请详情
+ */
 @Parcelize
 data class SSOApplicationDetailsDTO(
     @SerializedName("id")
     val applicationId: String,                      // 申请ID
+    @SSOApplicationState
+    @SerializedName("approval_status")
+    var applicationStatus: Int,                     // 申请状态
+
     @SerializedName("wallet_address")
-    val ssoWalletAddress: String,                   // 申请者的钱包地址
+    val issuerWalletAddress: String,                // 发行商的钱包地址
+
     @SerializedName("name")
     val idName: String,                             // 申请者的身份姓名
     @SerializedName("id_number")
@@ -71,7 +93,7 @@ data class SSOApplicationDetailsDTO(
     val tokenName: String,                          // 稳定币名称
     @SerializedName("token_value")
     val tokenValue: Int,                            // 稳定币价值（单位发币种类）
-    @SerializedName("module_address")
+    @SerializedName("token_id")
     val tokenIdx: Long? = null,                     // 稳定币索引
     @SerializedName("reserve_photo_url")
     val reservePhotoUrl: String,                    // 储备金照片url
@@ -85,12 +107,11 @@ data class SSOApplicationDetailsDTO(
     val applicationPeriod: Int,                     // 申请有效期（单位天数）
     @SerializedName("expiration_date")
     val expirationDate: Long,                       // 申请失效日期
-    @SSOApplicationState
-    @SerializedName("approval_status")
-    var applicationStatus: Int,                     // 申请发币状态 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
 
-    @SerializedName("unapproved_reason")
-    val unapprovedReason: String? = null
+    @SerializedName("failed_reason")
+    val unapprovedReason: String? = null,           // 州长董事长未批准时的原因
+    @SerializedName("remarks")
+    val unapprovedRemarks: String? = null           // 州长董事长未批准选择其它时的备注
 ) : Parcelable
 
 @Parcelize

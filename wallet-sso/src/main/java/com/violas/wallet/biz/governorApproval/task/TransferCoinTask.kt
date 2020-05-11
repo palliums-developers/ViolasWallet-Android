@@ -4,7 +4,10 @@ import com.violas.wallet.biz.governorApproval.GovernorApprovalStatus
 import com.violas.wallet.repository.database.entity.SSOApplicationRecordDo
 import org.palliums.violascore.wallet.Account
 
-class TransferCoinToSSOTask(
+/**
+ * 州长给发行商转平台币的任务
+ */
+class TransferCoinTask(
     private val account: Account? = null,
     private val walletAddress: String,
     private val ssoApplicationId: String,
@@ -21,12 +24,12 @@ class TransferCoinToSSOTask(
                 amount
             )*/
 
-        getServiceProvider()!!.getApplySsoRecordDao()
+        getServiceProvider()!!.getSSOApplicationRecordStorage()
             .insert(
                 SSOApplicationRecordDo(
                     walletAddress = walletAddress,
                     applicationId = ssoApplicationId,
-                    status = GovernorApprovalStatus.ReadyApproval
+                    status = GovernorApprovalStatus.TRANSFERRED
                 )
             )
     }

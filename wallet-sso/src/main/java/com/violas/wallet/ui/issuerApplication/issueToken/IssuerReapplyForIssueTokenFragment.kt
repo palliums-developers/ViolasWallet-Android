@@ -44,7 +44,7 @@ class IssuerReapplyForIssueTokenFragment : BaseIssuerApplyForIssueTokenFragment(
             tvSubDesc.text = if (details.unapprovedRemarks.isNullOrEmpty())
                 details.unapprovedReason
             else
-                details.unapprovedReason
+                details.unapprovedRemarks
         } else {
             // 超时计算的规则: 州长未审核前才计算超时
             ivIcon.setBackgroundResource(R.drawable.ic_application_timeout)

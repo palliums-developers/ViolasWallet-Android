@@ -96,7 +96,7 @@ abstract class BaseApprovalMintTokenFragment : BaseFragment() {
     }
 
     protected open fun setApplicationInfo(details: SSOApplicationDetailsDTO) {
-        asivSSOWalletAddress.setContent(details.ssoWalletAddress)
+        asivSSOWalletAddress.setContent(details.issuerWalletAddress)
         asivTokenName.setContent(details.tokenName)
         asivTokenAmount.setContent(convertViolasTokenUnit(details.tokenAmount))
     }
