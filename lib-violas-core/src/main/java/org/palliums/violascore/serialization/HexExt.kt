@@ -1,17 +1,31 @@
 package org.palliums.violascore.serialization
 
-fun ByteArray.toHex() = this.joinToString("") {
-    String.format("%02x", it)
+private val HEX_CHARS = "0123456789ABCDEF".toCharArray()
+private val toHEX = { b: ByteArray ->
+    buildString {
+        b.forEach {
+            val octet = it.toInt()
+            val firstIndex = (octet and 0xF0).ushr(4)
+            val secondIndex = octet and 0x0F
+            append(HEX_CHARS[firstIndex])
+            append(HEX_CHARS[secondIndex])
+        }
+    }
 }
 
-fun String.hexToBytes(): ByteArray {
-    val s = this.replace(" ", "")
-    val byteArray = ByteArray(s.length / 2)
-    for (i in 0 until s.length / 2) {
-        byteArray[i] = s.substring(i * 2, i * 2 + 2).toInt(16).toByte()
+private val hexToBytes = { hex: String ->
+    val len = hex.length
+    val result = ByteArray(len / 2)
+    (0 until len step 2).forEach { i ->
+        result[i.shr(1)] =
+            HEX_CHARS.indexOf(hex[i]).shl(4).or(HEX_CHARS.indexOf(hex[i + 1])).toByte()
     }
-    return byteArray
+    result
 }
+
+fun ByteArray.toHex() = toHEX(this)
+
+fun String.hexToBytes() = hexToBytes(this)
 
 fun ByteArray.putAll(byteArray: ByteArray) {
     this.putAll(byteArray, 0)
