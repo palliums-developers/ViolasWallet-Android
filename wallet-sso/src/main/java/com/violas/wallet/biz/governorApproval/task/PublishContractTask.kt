@@ -3,7 +3,10 @@ package com.violas.wallet.biz.governorApproval.task
 import com.violas.wallet.biz.governorApproval.GovernorApprovalStatus
 import org.palliums.violascore.wallet.Account
 
-class PublishTokenTask(
+/**
+ * 州长 publish 合约的任务
+ */
+class PublishContractTask(
     private val account: Account,
     private val walletAddress: String,
     private val ssoApplicationId: String
@@ -15,11 +18,11 @@ class PublishTokenTask(
             tokenManager.publishContract(account)
         }
 
-        getServiceProvider()!!.getApplySsoRecordDao()
+        getServiceProvider()!!.getSSOApplicationRecordStorage()
             .updateRecordStatus(
                 walletAddress,
                 ssoApplicationId,
-                GovernorApprovalStatus.PublishSuccess
+                GovernorApprovalStatus.PUBLISHED
             )
     }
 }

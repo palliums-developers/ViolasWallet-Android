@@ -8,7 +8,7 @@ import com.palliums.utils.getColor
 import com.violas.wallet.R
 import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
-import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_APPROVE_APPLICATION
+import com.violas.wallet.ui.governorApproval.ApprovalFragmentViewModel.Companion.ACTION_TRANSFER_COIN_TO_ISSUER
 import kotlinx.android.synthetic.main.fragment_apply_for_mintable_progress.*
 
 /**
@@ -32,7 +32,7 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
 
         tvStep1Desc.text =
             getString(R.string.apply_for_mintable_step_1, details.idName, details.tokenName)
-        if (details.applicationStatus == SSOApplicationState.APPLYING_MINTABLE) {
+        if (details.applicationStatus == SSOApplicationState.GOVERNOR_APPROVED) {
             vStep2Line.setBackgroundResource(R.color.color_9D9BA3)
             tvStep2Desc.setTextColor(getColor(R.color.def_text_title))
             return
@@ -48,7 +48,13 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
             ivStep3Icon.setBackgroundResource(R.drawable.ic_application_failed)
             tvStep3Desc.setText(R.string.apply_for_mintable_step_3_2)
             tvStep3Reason.text =
-                getString(R.string.apply_for_mintable_step_3_3, details.unapprovedReason)
+                getString(
+                    R.string.apply_for_mintable_step_3_3,
+                    if (details.unapprovedRemarks.isNullOrEmpty())
+                        details.unapprovedReason
+                    else
+                        details.unapprovedRemarks
+                )
             return
         }
 
@@ -58,12 +64,12 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
         tvTransferAndNotifyDesc.visibility = View.VISIBLE
         tvTransferAndNotifyBtn.visibility = View.VISIBLE
         vApplyingUnpassedBlank.visibility = View.GONE
-        if (details.applicationStatus == SSOApplicationState.TRANSFERRED_AND_NOTIFIED) {
+        if (details.applicationStatus == SSOApplicationState.GOVERNOR_TRANSFERRED) {
             refreshTransferAndNotifyBtn(3)
             return
         }
 
-        mViewModel.mIsTransferredCoinToSSOLD.observe(this, Observer {
+        mViewModel.mIsTransferredCoinToIssuerLD.observe(this, Observer {
             refreshTransferAndNotifyBtn(if (it) 2 else 1)
         })
     }
@@ -93,8 +99,8 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
         super.initEvent()
 
         tvTransferAndNotifyBtn.setOnClickListener {
-            if (mViewModel.mIsTransferredCoinToSSOLD.value == true) {
-                notifySSOCanApplyForMint()
+            if (mViewModel.mIsTransferredCoinToIssuerLD.value == true) {
+                notifyIssuerCanApplyForMint()
             } else {
                 mViewModel.transferCoinToSSO(this, TRANSFER_REQUEST_CODE)
             }
@@ -106,23 +112,23 @@ class ApplyForMintableProgressFragment : BaseApprovalIssueTokenFragment() {
         when (requestCode) {
             TRANSFER_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    notifySSOCanApplyForMint()
+                    notifyIssuerCanApplyForMint()
                 }
             }
         }
     }
 
-    private fun notifySSOCanApplyForMint() {
+    private fun notifyIssuerCanApplyForMint() {
         mViewModel.execute(
-            action = ACTION_APPROVE_APPLICATION,
+            action = ACTION_TRANSFER_COIN_TO_ISSUER,
             failureCallback = {
-                if (mViewModel.mIsTransferredCoinToSSOLD.value != true) {
-                    mViewModel.mIsTransferredCoinToSSOLD.postValue(true)
+                if (mViewModel.mIsTransferredCoinToIssuerLD.value != true) {
+                    mViewModel.mIsTransferredCoinToIssuerLD.postValue(true)
                 }
             }
         ) {
             mSSOApplicationDetails.applicationStatus =
-                SSOApplicationState.TRANSFERRED_AND_NOTIFIED
+                SSOApplicationState.GOVERNOR_TRANSFERRED
             refreshTransferAndNotifyBtn(3)
         }
     }

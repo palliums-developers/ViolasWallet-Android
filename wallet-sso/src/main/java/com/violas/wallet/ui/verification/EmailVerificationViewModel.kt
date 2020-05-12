@@ -31,8 +31,8 @@ class EmailVerificationViewModel : BaseViewModel() {
 
     private lateinit var currentAccount: AccountDO
 
-    private val ssoService by lazy {
-        DataRepository.getSSOService()
+    private val issuerService by lazy {
+        DataRepository.getIssuerService()
     }
 
     private val localUserService by lazy {
@@ -54,7 +54,7 @@ class EmailVerificationViewModel : BaseViewModel() {
 
         // 获取验证码操作
         if (action == ACTION_GET_VERIFICATION_CODE) {
-            ssoService.sendEmailVerifyCode(walletAddress, emailAddress)
+            issuerService.sendEmailVerifyCode(walletAddress, emailAddress)
 
             tipsMessage.postValueSupport(getString(R.string.hint_verification_code_get_success))
             getVerificationCodeResult.postValue(true)
@@ -63,7 +63,7 @@ class EmailVerificationViewModel : BaseViewModel() {
 
         // 绑定邮箱操作
         val verificationCode = params[1] as String
-        ssoService.bindEmail(walletAddress, emailAddress, verificationCode)
+        issuerService.bindEmail(walletAddress, emailAddress, verificationCode)
 
         val emailInfo = EmailInfo(emailAddress, AccountBindingStatus.BOUND)
         localUserService.setEmailInfo(emailInfo)

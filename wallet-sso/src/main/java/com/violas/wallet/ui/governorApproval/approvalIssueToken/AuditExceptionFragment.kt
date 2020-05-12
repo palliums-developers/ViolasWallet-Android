@@ -29,7 +29,10 @@ class AuditExceptionFragment : BaseApprovalIssueTokenFragment() {
             ivIcon.setBackgroundResource(R.drawable.ic_application_failed)
             tvStatusDesc.setText(R.string.token_application_status_desc_unapproved)
             tvSubDescLabel.setText(R.string.token_application_status_label_reason)
-            tvSubDesc.text = details.unapprovedReason
+            tvSubDesc.text = if (details.unapprovedRemarks.isNullOrEmpty())
+                details.unapprovedReason
+            else
+                details.unapprovedRemarks
         } else {
             // 超时计算的规则: 州长未审核前才计算超时
             ivIcon.setBackgroundResource(R.drawable.ic_application_timeout)

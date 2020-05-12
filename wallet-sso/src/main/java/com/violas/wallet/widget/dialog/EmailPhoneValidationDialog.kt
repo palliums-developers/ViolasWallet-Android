@@ -44,8 +44,8 @@ class EmailPhoneValidationDialog : DialogFragment(), CoroutineScope by CustomMai
         com.violas.wallet.biz.AccountManager().currentAccount()
     }
 
-    private val ssoService by lazy {
-        DataRepository.getSSOService()
+    private val issuerService by lazy {
+        DataRepository.getIssuerService()
     }
 
     override fun onCreateView(
@@ -94,7 +94,7 @@ class EmailPhoneValidationDialog : DialogFragment(), CoroutineScope by CustomMai
         mRootView.tvPhoneGetVerificationCode.setOnClickListener {
             (activity as BaseActivity).showProgress()
             launch(Dispatchers.IO) {
-                ssoService.sendPhoneVerifyCode(
+                issuerService.sendPhoneVerifyCode(
                     currentAccount.address,
                     phoneInfo.phoneNumber,
                     phoneInfo.areaCode
@@ -108,7 +108,7 @@ class EmailPhoneValidationDialog : DialogFragment(), CoroutineScope by CustomMai
         mRootView.tvEmailGetVerificationCode.setOnClickListener {
             (activity as BaseActivity).showProgress()
             launch(Dispatchers.IO) {
-                ssoService.sendEmailVerifyCode(
+                issuerService.sendEmailVerifyCode(
                     currentAccount.address,
                     emailInfo.emailAddress
                 )

@@ -33,8 +33,8 @@ class PhoneVerificationViewModel : BaseViewModel() {
 
     private lateinit var currentAccount: AccountDO
 
-    private val ssoService by lazy {
-        DataRepository.getSSOService()
+    private val issuerService by lazy {
+        DataRepository.getIssuerService()
     }
 
     private val localUserService by lazy {
@@ -61,7 +61,7 @@ class PhoneVerificationViewModel : BaseViewModel() {
 
         // 获取验证码操作
         if (action == ACTION_GET_VERIFICATION_CODE) {
-            ssoService.sendPhoneVerifyCode(walletAddress, phoneNumber, areaCode)
+            issuerService.sendPhoneVerifyCode(walletAddress, phoneNumber, areaCode)
 
             tipsMessage.postValueSupport(getString(R.string.hint_verification_code_get_success))
             getVerificationCodeResult.postValue(true)
@@ -70,7 +70,7 @@ class PhoneVerificationViewModel : BaseViewModel() {
 
         // 绑定手机号操作
         val verificationCode = params[1] as String
-        ssoService.bindPhone(walletAddress, phoneNumber, areaCode, verificationCode)
+        issuerService.bindPhone(walletAddress, phoneNumber, areaCode, verificationCode)
 
         val phoneInfo = PhoneInfo(areaCode, phoneNumber, AccountBindingStatus.BOUND)
         localUserService.setPhoneInfo(phoneInfo)

@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.ssoApplication.issueToken
+package com.violas.wallet.ui.issuerApplication.issueToken
 
 import android.os.Bundle
 import com.violas.wallet.R
@@ -6,10 +6,10 @@ import com.violas.wallet.R
 /**
  * 发行商首次申请发币视图
  */
-class SSOApplyForIssueTokenFragment : BaseSSOApplyForIssueTokenFragment() {
+class IssuerApplyForIssueTokenFragment : BaseIssuerApplyForIssueTokenFragment() {
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_sso_apply_for_issue_token
+        return R.layout.fragment_issuer_apply_for_issue_token
     }
 
     override fun initData(savedInstanceState: Bundle?): Boolean {

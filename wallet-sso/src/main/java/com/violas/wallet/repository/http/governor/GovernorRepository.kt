@@ -1,6 +1,9 @@
 package com.violas.wallet.repository.http.governor
 
+import com.palliums.net.RequestException
 import com.palliums.net.checkResponse
+import com.violas.wallet.biz.SSOApplicationState
+import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
@@ -86,86 +89,86 @@ class GovernorRepository(private val api: GovernorApi) {
      * 获取SSO申请详情
      */
     suspend fun getSSOApplicationDetails(
+        walletAddress: String,
         ssoApplicationId: String
-    ) =
-        checkResponse {
-            api.getSSOApplicationDetails(ssoApplicationId)
+    ): SSOApplicationDetailsDTO? {
+        val details =
+            checkResponse {
+                api.getSSOApplicationDetails(walletAddress, ssoApplicationId)
+            }.data
+
+        details?.let {
+            if (it.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
+                && it.tokenIdx == null
+            ) {
+                throw RequestException.responseDataException("Token id cannot be null")
+            } else if ((it.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED
+                        || it.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED)
+                && it.unapprovedReason.isNullOrEmpty()
+                && it.unapprovedRemarks.isNullOrEmpty()
+            ) {
+                throw RequestException.responseDataException(
+                    "Unapproved reasons and unapproved remarks cannot all be empty"
+                )
+            }
+
+            val countryArea = getCountryArea(it.countryCode)
+            it.countryName = countryArea.countryName
         }
+
+        return details
+    }
 
     /**
      * 获取审核SSO申请不通过原因列表
      */
-    suspend fun getUnapproveReasons() =
-        checkResponse(dataNullableOnSuccess = false) {
-            api.getUnapproveReasons()
-        }.data!!
+    suspend fun getUnapproveReasons(): List<UnapproveReasonDTO> {
+        val remoteReasons =
+            checkResponse(dataNullableOnSuccess = false) {
+                api.getUnapproveReasons()
+            }.data!!
+
+        return remoteReasons.map {
+            UnapproveReasonDTO(it.key, it.value)
+        }
+    }
 
     /**
      * 审核不通过SSO申请
      */
     suspend fun unapproveSSOApplication(
         ssoApplicationId: String,
-        ssoWalletAddress: String,
+        issuerWalletAddress: String,
         reasonType: Int,
-        reasonRemark: String = ""
+        reasonRemarks: String = ""
     ) =
         checkResponse {
             val requestBody = """{
     "id":"$ssoApplicationId",
-    "wallet_address":"$ssoWalletAddress",
-    "approval_status":2,
-    "reason_type":$reasonType,
-    "reason_remark":$reasonRemark
+    "address":"$issuerWalletAddress",
+    "status":${SSOApplicationState.GOVERNOR_UNAPPROVED},
+    "reason":$reasonType,
+    "remarks":"$reasonRemarks"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.approvalSSOApplication(requestBody)
+            api.submitSSOApplicationApprovalResults(requestBody)
         }
 
     /**
-     * 申请铸币权
+     * 提交SSO申请审批结果
      */
-    suspend fun applyForMintable(
-        walletAddress: String,
+    suspend fun submitSSOApplicationApprovalResults(
         ssoApplicationId: String,
-        ssoWalletAddress: String
-    ) =
-        checkResponse {
-            val requestBody = """{
-    "wallet_address":"$walletAddress",
-    "id":"$ssoApplicationId",
-    "sso_wallet_address":"$ssoWalletAddress"
-}""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.applyForMintable(requestBody)
-        }
-
-    /**
-     * 审核通过SSO申请
-     */
-    suspend fun approveSSOApplication(
-        ssoApplicationId: String,
-        ssoWalletAddress: String
+        issuerWalletAddress: String,
+        @SSOApplicationState
+        approvalResults: Int
     ) =
         checkResponse {
             val requestBody = """{
     "id":"$ssoApplicationId",
-    "wallet_address":"$ssoWalletAddress",
-    "approval_status":1
+    "address":"$issuerWalletAddress",
+    "status":$approvalResults
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.approvalSSOApplication(requestBody)
-        }
-
-    /**
-     * 改变SSO申请状态为已铸币
-     */
-    suspend fun changeSSOApplicationToMinted(
-        ssoApplicationId: String,
-        ssoWalletAddress: String
-    ) =
-        checkResponse {
-            val requestBody = """{
-    "id":"$ssoApplicationId",
-    "wallet_address":"$ssoWalletAddress"
-}""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.changeSSOApplicationToMinted(requestBody)
+            api.submitSSOApplicationApprovalResults(requestBody)
         }
 
     /**

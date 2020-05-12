@@ -1,35 +1,70 @@
-package com.violas.wallet.repository.http.governor
+package com.violas.wallet.repository.http.issuer
 
+import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.violas.wallet.biz.SSOApplicationState
 import kotlinx.android.parcel.Parcelize
 
-/**
- * Created by elephant on 2020/2/26 18:16.
- * Copyright © 2019-2020. All rights reserved.
- * <p>
- * desc:
- */
-
-data class GovernorInfoDTO(
-    @SerializedName("wallet_address")
-    val walletAddress: String,                      // 钱包地址
+data class UserInfoDTO(
+    @SerializedName("country")
+    val countryCode: String?,
     @SerializedName("name")
-    val name: String,                               // 州长名称
-    @SerializedName("status")
-    val applicationStatus: Int,                     // 申请州长状态 -1: no application; 0: not approved; 1: pass; 2: not pass; 3: published; 4: minted
-    @SerializedName("subaccount_count")
-    val subAccountCount: Long                       // 子账户个数（用于派生铸币账户注册新的module）
+    val idName: String?,
+    @SerializedName("id_number")
+    val idNumber: String?,
+    @SerializedName("id_photo_positive_url")
+    val idPhotoFrontUrl: String?,
+    @SerializedName("id_photo_back_url")
+    val idPhotoBackUrl: String?,
+    @SerializedName("email_address")
+    val emailAddress: String?,
+    @SerializedName("phone_number")
+    val phoneNumber: String?,
+    @SerializedName("phone_local_number")
+    val phoneAreaCode: String?
 )
 
+data class GovernorDTO(
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("wallet_address")
+    val walletAddress: String
+) : Parcelable {
+    fun getNameFirst(): Char {
+        return if (name.isNotEmpty())
+            name.first()
+        else
+            '#'
+    }
+
+    constructor(source: Parcel) : this(
+        source.readString() ?: "",
+        source.readString() ?: ""
+    )
+
+    override fun describeContents() = 0
+
+    override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
+        writeString(name)
+        writeString(walletAddress)
+    }
+
+    companion object {
+        @JvmField
+        val CREATOR: Parcelable.Creator<GovernorDTO> = object : Parcelable.Creator<GovernorDTO> {
+            override fun createFromParcel(source: Parcel): GovernorDTO = GovernorDTO(source)
+            override fun newArray(size: Int): Array<GovernorDTO?> = arrayOfNulls(size)
+        }
+    }
+}
+
 /**
- * SSO申请消息
+ * 发行商申请发行SSO的摘要信息
  */
-data class SSOApplicationMsgDTO(
-    @SerializedName("id")
-    val applicationId: String,                      // 申请ID
+@Parcelize
+data class ApplyForSSOSummaryDTO(
     /**
      * -1: Audit timeout;
      * -2: Governor unapproved;
@@ -43,28 +78,45 @@ data class SSOApplicationMsgDTO(
      */
     @SSOApplicationState
     @SerializedName("approval_status")
-    val applicationStatus: Int,                     // 申请状态
-    @SerializedName("application_date")
-    val applicationDate: Long,                      // 申请日期
-    @SerializedName("expiration_date")
-    val expirationDate: Long,                       // 申请失效日期
-    @SerializedName("name")
-    val applicantIdName: String                     // 申请人身份姓名
-)
+    val applicationStatus: Int,
+    @SerializedName("id")
+    val applicationId: String = "",
+    @SerializedName("token_name")
+    val tokenName: String = "",
+    @SerializedName("token_id")
+    val tokenIdx: Long? = null
+) : Parcelable {
+
+    companion object {
+
+        fun newInstance(details: ApplyForSSODetailsDTO): ApplyForSSOSummaryDTO {
+            return ApplyForSSOSummaryDTO(
+                applicationStatus = details.applicationStatus,
+                applicationId = details.applicationId,
+                tokenName = details.tokenName,
+                tokenIdx = details.tokenIdx
+            )
+        }
+    }
+}
 
 /**
- * SSO申请详情
+ * 发行商申请发行SSO的详细信息
  */
 @Parcelize
-data class SSOApplicationDetailsDTO(
-    @SerializedName("id")
-    val applicationId: String,                      // 申请ID
+data class ApplyForSSODetailsDTO(
     @SSOApplicationState
     @SerializedName("approval_status")
     var applicationStatus: Int,                     // 申请状态
+    @SerializedName("id")
+    val applicationId: String,                      // 申请ID
 
     @SerializedName("wallet_address")
     val issuerWalletAddress: String,                // 发行商的钱包地址
+    @SerializedName("governor_address")
+    val governorWalletAddress: String,              // 州长的钱包地址
+    @SerializedName("governor_name")
+    val governorName: String,                       // 州长的名称
 
     @SerializedName("name")
     val idName: String,                             // 申请者的身份姓名
@@ -92,7 +144,7 @@ data class SSOApplicationDetailsDTO(
     @SerializedName("token_name")
     val tokenName: String,                          // 稳定币名称
     @SerializedName("token_value")
-    val tokenValue: Int,                            // 稳定币价值（单位发币种类）
+    val tokenValue: Int,                            // 稳定币价值（单位法币种类）
     @SerializedName("token_id")
     val tokenIdx: Long? = null,                     // 稳定币索引
     @SerializedName("reserve_photo_url")
@@ -112,10 +164,4 @@ data class SSOApplicationDetailsDTO(
     val unapprovedReason: String? = null,           // 州长董事长未批准时的原因
     @SerializedName("remarks")
     val unapprovedRemarks: String? = null           // 州长董事长未批准选择其它时的备注
-) : Parcelable
-
-@Parcelize
-data class UnapproveReasonDTO(
-    val type: Int,                  // 原因类型 -1: 其他
-    val desc: String                // 原因描述
 ) : Parcelable

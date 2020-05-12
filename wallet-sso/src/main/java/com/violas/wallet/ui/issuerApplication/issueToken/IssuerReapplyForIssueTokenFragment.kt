@@ -1,11 +1,12 @@
-package com.violas.wallet.ui.ssoApplication.issueToken
+package com.violas.wallet.ui.issuerApplication.issueToken
 
 import android.view.View
 import com.palliums.utils.formatDate
 import com.palliums.utils.getColor
 import com.violas.wallet.R
 import com.violas.wallet.biz.SSOApplicationState
-import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
+import com.violas.wallet.repository.http.issuer.ApplyForSSODetailsDTO
+import com.violas.wallet.repository.http.issuer.GovernorDTO
 import com.violas.wallet.ui.selectCurrency.CurrencyFactory
 import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.layout_apply_for_issue_token.*
@@ -17,21 +18,21 @@ import kotlinx.coroutines.withContext
 /**
  * 发行商重新申请发币视图（审核失败和审核失败时，基于上一次提交的信息继续申请）
  */
-class SSOReapplyForIssueTokenFragment : BaseSSOApplyForIssueTokenFragment() {
+class IssuerReapplyForIssueTokenFragment : BaseIssuerApplyForIssueTokenFragment() {
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_sso_reapply_for_issue_token
+        return R.layout.fragment_issuer_reapply_for_issue_token
     }
 
     override fun initView() {
         super.initView()
 
-        mSSOApplicationDetails?.let {
-            setApplicationInfo(it)
+        mApplyForSSODetails?.let {
+            setApplyForSSOInfo(it)
         }
     }
 
-    private fun setApplicationInfo(details: SSOApplicationDetailsDTO) {
+    private fun setApplyForSSOInfo(details: ApplyForSSODetailsDTO) {
         tvStatusDesc.setTextColor(getColor(R.color.color_F55753))
         llSubDesc.visibility = View.VISIBLE
         if (details.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED
@@ -40,7 +41,10 @@ class SSOReapplyForIssueTokenFragment : BaseSSOApplyForIssueTokenFragment() {
             ivIcon.setBackgroundResource(R.drawable.ic_application_failed)
             tvStatusDesc.setText(R.string.sso_application_details_status_4)
             tvSubDescLabel.setText(R.string.token_application_status_label_reason)
-            tvSubDesc.text = details.unapprovedReason
+            tvSubDesc.text = if (details.unapprovedRemarks.isNullOrEmpty())
+                details.unapprovedReason
+            else
+                details.unapprovedRemarks
         } else {
             // 超时计算的规则: 州长未审核前才计算超时
             ivIcon.setBackgroundResource(R.drawable.ic_application_timeout)
@@ -64,6 +68,11 @@ class SSOReapplyForIssueTokenFragment : BaseSSOApplyForIssueTokenFragment() {
                 tvContent.text = it.currency
                 tvStableCurrencyValue.setContent("${it.exchange}")
             }
+        }
+
+        mCurrencyGovernorBean = GovernorDTO(details.governorName, details.governorWalletAddress)
+        mCurrencyGovernorBean?.let {
+            tvGovernorContent.text = it.name
         }
 
         itemCoinNumber.setContent(convertViolasTokenUnit(details.tokenAmount))

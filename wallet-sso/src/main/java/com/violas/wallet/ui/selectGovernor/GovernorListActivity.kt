@@ -26,8 +26,8 @@ class GovernorListActivity : BaseAppActivity() {
         }
     }
 
-    private val mSSORepository by lazy {
-        DataRepository.getSSOService()
+    private val mIssuerRepository by lazy {
+        DataRepository.getIssuerService()
     }
     override fun getLayoutResId(): Int {
         return R.layout.activity_select_currency
@@ -42,7 +42,7 @@ class GovernorListActivity : BaseAppActivity() {
         recyclerView.layoutManager = layoutManager
 
         launch(Dispatchers.IO) {
-            val currency = (mSSORepository.getGovernorList().data?:ArrayList()).sortedBy { it.name }
+            val currency = (mIssuerRepository.getGovernorList().data?:ArrayList()).sortedBy { it.name }
 
             val currencyAdapter =
                 GovernorAdapter(this@GovernorListActivity, ArrayList(currency)) {

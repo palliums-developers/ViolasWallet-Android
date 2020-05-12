@@ -70,7 +70,7 @@
                 tools:background="@color/white">
 
                 <Button
-                    android:id="@+id/btnApproveAndApplyForMintPower"
+                    android:id="@+id/btnApprove"
                     style="@style/BaseButtonPrimary"
                     android:text="@string/action_approve_and_apply_for_mint_power" />
 

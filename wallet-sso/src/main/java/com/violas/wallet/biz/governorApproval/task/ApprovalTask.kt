@@ -17,7 +17,7 @@ abstract class ApprovalTask {
 }
 
 interface ServiceProvider {
-    fun getApplySsoRecordDao(): SSOApplicationRecorDao
+    fun getSSOApplicationRecordStorage(): SSOApplicationRecorDao
     fun getGovernorService(): GovernorRepository
     fun getTokenManager():TokenManager
 }

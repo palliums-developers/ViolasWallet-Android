@@ -1,6 +1,6 @@
 package com.violas.wallet.event
 
-import com.violas.wallet.repository.http.sso.ApplyForStatusDTO
+import com.violas.wallet.repository.http.issuer.ApplyForSSOSummaryDTO
 
 /**
  * Created by elephant on 2020/5/7 17:31.
@@ -8,4 +8,4 @@ import com.violas.wallet.repository.http.sso.ApplyForStatusDTO
  * <p>
  * desc:
  */
-class SSOApplicationChangeEvent(val status: ApplyForStatusDTO?)
+class SSOApplicationChangeEvent(val summary: ApplyForSSOSummaryDTO?)

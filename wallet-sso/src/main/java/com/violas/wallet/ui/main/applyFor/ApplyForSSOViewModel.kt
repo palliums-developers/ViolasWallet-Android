@@ -1,6 +1,5 @@
 package com.violas.wallet.ui.main.applyFor
 
-import android.util.Log
 import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -14,7 +13,7 @@ import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SSOApplicationChangeEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.repository.http.sso.ApplyForStatusDTO
+import com.violas.wallet.repository.http.issuer.ApplyForSSOSummaryDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -29,11 +28,11 @@ class ApplyForSSOViewModel : BaseViewModel() {
         const val CODE_AUTHENTICATION_COMPLETE = CODE_AUTHENTICATION_ACCOUNT + 1
     }
 
-    private val mSSOService by lazy { DataRepository.getSSOService() }
+    private val mIssuerService by lazy { DataRepository.getIssuerService() }
     private val mTokenManager by lazy { TokenManager() }
 
     val mAccountDOLiveData = MutableLiveData<AccountDO>()
-    val mIssueSSOStatusLiveData = EnhancedMutableLiveData<ApplyForStatusDTO>()
+    val mApplyForSSOSummaryLiveData = EnhancedMutableLiveData<ApplyForSSOSummaryDTO>()
 
     init {
         EventBus.getDefault().register(this)
@@ -50,30 +49,32 @@ class ApplyForSSOViewModel : BaseViewModel() {
 
     @Subscribe
     fun onSSOApplicationChangeEvent(event: SSOApplicationChangeEvent) {
-        val issueSSOStatus =
-            event.status ?: ApplyForStatusDTO(CODE_AUTHENTICATION_COMPLETE)
-        mIssueSSOStatusLiveData.postValueSupport(issueSSOStatus)
+        mApplyForSSOSummaryLiveData.postValueSupport(
+            event.summary ?: ApplyForSSOSummaryDTO(CODE_AUTHENTICATION_COMPLETE)
+        )
     }
 
     @Subscribe
     fun onAuthenticationCompleteEvent(event: AuthenticationCompleteEvent) {
-        mIssueSSOStatusLiveData.postValueSupport(ApplyForStatusDTO(CODE_AUTHENTICATION_COMPLETE))
+        mApplyForSSOSummaryLiveData.postValueSupport(
+            ApplyForSSOSummaryDTO(CODE_AUTHENTICATION_COMPLETE)
+        )
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        val issueSSOStatus = coroutineScope {
+        val summary = coroutineScope {
             val userInfoDeferred =
                 async {
-                    mSSOService.loadUserInfo(mAccountDOLiveData.value!!.address)?.data
+                    mIssuerService.loadUserInfo(mAccountDOLiveData.value!!.address).data
                 }
 
-            val remoteIssueSSOStatusDeferred =
+            val remoteApplyForSSOSummaryDeferred =
                 async {
-                    mSSOService.selectApplyForStatus(mAccountDOLiveData.value!!.address)?.data
+                    mIssuerService.queryApplyForIssueSSOSummary(mAccountDOLiveData.value!!.address)
                 }
 
             val userInfo = userInfoDeferred.await()
-            val remoteIssueSSOStatus = remoteIssueSSOStatusDeferred.await()
+            val remoteSummary = remoteApplyForSSOSummaryDeferred.await()
 
             if (userInfo == null
                 || userInfo.countryCode.isNullOrEmpty()
@@ -85,28 +86,25 @@ class ApplyForSSOViewModel : BaseViewModel() {
                 || userInfo.phoneNumber.isNullOrEmpty()
                 || userInfo.phoneAreaCode.isNullOrEmpty()
             ) {
-                return@coroutineScope ApplyForStatusDTO(CODE_AUTHENTICATION_ACCOUNT)
+                return@coroutineScope ApplyForSSOSummaryDTO(CODE_AUTHENTICATION_ACCOUNT)
             }
 
-            if (remoteIssueSSOStatus == null) {
-                return@coroutineScope ApplyForStatusDTO(CODE_AUTHENTICATION_COMPLETE)
+            if (remoteSummary == null) {
+                return@coroutineScope ApplyForSSOSummaryDTO(CODE_AUTHENTICATION_COMPLETE)
             }
 
-            if (remoteIssueSSOStatus.approvalStatus == SSOApplicationState.MINTED_TOKEN) {
-                refreshAssert(mAccountDOLiveData.value!!, remoteIssueSSOStatus)
+            if (remoteSummary.applicationStatus == SSOApplicationState.GOVERNOR_MINTED) {
+                refreshAssert(mAccountDOLiveData.value!!, remoteSummary)
             }
 
-
-            Log.e("TEST", "coroutineScope =>  end")
-            return@coroutineScope remoteIssueSSOStatus!!
+            return@coroutineScope remoteSummary!!
         }
 
-        mIssueSSOStatusLiveData.postValueSupport(issueSSOStatus)
-        Log.e("TEST", "realExecute =>  end")
+        mApplyForSSOSummaryLiveData.postValueSupport(summary)
     }
 
-    private fun refreshAssert(account: AccountDO, applyToken: ApplyForStatusDTO) {
-        if (mTokenManager.findTokenByTokenAddress(account.id, applyToken.tokenIdx) != null) {
+    private fun refreshAssert(account: AccountDO, summary: ApplyForSSOSummaryDTO) {
+        if (mTokenManager.findTokenByTokenAddress(account.id, summary.tokenIdx!!) != null) {
             return
         }
 
@@ -114,9 +112,9 @@ class ApplyForSSOViewModel : BaseViewModel() {
             true,
             AssertToken(
                 account_id = account.id,
-                tokenIdx = applyToken.tokenIdx,
-                name = applyToken.tokenName,
-                fullName = applyToken.tokenName,
+                tokenIdx = summary.tokenIdx,
+                name = summary.tokenName,
+                fullName = summary.tokenName,
                 enable = true
             )
         )

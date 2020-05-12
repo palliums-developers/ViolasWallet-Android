@@ -1,59 +1,57 @@
 package com.violas.wallet.biz.governorApproval
 
 import androidx.annotation.IntDef
-import com.palliums.content.ContextProvider
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.governorApproval.task.ApprovalTask
 import com.violas.wallet.biz.governorApproval.task.ServiceProvider
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.database.AppDatabase
 import com.violas.wallet.repository.database.dao.SSOApplicationRecorDao
 import com.violas.wallet.repository.database.entity.SSOApplicationRecordDo
 import com.violas.wallet.repository.http.governor.GovernorRepository
 import java.util.*
 
 @IntDef(
-    GovernorApprovalStatus.None,
-    GovernorApprovalStatus.ReadyApproval,
-    GovernorApprovalStatus.Approval,
-    GovernorApprovalStatus.PublishSuccess,
-    GovernorApprovalStatus.MintSuccess
+    GovernorApprovalStatus.NONE,
+    GovernorApprovalStatus.TRANSFERRED,
+    GovernorApprovalStatus.NOTIFIED,
+    GovernorApprovalStatus.PUBLISHED,
+    GovernorApprovalStatus.MINTED
 )
-annotation class GovernorApprovalStatus{
-    companion object{
+annotation class GovernorApprovalStatus {
+    companion object {
         /**
          * 没有任何准备
          */
-        const val None = 0
+        const val NONE = 0
 
         /**
-         * 已经可以审批 SSO 申请
+         * 已转平台币给发行商
          */
-        const val ReadyApproval = 1
+        const val TRANSFERRED = 1
 
         /**
-         * 审批 SSO 申请完成
+         * 已通知发行商可以申请铸币
          */
-        const val Approval = 2
+        const val NOTIFIED = 2
 
         /**
-         * publish 合约成功
+         * 已 publish 合约
          */
-        const val PublishSuccess = 3
+        const val PUBLISHED = 3
 
         /**
-         * Mint 币成功
+         * 已铸稳定币给发行商
          */
-        const val MintSuccess = 4
+        const val MINTED = 4
     }
 }
 
 class ApprovalEngine {
 
-    private val mApplyHandles = LinkedList<ApprovalTask>()
+    private val mApprovalTasks = LinkedList<ApprovalTask>()
 
-    private val mApplySsoRecordDao by lazy {
-        AppDatabase.getInstance(ContextProvider.getContext()).ssoApplicationRecordDao()
+    private val mSSOApplicationRecordStorage by lazy {
+        DataRepository.getSSOApplicationRecordStorage()
     }
 
     private val mGovernorService by lazy {
@@ -64,10 +62,10 @@ class ApprovalEngine {
         TokenManager()
     }
 
-    fun addApplyHandle(handle: ApprovalTask) {
-        handle.setServiceProvider(object : ServiceProvider {
-            override fun getApplySsoRecordDao(): SSOApplicationRecorDao {
-                return mApplySsoRecordDao
+    fun addApprovalTask(task: ApprovalTask) {
+        task.setServiceProvider(object : ServiceProvider {
+            override fun getSSOApplicationRecordStorage(): SSOApplicationRecorDao {
+                return mSSOApplicationRecordStorage
             }
 
             override fun getGovernorService(): GovernorRepository {
@@ -78,33 +76,36 @@ class ApprovalEngine {
                 return mTokenManager
             }
         })
-        mApplyHandles.add(handle)
+        mApprovalTasks.add(task)
     }
 
-    fun getUnApproveRecord(walletAddress: String, ssoWalletAddress: String): SSOApplicationRecordDo? {
-        return mApplySsoRecordDao.findUnApproveRecord(walletAddress, ssoWalletAddress)
+    fun getUnTransferRecord(
+        walletAddress: String,
+        ssoWalletAddress: String
+    ): SSOApplicationRecordDo? {
+        return mSSOApplicationRecordStorage.findUnApproveRecord(walletAddress, ssoWalletAddress)
     }
 
     fun getUnMintRecord(walletAddress: String, ssoWalletAddress: String): SSOApplicationRecordDo? {
-        return mApplySsoRecordDao.findUnMintRecord(walletAddress, ssoWalletAddress)
+        return mSSOApplicationRecordStorage.findUnMintRecord(walletAddress, ssoWalletAddress)
     }
 
-    suspend fun execSSOApply(status: Int? = GovernorApprovalStatus.None) {
-        val currentStatus = status ?: GovernorApprovalStatus.None
-        for (index in GovernorApprovalStatus.None until currentStatus) {
-            mApplyHandles.removeAt(0)
+    suspend fun execTransfer(status: Int? = GovernorApprovalStatus.NONE) {
+        val currentStatus = status ?: GovernorApprovalStatus.NONE
+        for (index in GovernorApprovalStatus.NONE until currentStatus) {
+            mApprovalTasks.removeAt(0)
         }
-        for (item in mApplyHandles) {
+        for (item in mApprovalTasks) {
             item.handle()
         }
     }
 
-    suspend fun execMint(status: Int? = GovernorApprovalStatus.Approval) {
-        val currentStatus = status ?: GovernorApprovalStatus.Approval
-        for (index in GovernorApprovalStatus.Approval until currentStatus) {
-            mApplyHandles.removeAt(0)
+    suspend fun execMint(status: Int? = GovernorApprovalStatus.NOTIFIED) {
+        val currentStatus = status ?: GovernorApprovalStatus.NOTIFIED
+        for (index in GovernorApprovalStatus.NOTIFIED until currentStatus) {
+            mApprovalTasks.removeAt(0)
         }
-        for (item in mApplyHandles) {
+        for (item in mApprovalTasks) {
             item.handle()
         }
     }

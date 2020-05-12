@@ -1,29 +1,38 @@
-package com.violas.wallet.repository.http.sso
+package com.violas.wallet.repository.http.issuer
 
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
-import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
 
-interface SSOApi {
+interface IssuerApi {
+
     @GET("/1.0/violas/sso/user")
     suspend fun loadUserInfo(@Query("address") address: String): Response<UserInfoDTO>
 
-    @POST("/1.0/violas/sso/token")
-    suspend fun applyForIssuing(@Body body: RequestBody): Response<Any>
-
-    @GET("/1.0/violas/sso/token")
-    suspend fun selectApplyForStatus(@Query("address") address: String): Response<ApplyForStatusDTO>
+    /**
+     * 查询发行商申请发行SSO的摘要信息
+     */
+    @GET("/1.0/violas/sso/token/status")
+    suspend fun queryApplyForIssueSSOSummary(
+        @Query("address") walletAddress: String
+    ): Response<ApplyForSSOSummaryDTO>
 
     /**
-     * 获取SSO申请详情
+     * 获取发行商申请发行SSO的详细信息
      */
     @GET("/1.0/violas/sso/token")
-    suspend fun getSSOApplicationDetails(
-        @Query("address") address: String
-    ): Response<SSOApplicationDetailsDTO>
+    suspend fun getApplyForIssueSSODetails(
+        @Query("address") walletAddress: String,
+        @Query("id") ssoApplicationId: String
+    ): Response<ApplyForSSODetailsDTO>
+
+    /**
+     * 申请发行稳定币
+     */
+    @POST("/1.0/violas/sso/token")
+    suspend fun applyForIssueSSO(@Body body: RequestBody): Response<Any>
 
     @PUT("/1.0/violas/sso/token")
     suspend fun changePublishStatus(@Body body: RequestBody): Response<Any>

@@ -1,9 +1,9 @@
-package com.violas.wallet.ui.ssoApplication.issueToken
+package com.violas.wallet.ui.issuerApplication.issueToken
 
 import com.palliums.utils.formatDate
 import com.violas.wallet.R
 import com.violas.wallet.image.viewImage
-import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
+import com.violas.wallet.repository.http.issuer.ApplyForSSODetailsDTO
 import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.layout_approval_issue_token_info.*
 
@@ -13,15 +13,15 @@ import kotlinx.android.synthetic.main.layout_approval_issue_token_info.*
  * <p>
  * desc: 发行商申请发币审核中视图
  */
-class SSOIssueTokenAuditingFragment : BaseSSOIssueTokenFragment() {
+class IssuerIssueTokenAuditingFragment : BaseIssuerIssueTokenFragment() {
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_sso_issue_token_auditing
+        return R.layout.fragment_issuer_issue_token_auditing
     }
 
     override fun initView() {
         super.initView()
-        mSSOApplicationDetails?.let { setApplicationInfo(it) }
+        mApplyForSSODetails?.let { setApplicationInfo(it) }
     }
 
     override fun initEvent() {
@@ -29,33 +29,33 @@ class SSOIssueTokenAuditingFragment : BaseSSOIssueTokenFragment() {
 
         uivReservePhoto.setOnClickListener {
             uivReservePhoto.getContentImageView()?.let {
-                mSSOApplicationDetails?.reservePhotoUrl?.let { url ->
+                mApplyForSSODetails?.reservePhotoUrl?.let { url ->
                     it.viewImage(url)
                 }
             }
         }
         uivBankChequePhotoPositive.setOnClickListener {
             uivBankChequePhotoPositive.getContentImageView()?.let {
-                mSSOApplicationDetails?.bankChequePhotoPositiveUrl?.let { url ->
+                mApplyForSSODetails?.bankChequePhotoPositiveUrl?.let { url ->
                     it.viewImage(url)
                 }
             }
         }
         uivBankChequePhotoBack.setOnClickListener {
             uivBankChequePhotoBack.getContentImageView()?.let {
-                mSSOApplicationDetails?.bankChequePhotoBackUrl?.let { url ->
+                mApplyForSSODetails?.bankChequePhotoBackUrl?.let { url ->
                     it.viewImage(url)
                 }
             }
         }
     }
 
-    private fun setApplicationInfo(details: SSOApplicationDetailsDTO) {
+    private fun setApplicationInfo(details: ApplyForSSODetailsDTO) {
         asivFiatCurrencyType.setContent(details.fiatCurrencyType)
         asivTokenAmount.setContent(convertViolasTokenUnit(details.tokenAmount))
         asivTokenValue.setContent("${details.tokenValue}${details.fiatCurrencyType}")
         asivTokenName.setContent(details.tokenName)
-        asivSSOWalletAddress.setContent(details.ssoWalletAddress)
+        asivSSOWalletAddress.setContent(details.issuerWalletAddress)
         asivApplicationDate.setContent(
             formatDate(details.applicationDate, pattern = "yyyy.MM.dd HH:mm")
         )

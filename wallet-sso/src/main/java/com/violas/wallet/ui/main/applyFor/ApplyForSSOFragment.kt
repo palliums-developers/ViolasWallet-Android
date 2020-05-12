@@ -7,7 +7,7 @@ import com.palliums.base.BaseFragment
 import com.palliums.net.RequestException
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
-import com.violas.wallet.repository.http.sso.ApplyForStatusDTO
+import com.violas.wallet.repository.http.issuer.ApplyForSSOSummaryDTO
 import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_AUTHENTICATION_ACCOUNT
 import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_AUTHENTICATION_COMPLETE
 import kotlinx.android.synthetic.main.fragment_apply_for_sso.*
@@ -56,7 +56,7 @@ class ApplyForSSOFragment : BaseFragment() {
             }
         })
 
-        mViewModel.mIssueSSOStatusLiveData.observe(this, Observer {
+        mViewModel.mApplyForSSOSummaryLiveData.observe(this, Observer {
             it.getDataIfNotHandled()?.let { status ->
                 loadFragment(status)
             }
@@ -94,18 +94,18 @@ class ApplyForSSOFragment : BaseFragment() {
         }
     }
 
-    private fun loadFragment(issueSSOStatus: ApplyForStatusDTO) {
-        val fragment = when (issueSSOStatus.approvalStatus) {
+    private fun loadFragment(summary: ApplyForSSOSummaryDTO) {
+        val fragment = when (summary.applicationStatus) {
             CODE_AUTHENTICATION_ACCOUNT -> {
-                SSOVerifyUserInfoFragment()
+                VerifyIssuerAccountFragment()
             }
 
             CODE_AUTHENTICATION_COMPLETE -> {
-                SSOVerifySuccessFragment()
+                VerifyIssuerAccountSuccessFragment()
             }
 
             else -> {
-                SSOApplicationStatusFragment.getInstance(issueSSOStatus)
+                IssuerApplyForSSOStatusFragment.getInstance(summary)
             }
         }
 

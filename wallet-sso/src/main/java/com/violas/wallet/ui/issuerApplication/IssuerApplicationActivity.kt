@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.ssoApplication
+package com.violas.wallet.ui.issuerApplication
 
 import android.content.Context
 import android.content.Intent
@@ -12,49 +12,49 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
-import com.violas.wallet.repository.http.sso.ApplyForStatusDTO
-import com.violas.wallet.ui.ssoApplication.issueToken.SSOApplyForIssueTokenFragment
-import com.violas.wallet.ui.ssoApplication.issueToken.SSOIssueTokenAuditingFragment
-import com.violas.wallet.ui.ssoApplication.issueToken.SSOReapplyForIssueTokenFragment
-import com.violas.wallet.ui.ssoApplication.mintToken.SSOApplyForMintTokenFragment
-import com.violas.wallet.ui.ssoApplication.mintToken.SSOMintTokenProgressFragment
-import kotlinx.android.synthetic.main.activity_sso_application.*
+import com.violas.wallet.repository.http.issuer.ApplyForSSODetailsDTO
+import com.violas.wallet.repository.http.issuer.ApplyForSSOSummaryDTO
+import com.violas.wallet.ui.issuerApplication.issueToken.IssuerApplyForIssueTokenFragment
+import com.violas.wallet.ui.issuerApplication.issueToken.IssuerIssueTokenAuditingFragment
+import com.violas.wallet.ui.issuerApplication.issueToken.IssuerReapplyForIssueTokenFragment
+import com.violas.wallet.ui.issuerApplication.mintToken.IssuerApplyForMintTokenFragment
+import com.violas.wallet.ui.issuerApplication.mintToken.IssuerMintTokenProgressFragment
+import kotlinx.android.synthetic.main.activity_issuer_application.*
 
 /**
  * Created by elephant on 2020/5/7 16:31.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 发行商申请发币业务页面
+ * desc: 发行商申请发行SSO业务页面
  */
-class SSOApplicationActivity : BaseAppActivity() {
+class IssuerApplicationActivity : BaseAppActivity() {
 
     companion object {
 
-        fun start(context: Context, applicationMsg: ApplyForStatusDTO) {
-            Intent(context, SSOApplicationActivity::class.java)
-                .apply { putExtra(KEY_ONE, applicationMsg) }
+        fun start(context: Context, summary: ApplyForSSOSummaryDTO) {
+            Intent(context, IssuerApplicationActivity::class.java)
+                .apply { putExtra(KEY_ONE, summary) }
                 .start(context)
         }
 
-        fun start(context: Context, applicationDetails: SSOApplicationDetailsDTO) {
-            start(context, ApplyForStatusDTO.newInstance(applicationDetails))
+        fun start(context: Context, details: ApplyForSSODetailsDTO) {
+            start(context, ApplyForSSOSummaryDTO.newInstance(details))
         }
 
         fun start(context: Context) {
-            start(context, ApplyForStatusDTO(Int.MIN_VALUE))
+            start(context, ApplyForSSOSummaryDTO(Int.MIN_VALUE))
         }
     }
 
-    private lateinit var mSSOApplicationMsg: ApplyForStatusDTO
+    private lateinit var mApplyForSSOSummary: ApplyForSSOSummaryDTO
 
     private val mViewModel by lazy {
-        ViewModelProvider(this, SSOApplicationParentViewModelFactory(mSSOApplicationMsg))
-            .get(SSOApplicationParentViewModel::class.java)
+        ViewModelProvider(this, IssuerApplicationParentViewModelFactory(mApplyForSSOSummary))
+            .get(IssuerApplicationParentViewModel::class.java)
     }
 
     override fun getLayoutResId(): Int {
-        return R.layout.activity_sso_application
+        return R.layout.activity_issuer_application
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,22 +69,22 @@ class SSOApplicationActivity : BaseAppActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_ONE, mSSOApplicationMsg)
+        outState.putParcelable(KEY_ONE, mApplyForSSOSummary)
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
-        var applicationMsg: ApplyForStatusDTO? = null
+        var summary: ApplyForSSOSummaryDTO? = null
         if (savedInstanceState != null) {
-            applicationMsg = savedInstanceState.getParcelable(KEY_ONE)
+            summary = savedInstanceState.getParcelable(KEY_ONE)
         } else if (intent != null) {
-            applicationMsg = intent.getParcelableExtra(KEY_ONE)
+            summary = intent.getParcelableExtra(KEY_ONE)
         }
 
-        if (applicationMsg == null) {
+        if (summary == null) {
             return false
         }
 
-        mSSOApplicationMsg = applicationMsg
+        mApplyForSSOSummary = summary
         return true
     }
 
@@ -103,11 +103,11 @@ class SSOApplicationActivity : BaseAppActivity() {
             }
         })
 
-        mViewModel.mSSOApplicationDetailsLD.observe(this, Observer {
+        mViewModel.mApplyForSSODetailsLiveData.observe(this, Observer {
             loadFragment(it)
         })
 
-        mViewModel.mAccountLD.observe(this, Observer {
+        mViewModel.mAccountDOLiveData.observe(this, Observer {
             loadApplicationDetails()
         })
     }
@@ -136,33 +136,33 @@ class SSOApplicationActivity : BaseAppActivity() {
         }
     }
 
-    private fun loadFragment(details: SSOApplicationDetailsDTO?) {
+    private fun loadFragment(details: ApplyForSSODetailsDTO?) {
         if (details == null) {
-            loadRootFragment(R.id.flFragmentContainer, SSOApplyForIssueTokenFragment())
+            loadRootFragment(R.id.flFragmentContainer, IssuerApplyForIssueTokenFragment())
             return
         }
 
         val fragment = when (details.applicationStatus) {
-            SSOApplicationState.APPLYING_ISSUE_TOKEN -> {
-                    SSOIssueTokenAuditingFragment()
+            SSOApplicationState.ISSUER_APPLYING -> {
+                    IssuerIssueTokenAuditingFragment()
             }
 
-            SSOApplicationState.APPLYING_MINTABLE,
-            SSOApplicationState.GIVEN_MINTABLE -> {
-                SSOIssueTokenAuditingFragment()
+            SSOApplicationState.GOVERNOR_APPROVED,
+            SSOApplicationState.CHAIRMAN_APPROVED -> {
+                IssuerIssueTokenAuditingFragment()
             }
 
-            SSOApplicationState.TRANSFERRED_AND_NOTIFIED -> {
-                SSOApplyForMintTokenFragment()
+            SSOApplicationState.GOVERNOR_TRANSFERRED -> {
+                IssuerApplyForMintTokenFragment()
             }
 
-            SSOApplicationState.APPLYING_MINT_TOKEN,
-            SSOApplicationState.MINTED_TOKEN -> {
-                SSOMintTokenProgressFragment()
+            SSOApplicationState.ISSUER_PUBLISHED,
+            SSOApplicationState.GOVERNOR_MINTED -> {
+                IssuerMintTokenProgressFragment()
             }
 
             else -> {
-                SSOReapplyForIssueTokenFragment()
+                IssuerReapplyForIssueTokenFragment()
             }
         }.apply {
             arguments = Bundle().apply { putParcelable(KEY_ONE, details) }

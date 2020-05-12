@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.View
 import com.palliums.base.BaseFragment
 import com.violas.wallet.R
-import com.violas.wallet.ui.ssoApplication.SSOApplicationActivity
-import kotlinx.android.synthetic.main.fragment_verify_user_info.*
+import com.violas.wallet.ui.issuerApplication.IssuerApplicationActivity
+import kotlinx.android.synthetic.main.fragment_verify_issuer_account_success.*
 
 /**
- * 验证发行商用户信息成功视图
+ * 验证发行商账户成功视图
  */
-class SSOVerifySuccessFragment : BaseFragment() {
+class VerifyIssuerAccountSuccessFragment : BaseFragment() {
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_sso_verify_success
+        return R.layout.fragment_verify_issuer_account_success
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -21,7 +21,7 @@ class SSOVerifySuccessFragment : BaseFragment() {
 
         btnGo.setOnClickListener {
             activity?.let { it1 ->
-                SSOApplicationActivity.start(it1)
+                IssuerApplicationActivity.start(it1)
             }
         }
     }
