@@ -7,7 +7,8 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.target.Target
 import com.palliums.utils.isFastMultiClick
 import com.violas.wallet.R
 import com.violas.wallet.image.GlideApp
@@ -106,7 +107,8 @@ class IDCardLayout : FrameLayout, View.OnClickListener {
         GlideApp.with(context)
             .load(data)
             .centerCrop()
-            .transition(withCrossFade())
+            .transition(DrawableTransitionOptions.withCrossFade())
+            //.override(Target.SIZE_ORIGINAL)
             .placeholder(idCardDefault)
             .error(idCardDefault)
             .into(ivIdCard)

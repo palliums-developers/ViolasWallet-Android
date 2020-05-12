@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.target.Target
 import com.violas.wallet.R
 import com.violas.wallet.image.GlideApp
@@ -73,7 +74,8 @@ class UploadImageView : LinearLayout {
             GlideApp.with(this)
                 .load(imageUrl)
                 .centerCrop()
-                .override(Target.SIZE_ORIGINAL)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                //.override(Target.SIZE_ORIGINAL)
                 .placeholder(R.drawable.shape_bg_photo)
                 .error(R.drawable.shape_bg_photo)
                 .into(it)
