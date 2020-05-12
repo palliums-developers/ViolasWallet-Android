@@ -42,7 +42,7 @@ class IssuerApplicationActivity : BaseAppActivity() {
         }
 
         fun start(context: Context) {
-            start(context, ApplyForSSOSummaryDTO(Int.MIN_VALUE))
+            start(context, ApplyForSSOSummaryDTO(SSOApplicationState.IDLE))
         }
     }
 
@@ -143,10 +143,7 @@ class IssuerApplicationActivity : BaseAppActivity() {
         }
 
         val fragment = when (details.applicationStatus) {
-            SSOApplicationState.ISSUER_APPLYING -> {
-                    IssuerIssueTokenAuditingFragment()
-            }
-
+            SSOApplicationState.ISSUER_APPLYING,
             SSOApplicationState.GOVERNOR_APPROVED,
             SSOApplicationState.CHAIRMAN_APPROVED -> {
                 IssuerIssueTokenAuditingFragment()

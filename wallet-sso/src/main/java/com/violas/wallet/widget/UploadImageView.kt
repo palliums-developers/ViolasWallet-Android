@@ -84,28 +84,33 @@ class UploadImageView : LinearLayout {
 
     fun setContentImage(drawable: Drawable?) {
         drawable?.let {
-            view?.ivContent?.setImageDrawable(drawable)
             view?.ivClose?.visibility = View.VISIBLE
             view?.ivAdd?.visibility = View.GONE
             view?.tvDesc?.visibility = View.GONE
+            view?.ivContent?.background = null
+            view?.ivContent?.setImageDrawable(drawable)
         }
     }
 
     fun closeContentImage() {
+        view?.progress?.visibility = View.GONE
         view?.ivClose?.visibility = View.GONE
         view?.ivAdd?.visibility = View.VISIBLE
         view?.tvDesc?.visibility = View.VISIBLE
-        view?.progress?.visibility = View.GONE
+        view?.ivContent?.let {
+            it.setBackgroundResource(R.drawable.shape_bg_photo)
+            it.setImageDrawable(null)
+        }
         closeCallBack?.invoke()
     }
 
     fun startLoadingImage() {
         view?.progress?.visibility = View.VISIBLE
-        view?.ivAdd?.visibility = View.GONE
-        view?.tvDesc?.visibility = View.GONE
+        view?.ivClose?.visibility = View.GONE
     }
 
     fun endLoadingImage() {
         view?.progress?.visibility = View.GONE
+        view?.ivClose?.visibility = View.VISIBLE
     }
 }

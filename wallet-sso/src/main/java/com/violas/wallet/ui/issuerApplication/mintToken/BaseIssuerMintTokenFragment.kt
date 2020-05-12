@@ -69,7 +69,7 @@ abstract class BaseIssuerMintTokenFragment : BaseFragment() {
 
     protected open fun initView() {
         (activity as? BaseActivity)?.setTitle(R.string.hint_apply_for_mint)
-        setApplicationInfo(mApplyForSSODetails)
+        setApplyForSSOInfo(mApplyForSSODetails)
     }
 
     protected open fun initEvent() {
@@ -94,7 +94,7 @@ abstract class BaseIssuerMintTokenFragment : BaseFragment() {
         })
     }
 
-    protected open fun setApplicationInfo(details: ApplyForSSODetailsDTO) {
+    protected open fun setApplyForSSOInfo(details: ApplyForSSODetailsDTO) {
         asivSSOWalletAddress.setContent(details.issuerWalletAddress)
         asivTokenName.setContent(details.tokenName)
         asivTokenAmount.setContent(convertViolasTokenUnit(details.tokenAmount))

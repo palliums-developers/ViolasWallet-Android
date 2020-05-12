@@ -15,7 +15,7 @@ interface IssuerApi {
      * 查询发行商申请发行SSO的摘要信息
      */
     @GET("/1.0/violas/sso/token/status")
-    suspend fun queryApplyForIssueSSOSummary(
+    suspend fun queryApplyForSSOSummary(
         @Query("address") walletAddress: String
     ): Response<ApplyForSSOSummaryDTO>
 
@@ -23,19 +23,21 @@ interface IssuerApi {
      * 获取发行商申请发行SSO的详细信息
      */
     @GET("/1.0/violas/sso/token")
-    suspend fun getApplyForIssueSSODetails(
-        @Query("address") walletAddress: String,
-        @Query("id") ssoApplicationId: String
+    suspend fun getApplyForSSODetails(
+        @Query("address") walletAddress: String
     ): Response<ApplyForSSODetailsDTO>
 
     /**
      * 申请发行稳定币
      */
     @POST("/1.0/violas/sso/token")
-    suspend fun applyForIssueSSO(@Body body: RequestBody): Response<Any>
+    suspend fun applyForIssueToken(@Body body: RequestBody): Response<Any>
 
-    @PUT("/1.0/violas/sso/token")
-    suspend fun changePublishStatus(@Body body: RequestBody): Response<Any>
+    /**
+     * 更改申请发行SSO的状态为 published
+     */
+    @PUT("/1.0/violas/sso/token/status/publish")
+    suspend fun changeApplyForSSOToPublished(@Body body: RequestBody): Response<Any>
 
     @Multipart
     @POST("/1.0/violas/photo")

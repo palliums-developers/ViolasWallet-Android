@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.event.SSOApplicationChangeEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -49,14 +50,16 @@ class IssuerApplicationParentViewModel(
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
         val details =
-            mIssuerService.getApplyForIssueSSODetails(
-                mAccountDOLiveData.value!!.address,
-                mApplyForSSOSummary.applicationId
-            )
+            if (mApplyForSSOSummary.applicationStatus != SSOApplicationState.IDLE)
+                mIssuerService.getApplyForSSODetails(
+                    mAccountDOLiveData.value!!.address
+                )
+            else
+                null
 
-        if (details == null) {
+        if (details == null && mApplyForSSOSummary.applicationStatus != SSOApplicationState.IDLE) {
             EventBus.getDefault().post(SSOApplicationChangeEvent(null))
-        } else if (applicationChanged(details)) {
+        } else if (details != null && applicationChanged(details)) {
             EventBus.getDefault().post(
                 SSOApplicationChangeEvent(
                     ApplyForSSOSummaryDTO.newInstance(details)

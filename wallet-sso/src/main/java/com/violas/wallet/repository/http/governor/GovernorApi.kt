@@ -32,10 +32,10 @@ interface GovernorApi {
     suspend fun updateGovernorInfo(@Body body: RequestBody): Response<Any>
 
     /**
-     * 更新州长申请状态为published
+     * 更改申请州长的状态为 published
      */
     @PUT("/1.0/violas/governor/investment")
-    suspend fun updateGovernorApplicationToPublished(@Body body: RequestBody): Response<Any>
+    suspend fun changeApplyForGovernorToPublished(@Body body: RequestBody): Response<Any>
 
     /**
      * 获取SSO申请消息

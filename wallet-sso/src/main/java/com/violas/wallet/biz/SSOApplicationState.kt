@@ -18,7 +18,8 @@ import androidx.annotation.IntDef
     SSOApplicationState.GOVERNOR_MINTED,
     SSOApplicationState.AUDIT_TIMEOUT,
     SSOApplicationState.GOVERNOR_UNAPPROVED,
-    SSOApplicationState.CHAIRMAN_UNAPPROVED
+    SSOApplicationState.CHAIRMAN_UNAPPROVED,
+    SSOApplicationState.IDLE
 )
 annotation class SSOApplicationState {
     companion object {
@@ -48,5 +49,8 @@ annotation class SSOApplicationState {
 
         // 董事长审核未通过。
         const val CHAIRMAN_UNAPPROVED = -3
+
+        // 闲置
+        const val IDLE = Int.MIN_VALUE
     }
 }

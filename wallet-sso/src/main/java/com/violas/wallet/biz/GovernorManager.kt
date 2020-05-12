@@ -44,7 +44,9 @@ class GovernorManager {
         ApprovalManager()
     }
 
+    // test code =========> start
     private var mNextMockGovernorApplicationStatus = -1
+    // test code =========> end
 
     /**
      * 注册州长
@@ -127,7 +129,7 @@ class GovernorManager {
             }
 
             // 2.通知服务器州长已publish合约
-            mGovernorService.updateGovernorApplicationToPublished(walletAddress)
+            mGovernorService.changeApplyForGovernorToPublished(walletAddress)
         } catch (e: Exception) {
             if (BuildConfig.MOCK_GOVERNOR_DATA) {
             } else {
@@ -144,13 +146,13 @@ class GovernorManager {
         pageSize: Int,
         offset: Int
     ): List<SSOApplicationMsgVO> = withContext(Dispatchers.IO) {
-        val response =
+        var msgs =
             // test code =========> start
             try {
                 mGovernorService.getSSOApplicationMsgs(accountDO.address, pageSize, offset)
             } catch (e: Exception) {
                 if (BuildConfig.MOCK_GOVERNOR_DATA) {
-                    ListResponse<SSOApplicationMsgDTO>()
+                    null
                 } else {
                     throw e
                 }
@@ -158,7 +160,7 @@ class GovernorManager {
         // test code =========> end
 
         // test code =========> start
-        if (BuildConfig.MOCK_GOVERNOR_DATA) {
+        if (BuildConfig.MOCK_GOVERNOR_DATA && msgs == null) {
             val fakeList = arrayListOf<SSOApplicationMsgDTO>()
             for (index in SSOApplicationState.CHAIRMAN_UNAPPROVED..SSOApplicationState.GOVERNOR_MINTED) {
                 delay(200)
@@ -182,22 +184,22 @@ class GovernorManager {
                 )
             }
 
-            response.data = fakeList
+            msgs = fakeList
         }
         // test code =========> end
 
-        if (response.data.isNullOrEmpty()) {
+        if (msgs.isNullOrEmpty()) {
             return@withContext emptyList<SSOApplicationMsgVO>()
         }
 
         // 获取SSO发币申请本地记录
-        val applicationIds = response.data!!.map { it.applicationId }.toTypedArray()
+        val applicationIds = msgs.map { it.applicationId }.toTypedArray()
         val localMsgs =
             mSSOApplicationMsgStorage.loadMsgsFromApplicationIds(accountDO.id, *applicationIds)
                 .toMap { it.applicationId }
 
         // DTO 转换 VO
-        return@withContext response.data!!.map {
+        return@withContext msgs.map {
             val msgRead = when (it.applicationStatus) {
                 SSOApplicationState.ISSUER_APPLYING -> {
                     localMsgs[it.applicationId]?.issueRead ?: false
@@ -230,56 +232,75 @@ class GovernorManager {
         accountDO: AccountDO,
         msgVO: SSOApplicationMsgVO
     ): SSOApplicationDetailsDTO? {
-        // TODO delete test code
-        val details =
+        var details =
             // test code =========> start
             try {
                 mGovernorService.getSSOApplicationDetails(accountDO.address, msgVO.applicationId)
             } catch (e: Exception) {
                 if (BuildConfig.MOCK_GOVERNOR_DATA) {
-                    SSOApplicationDetailsDTO(
-                        applicationId = msgVO.applicationId,
-                        applicationStatus = msgVO.applicationStatus,
-                        issuerWalletAddress = "f4174e9eabcb2e968e22da4c75ac653b",
-                        idName = msgVO.applicantIdName,
-                        idNumber = "1234567890",
-                        idPhotoPositiveUrl = "",
-                        idPhotoBackUrl = "",
-                        countryCode = "CN",
-                        countryName = "中国",
-                        emailAddress = "luckeast@163.com",
-                        phoneNumber = "18919025675",
-                        phoneAreaCode = "+86",
-                        fiatCurrencyType = "RMB",
-                        tokenAmount = "100000000000000",
-                        tokenName = "DTY",
-                        tokenValue = 2,
-                        tokenIdx = 1,
-                        reservePhotoUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005061016156252.jpeg",
-                        bankChequePhotoPositiveUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005090243496532.jpeg",
-                        bankChequePhotoBackUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005061016148281.jpeg",
-                        applicationDate = msgVO.applicationDate,
-                        applicationPeriod = 5,
-                        expirationDate = msgVO.expirationDate,
-                        unapprovedReason =
-                        if (msgVO.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED
-                            || msgVO.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED
-                        ) {
-                            "信息不完善"
-                        } else {
-                            null
-                        }
-                    )
+                    null
                 } else {
                     throw e
                 }
             }
         // test code =========> end
 
+        // test code =========> start
+        if (BuildConfig.MOCK_GOVERNOR_DATA && details == null) {
+            SSOApplicationDetailsDTO(
+                applicationId = msgVO.applicationId,
+                applicationStatus = msgVO.applicationStatus,
+                issuerWalletAddress = "f4174e9eabcb2e968e22da4c75ac653b",
+                idName = msgVO.applicantIdName,
+                idNumber = "1234567890",
+                idPhotoPositiveUrl = "",
+                idPhotoBackUrl = "",
+                countryCode = "CN",
+                countryName = "中国",
+                emailAddress = "luckeast@163.com",
+                phoneNumber = "18919025675",
+                phoneAreaCode = "+86",
+                fiatCurrencyType = "RMB",
+                tokenAmount = "100000000000000",
+                tokenName = "DTY",
+                tokenValue = 2,
+                tokenIdx = 1,
+                reservePhotoUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005061016156252.jpeg",
+                bankChequePhotoPositiveUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005090243496532.jpeg",
+                bankChequePhotoBackUrl = "http://52.27.228.84:4000/1.0/violas/photo/202005061016148281.jpeg",
+                applicationDate = msgVO.applicationDate,
+                applicationPeriod = 5,
+                expirationDate = msgVO.expirationDate,
+                unapprovedReason =
+                if (msgVO.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED
+                    || msgVO.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED
+                ) {
+                    "信息不完善"
+                } else {
+                    null
+                }
+            )
+        }
+        // test code =========> end
+
         details?.let {
-            if (msgVO.applicationStatus != it.applicationStatus) {
-                msgVO.applicationStatus = it.applicationStatus
-                updateSSOApplicationMsgStatus(accountDO.id, msgVO)
+            if (msgVO.applicationId != it.applicationId
+                || msgVO.applicationStatus != it.applicationStatus
+                || msgVO.applicationDate != it.applicationDate
+                || msgVO.expirationDate != it.expirationDate
+                || msgVO.applicantIdName != it.idName
+            ) {
+                updateSSOApplicationMsgStatus(
+                    accountDO.id,
+                    SSOApplicationMsgVO(
+                        applicationId = it.applicationId,
+                        applicationStatus = it.applicationStatus,
+                        applicationDate = it.applicationDate,
+                        expirationDate = it.expirationDate,
+                        applicantIdName = it.idName,
+                        msgRead = true
+                    )
+                )
             }
         }
 

@@ -42,6 +42,7 @@ class GovernorRepository(private val api: GovernorApi) {
     suspend fun getGovernorInfo(
         walletAddress: String
     ) =
+        // {"code":2011,"message":"Governor info does not exist."}
         checkResponse(2011) {
             api.getGovernorInfo(walletAddress)
         }
@@ -62,9 +63,9 @@ class GovernorRepository(private val api: GovernorApi) {
         }
 
     /**
-     * 更新州长申请状态为published
+     * 更改申请州长的状态为 published
      */
-    suspend fun updateGovernorApplicationToPublished(
+    suspend fun changeApplyForGovernorToPublished(
         walletAddress: String
     ) =
         checkResponse {
@@ -72,7 +73,7 @@ class GovernorRepository(private val api: GovernorApi) {
     "wallet_address":"$walletAddress",
     "is_handle":3
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.updateGovernorApplicationToPublished(requestBody)
+            api.changeApplyForGovernorToPublished(requestBody)
         }
 
     /**
@@ -80,10 +81,24 @@ class GovernorRepository(private val api: GovernorApi) {
      */
     suspend fun getSSOApplicationMsgs(
         walletAddress: String, pageSize: Int, offset: Int
-    ) =
-        checkResponse {
+    ):List<SSOApplicationMsgDTO>? {
+       val msgs = checkResponse {
             api.getSSOApplicationMsgs(walletAddress, pageSize, offset)
+        }.data
+
+        msgs?.forEach {
+            if (it.applicationStatus < SSOApplicationState.CHAIRMAN_UNAPPROVED
+                || it.applicationStatus > SSOApplicationState.GOVERNOR_MINTED
+            ) {
+                throw RequestException.responseDataException(
+                    "Unknown approval status ${it.applicationStatus}"
+                )
+            }
         }
+
+        return msgs
+    }
+
 
     /**
      * 获取SSO申请详情
@@ -98,7 +113,13 @@ class GovernorRepository(private val api: GovernorApi) {
             }.data
 
         details?.let {
-            if (it.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
+            if (it.applicationStatus < SSOApplicationState.CHAIRMAN_UNAPPROVED
+                || it.applicationStatus > SSOApplicationState.GOVERNOR_MINTED
+            ) {
+                throw RequestException.responseDataException(
+                    "Unknown approval status ${it.applicationStatus}"
+                )
+            } else if (it.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
                 && it.tokenIdx == null
             ) {
                 throw RequestException.responseDataException("Token id cannot be null")
