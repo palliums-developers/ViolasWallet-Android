@@ -12,6 +12,7 @@
     <string name="common_http_server_error">Server Error. Please try again later(%1$s)</string>
     <string name="common_http_request_fail">Request Failed. Please try again later(%1$s)</string>
     <string name="common_load_fail">Load Failed. Please try again later</string>
+    <string name="common_operation_fail">Operation failed, please try again later</string>
 
     <string name="common_status_click_reload">Click to reload</string>
     <string name="common_status_empty">No Data</string>

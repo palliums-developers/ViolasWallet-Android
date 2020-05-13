@@ -40,7 +40,7 @@ suspend inline fun <T, R> T.checkResponse(
     try {
         val func1 = func()
         if (func1 !is ApiResponse) {
-            throw RequestException.responseDataException("response is not ApiResponse")
+            throw RequestException.responseDataException("Response is not ApiResponse")
         }
 
         if (specialStatusCodes.isNotEmpty()) {
@@ -54,11 +54,47 @@ suspend inline fun <T, R> T.checkResponse(
         if (func1.getErrorCode() != func1.getSuccessCode()) {
             throw RequestException(func1)
         } else if (!dataNullableOnSuccess && func1.getResponseData() == null) {
-            throw RequestException.responseDataException("data is null")
+            throw RequestException.responseDataException("Data is null")
         }
 
         return func1
     } catch (e: Throwable) {
         throw if (e is RequestException) e else RequestException(e)
     }
+}
+
+@Throws(RequestException::class)
+suspend inline fun <T, R> T.checkResponse2(
+    vararg specialStatusCodes: Any,
+    dataNullableOnSuccess: Boolean = true,
+    noinline checkError: ((response: R) -> Unit)? = null,
+    crossinline func: suspend T.() -> R
+): R {
+    val response = try {
+        func()
+    } catch (e: Throwable) {
+        throw RequestException(e)
+    }
+
+    if (response !is ApiResponse) {
+        throw RequestException.responseDataException("Response is not ApiResponse")
+    }
+
+    specialStatusCodes.forEach {
+        if (response.getErrorCode() == it) {
+            return response
+        }
+    }
+
+    if (response.getErrorCode() != response.getSuccessCode()) {
+        if (checkError != null) {
+            checkError.invoke(response)
+        } else {
+            throw RequestException(response)
+        }
+    } else if (!dataNullableOnSuccess && response.getResponseData() == null) {
+        throw RequestException.responseDataException("Data is null")
+    }
+
+    return response
 }
