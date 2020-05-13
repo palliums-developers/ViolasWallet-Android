@@ -1,5 +1,7 @@
 package org.palliums.violascore.serialization
 
+import java.util.*
+
 private val HEX_CHARS = "0123456789ABCDEF".toCharArray()
 private val toHEX = { b: ByteArray ->
     buildString {
@@ -18,7 +20,7 @@ private val hexToBytes = { hex: String ->
     val result = ByteArray(len / 2)
     (0 until len step 2).forEach { i ->
         result[i.shr(1)] =
-            HEX_CHARS.indexOf(hex[i]).shl(4).or(HEX_CHARS.indexOf(hex[i + 1])).toByte()
+            Character.digit(hex[i], 16).shl(4).or(Character.digit(hex[i + 1], 16)).toByte()
     }
     result
 }
