@@ -70,8 +70,7 @@ class GovernorRepository(private val api: GovernorApi) {
     ) =
         checkResponse {
             val requestBody = """{
-    "wallet_address":"$walletAddress",
-    "is_handle":3
+    "wallet_address":"$walletAddress"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
             api.changeApplyForGovernorToPublished(requestBody)
         }
@@ -81,8 +80,8 @@ class GovernorRepository(private val api: GovernorApi) {
      */
     suspend fun getSSOApplicationMsgs(
         walletAddress: String, pageSize: Int, offset: Int
-    ):List<SSOApplicationMsgDTO>? {
-       val msgs = checkResponse {
+    ): List<SSOApplicationMsgDTO>? {
+        val msgs = checkResponse {
             api.getSSOApplicationMsgs(walletAddress, pageSize, offset)
         }.data
 

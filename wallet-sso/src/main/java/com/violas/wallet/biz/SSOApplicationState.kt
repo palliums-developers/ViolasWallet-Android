@@ -23,31 +23,31 @@ import androidx.annotation.IntDef
 )
 annotation class SSOApplicationState {
     companion object {
-        // 发行商申请发币中；
+        // 发行商申请发币中
         const val ISSUER_APPLYING = 0
 
-        // 州长已审核通过，并申请铸币权；
+        // 州长已审核通过，并申请铸币权
         const val GOVERNOR_APPROVED = 1
 
-        // 董事长已发布新稳定币，并指定铸币权给州长；
+        // 董事长已发布新稳定币，并指定铸币权给州长
         const val CHAIRMAN_APPROVED = 2
 
-        // 州长已给发行商转平台币，并通知；
+        // 州长已给发行商转平台币，并通知
         const val GOVERNOR_TRANSFERRED = 3
 
-        // 发行商已publish合约，请求铸币中；
+        // 发行商已publish合约，请求铸币中
         const val ISSUER_PUBLISHED = 4
 
-        // 州长已铸币给发行商；
+        // 州长已铸币给发行商
         const val GOVERNOR_MINTED = 5
 
         // 审核超时
         const val AUDIT_TIMEOUT = -1
 
-        // 州长审核未通过；
+        // 州长审核未通过
         const val GOVERNOR_UNAPPROVED = -2
 
-        // 董事长审核未通过。
+        // 董事长审核未通过
         const val CHAIRMAN_UNAPPROVED = -3
 
         // 闲置

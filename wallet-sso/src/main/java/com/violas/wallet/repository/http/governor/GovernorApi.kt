@@ -34,7 +34,7 @@ interface GovernorApi {
     /**
      * 更改申请州长的状态为 published
      */
-    @PUT("/1.0/violas/governor/investment")
+    @PUT("/1.0/violas/governor/status/published")
     suspend fun changeApplyForGovernorToPublished(@Body body: RequestBody): Response<Any>
 
     /**
