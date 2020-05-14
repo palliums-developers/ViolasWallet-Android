@@ -114,6 +114,8 @@ class ApplyMessageFragment : BaseFragment() {
 
         mViewModel.loadGovernorApplicationProgress(
             failureCallback = {
+                if (srlRefreshLayout == null) return@loadGovernorApplicationProgress
+
                 if (srlRefreshLayout.isRefreshing) {
                     srlRefreshLayout.isRefreshing = false
                 } else {
@@ -130,6 +132,8 @@ class ApplyMessageFragment : BaseFragment() {
                 }
             },
             successCallback = {
+                if (srlRefreshLayout == null) return@loadGovernorApplicationProgress
+
                 if (it == 4) { // 4: minted
                     // 州长牌照已批准
                     showSSOApplicationMsgView()
