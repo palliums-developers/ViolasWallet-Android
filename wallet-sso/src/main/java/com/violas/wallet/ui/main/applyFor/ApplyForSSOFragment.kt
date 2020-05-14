@@ -11,6 +11,7 @@ import com.violas.wallet.repository.http.issuer.ApplyForSSOSummaryDTO
 import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_AUTHENTICATION_ACCOUNT
 import com.violas.wallet.ui.main.applyFor.ApplyForSSOViewModel.Companion.CODE_AUTHENTICATION_COMPLETE
 import kotlinx.android.synthetic.main.fragment_apply_for_sso.*
+import me.yokeyword.fragmentation.SupportFragment
 
 /**
  * 发行商申请发行SSO首页
@@ -70,11 +71,15 @@ class ApplyForSSOFragment : BaseFragment() {
     private fun loadIssueSSOStatus() {
         mViewModel.execute(
             failureCallback = {
+                if (srlRefreshLayout == null) return@execute
+
                 if (srlRefreshLayout.isRefreshing) {
                     srlRefreshLayout.isRefreshing = false
                 } else {
                     srlRefreshLayout.isEnabled = true
                 }
+
+                if (isLoadFragment()) return@execute
 
                 dslStatusLayout.showStatus(
                     if (it.isNoNetwork())
@@ -84,6 +89,8 @@ class ApplyForSSOFragment : BaseFragment() {
                 )
             }
         ) {
+            if (srlRefreshLayout == null) return@execute
+
             if (srlRefreshLayout.isRefreshing) {
                 srlRefreshLayout.isRefreshing = false
             } else {
@@ -95,20 +102,43 @@ class ApplyForSSOFragment : BaseFragment() {
     }
 
     private fun loadFragment(summary: ApplyForSSOSummaryDTO) {
-        val fragment = when (summary.applicationStatus) {
+        when (summary.applicationStatus) {
             CODE_AUTHENTICATION_ACCOUNT -> {
-                VerifyIssuerAccountFragment()
+                if (topChildFragment !is VerifyIssuerAccountFragment) {
+                    loadRootFragment(
+                        R.id.fragmentContainerView,
+                        VerifyIssuerAccountFragment()
+                    )
+                }
             }
 
             CODE_AUTHENTICATION_COMPLETE -> {
-                VerifyIssuerAccountSuccessFragment()
+                if (topChildFragment !is VerifyIssuerAccountSuccessFragment) {
+                    loadRootFragment(
+                        R.id.fragmentContainerView,
+                        VerifyIssuerAccountSuccessFragment()
+                    )
+                }
             }
 
             else -> {
-                IssuerApplyForSSOStatusFragment.getInstance(summary)
+                if (topChildFragment is IssuerApplyForSSOStatusFragment) {
+                    topChildFragment.putNewBundle(IssuerApplyForSSOStatusFragment.newBundle(summary))
+                    (topChildFragment as SupportFragment).start(
+                        topChildFragment,
+                        SupportFragment.SINGLETASK
+                    )
+                } else {
+                    loadRootFragment(
+                        R.id.fragmentContainerView,
+                        IssuerApplyForSSOStatusFragment.getInstance(summary)
+                    )
+                }
             }
         }
+    }
 
-        loadRootFragment(R.id.fragmentContainerView, fragment)
+    private fun isLoadFragment(): Boolean {
+        return topChildFragment != null
     }
 }

@@ -18,11 +18,16 @@ class IssuerApplyForSSOStatusFragment : BaseFragment() {
 
     companion object {
         fun getInstance(summary: ApplyForSSOSummaryDTO): BaseFragment {
-            val fragment = IssuerApplyForSSOStatusFragment()
-            fragment.arguments = Bundle().apply {
+            return IssuerApplyForSSOStatusFragment()
+                .apply {
+                    arguments = newBundle(summary)
+                }
+        }
+
+        fun newBundle(summary: ApplyForSSOSummaryDTO): Bundle {
+            return Bundle().apply {
                 putParcelable(KEY_ONE, summary)
             }
-            return fragment
         }
     }
 
@@ -36,6 +41,14 @@ class IssuerApplyForSSOStatusFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if (initData(savedInstanceState)) {
+            initView()
+            initEvent()
+        }
+    }
+
+    override fun onNewBundle(args: Bundle?) {
+        super.onNewBundle(args)
+        if (initData(args)) {
             initView()
             initEvent()
         }
