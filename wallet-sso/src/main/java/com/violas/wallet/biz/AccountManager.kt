@@ -21,6 +21,7 @@ import org.palliums.libracore.mnemonic.WordCount
 import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.crypto.KeyFactory
 import org.palliums.libracore.crypto.Seed
+import org.palliums.violascore.serialization.toHex
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -256,6 +257,7 @@ class AccountManager {
             AccountDO(
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
                 publicKey = deriveLibra.getPublicKey(),
+                authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
@@ -281,6 +283,7 @@ class AccountManager {
             AccountDO(
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
                 publicKey = deriveLibra.getPublicKey(),
+                authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
@@ -362,6 +365,7 @@ class AccountManager {
             AccountDO(
                 privateKey = security.encrypt(password, deriveLibra.keyPair.getPrivateKey().toByteArray()),
                 publicKey = deriveLibra.getPublicKey(),
+                authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
@@ -449,5 +453,35 @@ class AccountManager {
                 }
             }
         }
+    }
+
+    suspend fun activateAccount(account: AccountDO) {
+        when (account.coinNumber) {
+            CoinTypes.Violas.coinType() -> {
+                //todo 等后台接口做完修改
+                val accountState =
+                    DataRepository.getViolasService().getAccountState(account.address)
+                if (!isActivate(accountState?.authenticationKey)) {
+                    DataRepository.getViolasService()
+                        .activateAccount(account.address, account.authKeyPrefix)
+                }
+            }
+
+            CoinTypes.Libra.coinType() -> {
+                val accountState =
+                    DataRepository.getLibraService().getAccountState(account.address)
+                if (!isActivate(accountState?.authenticationKey)) {
+                    DataRepository.getLibraViolasService()
+                        .activateAccount(account.address, account.authKeyPrefix)
+                }
+            }
+        }
+    }
+
+    private fun isActivate(authKey: String?): Boolean {
+        if (authKey == null || authKey.substring(0, 32) == "00000000000000000000000000000000") {
+            return false
+        }
+        return true
     }
 }

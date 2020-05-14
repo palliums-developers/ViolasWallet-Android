@@ -85,6 +85,9 @@ object DataRepository {
     fun getViolasBizService() =
         ViolasBizService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
+    fun getLibraViolasService() =
+        LibraViolasService(LibraViolasRepository(retrofit.create(LibraViolasApi::class.java)))
+
     fun getTransactionService(coinTypes: CoinTypes) =
         when (coinTypes) {
             CoinTypes.Violas -> {
@@ -92,7 +95,7 @@ object DataRepository {
             }
 
             CoinTypes.Libra -> {
-                LibraViolasService(LibraViolasRepository(retrofit.create(LibraViolasApi::class.java)))
+                getLibraViolasService()
             }
 
             else -> {

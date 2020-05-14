@@ -63,4 +63,11 @@ class LibraViolasService(
         }
         onSuccess.invoke(list, null)
     }
+
+    suspend fun activateAccount(
+        address: String,
+        authKeyPrefix: String
+    ) =
+        mRepository.activateAccount(address, authKeyPrefix)
+
 }

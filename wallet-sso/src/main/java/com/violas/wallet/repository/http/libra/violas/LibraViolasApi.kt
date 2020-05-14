@@ -1,6 +1,7 @@
 package com.violas.wallet.repository.http.libra.violas
 
 import com.palliums.violas.http.ListResponse
+import com.palliums.violas.http.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -26,6 +27,12 @@ interface LibraViolasApi {
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
     ): ListResponse<TransactionRecordDTO>
+
+    @GET("/1.0/libra/mint")
+    suspend fun activateAccount(
+        @Query("address") address: String,
+        @Query("auth_key_perfix") authKeyPrefix: String
+    ): Response<Any>
 }
 
 data class TransactionRecordDTO(

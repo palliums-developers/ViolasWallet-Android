@@ -13,7 +13,7 @@ import com.violas.wallet.repository.database.entity.*
 
 @Database(
     entities = [AccountDO::class, TokenDo::class, AddressBookDo::class, SSOApplicationRecordDo::class, SSOApplicationMsgDO::class],
-    version = 5,
+    version = 1,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class)
@@ -45,10 +45,10 @@ abstract class AppDatabase : RoomDatabase() {
 //                        WorkManager.getInstance(context).enqueue(request)
                     }
                 })
-                .addMigrations(migration1To2())
-                .addMigrations(migration2To3())
-                .addMigrations(migration3To4())
-                .addMigrations(migration4To5())
+//                .addMigrations(migration1To2())
+//                .addMigrations(migration2To3())
+//                .addMigrations(migration3To4())
+//                .addMigrations(migration4To5())
                 .build()
         }
 

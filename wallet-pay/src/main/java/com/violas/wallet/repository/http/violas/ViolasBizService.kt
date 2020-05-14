@@ -1,7 +1,5 @@
 package com.violas.wallet.repository.http.violas
 
-import android.content.Context
-import com.palliums.violas.error.ViolasException
 import com.palliums.violas.http.Response
 import com.palliums.violas.http.ViolasRepository
 import com.palliums.violas.http.WalletAccountDTO
@@ -10,11 +8,6 @@ import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
-import org.palliums.violascore.crypto.KeyPair
-import org.palliums.violascore.crypto.Signature
-import org.palliums.violascore.serialization.toHex
-import org.palliums.violascore.transaction.*
-import org.palliums.violascore.wallet.Account
 
 /**
  * Created by elephant on 2019-11-11 15:47.

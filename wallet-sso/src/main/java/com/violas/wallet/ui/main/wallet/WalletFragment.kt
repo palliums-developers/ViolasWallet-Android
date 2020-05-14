@@ -375,6 +375,14 @@ class WalletFragment : BaseFragment() {
                 }
             }
 
+            supervisorScope {
+                try {
+                    mAccountManager.activateAccount(currentAccount)
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            }
+
             if (currentAccount.coinNumber == CoinTypes.Violas.coinType()) {
                 refreshViolasAssert(currentAccount, enableTokens)
             } else {
