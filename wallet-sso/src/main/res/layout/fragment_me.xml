@@ -57,6 +57,20 @@
         tools:text="@string/app_name"
         tools:visibility="visible" />
 
+    <TextView
+        android:id="@+id/tvSSONickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_6"
+        android:text="SSO"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_14"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/nivAvatar"
+        app:layout_constraintStart_toStartOf="@id/nivAvatar"
+        app:layout_constraintTop_toBottomOf="@id/nivAvatar"
+        tools:visibility="visible" />
+
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivIDAuthentication"
         style="@style/MenuItemView"

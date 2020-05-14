@@ -195,19 +195,19 @@ class MeFragment : BaseFragment() {
             return
         }
 
+        tvSSONickname.visibility = View.GONE
+        tvNickname.visibility = View.VISIBLE
         if (governorInfo.applicationStatus == 4) {
             // 4: minted
-            tvNickname.text = account.walletNickname
-            tvNickname.setTextColor(getColor(R.color.white))
-            tvNickname.visibility = View.VISIBLE
             nivAvatar.setImageResource(R.drawable.ic_avatar_governor_default)
             nivAvatar.visibility = View.VISIBLE
+            tvNickname.setTextColor(getColor(R.color.white))
+            tvNickname.text = account.walletNickname
             return
         }
 
-        tvNickname.setTextColor(getColor(R.color.def_text_warn))
-        tvNickname.visibility = View.VISIBLE
         nivAvatar.visibility = View.GONE
+        tvNickname.setTextColor(getColor(R.color.def_text_warn))
         tvNickname.setText(
             when (governorInfo.applicationStatus) {
                 0 -> {  // 0: not approved
@@ -234,11 +234,10 @@ class MeFragment : BaseFragment() {
     }
 
     private fun showSSOHeaderView() {
-        tvNickname.text = "SSO"
-        tvNickname.setTextColor(getColor(R.color.white))
-        tvNickname.visibility = View.VISIBLE
         nivAvatar.setImageResource(R.drawable.ic_avatar_sso_default)
         nivAvatar.visibility = View.VISIBLE
+        tvNickname.visibility = View.GONE
+        tvSSONickname.visibility = View.VISIBLE
     }
 
     private fun showApplyForLicenceDialog(account: AccountDO?, governorInfo: GovernorInfoDTO?) {

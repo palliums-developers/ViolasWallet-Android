@@ -75,7 +75,7 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
                     mGovernorManager.getGovernorInfo(mAccountLD.value!!)
 
                 // 发送更新州长信息事件
-                EventBus.getDefault().post(UpdateGovernorInfoEvent(governorInfo))
+                EventBus.getDefault().postSticky(UpdateGovernorInfoEvent(governorInfo))
 
                 mGovernorApplicationStatus = governorInfo.applicationStatus
                 successCallback?.invoke(mGovernorApplicationStatus)

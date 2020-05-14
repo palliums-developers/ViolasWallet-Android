@@ -133,8 +133,13 @@ class UserViewModel : BaseViewModel() {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    @Subscribe(sticky = true)
     fun onUpdateGovernorInfoEvent(event: UpdateGovernorInfoEvent) {
+        try {
+            EventBus.getDefault().removeStickyEvent(event)
+        } catch (ignore: Exception) {
+        }
+
         mGovernorInfoLD.postValue(event.governorInfo)
     }
 
