@@ -1,8 +1,6 @@
 package org.palliums.libracore.serialization
 
-import java.util.*
-
-private val HEX_CHARS = "0123456789ABCDEF".toCharArray()
+private val HEX_CHARS = "0123456789abcdef".toCharArray()
 private val toHEX = { b: ByteArray ->
     buildString {
         b.forEach {
