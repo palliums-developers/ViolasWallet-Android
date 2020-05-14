@@ -59,7 +59,7 @@ class IssuerApplicationChildViewModel(
         when (action) {
             ACTION_APPLY_FOR_ISSUE_TOKEN -> {
                 // 申请发币
-                mIssuerManager.applyForIssuing(
+                mIssuerManager.applyForIssueToken(
                     walletAddress = mAccountDOLiveData.value!!.address,
                     tokenType = params[0] as String,
                     amount = params[1] as BigDecimal,
@@ -96,7 +96,10 @@ class IssuerApplicationChildViewModel(
                 }
 
                 // 2.通知服务器发行商已publish合约
-                mIssuerManager.changePublishStatus(walletAddress)
+                mIssuerManager.changeApplyForSSOToPublished(
+                    walletAddress,
+                    mApplyForSSODetails!!.applicationId
+                )
 
                 // 将新发行的token显示在钱包首页
                 EventBus.getDefault().post(SwitchAccountEvent())

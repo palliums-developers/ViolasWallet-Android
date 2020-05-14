@@ -6,8 +6,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import com.palliums.base.BaseFragment
+import com.palliums.extensions.isNoNetwork
 import com.palliums.net.LoadState
-import com.palliums.net.RequestException
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColor
 import com.palliums.widget.dividers.RecycleViewItemDividers
@@ -114,6 +114,8 @@ class ApplyMessageFragment : BaseFragment() {
 
         mViewModel.loadGovernorApplicationProgress(
             failureCallback = {
+                if (srlRefreshLayout == null) return@loadGovernorApplicationProgress
+
                 if (srlRefreshLayout.isRefreshing) {
                     srlRefreshLayout.isRefreshing = false
                 } else {
@@ -122,7 +124,7 @@ class ApplyMessageFragment : BaseFragment() {
 
                 if (clGovernorLicenceLayout?.visibility != View.VISIBLE) {
                     dslStatusLayout.showStatus(
-                        if (RequestException.isNoNetwork(it))
+                        if (it.isNoNetwork())
                             IStatusLayout.Status.STATUS_NO_NETWORK
                         else
                             IStatusLayout.Status.STATUS_FAILURE
@@ -130,6 +132,8 @@ class ApplyMessageFragment : BaseFragment() {
                 }
             },
             successCallback = {
+                if (srlRefreshLayout == null) return@loadGovernorApplicationProgress
+
                 if (it == 4) { // 4: minted
                     // 州长牌照已批准
                     showSSOApplicationMsgView()

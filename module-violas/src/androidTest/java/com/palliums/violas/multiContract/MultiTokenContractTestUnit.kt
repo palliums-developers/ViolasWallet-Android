@@ -1,4 +1,4 @@
-package org.palliums.violascore.multiContract
+package com.palliums.violas.multiContract
 
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -22,7 +22,11 @@ class MoveHandlerTest {
     }
 
     private fun getViolasMultiTokenContract(): MultiTokenContract {
-        return MultiTokenContract("e1be1ab8360a35a0259f1c93e3eac736")
+        return object : MultiTokenContract() {
+            override fun getContractAddress(): String {
+                return "e1be1ab8360a35a0259f1c93e3eac736"
+            }
+        }
     }
 
     @Test

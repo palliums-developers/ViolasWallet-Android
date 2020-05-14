@@ -1,11 +1,13 @@
 package com.violas.wallet.ui.issuerApplication.issueToken
 
 import com.palliums.utils.formatDate
+import com.palliums.utils.getColor
 import com.violas.wallet.R
 import com.violas.wallet.image.viewImage
 import com.violas.wallet.repository.http.issuer.ApplyForSSODetailsDTO
 import com.violas.wallet.utils.convertViolasTokenUnit
 import kotlinx.android.synthetic.main.layout_approval_issue_token_info.*
+import kotlinx.android.synthetic.main.layout_token_application_status.*
 
 /**
  * Created by elephant on 2020/5/7 17:57.
@@ -21,7 +23,9 @@ class IssuerIssueTokenAuditingFragment : BaseIssuerIssueTokenFragment() {
 
     override fun initView() {
         super.initView()
-        mApplyForSSODetails?.let { setApplicationInfo(it) }
+        mApplyForSSODetails?.let {
+            setApplyForSSOInfo(it)
+        }
     }
 
     override fun initEvent() {
@@ -50,7 +54,11 @@ class IssuerIssueTokenAuditingFragment : BaseIssuerIssueTokenFragment() {
         }
     }
 
-    private fun setApplicationInfo(details: ApplyForSSODetailsDTO) {
+    private fun setApplyForSSOInfo(details: ApplyForSSODetailsDTO) {
+        ivIcon.setBackgroundResource(R.drawable.ic_application_processing)
+        tvStatusDesc.setText(R.string.sso_application_details_status_1)
+        tvStatusDesc.setTextColor(getColor(R.color.color_FAA030))
+
         asivFiatCurrencyType.setContent(details.fiatCurrencyType)
         asivTokenAmount.setContent(convertViolasTokenUnit(details.tokenAmount))
         asivTokenValue.setContent("${details.tokenValue}${details.fiatCurrencyType}")

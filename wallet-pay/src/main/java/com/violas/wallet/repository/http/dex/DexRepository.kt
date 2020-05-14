@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.dex
 
-import com.palliums.net.RequestException
+import com.palliums.exceptions.RequestException
 import com.palliums.net.checkResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody

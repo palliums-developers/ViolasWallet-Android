@@ -7,9 +7,10 @@ import com.palliums.base.BaseActivity
 import com.palliums.base.BaseFragment
 import com.palliums.net.LoadState
 import com.violas.wallet.R
+import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.repository.http.issuer.ApplyForSSODetailsDTO
+import com.violas.wallet.repository.http.issuer.ApplyForSSOSummaryDTO
 import com.violas.wallet.ui.issuerApplication.IssuerApplicationActivity
 import com.violas.wallet.ui.issuerApplication.IssuerApplicationChildViewModel
 import com.violas.wallet.ui.issuerApplication.IssuerApplicationChildViewModelFactory
@@ -95,7 +96,10 @@ abstract class BaseIssuerIssueTokenFragment : BaseFragment() {
     protected fun startNewApplicationActivity() {
         context?.let {
             if (mApplyForSSODetails == null) {
-                IssuerApplicationActivity.start(it)
+                IssuerApplicationActivity.start(
+                    it,
+                    ApplyForSSOSummaryDTO(SSOApplicationState.ISSUER_APPLYING)
+                )
             } else {
                 IssuerApplicationActivity.start(it, mApplyForSSODetails!!)
             }

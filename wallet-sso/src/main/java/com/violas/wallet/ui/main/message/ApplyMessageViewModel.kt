@@ -1,7 +1,7 @@
 package com.violas.wallet.ui.main.message
 
 import androidx.lifecycle.*
-import com.palliums.net.getErrorTipsMsg
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getString
 import com.violas.wallet.R
@@ -81,7 +81,7 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
                 successCallback?.invoke(mGovernorApplicationStatus)
             } catch (e: Exception) {
                 failureCallback?.invoke(e)
-                mTipsMessageLD.postValueSupport(e.getErrorTipsMsg())
+                mTipsMessageLD.postValueSupport(e.getShowErrorMessage(true))
             }
         }
     }
@@ -99,7 +99,7 @@ class ApplyMessageViewModel : PagingViewModel<SSOApplicationMsgVO>() {
                 mTipsMessageLD.postValueSupport(getString(R.string.tips_apply_for_licence_success))
             } catch (e: Exception) {
                 failureCallback?.invoke(e)
-                mTipsMessageLD.postValueSupport(e.getErrorTipsMsg())
+                mTipsMessageLD.postValueSupport(e.getShowErrorMessage(false))
             }
         }
     }

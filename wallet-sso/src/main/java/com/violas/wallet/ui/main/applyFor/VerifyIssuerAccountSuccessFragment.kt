@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import com.palliums.base.BaseFragment
 import com.violas.wallet.R
+import com.violas.wallet.biz.SSOApplicationState
+import com.violas.wallet.repository.http.issuer.ApplyForSSOSummaryDTO
 import com.violas.wallet.ui.issuerApplication.IssuerApplicationActivity
 import kotlinx.android.synthetic.main.fragment_verify_issuer_account_success.*
 
@@ -21,7 +23,10 @@ class VerifyIssuerAccountSuccessFragment : BaseFragment() {
 
         btnGo.setOnClickListener {
             activity?.let { it1 ->
-                IssuerApplicationActivity.start(it1)
+                IssuerApplicationActivity.start(
+                    it1,
+                    ApplyForSSOSummaryDTO(SSOApplicationState.IDLE)
+                )
             }
         }
     }

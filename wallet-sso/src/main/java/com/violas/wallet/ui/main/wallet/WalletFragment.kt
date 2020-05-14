@@ -10,8 +10,8 @@ import android.widget.FrameLayout
 import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
-import com.palliums.net.RequestException
-import com.palliums.net.getErrorTipsMsg
+import com.palliums.extensions.getShowErrorMessage
+import com.palliums.extensions.isActiveCancellation
 import com.palliums.utils.isFastMultiClick
 import com.quincysx.crypto.CoinTypes
 import com.takusemba.spotlight.Spotlight
@@ -382,11 +382,11 @@ class WalletFragment : BaseFragment() {
                     mAccountManager.refreshAccount(currentAccount)
                     true
                 } catch (e: Exception) {
-                    if (RequestException.isActiveCancellation(e)) {
+                    if (e.isActiveCancellation()) {
                         return@launch
                     }
 
-                    showToast(e.getErrorTipsMsg())
+                    showToast(e.getShowErrorMessage(true))
                     false
                 }
 
@@ -420,11 +420,11 @@ class WalletFragment : BaseFragment() {
             try {
                 mTokenManger.refreshBalance(currentAccount.address, enableTokens)
             } catch (e: Exception) {
-                if (RequestException.isActiveCancellation(e)) {
+                if (e.isActiveCancellation()) {
                     return
                 }
 
-                showToast(e.getErrorTipsMsg())
+                showToast(e.getShowErrorMessage(true))
                 null
             }
 

@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseFragment
-import com.palliums.net.RequestException
+import com.palliums.extensions.isNoNetwork
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.repository.http.issuer.ApplyForSSOSummaryDTO
@@ -77,7 +77,7 @@ class ApplyForSSOFragment : BaseFragment() {
                 }
 
                 dslStatusLayout.showStatus(
-                    if (RequestException.isNoNetwork(it))
+                    if (it.isNoNetwork())
                         IStatusLayout.Status.STATUS_NO_NETWORK
                     else
                         IStatusLayout.Status.STATUS_FAILURE

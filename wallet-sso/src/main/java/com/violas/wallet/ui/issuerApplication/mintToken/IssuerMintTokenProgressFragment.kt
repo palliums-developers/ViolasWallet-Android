@@ -19,8 +19,8 @@ class IssuerMintTokenProgressFragment : BaseIssuerMintTokenFragment() {
         return R.layout.fragment_issuer_mint_token_progress
     }
 
-    override fun setApplicationInfo(details: ApplyForSSODetailsDTO) {
-        super.setApplicationInfo(details)
+    override fun setApplyForSSOInfo(details: ApplyForSSODetailsDTO) {
+        super.setApplyForSSOInfo(details)
 
         if (details.applicationStatus == SSOApplicationState.GOVERNOR_MINTED) {
             ivIcon.setBackgroundResource(R.drawable.ic_application_completed)

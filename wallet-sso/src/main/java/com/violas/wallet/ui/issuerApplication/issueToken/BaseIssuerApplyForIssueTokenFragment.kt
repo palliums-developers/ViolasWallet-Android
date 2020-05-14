@@ -182,7 +182,7 @@ abstract class BaseIssuerApplyForIssueTokenFragment : BaseIssuerIssueTokenFragme
             emailVerifyCode,
             action = ACTION_APPLY_FOR_ISSUE_TOKEN
         ) {
-            showToast(getString(R.string.hint_mint_condition_success))
+            //showToast(getString(R.string.hint_mint_condition_success))
             startNewApplicationActivity()
         }
     }

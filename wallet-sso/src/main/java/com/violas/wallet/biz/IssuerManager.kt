@@ -11,10 +11,13 @@ class IssuerManager {
     suspend fun uploadImage(file: File) =
         mIssuerService.uploadImage(file)
 
-    suspend fun changePublishStatus(address: String) =
-        mIssuerService.changePublishStatus(address)
+    suspend fun changeApplyForSSOToPublished(
+        walletAddress: String,
+        ssoApplicationId: String
+    ) =
+        mIssuerService.changeApplyForSSOToPublished(walletAddress, ssoApplicationId)
 
-    suspend fun applyForIssuing(
+    suspend fun applyForIssueToken(
         walletAddress: String,
         tokenType: String,
         amount: BigDecimal,
@@ -27,7 +30,7 @@ class IssuerManager {
         phoneVerifyCode: String,
         emailVerifyCode: String
     ) =
-        mIssuerService.applyForIssueSSO(
+        mIssuerService.applyForIssueToken(
             walletAddress,
             tokenType,
             amount.multiply(BigDecimal("1000000")).toLong(),

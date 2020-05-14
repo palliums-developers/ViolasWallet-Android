@@ -4,8 +4,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.lifecycle.*
 import com.palliums.base.BaseViewModel
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.net.LoadState
-import com.palliums.net.getErrorTipsMsg
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.GovernorManager
@@ -251,7 +251,7 @@ class UserViewModel : BaseViewModel() {
 
                 synchronized(lock) {
                     loadState.postValueSupport(LoadState.failure(e))
-                    tipsMessage.postValueSupport(e.getErrorTipsMsg())
+                    tipsMessage.postValueSupport(e.getShowErrorMessage(false))
                 }
             }
         }
@@ -377,5 +377,9 @@ class UserViewModel : BaseViewModel() {
         return (idInfo != null && !idInfo.isAuthenticatedID())
                 || (emailInfo != null && !emailInfo.isBoundEmail())
                 || (phoneInfo != null && !phoneInfo.isBoundPhone())
+    }
+
+    override fun isLoadAction(action: Int): Boolean {
+        return action != ACTION_PUBLISH_CONTRACT
     }
 }

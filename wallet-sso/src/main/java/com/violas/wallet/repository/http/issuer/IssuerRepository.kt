@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.issuer
 
 import com.palliums.content.ContextProvider
-import com.palliums.net.RequestException
+import com.palliums.exceptions.RequestException
 import com.palliums.net.checkResponse
 import com.palliums.utils.getImageName
 import com.palliums.violas.http.Response
@@ -48,28 +48,36 @@ class SSORepository(private val ssoApi: IssuerApi) {
     /**
      * 获取用户基本信息，包括绑定状态
      */
-    suspend fun loadUserInfo(address: String): Response<UserInfoDTO> {
+    suspend fun loadUserInfo(walletAddress: String): Response<UserInfoDTO> {
+        // {"code":2004,"message":"SSO info does not exist."}
         return checkResponse(2004) {
-            ssoApi.loadUserInfo(address)
+            ssoApi.loadUserInfo(walletAddress)
         }
     }
 
     /**
      * 查询发行商申请发行SSO的摘要信息
      */
-    suspend fun queryApplyForIssueSSOSummary(
+    suspend fun queryApplyForSSOSummary(
         walletAddress: String
     ): ApplyForSSOSummaryDTO? {
+        // {"code":2005,"message":"Token info does not exist."}
         val summary =
             checkResponse(2005) {
-                ssoApi.queryApplyForIssueSSOSummary(walletAddress)
+                ssoApi.queryApplyForSSOSummary(walletAddress)
             }.data
 
         summary?.let {
-            if (it.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
+            if (it.applicationStatus < SSOApplicationState.CHAIRMAN_UNAPPROVED
+                || it.applicationStatus > SSOApplicationState.GOVERNOR_MINTED
+            ) {
+                throw RequestException.responseDataException(
+                    "Unknown approval status ${it.applicationStatus}"
+                )
+            } else if (it.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
                 && it.tokenIdx == null
             ) {
-                throw RequestException.responseDataException("token id cannot be null")
+                throw RequestException.responseDataException("Token id cannot be null")
             }
         }
 
@@ -79,17 +87,22 @@ class SSORepository(private val ssoApi: IssuerApi) {
     /**
      * 获取发行商申请发行SSO的详细信息
      */
-    suspend fun getApplyForIssueSSODetails(
-        walletAddress: String,
-        ssoApplicationId: String
+    suspend fun getApplyForSSODetails(
+        walletAddress: String
     ): ApplyForSSODetailsDTO? {
         val details =
             checkResponse(2005) {
-                ssoApi.getApplyForIssueSSODetails(walletAddress, ssoApplicationId)
+                ssoApi.getApplyForSSODetails(walletAddress)
             }.data
 
         details?.let {
-            if (it.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
+            if (it.applicationStatus < SSOApplicationState.CHAIRMAN_UNAPPROVED
+                || it.applicationStatus > SSOApplicationState.GOVERNOR_MINTED
+            ) {
+                throw RequestException.responseDataException(
+                    "Unknown approval status ${it.applicationStatus}"
+                )
+            } else if (it.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
                 && it.tokenIdx == null
             ) {
                 throw RequestException.responseDataException("Token id cannot be null")
@@ -113,7 +126,7 @@ class SSORepository(private val ssoApi: IssuerApi) {
     /**
      * 申请发行稳定币
      */
-    suspend fun applyForIssueSSO(
+    suspend fun applyForIssueToken(
         walletAddress: String,
         tokenType: String,
         amount: Long,
@@ -141,20 +154,24 @@ class SSORepository(private val ssoApi: IssuerApi) {
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
         return checkResponse(2003) {
-            ssoApi.applyForIssueSSO(toRequestBody)
+            ssoApi.applyForIssueToken(toRequestBody)
         }
     }
 
     /**
-     * 更改Publish状态
+     * 更改申请发行SSO的状态为 published
      */
-    suspend fun changePublishStatus(address: String): Response<Any>? {
+    suspend fun changeApplyForSSOToPublished(
+        walletAddress: String,
+        ssoApplicationId: String
+    ): Response<Any>? {
         val toRequestBody = """{
-    "address":"$address"
+    "address":"$walletAddress",
+    "id":"$ssoApplicationId"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
         return checkResponse {
-            ssoApi.changePublishStatus(toRequestBody)
+            ssoApi.changeApplyForSSOToPublished(toRequestBody)
         }
     }
 

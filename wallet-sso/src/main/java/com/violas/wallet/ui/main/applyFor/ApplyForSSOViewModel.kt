@@ -68,13 +68,13 @@ class ApplyForSSOViewModel : BaseViewModel() {
                     mIssuerService.loadUserInfo(mAccountDOLiveData.value!!.address).data
                 }
 
-            val remoteApplyForSSOSummaryDeferred =
+            val remoteSummaryDeferred =
                 async {
-                    mIssuerService.queryApplyForIssueSSOSummary(mAccountDOLiveData.value!!.address)
+                    mIssuerService.queryApplyForSSOSummary(mAccountDOLiveData.value!!.address)
                 }
 
             val userInfo = userInfoDeferred.await()
-            val remoteSummary = remoteApplyForSSOSummaryDeferred.await()
+            val remoteSummary = remoteSummaryDeferred.await()
 
             if (userInfo == null
                 || userInfo.countryCode.isNullOrEmpty()
@@ -119,5 +119,9 @@ class ApplyForSSOViewModel : BaseViewModel() {
             )
         )
         EventBus.getDefault().post(RefreshBalanceEvent())
+    }
+
+    override fun isLoadAction(action: Int): Boolean {
+        return true
     }
 }

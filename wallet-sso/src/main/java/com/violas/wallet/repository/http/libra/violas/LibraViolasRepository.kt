@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.libra.violas
 
-import com.palliums.net.RequestException
+import com.palliums.exceptions.RequestException
 import com.palliums.net.checkResponse
 
 /**

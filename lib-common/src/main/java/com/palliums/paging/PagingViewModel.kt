@@ -6,8 +6,8 @@ import androidx.paging.Config
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.toLiveData
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.net.LoadState
-import com.palliums.net.getErrorTipsMsg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
@@ -204,7 +204,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                         retry = { loadInitial(params, callback) }
 
                         refreshState.postValueSupport(LoadState.failure(e))
-                        tipsMessage.postValueSupport(e.getErrorTipsMsg())
+                        tipsMessage.postValueSupport(e.getShowErrorMessage(true))
                     }
                 }
             }
@@ -270,7 +270,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                         retry = { loadAfter(params, callback) }
 
                         loadMoreState.postValueSupport(LoadState.failure(e))
-                        tipsMessage.postValueSupport(e.getErrorTipsMsg())
+                        tipsMessage.postValueSupport(e.getShowErrorMessage(true))
                     }
                 }
             }

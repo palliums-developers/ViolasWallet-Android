@@ -1,6 +1,7 @@
 package com.palliums.net
 
 import androidx.annotation.IntDef
+import com.palliums.extensions.isNoNetwork
 
 /**
  * Created by elephant on 2019-08-13 11:20.
@@ -41,18 +42,10 @@ data class LoadState private constructor(
     }
 
     fun isNoNetwork(): Boolean {
-        return throwable != null && RequestException.isNoNetwork(throwable)
+        return throwable != null && throwable.isNoNetwork()
     }
 
     fun getErrorMsg(): String? {
         return throwable?.message ?: errorText
-    }
-
-    fun getErrorCode(): Any {
-        return if (throwable != null && throwable is RequestException) {
-            throwable.errorCode
-        } else {
-            RequestException.ERROR_CODE_UNKNOWN_ERROR
-        }
     }
 }

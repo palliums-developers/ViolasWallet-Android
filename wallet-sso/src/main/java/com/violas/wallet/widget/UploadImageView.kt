@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.target.Target
 import com.violas.wallet.R
 import com.violas.wallet.image.GlideApp
@@ -73,7 +74,8 @@ class UploadImageView : LinearLayout {
             GlideApp.with(this)
                 .load(imageUrl)
                 .centerCrop()
-                .override(Target.SIZE_ORIGINAL)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                //.override(Target.SIZE_ORIGINAL)
                 .placeholder(R.drawable.shape_bg_photo)
                 .error(R.drawable.shape_bg_photo)
                 .into(it)
@@ -82,28 +84,33 @@ class UploadImageView : LinearLayout {
 
     fun setContentImage(drawable: Drawable?) {
         drawable?.let {
-            view?.ivContent?.setImageDrawable(drawable)
             view?.ivClose?.visibility = View.VISIBLE
             view?.ivAdd?.visibility = View.GONE
             view?.tvDesc?.visibility = View.GONE
+            view?.ivContent?.background = null
+            view?.ivContent?.setImageDrawable(drawable)
         }
     }
 
     fun closeContentImage() {
+        view?.progress?.visibility = View.GONE
         view?.ivClose?.visibility = View.GONE
         view?.ivAdd?.visibility = View.VISIBLE
         view?.tvDesc?.visibility = View.VISIBLE
-        view?.progress?.visibility = View.GONE
+        view?.ivContent?.let {
+            it.setBackgroundResource(R.drawable.shape_bg_photo)
+            it.setImageDrawable(null)
+        }
         closeCallBack?.invoke()
     }
 
     fun startLoadingImage() {
         view?.progress?.visibility = View.VISIBLE
-        view?.ivAdd?.visibility = View.GONE
-        view?.tvDesc?.visibility = View.GONE
+        view?.ivClose?.visibility = View.GONE
     }
 
     fun endLoadingImage() {
         view?.progress?.visibility = View.GONE
+        view?.ivClose?.visibility = View.VISIBLE
     }
 }

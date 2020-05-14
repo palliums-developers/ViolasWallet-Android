@@ -1,0 +1,12 @@
+<resources>
+
+    <string name="exception_account_no_activation">账户未激活</string>
+    <string name="exception_account_no_control">提供的私钥无法控制账户</string>
+    <string name="exception_receive_account_no_activation">接受转账的账户没有激活</string>
+    <string name="exception_script_validation_failed">脚本验证错误</string>
+    <string name="exception_sequence_number_old">SequenceNumber 已经失效</string>
+    <string name="exception_lack_of_balance">账户余额不足</string>
+    <string name="exception_node_response">节点响应失败</string>
+    <string name="exception_account_no_mintable">账户没有铸币权</string>
+
+</resources>

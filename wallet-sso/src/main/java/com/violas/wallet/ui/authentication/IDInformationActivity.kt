@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.authentication
 
 import android.os.Bundle
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.target.Target
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -56,7 +57,8 @@ class IDInformationActivity : BaseAppActivity() {
                 GlideApp.with(this@IDInformationActivity)
                     .load(idInfo.idPhotoFrontUrl)
                     .centerCrop()
-                    .override(Target.SIZE_ORIGINAL)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    //.override(Target.SIZE_ORIGINAL)
                     .placeholder(R.drawable.bg_id_card_front)
                     .error(R.drawable.bg_id_card_front)
                     .into(ivIDCardFront)
@@ -64,7 +66,8 @@ class IDInformationActivity : BaseAppActivity() {
                 GlideApp.with(this@IDInformationActivity)
                     .load(idInfo.idPhotoBackUrl)
                     .centerCrop()
-                    .override(Target.SIZE_ORIGINAL)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    //.override(Target.SIZE_ORIGINAL)
                     .placeholder(R.drawable.bg_id_card_back)
                     .error(R.drawable.bg_id_card_back)
                     .into(ivIDCardBack)

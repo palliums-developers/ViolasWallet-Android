@@ -12,6 +12,7 @@ import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.governor.SSOApplicationDetailsDTO
 import com.violas.wallet.repository.http.governor.UnapproveReasonDTO
+import com.violas.wallet.ui.main.message.SSOApplicationMsgVO
 import com.violas.wallet.ui.transfer.TransferActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -97,6 +98,18 @@ class ApprovalFragmentViewModel(
                     mSSOApplicationDetails,
                     null,
                     mAccountLD.value!!.address
+                )
+
+                mGovernorManager.updateSSOApplicationMsgStatus(
+                    mAccountLD.value!!.id,
+                    SSOApplicationMsgVO(
+                        applicationId = mSSOApplicationDetails.applicationId,
+                        applicationStatus = SSOApplicationState.GOVERNOR_TRANSFERRED,
+                        applicationDate = mSSOApplicationDetails.applicationDate,
+                        expirationDate = mSSOApplicationDetails.expirationDate,
+                        applicantIdName = mSSOApplicationDetails.idName,
+                        msgRead = true
+                    )
                 )
             }
 
