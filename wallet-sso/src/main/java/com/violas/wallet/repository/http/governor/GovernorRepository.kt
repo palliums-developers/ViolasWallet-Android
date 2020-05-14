@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.governor
 
-import com.palliums.net.RequestException
+import com.palliums.exceptions.RequestException
 import com.palliums.net.checkResponse
 import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.ui.selectCountryArea.getCountryArea

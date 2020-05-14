@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.issuer
 
 import com.palliums.content.ContextProvider
-import com.palliums.net.RequestException
+import com.palliums.exceptions.RequestException
 import com.palliums.net.checkResponse
 import com.palliums.utils.getImageName
 import com.palliums.violas.http.Response

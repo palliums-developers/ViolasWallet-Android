@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.bitcoin
 
-import com.palliums.net.RequestException
+import com.palliums.exceptions.RequestException
 import com.palliums.net.checkResponse
 
 /**

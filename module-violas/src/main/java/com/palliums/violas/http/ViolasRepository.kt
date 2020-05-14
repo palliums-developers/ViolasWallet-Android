@@ -1,9 +1,8 @@
 package com.palliums.violas.http
 
 import com.google.gson.Gson
-import com.palliums.net.RequestException
+import com.palliums.exceptions.RequestException
 import com.palliums.net.checkResponse
-import com.palliums.net.checkResponse2
 import com.palliums.violas.error.ViolasException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -36,7 +35,7 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
 
     @Throws(ViolasException::class, RequestException::class)
     suspend fun pushTx(tx: String): Response<Any> {
-        return checkResponse2(
+        return checkResponse(
             checkError = {
                 ViolasException.checkViolasTransactionException(it)
             }

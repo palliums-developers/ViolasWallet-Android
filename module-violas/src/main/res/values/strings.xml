@@ -7,6 +7,6 @@
     <string name="exception_sequence_number_old">SequenceNumber has expired</string>
     <string name="exception_lack_of_balance">Insufficient account balance</string>
     <string name="exception_node_response">Node response failed</string>
-    <string name="exception_invalid_token_id">Invalid token id</string>
+    <string name="exception_account_no_mintable">Account does not have the right to mint</string>
 
 </resources>

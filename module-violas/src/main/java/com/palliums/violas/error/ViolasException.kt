@@ -1,12 +1,15 @@
 package com.palliums.violas.error
 
+import com.palliums.exceptions.BaseException
 import com.palliums.utils.getString
 import com.palliums.violas.BuildConfig
 import com.palliums.violas.R
 import com.palliums.violas.http.Response
-import java.lang.RuntimeException
 
-abstract class ViolasException(val errorCode: String, val errorMsg: String?) : RuntimeException() {
+abstract class ViolasException(
+    val errorCode: String,
+    val errorMsg: String?
+) : RuntimeException(), BaseException {
 
     companion object {
 
@@ -22,7 +25,7 @@ abstract class ViolasException(val errorCode: String, val errorMsg: String?) : R
 
                 // {"code":4000,"message":"Node runtime error: NUMBER_OF_TYPE_ARGUMENTS_MISMATCH"}
                 response.errorMsg!!.contains("NUMBER_OF_TYPE_ARGUMENTS_MISMATCH") -> {
-                    throw InvalidTokenIdException()
+                    throw AccountNoMintableException()
                 }
 
                 // todo chain other error
@@ -36,22 +39,22 @@ abstract class ViolasException(val errorCode: String, val errorMsg: String?) : R
     override val message: String?
         get() = super.message
 
-    fun getErrorMessage(load: Boolean): String {
-        if (this !is UnknownException) {
-            return errorMsg!!
+    override fun getErrorMessage(loadAction: Boolean): String {
+        if (this !is UnknownException && !errorMsg.isNullOrEmpty()) {
+            return errorMsg
         }
 
-        if (load) {
+        if (loadAction) {
             return if (BuildConfig.DEBUG)
                 "${getString(R.string.common_load_fail)}($errorCode)\n${errorMsg
-                    ?: "Unknown error"}"
+                    ?: "Unknown reason"}"
             else
                 "${getString(R.string.common_load_fail)}($errorCode)"
         }
 
         return if (BuildConfig.DEBUG)
             "${getString(R.string.common_operation_fail)}($errorCode)\n${errorMsg
-                ?: "Unknown error"}"
+                ?: "Unknown reason"}"
         else
             "${getString(R.string.common_operation_fail)}($errorCode)"
     }
@@ -105,9 +108,9 @@ abstract class ViolasException(val errorCode: String, val errorMsg: String?) : R
         ViolasException("V106", getString(R.string.exception_node_response))
 
     /**
-     * 无效的token id
+     * 账户没有铸币权
      */
-    class InvalidTokenIdException :
-        ViolasException("V107", getString(R.string.exception_invalid_token_id))
+    class AccountNoMintableException :
+        ViolasException("V107", getString(R.string.exception_account_no_mintable))
 }
 

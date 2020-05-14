@@ -5,9 +5,9 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.palliums.exceptions.RequestException
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.net.LoadState
-import com.palliums.net.RequestException
-import com.palliums.net.getErrorTipsMsg
 import com.palliums.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,7 +65,7 @@ abstract class BaseViewModel : ViewModel() {
 
                 val exception = RequestException.networkUnavailable()
                 loadState.postValueSupport(LoadState.failure(exception))
-                tipsMessage.postValueSupport(exception.getErrorTipsMsg())
+                tipsMessage.postValueSupport(exception.getShowErrorMessage(isLoadAction(action)))
 
                 failureCallback?.invoke(exception)
                 return false
@@ -102,7 +102,7 @@ abstract class BaseViewModel : ViewModel() {
                     }
 
                     loadState.postValueSupport(LoadState.failure(e))
-                    tipsMessage.postValueSupport(e.getErrorTipsMsg())
+                    tipsMessage.postValueSupport(e.getShowErrorMessage(isLoadAction(action)))
                 }
 
                 failureCallback?.invoke(e)
@@ -120,6 +120,14 @@ abstract class BaseViewModel : ViewModel() {
 
             prevRetry?.invoke()
         }
+    }
+
+    /**
+     * 是否为加载数据动作，默认为其它操作动作
+     * 用于[execute]执行异常时获取错误信息展示，是加载失败还是操作失败
+     */
+    open fun isLoadAction(action: Int): Boolean {
+        return false
     }
 
     /**

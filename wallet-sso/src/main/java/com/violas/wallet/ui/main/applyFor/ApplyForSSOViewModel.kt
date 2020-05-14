@@ -120,4 +120,8 @@ class ApplyForSSOViewModel : BaseViewModel() {
         )
         EventBus.getDefault().post(RefreshBalanceEvent())
     }
+
+    override fun isLoadAction(action: Int): Boolean {
+        return true
+    }
 }

@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
-import com.palliums.net.RequestException
+import com.palliums.exceptions.RequestException
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager

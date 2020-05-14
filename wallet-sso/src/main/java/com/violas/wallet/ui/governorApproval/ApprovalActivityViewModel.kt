@@ -51,10 +51,11 @@ class ApprovalActivityViewModel(
     override suspend fun realExecute(action: Int, vararg params: Any) {
         // 加载SSO申请详情
         val ssoApplicationDetails =
-            mGovernorManager.getSSOApplicationDetails(
-                mAccountLD.value!!,
-                mSSOApplicationMsgVO
-            )
+            mGovernorManager.getSSOApplicationDetails(mAccountLD.value!!, mSSOApplicationMsgVO)
         mSSOApplicationDetailsLD.postValue(ssoApplicationDetails)
+    }
+
+    override fun isLoadAction(action: Int): Boolean {
+        return true
     }
 }

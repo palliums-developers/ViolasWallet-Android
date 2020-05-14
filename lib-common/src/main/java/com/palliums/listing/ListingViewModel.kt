@@ -6,9 +6,9 @@ import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.palliums.exceptions.RequestException
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.net.LoadState
-import com.palliums.net.RequestException
-import com.palliums.net.getErrorTipsMsg
 import com.palliums.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,7 +44,7 @@ abstract class ListingViewModel<VO> : ViewModel() {
 
                 val exception = RequestException.networkUnavailable()
                 loadState.postValueSupport(LoadState.failure(exception))
-                tipsMessage.postValueSupport(exception.getErrorTipsMsg())
+                tipsMessage.postValueSupport(exception.getShowErrorMessage(true))
                 return false
             }
 
@@ -71,7 +71,7 @@ abstract class ListingViewModel<VO> : ViewModel() {
                     retry = { execute(*params) }
 
                     loadState.postValueSupport(LoadState.failure(e))
-                    tipsMessage.postValueSupport(e.getErrorTipsMsg())
+                    tipsMessage.postValueSupport(e.getShowErrorMessage(true))
                 }
             }
         }

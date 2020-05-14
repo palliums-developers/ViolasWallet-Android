@@ -1,8 +1,9 @@
-package com.palliums.net
+package com.palliums.exceptions
 
 import com.google.gson.JsonParseException
 import com.palliums.BuildConfig
 import com.palliums.R
+import com.palliums.net.ApiResponse
 import com.palliums.utils.getString
 import com.palliums.utils.isNetworkConnected
 import org.apache.http.conn.ConnectTimeoutException
@@ -19,9 +20,12 @@ import javax.net.ssl.SSLPeerUnverifiedException
  * <p>
  * desc: 请求异常，统一处理网络请求中出现的exception、http error、server error、响应数据无法解析、无网络情况
  */
-class RequestException : RuntimeException {
+class RequestException : RuntimeException, BaseException {
 
     companion object {
+
+        /** 未知错误 */
+        const val ERROR_CODE_UNKNOWN_ERROR = "L100"
         /** 连接超时 */
         private const val ERROR_CODE_CONNECT_TIMEOUT = "L101"
         /** Socket超时 */
@@ -38,8 +42,6 @@ class RequestException : RuntimeException {
         const val ERROR_CODE_NO_NETWORK = "L107"
         /** 主动取消 */
         const val ERROR_CODE_ACTIVE_CANCELLATION = "L108"
-        /** 未知错误 */
-        const val ERROR_CODE_UNKNOWN_ERROR = "L100"
 
         fun networkUnavailable(): RequestException {
             return RequestException(
@@ -49,25 +51,10 @@ class RequestException : RuntimeException {
         }
 
         fun responseDataException(errorDesc: String): RequestException {
-            val errorCode = ERROR_CODE_DATA_EXCEPTION
             return RequestException(
-                errorCode,
-                if (BuildConfig.DEBUG)
-                    getString(R.string.common_http_data_exception, errorDesc)
-                else
-                    getString(R.string.common_http_request_fail, errorCode)
+                ERROR_CODE_DATA_EXCEPTION,
+                errorDesc
             )
-        }
-
-        fun isNoNetwork(error: Throwable): Boolean {
-            return error is RequestException
-                    && error.errorCode == ERROR_CODE_NO_NETWORK
-        }
-
-        fun isActiveCancellation(error: Throwable): Boolean {
-            return (error is RequestException
-                    && error.errorCode == ERROR_CODE_ACTIVE_CANCELLATION)
-                    || error.javaClass.name == "kotlinx.coroutines.JobCancellationException"
         }
     }
 
@@ -77,12 +64,12 @@ class RequestException : RuntimeException {
      * 负数表示一个exception的错误码，如：[ERROR_CODE_CERTIFICATE_INVALID]...
      */
     val errorCode: Any
-    val errorMsg: String
+    val errorMsg: String?
 
     constructor(exception: Throwable) : super(exception) {
         if (exception.javaClass.name == "kotlinx.coroutines.JobCancellationException") {
             errorCode = ERROR_CODE_ACTIVE_CANCELLATION
-            errorMsg = ""
+            errorMsg = "Active Cancellation"
             return
         } else if (!isNetworkConnected()) {
             errorCode = ERROR_CODE_NO_NETWORK
@@ -123,10 +110,7 @@ class RequestException : RuntimeException {
             }
             is JSONException, is JsonParseException -> {
                 errorCode = ERROR_CODE_DATA_EXCEPTION
-                errorMsg = if (BuildConfig.DEBUG)
-                    getString(R.string.common_http_data_exception, exception.toString())
-                else
-                    getString(R.string.common_http_request_fail, errorCode)
+                errorMsg = exception.toString()
             }
             else -> {
                 if (exception is InterruptedIOException
@@ -140,10 +124,7 @@ class RequestException : RuntimeException {
 
                 // 未知错误
                 errorCode = ERROR_CODE_UNKNOWN_ERROR
-                errorMsg = if (BuildConfig.DEBUG)
-                    getString(R.string.common_http_unknown_error, exception.toString())
-                else
-                    getString(R.string.common_http_request_fail, errorCode)
+                errorMsg = exception.toString()
             }
         }
     }
@@ -154,17 +135,40 @@ class RequestException : RuntimeException {
         val realErrorMsg = response.getErrorMsg()
         errorMsg =
             if (realErrorMsg == null || (realErrorMsg is String && realErrorMsg.isEmpty())) {
-                getString(R.string.common_http_request_fail, errorCode)
+                null
             } else {
                 realErrorMsg.toString()
             }
     }
 
-    constructor(errorCode: Any, errorMsg: String) {
+    private constructor(errorCode: Any, errorMsg: String) {
         this.errorCode = errorCode
         this.errorMsg = errorMsg
     }
 
     override val message: String?
         get() = errorMsg
+
+    override fun getErrorMessage(loadAction: Boolean): String {
+        if (errorCode != ERROR_CODE_DATA_EXCEPTION
+            && errorCode != ERROR_CODE_UNKNOWN_ERROR
+            && !errorMsg.isNullOrEmpty()
+        ) {
+            return errorMsg
+        }
+
+        if (loadAction) {
+            return if (BuildConfig.DEBUG)
+                "${getString(R.string.common_load_fail)}($errorCode)\n${errorMsg
+                    ?: "Unknown reason"}"
+            else
+                "${getString(R.string.common_load_fail)}($errorCode)"
+        }
+
+        return if (BuildConfig.DEBUG)
+            "${getString(R.string.common_operation_fail)}($errorCode)\n${errorMsg
+                ?: "Unknown reason"}"
+        else
+            "${getString(R.string.common_operation_fail)}($errorCode)"
+    }
 }

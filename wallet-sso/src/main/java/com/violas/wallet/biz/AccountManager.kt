@@ -2,7 +2,7 @@ package com.violas.wallet.biz
 
 import android.content.Context
 import com.palliums.content.ContextProvider.getContext
-import com.palliums.net.RequestException
+import com.palliums.exceptions.RequestException
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip32.ExtendedKey
 import com.quincysx.crypto.bip44.BIP44
@@ -437,7 +437,11 @@ class AccountManager {
                         .subscribe({
                             coroutine.resume(it.toLong())
                         }, {
-                            coroutine.resumeWithException(RequestException(it))
+                            coroutine.resumeWithException(
+                                RequestException(
+                                    it
+                                )
+                            )
                         })
                     coroutine.invokeOnCancellation {
                         subscribe.dispose()

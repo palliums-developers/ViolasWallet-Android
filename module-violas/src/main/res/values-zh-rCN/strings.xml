@@ -7,6 +7,6 @@
     <string name="exception_sequence_number_old">SequenceNumber 已经失效</string>
     <string name="exception_lack_of_balance">账户余额不足</string>
     <string name="exception_node_response">节点响应失败</string>
-    <string name="exception_invalid_token_id">无效的 token id</string>
+    <string name="exception_account_no_mintable">账户没有铸币权</string>
 
 </resources>

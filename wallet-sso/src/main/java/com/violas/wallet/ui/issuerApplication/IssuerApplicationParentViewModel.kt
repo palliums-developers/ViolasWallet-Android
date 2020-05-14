@@ -51,9 +51,7 @@ class IssuerApplicationParentViewModel(
     override suspend fun realExecute(action: Int, vararg params: Any) {
         val details =
             if (mApplyForSSOSummary.applicationStatus != SSOApplicationState.IDLE)
-                mIssuerService.getApplyForSSODetails(
-                    mAccountDOLiveData.value!!.address
-                )
+                mIssuerService.getApplyForSSODetails(mAccountDOLiveData.value!!.address)
             else
                 null
 
@@ -71,9 +69,13 @@ class IssuerApplicationParentViewModel(
     }
 
     private fun applicationChanged(details: ApplyForSSODetailsDTO): Boolean {
-        return mApplyForSSOSummary.applicationStatus != details.applicationStatus ||
-                mApplyForSSOSummary.applicationId != details.applicationId ||
-                mApplyForSSOSummary.tokenName != details.tokenName ||
-                mApplyForSSOSummary.tokenIdx != details.tokenIdx
+        return mApplyForSSOSummary.applicationStatus != details.applicationStatus
+                || mApplyForSSOSummary.applicationId != details.applicationId
+                || mApplyForSSOSummary.tokenName != details.tokenName
+                || mApplyForSSOSummary.tokenIdx != details.tokenIdx
+    }
+
+    override fun isLoadAction(action: Int): Boolean {
+        return true
     }
 }

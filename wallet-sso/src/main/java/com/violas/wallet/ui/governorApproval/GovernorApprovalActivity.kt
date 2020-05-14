@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.palliums.net.RequestException
+import com.palliums.extensions.isNoNetwork
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
@@ -137,7 +137,7 @@ class GovernorApprovalActivity : BaseAppActivity() {
                 srlRefreshLayout.isEnabled = true
 
                 dslStatusLayout.showStatus(
-                    if (RequestException.isNoNetwork(it))
+                    if (it.isNoNetwork())
                         IStatusLayout.Status.STATUS_NO_NETWORK
                     else
                         IStatusLayout.Status.STATUS_FAILURE
