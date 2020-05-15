@@ -5,3 +5,4 @@ include ':lib-zbar-scan', ':lib-switch-button',
         ':wallet-pay', ':wallet-sso'
 
 rootProject.name = 'ViolasWallet'
+include ':lib-wallet-connect'

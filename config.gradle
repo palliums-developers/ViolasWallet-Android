@@ -154,6 +154,7 @@ ext {
             retrofit2                       : "com.squareup.retrofit2:retrofit:$versions.retrofit2",
             retrofit2_adapter_rxjava2       : "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit2",
             retrofit2_converter_gson        : "com.squareup.retrofit2:converter-gson:$versions.retrofit2",
+            gson                     : "com.google.code.gson:gson:$versions.gson",
             grpc_okhttp                     : "io.grpc:grpc-okhttp:$versions.grpc",
             grpc_protobuf                   : "io.grpc:grpc-protobuf:$versions.grpc",
             grpc_stub                       : "io.grpc:grpc-stub:$versions.grpc",
