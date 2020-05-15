@@ -23,10 +23,12 @@ abstract class ViolasException(
                     throw NodeResponseException()
                 }
 
-                // {"code":4000,"message":"Node runtime error: NUMBER_OF_TYPE_ARGUMENTS_MISMATCH"}
-                response.errorMsg!!.contains("NUMBER_OF_TYPE_ARGUMENTS_MISMATCH") -> {
+                // Script 有 TypeTag 时 1076，{"code":4000,"message":"Node runtime error: NUMBER_OF_TYPE_ARGUMENTS_MISMATCH"}
+                // Script 无 TypeTag，token id 不正确时 4016，{"code":4000,"message":"Node runtime error: ABORTED"}
+                // 暂时无法判断当前账户是否有某 token id 的铸币权
+                /*response.errorMsg!!.contains("NUMBER_OF_TYPE_ARGUMENTS_MISMATCH") -> {
                     throw AccountNoMintableException()
-                }
+                }*/
 
                 // todo chain other error
                 else -> {
