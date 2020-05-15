@@ -46,17 +46,17 @@ fun decodeScanQRCode(
         val splitMsg = splitMsg(msg)
         var scanType = ScanCodeType.Address
         val coinType = when (splitMsg.coinType?.toLowerCase(Locale.CHINA)) {
-            CoinTypes.Bitcoin.coinName().toLowerCase(Locale.CHINA) -> {
+            CoinTypes.Bitcoin.fullName().toLowerCase(Locale.CHINA) -> {
                 if (Vm.TestNet) {
                     CoinTypes.BitcoinTest.coinType()
                 } else {
                     CoinTypes.Bitcoin.coinType()
                 }
             }
-            CoinTypes.Libra.coinName().toLowerCase(Locale.CHINA) -> {
+            CoinTypes.Libra.fullName().toLowerCase(Locale.CHINA) -> {
                 CoinTypes.Libra.coinType()
             }
-            CoinTypes.Violas.coinName().toLowerCase(Locale.CHINA) -> {
+            CoinTypes.Violas.fullName().toLowerCase(Locale.CHINA) -> {
                 CoinTypes.Violas.coinType()
             }
             else -> {
