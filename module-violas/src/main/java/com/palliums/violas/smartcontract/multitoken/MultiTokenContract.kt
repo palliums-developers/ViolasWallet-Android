@@ -92,7 +92,7 @@ abstract class MultiTokenContract {
         return TransactionPayload(
             TransactionPayload.Script(
                 moveEncode,
-                arrayListOf(lbrStructTag()),
+                arrayListOf(),
                 arrayListOf(tokenIdxArgument, addressArgument, amountArgument, dataArgument)
             )
         )
