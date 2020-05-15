@@ -9,6 +9,7 @@ import com.palliums.net.LoadState
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.GovernorManager
+import com.violas.wallet.biz.WalletType
 import com.violas.wallet.event.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -280,8 +281,17 @@ class UserViewModel : BaseViewModel() {
         // 从服务器获取用户信息
         val walletAddress = mCurrentAccountLD.value!!.address
         val userInfoDTO = try {
-            issuerService.loadUserInfo(walletAddress).data
+            val userInfo = issuerService.loadUserInfo(walletAddress).data
+
+            if (mCurrentAccountLD.value?.walletType != WalletType.SSO.type) {
+                return
+            }
+
+            userInfo
         } catch (e: Exception) {
+            if (mCurrentAccountLD.value?.walletType != WalletType.SSO.type) {
+                return
+            }
 
             postStateIfNotReady(LoadState.failure(e))
 

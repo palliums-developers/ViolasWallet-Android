@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_196"
         android:background="@drawable/bg_title_dark"
+        app:layout_constraintBottom_toTopOf="@id/mivIDAuthentication"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -74,6 +75,7 @@
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivIDAuthentication"
         style="@style/MenuItemView"
+        app:layout_constraintBottom_toTopOf="@id/mivPhoneVerification"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivHeaderBg"
@@ -101,6 +103,7 @@
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivPhoneVerification"
         style="@style/MenuItemView"
+        app:layout_constraintBottom_toTopOf="@id/mivEmailVerification"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mivIDAuthentication"
@@ -128,9 +131,12 @@
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivEmailVerification"
         style="@style/MenuItemView"
+        android:layout_marginBottom="@dimen/item_spacing"
+        app:layout_constraintBottom_toTopOf="@id/mivAddressBook"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mivPhoneVerification"
+        app:layout_goneMarginBottom="@dimen/dp_0"
         app:mivShowBottomLine="false"
         app:mivShowEndArrow="false"
         app:mivStartIcon="@drawable/ic_me_email"
@@ -156,7 +162,7 @@
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivAddressBook"
         style="@style/MenuItemView"
-        android:layout_marginTop="@dimen/item_spacing"
+        app:layout_constraintBottom_toTopOf="@id/mivSettings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivEmailVerification"

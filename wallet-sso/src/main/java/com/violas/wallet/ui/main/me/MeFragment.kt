@@ -70,18 +70,17 @@ class MeFragment : BaseFragment() {
         mViewModel.mCurrentAccountLD.observe(viewLifecycleOwner, Observer {
             if (it.walletType == WalletType.Governor.type) {
                 tvWalletTypeName.setText(R.string.title_governor_wallet)
-                showGovernorHeaderView(it, mViewModel.mGovernorInfoLD.value)
+                showGovernorView(it, mViewModel.mGovernorInfoLD.value)
                 showApplyForLicenceDialog(it, mViewModel.mGovernorInfoLD.value)
             } else {
                 tvWalletTypeName.setText(R.string.title_sso_wallet)
-                showSSOHeaderView()
+                showSSOView()
+                mViewModel.init()
             }
-
-            mViewModel.init()
         })
 
         mViewModel.mGovernorInfoLD.observe(viewLifecycleOwner, Observer {
-            showGovernorHeaderView(mViewModel.mCurrentAccountLD.value, it)
+            showGovernorView(mViewModel.mCurrentAccountLD.value, it)
             showApplyForLicenceDialog(mViewModel.mCurrentAccountLD.value, it)
         })
 
@@ -187,7 +186,14 @@ class MeFragment : BaseFragment() {
         }
     }
 
-    private fun showGovernorHeaderView(account: AccountDO?, governorInfo: GovernorInfoDTO?) {
+    private fun showGovernorView(account: AccountDO?, governorInfo: GovernorInfoDTO?) {
+        mivIDAuthentication.visibility = View.GONE
+        pbIDAuthenticationLoading.visibility = View.GONE
+        mivPhoneVerification.visibility = View.GONE
+        pbPhoneVerificationLoading.visibility = View.GONE
+        mivEmailVerification.visibility = View.GONE
+        pbEmailVerificationLoading.visibility = View.GONE
+
         if (account == null
             || governorInfo == null
             || account.address != governorInfo.walletAddress
@@ -233,11 +239,18 @@ class MeFragment : BaseFragment() {
         )
     }
 
-    private fun showSSOHeaderView() {
+    private fun showSSOView() {
         nivAvatar.setImageResource(R.drawable.ic_avatar_sso_default)
         nivAvatar.visibility = View.VISIBLE
         tvNickname.visibility = View.GONE
         tvSSONickname.visibility = View.VISIBLE
+
+        mivIDAuthentication.visibility = View.VISIBLE
+        pbIDAuthenticationLoading.visibility = View.VISIBLE
+        mivPhoneVerification.visibility = View.VISIBLE
+        pbPhoneVerificationLoading.visibility = View.VISIBLE
+        mivEmailVerification.visibility = View.VISIBLE
+        pbEmailVerificationLoading.visibility = View.VISIBLE
     }
 
     private fun showApplyForLicenceDialog(account: AccountDO?, governorInfo: GovernorInfoDTO?) {
