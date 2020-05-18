@@ -65,8 +65,8 @@ data class RequestDTO(
 data class AccountStateDTO(
     @SerializedName("authentication_key")
     val authenticationKey: String,
-    @SerializedName("balance")
-    val balance: AccountBalance,
+    @SerializedName("balances")
+    val balances: List<AccountBalance>?,
     @SerializedName("sequence_number")
     val sequenceNumber: Long,
     @SerializedName("sent_events_key")
