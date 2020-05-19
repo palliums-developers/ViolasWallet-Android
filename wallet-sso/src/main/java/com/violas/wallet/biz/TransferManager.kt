@@ -3,6 +3,7 @@ package com.violas.wallet.biz
 import android.content.Context
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.utils.getString
+import com.palliums.violas.error.ViolasException
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.common.SimpleSecurity
@@ -24,6 +25,19 @@ class LackOfBalanceException :
 class TransferManager {
     private val mTokenManager by lazy {
         TokenManager()
+    }
+
+    private fun convertViolasTransferException(e: Exception): Exception {
+        e.printStackTrace()
+        return when (e) {
+            is ViolasException.LackOfBalanceException -> {
+                LackOfBalanceException()
+            }
+            is ViolasException.NodeResponseException -> {
+                LackOfBalanceException()
+            }
+            else -> TransferUnknownException()
+        }
     }
 
     @Throws(AddressFaultException::class, RuntimeException::class)
@@ -143,7 +157,7 @@ class TransferManager {
                 )
                 success.invoke("")
             } catch (e: Exception) {
-                error.invoke(e)
+                error.invoke(convertViolasTransferException(e))
             }
         }
     }
@@ -192,7 +206,7 @@ class TransferManager {
             )
             success.invoke("")
         } catch (e: Exception) {
-            error.invoke(e)
+            error.invoke(convertViolasTransferException(e))
         }
     }
 

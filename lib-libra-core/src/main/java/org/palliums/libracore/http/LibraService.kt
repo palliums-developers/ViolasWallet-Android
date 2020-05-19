@@ -131,7 +131,14 @@ class LibraService(private val mLibraRepository: LibraRepository) {
 
     suspend fun getBalanceInMicroLibra(address: String): Long {
         val response = getAccountState(address)
-        return response?.balance?.amount ?: 0
+        response?.balances?.forEach {
+            if (it.currency.equals("lbr", true)
+                || it.currency.equals("libra", true)
+            ) {
+                return it.amount
+            }
+        }
+        return 0
     }
 
     suspend fun getAccountState(
