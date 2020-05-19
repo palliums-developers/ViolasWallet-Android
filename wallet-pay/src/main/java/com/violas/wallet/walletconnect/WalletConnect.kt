@@ -76,9 +76,6 @@ class WalletConnect private constructor(val context: Context) {
         mWCClient?.onViolasSignTransaction = { id, _ ->
             sendSuccessMessage(id, "Success Violas Sign Transaction")
         }
-        mWCClient?.onViolasSign = { id, _ ->
-            sendSuccessMessage(id, "Success Violas Sign")
-        }
         mWCClient?.onGetAccounts = { id ->
             val accounts = mAccountStorage.loadAll().map {
                 WCViolasAccount(
