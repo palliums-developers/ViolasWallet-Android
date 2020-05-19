@@ -147,6 +147,7 @@ dependencies {
     implementation project(':module-violas')
 //    implementation project(':lib-violas-core')
     implementation project(':lib-btc-core')
+    implementation project(':lib-wallet-connect')
 
     testImplementation libraries.test_junit
     androidTestImplementation libraries.androidTest_junit

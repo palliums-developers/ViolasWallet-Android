@@ -19,7 +19,6 @@ import com.violas.walletconnect.models.*
 import com.violas.walletconnect.models.violas.WCViolasSendRawTransaction
 import com.violas.walletconnect.models.violas.WCViolasSendTransaction
 import com.violas.walletconnect.models.violas.WCViolasSign
-import com.violas.walletconnect.models.violas.WCViolasSignTransaction
 import okhttp3.*
 import okio.ByteString
 import java.util.*
@@ -27,10 +26,10 @@ import java.util.*
 const val JSONRPC_VERSION = "2.0"
 const val WS_CLOSE_NORMAL = 1000
 
-open class WCClient (
+open class WCClient(
     private val httpClient: OkHttpClient,
     builder: GsonBuilder = GsonBuilder()
-): WebSocketListener() {
+) : WebSocketListener() {
     private val TAG = "WCClient"
 
     private val gson = builder
@@ -58,15 +57,16 @@ open class WCClient (
 
     private var handshakeId: Long = -1
 
-    var onFailure: (Throwable) -> Unit = { _ -> Unit}
+    var onFailure: (Throwable) -> Unit = { _ -> Unit }
     var onDisconnect: (code: Int, reason: String) -> Unit = { _, _ -> Unit }
     var onSessionRequest: (id: Long, peer: WCPeerMeta) -> Unit = { _, _ -> Unit }
     var onCustomRequest: (id: Long, payload: String) -> Unit = { _, _ -> Unit }
     var onGetAccounts: (id: Long) -> Unit = { _ -> Unit }
-    var onViolasSignTransaction: (id: Long, transaction: WCViolasSignTransaction) -> Unit = { _, _ -> Unit }
-    var onViolasSendTransaction: (id: Long, transaction: WCViolasSendTransaction) -> Unit = { _, _ -> Unit }
-    var onViolasSendRawTransaction: (id: Long, transaction: WCViolasSendRawTransaction) -> Unit = { _, _ -> Unit }
-    var onViolasSign: (id: Long, transaction: WCViolasSign) -> Unit = { _, _ -> Unit }
+    var onViolasSendTransaction: (id: Long, transaction: WCViolasSendTransaction) -> Unit =
+        { _, _ -> Unit }
+    var onViolasSendRawTransaction: (id: Long, transaction: WCViolasSendRawTransaction) -> Unit =
+        { _, _ -> Unit }
+    var onViolasSignTransaction: (id: Long, transaction: WCViolasSign) -> Unit = { _, _ -> Unit }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         Log.d(TAG, "<< websocket opened >>")
@@ -74,8 +74,10 @@ open class WCClient (
 
         listeners.forEach { it.onOpen(webSocket, response) }
 
-        val session = this.session ?: throw IllegalStateException("session can't be null on connection open")
-        val peerId = this.peerId ?: throw IllegalStateException("peerId can't be null on connection open")
+        val session =
+            this.session ?: throw IllegalStateException("session can't be null on connection open")
+        val peerId =
+            this.peerId ?: throw IllegalStateException("peerId can't be null on connection open")
         // The Session.topic channel is used to listen session request messages only.
         subscribe(session.topic)
         // The peerId channel is used to listen to all messages sent to this httpClient.
@@ -104,19 +106,19 @@ open class WCClient (
     }
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-        Log.d(TAG,"<< websocket closed >>")
+        Log.d(TAG, "<< websocket closed >>")
 
         listeners.forEach { it.onClosed(webSocket, code, reason) }
     }
 
     override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-        Log.d(TAG,"<== pong")
+        Log.d(TAG, "<== pong")
 
         listeners.forEach { it.onMessage(webSocket, bytes) }
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-        Log.d(TAG,"<< closing socket >>")
+        Log.d(TAG, "<< closing socket >>")
 
         resetState()
         onDisconnect(code, reason)
@@ -124,7 +126,12 @@ open class WCClient (
         listeners.forEach { it.onClosing(webSocket, code, reason) }
     }
 
-    fun connect(session: WCSession, peerMeta: WCPeerMeta, peerId: String = UUID.randomUUID().toString(), remotePeerId: String? = null) {
+    fun connect(
+        session: WCSession,
+        peerMeta: WCPeerMeta,
+        peerId: String = UUID.randomUUID().toString(),
+        remotePeerId: String? = null
+    ) {
         if (this.session != null && this.session?.topic != session.topic) {
             killSession()
         }
@@ -141,7 +148,7 @@ open class WCClient (
         socket = httpClient.newWebSocket(request, this)
     }
 
-    fun approveSession(accounts: List<WCAccount>, chainId: String): Boolean {
+    fun approveSession(accounts: List<String>, chainId: String): Boolean {
         check(handshakeId > 0) { "handshakeId must be greater than 0 on session approve" }
 
         val result = WCApproveSessionResponse(
@@ -158,7 +165,11 @@ open class WCClient (
         return encryptAndSend(gson.toJson(response))
     }
 
-    fun updateSession(accounts: List<WCAccount>? = null, chainId: String? = null, approved: Boolean = true): Boolean {
+    fun updateSession(
+        accounts: List<String>? = null,
+        chainId: String? = null,
+        approved: Boolean = true
+    ): Boolean {
         val request = JsonRpcRequest(
             id = generateId(),
             method = WCMethod.SESSION_UPDATE,
@@ -211,8 +222,12 @@ open class WCClient (
     private fun decryptMessage(text: String): String {
         val message = gson.fromJson<WCSocketMessage>(text)
         val encrypted = gson.fromJson<WCEncryptionPayload>(message.payload)
-        val session = this.session ?: throw IllegalStateException("session can't be null on message receive")
-        return String(WCCipher.decrypt(encrypted, session.key.hexStringToByteArray()), Charsets.UTF_8)
+        val session =
+            this.session ?: throw IllegalStateException("session can't be null on message receive")
+        return String(
+            WCCipher.decrypt(encrypted, session.key.hexStringToByteArray()),
+            Charsets.UTF_8
+        )
     }
 
     private fun invalidParams(id: Long): Boolean {
@@ -228,7 +243,10 @@ open class WCClient (
 
     private fun handleMessage(payload: String) {
         try {
-            val request = gson.fromJson<JsonRpcRequest<JsonArray>>(payload, typeToken<JsonRpcRequest<JsonArray>>())
+            val request = gson.fromJson<JsonRpcRequest<JsonArray>>(
+                payload,
+                typeToken<JsonRpcRequest<JsonArray>>()
+            )
             val method = request.method
             if (method != null) {
                 handleRequest(request)
@@ -244,33 +262,34 @@ open class WCClient (
         when (request.method) {
             WCMethod.SESSION_REQUEST -> {
                 val param = gson.fromJson<List<WCSessionRequest>>(request.params)
-                        .firstOrNull() ?: throw InvalidJsonRpcParamsException(request.id)
+                    .firstOrNull() ?: throw InvalidJsonRpcParamsException(request.id)
                 handshakeId = request.id
                 remotePeerId = param.peerId
                 onSessionRequest(request.id, param.peerMeta)
             }
             WCMethod.SESSION_UPDATE -> {
                 val param = gson.fromJson<List<WCSessionUpdate>>(request.params)
-                        .firstOrNull() ?: throw InvalidJsonRpcParamsException(request.id)
+                    .firstOrNull() ?: throw InvalidJsonRpcParamsException(request.id)
                 if (!param.approved) {
                     killSession()
                 }
             }
-            WCMethod.VIOLAS_SIGN -> {
-                val params = gson.fromJson<List<WCViolasSign>>(request.params).firstOrNull()?:throw InvalidJsonRpcParamsException(request.id)
-                onViolasSign(request.id, params)
+            WCMethod.VIOLAS_SIGN_TRANSACTION -> {
+                val params = gson.fromJson<List<WCViolasSign>>(request.params).firstOrNull()
+                    ?: throw InvalidJsonRpcParamsException(request.id)
+                onViolasSignTransaction(request.id, params)
             }
             WCMethod.VIOLAS_SEND_TRANSACTION -> {
-                val params = gson.fromJson<List<WCViolasSendTransaction>>(request.params).firstOrNull()?:throw InvalidJsonRpcParamsException(request.id)
+                val params =
+                    gson.fromJson<List<WCViolasSendTransaction>>(request.params).firstOrNull()
+                        ?: throw InvalidJsonRpcParamsException(request.id)
                 onViolasSendTransaction(request.id, params)
             }
             WCMethod.VIOLAS_SEND_RAW_TRANSACTION -> {
-                val params = gson.fromJson<List<WCViolasSendRawTransaction>>(request.params).firstOrNull()?:throw InvalidJsonRpcParamsException(request.id)
+                val params =
+                    gson.fromJson<List<WCViolasSendRawTransaction>>(request.params).firstOrNull()
+                        ?: throw InvalidJsonRpcParamsException(request.id)
                 onViolasSendRawTransaction(request.id, params)
-            }
-            WCMethod.VIOLAS_SIGN_TRANSACTION -> {
-                val params = gson.fromJson<List<WCViolasSignTransaction>>(request.params).firstOrNull()?:throw InvalidJsonRpcParamsException(request.id)
-                onViolasSignTransaction(request.id, params)
             }
             WCMethod.GET_ACCOUNTS -> {
                 onGetAccounts(request.id)
@@ -285,15 +304,21 @@ open class WCClient (
             payload = ""
         )
         val json = gson.toJson(message)
-        Log.d(TAG,"==> subscribe $json")
+        Log.d(TAG, "==> subscribe $json")
 
         return socket?.send(gson.toJson(message)) ?: false
     }
 
-    private fun encryptAndSend(result: String): Boolean {
-        Log.d(TAG,"==> message $result")
-        val session = this.session ?: throw IllegalStateException("session can't be null on message send")
-        val payload = gson.toJson(WCCipher.encrypt(result.toByteArray(Charsets.UTF_8), session.key.hexStringToByteArray()))
+    fun encryptAndSend(result: String): Boolean {
+        Log.d(TAG, "==> message $result")
+        val session =
+            this.session ?: throw IllegalStateException("session can't be null on message send")
+        val payload = gson.toJson(
+            WCCipher.encrypt(
+                result.toByteArray(Charsets.UTF_8),
+                session.key.hexStringToByteArray()
+            )
+        )
         val message = WCSocketMessage(
             // Once the remotePeerId is defined, all messages must be sent to this channel. The session.topic channel
             // will be used only to respond the session request message.
@@ -302,7 +327,7 @@ open class WCClient (
             payload = payload
         )
         val json = gson.toJson(message)
-        Log.d(TAG,"==> encrypted $json")
+        Log.d(TAG, "==> encrypted $json")
 
         return socket?.send(json) ?: false
     }

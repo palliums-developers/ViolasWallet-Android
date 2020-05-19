@@ -5,5 +5,5 @@ import com.violas.walletconnect.models.WCAccount
 data class WCSessionUpdate(
     val approved: Boolean,
     val chainId: String?,
-    val accounts: List<WCAccount>?
+    val accounts: List<String>?
 )

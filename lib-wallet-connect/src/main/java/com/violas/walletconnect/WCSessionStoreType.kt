@@ -1,5 +1,6 @@
 package com.violas.walletconnect
 
+import android.content.Context
 import android.content.SharedPreferences
 import com.github.salomonbrys.kotson.*
 import com.google.gson.GsonBuilder
@@ -30,6 +31,10 @@ class WCSessionStoreType(
         get() = load()
 
     companion object {
-        private const val SESSION_KEY = "org.walletconnect.session"
+        private const val SESSION_KEY = "org.walletconnect.violas.session"
+
+        fun getSharedPreferences(context: Context): SharedPreferences {
+            return context.applicationContext.getSharedPreferences("wallet_connect", Context.MODE_PRIVATE)
+        }
     }
 }
