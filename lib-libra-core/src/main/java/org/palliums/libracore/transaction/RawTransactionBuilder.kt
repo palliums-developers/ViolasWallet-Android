@@ -58,7 +58,8 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     address: String,
     authenticationKeyPrefix: String,
     amount: Long,
-    metaData: ByteArray = byteArrayOf()
+    metaData: ByteArray = byteArrayOf(),
+    metadataSignature: ByteArray = byteArrayOf()
 ): TransactionPayload {
     val moveEncode = Move.decode(context.assets.open("move/libra_peer_to_peer_with_metadata.mv"))
 
@@ -67,6 +68,7 @@ fun TransactionPayload.Companion.optionTransactionPayload(
         TransactionArgument.newByteArray(authenticationKeyPrefix.hexToBytes())
     val amountArgument = TransactionArgument.newU64(amount)
     val metadataArgument = TransactionArgument.newByteArray(metaData)
+    val metadataSignatureArgument = TransactionArgument.newByteArray(metadataSignature)
 
     return TransactionPayload(
         TransactionPayload.Script(
@@ -76,7 +78,8 @@ fun TransactionPayload.Companion.optionTransactionPayload(
                 addressArgument,
                 authenticationKeyPrefixArgument,
                 amountArgument,
-                metadataArgument
+                metadataArgument,
+                metadataSignatureArgument
             )
         )
     )
