@@ -2,10 +2,12 @@ package com.palliums.biometric
 
 import android.os.Handler
 import android.os.Looper
-import androidx.biometric.BiometricConstants
-import androidx.biometric.BiometricPrompt
+import androidx.annotation.RestrictTo
+import com.palliums.biometric.custom.BiometricConstants
+import com.palliums.biometric.custom.BiometricPrompt
 import com.palliums.biometric.exceptions.DecryptionException
 import com.palliums.biometric.exceptions.EncryptionException
+import com.palliums.biometric.util.LogUtils
 
 /**
  * Created by elephant on 2020/5/20 10:51.
@@ -15,8 +17,10 @@ import com.palliums.biometric.exceptions.EncryptionException
  * Extended default callback.
  * Tracks if the authentication is still active and handles multiple
  * edge cases that are not expected by the user.
+ * @hide
  */
-class BiometricPromptCallback(
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+class CustomBiometricCallback(
     private val crypterProxy: CrypterProxy,
     private val mode: Mode,
     private val value: String?,
@@ -32,6 +36,7 @@ class BiometricPromptCallback(
 
         isAuthenticationActive = false
         val reason = errorToReason(errorCode)
+        LogUtils.log("onAuthenticationError [$reason, $errString]")
         mainHandler.post {
             callback.onResult(
                 BiometricCompat.Result(
@@ -47,11 +52,14 @@ class BiometricPromptCallback(
     override fun onAuthenticationFailed() {
         if (!isAuthenticationActive) return
 
+
+        val reason = BiometricCompat.Reason.AUTHENTICATION_FAIL
+        LogUtils.log("onAuthenticationFailed [$reason]")
         mainHandler.post {
             callback.onResult(
                 BiometricCompat.Result(
                     BiometricCompat.Type.INFO,
-                    BiometricCompat.Reason.AUTHENTICATION_FAIL
+                    reason
                 )
             )
         }
@@ -63,6 +71,7 @@ class BiometricPromptCallback(
         isAuthenticationActive = false
         when {
             mode == Mode.AUTHENTICATION -> {
+                LogUtils.log("onAuthenticationSucceeded")
                 mainHandler.post {
                     callback.onResult(
                         BiometricCompat.Result(
@@ -74,20 +83,24 @@ class BiometricPromptCallback(
             }
 
             result.cryptoObject == null -> {
+                val reason = BiometricCompat.Reason.UNKNOWN
+                val message = "androidx.biometric.BiometricPrompt.CryptoObject is null"
+                LogUtils.log("onAuthenticationError [$reason, $message]")
                 mainHandler.post {
                     callback.onResult(
                         BiometricCompat.Result(
                             BiometricCompat.Type.ERROR,
-                            BiometricCompat.Reason.UNKNOWN,
+                            reason,
                             null,
-                            "BiometricPrompt.CryptoObject is null"
+                            message
                         )
                     )
                 }
             }
 
             else -> {
-                cipherValue(result.cryptoObject!!)
+                LogUtils.log("onAuthenticationSucceeded")
+                cipherValue(convertCryptoObject(result.cryptoObject!!))
             }
         }
     }
@@ -108,11 +121,11 @@ class BiometricPromptCallback(
     }
 
     /**
-     * Cipher the value with unlocked [BiometricPrompt.CryptoObject].
+     * Cipher the value with unlocked [CryptoObject].
      *
-     * @param cryptoObject unlocked [BiometricPrompt.CryptoObject] that is ready to use.
+     * @param cryptoObject unlocked [CryptoObject] that is ready to use.
      */
-    private fun cipherValue(cryptoObject: BiometricPrompt.CryptoObject) {
+    private fun cipherValue(cryptoObject: CryptoObject) {
         val cipheredValue = if (mode == Mode.ENCRYPTION)
             crypterProxy.encrypt(cryptoObject, value!!)
         else
@@ -169,6 +182,14 @@ class BiometricPromptCallback(
                 BiometricCompat.Reason.NO_DEVICE_CREDENTIAL
             else ->
                 BiometricCompat.Reason.UNKNOWN
+        }
+    }
+
+    private fun convertCryptoObject(cryptoObject: BiometricPrompt.CryptoObject): CryptoObject {
+        return when {
+            cryptoObject.signature != null -> CryptoObject(cryptoObject.signature!!)
+            cryptoObject.cipher != null -> CryptoObject(cryptoObject.cipher!!)
+            else -> CryptoObject(cryptoObject.mac!!)
         }
     }
 }

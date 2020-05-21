@@ -1,6 +1,6 @@
 package com.palliums.biometric
 
-import androidx.biometric.BiometricPrompt
+import androidx.annotation.RestrictTo
 import com.palliums.biometric.crypto.CipherCrypter
 import com.palliums.biometric.crypto.MacCrypter
 import com.palliums.biometric.crypto.SignatureCrypter
@@ -12,14 +12,16 @@ import com.palliums.biometric.crypto.SignatureCrypter
  *
  * Internal wrapper around different crypters to have this logic
  * in one place hidden from the rest of the code.
+ * @hide
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 class CrypterProxy(
     private val cipherCrypter: CipherCrypter?,
     private val macCrypter: MacCrypter?,
     private val signatureCrypter: SignatureCrypter?
 ) {
 
-    fun encrypt(cryptoObject: BiometricPrompt.CryptoObject, value: String): String? {
+    fun encrypt(cryptoObject: CryptoObject, value: String): String? {
         val cipher = cryptoObject.cipher
         if (cipher != null && cipherCrypter != null) {
             return cipherCrypter.encrypt(cipher, value)
@@ -38,7 +40,7 @@ class CrypterProxy(
         return null
     }
 
-    fun decrypt(cryptoObject: BiometricPrompt.CryptoObject, value: String): String? {
+    fun decrypt(cryptoObject: CryptoObject, value: String): String? {
         val cipher = cryptoObject.cipher
         if (cipher != null && cipherCrypter != null) {
             return cipherCrypter.decrypt(cipher, value)

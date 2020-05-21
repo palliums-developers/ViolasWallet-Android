@@ -1,6 +1,7 @@
 package com.palliums.biometric.util
 
 import android.util.Log
+import androidx.annotation.RestrictTo
 import java.util.*
 import com.palliums.biometric.BiometricCompat
 
@@ -10,7 +11,9 @@ import com.palliums.biometric.BiometricCompat
  * <p>
  *
  * Logging utility functions. Logger can be turned on/off from [BiometricCompat]
+ * @hide
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 class LogUtils {
 
     companion object {

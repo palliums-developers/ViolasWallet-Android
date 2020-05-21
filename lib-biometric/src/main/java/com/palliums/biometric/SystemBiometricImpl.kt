@@ -3,6 +3,7 @@ package com.palliums.biometric
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.RestrictTo
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.Fragment
@@ -18,9 +19,13 @@ import java.util.concurrent.Executors
  * Created by elephant on 2020/5/20 14:36.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc:
+ *
+ * BiometricCompat implementation for Android Marshmallow and newer.
+ * Older versions use [BiometricMock].
+ * @hide
  */
-class BiometricImpl(
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+class SystemBiometricImpl(
     context: Context,
     private val asyncCryptoObjectFactory: AsyncCryptoObjectFactory,
     private val crypterProxy: CrypterProxy
@@ -32,7 +37,7 @@ class BiometricImpl(
 
     private var asyncCryptoObjectFactoryCallback: AsyncCryptoObjectFactory.Callback? = null
     private var biometricPrompt: BiometricPrompt? = null
-    private var biometricPromptCallback: BiometricPromptCallback? = null
+    private var biometricPromptCallback: SystemBiometricCallback? = null
     private var creatingCryptoObject = false
 
     override fun hasBiometricHardware(): Boolean {
@@ -106,7 +111,7 @@ class BiometricImpl(
         LogUtils.log("Creating CryptoObject")
         asyncCryptoObjectFactoryCallback = object : AsyncCryptoObjectFactory.Callback() {
 
-            override fun onCryptoObjectCreated(cryptoObject: BiometricPrompt.CryptoObject?) {
+            override fun onCryptoObjectCreated(cryptoObject: CryptoObject?) {
                 creatingCryptoObject = false
                 if (cryptoObject != null) {
                     startNativeBiometricAuthentication(
@@ -134,32 +139,33 @@ class BiometricImpl(
         key: String?,
         value: String?,
         callback: BiometricCompat.Callback,
-        cryptoObject: BiometricPrompt.CryptoObject?
+        cryptoObject: CryptoObject?
     ) {
         /*
          * Use proxy callback because some devices do not cancel authentication when error is received.
          * Cancel authentication manually and proxy the result to real callback.
          */
-        biometricPromptCallback = BiometricPromptCallback(
-            crypterProxy,
-            mode,
-            value,
-            object : BiometricCompat.Callback {
-                override fun onResult(result: BiometricCompat.Result) {
-                    if (result.type == BiometricCompat.Type.ERROR
-                        || result.type == BiometricCompat.Type.SUCCESS
-                    ) {
-                        cancel()
+        biometricPromptCallback =
+            SystemBiometricCallback(
+                crypterProxy,
+                mode,
+                value,
+                object : BiometricCompat.Callback {
+                    override fun onResult(result: BiometricCompat.Result) {
+                        if (result.type == BiometricCompat.Type.ERROR
+                            || result.type == BiometricCompat.Type.SUCCESS
+                        ) {
+                            cancel()
+                        }
+                        callback.onResult(result)
                     }
-                    callback.onResult(result)
-                }
 
-                override fun onError(e: Exception) {
-                    cancel()
-                    callback.onError(e)
+                    override fun onError(e: Exception) {
+                        cancel()
+                        callback.onError(e)
+                    }
                 }
-            }
-        )
+            )
 
         if (params.dialogOwner is Fragment) {
             biometricPrompt =
@@ -183,7 +189,7 @@ class BiometricImpl(
                         BiometricCompat.Reason.AUTHENTICATION_START
                     )
                 )
-                biometricPrompt!!.authenticate(params.buildPromptInfo())
+                biometricPrompt!!.authenticate(buildPromptInfo(params))
             } else {
                 /* Encryption/Decryption call with initialized CryptoObject */
                 /* Encryption/Decryption call with initialized CryptoObject */
@@ -194,9 +200,40 @@ class BiometricImpl(
                         BiometricCompat.Reason.AUTHENTICATION_START
                     )
                 )
-                biometricPrompt!!.authenticate(params.buildPromptInfo(), cryptoObject!!)
+                biometricPrompt!!.authenticate(
+                    buildPromptInfo(params),
+                    convertCryptoObject(cryptoObject!!)
+                )
             }
         }
+    }
+
+    private fun convertCryptoObject(cryptoObject: CryptoObject): BiometricPrompt.CryptoObject {
+        return when {
+            cryptoObject.signature != null -> BiometricPrompt.CryptoObject(cryptoObject.signature)
+            cryptoObject.cipher != null -> BiometricPrompt.CryptoObject(cryptoObject.cipher)
+            else -> BiometricPrompt.CryptoObject(cryptoObject.mac!!)
+        }
+    }
+
+    /**
+     * Create new [BiometricPrompt.PromptInfo] instance. Parameter
+     * validation is done earlier in the code so we can trust the data at
+     * this step.
+     */
+    private fun buildPromptInfo(
+        params: BiometricCompat.PromptParams
+    ): BiometricPrompt.PromptInfo {
+        val builder = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(params.title!!)
+            .setSubtitle(params.subtitle)
+            .setDescription(params.description)
+            .setDeviceCredentialAllowed(params.deviceCredentialsAllowed)
+            .setConfirmationRequired(params.confirmationRequired)
+        if (!params.deviceCredentialsAllowed) {
+            builder.setNegativeButtonText(params.negativeButtonText!!)
+        }
+        return builder.build()
     }
 
     private fun preconditionsInvalid(

@@ -1,6 +1,6 @@
 package com.palliums.biometric
 
-import androidx.biometric.BiometricPrompt
+import androidx.annotation.RestrictTo
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
@@ -10,7 +10,9 @@ import java.util.concurrent.Future
  * <p>
  *
  * Creates CryptoObject asynchronously.
+ * @hide
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 class AsyncCryptoObjectFactory(
     private val cryptoObjectFactory: CryptoObjectFactory
 ) {
@@ -23,11 +25,13 @@ class AsyncCryptoObjectFactory(
             task!!.cancel(true)
         }
 
-        task = executor.submit(CryptoObjectInitRunnable(cryptoObjectFactory, mode, key, callback))
+        task = executor.submit(
+            CryptoObjectInitRunnable(cryptoObjectFactory, mode, key, callback)
+        )
     }
 
     /**
-     * Internal callback used to receive created [BiometricPrompt.CryptoObject]
+     * Internal callback used to receive created [CryptoObject]
      */
     abstract class Callback {
 
@@ -41,6 +45,6 @@ class AsyncCryptoObjectFactory(
             return canceled
         }
 
-        abstract fun onCryptoObjectCreated(cryptoObject: BiometricPrompt.CryptoObject?)
+        abstract fun onCryptoObjectCreated(cryptoObject: CryptoObject?)
     }
 }

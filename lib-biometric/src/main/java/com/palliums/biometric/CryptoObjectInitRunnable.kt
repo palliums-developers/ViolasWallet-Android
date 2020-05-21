@@ -2,6 +2,7 @@ package com.palliums.biometric
 
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.RestrictTo
 
 
 /**
@@ -11,7 +12,9 @@ import android.os.Looper
  *
  * Custom runnable that creates CryptoObject.
  * Used for asynchronous creation.
+ * @hide
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 class CryptoObjectInitRunnable(
     private val cryptoObjectFactory: CryptoObjectFactory,
     private val mode: Mode,
@@ -23,7 +26,7 @@ class CryptoObjectInitRunnable(
 
     override fun run() {
         val cryptoObject =
-            cryptoObjectFactory.createCryptoObject(key, mode)
+            cryptoObjectFactory.createCryptoObject(mode, key)
 
         if (!callback.isCanceled()) {
             mainHandler.post {

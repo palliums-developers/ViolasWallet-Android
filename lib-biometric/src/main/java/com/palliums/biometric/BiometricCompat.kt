@@ -1,9 +1,9 @@
 package com.palliums.biometric
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.annotation.RestrictTo
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
@@ -36,7 +36,6 @@ interface BiometricCompat {
      * @see [BiometricManager.canAuthenticate]
      */
     fun canAuthenticate(): Boolean
-
 
     /**
      * Authenticate user via Fingerprint.
@@ -107,10 +106,11 @@ interface BiometricCompat {
         private val mode = Mode.AUTHENTICATION
         private val key: String? = null
         private val value: String? = null
-        fun build(): BiometricCompat {
+
+        fun build(useCustom: Boolean = true): BiometricCompat {
             ensureParamsValid()
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                buildGoldfinger()
+                buildBiometric(useCustom)
             } else {
                 BiometricMock()
             }
@@ -152,18 +152,39 @@ interface BiometricCompat {
         }
 
         @RequiresApi(Build.VERSION_CODES.M)
-        private fun buildGoldfinger(): BiometricCompat {
+        private fun buildBiometric(useCustom: Boolean): BiometricCompat {
             if (macCrypter == null && signatureCrypter == null && cipherCrypter == null) {
                 cipherCrypter = Base64CipherCrypter()
             }
             if (macFactory == null && signatureFactory == null && cipherFactory == null) {
                 cipherFactory = AesCipherFactory(context)
             }
-            val asyncFactory = AsyncCryptoObjectFactory(
-                CryptoObjectFactory(cipherFactory, macFactory, signatureFactory)
+            val asyncFactory =
+                AsyncCryptoObjectFactory(
+                    CryptoObjectFactory(
+                        cipherFactory,
+                        macFactory,
+                        signatureFactory
+                    )
+                )
+            val cryptoProxy = CrypterProxy(
+                cipherCrypter,
+                macCrypter,
+                signatureCrypter
             )
-            val cryptoProxy = CrypterProxy(cipherCrypter, macCrypter, signatureCrypter)
-            return BiometricImpl(context, asyncFactory, cryptoProxy)
+
+            return if (useCustom)
+                CustomBiometricImpl(
+                    context,
+                    asyncFactory,
+                    cryptoProxy
+                )
+            else
+                SystemBiometricImpl(
+                    context,
+                    asyncFactory,
+                    cryptoProxy
+                )
         }
 
         private fun ensureParamsValid() {
@@ -185,10 +206,6 @@ interface BiometricCompat {
                             + "BiometricCompat.Builder#signatureCrypter(SignatureCrypter) methods to set values."
                 )
             }
-
-            PackageManager.FEATURE_FINGERPRINT
-            PackageManager.FEATURE_IRIS
-            PackageManager.FEATURE_FACE
         }
 
     }
@@ -202,24 +219,6 @@ interface BiometricCompat {
         val confirmationRequired: Boolean,
         val deviceCredentialsAllowed: Boolean
     ) {
-
-        /**
-         * Create new [BiometricPrompt.PromptInfo] instance. Parameter
-         * validation is done earlier in the code so we can trust the data at
-         * this step.
-         */
-        fun buildPromptInfo(): PromptInfo {
-            val builder = PromptInfo.Builder()
-                .setTitle(title!!)
-                .setSubtitle(subtitle)
-                .setDescription(description)
-                .setDeviceCredentialAllowed(deviceCredentialsAllowed)
-                .setConfirmationRequired(confirmationRequired)
-            if (!deviceCredentialsAllowed) {
-                builder.setNegativeButtonText(negativeButtonText!!)
-            }
-            return builder.build()
-        }
 
         class Builder {
             /* Dialog dialogOwner can be either Fragment or FragmentActivity */
@@ -452,5 +451,4 @@ interface BiometricCompat {
          */
         ERROR
     }
-
 }

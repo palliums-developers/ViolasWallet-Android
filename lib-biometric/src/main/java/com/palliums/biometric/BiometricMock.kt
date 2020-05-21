@@ -1,12 +1,16 @@
 package com.palliums.biometric
 
+import androidx.annotation.RestrictTo
+
 /**
  * Created by elephant on 2020/5/20 10:47.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
  *
  * Legacy implementation for pre-Marshmallow devices.
+ * @hide
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 class BiometricMock : BiometricCompat {
 
     override fun hasBiometricHardware(): Boolean {
