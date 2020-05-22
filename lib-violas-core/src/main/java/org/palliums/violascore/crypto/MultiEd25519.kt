@@ -1,7 +1,12 @@
 package org.palliums.violascore.crypto
 
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable
+import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.LCSOutputStream
+import org.palliums.violascore.transaction.AuthenticationKey
+import org.palliums.violascore.transaction.TransactionAuthenticator
+import org.palliums.violascore.transaction.TransactionMultiSignAuthenticator
+import org.palliums.violascore.transaction.TransactionSignAuthenticator
 import org.palliums.violascore.wallet.CryptoMaterialError
 import java.lang.RuntimeException
 

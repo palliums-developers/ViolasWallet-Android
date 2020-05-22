@@ -1,6 +1,6 @@
 package com.violas.walletconnect.models.violas
 
-open class WCViolasSign(
+open class WCViolasSignRawTransaction(
     val address: String,
     val message: String
 )

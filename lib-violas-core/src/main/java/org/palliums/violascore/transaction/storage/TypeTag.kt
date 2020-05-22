@@ -160,11 +160,11 @@ class TypeTagStructTag(val value: StructTag) : TypeTag {
 }
 
 data class StructTag(
-    private val address: AccountAddress,
-    private val module: String,
-    private val name: String,
+    val address: AccountAddress,
+    val module: String,
+    val name: String,
     // TODO: rename to "type_args"
-    private val type_params: ArrayList<TypeTagEnum>
+    val type_params: ArrayList<TypeTagEnum>
 ) {
     companion object {
         fun decode(input: LCSInputStream): StructTag {

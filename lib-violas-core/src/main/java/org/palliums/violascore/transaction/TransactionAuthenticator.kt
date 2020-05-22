@@ -2,6 +2,7 @@ package org.palliums.violascore.transaction
 
 import org.palliums.violascore.crypto.*
 import org.palliums.violascore.serialization.LCS
+import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.LCSOutputStream
 import org.palliums.violascore.serialization.toHex
 import org.spongycastle.jcajce.provider.digest.SHA3
@@ -52,6 +53,26 @@ class AuthenticationKey(publicKey: KeyPair.PublicKey, scheme: Scheme) {
 interface TransactionAuthenticator {
 
     fun toByteArray(): ByteArray
+
+    companion object {
+        fun decode(input: LCSInputStream): TransactionAuthenticator {
+            return when (input.readU8()) {
+                AuthenticationKey.Scheme.Ed25519.value.toInt() -> {
+                    TransactionSignAuthenticator(
+                        Ed25519PublicKey(input.readBytes()),
+                        Ed25519Signature(input.readBytes())
+                    )
+                }
+//                AuthenticationKey.Scheme.MultiEd25519.value.toInt() -> {
+//                    TransactionMultiSignAuthenticator(
+//                        Ed25519PublicKey(input.readBytes()),
+//                        Ed25519Signature(input.readBytes())
+//                    )
+//                }
+                else -> throw IllegalArgumentException()
+            }
+        }
+    }
 }
 
 class TransactionSignAuthenticator(

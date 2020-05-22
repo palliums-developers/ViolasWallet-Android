@@ -264,6 +264,7 @@
     <string name="hint_load_exchange_pair">Query for supported transaction pairs</string>
 
     <string name="desc_scan_login">Page ViolasPay login confirmation</string>
+    <string name="desc_scan_wallet_connect_login">App %1$s login confirmation</string>
     <string name="hint_input_login_pwd">Please enter your payment password</string>
     <string name="tips_login_pwd_error">The password is wrong. Please enter it again</string>
     <string name="action_confirm_login">Confirm the login</string>
@@ -271,4 +272,6 @@
     <string name="tips_scan_login_success">Web page ViolasPay is logged in</string>
     <string name="tips_scan_login_desktop">Please operate the scan code on the governor SSO wallet to log in</string>
     <string name="tips_scan_login_not_support">The scan login operation is not supported</string>
+    <string name="wallet_connect_transfer_amount">金&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;额：</string>
+    <string name="wallet_connect_transfer_address">转账地址：</string>
 </resources>

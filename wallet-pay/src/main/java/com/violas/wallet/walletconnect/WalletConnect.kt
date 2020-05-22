@@ -1,24 +1,43 @@
 package com.violas.wallet.walletconnect
 
 
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
-import androidx.core.app.NotificationCompat
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.palliums.violas.error.ViolasException
 import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.utils.Base64
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.ui.walletconnect.WalletConnectActivity
+import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.walletconnect.WCClient
 import com.violas.walletconnect.WCSessionStoreItem
 import com.violas.walletconnect.WCSessionStoreType
+import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.jsonrpc.JsonRpcError
 import com.violas.walletconnect.jsonrpc.JsonRpcErrorResponse
 import com.violas.walletconnect.jsonrpc.JsonRpcResponse
+import com.violas.walletconnect.models.WCPeerMeta
+import com.violas.walletconnect.models.session.WCSession
+import com.violas.walletconnect.models.violas.WCViolasSendRawTransaction
+import com.violas.walletconnect.models.violas.WCViolasSendTransaction
+import com.violas.walletconnect.models.violas.WCViolasSignRawTransaction
 import com.violas.walletconnect.models.violasprivate.WCViolasAccount
+import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
+import org.palliums.libracore.serialization.hexToBytes
+import org.palliums.libracore.serialization.toHex
+import org.palliums.violascore.serialization.LCSInputStream
+import org.palliums.violascore.transaction.RawTransaction
+import org.palliums.violascore.transaction.TransactionArgument
+import org.palliums.violascore.transaction.TransactionPayload
+import org.palliums.violascore.transaction.storage.StructTag
+import org.palliums.violascore.transaction.storage.TypeTag
+import java.lang.Exception
 
-class WalletConnect private constructor(val context: Context) {
+class WalletConnect private constructor(val context: Context) : CoroutineScope by MainScope() {
 
     companion object {
         @Volatile
@@ -34,49 +53,64 @@ class WalletConnect private constructor(val context: Context) {
     }
 
     private val mGsonBuilder = GsonBuilder()
-    var mWCClient: WCClient? = null
-        private set
     private val httpClient: OkHttpClient = OkHttpClient()
+    val mWCClient: WCClient = WCClient(httpClient, mGsonBuilder)
     private val mWCSessionStoreType =
         WCSessionStoreType(WCSessionStoreType.getSharedPreferences(context), mGsonBuilder)
 
+    init {
+        listenerClientEvent()
+    }
+
     //    private val mAccountManager by lazy { AccountManager() }
+    private val mViolasService by lazy { DataRepository.getViolasService() }
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
     fun restore() {
-        mWCSessionStoreType
-            .session?.let {
-                mWCClient = WCClient(httpClient, mGsonBuilder)
-                listenerClientEvent()
-                mWCClient?.connect(it.session, it.remotePeerMeta, it.peerId, it.remotePeerId)
-            }
+        launch(Dispatchers.IO) {
+            mWCSessionStoreType
+                .session?.let {
+                    mWCClient.connect(it.session, it.remotePeerMeta, it.peerId, it.remotePeerId)
+                }
+        }
+    }
+
+    fun connect(
+        msg: String
+    ): Boolean {
+        val from = WCSession.from(msg) ?: return false
+        val wcPeerMeta = WCPeerMeta(
+            "violasPay", "https://www.violas.io"
+        )
+        mWCClient.connect(from, wcPeerMeta)
+        return true
     }
 
     private fun listenerClientEvent() {
-        mWCClient?.onSessionRequest = { id, peer ->
-            mWCClient?.session?.let { session ->
+        mWCClient.onSessionRequest = { id, peer ->
+            mWCClient.session?.let { session ->
                 val wcSessionStoreItem = WCSessionStoreItem(
                     session,
-                    mWCClient?.peerId ?: "",
-                    mWCClient?.remotePeerId ?: "",
+                    mWCClient.peerId ?: "",
+                    mWCClient.remotePeerId ?: "",
                     peer
                 )
                 mWCSessionStoreType.session = wcSessionStoreItem
             }
-            mWCClient?.approveSession(arrayListOf("account1"), "chainId")
+            WalletConnectAuthorizationActivity.startActivity(context, id, peer)
         }
-        mWCClient?.onDisconnect = { _, _ ->
+        mWCClient.onDisconnect = { _, _ ->
             mWCSessionStoreType.session = null
         }
-        mWCClient?.onViolasSendRawTransaction = { id, _ ->
-            sendSuccessMessage(id, "Success Violas Send Raw Transaction")
+        mWCClient.onViolasSendRawTransaction = { id, violasSendRawTransaction ->
+            convertAndCheckTransaction(id, violasSendRawTransaction)
         }
-        mWCClient?.onViolasSendTransaction = { id, _ ->
-            sendSuccessMessage(id, "Success Violas Send Transaction")
+        mWCClient.onViolasSendTransaction = { id, violasSendTransaction ->
+            convertAndCheckTransaction(id, violasSendTransaction)
         }
-        mWCClient?.onViolasSignTransaction = { id, _ ->
-            sendSuccessMessage(id, "Success Violas Sign Transaction")
+        mWCClient.onViolasSignTransaction = { id, violasSignRawTransaction ->
+            convertAndCheckTransaction(id, violasSignRawTransaction)
         }
-        mWCClient?.onGetAccounts = { id ->
+        mWCClient.onGetAccounts = { id ->
             val accounts = mAccountStorage.loadAll().map {
                 WCViolasAccount(
                     walletType = it.walletType,
@@ -93,13 +127,160 @@ class WalletConnect private constructor(val context: Context) {
         }
     }
 
+    private fun <T> convertAndCheckTransaction(requestID: Long, tx: T) = runBlocking {
+        try {
+            val mTransactionSwapVo: TransactionSwapVo? = when (tx) {
+                is WCViolasSignRawTransaction -> {
+                    val account = mAccountStorage.findByCoinTypeAndCoinAddress(
+                        CoinTypes.Violas.coinType(),
+                        tx.address
+                    )
+
+                    if (account == null) {
+                        sendInvalidParameterErrorMessage(requestID, "Account does not exist.")
+                        return@runBlocking
+                    }
+
+                    val rawTransaction =
+                        RawTransaction.decode(LCSInputStream(tx.message.hexStringToByteArray()))
+                    val payload = rawTransaction.payload?.payload as TransactionPayload.Script
+
+                    val coinName = if (payload.tyArgs.isNotEmpty()) {
+                        (payload.tyArgs[0] as StructTag).name
+                    } else {
+                        ""
+                    }
+
+                    val data = payload.args.getOrNull(3)?.let {
+                        val decodeToValue = it.decodeToValue()
+                        if (decodeToValue !is ByteArray) {
+                            byteArrayOf()
+                        } else {
+                            decodeToValue
+                        }
+                    } ?: byteArrayOf()
+
+                    val transferDataType = TransferDataType(
+                        rawTransaction.sender.toHex(),
+                        payload.args[0].decodeToValue() as String,
+                        payload.args[2].decodeToValue() as Long,
+                        coinName,
+                        Base64.encode(data)
+                    )
+                    TransactionSwapVo(
+                        requestID,
+                        rawTransaction.toByteArray().toHex(),
+                        false,
+                        account.id,
+                        TransactionDataType.Transfer.value,
+                        Gson().toJson(transferDataType)
+                    )
+                }
+                is WCViolasSendRawTransaction -> {
+                    // todo 正在考虑要不要自动上链。
+                    TransactionSwapVo(
+                        requestID,
+                        tx.tx,
+                        true,
+                        -1L,
+                        TransactionDataType.None.value, ""
+                    )
+                }
+                is WCViolasSendTransaction -> {
+                    val account = mAccountStorage.findByCoinTypeAndCoinAddress(
+                        CoinTypes.Violas.coinType(),
+                        tx.from
+                    )
+
+                    if (account == null) {
+                        sendInvalidParameterErrorMessage(requestID, "Account does not exist.")
+                        return@runBlocking
+                    }
+
+                    val gasUnitPrice = tx.gasUnitPrice ?: 0
+                    val maxGasAmount = tx.maxGasAmount ?: 40_000
+                    val delayed = tx.delayed ?: 1000L
+                    val sequenceNumber = tx.sequenceNumber ?: -1
+
+                    val payload = TransactionPayload.Script(
+                        tx.payload.code.hexToBytes(),
+                        tx.payload.tyArgs.map { TypeTag.decode(LCSInputStream(it.hexToBytes())) },
+                        tx.payload.args.map {
+                            when (it.type.toLowerCase()) {
+                                "address" -> {
+                                    TransactionArgument.newAddress(it.value)
+                                }
+                                "bool" -> {
+                                    TransactionArgument.newBool(it.value.toBoolean())
+                                }
+                                "number" -> {
+                                    TransactionArgument.newU64(it.value.toLong())
+                                }
+                                "bytes" -> {
+                                    TransactionArgument.newByteArray(it.value.hexToBytes())
+                                }
+                                else -> {
+                                    TransactionArgument.newByteArray(it.value.toByteArray())
+                                }
+                            }
+                        }
+                    )
+
+                    val generateRawTransaction = mViolasService.generateRawTransaction(
+                        TransactionPayload(payload),
+                        tx.from,
+                        sequenceNumber,
+                        maxGasAmount,
+                        gasUnitPrice,
+                        delayed
+                    )
+                    TransactionSwapVo(
+                        requestID,
+                        generateRawTransaction.toByteArray().toHex(),
+                        false,
+                        account.id,
+                        TransactionDataType.Transfer.value,
+                        tx.from
+                    )
+                }
+                else -> null
+            }
+
+            mTransactionSwapVo?.let {
+                WalletConnectActivity.startActivity(context, mTransactionSwapVo)
+            }
+        } catch (e: NullPointerException) {
+            e.printStackTrace()
+            sendInvalidParameterErrorMessage(
+                requestID,
+                "Parameters of the abnormal"
+            )
+        } catch (e: ViolasException.AccountNoActivation) {
+            e.printStackTrace()
+            sendErrorMessage(
+                requestID,
+                JsonRpcError.accountNotActivationError("Please check whether the account is activated.")
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            sendInvalidParameterErrorMessage(
+                requestID,
+                "Transaction resolution failed"
+            )
+        }
+    }
+
+    private fun sendInvalidParameterErrorMessage(id: Long, msg: String) {
+        sendErrorMessage(id, JsonRpcError.invalidParams("Invalid Parameter:$msg"))
+    }
+
     fun <T> sendSuccessMessage(id: Long, result: T) {
         val response = JsonRpcResponse(
             id = id,
             result = result
         )
         val toJson = Gson().toJson(response)
-        mWCClient?.encryptAndSend(toJson)
+        mWCClient.encryptAndSend(toJson)
     }
 
     fun sendErrorMessage(id: Long, result: JsonRpcError) {
@@ -108,7 +289,86 @@ class WalletConnect private constructor(val context: Context) {
             error = result
         )
         val toJson = Gson().toJson(response)
-        mWCClient?.encryptAndSend(toJson)
+        mWCClient.encryptAndSend(toJson)
     }
 
+    /**
+     * 传递给转账确认页面的数据类型
+     */
+    enum class TransactionDataType(val value: Int) {
+        Normal(0), Transfer(1), None(2);
+
+        companion object {
+            fun decode(value: Int): TransactionDataType {
+                return when (value) {
+                    0 -> {
+                        Normal
+                    }
+                    1 -> {
+                        Transfer
+                    }
+                    2 -> {
+                        None
+                    }
+                    else -> {
+                        None
+                    }
+                }
+            }
+        }
+    }
+
+    data class TransferDataType(
+        val form: String,
+        val to: String,
+        val amount: Long,
+        val coinName: String,
+        val data: String
+    )
+
+    /**
+     * 传递给转账确认页面的数据类型
+     */
+    data class TransactionSwapVo(
+        val requestID: Long,
+        val hexTx: String,
+        val isSigned: Boolean = true,
+        val accountId: Long = -1,
+        val viewType: Int,
+        // Base58
+        val viewData: String
+    ) : Parcelable {
+        constructor(parcel: Parcel) : this(
+            parcel.readLong(),
+            parcel.readString() ?: "",
+            parcel.readByte() != 0.toByte(),
+            parcel.readLong(),
+            parcel.readInt(),
+            parcel.readString() ?: ""
+        ) {
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeLong(requestID)
+            parcel.writeString(hexTx)
+            parcel.writeByte(if (isSigned) 1 else 0)
+            parcel.writeLong(accountId)
+            parcel.writeInt(viewType)
+            parcel.writeString(viewData)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<TransactionSwapVo> {
+            override fun createFromParcel(parcel: Parcel): TransactionSwapVo {
+                return TransactionSwapVo(parcel)
+            }
+
+            override fun newArray(size: Int): Array<TransactionSwapVo?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
 }

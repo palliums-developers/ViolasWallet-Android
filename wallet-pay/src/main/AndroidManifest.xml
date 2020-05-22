@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.violas.wallet">
-
     <!-- 上架 Google Play 需要删除 READ_PHONE_STATE 权限 -->
     <uses-permission
         android:name="android.permission.READ_PHONE_STATE"
@@ -21,6 +20,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
+        <activity android:name=".ui.walletconnect.WalletConnectActivity"
+            android:launchMode="singleInstance"/>
+        <activity android:name=".ui.walletconnect.WalletConnectAuthorizationActivity"
+            android:launchMode="singleInstance"/>
+
         <activity
             android:name=".ui.launch.LaunchActivity"
             android:screenOrientation="portrait"
@@ -145,10 +149,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.ScanLogin" />
 
-        <service
-            android:name=".walletconnect.WalletConnectService"
-            android:enabled="true"
-            android:exported="false" />
         <!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data
             android:name="design_width_in_dp"

@@ -1,17 +1,17 @@
 package com.violas.wallet.biz
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
-import com.violas.wallet.utils.convertDisplayUnitToAmount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 
 enum class ScanCodeType {
-    Address, Text, Login
+    Address, Text, Login, WalletConnectSocket
 }
 
 open class ScanBean(
@@ -48,6 +48,14 @@ fun decodeScanQRCode(
             callback.invoke(
                 ScanCodeType.Login,
                 ScanLoginBean(msg, loginQRCode.type, loginQRCode.sessionId)
+            )
+            return@launch
+        }
+
+        if (decodeWalletConnectSocketQRCode(msg)) {
+            callback.invoke(
+                ScanCodeType.WalletConnectSocket,
+                ScanBean(msg)
             )
             return@launch
         }
@@ -165,4 +173,9 @@ private fun decodeLoginQRCode(content: String): LoginQRCode? {
     } catch (ignore: Exception) {
         null
     }
+}
+
+private fun decodeWalletConnectSocketQRCode(msg: String): Boolean {
+    val regex = Regex("wc:\\S+bridge=\\S+key=\\S+")
+    return regex.matches(msg)
 }

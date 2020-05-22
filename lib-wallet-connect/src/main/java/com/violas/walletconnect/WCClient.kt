@@ -3,6 +3,7 @@ package com.violas.walletconnect
 import android.util.Log
 import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.typeToken
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.violas.walletconnect.exceptions.InvalidJsonRpcParamsException
@@ -18,7 +19,7 @@ import com.violas.walletconnect.models.session.WCSessionUpdate
 import com.violas.walletconnect.models.*
 import com.violas.walletconnect.models.violas.WCViolasSendRawTransaction
 import com.violas.walletconnect.models.violas.WCViolasSendTransaction
-import com.violas.walletconnect.models.violas.WCViolasSign
+import com.violas.walletconnect.models.violas.WCViolasSignRawTransaction
 import okhttp3.*
 import okio.ByteString
 import java.util.*
@@ -66,7 +67,8 @@ open class WCClient(
         { _, _ -> Unit }
     var onViolasSendRawTransaction: (id: Long, transaction: WCViolasSendRawTransaction) -> Unit =
         { _, _ -> Unit }
-    var onViolasSignTransaction: (id: Long, transaction: WCViolasSign) -> Unit = { _, _ -> Unit }
+    var onViolasSignTransaction: (id: Long, transaction: WCViolasSignRawTransaction) -> Unit =
+        { _, _ -> Unit }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         Log.d(TAG, "<< websocket opened >>")
@@ -275,8 +277,9 @@ open class WCClient(
                 }
             }
             WCMethod.VIOLAS_SIGN_TRANSACTION -> {
-                val params = gson.fromJson<List<WCViolasSign>>(request.params).firstOrNull()
-                    ?: throw InvalidJsonRpcParamsException(request.id)
+                val params =
+                    gson.fromJson<List<WCViolasSignRawTransaction>>(request.params).firstOrNull()
+                        ?: throw InvalidJsonRpcParamsException(request.id)
                 onViolasSignTransaction(request.id, params)
             }
             WCMethod.VIOLAS_SEND_TRANSACTION -> {
@@ -293,6 +296,14 @@ open class WCClient(
             }
             WCMethod.GET_ACCOUNTS -> {
                 onGetAccounts(request.id)
+            }
+            else -> {
+                val response = JsonRpcErrorResponse(
+                    id = request.id,
+                    error = JsonRpcError.methodNotFound("'${request.method}' Method doesn't exist.")
+                )
+                val toJson = Gson().toJson(response)
+                encryptAndSend(toJson)
             }
         }
     }

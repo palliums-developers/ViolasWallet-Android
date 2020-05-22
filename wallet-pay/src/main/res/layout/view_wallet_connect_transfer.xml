@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <TextView
+        android:id="@+id/tvTitleAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/wallet_connect_transfer_amount"
+        android:textColor="#999999"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvDescribeAmount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="#333333"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/tvTitleAmount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/tvTitleAmount"
+        tools:text="1234.999999 violas" />
+
+    <TextView
+        android:id="@+id/tvTitleAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/wallet_connect_transfer_address"
+        android:textColor="#999999"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDescribeAmount" />
+
+    <TextView
+        android:id="@+id/tvDescribeAddress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="#5C5C5C"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvTitleAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/tvTitleAddress"
+        tools:text="1234.999999 violas" />
+
+    <TextView
+        android:id="@+id/tvTitleFee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="矿工费用："
+        android:textColor="#999999"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDescribeAddress" />
+
+    <TextView
+        android:id="@+id/tvDescribeFee"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="#5C5C5C"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvTitleFee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/tvTitleFee"
+        tools:text="1234.999999 violas" />
+</androidx.constraintlayout.widget.ConstraintLayout>
