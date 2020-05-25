@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import cn.bertsir.zbar.utils.QRUtils
+import com.palliums.utils.DensityUtility
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -14,7 +15,6 @@ import kotlinx.android.synthetic.main.activity_collection.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.jessyan.autosize.utils.AutoSizeUtils
 import java.util.*
 
 
@@ -88,7 +88,7 @@ class CollectionActivity : BaseAppActivity() {
                 "${CoinTypes.parseCoinType(currentAccount.coinNumber).fullName().toLowerCase(Locale.CHINA)}${prefix}:${currentAccount.address}"
             val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
                 collectionAddress,
-                AutoSizeUtils.dp2px(this@CollectionActivity, 164.toFloat()),
+                DensityUtility.dp2px(this@CollectionActivity, 164),
                 null
             )
             withContext(Dispatchers.Main) {
