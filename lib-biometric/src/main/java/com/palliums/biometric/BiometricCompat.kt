@@ -3,10 +3,8 @@ package com.palliums.biometric
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.annotation.RestrictTo
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.palliums.biometric.crypto.*
@@ -18,35 +16,41 @@ import com.palliums.biometric.util.LogUtils
  * Created by elephant on 2020/5/19 17:33.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc:
+ *
+ * @see androidx.biometric.BiometricManager
+ * @see androidx.biometric.BiometricPrompt
+ * @see <a href="https://github.com/infinum/Android-Goldfinger">link</a>
  */
 interface BiometricCompat {
 
     /**
-     * Returns true if user has biometric hardware, false otherwise.
+     * @see [BiometricManager.canAuthenticate]
      */
-    fun hasBiometricHardware(): Boolean
-
-    /**
-     * Returns true if user has enrolled biometric, false otherwise.
-     */
-    fun hasEnrolledBiometric(): Boolean
+    fun canAuthenticate(userFingerprint: Boolean = true): Boolean
 
     /**
      * @see [BiometricManager.canAuthenticate]
      */
-    fun canAuthenticate(): Boolean
+    fun canBiometric(userFingerprint: Boolean = true): Int
 
     /**
      * Authenticate user via Fingerprint.
      * <p>
      * Example - Process payment after successful fingerprint authentication.
      *
-     * @see PromptParams
+     * @param params   parameters used to build [BiometricPrompt] instance
+     * @param callback Returns fingerprint result and will be invoked multiple times during
+     *                 fingerprint authentication as not all fingerprint results complete
+     *                 the authentication.
+     *
+     *                 Result callback invoked for every fingerprint result (success, exception,
+     *                 error or info).
+     *                 It can be invoked multiple times during single fingerprint authentication.
+     * @see BiometricCompat.Result
      */
     fun authenticate(
         params: PromptParams,
-        callback: Callback
+        callback: (Result) -> Unit
     )
 
     /**
@@ -61,31 +65,45 @@ interface BiometricCompat {
      * @param params   parameters used to build [BiometricPrompt] instance
      * @param key      unique key identifier, used to store cipher IV internally
      * @param value    String value which will be encrypted if user successfully authenticates
-     * @param callback callback
-     * @see BiometricCompat.Callback
+     * @param callback Returns fingerprint result and will be invoked multiple times during
+     *                 fingerprint authentication as not all fingerprint results complete
+     *                 the authentication.
+     *
+     *                 Result callback invoked for every fingerprint result (success, exception,
+     *                 error or info).
+     *                 It can be invoked multiple times during single fingerprint authentication.
+     * @see BiometricCompat.Result
      */
     fun encrypt(
         params: PromptParams,
         key: String,
         value: String,
-        callback: Callback
+        callback: (Result) -> Unit
     )
 
     /**
      * Authenticate user via Fingerprint. If user is successfully authenticated,
      * [CrypterProxy] implementation is used to automatically decrypt given value.
-     *
-     *
+     * <p>
      * Should be used together with [BiometricCompat.encrypt] to decrypt saved data.
      *
+     * @param params   parameters used to build [BiometricPrompt] instance
      * @param key   unique key identifier, used to load Cipher IV internally
      * @param value String value which will be decrypted if user successfully authenticates
+     * @param callback Returns fingerprint result and will be invoked multiple times during
+     *                 fingerprint authentication as not all fingerprint results complete
+     *                 the authentication.
+     *
+     *                 Result callback invoked for every fingerprint result (success, exception,
+     *                 error or info).
+     *                 It can be invoked multiple times during single fingerprint authentication.
+     * @see BiometricCompat.Result
      */
     fun decrypt(
         params: PromptParams,
         key: String,
         value: String,
-        callback: Callback
+        callback: (Result) -> Unit
     )
 
     /**
@@ -103,9 +121,6 @@ interface BiometricCompat {
         private var cipherCrypter: CipherCrypter? = null
         private var macCrypter: MacCrypter? = null
         private var signatureCrypter: SignatureCrypter? = null
-        private val mode = Mode.AUTHENTICATION
-        private val key: String? = null
-        private val value: String? = null
 
         fun build(useCustom: Boolean = true): BiometricCompat {
             ensureParamsValid()
@@ -123,11 +138,6 @@ interface BiometricCompat {
 
         fun cipherFactory(cipherFactory: CipherFactory?): Builder {
             this.cipherFactory = cipherFactory
-            return this
-        }
-
-        fun logEnabled(logEnabled: Boolean): Builder {
-            LogUtils.setEnable(logEnabled)
             return this
         }
 
@@ -151,6 +161,11 @@ interface BiometricCompat {
             return this
         }
 
+        fun logEnabled(logEnabled: Boolean): Builder {
+            LogUtils.setEnable(logEnabled)
+            return this
+        }
+
         @RequiresApi(Build.VERSION_CODES.M)
         private fun buildBiometric(useCustom: Boolean): BiometricCompat {
             if (macCrypter == null && signatureCrypter == null && cipherCrypter == null) {
@@ -159,14 +174,13 @@ interface BiometricCompat {
             if (macFactory == null && signatureFactory == null && cipherFactory == null) {
                 cipherFactory = AesCipherFactory(context)
             }
-            val asyncFactory =
-                AsyncCryptoObjectFactory(
-                    CryptoObjectFactory(
-                        cipherFactory,
-                        macFactory,
-                        signatureFactory
-                    )
+            val asyncFactory = AsyncCryptoObjectFactory(
+                CryptoObjectFactory(
+                    cipherFactory,
+                    macFactory,
+                    signatureFactory
                 )
+            )
             val cryptoProxy = CrypterProxy(
                 cipherCrypter,
                 macCrypter,
@@ -207,7 +221,6 @@ interface BiometricCompat {
                 )
             }
         }
-
     }
 
     class PromptParams private constructor(
@@ -216,8 +229,10 @@ interface BiometricCompat {
         val subtitle: String?,
         val description: String?,
         val negativeButtonText: String?,
+        val positiveButtonText: String?,
         val confirmationRequired: Boolean,
-        val deviceCredentialsAllowed: Boolean
+        val deviceCredentialsAllowed: Boolean,
+        val useFingerprint: Boolean
     ) {
 
         class Builder {
@@ -227,9 +242,10 @@ interface BiometricCompat {
             private var subtitle: String? = null
             private var description: String? = null
             private var negativeButtonText: String? = null
+            private var positiveButtonText: String? = null
             private var confirmationRequired = false
             private var deviceCredentialsAllowed = false
-            private val mode = Mode.AUTHENTICATION
+            private var useFingerprint = true
 
             constructor(activity: FragmentActivity) {
                 dialogOwner = activity
@@ -246,8 +262,10 @@ interface BiometricCompat {
                     subtitle,
                     description,
                     negativeButtonText,
+                    positiveButtonText,
                     confirmationRequired,
-                    deviceCredentialsAllowed
+                    deviceCredentialsAllowed,
+                    useFingerprint
                 )
             }
 
@@ -284,6 +302,16 @@ interface BiometricCompat {
             }
 
             /**
+             * Only valid when using custom biometrics.
+             *
+             * @see com.palliums.biometric.custom.BiometricPrompt.PromptInfo.Builder.setPositiveButtonText
+             */
+            fun positiveButtonText(positiveButtonText: String): Builder {
+                this.positiveButtonText = positiveButtonText
+                return this
+            }
+
+            /**
              * @see BiometricPrompt.PromptInfo.Builder.setConfirmationRequired
              */
             fun confirmationRequired(confirmationRequired: Boolean): Builder {
@@ -298,38 +326,24 @@ interface BiometricCompat {
                 this.deviceCredentialsAllowed = deviceCredentialsAllowed
                 return this
             }
+
+            /**
+             * Only valid when using custom biometrics.
+             *
+             * @see com.palliums.biometric.custom.BiometricPrompt.PromptInfo.Builder.setUseFingerprint
+             */
+            fun useFingerprint(useFingerprint: Boolean): Builder {
+                this.useFingerprint = useFingerprint
+                return this
+            }
         }
-    }
-
-    /**
-     * Callback used to receive BiometricCompat results.
-     */
-    interface Callback {
-        /**
-         * Returns fingerprint result and will be invoked multiple times during
-         * fingerprint authentication as not all fingerprint results complete
-         * the authentication.
-         *
-         *
-         * Result callback invoked for every fingerprint result (success, error or info).
-         * It can be invoked multiple times during single fingerprint authentication.
-         *
-         * @param result contains fingerprint result information
-         * @see BiometricCompat.Result
-         */
-        fun onResult(result: Result)
-
-        /**
-         * Critical error happened and fingerprint authentication is stopped.
-         */
-        fun onError(e: Exception)
     }
 
     /**
      * Result wrapper class containing all the useful information about
      * fingerprint authentication and value for encryption/decryption operations.
      */
-    class Result @JvmOverloads internal constructor(
+    data class Result internal constructor(
         /**
          * @see BiometricCompat.Type
          */
@@ -352,11 +366,15 @@ interface BiometricCompat {
          * System message returned by [BiometricPrompt.AuthenticationCallback].
          * A human-readable error string that can be shown in UI.
          */
-        val message: String? = null
+        val message: String? = null,
+        /**
+         *  reason 为 [Reason.AUTHENTICATION_EXCEPTION] 时的值
+         */
+        val exception: Exception? = null
     )
 
     /**
-     * Describes in detail why [Callback.onResult] is dispatched.
+     * Describes in detail why [authenticate]｜[encrypt]|[decrypt] is dispatched.
      */
     enum class Reason {
         /**
@@ -412,6 +430,10 @@ interface BiometricCompat {
          */
         NO_DEVICE_CREDENTIAL,
         /**
+         * @see com.palliums.biometric.custom.BiometricPrompt.ERROR_POSITIVE_BUTTON
+         */
+        POSITIVE_BUTTON,
+        /**
          * Dispatched when Fingerprint authentication is initialized correctly and
          * just before actual authentication is started. Can be used to update UI if necessary.
          */
@@ -425,13 +447,17 @@ interface BiometricCompat {
          */
         AUTHENTICATION_FAIL,
         /**
+         * Critical error happened and fingerprint authentication is stopped.
+         */
+        AUTHENTICATION_EXCEPTION,
+        /**
          * Unknown reason.
          */
         UNKNOWN
     }
 
     /**
-     * Describes the type of the result received in [Callback.onResult]
+     * Describes the type of the result received in [authenticate]｜[encrypt]|[decrypt]
      */
     enum class Type {
         /**

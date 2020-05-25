@@ -5,6 +5,6 @@ package com.palliums.biometric.exceptions
  * Copyright © 2019-2020. All rights reserved.
  * <p>
  *
- * Thrown if the device is missing biometric hardware.
+ * Thrown if the hardware is unavailable.
  */
-class MissingHardwareException : Exception("Device has no biometric hardware.")
+class HardwareUnavailableException : Exception("The hardware is unavailable. Try again later.")

@@ -17,7 +17,7 @@ import javax.crypto.Mac
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-class CryptoObject {
+internal class CryptoObject {
     /**
      * Get [Signature] object.
      *

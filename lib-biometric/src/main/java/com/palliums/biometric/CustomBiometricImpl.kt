@@ -1,17 +1,17 @@
 package com.palliums.biometric
 
 import android.content.Context
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.RestrictTo
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.palliums.biometric.custom.BiometricManager
 import com.palliums.biometric.custom.BiometricPrompt
-import com.palliums.biometric.exceptions.CryptoObjectInitException
-import com.palliums.biometric.exceptions.InvalidParametersException
-import com.palliums.biometric.exceptions.MissingHardwareException
-import com.palliums.biometric.exceptions.NoEnrolledFingerprintException
+import com.palliums.biometric.custom.Utils
+import com.palliums.biometric.exceptions.*
 import com.palliums.biometric.util.LogUtils
 import java.util.concurrent.Executors
 
@@ -25,8 +25,8 @@ import java.util.concurrent.Executors
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-class CustomBiometricImpl(
-    context: Context,
+internal class CustomBiometricImpl(
+    private val context: Context,
     private val asyncCryptoObjectFactory: AsyncCryptoObjectFactory,
     private val crypterProxy: CrypterProxy
 ) : BiometricCompat {
@@ -34,46 +34,50 @@ class CustomBiometricImpl(
     private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
     private val executor by lazy { Executors.newSingleThreadExecutor() }
     private val biometricManager by lazy { BiometricManager.from(context) }
+    private val fingerprintManager by lazy { FingerprintManagerCompat.from(context) }
 
     private var asyncCryptoObjectFactoryCallback: AsyncCryptoObjectFactory.Callback? = null
     private var biometricPrompt: BiometricPrompt? = null
-    private var biometricPromptCallback: CustomBiometricCallback? = null
+    private var biometricCallback: CustomBiometricCallback? = null
     private var creatingCryptoObject = false
 
-    override fun hasBiometricHardware(): Boolean {
-        return biometricManager.canAuthenticate() != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
+    override fun canAuthenticate(userFingerprint: Boolean): Boolean {
+        return canBiometric(userFingerprint) == BiometricManager.BIOMETRIC_SUCCESS
     }
 
-    override fun hasEnrolledBiometric(): Boolean {
-        return biometricManager.canAuthenticate() != BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED
-    }
-
-    override fun canAuthenticate(): Boolean {
-        return biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
+    override fun canBiometric(userFingerprint: Boolean): Int {
+        if (userFingerprint || Utils.shouldUseFingerprintForCrypto(
+                context,
+                Build.MANUFACTURER,
+                Build.MODEL
+            )
+        ) {
+            return if (!fingerprintManager.isHardwareDetected) {
+                BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
+            } else if (!fingerprintManager.hasEnrolledFingerprints()) {
+                BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED;
+            } else {
+                BiometricManager.BIOMETRIC_SUCCESS;
+            }
+        } else {
+            return biometricManager.canAuthenticate()
+        }
     }
 
     override fun authenticate(
         params: BiometricCompat.PromptParams,
-        callback: BiometricCompat.Callback
+        callback: (BiometricCompat.Result) -> Unit
     ) {
         if (preconditionsInvalid(params, Mode.AUTHENTICATION, null, null, callback)) return
 
-        LogUtils.log("Starting authentication")
-        startNativeBiometricAuthentication(
-            params,
-            Mode.AUTHENTICATION,
-            null,
-            null,
-            callback,
-            null
-        )
+        startNativeBiometricAuthentication(params, Mode.AUTHENTICATION, null, null, callback, null)
     }
 
     override fun encrypt(
         params: BiometricCompat.PromptParams,
         key: String,
         value: String,
-        callback: BiometricCompat.Callback
+        callback: (BiometricCompat.Result) -> Unit
     ) {
         if (preconditionsInvalid(params, Mode.ENCRYPTION, key, value, callback)) return
 
@@ -84,7 +88,7 @@ class CustomBiometricImpl(
         params: BiometricCompat.PromptParams,
         key: String,
         value: String,
-        callback: BiometricCompat.Callback
+        callback: (BiometricCompat.Result) -> Unit
     ) {
         if (preconditionsInvalid(params, Mode.DECRYPTION, key, value, callback)) return
 
@@ -92,18 +96,18 @@ class CustomBiometricImpl(
     }
 
     override fun cancel() {
-        biometricPrompt?.let {
-            it.cancelAuthentication()
+        if (biometricPrompt != null) {
+            biometricPrompt!!.cancelAuthentication()
             biometricPrompt = null
         }
 
-        biometricPromptCallback?.let {
-            it.cancel()
-            biometricPromptCallback = null
+        if (biometricCallback != null) {
+            biometricCallback!!.cancel()
+            biometricCallback = null
         }
 
-        asyncCryptoObjectFactoryCallback?.let {
-            it.cancel()
+        if (asyncCryptoObjectFactoryCallback != null) {
+            asyncCryptoObjectFactoryCallback!!.cancel()
             asyncCryptoObjectFactoryCallback = null
         }
     }
@@ -113,7 +117,7 @@ class CustomBiometricImpl(
         mode: Mode,
         key: String,
         value: String,
-        callback: BiometricCompat.Callback
+        callback: (BiometricCompat.Result) -> Unit
     ) {
         LogUtils.log("Creating CryptoObject")
         asyncCryptoObjectFactoryCallback = object : AsyncCryptoObjectFactory.Callback() {
@@ -131,7 +135,13 @@ class CustomBiometricImpl(
                     )
                 } else {
                     LogUtils.log("Failed to create CryptoObject")
-                    callback.onError(CryptoObjectInitException())
+                    callback.invoke(
+                        BiometricCompat.Result(
+                            BiometricCompat.Type.ERROR,
+                            BiometricCompat.Reason.AUTHENTICATION_EXCEPTION,
+                            exception = CryptoObjectInitException()
+                        )
+                    )
                 }
             }
         }
@@ -145,42 +155,27 @@ class CustomBiometricImpl(
         mode: Mode,
         key: String?,
         value: String?,
-        callback: BiometricCompat.Callback,
+        callback: (BiometricCompat.Result) -> Unit,
         cryptoObject: CryptoObject?
     ) {
         /*
          * Use proxy callback because some devices do not cancel authentication when error is received.
          * Cancel authentication manually and proxy the result to real callback.
          */
-        biometricPromptCallback =
-            CustomBiometricCallback(
-                crypterProxy,
-                mode,
-                value,
-                object : BiometricCompat.Callback {
-                    override fun onResult(result: BiometricCompat.Result) {
-                        if (result.type == BiometricCompat.Type.ERROR
-                            || result.type == BiometricCompat.Type.SUCCESS
-                        ) {
-                            cancel()
-                        }
-                        callback.onResult(result)
-                    }
-
-                    override fun onError(e: Exception) {
-                        cancel()
-                        callback.onError(e)
-                    }
-                }
-            )
+        biometricCallback = CustomBiometricCallback(crypterProxy, mode, value) {
+            if (it.type == BiometricCompat.Type.ERROR || it.type == BiometricCompat.Type.SUCCESS) {
+                cancel()
+            }
+            callback.invoke(it)
+        }
 
         if (params.dialogOwner is Fragment) {
             biometricPrompt =
-                BiometricPrompt(params.dialogOwner, executor, biometricPromptCallback!!)
+                BiometricPrompt(params.dialogOwner, executor, biometricCallback!!)
         }
         if (params.dialogOwner is FragmentActivity) {
             biometricPrompt =
-                BiometricPrompt(params.dialogOwner, executor, biometricPromptCallback!!)
+                BiometricPrompt(params.dialogOwner, executor, biometricCallback!!)
         }
 
         /* Delay with post because Navigation and Prompt both work with Fragment transactions */
@@ -190,7 +185,7 @@ class CustomBiometricImpl(
             if (mode == Mode.AUTHENTICATION) {
                 /* Simple Authentication call */
                 LogUtils.log("Starting authentication")
-                callback.onResult(
+                callback.invoke(
                     BiometricCompat.Result(
                         BiometricCompat.Type.INFO,
                         BiometricCompat.Reason.AUTHENTICATION_START
@@ -201,7 +196,7 @@ class CustomBiometricImpl(
                 /* Encryption/Decryption call with initialized CryptoObject */
                 /* Encryption/Decryption call with initialized CryptoObject */
                 LogUtils.log("Starting authentication [keyName=$key; value=$value]")
-                callback.onResult(
+                callback.invoke(
                     BiometricCompat.Result(
                         BiometricCompat.Type.INFO,
                         BiometricCompat.Reason.AUTHENTICATION_START
@@ -237,8 +232,12 @@ class CustomBiometricImpl(
             .setDescription(params.description)
             .setDeviceCredentialAllowed(params.deviceCredentialsAllowed)
             .setConfirmationRequired(params.confirmationRequired)
+            .setUseFingerprint(params.useFingerprint)
         if (!params.deviceCredentialsAllowed) {
             builder.setNegativeButtonText(params.negativeButtonText!!)
+        }
+        if (!params.positiveButtonText.isNullOrBlank()) {
+            builder.setPositiveButtonText(params.positiveButtonText)
         }
         return builder.build()
     }
@@ -248,34 +247,69 @@ class CustomBiometricImpl(
         mode: Mode,
         key: String?,
         value: String?,
-        callback: BiometricCompat.Callback
+        callback: (BiometricCompat.Result) -> Unit
     ): Boolean {
-        if ((biometricPromptCallback != null && biometricPromptCallback!!.isAuthenticationActive())
+        if ((biometricCallback != null && biometricCallback!!.isAuthenticationActive())
             || creatingCryptoObject
         ) {
             LogUtils.log("Authentication is already active. Ignoring authenticate call.")
             return true
         }
 
-        if (!hasBiometricHardware()) {
-            callback.onError(MissingHardwareException())
-            return true
-        }
-
-        if (!hasEnrolledBiometric()) {
-            callback.onError(NoEnrolledFingerprintException())
-            return true
+        when (canBiometric(params.useFingerprint)) {
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+                callback.invoke(
+                    BiometricCompat.Result(
+                        BiometricCompat.Type.ERROR,
+                        BiometricCompat.Reason.AUTHENTICATION_EXCEPTION,
+                        exception = MissingHardwareException()
+                    )
+                )
+                return true
+            }
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                callback.invoke(
+                    BiometricCompat.Result(
+                        BiometricCompat.Type.ERROR,
+                        BiometricCompat.Reason.AUTHENTICATION_EXCEPTION,
+                        exception = NoEnrolledBiometricsException()
+                    )
+                )
+                return true
+            }
+            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+                callback.invoke(
+                    BiometricCompat.Result(
+                        BiometricCompat.Type.ERROR,
+                        BiometricCompat.Reason.AUTHENTICATION_EXCEPTION,
+                        exception = HardwareUnavailableException()
+                    )
+                )
+                return true
+            }
         }
 
         val promptParamsErrors = validatePromptParams(mode, params)
         if (promptParamsErrors.isNotEmpty()) {
-            callback.onError(InvalidParametersException(promptParamsErrors))
+            callback.invoke(
+                BiometricCompat.Result(
+                    BiometricCompat.Type.ERROR,
+                    BiometricCompat.Reason.AUTHENTICATION_EXCEPTION,
+                    exception = InvalidParametersException(promptParamsErrors)
+                )
+            )
             return true
         }
 
         val cipherParamsErrors = validateCipherParams(mode, key, value)
         if (cipherParamsErrors.isNotEmpty()) {
-            callback.onError(InvalidParametersException(cipherParamsErrors))
+            callback.invoke(
+                BiometricCompat.Result(
+                    BiometricCompat.Type.ERROR,
+                    BiometricCompat.Reason.AUTHENTICATION_EXCEPTION,
+                    exception = InvalidParametersException(cipherParamsErrors)
+                )
+            )
             return true
         }
 

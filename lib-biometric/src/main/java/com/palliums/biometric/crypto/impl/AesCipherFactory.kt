@@ -95,7 +95,7 @@ open class AesCipherFactory(context: Context) : CipherFactory {
      * @return created key, or null if something weird happens.
      * @throws Exception if anything fails, it is handled gracefully.
      */
-    @Throws(java.lang.Exception::class)
+    @Throws(Exception::class)
     private fun createKey(key: String): Key {
         val keyGenParamsBuilder = KeyGenParameterSpec.Builder(
             key,

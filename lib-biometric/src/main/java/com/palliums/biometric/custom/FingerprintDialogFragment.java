@@ -150,6 +150,10 @@ public class FingerprintDialogFragment extends DialogFragment {
     @VisibleForTesting
     DialogInterface.OnClickListener mNegativeButtonListener;
 
+    // This should be re-set by the BiometricPromptCompat each time the lifecycle changes.
+    @VisibleForTesting
+    DialogInterface.OnClickListener mPositiveButtonListener;
+
     // Also created once and retained.
     private final DialogInterface.OnClickListener mDeviceCredentialButtonListener =
             new DialogInterface.OnClickListener() {
@@ -182,7 +186,10 @@ public class FingerprintDialogFragment extends DialogFragment {
             mBundle = savedInstanceState.getBundle(KEY_DIALOG_BUNDLE);
         }
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(
+                getContext(),
+                R.style.ThemeOverlay_AppCompat_Dialog_Alert_Custom
+        );
         builder.setTitle(mBundle.getCharSequence(BiometricPrompt.KEY_TITLE));
 
         // We have to use builder.getContext() instead of the usual getContext() in order to get
@@ -230,6 +237,20 @@ public class FingerprintDialogFragment extends DialogFragment {
                 }
             }
         });
+
+        final CharSequence positiveButtonText = getPositiveButtonText();
+        if (!TextUtils.isEmpty(positiveButtonText)) {
+            builder.setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (mPositiveButtonListener != null) {
+                        mPositiveButtonListener.onClick(dialog, which);
+                    } else {
+                        Log.w(TAG, "No suitable positive button listener.");
+                    }
+                }
+            });
+        }
 
         builder.setView(layout);
         Dialog dialog = builder.create();
@@ -306,8 +327,22 @@ public class FingerprintDialogFragment extends DialogFragment {
         return mBundle.getCharSequence(BiometricPrompt.KEY_NEGATIVE_TEXT);
     }
 
+    /**
+     * The positive button text is persisted in the fragment, not in BiometricPromptCompat. Since
+     * the dialog persists through rotation, this allows us to return this as the error text for
+     * ERROR_POSITIVE_BUTTON.
+     */
+    @Nullable
+    protected CharSequence getPositiveButtonText() {
+        return mBundle.getCharSequence(BiometricPrompt.KEY_POSITIVE_TEXT);
+    }
+
     void setNegativeButtonListener(DialogInterface.OnClickListener listener) {
         mNegativeButtonListener = listener;
+    }
+
+    void setPositiveButtonListener(DialogInterface.OnClickListener listener) {
+        mPositiveButtonListener = listener;
     }
 
     /**

@@ -112,6 +112,11 @@ public interface BiometricConstants {
     int ERROR_NO_DEVICE_CREDENTIAL = 14;
 
     /**
+     * The user pressed the positive button.
+     */
+    int ERROR_POSITIVE_BUTTON = 15;
+
+    /**
      * @hide
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY)

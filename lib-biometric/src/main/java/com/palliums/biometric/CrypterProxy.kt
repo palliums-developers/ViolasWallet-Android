@@ -15,7 +15,7 @@ import com.palliums.biometric.crypto.SignatureCrypter
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-class CrypterProxy(
+internal class CrypterProxy(
     private val cipherCrypter: CipherCrypter?,
     private val macCrypter: MacCrypter?,
     private val signatureCrypter: SignatureCrypter?

@@ -54,6 +54,7 @@ public class FingerprintHelperFragment extends Fragment {
     static final int USER_CANCELED_FROM_NONE = 0;
     static final int USER_CANCELED_FROM_USER = 1;
     static final int USER_CANCELED_FROM_NEGATIVE_BUTTON = 2;
+    static final int USER_CANCELED_FROM_POSITIVE_BUTTON = 3;
 
     /**
      * Pass-through class for obtaining and sending messages without directly invoking the

@@ -15,7 +15,7 @@ import com.palliums.biometric.crypto.SignatureFactory
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-class CryptoObjectFactory(
+internal class CryptoObjectFactory(
     private val cipherFactory: CipherFactory?,
     private val macFactory: MacFactory?,
     private val signatureFactory: SignatureFactory?

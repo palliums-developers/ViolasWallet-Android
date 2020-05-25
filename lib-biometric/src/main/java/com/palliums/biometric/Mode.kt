@@ -15,6 +15,6 @@ import androidx.annotation.RestrictTo
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-enum class Mode {
+internal enum class Mode {
     AUTHENTICATION, DECRYPTION, ENCRYPTION
 }

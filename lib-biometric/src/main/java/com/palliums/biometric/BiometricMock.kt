@@ -1,6 +1,8 @@
 package com.palliums.biometric
 
 import androidx.annotation.RestrictTo
+import androidx.biometric.BiometricManager
+import com.palliums.biometric.exceptions.MissingHardwareException
 
 /**
  * Created by elephant on 2020/5/20 10:47.
@@ -11,43 +13,57 @@ import androidx.annotation.RestrictTo
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-class BiometricMock : BiometricCompat {
+internal class BiometricMock : BiometricCompat {
 
-    override fun hasBiometricHardware(): Boolean {
+    override fun canAuthenticate(userFingerprint: Boolean): Boolean {
         return false
     }
 
-    override fun hasEnrolledBiometric(): Boolean {
-        return false
-    }
-
-    override fun canAuthenticate(): Boolean {
-        return false
+    override fun canBiometric(userFingerprint: Boolean): Int {
+        return BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
     }
 
     override fun authenticate(
         params: BiometricCompat.PromptParams,
-        callback: BiometricCompat.Callback
+        callback: (BiometricCompat.Result) -> Unit
     ) {
-
+        callback.invoke(
+            BiometricCompat.Result(
+                BiometricCompat.Type.ERROR,
+                BiometricCompat.Reason.AUTHENTICATION_EXCEPTION,
+                exception = MissingHardwareException()
+            )
+        )
     }
 
     override fun encrypt(
         params: BiometricCompat.PromptParams,
         key: String,
         value: String,
-        callback: BiometricCompat.Callback
+        callback: (BiometricCompat.Result) -> Unit
     ) {
-
+        callback.invoke(
+            BiometricCompat.Result(
+                BiometricCompat.Type.ERROR,
+                BiometricCompat.Reason.AUTHENTICATION_EXCEPTION,
+                exception = MissingHardwareException()
+            )
+        )
     }
 
     override fun decrypt(
         params: BiometricCompat.PromptParams,
         key: String,
         value: String,
-        callback: BiometricCompat.Callback
+        callback: (BiometricCompat.Result) -> Unit
     ) {
-
+        callback.invoke(
+            BiometricCompat.Result(
+                BiometricCompat.Type.ERROR,
+                BiometricCompat.Reason.AUTHENTICATION_EXCEPTION,
+                exception = MissingHardwareException()
+            )
+        )
     }
 
     override fun cancel() {

@@ -5,6 +5,6 @@ package com.palliums.biometric.exceptions
  * Copyright © 2019-2020. All rights reserved.
  * <p>
  *
- * Thrown if the user has no enrolled fingerprints.
+ * Thrown if the user has no enrolled biometrics.
  */
-class NoEnrolledFingerprintException : Exception("User has no enrolled fingerprint.")
+class NoEnrolledBiometricsException : Exception("The user does not have any biometrics enrolled.")

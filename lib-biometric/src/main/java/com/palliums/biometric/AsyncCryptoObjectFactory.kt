@@ -13,7 +13,7 @@ import java.util.concurrent.Future
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-class AsyncCryptoObjectFactory(
+internal class AsyncCryptoObjectFactory(
     private val cryptoObjectFactory: CryptoObjectFactory
 ) {
 

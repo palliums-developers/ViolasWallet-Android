@@ -40,6 +40,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.palliums.biometric.R;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
 
 /**
@@ -69,11 +70,14 @@ public class BiometricFragment extends Fragment {
     @VisibleForTesting
     DialogInterface.OnClickListener mClientNegativeButtonListener;
     @VisibleForTesting
+    DialogInterface.OnClickListener mClientPositiveButtonListener;
+    @VisibleForTesting
     BiometricPrompt.AuthenticationCallback mClientAuthenticationCallback;
 
     // Set once and retained.
     private BiometricPrompt.CryptoObject mCryptoObject;
     private CharSequence mNegativeButtonText;
+    private CharSequence mPositiveButtonText;
 
     // Created once and retained.
     private boolean mShowing;
@@ -167,6 +171,15 @@ public class BiometricFragment extends Fragment {
             };
 
     // Also created once and retained.
+    private final DialogInterface.OnClickListener mPositiveButtonListener =
+            new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mClientPositiveButtonListener.onClick(dialog, which);
+                }
+            };
+
+    // Also created once and retained.
     private final DialogInterface.OnClickListener mDeviceCredentialButtonListener =
             new DialogInterface.OnClickListener() {
                 @Override
@@ -189,10 +202,12 @@ public class BiometricFragment extends Fragment {
      * Sets the client's callback. This should be done whenever the lifecycle changes (orientation
      * changes).
      */
-    void setCallbacks(Executor executor, DialogInterface.OnClickListener onClickListener,
+    void setCallbacks(Executor executor, DialogInterface.OnClickListener onNegativeClickListener,
+                      DialogInterface.OnClickListener onPositiveClickListener,
             BiometricPrompt.AuthenticationCallback authenticationCallback) {
         mClientExecutor = executor;
-        mClientNegativeButtonListener = onClickListener;
+        mClientNegativeButtonListener = onNegativeClickListener;
+        mClientPositiveButtonListener = onPositiveClickListener;
         mClientAuthenticationCallback = authenticationCallback;
     }
 
@@ -237,6 +252,11 @@ public class BiometricFragment extends Fragment {
         return mNegativeButtonText;
     }
 
+    @Nullable
+    protected CharSequence getPositiveButtonText() {
+        return mPositiveButtonText;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -265,6 +285,7 @@ public class BiometricFragment extends Fragment {
         // Start the actual authentication when the fragment is attached.
         if (!mShowing && mBundle != null) {
             mNegativeButtonText = mBundle.getCharSequence(BiometricPrompt.KEY_NEGATIVE_TEXT);
+            mPositiveButtonText = mBundle.getCharSequence(BiometricPrompt.KEY_POSITIVE_TEXT);
 
             final android.hardware.biometrics.BiometricPrompt.Builder builder =
                     new android.hardware.biometrics.BiometricPrompt.Builder(getContext());
@@ -283,6 +304,10 @@ public class BiometricFragment extends Fragment {
             } else if (!TextUtils.isEmpty(mNegativeButtonText)) {
                 builder.setNegativeButton(
                         mNegativeButtonText, mClientExecutor, mNegativeButtonListener);
+            }
+
+            if (!TextUtils.isEmpty(mPositiveButtonText)) {
+                setPositiveButton(builder);
             }
 
             // Set builder flags introduced in Q.
@@ -316,6 +341,24 @@ public class BiometricFragment extends Fragment {
         }
         mShowing = true;
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    private void setPositiveButton(android.hardware.biometrics.BiometricPrompt.Builder builder) {
+        try {
+            Class builderClass = builder.getClass();
+            Method setPositiveButtonMethod = builderClass.getMethod(
+                    "setPositiveButton",
+                    CharSequence.class,
+                    Executor.class,
+                    DialogInterface.OnClickListener.class
+            );
+
+            setPositiveButtonMethod.invoke(
+                    builder, mPositiveButtonText, mClientExecutor, mPositiveButtonListener
+            );
+        } catch (Throwable t) {
+            Log.w(TAG, "setPositiveButton failed, " + t.toString());
+        }
     }
 
     private static BiometricPrompt.CryptoObject unwrapCryptoObject(

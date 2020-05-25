@@ -83,9 +83,11 @@ public class BiometricPrompt implements BiometricConstants {
     static final String KEY_SUBTITLE = "subtitle";
     static final String KEY_DESCRIPTION = "description";
     static final String KEY_NEGATIVE_TEXT = "negative_text";
+    static final String KEY_POSITIVE_TEXT = "positive_text";
     static final String KEY_REQUIRE_CONFIRMATION = "require_confirmation";
     static final String KEY_ALLOW_DEVICE_CREDENTIAL = "allow_device_credential";
     static final String KEY_HANDLING_DEVICE_CREDENTIAL_RESULT = "handling_device_credential_result";
+    static final String KEY_USE_FINGERPRINT = "use_fingerprint";
 
     @Retention(SOURCE)
     @IntDef({ERROR_HW_UNAVAILABLE,
@@ -100,7 +102,8 @@ public class BiometricPrompt implements BiometricConstants {
             ERROR_NO_BIOMETRICS,
             ERROR_HW_NOT_PRESENT,
             ERROR_NEGATIVE_BUTTON,
-            ERROR_NO_DEVICE_CREDENTIAL})
+            ERROR_NO_DEVICE_CREDENTIAL,
+            ERROR_POSITIVE_BUTTON,})
     private @interface BiometricError {
     }
 
@@ -272,6 +275,17 @@ public class BiometricPrompt implements BiometricConstants {
             }
 
             /**
+             * Required: Set the text for the negative button. This would typically be used as a
+             * "Cancel" button, but may be also used to show an alternative method for
+             * authentication, such as screen that asks for a backup password.
+             */
+            @NonNull
+            public Builder setPositiveButtonText(@NonNull CharSequence text) {
+                mBundle.putCharSequence(KEY_POSITIVE_TEXT, text);
+                return this;
+            }
+
+            /**
              * Optional: A hint to the system to require user confirmation after a biometric has
              * been authenticated. For example, implicit modalities like Face and
              * Iris authentication are passive, meaning they don't require an explicit user action
@@ -332,6 +346,18 @@ public class BiometricPrompt implements BiometricConstants {
             @NonNull
             Builder setHandlingDeviceCredentialResult(boolean isHandling) {
                 mBundle.putBoolean(KEY_HANDLING_DEVICE_CREDENTIAL_RESULT, isHandling);
+                return this;
+            }
+
+            /**
+             * 使用指纹识别
+             *
+             * @param useFingerprint true: 使用指纹识别进行认证加解密; false: 按系统生物识别规则进行认证加解密
+             * @return
+             */
+            @NonNull
+            public Builder setUseFingerprint(boolean useFingerprint) {
+                mBundle.putBoolean(KEY_USE_FINGERPRINT, useFingerprint);
                 return this;
             }
 
@@ -410,6 +436,14 @@ public class BiometricPrompt implements BiometricConstants {
         }
 
         /**
+         * @return See {@link Builder#setPositiveButtonText(CharSequence)}.
+         */
+        @NonNull
+        public CharSequence getPositiveButtonText() {
+            return mBundle.getCharSequence(KEY_POSITIVE_TEXT);
+        }
+
+        /**
          * @return See {@link Builder#setConfirmationRequired(boolean)}.
          */
         public boolean isConfirmationRequired() {
@@ -431,6 +465,13 @@ public class BiometricPrompt implements BiometricConstants {
         @RestrictTo(RestrictTo.Scope.LIBRARY)
         boolean isHandlingDeviceCredentialResult() {
             return mBundle.getBoolean(KEY_HANDLING_DEVICE_CREDENTIAL_RESULT);
+        }
+
+        /**
+         * @return See {@link Builder#setUseFingerprint(boolean)}.
+         */
+        public boolean isUsedFingerprint() {
+            return mBundle.getBoolean(KEY_USE_FINGERPRINT);
         }
     }
 
@@ -492,6 +533,42 @@ public class BiometricPrompt implements BiometricConstants {
             };
 
     /**
+     * A shim to interface with the framework API and simplify the support library's API.
+     * The support library sends onAuthenticationError when the negative button is pressed.
+     * Conveniently, the {@link FingerprintDialogFragment} also uses the
+     * {@link DialogInterface.OnClickListener} for its buttons ;)
+     */
+    private final DialogInterface.OnClickListener mPositiveButtonListener =
+            new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (canUseBiometricFragment() && mBiometricFragment != null) {
+                                final CharSequence errorText =
+                                        mBiometricFragment.getPositiveButtonText();
+                                mAuthenticationCallback.onAuthenticationError(
+                                        ERROR_POSITIVE_BUTTON, errorText != null ? errorText : "");
+                                mBiometricFragment.cleanup();
+                            } else if (mFingerprintDialogFragment != null
+                                    && mFingerprintHelperFragment != null) {
+                                final CharSequence errorText =
+                                        mFingerprintDialogFragment.getPositiveButtonText();
+                                mAuthenticationCallback.onAuthenticationError(
+                                        ERROR_POSITIVE_BUTTON, errorText != null ? errorText : "");
+                                mFingerprintHelperFragment.cancel(
+                                        FingerprintHelperFragment
+                                                .USER_CANCELED_FROM_POSITIVE_BUTTON);
+                            } else {
+                                Log.e(TAG, "Negative button callback not run. Fragment was null.");
+                            }
+                        }
+                    });
+                }
+            };
+
+    /**
      * Observe the client's lifecycle. Keep authenticating across configuration changes, but
      * dismiss the prompt if the client goes into the background.
      */
@@ -536,7 +613,7 @@ public class BiometricPrompt implements BiometricConstants {
             }
             if (canUseBiometricFragment() && mBiometricFragment != null) {
                 mBiometricFragment.setCallbacks(mExecutor, mNegativeButtonListener,
-                        mAuthenticationCallback);
+                        mPositiveButtonListener, mAuthenticationCallback);
             } else {
                 mFingerprintDialogFragment =
                         (FingerprintDialogFragment) getFragmentManager().findFragmentByTag(
@@ -549,6 +626,7 @@ public class BiometricPrompt implements BiometricConstants {
                 if (DEBUG) Log.v(TAG, "FingerprintHelperFragment: " + mFingerprintHelperFragment);
                 if (mFingerprintDialogFragment != null) {
                     mFingerprintDialogFragment.setNegativeButtonListener(mNegativeButtonListener);
+                    mFingerprintDialogFragment.setPositiveButtonListener(mPositiveButtonListener);
                 }
                 if (mFingerprintHelperFragment != null) {
                     mFingerprintHelperFragment.setCallback(mExecutor, mAuthenticationCallback);
@@ -712,8 +790,9 @@ public class BiometricPrompt implements BiometricConstants {
 
         // Force some devices to fall back to fingerprint in order to support strong (crypto) auth.
         final boolean shouldForceFingerprint = DEBUG_FORCE_FINGERPRINT
-                || (activity != null && crypto != null && Utils.shouldUseFingerprintForCrypto(
-                        activity, Build.MANUFACTURER, Build.MODEL));
+                || (activity != null && crypto != null
+                    && (Utils.shouldUseFingerprintForCrypto(activity, Build.MANUFACTURER, Build.MODEL))
+                        || info.isUsedFingerprint());
 
         if (!shouldForceFingerprint && canUseBiometricFragment()) {
             BiometricFragment biometricFragment =
@@ -724,7 +803,7 @@ public class BiometricPrompt implements BiometricConstants {
                 mBiometricFragment = BiometricFragment.newInstance();
             }
             mBiometricFragment.setCallbacks(mExecutor, mNegativeButtonListener,
-                    mAuthenticationCallback);
+                    mPositiveButtonListener, mAuthenticationCallback);
 
             // Set the crypto object.
             mBiometricFragment.setCryptoObject(crypto);
@@ -752,6 +831,7 @@ public class BiometricPrompt implements BiometricConstants {
             }
 
             mFingerprintDialogFragment.setNegativeButtonListener(mNegativeButtonListener);
+            mFingerprintDialogFragment.setPositiveButtonListener(mPositiveButtonListener);
             mFingerprintDialogFragment.setBundle(bundle);
 
             if (activity != null && !Utils.shouldHideFingerprintDialog(activity, Build.MODEL)) {
@@ -895,7 +975,12 @@ public class BiometricPrompt implements BiometricConstants {
                 }
             }
         }
-        bridge.setCallbacks(mExecutor, mNegativeButtonListener, mAuthenticationCallback);
+        bridge.setCallbacks(
+                mExecutor,
+                mNegativeButtonListener,
+                mPositiveButtonListener,
+                mAuthenticationCallback
+        );
 
         if (startIgnoringReset) {
             bridge.startIgnoringReset();

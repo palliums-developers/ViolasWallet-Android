@@ -15,7 +15,7 @@ import androidx.annotation.RestrictTo
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-class CryptoObjectInitRunnable(
+internal class CryptoObjectInitRunnable(
     private val cryptoObjectFactory: CryptoObjectFactory,
     private val mode: Mode,
     private val key: String,

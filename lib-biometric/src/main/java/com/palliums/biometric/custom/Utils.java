@@ -36,7 +36,7 @@ import com.palliums.biometric.R;
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-class Utils {
+public class Utils {
     // Private constructor to prevent instantiation.
     private Utils() {
     }
@@ -62,6 +62,7 @@ class Utils {
             case BiometricPrompt.ERROR_HW_NOT_PRESENT:
             case BiometricPrompt.ERROR_NEGATIVE_BUTTON:
             case BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL:
+            case BiometricPrompt.ERROR_POSITIVE_BUTTON:
                 return false;
             default:
                 return true;
@@ -168,7 +169,7 @@ class Utils {
      * @return true if the current device should fall back to fingerprint for crypto-based
      * authentication, or false otherwise.
      */
-    static boolean shouldUseFingerprintForCrypto(@NonNull Context context, String vendor,
+    public static boolean shouldUseFingerprintForCrypto(@NonNull Context context, String vendor,
             String model) {
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.P) {
             // This workaround is only needed for API 28.

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.annotation.RestrictTo
 import java.util.*
 import com.palliums.biometric.BiometricCompat
+import com.palliums.biometric.BuildConfig
 
 /**
  * Created by elephant on 2020/5/20 14:16.
@@ -14,11 +15,11 @@ import com.palliums.biometric.BiometricCompat
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-class LogUtils {
+internal class LogUtils {
 
     companion object {
         private const val TAG = "BiometricCompat"
-        private var enable = false
+        private var enable = BuildConfig.DEBUG
 
         fun log(message: String, vararg args: Any) {
             if (enable) {

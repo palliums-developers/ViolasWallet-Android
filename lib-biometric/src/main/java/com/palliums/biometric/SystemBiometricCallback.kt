@@ -20,11 +20,11 @@ import com.palliums.biometric.util.LogUtils
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-class SystemBiometricCallback(
+internal class SystemBiometricCallback(
     private val crypterProxy: CrypterProxy,
     private val mode: Mode,
     private val value: String?,
-    private val callback: BiometricCompat.Callback
+    private val callback: (BiometricCompat.Result) -> Unit
 ) : BiometricPrompt.AuthenticationCallback() {
 
     private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
@@ -38,12 +38,11 @@ class SystemBiometricCallback(
         val reason = errorToReason(errorCode)
         LogUtils.log("onAuthenticationError [$reason, $errString]")
         mainHandler.post {
-            callback.onResult(
+            callback.invoke(
                 BiometricCompat.Result(
                     BiometricCompat.Type.ERROR,
                     reason,
-                    null,
-                    errString.toString()
+                    message = errString.toString()
                 )
             )
         }
@@ -52,11 +51,10 @@ class SystemBiometricCallback(
     override fun onAuthenticationFailed() {
         if (!isAuthenticationActive) return
 
-
         val reason = BiometricCompat.Reason.AUTHENTICATION_FAIL
         LogUtils.log("onAuthenticationFailed [$reason]")
         mainHandler.post {
-            callback.onResult(
+            callback.invoke(
                 BiometricCompat.Result(
                     BiometricCompat.Type.INFO,
                     reason
@@ -73,7 +71,7 @@ class SystemBiometricCallback(
             mode == Mode.AUTHENTICATION -> {
                 LogUtils.log("onAuthenticationSucceeded")
                 mainHandler.post {
-                    callback.onResult(
+                    callback.invoke(
                         BiometricCompat.Result(
                             BiometricCompat.Type.SUCCESS,
                             BiometricCompat.Reason.AUTHENTICATION_SUCCESS
@@ -87,12 +85,11 @@ class SystemBiometricCallback(
                 val message = "androidx.biometric.BiometricPrompt.CryptoObject is null"
                 LogUtils.log("onAuthenticationError [$reason, $message]")
                 mainHandler.post {
-                    callback.onResult(
+                    callback.invoke(
                         BiometricCompat.Result(
                             BiometricCompat.Type.ERROR,
                             reason,
-                            null,
-                            message
+                            message = message
                         )
                     )
                 }
@@ -133,20 +130,23 @@ class SystemBiometricCallback(
 
         mainHandler.post {
             if (cipheredValue != null) {
-                callback.onResult(
+                callback.invoke(
                     BiometricCompat.Result(
                         BiometricCompat.Type.SUCCESS,
                         BiometricCompat.Reason.AUTHENTICATION_SUCCESS,
-                        cipheredValue,
-                        null
+                        value = cipheredValue
                     )
                 )
             } else {
-                callback.onError(
-                    if (mode == Mode.ENCRYPTION)
-                        EncryptionException()
-                    else
-                        DecryptionException()
+                callback.invoke(
+                    BiometricCompat.Result(
+                        BiometricCompat.Type.ERROR,
+                        BiometricCompat.Reason.AUTHENTICATION_EXCEPTION,
+                        exception = if (mode == Mode.ENCRYPTION)
+                            EncryptionException()
+                        else
+                            DecryptionException()
+                    )
                 )
             }
         }
