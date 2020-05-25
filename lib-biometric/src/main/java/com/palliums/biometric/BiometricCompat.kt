@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentActivity
 import com.palliums.biometric.crypto.*
 import com.palliums.biometric.crypto.impl.AesCipherFactory
 import com.palliums.biometric.crypto.impl.Base64CipherCrypter
+import androidx.biometric.enhanced.BaseFingerprintDialogFragment
 import com.palliums.biometric.util.LogUtils
 
 /**
@@ -19,19 +20,17 @@ import com.palliums.biometric.util.LogUtils
  *
  * @see androidx.biometric.BiometricManager
  * @see androidx.biometric.BiometricPrompt
+ * @see androidx.biometric.enhanced.BiometricManager
+ * @see androidx.biometric.enhanced.BiometricPrompt
  * @see <a href="https://github.com/infinum/Android-Goldfinger">link</a>
  */
 interface BiometricCompat {
 
     /**
+     * @param userFingerprint true: 使用指纹识别; false: 使用生物特征识别（指纹、面部、虹膜）
      * @see [BiometricManager.canAuthenticate]
      */
-    fun canAuthenticate(userFingerprint: Boolean = true): Boolean
-
-    /**
-     * @see [BiometricManager.canAuthenticate]
-     */
-    fun canBiometric(userFingerprint: Boolean = true): Int
+    fun canAuthenticate(userFingerprint: Boolean = true): Int
 
     /**
      * Authenticate user via Fingerprint.
@@ -122,10 +121,13 @@ interface BiometricCompat {
         private var macCrypter: MacCrypter? = null
         private var signatureCrypter: SignatureCrypter? = null
 
-        fun build(useCustom: Boolean = true): BiometricCompat {
+        /**
+         * @param useEnhanced true: 使用系统生物识别库的加强版; false: 使用系统生物识别库
+         */
+        fun build(useEnhanced: Boolean = true): BiometricCompat {
             ensureParamsValid()
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                buildBiometric(useCustom)
+                buildBiometric(useEnhanced)
             } else {
                 BiometricMock()
             }
@@ -167,7 +169,7 @@ interface BiometricCompat {
         }
 
         @RequiresApi(Build.VERSION_CODES.M)
-        private fun buildBiometric(useCustom: Boolean): BiometricCompat {
+        private fun buildBiometric(useEnhanced: Boolean): BiometricCompat {
             if (macCrypter == null && signatureCrypter == null && cipherCrypter == null) {
                 cipherCrypter = Base64CipherCrypter()
             }
@@ -187,8 +189,8 @@ interface BiometricCompat {
                 signatureCrypter
             )
 
-            return if (useCustom)
-                CustomBiometricImpl(
+            return if (useEnhanced)
+                EnhancedBiometricImpl(
                     context,
                     asyncFactory,
                     cryptoProxy
@@ -232,7 +234,8 @@ interface BiometricCompat {
         val positiveButtonText: String?,
         val confirmationRequired: Boolean,
         val deviceCredentialsAllowed: Boolean,
-        val useFingerprint: Boolean
+        val useFingerprint: Boolean,
+        val customFingerprintDialogClass: Class<out BaseFingerprintDialogFragment>?
     ) {
 
         class Builder {
@@ -246,6 +249,8 @@ interface BiometricCompat {
             private var confirmationRequired = false
             private var deviceCredentialsAllowed = false
             private var useFingerprint = true
+            private var customFingerprintDialogClass: Class<out BaseFingerprintDialogFragment>? =
+                null
 
             constructor(activity: FragmentActivity) {
                 dialogOwner = activity
@@ -265,7 +270,8 @@ interface BiometricCompat {
                     positiveButtonText,
                     confirmationRequired,
                     deviceCredentialsAllowed,
-                    useFingerprint
+                    useFingerprint,
+                    customFingerprintDialogClass
                 )
             }
 
@@ -302,9 +308,9 @@ interface BiometricCompat {
             }
 
             /**
-             * Only valid when using custom biometrics.
+             * Only valid when using enhanced biometrics.
              *
-             * @see com.palliums.biometric.custom.BiometricPrompt.PromptInfo.Builder.setPositiveButtonText
+             * @see androidx.biometric.enhanced.BiometricPrompt.PromptInfo.Builder.setPositiveButtonText
              */
             fun positiveButtonText(positiveButtonText: String): Builder {
                 this.positiveButtonText = positiveButtonText
@@ -328,12 +334,22 @@ interface BiometricCompat {
             }
 
             /**
-             * Only valid when using custom biometrics.
+             * Only valid when using enhanced biometrics.
              *
-             * @see com.palliums.biometric.custom.BiometricPrompt.PromptInfo.Builder.setUseFingerprint
+             * @see androidx.biometric.enhanced.BiometricPrompt.PromptInfo.Builder.setUseFingerprint
              */
             fun useFingerprint(useFingerprint: Boolean): Builder {
                 this.useFingerprint = useFingerprint
+                return this
+            }
+
+            /**
+             * Only valid when using enhanced biometrics.
+             *
+             * @see androidx.biometric.enhanced.BiometricPrompt.PromptInfo.Builder.setCustomFingerprintDialogClass
+             */
+            fun customFingerprintDialogClass(clazz: Class<out BaseFingerprintDialogFragment>): Builder {
+                this.customFingerprintDialogClass = clazz
                 return this
             }
         }
@@ -430,7 +446,7 @@ interface BiometricCompat {
          */
         NO_DEVICE_CREDENTIAL,
         /**
-         * @see com.palliums.biometric.custom.BiometricPrompt.ERROR_POSITIVE_BUTTON
+         * @see androidx.biometric.enhanced.BiometricPrompt.ERROR_POSITIVE_BUTTON
          */
         POSITIVE_BUTTON,
         /**

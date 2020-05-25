@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palliums.biometric.custom;
+package androidx.biometric.enhanced;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -47,7 +47,7 @@ public class DeviceCredentialHandlerBridge {
     private BiometricFragment mBiometricFragment;
 
     @Nullable
-    private FingerprintDialogFragment mFingerprintDialogFragment;
+    private BaseFingerprintDialogFragment mFingerprintDialogFragment;
 
     @Nullable
     private FingerprintHelperFragment mFingerprintHelperFragment;
@@ -134,29 +134,29 @@ public class DeviceCredentialHandlerBridge {
     }
 
     /**
-     * Registers a {@link FingerprintDialogFragment} and {@link FingerprintHelperFragment} to the
+     * Registers a {@link BaseFingerprintDialogFragment} and {@link FingerprintHelperFragment} to the
      * bridge. These will automatically receive new callbacks set by {@link #setCallbacks(Executor,
      * DialogInterface.OnClickListener, DialogInterface.OnClickListener,
      * BiometricPrompt.AuthenticationCallback)}.
      */
-    void setFingerprintFragments(@Nullable FingerprintDialogFragment fingerprintDialogFragment,
+    void setFingerprintFragments(@Nullable BaseFingerprintDialogFragment fingerprintDialogFragment,
             @Nullable FingerprintHelperFragment fingerprintHelperFragment) {
         mFingerprintDialogFragment = fingerprintDialogFragment;
         mFingerprintHelperFragment = fingerprintHelperFragment;
     }
 
     /**
-     * @return The latest {@link FingerprintDialogFragment} set via
-     * {@link #setFingerprintFragments(FingerprintDialogFragment, FingerprintHelperFragment)}.
+     * @return The latest {@link BaseFingerprintDialogFragment} set via
+     * {@link #setFingerprintFragments(BaseFingerprintDialogFragment, FingerprintHelperFragment)}.
      */
     @Nullable
-    public FingerprintDialogFragment getFingerprintDialogFragment() {
+    public BaseFingerprintDialogFragment getFingerprintDialogFragment() {
         return mFingerprintDialogFragment;
     }
 
     /**
      * @return The latest {@link FingerprintHelperFragment} set via
-     * {@link #setFingerprintFragments(FingerprintDialogFragment, FingerprintHelperFragment)}.
+     * {@link #setFingerprintFragments(BaseFingerprintDialogFragment, FingerprintHelperFragment)}.
      */
     @Nullable
     public FingerprintHelperFragment getFingerprintHelperFragment() {
@@ -168,9 +168,9 @@ public class DeviceCredentialHandlerBridge {
      * be used to run them.
      *
      * <p>If a {@link BiometricFragment} has been registered via
-     * {@link #setBiometricFragment(BiometricFragment)}, or if a {@link FingerprintDialogFragment}
+     * {@link #setBiometricFragment(BiometricFragment)}, or if a {@link BaseFingerprintDialogFragment}
      * and {@link FingerprintHelperFragment} have been registered via
-     * {@link #setFingerprintFragments(FingerprintDialogFragment, FingerprintHelperFragment)}, then
+     * {@link #setFingerprintFragments(BaseFingerprintDialogFragment, FingerprintHelperFragment)}, then
      * these fragments will receive the updated executor and callbacks as well.
      *
      * @param executor               An executor that can be used to run callbacks.

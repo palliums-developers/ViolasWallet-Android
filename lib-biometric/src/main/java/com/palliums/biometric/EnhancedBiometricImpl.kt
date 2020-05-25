@@ -8,9 +8,9 @@ import androidx.annotation.RestrictTo
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.palliums.biometric.custom.BiometricManager
-import com.palliums.biometric.custom.BiometricPrompt
-import com.palliums.biometric.custom.Utils
+import androidx.biometric.enhanced.BiometricManager
+import androidx.biometric.enhanced.BiometricPrompt
+import androidx.biometric.enhanced.Utils
 import com.palliums.biometric.exceptions.*
 import com.palliums.biometric.util.LogUtils
 import java.util.concurrent.Executors
@@ -25,7 +25,7 @@ import java.util.concurrent.Executors
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-internal class CustomBiometricImpl(
+internal class EnhancedBiometricImpl(
     private val context: Context,
     private val asyncCryptoObjectFactory: AsyncCryptoObjectFactory,
     private val crypterProxy: CrypterProxy
@@ -38,21 +38,14 @@ internal class CustomBiometricImpl(
 
     private var asyncCryptoObjectFactoryCallback: AsyncCryptoObjectFactory.Callback? = null
     private var biometricPrompt: BiometricPrompt? = null
-    private var biometricCallback: CustomBiometricCallback? = null
+    private var biometricCallback: EnhancedBiometricCallback? = null
     private var creatingCryptoObject = false
 
-    override fun canAuthenticate(userFingerprint: Boolean): Boolean {
-        return canBiometric(userFingerprint) == BiometricManager.BIOMETRIC_SUCCESS
-    }
-
-    override fun canBiometric(userFingerprint: Boolean): Int {
-        if (userFingerprint || Utils.shouldUseFingerprintForCrypto(
-                context,
-                Build.MANUFACTURER,
-                Build.MODEL
-            )
+    override fun canAuthenticate(userFingerprint: Boolean): Int {
+        return if (userFingerprint
+            || Utils.shouldUseFingerprintForCrypto(context, Build.MANUFACTURER, Build.MODEL)
         ) {
-            return if (!fingerprintManager.isHardwareDetected) {
+            if (!fingerprintManager.isHardwareDetected) {
                 BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
             } else if (!fingerprintManager.hasEnrolledFingerprints()) {
                 BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED;
@@ -60,7 +53,7 @@ internal class CustomBiometricImpl(
                 BiometricManager.BIOMETRIC_SUCCESS;
             }
         } else {
-            return biometricManager.canAuthenticate()
+            biometricManager.canAuthenticate()
         }
     }
 
@@ -162,7 +155,7 @@ internal class CustomBiometricImpl(
          * Use proxy callback because some devices do not cancel authentication when error is received.
          * Cancel authentication manually and proxy the result to real callback.
          */
-        biometricCallback = CustomBiometricCallback(crypterProxy, mode, value) {
+        biometricCallback = EnhancedBiometricCallback(crypterProxy, mode, value) {
             if (it.type == BiometricCompat.Type.ERROR || it.type == BiometricCompat.Type.SUCCESS) {
                 cancel()
             }
@@ -171,11 +164,19 @@ internal class CustomBiometricImpl(
 
         if (params.dialogOwner is Fragment) {
             biometricPrompt =
-                BiometricPrompt(params.dialogOwner, executor, biometricCallback!!)
+                BiometricPrompt(
+                    params.dialogOwner,
+                    executor,
+                    biometricCallback!!
+                )
         }
         if (params.dialogOwner is FragmentActivity) {
             biometricPrompt =
-                BiometricPrompt(params.dialogOwner, executor, biometricCallback!!)
+                BiometricPrompt(
+                    params.dialogOwner,
+                    executor,
+                    biometricCallback!!
+                )
         }
 
         /* Delay with post because Navigation and Prompt both work with Fragment transactions */
@@ -239,6 +240,9 @@ internal class CustomBiometricImpl(
         if (!params.positiveButtonText.isNullOrBlank()) {
             builder.setPositiveButtonText(params.positiveButtonText)
         }
+        if (params.customFingerprintDialogClass != null) {
+            builder.setCustomFingerprintDialogClass(params.customFingerprintDialogClass)
+        }
         return builder.build()
     }
 
@@ -256,7 +260,7 @@ internal class CustomBiometricImpl(
             return true
         }
 
-        when (canBiometric(params.useFingerprint)) {
+        when (canAuthenticate(params.useFingerprint)) {
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
                 callback.invoke(
                     BiometricCompat.Result(

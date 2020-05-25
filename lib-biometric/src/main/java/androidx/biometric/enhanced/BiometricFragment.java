@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palliums.biometric.custom;
+package androidx.biometric.enhanced;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

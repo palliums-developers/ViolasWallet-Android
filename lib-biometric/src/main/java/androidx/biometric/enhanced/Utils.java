@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palliums.biometric.custom;
+package androidx.biometric.enhanced;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -159,7 +159,7 @@ public class Utils {
     /**
 <<<<<<< HEAD
      * Determines if the current device should explicitly fall back to using
-     * {@link FingerprintDialogFragment} and {@link FingerprintHelperFragment} when
+     * {@link BaseFingerprintDialogFragment} and {@link FingerprintHelperFragment} when
      * {@link BiometricPrompt#authenticate(BiometricPrompt.PromptInfo,
      * BiometricPrompt.CryptoObject)} is called.
      *
@@ -180,14 +180,14 @@ public class Utils {
     }
 
     /**
-     * Determines if the current device requires {@link FingerprintDialogFragment} to always be
+     * Determines if the current device requires {@link BaseFingerprintDialogFragment} to always be
      * dismissed immediately upon receiving an error or cancel signal (e.g., if the dialog is
      * shown behind an overlay that sends a cancel signal when it is dismissed).
      *
      * @param context The application or activity context.
      * @param model Model name of the current device.
-     * @return true if {@link FingerprintDialogFragment} should always be dismissed immediately, or
-     * false otherwise.
+     * @return true if {@link BaseFingerprintDialogFragment} should always be dismissed immediately,
+     * or false otherwise.
      */
     static boolean shouldHideFingerprintDialog(@NonNull Context context, String model) {
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.P) {

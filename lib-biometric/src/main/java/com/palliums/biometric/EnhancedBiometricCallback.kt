@@ -3,8 +3,8 @@ package com.palliums.biometric
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.RestrictTo
-import com.palliums.biometric.custom.BiometricConstants
-import com.palliums.biometric.custom.BiometricPrompt
+import androidx.biometric.enhanced.BiometricConstants
+import androidx.biometric.enhanced.BiometricPrompt
 import com.palliums.biometric.exceptions.DecryptionException
 import com.palliums.biometric.exceptions.EncryptionException
 import com.palliums.biometric.util.LogUtils
@@ -20,7 +20,7 @@ import com.palliums.biometric.util.LogUtils
  * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-internal class CustomBiometricCallback(
+internal class EnhancedBiometricCallback(
     private val crypterProxy: CrypterProxy,
     private val mode: Mode,
     private val value: String?,
@@ -82,7 +82,7 @@ internal class CustomBiometricCallback(
 
             result.cryptoObject == null -> {
                 val reason = BiometricCompat.Reason.UNKNOWN
-                val message = "com.palliums.biometric.custom.BiometricPrompt.CryptoObject is null"
+                val message = "androidx.biometric.enhanced.BiometricPrompt.CryptoObject is null"
                 LogUtils.log("onAuthenticationError [$reason, $message]")
                 mainHandler.post {
                     callback.invoke(

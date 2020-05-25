@@ -15,11 +15,7 @@ import com.palliums.biometric.exceptions.MissingHardwareException
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class BiometricMock : BiometricCompat {
 
-    override fun canAuthenticate(userFingerprint: Boolean): Boolean {
-        return false
-    }
-
-    override fun canBiometric(userFingerprint: Boolean): Int {
+    override fun canAuthenticate(userFingerprint: Boolean): Int {
         return BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
     }
 

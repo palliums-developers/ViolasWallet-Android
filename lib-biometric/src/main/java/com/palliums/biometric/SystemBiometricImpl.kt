@@ -10,7 +10,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.palliums.biometric.custom.Utils
+import androidx.biometric.enhanced.Utils
 import com.palliums.biometric.exceptions.*
 import com.palliums.biometric.util.LogUtils
 import java.util.concurrent.Executors
@@ -41,18 +41,11 @@ internal class SystemBiometricImpl(
     private var biometricCallback: SystemBiometricCallback? = null
     private var creatingCryptoObject = false
 
-    override fun canAuthenticate(userFingerprint: Boolean): Boolean {
-        return canBiometric(userFingerprint) == BiometricManager.BIOMETRIC_SUCCESS
-    }
-
-    override fun canBiometric(userFingerprint: Boolean): Int {
-        if (userFingerprint || Utils.shouldUseFingerprintForCrypto(
-                context,
-                Build.MANUFACTURER,
-                Build.MODEL
-            )
+    override fun canAuthenticate(userFingerprint: Boolean): Int {
+        return if (userFingerprint
+            || Utils.shouldUseFingerprintForCrypto(context, Build.MANUFACTURER, Build.MODEL)
         ) {
-            return if (!fingerprintManager.isHardwareDetected) {
+            if (!fingerprintManager.isHardwareDetected) {
                 BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
             } else if (!fingerprintManager.hasEnrolledFingerprints()) {
                 BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED;
@@ -60,7 +53,7 @@ internal class SystemBiometricImpl(
                 BiometricManager.BIOMETRIC_SUCCESS;
             }
         } else {
-            return biometricManager.canAuthenticate()
+            biometricManager.canAuthenticate()
         }
     }
 
@@ -252,7 +245,7 @@ internal class SystemBiometricImpl(
             return true
         }
 
-        when (canBiometric(params.useFingerprint)) {
+        when (canAuthenticate(params.useFingerprint)) {
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
                 callback.invoke(
                     BiometricCompat.Result(

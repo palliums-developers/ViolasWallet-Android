@@ -6,7 +6,7 @@
 
     <application>
         <activity
-            android:name=".custom.DeviceCredentialHandlerActivity"
+            android:name="androidx.biometric.enhanced.DeviceCredentialHandlerActivity"
             android:exported="true"
             android:theme="@style/DeviceCredentialHandlerTheme"
             android:screenOrientation="portrait" />
