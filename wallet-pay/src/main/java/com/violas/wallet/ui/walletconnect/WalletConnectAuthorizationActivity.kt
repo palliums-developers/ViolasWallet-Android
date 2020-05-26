@@ -10,10 +10,10 @@ import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.palliums.content.App
 import com.quincysx.crypto.CoinTypes
@@ -41,6 +41,14 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
             val contextWrapper: Context = when (context) {
                 is App -> context.getTopActivity() ?: context.also { newTaskTag = true }
                 is Activity -> context
+                is Fragment -> {
+                    if (context.activity == null) {
+                        newTaskTag = true
+                        context.applicationContext
+                    } else {
+                        context.activity!!
+                    }
+                }
                 else -> context.also { newTaskTag = true }
             }
             return result.invoke(newTaskTag, contextWrapper)

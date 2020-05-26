@@ -273,9 +273,11 @@
     <string name="tips_scan_login_success">Web page ViolasPay is logged in</string>
     <string name="tips_scan_login_desktop">Please operate the scan code on the governor SSO wallet to log in</string>
     <string name="tips_scan_login_not_support">The scan login operation is not supported</string>
-    <string name="wallet_connect_transfer_amount">金&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;额：</string>
+    <string name="wallet_connect_transfer_sender_address">地址：</string>
+    <string name="wallet_connect_transfer_amount">金额：</string>
     <string name="wallet_connect_transfer_address">转账地址：</string>
     <string name="wallet_connect_use_behavior">*其使用行为同样适用《用户协议》和《隐私条款》</string>
     <string name="wallet_connect_user_agreement">《用户协议》</string>
     <string name="wallet_connect_privacy_policy">《隐私条款》</string>
+    <string name="wallet_connect_transaction">转账确认</string>
 </resources>

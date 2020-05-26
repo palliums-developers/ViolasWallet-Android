@@ -272,4 +272,10 @@
     <string name="tips_scan_login_success">网页ViolasPay已登录</string>
     <string name="tips_scan_login_desktop">请在州长SSO钱包上操作扫码登录</string>
     <string name="tips_scan_login_not_support">不支持该扫码登录操作</string>
+    <string name="wallet_connect_transfer_amount">金额：</string>
+    <string name="wallet_connect_transfer_address">转账地址：</string>
+    <string name="wallet_connect_use_behavior">*其使用行为同样适用《用户协议》和《隐私条款》</string>
+    <string name="wallet_connect_user_agreement">《用户协议》</string>
+    <string name="wallet_connect_privacy_policy">《隐私条款》</string>
+    <string name="wallet_connect_transaction">转账确认</string>
 </resources>

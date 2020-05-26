@@ -8,27 +8,37 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.palliums.content.App
+import com.palliums.content.ContextProvider
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.biz.WrongPasswordException
+import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.decryptAccount
 import com.violas.wallet.walletconnect.WalletConnect
+import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import com.violas.walletconnect.jsonrpc.JsonRpcError
+import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.android.synthetic.main.activity_wallet_connect.*
 import kotlinx.android.synthetic.main.view_wallet_connect_transfer.view.*
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import org.palliums.violascore.crypto.Ed25519PublicKey
+import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.crypto.Signature
 import org.palliums.violascore.transaction.*
 import java.lang.Exception
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class WalletConnectActivity : BaseAppActivity() {
 
@@ -40,6 +50,14 @@ class WalletConnectActivity : BaseAppActivity() {
             val contextWrapper: Context = when (context) {
                 is App -> context.getTopActivity() ?: context.also { newTaskTag = true }
                 is Activity -> context
+                is Fragment -> {
+                    if (context.activity == null) {
+                        newTaskTag = true
+                        context.applicationContext
+                    } else {
+                        context.activity!!
+                    }
+                }
                 else -> context.also { newTaskTag = true }
             }
             return result.invoke(newTaskTag, contextWrapper)
@@ -50,12 +68,16 @@ class WalletConnectActivity : BaseAppActivity() {
             mTransactionSwapVo: WalletConnect.TransactionSwapVo
         ) {
             getContext(context) { newTaskTag, newContext ->
-                newContext.startActivity(Intent(context, WalletConnectActivity::class.java).apply {
-                    if (newTaskTag) {
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
-                    putExtra(CONNECT_DATA, mTransactionSwapVo)
-                })
+                newContext.startActivity(
+                    Intent(
+                        newContext,
+                        WalletConnectActivity::class.java
+                    ).apply {
+                        if (newTaskTag) {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        putExtra(CONNECT_DATA, mTransactionSwapVo)
+                    })
             }
         }
     }
@@ -124,14 +146,12 @@ class WalletConnectActivity : BaseAppActivity() {
             var signedTx: String? = null
             try {
                 if (!transactionSwapVo.isSigned) {
-                    val trim = etLoginPwd.text.toString().trim()
-
                     val account = mAccountStorage.findById(transactionSwapVo.accountId)
                     if (account != null) {
                         val rawTransactionHex = transactionSwapVo.hexTx
                         val hashByteArray =
                             RawTransaction.hashByteArray(rawTransactionHex.hexStringToByteArray())
-                        val signature = signTx(account, trim, hashByteArray) ?: return@launch
+                        val signature = showPasswordSignTx(account, hashByteArray) ?: return@launch
 
                         signedTx = SignedTransactionHex(
                             rawTransactionHex,
@@ -162,27 +182,26 @@ class WalletConnectActivity : BaseAppActivity() {
             }
         }
 
-    private suspend fun signTx(
-        account: AccountDO,
-        pwd: String,
-        hashByteArray: ByteArray
-    ) = suspendCancellableCoroutine<Signature?> { cont ->
-        decryptAccount(
-            accountDO = account,
-            pwd = pwd,
-            pwdErrorCallback = {
-                launch(Dispatchers.Main) {
-                    if (tvLoginPwdErrorTips.visibility != View.VISIBLE) {
-                        tvLoginPwdErrorTips.visibility = View.VISIBLE
+    private suspend fun showPasswordSignTx(account: AccountDO, hashByteArray: ByteArray) =
+        suspendCancellableCoroutine<Signature?> { cont ->
+            PasswordInputDialog()
+                .setConfirmListener { password, dialogFragment ->
+                    dialogFragment.dismiss()
+                    showProgress()
+                    launch(Dispatchers.IO) {
+                        val decryptPrivateKey =
+                            SimpleSecurity.instance(ContextProvider.getContext())
+                                .decrypt(password, account.privateKey)
+                        if (decryptPrivateKey == null) {
+                            cont.resumeWithException(WrongPasswordException())
+                            return@launch
+                        }
+                        val keyPair = KeyPair.fromSecretKey(decryptPrivateKey)
+                        val signMessage = keyPair.signMessage(hashByteArray)
+                        cont.resume(signMessage)
                     }
-                    cont.resume(null)
-                }
-            }
-        ) {
-            val signMessage = it.keyPair.signMessage(hashByteArray)
-            cont.resume(signMessage)
+                }.show(supportFragmentManager)
         }
-    }
 
     private suspend fun showDisplay(transactionSwapVo: WalletConnect.TransactionSwapVo) =
         withContext(Dispatchers.IO) {
@@ -208,9 +227,10 @@ class WalletConnectActivity : BaseAppActivity() {
                     val view = LayoutInflater.from(this@WalletConnectActivity)
                         .inflate(R.layout.view_wallet_connect_transfer, null)
                     withContext(Dispatchers.Main) {
-                        view.tvDescribeAmount.text = amount
+                        view.tvDescribeSender.text = mTransferDataType.form
                         view.tvDescribeAddress.text = mTransferDataType.to
-                        view.tvDescribeFee.text = "0.00"
+                        view.tvDescribeAmount.text = "$amount ${mTransferDataType.coinName}"
+                        view.tvDescribeFee.text = "0.00 ${mTransferDataType.coinName}"
 
                         viewGroupContent.removeAllViews()
                         viewGroupContent.addView(view)
