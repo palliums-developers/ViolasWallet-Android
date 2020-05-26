@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import com.google.gson.Gson
 import com.palliums.content.App
 import com.violas.wallet.R
@@ -17,10 +19,7 @@ import com.violas.wallet.walletconnect.WalletConnect
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import com.violas.walletconnect.jsonrpc.JsonRpcError
-import kotlinx.android.synthetic.main.activity_wallet_connect.btnConfirmLogin
-import kotlinx.android.synthetic.main.activity_wallet_connect.etLoginPwd
-import kotlinx.android.synthetic.main.activity_wallet_connect.tvCancelLogin
-import kotlinx.android.synthetic.main.activity_wallet_connect.tvLoginPwdErrorTips
+import kotlinx.android.synthetic.main.activity_wallet_connect.*
 import kotlinx.android.synthetic.main.view_wallet_connect_transfer.view.*
 import kotlinx.coroutines.*
 import org.palliums.violascore.crypto.Ed25519PublicKey
@@ -66,6 +65,9 @@ class WalletConnectActivity : BaseAppActivity() {
         WalletConnect.getInstance(this)
     }
 
+    // 是否处理了请求
+    private var mRequestHandle = false
+
     override fun getLayoutResId(): Int {
         return R.layout.activity_wallet_connect
     }
@@ -79,62 +81,82 @@ class WalletConnectActivity : BaseAppActivity() {
             if (mTransactionSwapVo == null) {
                 finish()
             }
-            withContext(Dispatchers.Main) {
-                showDisplay(mTransactionSwapVo)
-            }
+
+            showDisplay(mTransactionSwapVo)
 
             withContext(Dispatchers.Main) {
                 btnConfirmLogin.setOnClickListener {
                     confirmAuthorization(mTransactionSwapVo)
                 }
                 tvCancelLogin.setOnClickListener {
-                    mWalletConnect.sendErrorMessage(
-                        mTransactionSwapVo.requestID,
-                        JsonRpcError.userRefused()
-                    )
+                    cancelAuthorization(mTransactionSwapVo)
                 }
             }
         }
     }
 
-    private fun confirmAuthorization(transactionSwapVo: WalletConnect.TransactionSwapVo) =
-        runBlocking(Dispatchers.IO) {
-            var signedTx: String? = null
-            if (!transactionSwapVo.isSigned) {
-                val trim = etLoginPwd.text.trim()
-            
-                val account = mAccountStorage.findById(transactionSwapVo.accountId)
-                if (account != null) {
-                    val text = tvLoginPwdErrorTips.text.toString().trim()
-                    val rawTransactionHex = transactionSwapVo.hexTx
-                    val hashByteArray =
-                        RawTransaction.hashByteArray(rawTransactionHex.hexStringToByteArray())
-                    val signature = signTx(account, text, hashByteArray) ?: return@runBlocking
-
-                    signedTx = SignedTransactionHex(
-                        rawTransactionHex,
-                        TransactionSignAuthenticator(
-                            Ed25519PublicKey(account.publicKey.hexStringToByteArray()), signature
-                        )
-                    ).toByteArray().toHex()
-
-                } else {
-                    showToast("账户异常")
-                }
-            } else {
-                signedTx = transactionSwapVo.hexTx
-            }
-            if (signedTx == null) {
-                return@runBlocking
-            }
+    private fun cancelAuthorization(mTransactionSwapVo: WalletConnect.TransactionSwapVo) {
+        launch {
             try {
-                DataRepository.getViolasService().sendTransaction(signedTx)
+                val success = mWalletConnect.sendErrorMessage(
+                    mTransactionSwapVo.requestID,
+                    JsonRpcError.userRefused()
+                )
+                if (success) {
+                    mRequestHandle = true
+                    withContext(Dispatchers.Main) {
+                        finish()
+                    }
+                } else {
+                    showToast(R.string.common_http_socket_timeout)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
-                mWalletConnect.sendErrorMessage(
-                    transactionSwapVo.requestID,
-                    JsonRpcError.transactionBroadcastFailed("")
-                )
+                showToast(R.string.common_http_socket_timeout)
+            }
+        }
+    }
+
+    private fun confirmAuthorization(transactionSwapVo: WalletConnect.TransactionSwapVo) =
+        launch(Dispatchers.IO) {
+            var signedTx: String? = null
+            try {
+                if (!transactionSwapVo.isSigned) {
+                    val trim = etLoginPwd.text.toString().trim()
+
+                    val account = mAccountStorage.findById(transactionSwapVo.accountId)
+                    if (account != null) {
+                        val rawTransactionHex = transactionSwapVo.hexTx
+                        val hashByteArray =
+                            RawTransaction.hashByteArray(rawTransactionHex.hexStringToByteArray())
+                        val signature = signTx(account, trim, hashByteArray) ?: return@launch
+
+                        signedTx = SignedTransactionHex(
+                            rawTransactionHex,
+                            TransactionSignAuthenticator(
+                                Ed25519PublicKey(account.publicKey.hexStringToByteArray()),
+                                signature
+                            )
+                        ).toByteArray().toHex()
+                    } else {
+                        showToast("账户异常")
+                    }
+                } else {
+                    signedTx = transactionSwapVo.hexTx
+                }
+                if (signedTx == null) {
+                    return@launch
+                }
+
+                DataRepository.getViolasService().sendTransaction(signedTx)
+                mWalletConnect.sendSuccessMessage(transactionSwapVo.requestID, "success")
+                mRequestHandle = true
+                finish()
+                dismissProgress()
+            } catch (e: Exception) {
+                dismissProgress()
+                e.message?.let { it1 -> showToast(it1) }
+                e.printStackTrace()
             }
         }
 
@@ -160,8 +182,8 @@ class WalletConnectActivity : BaseAppActivity() {
         }
     }
 
-    private fun showDisplay(transactionSwapVo: WalletConnect.TransactionSwapVo) =
-        runBlocking(Dispatchers.IO) {
+    private suspend fun showDisplay(transactionSwapVo: WalletConnect.TransactionSwapVo) =
+        withContext(Dispatchers.IO) {
             when (transactionSwapVo.viewType) {
                 WalletConnect.TransactionDataType.None.value -> {
 
@@ -171,6 +193,7 @@ class WalletConnectActivity : BaseAppActivity() {
                 }
                 WalletConnect.TransactionDataType.Transfer.value -> {
                     val viewData = transactionSwapVo.viewData
+                    println("transfer data: $viewData")
                     val mTransferDataType = Gson().fromJson(
                         viewData,
                         WalletConnect.TransferDataType::class.java
@@ -184,11 +207,24 @@ class WalletConnectActivity : BaseAppActivity() {
                         .inflate(R.layout.view_wallet_connect_transfer, null)
                     withContext(Dispatchers.Main) {
                         view.tvDescribeAmount.text = amount
-                        view.tvDescribeAddress.text = mTransferDataType.form
+                        view.tvDescribeAddress.text = mTransferDataType.to
                         view.tvDescribeFee.text = "0.00"
+
+                        viewGroupContent.removeAllViews()
+                        viewGroupContent.addView(view)
                     }
                 }
             }
         }
 
+    override fun onDestroy() {
+        if (!mRequestHandle) {
+            GlobalScope.launch {
+                intent.getParcelableExtra<WalletConnect.TransactionSwapVo>(CONNECT_DATA)?.let {
+                    mWalletConnect.sendErrorMessage(it.requestID, JsonRpcError.userRefused())
+                }
+            }
+        }
+        super.onDestroy()
+    }
 }

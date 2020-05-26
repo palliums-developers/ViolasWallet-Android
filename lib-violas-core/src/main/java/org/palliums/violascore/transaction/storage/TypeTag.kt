@@ -33,7 +33,7 @@ enum class TypeTagEnum(val value: Int) {
 interface TypeTag {
     companion object {
         fun decode(input: LCSInputStream): TypeTag {
-            return when (input.readInt()) {
+            return when (input.readIntAsLEB128()) {
                 TypeTagEnum.Bool.value -> TypeTagBool(input.readBool())
                 TypeTagEnum.U8.value -> TypeTagU8(input.readShort())
                 TypeTagEnum.U64.value -> TypeTagU64(input.readLong())
@@ -52,7 +52,8 @@ interface TypeTag {
                     TypeTagListTypeTag(list)
                 }
                 TypeTagEnum.StructTag.value -> {
-                    TypeTagStructTag(StructTag.decode(input))
+                    val decode = StructTag.decode(input)
+                    TypeTagStructTag(decode)
                 }
                 else -> {
                     TypeTagBool(false)

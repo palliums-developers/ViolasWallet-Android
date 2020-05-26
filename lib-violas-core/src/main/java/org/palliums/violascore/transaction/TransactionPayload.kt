@@ -231,13 +231,14 @@ data class TransactionArgument(
     fun decodeToValue(): Any {
         return when (argType) {
             ArgType.U64 -> LCS.decodeLong(data)
-            ArgType.ADDRESS -> LCS.decodeLong(data)
+            ArgType.ADDRESS -> {
+                data
+            }
             ArgType.BYTEARRAY -> {
                 val lcsInputStream = LCSInputStream(data)
                 lcsInputStream.readBytes()
             }
             ArgType.BOOL -> LCS.decodeBool(data)
-            else -> 0
         }
     }
 

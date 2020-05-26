@@ -151,7 +151,8 @@ open class WCClient(
     }
 
     fun approveSession(accounts: List<String>, chainId: String): Boolean {
-        check(handshakeId > 0) { "handshakeId must be greater than 0 on session approve" }
+//        check(handshakeId > 0) { "handshakeId must be greater than 0 on session approve" }
+        Log.e("wallet connect", "handshakeId is: $handshakeId")
 
         val result = WCApproveSessionResponse(
             chainId = chainId,
@@ -187,7 +188,7 @@ open class WCClient(
     }
 
     fun rejectSession(message: String = "Session rejected"): Boolean {
-        check(handshakeId > 0) { "handshakeId must be greater than 0 on session reject" }
+//        check(handshakeId > 0) { "handshakeId must be greater than 0 on session reject" }
 
         val response = JsonRpcErrorResponse(
             id = handshakeId,

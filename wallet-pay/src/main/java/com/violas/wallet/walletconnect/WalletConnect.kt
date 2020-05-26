@@ -4,6 +4,7 @@ package com.violas.wallet.walletconnect
 import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.palliums.violas.error.ViolasException
@@ -145,20 +146,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                         RawTransaction.decode(LCSInputStream(tx.message.hexStringToByteArray()))
                     val payload = rawTransaction.payload?.payload as TransactionPayload.Script
 
-                    val coinName = if (payload.tyArgs.isNotEmpty()) {
-                        (payload.tyArgs[0] as StructTag).name
-                    } else {
-                        ""
-                    }
+                    val coinName = decodeCoinName(payload)
 
-                    val data = payload.args.getOrNull(3)?.let {
-                        val decodeToValue = it.decodeToValue()
-                        if (decodeToValue !is ByteArray) {
-                            byteArrayOf()
-                        } else {
-                            decodeToValue
-                        }
-                    } ?: byteArrayOf()
+                    val data = decodeWithData(payload)
 
                     val transferDataType = TransferDataType(
                         rawTransaction.sender.toHex(),
@@ -198,8 +188,8 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                     }
 
                     val gasUnitPrice = tx.gasUnitPrice ?: 0
-                    val maxGasAmount = tx.maxGasAmount ?: 40_000
-                    val delayed = tx.delayed ?: 1000L
+                    val maxGasAmount = tx.maxGasAmount ?: 400_000
+                    val expirationTime = tx.expirationTime ?: System.currentTimeMillis() + 1000
                     val sequenceNumber = tx.sequenceNumber ?: -1
 
                     val payload = TransactionPayload.Script(
@@ -226,13 +216,27 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                         }
                     )
 
+                    Log.e("WalletConnect", Gson().toJson(payload))
+
                     val generateRawTransaction = mViolasService.generateRawTransaction(
                         TransactionPayload(payload),
                         tx.from,
                         sequenceNumber,
                         maxGasAmount,
                         gasUnitPrice,
-                        delayed
+                        expirationTime - System.currentTimeMillis()
+                    )
+
+                    val coinName = decodeCoinName(payload)
+
+                    val data = decodeWithData(payload)
+
+                    val transferDataType = TransferDataType(
+                        tx.from,
+                        (payload.args[0].decodeToValue() as ByteArray).toHex(),
+                        payload.args[2].decodeToValue() as Long,
+                        coinName,
+                        Base64.encode(data)
                     )
                     TransactionSwapVo(
                         requestID,
@@ -240,7 +244,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                         false,
                         account.id,
                         TransactionDataType.Transfer.value,
-                        tx.from
+                        Gson().toJson(transferDataType)
                     )
                 }
                 else -> null
@@ -283,13 +287,13 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         mWCClient.encryptAndSend(toJson)
     }
 
-    fun sendErrorMessage(id: Long, result: JsonRpcError) {
+    fun sendErrorMessage(id: Long, result: JsonRpcError): Boolean {
         val response = JsonRpcErrorResponse(
             id = id,
             error = result
         )
         val toJson = Gson().toJson(response)
-        mWCClient.encryptAndSend(toJson)
+        return mWCClient.encryptAndSend(toJson)
     }
 
     /**
@@ -323,6 +327,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         val to: String,
         val amount: Long,
         val coinName: String,
+        // base64
         val data: String
     )
 
@@ -335,7 +340,6 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         val isSigned: Boolean = true,
         val accountId: Long = -1,
         val viewType: Int,
-        // Base58
         val viewData: String
     ) : Parcelable {
         constructor(parcel: Parcel) : this(

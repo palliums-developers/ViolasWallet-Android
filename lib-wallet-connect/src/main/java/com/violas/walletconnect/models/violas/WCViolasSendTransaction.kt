@@ -3,10 +3,10 @@ package com.violas.walletconnect.models.violas
 open class WCViolasSendTransaction(
     val from: String,
     val payload: WCViolasSendTransactionPayload,
-    val maxGasAmount: Long? = 400_000,
-    val gasUnitPrice: Long? = 0,
+    val maxGasAmount: Long?,
+    val gasUnitPrice: Long?,
     val sequenceNumber: Long?,
-    val delayed: Long? = 1000
+    val expirationTime: Long?
 )
 
 data class WCViolasSendTransactionPayload(

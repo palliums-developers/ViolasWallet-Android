@@ -115,7 +115,7 @@ data class AccountAddress(val byte: ByteArray) {
         val DEFAULT = AccountAddress(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 
         fun decode(input: LCSInputStream): AccountAddress {
-            val value = ByteArray(32)
+            val value = ByteArray(16)
             input.read(value)
             return AccountAddress(
                 value

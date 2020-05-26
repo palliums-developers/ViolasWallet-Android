@@ -40,6 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
+            android:layout_marginTop="@dimen/dp_20"
             android:layout_marginEnd="40dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/etLoginPwd"
@@ -51,7 +52,7 @@
             android:id="@+id/etLoginPwd"
             android:layout_width="@dimen/dp_238"
             android:layout_height="@dimen/dp_40"
-            android:layout_marginTop="@dimen/dp_115"
+            android:layout_marginTop="@dimen/dp_40"
             android:background="@drawable/selector_edit_bg_scan_login"
             android:hint="@string/hint_input_login_pwd"
             android:inputType="textPassword"
@@ -62,7 +63,7 @@
             android:textSize="@dimen/sp_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvScanLoginDesc" />
+            app:layout_constraintTop_toBottomOf="@id/viewGroupContent" />
 
         <TextView
             android:id="@+id/tvLoginPwdErrorTips"
