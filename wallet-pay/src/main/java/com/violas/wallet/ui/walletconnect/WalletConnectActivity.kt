@@ -98,6 +98,7 @@ class WalletConnectActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTitleLeftViewVisibility(View.GONE)
 
         launch(Dispatchers.IO) {
             val mTransactionSwapVo =
@@ -112,7 +113,7 @@ class WalletConnectActivity : BaseAppActivity() {
                 btnConfirmLogin.setOnClickListener {
                     confirmAuthorization(mTransactionSwapVo)
                 }
-                tvCancelLogin.setOnClickListener {
+                ivClose.setOnClickListener {
                     cancelAuthorization(mTransactionSwapVo)
                 }
             }

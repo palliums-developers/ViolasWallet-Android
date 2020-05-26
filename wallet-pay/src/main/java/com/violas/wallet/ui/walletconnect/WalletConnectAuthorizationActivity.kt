@@ -92,6 +92,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTitleLeftViewVisibility(View.GONE)
 
         launch(Dispatchers.IO) {
             val parcelableExtra = intent.getParcelableExtra<WCPeerMeta>(CONNECT_PEER_DATA)
