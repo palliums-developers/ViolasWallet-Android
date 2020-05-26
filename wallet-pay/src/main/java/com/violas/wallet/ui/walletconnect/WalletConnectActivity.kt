@@ -72,6 +72,8 @@ class WalletConnectActivity : BaseAppActivity() {
         return R.layout.activity_wallet_connect
     }
 
+    override fun getTitleStyle() = TITLE_STYLE_CUSTOM
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
