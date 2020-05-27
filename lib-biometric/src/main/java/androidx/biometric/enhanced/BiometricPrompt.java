@@ -90,6 +90,7 @@ public class BiometricPrompt implements BiometricConstants {
     static final String KEY_HANDLING_DEVICE_CREDENTIAL_RESULT = "handling_device_credential_result";
     static final String KEY_USE_FINGERPRINT = "use_fingerprint";
     static final String KEY_CUSTOM_FINGERPRINT_DIALOG_CLASS = "custom_fingerprint_dialog_class";
+    static final String KEY_REACTIVATE_BIOMETRIC_WHEN_LOCKOUT = "reactivate_biometric_when_lockout";
 
     @Retention(SOURCE)
     @IntDef({ERROR_HW_UNAVAILABLE,
@@ -376,6 +377,20 @@ public class BiometricPrompt implements BiometricConstants {
             }
 
             /**
+             * 设置生物识别功能被锁定后可以通过强身份验证解锁重新启用
+             *
+             * @param reactivateBiometricWhenLockout true: 失败时重新启用; false: 失败时直接返回给调用着
+             * @return
+             * @see {@link BiometricConstants#ERROR_LOCKOUT}
+             * @see {@link BiometricConstants#ERROR_LOCKOUT_PERMANENT}
+             */
+            @NonNull
+            public Builder setReactivateBiometricWhenLockout(boolean reactivateBiometricWhenLockout) {
+                mBundle.putBoolean(KEY_REACTIVATE_BIOMETRIC_WHEN_LOCKOUT, reactivateBiometricWhenLockout);
+                return this;
+            }
+
+            /**
              * Creates a {@link BiometricPrompt}.
              *
              * @return a {@link BiometricPrompt}
@@ -493,6 +508,13 @@ public class BiometricPrompt implements BiometricConstants {
         public Class<? extends BaseFingerprintDialogFragment> getCustomFingerprintDialogClass() {
             Serializable clazz = mBundle.getSerializable(KEY_CUSTOM_FINGERPRINT_DIALOG_CLASS);
             return clazz == null ? null : ((Class<? extends BaseFingerprintDialogFragment>) clazz);
+        }
+
+        /**
+         * @return See {@link Builder#setReactivateBiometricWhenLockout(boolean)}.
+         */
+        public boolean isReactivateBiometricWhenLockout() {
+            return mBundle.getBoolean(KEY_REACTIVATE_BIOMETRIC_WHEN_LOCKOUT);
         }
     }
 
@@ -617,7 +639,9 @@ public class BiometricPrompt implements BiometricConstants {
                     mBiometricFragment.cancel();
                 }
             } else if (mFingerprintDialogFragment != null && mFingerprintHelperFragment != null) {
-                dismissFingerprintFragments(mFingerprintDialogFragment, mFingerprintHelperFragment);
+                if (!mFingerprintDialogFragment.isReactivateBiometricWhenLock()) {
+                    dismissFingerprintFragments(mFingerprintDialogFragment, mFingerprintHelperFragment);
+                }
             }
 
             maybeResetHandlerBridge();
@@ -889,6 +913,8 @@ public class BiometricPrompt implements BiometricConstants {
             final Handler fingerprintDialogHandler = mFingerprintDialogFragment.getHandler();
             mFingerprintHelperFragment.setHandler(fingerprintDialogHandler);
             mFingerprintHelperFragment.setCryptoObject(crypto);
+            mFingerprintHelperFragment.setReactivateBiometricWhenLockout(
+                    info.isReactivateBiometricWhenLockout());
             fingerprintDialogHandler.sendMessageDelayed(
                     fingerprintDialogHandler.obtainMessage(
                             BaseFingerprintDialogFragment.DISPLAYED_FOR_500_MS), DELAY_MILLIS);

@@ -56,7 +56,10 @@ public class DeviceCredentialHandlerBridge {
     private Executor mExecutor;
 
     @Nullable
-    private DialogInterface.OnClickListener mOnClickListener;
+    private DialogInterface.OnClickListener mOnNegativeClickListener;
+
+    @Nullable
+    private DialogInterface.OnClickListener mOnPositiveClickListener;
 
     @Nullable
     private BiometricPrompt.AuthenticationCallback mAuthenticationCallback;
@@ -184,7 +187,8 @@ public class DeviceCredentialHandlerBridge {
             @NonNull DialogInterface.OnClickListener onPositiveClickListener,
             @NonNull BiometricPrompt.AuthenticationCallback authenticationCallback) {
         mExecutor = executor;
-        mOnClickListener = onNegativeClickListener;
+        mOnNegativeClickListener = onNegativeClickListener;
+        mOnPositiveClickListener = onPositiveClickListener;
         mAuthenticationCallback = authenticationCallback;
         if (mBiometricFragment != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mBiometricFragment.setCallbacks(
@@ -217,8 +221,18 @@ public class DeviceCredentialHandlerBridge {
      * BiometricPrompt.AuthenticationCallback)}.
      */
     @Nullable
-    DialogInterface.OnClickListener getOnClickListener() {
-        return mOnClickListener;
+    DialogInterface.OnClickListener getOnNegativeClickListener() {
+        return mOnNegativeClickListener;
+    }
+
+    /**
+     * @return The latest {@link DialogInterface.OnClickListener} set via {@link #setCallbacks(
+     * Executor, DialogInterface.OnClickListener, DialogInterface.OnClickListener,
+     * BiometricPrompt.AuthenticationCallback)}.
+     */
+    @Nullable
+    DialogInterface.OnClickListener getOnPositiveClickListener() {
+        return mOnPositiveClickListener;
     }
 
     /**
@@ -307,7 +321,8 @@ public class DeviceCredentialHandlerBridge {
         mFingerprintDialogFragment = null;
         mFingerprintHelperFragment = null;
         mExecutor = null;
-        mOnClickListener = null;
+        mOnNegativeClickListener = null;
+        mOnPositiveClickListener = null;
         mAuthenticationCallback = null;
         mDeviceCredentialResult = RESULT_NONE;
         mConfirmingDeviceCredential = false;

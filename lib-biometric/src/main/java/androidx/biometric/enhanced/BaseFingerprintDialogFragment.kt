@@ -1,7 +1,9 @@
 package androidx.biometric.enhanced
 
+import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -51,6 +53,14 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
         // The amount of time required that this fragment be displayed for in order that
         // we show an error message on top of the UI.
         const val DISPLAYED_FOR_500_MS = 6
+        /**
+         * @see BiometricConstants.ERROR_LOCKOUT_PERMANENT
+         */
+        const val MSG_LOCKOUT = 7
+        /**
+         * @see BiometricConstants.ERROR_LOCKOUT_PERMANENT
+         */
+        const val MSG_LOCKOUT_PERMANENT = 8
 
         // States for icon animation
         const val STATE_NONE = 0
@@ -89,6 +99,10 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
                     mDismissInstantly = context != null
                             && Utils.shouldHideFingerprintDialog(context, Build.MODEL)
                 }
+                MSG_LOCKOUT ->
+                    onLockout(msg.obj as CharSequence)
+                MSG_LOCKOUT_PERMANENT ->
+                    onLockoutPermanent(msg.obj as CharSequence)
             }
         }
     }
@@ -117,17 +131,27 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
     // Also created once and retained.
     protected val mDeviceCredentialButtonListener =
         DialogInterface.OnClickListener { dialog, which ->
-            if (which == DialogInterface.BUTTON_NEGATIVE) {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                     Log.e(TAG, "Failed to check device credential. Not supported prior to L.")
                     return@OnClickListener
                 }
-                Utils.launchDeviceCredentialConfirmation(
-                    TAG, activity, mBundle
-                ) {
+                Utils.launchDeviceCredentialConfirmation(TAG, activity, mBundle) {
                     // Dismiss the fingerprint dialog without forwarding errors.
                     onCancel(dialog)
                 }
+            }
+        }
+
+    // Also created once and retained.
+    protected val mReactivateBiometricButtonListener =
+        DialogInterface.OnClickListener { dialog, which ->
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    Log.e(TAG, "Failed to reactivate biometric. Not supported prior to L.")
+                    return@OnClickListener
+                }
+                Utils.launchReactivateBiometricConfirmation(TAG, this, mBundle)
             }
         }
 
@@ -155,10 +179,28 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
 
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
-        val fingerprintHelperFragment =
-            fragmentManager
-                ?.findFragmentByTag(BiometricPrompt.FINGERPRINT_HELPER_FRAGMENT_TAG) as FingerprintHelperFragment?
-        fingerprintHelperFragment?.cancel(FingerprintHelperFragment.USER_CANCELED_FROM_USER)
+        getFingerprintHelperFragment()?.cancel(FingerprintHelperFragment.USER_CANCELED_FROM_USER)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        handleDeviceCredentialResult(resultCode)
+    }
+
+    private fun getFingerprintHelperFragment(): FingerprintHelperFragment? {
+        return fragmentManager?.findFragmentByTag(BiometricPrompt.FINGERPRINT_HELPER_FRAGMENT_TAG)
+                as FingerprintHelperFragment?
+    }
+
+    protected fun handleDeviceCredentialResult(resultCode: Int) {
+        if (resultCode == Activity.RESULT_OK) {
+            getFingerprintHelperFragment()?.reset()
+            onBiometricReactivated()
+        } else {
+            dialog?.let {
+                mNegativeButtonListener?.onClick(it, DialogInterface.BUTTON_NEGATIVE)
+            }
+        }
     }
 
     fun setBundle(bundle: Bundle) {
@@ -210,6 +252,30 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
 
     protected fun isDeviceCredentialAllowed(): Boolean {
         return mBundle!!.getBoolean(BiometricPrompt.KEY_ALLOW_DEVICE_CREDENTIAL)
+    }
+
+    protected fun isReactivateBiometricWhenLock(): Boolean {
+        return mBundle!!.getBoolean(BiometricPrompt.KEY_REACTIVATE_BIOMETRIC_WHEN_LOCKOUT)
+    }
+
+    protected open fun onLockout(msg: CharSequence) {
+        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
+        mHandler.removeMessages(MSG_RESET_MESSAGE)
+
+        // May be null if we're intentionally suppressing the dialog.
+        updateErrorText(msg)
+    }
+
+    protected open fun onLockoutPermanent(msg: CharSequence) {
+        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
+        mHandler.removeMessages(MSG_RESET_MESSAGE)
+
+        // May be null if we're intentionally suppressing the dialog.
+        updateErrorText(msg)
+    }
+
+    protected open fun onBiometricReactivated() {
+        handleResetMessage()
     }
 
     protected open fun updateFingerprintIcon(newState: Int) {

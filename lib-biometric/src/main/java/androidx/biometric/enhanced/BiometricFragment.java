@@ -122,7 +122,7 @@ public class BiometricFragment extends Fragment {
 
                 @Override
                 public void onAuthenticationHelp(final int helpCode,
-                        final CharSequence helpString) {
+                                                 final CharSequence helpString) {
                     // Don't forward the result to the client, since the dialog takes care of it.
                 }
 
@@ -136,7 +136,7 @@ public class BiometricFragment extends Fragment {
                     final BiometricPrompt.AuthenticationResult promptResult =
                             result != null
                                     ? new BiometricPrompt.AuthenticationResult(
-                                            unwrapCryptoObject(result.getCryptoObject()))
+                                    unwrapCryptoObject(result.getCryptoObject()))
                                     : new BiometricPrompt.AuthenticationResult(null /* crypto */);
 
                     mClientExecutor.execute(
@@ -204,7 +204,7 @@ public class BiometricFragment extends Fragment {
      */
     void setCallbacks(Executor executor, DialogInterface.OnClickListener onNegativeClickListener,
                       DialogInterface.OnClickListener onPositiveClickListener,
-            BiometricPrompt.AuthenticationCallback authenticationCallback) {
+                      BiometricPrompt.AuthenticationCallback authenticationCallback) {
         mClientExecutor = executor;
         mClientNegativeButtonListener = onNegativeClickListener;
         mClientPositiveButtonListener = onPositiveClickListener;
@@ -281,7 +281,7 @@ public class BiometricFragment extends Fragment {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable Bundle savedInstanceState) {
         // Start the actual authentication when the fragment is attached.
         if (!mShowing && mBundle != null) {
             mNegativeButtonText = mBundle.getCharSequence(BiometricPrompt.KEY_NEGATIVE_TEXT);
@@ -307,7 +307,7 @@ public class BiometricFragment extends Fragment {
             }
 
             if (!TextUtils.isEmpty(mPositiveButtonText)) {
-                setPositiveButton(builder);
+                setPositiveButton(builder, mPositiveButtonText, mPositiveButtonListener);
             }
 
             // Set builder flags introduced in Q.
@@ -343,7 +343,11 @@ public class BiometricFragment extends Fragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    private void setPositiveButton(android.hardware.biometrics.BiometricPrompt.Builder builder) {
+    private void setPositiveButton(
+            android.hardware.biometrics.BiometricPrompt.Builder builder,
+            CharSequence text,
+            DialogInterface.OnClickListener listener
+    ) {
         try {
             Class builderClass = builder.getClass();
             Method setPositiveButtonMethod = builderClass.getMethod(
@@ -354,7 +358,7 @@ public class BiometricFragment extends Fragment {
             );
 
             setPositiveButtonMethod.invoke(
-                    builder, mPositiveButtonText, mClientExecutor, mPositiveButtonListener
+                    builder, text, mClientExecutor, listener
             );
         } catch (Throwable t) {
             Log.w(TAG, "setPositiveButton failed, " + t.toString());

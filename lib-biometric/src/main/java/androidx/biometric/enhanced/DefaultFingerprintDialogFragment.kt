@@ -1,10 +1,13 @@
 package androidx.biometric.enhanced
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
@@ -16,6 +19,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.palliums.biometric.R
+import java.lang.ref.WeakReference
 
 /**
  * Created by elephant on 2020/5/25 13:34.
@@ -38,46 +42,43 @@ class DefaultFingerprintDialogFragment : BaseFingerprintDialogFragment() {
         if (savedInstanceState != null && mBundle == null) {
             mBundle = savedInstanceState.getBundle(KEY_DIALOG_BUNDLE)
         }
+
         val builder = AlertDialog.Builder(
             context!!,
             R.style.ThemeOverlay_AppCompat_Dialog_Alert_Custom
         )
         builder.setTitle(mBundle!!.getCharSequence(BiometricPrompt.KEY_TITLE))
+
         // We have to use builder.getContext() instead of the usual getContext() in order to get
         // the appropriately themed context for this dialog.
         val layout = LayoutInflater.from(builder.context)
             .inflate(R.layout.fingerprint_dialog_layout, null)
+        builder.setView(layout)
+
         val subtitleView = layout.findViewById<TextView>(R.id.fingerprint_subtitle)
-        val descriptionView = layout.findViewById<TextView>(R.id.fingerprint_description)
-        val subtitle = mBundle!!.getCharSequence(
-            BiometricPrompt.KEY_SUBTITLE
-        )
+        val subtitle = mBundle!!.getCharSequence(BiometricPrompt.KEY_SUBTITLE)
         if (TextUtils.isEmpty(subtitle)) {
             subtitleView.visibility = View.GONE
         } else {
             subtitleView.visibility = View.VISIBLE
             subtitleView.text = subtitle
         }
-        val description = mBundle!!.getCharSequence(
-            BiometricPrompt.KEY_DESCRIPTION
-        )
+
+        val descriptionView = layout.findViewById<TextView>(R.id.fingerprint_description)
+        val description = mBundle!!.getCharSequence(BiometricPrompt.KEY_DESCRIPTION)
         if (TextUtils.isEmpty(description)) {
             descriptionView.visibility = View.GONE
         } else {
             descriptionView.visibility = View.VISIBLE
             descriptionView.text = description
         }
+
         mFingerprintIcon = layout.findViewById(R.id.fingerprint_icon)
         mErrorText = layout.findViewById(R.id.fingerprint_error)
-        val negativeButtonText = if (isDeviceCredentialAllowed()) getString(
-            R.string.confirm_device_credential_password
-        ) else
-            mBundle!!.getCharSequence(BiometricPrompt.KEY_NEGATIVE_TEXT)!!
+
+        val negativeButtonText = getNegativeButtonText()!!
         builder.setNegativeButton(negativeButtonText) { dialog, which ->
             when {
-                isDeviceCredentialAllowed() -> {
-                    mDeviceCredentialButtonListener.onClick(dialog, which)
-                }
                 mNegativeButtonListener != null -> {
                     mNegativeButtonListener!!.onClick(dialog, which)
                 }
@@ -86,20 +87,94 @@ class DefaultFingerprintDialogFragment : BaseFingerprintDialogFragment() {
                 }
             }
         }
-        val positiveButtonText = getPositiveButtonText()
+
+        val positiveButtonText = when {
+            isDeviceCredentialAllowed() ->
+                getString(R.string.confirm_device_credential_password)
+            isReactivateBiometricWhenLock() -> {
+                val setText = getPositiveButtonText()
+                if (setText.isNullOrBlank()) {
+                    getString(R.string.action_fingerprint_error_lockout)
+                } else {
+                    setText
+                }
+            }
+            else -> getPositiveButtonText()
+        }
         if (!TextUtils.isEmpty(positiveButtonText)) {
             builder.setPositiveButton(positiveButtonText) { dialog, which ->
-                if (mPositiveButtonListener != null) {
-                    mPositiveButtonListener!!.onClick(dialog, which)
-                } else {
-                    Log.w(TAG, "No suitable positive button listener.")
+                when {
+                    isDeviceCredentialAllowed() -> {
+                        mDeviceCredentialButtonListener.onClick(dialog, which)
+                    }
+                    isReactivateBiometricWhenLock() -> {
+                        mReactivateBiometricButtonListener.onClick(dialog, which)
+                    }
+                    mPositiveButtonListener != null -> {
+                        mPositiveButtonListener!!.onClick(dialog, which)
+                    }
+                    else -> {
+                        Log.w(TAG, "No suitable positive button listener.")
+                    }
                 }
             }
         }
-        builder.setView(layout)
-        val dialog: Dialog = builder.create()
+
+        val dialog: AlertDialog = builder.create()
+        dialog.setCancelable(false)
         dialog.setCanceledOnTouchOutside(false)
+        if (isReactivateBiometricWhenLock()) {
+            dialog.setOnShowListener {
+                mFingerprintIcon?.postDelayed({
+                    disableAlertDialogAutoDismiss(dialog)
+                    updatePositiveBtn(false, dialog)
+                }, 50)
+            }
+        }
+
         return dialog
+    }
+
+    private fun disableAlertDialogAutoDismiss(dialog: AlertDialog) {
+        try {
+            val mAlertField = dialog.javaClass.getDeclaredField("mAlert")
+            mAlertField.isAccessible = true
+            val obj = mAlertField.get(dialog)
+            mAlertField.isAccessible = false
+
+            val mHandlerField = obj.javaClass.getDeclaredField("mHandler")
+            mHandlerField.isAccessible = true
+            mHandlerField.set(obj, ButtonHandler(dialog))
+            mHandlerField.isAccessible = false
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to disable AlertDialog auto dismiss, $e")
+        }
+    }
+
+    private class ButtonHandler(dialog: DialogInterface) : Handler() {
+        private val mDialog: WeakReference<DialogInterface> = WeakReference(dialog)
+
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                DialogInterface.BUTTON_POSITIVE,
+                DialogInterface.BUTTON_NEGATIVE,
+                DialogInterface.BUTTON_NEUTRAL ->
+                    (msg.obj as DialogInterface.OnClickListener).onClick(
+                        mDialog.get(),
+                        msg.what
+                    )
+            }
+        }
+    }
+
+    private fun getThemedColorFor(attr: Int): Int {
+        val tv = TypedValue()
+        val theme = mContext!!.theme
+        theme.resolveAttribute(attr, tv, true /* resolveRefs */)
+        val arr = activity!!.obtainStyledAttributes(tv.data, intArrayOf(attr))
+        val color = arr.getColor(0 /* index */, 0 /* defValue */)
+        arr.recycle()
+        return color
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,14 +187,30 @@ class DefaultFingerprintDialogFragment : BaseFingerprintDialogFragment() {
         mTextColor = getThemedColorFor(android.R.attr.textColorSecondary)
     }
 
-    private fun getThemedColorFor(attr: Int): Int {
-        val tv = TypedValue()
-        val theme = mContext!!.theme
-        theme.resolveAttribute(attr, tv, true /* resolveRefs */)
-        val arr = activity!!.obtainStyledAttributes(tv.data, intArrayOf(attr))
-        val color = arr.getColor(0 /* index */, 0 /* defValue */)
-        arr.recycle()
-        return color
+    override fun onLockout(msg: CharSequence) {
+        super.onLockoutPermanent(msg)
+        (dialog as AlertDialog?)?.let {
+            updatePositiveBtn(true, it)
+        }
+    }
+
+    override fun onLockoutPermanent(msg: CharSequence) {
+        super.onLockoutPermanent(msg)
+        (dialog as AlertDialog?)?.let {
+            updatePositiveBtn(true, it)
+        }
+    }
+
+    override fun onBiometricReactivated() {
+        super.onBiometricReactivated()
+        (dialog as AlertDialog?)?.let {
+            updatePositiveBtn(false, it)
+        }
+    }
+
+    private fun updatePositiveBtn(show: Boolean, dialog: AlertDialog) {
+        val positiveBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+        positiveBtn.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     override fun updateFingerprintIcon(newState: Int) {

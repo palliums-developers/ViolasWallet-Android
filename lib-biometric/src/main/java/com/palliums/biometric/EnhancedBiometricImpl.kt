@@ -155,7 +155,12 @@ internal class EnhancedBiometricImpl(
          * Use proxy callback because some devices do not cancel authentication when error is received.
          * Cancel authentication manually and proxy the result to real callback.
          */
-        biometricCallback = EnhancedBiometricCallback(crypterProxy, mode, value) {
+        biometricCallback = EnhancedBiometricCallback(
+            crypterProxy,
+            mode,
+            value,
+            params.reactivateBiometricWhenLockout
+        ) {
             if (it.type == BiometricCompat.Type.ERROR || it.type == BiometricCompat.Type.SUCCESS) {
                 cancel()
             }
@@ -234,6 +239,7 @@ internal class EnhancedBiometricImpl(
             .setDeviceCredentialAllowed(params.deviceCredentialsAllowed)
             .setConfirmationRequired(params.confirmationRequired)
             .setUseFingerprint(params.useFingerprint)
+            .setReactivateBiometricWhenLockout(params.reactivateBiometricWhenLockout)
         if (!params.deviceCredentialsAllowed) {
             builder.setNegativeButtonText(params.negativeButtonText!!)
         }

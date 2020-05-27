@@ -33,6 +33,7 @@
 
     <string name="accessibility_fingerprint_dialog_help_area">Help message area</string>
     <string name="confirm_device_credential_password">Use password</string>
+    <string name="action_fingerprint_error_lockout">Start now</string>
     <string name="default_error_msg">Unknown error</string>
     <string name="fingerprint_dialog_touch_sensor">Touch the fingerprint sensor</string>
     <string name="fingerprint_error_hw_not_available">Fingerprint hardware not available.</string>

@@ -100,6 +100,7 @@ public class FingerprintHelperFragment extends Fragment {
     // Set once and retained.
     private boolean mShowing;
     private BiometricPrompt.CryptoObject mCryptoObject;
+    private boolean mReactivateBiometricWhenLockout;
 
     // Created once and retained.
     private Context mContext;
@@ -115,7 +116,7 @@ public class FingerprintHelperFragment extends Fragment {
                     .AuthenticationCallback() {
 
                 private void dismissAndForwardResult(final int errMsgId,
-                        final CharSequence errString) {
+                                                     final CharSequence errString) {
                     mMessageRouter.sendMessage(BaseFingerprintDialogFragment.MSG_DISMISS_DIALOG_ERROR);
                     if (!Utils.isConfirmingDeviceCredential()) {
                         mExecutor.execute(
@@ -131,7 +132,7 @@ public class FingerprintHelperFragment extends Fragment {
 
                 @Override
                 public void onAuthenticationError(final int errMsgId,
-                        CharSequence errString) {
+                                                  final CharSequence errString) {
                     if (errMsgId == BiometricPrompt.ERROR_CANCELED) {
                         if (mCanceledFrom == USER_CANCELED_FROM_NONE) {
                             // The dialog may not have been dismissed yet.
@@ -140,8 +141,23 @@ public class FingerprintHelperFragment extends Fragment {
                         cleanup();
                     } else if (errMsgId == BiometricPrompt.ERROR_LOCKOUT
                             || errMsgId == BiometricPrompt.ERROR_LOCKOUT_PERMANENT) {
-                        dismissAndForwardResult(errMsgId, errString);
-                        cleanup();
+                        if (mReactivateBiometricWhenLockout) {
+                            mMessageRouter.sendMessage(errMsgId == BiometricPrompt.ERROR_LOCKOUT ?
+                                            BaseFingerprintDialogFragment.MSG_LOCKOUT :
+                                            BaseFingerprintDialogFragment.MSG_LOCKOUT_PERMANENT,
+                                    errString);
+                            mExecutor.execute(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mClientAuthenticationCallback
+                                                    .onAuthenticationError(errMsgId, errString);
+                                        }
+                                    });
+                        } else {
+                            dismissAndForwardResult(errMsgId, errString);
+                            cleanup();
+                        }
                     } else {
                         // Avoid passing a null error string to the client callback. This needs
                         // to be a final copy, since it's accessed in the runnable below.
@@ -175,7 +191,7 @@ public class FingerprintHelperFragment extends Fragment {
 
                 @Override
                 public void onAuthenticationHelp(final int helpMsgId,
-                        final CharSequence helpString) {
+                                                 final CharSequence helpString) {
                     mMessageRouter.sendMessage(BaseFingerprintDialogFragment.MSG_SHOW_HELP, helpString);
                     // Don't forward the result to the client, since the dialog takes care of it.
                 }
@@ -192,7 +208,7 @@ public class FingerprintHelperFragment extends Fragment {
                     final BiometricPrompt.AuthenticationResult promptResult =
                             result != null
                                     ? new BiometricPrompt.AuthenticationResult(
-                                            unwrapCryptoObject(result.getCryptoObject()))
+                                    unwrapCryptoObject(result.getCryptoObject()))
                                     : new BiometricPrompt.AuthenticationResult(null /* crypto */);
 
                     mExecutor.execute(new Runnable() {
@@ -233,6 +249,18 @@ public class FingerprintHelperFragment extends Fragment {
         mCryptoObject = crypto;
     }
 
+    BiometricPrompt.CryptoObject getCryptoObject() {
+        return mCryptoObject;
+    }
+
+    /**
+     * @param reactivateBiometricWhenLockout
+     * @see {@link BiometricPrompt.PromptInfo.Builder#setReactivateBiometricWhenLockout(boolean)}
+     */
+    void setReactivateBiometricWhenLockout(boolean reactivateBiometricWhenLockout) {
+        this.mReactivateBiometricWhenLockout = reactivateBiometricWhenLockout;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -244,26 +272,30 @@ public class FingerprintHelperFragment extends Fragment {
     @SuppressWarnings("deprecation")
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable Bundle savedInstanceState) {
         if (!mShowing) {
-            mCancellationSignal = new CancellationSignal();
-            mCanceledFrom = USER_CANCELED_FROM_NONE;
-            androidx.core.hardware.fingerprint.FingerprintManagerCompat fingerprintManagerCompat =
-                    androidx.core.hardware.fingerprint.FingerprintManagerCompat.from(mContext);
-            if (handlePreAuthenticationErrors(fingerprintManagerCompat)) {
-                mMessageRouter.sendMessage(BaseFingerprintDialogFragment.MSG_DISMISS_DIALOG_ERROR);
-                cleanup();
-            } else {
-                fingerprintManagerCompat.authenticate(
-                        wrapCryptoObject(mCryptoObject),
-                        0 /* flags */,
-                        mCancellationSignal,
-                        mAuthenticationCallback,
-                        null /* handler */);
-                mShowing = true;
-            }
+            initFingerprintAuthenticate();
         }
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    private void initFingerprintAuthenticate(){
+        mCancellationSignal = new CancellationSignal();
+        mCanceledFrom = USER_CANCELED_FROM_NONE;
+        androidx.core.hardware.fingerprint.FingerprintManagerCompat fingerprintManagerCompat =
+                androidx.core.hardware.fingerprint.FingerprintManagerCompat.from(mContext);
+        if (handlePreAuthenticationErrors(fingerprintManagerCompat)) {
+            mMessageRouter.sendMessage(BaseFingerprintDialogFragment.MSG_DISMISS_DIALOG_ERROR);
+            cleanup();
+        } else {
+            fingerprintManagerCompat.authenticate(
+                    wrapCryptoObject(mCryptoObject),
+                    0 /* flags */,
+                    mCancellationSignal,
+                    mAuthenticationCallback,
+                    null /* handler */);
+            mShowing = true;
+        }
     }
 
     /**
@@ -271,7 +303,7 @@ public class FingerprintHelperFragment extends Fragment {
      * changes).
      */
     void setCallback(Executor executor,
-            BiometricPrompt.AuthenticationCallback callback) {
+                     BiometricPrompt.AuthenticationCallback callback) {
         mExecutor = executor;
         mClientAuthenticationCallback = callback;
     }
@@ -304,6 +336,13 @@ public class FingerprintHelperFragment extends Fragment {
             mCancellationSignal.cancel();
         }
         cleanup();
+    }
+
+    void reset(){
+        if (mCancellationSignal != null) {
+            mCancellationSignal.cancel();
+        }
+        initFingerprintAuthenticate();
     }
 
     /**
@@ -389,7 +428,7 @@ public class FingerprintHelperFragment extends Fragment {
 
     @SuppressWarnings("deprecation")
     private static androidx.core.hardware.fingerprint.FingerprintManagerCompat.CryptoObject
-            wrapCryptoObject(BiometricPrompt.CryptoObject cryptoObject) {
+    wrapCryptoObject(BiometricPrompt.CryptoObject cryptoObject) {
         if (cryptoObject == null) {
             return null;
         } else if (cryptoObject.getCipher() != null) {

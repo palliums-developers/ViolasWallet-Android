@@ -61,7 +61,7 @@ public class DeviceCredentialHandlerActivity extends AppCompatActivity {
 
         // Don't reset the bridge when recreating from a configuration change.
         mDidChangeConfiguration = savedInstanceState != null
-                    && savedInstanceState.getBoolean(KEY_DID_CHANGE_CONFIGURATION, false);
+                && savedInstanceState.getBoolean(KEY_DID_CHANGE_CONFIGURATION, false);
         if (!mDidChangeConfiguration) {
             bridge.stopIgnoringReset();
         } else {

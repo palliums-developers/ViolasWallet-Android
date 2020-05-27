@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.palliums.biometric.R;
@@ -69,16 +70,72 @@ public class Utils {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    static void launchReactivateBiometricConfirmation(
+            @NonNull String loggingTag,
+            @Nullable DialogFragment fragment,
+            @Nullable Bundle bundle
+    ) {
+        if (!(fragment instanceof BaseFingerprintDialogFragment)) {
+            Log.e(loggingTag, "Failed to reactivate biometric. Parent handler not found.");
+            return;
+        }
+
+        final BaseFingerprintDialogFragment handlerFragment = (BaseFingerprintDialogFragment) fragment;
+
+        // Get the KeyguardManager service in whichever way the platform supports.
+        final KeyguardManager keyguardManager;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            keyguardManager = handlerFragment.getContext().getSystemService(KeyguardManager.class);
+        } else {
+            final Object service = handlerFragment.getContext().getSystemService(Context.KEYGUARD_SERVICE);
+            if (!(service instanceof KeyguardManager)) {
+                Log.e(loggingTag, "Failed to reactivate biometric. KeyguardManager not found.");
+                handlerFragment.handleDeviceCredentialResult(Activity.RESULT_CANCELED);
+                return;
+            }
+            keyguardManager = (KeyguardManager) service;
+        }
+
+        if (keyguardManager == null) {
+            Log.e(loggingTag, "Failed to reactivate biometric. KeyguardManager was null.");
+            handlerFragment.handleDeviceCredentialResult(Activity.RESULT_CANCELED);
+            return;
+        }
+
+        // Pass along the title and subtitle from the biometric prompt.
+        final CharSequence title;
+        final CharSequence subtitle;
+        if (bundle != null) {
+            title = bundle.getCharSequence(BiometricPrompt.KEY_TITLE);
+            subtitle = bundle.getCharSequence(BiometricPrompt.KEY_SUBTITLE);
+        } else {
+            title = null;
+            subtitle = null;
+        }
+
+        final Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(title, subtitle);
+        if (intent == null) {
+            Log.e(loggingTag, "Failed to reactivate biometric. Got null intent from Keyguard.");
+            handlerFragment.handleDeviceCredentialResult(Activity.RESULT_CANCELED);
+            return;
+        }
+
+        // Launch a new instance of the confirm device credential Settings activity.
+        intent.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        handlerFragment.startActivityForResult(intent, 0);
+    }
+
     /**
      * Launches the confirm device credential (CDC) Settings activity to allow the user to
      * authenticate with their device credential (PIN/pattern/password) on Android P and below.
      *
      * @param loggingTag The tag to be used for logging events.
-     * @param activity Activity that will launch the CDC activity and handle its result. Should be
-     *                 {@link DeviceCredentialHandlerActivity}; all other activities will fail to
-     *                 launch the CDC activity and instead log an error.
-     * @param bundle Bundle of extras forwarded from {@link BiometricPrompt}.
-     * @param onLaunch Optional callback to be run before launching the new activity.
+     * @param activity   Activity that will launch the CDC activity and handle its result. Should be
+     *                   {@link DeviceCredentialHandlerActivity}; all other activities will fail to
+     *                   launch the CDC activity and instead log an error.
+     * @param bundle     Bundle of extras forwarded from {@link BiometricPrompt}.
+     * @param onLaunch   Optional callback to be run before launching the new activity.
      */
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     static void launchDeviceCredentialConfirmation(
@@ -122,8 +179,7 @@ public class Utils {
             subtitle = null;
         }
 
-        @SuppressWarnings("deprecation")
-        final Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(title, subtitle);
+        @SuppressWarnings("deprecation") final Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(title, subtitle);
         if (intent == null) {
             Log.e(loggingTag, "Failed to check device credential. Got null intent from Keyguard.");
             handlerActivity.handleDeviceCredentialResult(Activity.RESULT_CANCELED);
@@ -157,26 +213,26 @@ public class Utils {
     }
 
     /**
-<<<<<<< HEAD
+     * <<<<<<< HEAD
      * Determines if the current device should explicitly fall back to using
      * {@link BaseFingerprintDialogFragment} and {@link FingerprintHelperFragment} when
      * {@link BiometricPrompt#authenticate(BiometricPrompt.PromptInfo,
      * BiometricPrompt.CryptoObject)} is called.
      *
      * @param context The application or activity context.
-     * @param vendor Name of the device vendor/manufacturer.
-     * @param model Model name of the current device.
+     * @param vendor  Name of the device vendor/manufacturer.
+     * @param model   Model name of the current device.
      * @return true if the current device should fall back to fingerprint for crypto-based
      * authentication, or false otherwise.
      */
     public static boolean shouldUseFingerprintForCrypto(@NonNull Context context, String vendor,
-            String model) {
+                                                        String model) {
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.P) {
             // This workaround is only needed for API 28.
             return false;
         }
         return isVendorInList(context, vendor, R.array.crypto_fingerprint_fallback_vendors)
-            || isModelInPrefixList(context, model, R.array.crypto_fingerprint_fallback_prefixes);
+                || isModelInPrefixList(context, model, R.array.crypto_fingerprint_fallback_prefixes);
     }
 
     /**
@@ -185,7 +241,7 @@ public class Utils {
      * shown behind an overlay that sends a cancel signal when it is dismissed).
      *
      * @param context The application or activity context.
-     * @param model Model name of the current device.
+     * @param model   Model name of the current device.
      * @return true if {@link BaseFingerprintDialogFragment} should always be dismissed immediately,
      * or false otherwise.
      */
@@ -202,8 +258,8 @@ public class Utils {
      * resource.
      *
      * @param context The application or activity context.
-     * @param vendor Case-insensitive name of the device vendor.
-     * @param resId Resource ID for the string array of vendor names to check against.
+     * @param vendor  Case-insensitive name of the device vendor.
+     * @param resId   Resource ID for the string array of vendor names to check against.
      * @return true if the vendor name matches one in the given string array, or false otherwise.
      */
     private static boolean isVendorInList(@NonNull Context context, String vendor, int resId) {
@@ -224,8 +280,8 @@ public class Utils {
      * Determines if the current device model matches a prefix in the given string array resource.
      *
      * @param context The application or activity context.
-     * @param model Model name of the current device.
-     * @param resId Resource ID for the string array of device model prefixes to check against.
+     * @param model   Model name of the current device.
+     * @param resId   Resource ID for the string array of device model prefixes to check against.
      * @return true if the model matches one in the given string array, or false otherwise.
      */
     private static boolean isModelInPrefixList(@NonNull Context context, String model, int resId) {
