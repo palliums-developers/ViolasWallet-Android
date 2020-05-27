@@ -215,10 +215,12 @@ data class TransactionArgument(
     val data: ByteArray
 ) {
     enum class ArgType(val number: Int) {
-        U64(0),
-        ADDRESS(1),
-        BYTEARRAY(2),
-        BOOL(3),
+        U8(0),
+        U64(1),
+        U128(2),
+        ADDRESS(3),
+        BOOL(4),
+        BYTEARRAY(5),
     }
 
     fun toByteArray(): ByteArray {
