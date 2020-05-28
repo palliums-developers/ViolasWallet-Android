@@ -25,16 +25,18 @@ fun BaseFragment.showPwdInputDialog(
     accountDO: AccountDO,
     retryWhenPwdInputError: Boolean = true,
     showLoadingWhenVerifyPwd: Boolean = true,
+    passwordCallback: ((password: String) -> Unit)? = null,
     accountCallback: ((account: Account) -> Unit)? = null,
     mnemonicCallback: ((mnemonics: List<String>) -> Unit)? = null,
     accountMnemonicCallback: ((account: Account, mnemonics: List<String>) -> Unit)? = null
 ) {
     require(
-        accountCallback != null
+        passwordCallback != null
+                || accountCallback != null
                 || mnemonicCallback != null
                 || accountMnemonicCallback != null
     ) {
-        "accountCallback, mnemonicCallback, accountMnemonicCallback cannot all be null"
+        "passwordCallback, accountCallback, mnemonicCallback, accountMnemonicCallback cannot all be null"
     }
 
     PasswordInputDialog()
@@ -53,7 +55,7 @@ fun BaseFragment.showPwdInputDialog(
                         SimpleSecurity.instance(requireContext().applicationContext)
 
                     when {
-                        accountCallback != null -> {
+                        passwordCallback != null || accountCallback != null -> {
                             val privateKeyBytes = simpleSecurity.decrypt(
                                 pwdBytes, accountDO.privateKey
                             )
@@ -108,7 +110,11 @@ fun BaseFragment.showPwdInputDialog(
                     }
                 }
 
-                if (accountCallback != null
+                if (passwordCallback != null
+                    && account != null
+                ) {
+                    passwordCallback.invoke(String(pwdBytes))
+                } else if (accountCallback != null
                     && account != null
                 ) {
                     accountCallback.invoke(account!!)
@@ -131,6 +137,7 @@ fun BaseFragment.showPwdInputDialog(
                             accountDO,
                             retryWhenPwdInputError,
                             showLoadingWhenVerifyPwd,
+                            passwordCallback,
                             accountCallback,
                             mnemonicCallback,
                             accountMnemonicCallback
@@ -148,19 +155,25 @@ fun BaseActivity.showPwdInputDialog(
     accountDO: AccountDO,
     retryWhenPwdInputError: Boolean = true,
     showLoadingWhenVerifyPwd: Boolean = true,
+    cancelCallback: (() -> Unit)? = null,
+    passwordCallback: ((password: String) -> Unit)? = null,
     accountCallback: ((account: Account) -> Unit)? = null,
     mnemonicCallback: ((mnemonics: List<String>) -> Unit)? = null,
     accountMnemonicCallback: ((account: Account, mnemonics: List<String>) -> Unit)? = null
 ) {
     require(
-        accountCallback != null
+        passwordCallback != null
+                || accountCallback != null
                 || mnemonicCallback != null
                 || accountMnemonicCallback != null
     ) {
-        "accountCallback, mnemonicCallback, accountMnemonicCallback cannot all be null"
+        "passwordCallback, accountCallback, mnemonicCallback, accountMnemonicCallback cannot all be null"
     }
 
     PasswordInputDialog()
+        .setCancelListener {
+            cancelCallback?.invoke()
+        }
         .setConfirmListener { pwdBytes, pwdDialog ->
             pwdDialog.dismiss()
 
@@ -176,7 +189,7 @@ fun BaseActivity.showPwdInputDialog(
                         SimpleSecurity.instance(applicationContext)
 
                     when {
-                        accountCallback != null -> {
+                        passwordCallback != null || accountCallback != null -> {
                             val privateKeyBytes = simpleSecurity.decrypt(
                                 pwdBytes, accountDO.privateKey
                             )
@@ -231,7 +244,11 @@ fun BaseActivity.showPwdInputDialog(
                     }
                 }
 
-                if (accountCallback != null
+                if (passwordCallback != null
+                    && account != null
+                ) {
+                    passwordCallback.invoke(String(pwdBytes))
+                } else if (accountCallback != null
                     && account != null
                 ) {
                     accountCallback.invoke(account!!)
@@ -254,6 +271,8 @@ fun BaseActivity.showPwdInputDialog(
                             accountDO,
                             retryWhenPwdInputError,
                             showLoadingWhenVerifyPwd,
+                            cancelCallback,
+                            passwordCallback,
                             accountCallback,
                             mnemonicCallback,
                             accountMnemonicCallback

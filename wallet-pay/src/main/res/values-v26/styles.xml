@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:screenOrientation">portrait</item>
+        <item name="android:hyphenationFrequency" tools:ignore="NewApi">none</item>
+        <item name="android:windowAnimationStyle">@style/AppWindowAnimation</item>
+        <item name="android:colorError">@color/colorAccent</item>
+    </style>
+</resources>

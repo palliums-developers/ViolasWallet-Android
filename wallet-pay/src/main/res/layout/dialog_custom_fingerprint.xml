@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="272dp"
+        android:layout_height="270dp"
+        android:background="@drawable/shape_bg_biometric">
+
+        <ImageView
+            android:id="@+id/ivFingerprintIcon"
+            android:layout_width="@dimen/dp_50"
+            android:layout_height="@dimen/dp_50"
+            android:layout_marginTop="@dimen/dp_35"
+            android:src="@drawable/ic_fingerprint_start"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvFingerprintTitle"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_28"
+            android:layout_marginTop="@dimen/dp_26"
+            android:gravity="center_horizontal"
+            android:text="@string/desc_fingerprint_authenticate_start"
+            android:textColor="@color/color_413D4D"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivFingerprintIcon" />
+
+        <TextView
+            android:id="@+id/tvFingerprintDesc"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_28"
+            android:layout_marginTop="@dimen/dp_8"
+            android:gravity="center_horizontal"
+            android:textColor="@color/def_text_title"
+            android:textSize="@dimen/sp_14"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvFingerprintTitle"
+            tools:text="@string/desc_fingerprint_authenticate_retry" />
+
+        <View
+            android:id="@+id/vHorizontalLine1"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0.5"
+            android:layout_marginBottom="@dimen/dp_39"
+            android:background="@color/color_EBEBEC"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vHorizontalLine1">
+
+            <TextView
+                android:id="@+id/tvNegativeBtn"
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:text="@string/action_cancel_nbsp"
+                android:textColor="@color/color_999999"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/vVerticalLine1"
+                android:layout_width="@dimen/dp_0.5"
+                android:layout_height="match_parent"
+                android:background="@color/color_EBEBEC"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tvPositiveBtn"
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center"
+                android:text="@string/action_use_password"
+                android:textColor="@color/color_7038FD"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/vHorizontalLine2"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0.5"
+            android:layout_marginBottom="@dimen/dp_39"
+            android:background="@color/color_EBEBEC"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/vHorizontalLine1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvNeutralBtn"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@string/action_retry_fingerprint"
+            android:textColor="@color/color_7038FD"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/vHorizontalLine1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vHorizontalLine2"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

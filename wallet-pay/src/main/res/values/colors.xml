@@ -60,6 +60,10 @@
     <color name="color_5BBE75">#5BBE75</color>
     <color name="color_FF6464">#FF6464</color>
     <color name="color_F8F7FA">#F8F7FA</color>
+    <color name="color_413D4D">#413D4D</color>
+    <color name="color_EBEBEC">#EBEBEC</color>
+    <color name="color_999999">#999999</color>
+    <color name="color_DEDFE0">#DEDFE0</color>
 
     <color name="def_activity_bg">@color/white</color>
     <color name="def_activity_vice_bg">@color/color_F7F7F9</color>

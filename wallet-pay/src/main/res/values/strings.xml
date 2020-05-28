@@ -271,4 +271,23 @@
     <string name="tips_scan_login_success">Web page ViolasPay is logged in</string>
     <string name="tips_scan_login_desktop">Please operate the scan code on the governor SSO wallet to log in</string>
     <string name="tips_scan_login_not_support">The scan login operation is not supported</string>
+
+    <string name="title_open_fingerprint_payment">Open Fingerprint Payment</string>
+    <string name="action_cancel_nbsp">Cancel</string>
+    <string name="action_confirm_nbsp">Confirm</string>
+    <string name="action_use_password">Use Password</string>
+    <string name="action_start_now_enable">Start Now Enable</string>
+    <string name="action_go_to_enable">Go To Enable</string>
+    <string name="action_retry_fingerprint">Try fingerprint ID again</string>
+    <string name="desc_fingerprint_authenticate_start">Please verify that you have a fingerprint</string>
+    <string name="desc_fingerprint_authenticate_retry">Try again</string>
+    <string name="desc_fingerprint_authenticate_failed">Fingerprint not recognized</string>
+    <string name="desc_fingerprint_authenticate_error_lockout">Too many attempts. The fingerprint sensor is temporarily suspended. Please try again later.</string>
+    <string name="desc_fingerprint_authenticate_error_lockout_permanent">Too many attempts, the fingerprint sensor is disabled, and the phone password needs to be verified.</string>
+    <string name="label_fingerprint_payment">Fingerprint Payment</string>
+    <string name="title_prompt">Prompt</string>
+    <string name="desc_close_biometric_payment">Are you sure to turn off biological payments?</string>
+    <string name="desc_biometric_error_no_hardware">The current device does not support this function</string>
+    <string name="desc_biometric_error_none_enrolled">Please turn on biometrics first</string>
+    <string name="desc_biometric_error_hardware_unavailable">Biometrics is temporarily unavailable, please try again later.</string>
 </resources>
