@@ -187,15 +187,15 @@ class DefaultFingerprintDialogFragment : BaseFingerprintDialogFragment() {
         mTextColor = getThemedColorFor(android.R.attr.textColorSecondary)
     }
 
-    override fun onLockout(msg: CharSequence) {
-        super.onLockoutPermanent(msg)
+    override fun onShowLockout(msg: CharSequence) {
+        super.onShowLockoutPermanent(msg)
         (dialog as AlertDialog?)?.let {
             updatePositiveBtn(true, it)
         }
     }
 
-    override fun onLockoutPermanent(msg: CharSequence) {
-        super.onLockoutPermanent(msg)
+    override fun onShowLockoutPermanent(msg: CharSequence) {
+        super.onShowLockoutPermanent(msg)
         (dialog as AlertDialog?)?.let {
             updatePositiveBtn(true, it)
         }

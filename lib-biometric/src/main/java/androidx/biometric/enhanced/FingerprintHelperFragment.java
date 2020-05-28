@@ -143,8 +143,8 @@ public class FingerprintHelperFragment extends Fragment {
                             || errMsgId == BiometricPrompt.ERROR_LOCKOUT_PERMANENT) {
                         if (mReactivateBiometricWhenLockout) {
                             mMessageRouter.sendMessage(errMsgId == BiometricPrompt.ERROR_LOCKOUT ?
-                                            BaseFingerprintDialogFragment.MSG_LOCKOUT :
-                                            BaseFingerprintDialogFragment.MSG_LOCKOUT_PERMANENT,
+                                            BaseFingerprintDialogFragment.MSG_SHOW_LOCKOUT :
+                                            BaseFingerprintDialogFragment.MSG_SHOW_LOCKOUT_PERMANENT,
                                     errString);
                             mExecutor.execute(
                                     new Runnable() {
@@ -223,7 +223,7 @@ public class FingerprintHelperFragment extends Fragment {
 
                 @Override
                 public void onAuthenticationFailed() {
-                    mMessageRouter.sendMessage(BaseFingerprintDialogFragment.MSG_SHOW_HELP,
+                    mMessageRouter.sendMessage(BaseFingerprintDialogFragment.MSG_SHOW_FAILED,
                             mContext.getResources().getString(R.string.fingerprint_not_recognized));
                     mExecutor.execute(new Runnable() {
                         @Override
@@ -279,7 +279,7 @@ public class FingerprintHelperFragment extends Fragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    private void initFingerprintAuthenticate(){
+    private void initFingerprintAuthenticate() {
         mCancellationSignal = new CancellationSignal();
         mCanceledFrom = USER_CANCELED_FROM_NONE;
         androidx.core.hardware.fingerprint.FingerprintManagerCompat fingerprintManagerCompat =
@@ -338,7 +338,7 @@ public class FingerprintHelperFragment extends Fragment {
         cleanup();
     }
 
-    void reset(){
+    void reset() {
         if (mCancellationSignal != null) {
             mCancellationSignal.cancel();
         }
