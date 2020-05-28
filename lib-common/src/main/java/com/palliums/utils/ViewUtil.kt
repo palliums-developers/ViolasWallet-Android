@@ -9,7 +9,6 @@ import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
-import androidx.fragment.app.DialogFragment
 import com.google.android.material.tabs.TabLayout
 import com.palliums.R
 import java.lang.reflect.Field
@@ -21,12 +20,6 @@ import java.lang.reflect.Field
  * <p>
  * desc:
  */
-
-fun DialogFragment.close(){
-    if (!isDetached && !isRemoving && fragmentManager != null) {
-        dismissAllowingStateLoss()
-    }
-}
 
 /**
  * 判断当前的点击事件是否是快速多次点击(连续多点击），该方法用来防止多次连击。

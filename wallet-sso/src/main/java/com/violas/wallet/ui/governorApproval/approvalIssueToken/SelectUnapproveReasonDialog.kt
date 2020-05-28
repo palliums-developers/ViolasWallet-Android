@@ -12,8 +12,8 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
+import com.palliums.extensions.close
 import com.palliums.utils.DensityUtility
-import com.palliums.utils.close
 import com.palliums.utils.hideSoftInput
 import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
