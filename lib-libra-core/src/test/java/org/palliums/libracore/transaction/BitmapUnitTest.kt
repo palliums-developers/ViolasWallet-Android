@@ -3,6 +3,9 @@ package org.palliums.libracore.transaction
 import org.junit.Assert
 import org.junit.Test
 import org.palliums.libracore.crypto.Bitmap
+import org.palliums.libracore.serialization.toHex
+import org.palliums.libracore.wallet.RAW_TRANSACTION_HASH_SALT
+import org.spongycastle.jcajce.provider.digest.SHA3
 
 class BitmapUnitTest {
 

@@ -219,8 +219,8 @@ data class TransactionArgument(
         U64(1),
         U128(2),
         ADDRESS(3),
-        BOOL(4),
-        BYTEARRAY(5),
+        BYTEARRAY(4),
+        BOOL(5),
     }
 
     fun toByteArray(): ByteArray {

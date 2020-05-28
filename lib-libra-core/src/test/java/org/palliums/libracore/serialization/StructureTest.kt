@@ -182,7 +182,7 @@ class StructureTest {
             transactionPayload,
             10000,
             20000,
-            LBR_NAME,
+            "LBR",
             86400
         )
 
