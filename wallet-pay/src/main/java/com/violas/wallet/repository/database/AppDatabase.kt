@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.violas.wallet.repository.database.converter.DateConverter
 import com.violas.wallet.repository.database.dao.AccountDao
@@ -16,7 +17,7 @@ import com.violas.wallet.repository.database.entity.TokenDo
 
 @Database(
     entities = [AccountDO::class, TokenDo::class, AddressBookDo::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class)
@@ -46,7 +47,14 @@ abstract class AppDatabase : RoomDatabase() {
 //                        WorkManager.getInstance(context).enqueue(request)
                     }
                 })
+                .addMigrations(migration1To2())
                 .build()
+        }
+
+        private fun migration1To2() = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE account ADD COLUMN encrypted_password BLOB")
+            }
         }
     }
 }

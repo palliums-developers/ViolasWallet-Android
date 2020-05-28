@@ -30,6 +30,8 @@ data class AccountDO(
     var address: String = "",
     @ColumnInfo(name = "amount")
     var amount: Long = 0,
+    @ColumnInfo(name = "encrypted_password", typeAffinity = ColumnInfo.BLOB)
+    var encryptedPassword: ByteArray? = null,
     @ColumnInfo(name = "avoid_password")
     var avoidPassword: Boolean = false,
     @ColumnInfo(name = "modify_date")
@@ -37,6 +39,18 @@ data class AccountDO(
 ) {
     companion object {
         const val TABLE_NAME = "account"
+    }
+
+    fun getEncryptedPasswordStr(): String? {
+        return try {
+            if (encryptedPassword != null) String(encryptedPassword!!) else null
+        } catch (ignore: Exception) {
+            null
+        }
+    }
+
+    fun isOpenedBiometricPayment(): Boolean {
+        return !getEncryptedPasswordStr().isNullOrBlank()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -55,6 +69,7 @@ data class AccountDO(
         if (coinNumber != other.coinNumber) return false
         if (address != other.address) return false
         if (amount != other.amount) return false
+        if (encryptedPassword != other.encryptedPassword) return false
         if (avoidPassword != other.avoidPassword) return false
         if (modifyDate != other.modifyDate) return false
 
@@ -72,6 +87,7 @@ data class AccountDO(
         result = 31 * result + coinNumber
         result = 31 * result + address.hashCode()
         result = 31 * result + amount.hashCode()
+        result = 31 * result + encryptedPassword.hashCode()
         result = 31 * result + avoidPassword.hashCode()
         result = 31 * result + modifyDate.hashCode()
         return result

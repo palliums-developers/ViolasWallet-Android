@@ -45,6 +45,10 @@ class AccountManager {
         DataRepository.getAccountStorage()
     }
 
+    fun updateAccountPassword(accountId: Long, encryptedPassword: String) {
+        mAccountStorage.updateEncryptedPassword(accountId, encryptedPassword.toByteArray())
+    }
+
     /**
      * 获取当前账户账户
      */

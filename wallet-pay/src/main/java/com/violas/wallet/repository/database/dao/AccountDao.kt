@@ -47,4 +47,10 @@ interface AccountDao : BaseDao<AccountDO> {
 
     @Query("SELECT * FROM account WHERE coin_number = :coinType AND wallet_type = 0 LIMIT 1")
     fun findByCoinTypeByIdentity(coinType: Int): AccountDO?
+
+    @Query("UPDATE ${AccountDO.TABLE_NAME} set encrypted_password = :encryptedPassword WHERE id = :id")
+    fun updateEncryptedPassword(
+        id: Long,
+        encryptedPassword: ByteArray
+    )
 }
