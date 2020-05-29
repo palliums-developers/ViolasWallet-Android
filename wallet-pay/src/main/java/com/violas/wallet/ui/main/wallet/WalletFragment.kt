@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.biometric.BiometricManager
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
+import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.getShowErrorMessage
 import com.palliums.extensions.isActiveCancellation
+import com.palliums.extensions.show
 import com.palliums.utils.isFastMultiClick
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
@@ -24,6 +27,7 @@ import com.violas.wallet.ui.account.selection.AccountSelectionActivity
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
+import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
 import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.outsideExchange.OutsideExchangeActivity
@@ -101,12 +105,16 @@ class WalletFragment : BaseFragment() {
                     if (!mAccountManager.isIdentityMnemonicBackup()) {
                         layoutBackupNow.visibility = View.VISIBLE
                         btnConfirm.setOnClickListener(this)
+
+                        handleOpenBiometricsPrompt()
                     }
                 }
                 .show(requireActivity().supportFragmentManager, "fast")
         } else if (!mAccountManager.isIdentityMnemonicBackup()) {
             layoutBackupNow.visibility = View.VISIBLE
             btnConfirm.setOnClickListener(this)
+
+            handleOpenBiometricsPrompt()
         }
 
         swipeRefreshLayout.setOnRefreshListener {
@@ -227,6 +235,27 @@ class WalletFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun handleOpenBiometricsPrompt() {
+        if (mAccountManager.isOpenBiometricsPrompted()) {
+            return
+        }
+
+        val biometricCompat = BiometricCompat.Builder(requireContext()).build()
+        if (biometricCompat.canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS) {
+            return
+        }
+
+        mAccountManager.setOpenBiometricsPrompted()
+        OpenBiometricsPromptDialog()
+            .setCallback {
+                launch(Dispatchers.IO) {
+                    val currentAccount = mAccountManager.currentAccount()
+                    WalletManagerActivity.start(this@WalletFragment, currentAccount.id)
+                }
+            }
+            .show(childFragmentManager)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

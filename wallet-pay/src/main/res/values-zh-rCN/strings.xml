@@ -272,6 +272,7 @@
     <string name="tips_scan_login_success">网页ViolasPay已登录</string>
     <string name="tips_scan_login_desktop">请在州长SSO钱包上操作扫码登录</string>
     <string name="tips_scan_login_not_support">不支持该扫码登录操作</string>
+    <string name="wallet_connect_transfer_sender_address">地址：</string>
     <string name="wallet_connect_transfer_amount">金额：</string>
     <string name="wallet_connect_transfer_address">转账地址：</string>
     <string name="wallet_connect_use_behavior">*其使用行为同样适用《用户协议》和《隐私条款》</string>
@@ -297,4 +298,7 @@
     <string name="desc_biometric_error_no_hardware">当前设备不支持此功能</string>
     <string name="desc_biometric_error_none_enrolled">请先开启生物识别功能</string>
     <string name="desc_biometric_error_hardware_unavailable">生物识别暂不可用，请稍后再试。</string>
+    <string name="title_open_fingerprint_verification_prompt">设置指纹识别让交易更方便</string>
+    <string name="action_set_up_now">马上设置</string>
+    <string name="action_talk_about_later">稍后再说</string>
 </resources>

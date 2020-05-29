@@ -4,19 +4,22 @@ import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.palliums.extensions.close
 import com.violas.wallet.R
-import kotlinx.android.synthetic.main.dialog_close_biometric_payment.*
+import kotlinx.android.synthetic.main.dialog_open_biometrics_prompt.*
 
 /**
- * Created by elephant on 2020/5/28 15:04.
+ * Created by elephant on 2020/5/29 16:21.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 关闭生物支付对话框
+ * desc: 开启指纹识别提示对话框
  */
-class CloseBiometricPaymentDialog : DialogFragment() {
+class OpenBiometricsPromptDialog : DialogFragment() {
 
     private var confirmCallback: (() -> Unit)? = null
     private var cancelCallback: (() -> Unit)? = null
@@ -26,20 +29,20 @@ class CloseBiometricPaymentDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.dialog_close_biometric_payment, container)
+        return inflater.inflate(R.layout.dialog_open_biometrics_prompt, container)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tvNegativeBtn.setOnClickListener {
-            close()
-            cancelCallback?.invoke()
-        }
-
-        tvPositiveBtn.setOnClickListener {
+        btnPositive.setOnClickListener {
             close()
             confirmCallback?.invoke()
+        }
+
+        tvNegative.setOnClickListener {
+            close()
+            cancelCallback?.invoke()
         }
     }
 
@@ -62,29 +65,12 @@ class CloseBiometricPaymentDialog : DialogFragment() {
         super.onStart()
     }
 
-    override fun onResume() {
-        super.onResume()
-        view?.let {
-            it.isFocusableInTouchMode = true
-            it.requestFocus()
-            it.setOnKeyListener { v, keyCode, event ->
-                if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                    close()
-                    cancelCallback?.invoke()
-                    return@setOnKeyListener true
-                }
-
-                return@setOnKeyListener false
-            }
-        }
-    }
-
     fun setCallback(
-        confirmCallback: () -> Unit,
-        cancelCallback: () -> Unit
-    ): CloseBiometricPaymentDialog {
-        this.confirmCallback = confirmCallback
+        cancelCallback: (() -> Unit)? = null,
+        confirmCallback: () -> Unit
+    ): OpenBiometricsPromptDialog {
         this.cancelCallback = cancelCallback
+        this.confirmCallback = confirmCallback
         return this
     }
 }

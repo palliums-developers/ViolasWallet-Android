@@ -33,6 +33,7 @@ class AccountManager {
         private const val CURRENT_ACCOUNT = "ab1"
         private const val IDENTITY_MNEMONIC_BACKUP = "IDENTITY_MNEMONIC_BACKUP"
         private const val FAST_INTO_WALLET = "ab2"
+        private const val KEY_PROMPT_OPEN_BIOMETRICS = "PROMPT_OPEN_BIOMETRICS"
     }
 
     private val mExecutor by lazy { Executors.newFixedThreadPool(2) }
@@ -89,7 +90,7 @@ class AccountManager {
     }
 
     fun getIdentityAccount(): AccountDO {
-         return mAccountStorage.loadByWalletType(0)!!
+        return mAccountStorage.loadByWalletType(0)!!
     }
 
     /**
@@ -119,6 +120,20 @@ class AccountManager {
             mConfigSharedPreferences.edit().putBoolean(FAST_INTO_WALLET, false).apply()
         }
         return fastInto
+    }
+
+    /**
+     * 设置已提示开启指纹
+    */
+    fun setOpenBiometricsPrompted() {
+        mConfigSharedPreferences.edit().putBoolean(KEY_PROMPT_OPEN_BIOMETRICS, true).apply()
+    }
+
+    /**
+     * 是否已提示开启指纹识别
+     */
+    fun isOpenBiometricsPrompted(): Boolean {
+        return mConfigSharedPreferences.getBoolean(KEY_PROMPT_OPEN_BIOMETRICS, false)
     }
 
     /**

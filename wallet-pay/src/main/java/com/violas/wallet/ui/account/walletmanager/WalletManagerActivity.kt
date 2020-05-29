@@ -21,7 +21,7 @@ import com.violas.wallet.ui.account.AccountInfoActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.backup.ShowMnemonicActivity
-import com.violas.wallet.ui.biometric.CloseBiometricPaymentDialog
+import com.violas.wallet.ui.biometric.CloseBiometricsDialog
 import com.violas.wallet.ui.biometric.CustomFingerprintDialog
 import com.violas.wallet.ui.biometric.UnableBiometricPromptDialog
 import com.violas.wallet.utils.authenticateAccount
@@ -202,7 +202,7 @@ class WalletManagerActivity : BaseAppActivity() {
     }
 
     private fun closeBiometricPayment() {
-        CloseBiometricPaymentDialog()
+        CloseBiometricsDialog()
             .setCallback(
                 confirmCallback = {
                     mAccountDO.encryptedPassword = "".toByteArray()

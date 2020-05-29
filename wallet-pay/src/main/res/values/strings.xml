@@ -299,4 +299,7 @@
     <string name="desc_biometric_error_no_hardware">The current device does not support this function</string>
     <string name="desc_biometric_error_none_enrolled">Please turn on biometrics first</string>
     <string name="desc_biometric_error_hardware_unavailable">Biometrics is temporarily unavailable, please try again later.</string>
+    <string name="title_open_fingerprint_verification_prompt">Set up fingerprint recognition to make transactions more convenient</string>
+    <string name="action_set_up_now">Set Up Now</string>
+    <string name="action_talk_about_later">Talk About Later</string>
 </resources>
