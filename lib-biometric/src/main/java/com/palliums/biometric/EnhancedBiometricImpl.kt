@@ -41,8 +41,8 @@ internal class EnhancedBiometricImpl(
     private var biometricCallback: EnhancedBiometricCallback? = null
     private var creatingCryptoObject = false
 
-    override fun canAuthenticate(userFingerprint: Boolean): Int {
-        return if (userFingerprint
+    override fun canAuthenticate(useFingerprint: Boolean): Int {
+        return if (useFingerprint
             || Utils.shouldUseFingerprintForCrypto(context, Build.MANUFACTURER, Build.MODEL)
         ) {
             if (!fingerprintManager.isHardwareDetected) {

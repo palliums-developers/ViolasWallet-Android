@@ -27,10 +27,10 @@ import com.palliums.biometric.util.LogUtils
 interface BiometricCompat {
 
     /**
-     * @param userFingerprint true: 使用指纹识别; false: 使用生物特征识别（指纹、面部、虹膜）
+     * @param useFingerprint true: 使用指纹识别; false: 使用生物特征识别（指纹、面部、虹膜）
      * @see [BiometricManager.canAuthenticate]
      */
-    fun canAuthenticate(userFingerprint: Boolean = true): Int
+    fun canAuthenticate(useFingerprint: Boolean = true): Int
 
     /**
      * Authenticate user via Fingerprint.
