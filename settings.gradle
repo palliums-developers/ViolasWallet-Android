@@ -1,6 +1,7 @@
 include ':lib-zbar-scan', ':lib-switch-button',
         ':lib-violas-core', ':lib-libra-core', ':lib-btc-core',
-        ':lib-common', ':lib-core', ':lib-biometric',
+        ':lib-common', ':lib-core',
+        ':lib-biometric', ':lib-wallet-connect',
         ':module-violas',
         ':wallet-pay', ':wallet-sso'
 

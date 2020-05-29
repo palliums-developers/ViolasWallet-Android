@@ -36,6 +36,7 @@ import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.walletconnect.WalletConnect
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
@@ -420,6 +421,14 @@ class WalletFragment : BaseFragment() {
                             ScanCodeType.Text -> {
                                 activity?.let {
                                     ScanResultActivity.start(it, scanBean.msg)
+                                }
+                            }
+
+                            ScanCodeType.WalletConnectSocket -> {
+                                context?.let {
+                                    WalletConnect.getInstance(it.applicationContext).connect(
+                                        msg
+                                    )
                                 }
                             }
 

@@ -49,8 +49,8 @@ class WalletTest {
     fun testGenerateKey() {
         val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
         val account = libraWallet.newAccount()
-        val privateKey = Hex.toHexString(account.keyPair.getPrivateKey())
-        val publicKey = Hex.toHexString(account.keyPair.getPublicKey())
+        val privateKey = Hex.toHexString(account.keyPair.getPrivateKey().toByteArray())
+        val publicKey = Hex.toHexString(account.keyPair.getPublicKey().toByteArray())
         println()
         println("Private Key: $privateKey")
         println("Public Key: $publicKey")
@@ -69,7 +69,7 @@ class WalletTest {
     fun testSign() {
         val libraWallet = LibraWallet(WalletConfig(generateMnemonic()))
         val account = libraWallet.newAccount()
-        val signHexStr = Hex.toHexString(account.keyPair.signMessage(Hex.decode("1234567890")))
+        val signHexStr = Hex.toHexString(account.keyPair.signMessage(Hex.decode("1234567890")).toByteArray())
         println()
         println("message sign: $signHexStr")
 

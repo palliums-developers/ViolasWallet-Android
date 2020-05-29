@@ -28,6 +28,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
      *
      * @param payload 交易内容，通常情况下一般使用 @{link TransactionPayload.Script}
      * @param keyPair 公钥，单签使用 {@link Ed25519KeyPair}，多签使用{@link MultiEd25519KeyPair}
+     * @param sequenceNumber 账户 sequenceNumber
      * @param maxGasAmount 该交易可使用的最大 gas 数量
      * @param gasUnitPrice gas 的价格
      * @param delayed 交易超时时间：当前时间的延迟，单位秒。例如当前时间延迟 1000 秒。
@@ -36,10 +37,12 @@ class LibraService(private val mLibraRepository: LibraRepository) {
     suspend fun sendTransaction(
         payload: TransactionPayload,
         account: Account,
+        sequenceNumber: Long = -1,
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
         delayed: Long = 1000
     ): TransactionResult {
+        var sequenceNumber = sequenceNumber
         val keyPair = account.keyPair
         val senderAddress = account.getAddress()
         val accountState = getAccountState(senderAddress.toHex())
@@ -49,7 +52,9 @@ class LibraService(private val mLibraRepository: LibraRepository) {
             throw LibraException.AccountNoControl()
         }
 
-        val sequenceNumber = accountState.sequenceNumber
+        if (sequenceNumber == -1L) {
+            sequenceNumber = accountState.sequenceNumber
+        }
         val rawTransaction = RawTransaction.optionTransaction(
             senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
         )

@@ -37,14 +37,22 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     suspend fun sendTransaction(
         payload: TransactionPayload,
         account: Account,
+        sequenceNumber: Long = -1L,
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
         delayed: Long = 1000
     ): TransactionResult {
-        val (signedTxn, sender, sequenceNumber) =
-            generateTransaction(payload, account, maxGasAmount, gasUnitPrice, delayed)
+        val (signedTxn, sender, newSequenceNumber) =
+            generateTransaction(
+                payload,
+                account,
+                sequenceNumber,
+                maxGasAmount,
+                gasUnitPrice,
+                delayed
+            )
         sendTransaction(signedTxn)
-        return TransactionResult(sender, sequenceNumber)
+        return TransactionResult(sender, newSequenceNumber)
     }
 
     /**
@@ -75,10 +83,12 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     suspend fun generateTransaction(
         payload: TransactionPayload,
         account: Account,
+        sequenceNumber: Long = -1L,
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
         delayed: Long = 1000
     ): GenerateTransactionResult {
+        var sequenceNumber = sequenceNumber
         val keyPair = account.keyPair
         val senderAddress = account.getAddress()
         val accountState = getAccountState(senderAddress.toHex())
@@ -88,7 +98,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             throw ViolasException.AccountNoControl()
         }
 
-        val sequenceNumber = accountState.sequenceNumber ?: 0
+        if (sequenceNumber == -1L) {
+            sequenceNumber = accountState.sequenceNumber
+        }
 
         val rawTransaction = RawTransaction.optionTransaction(
             senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
@@ -99,6 +111,32 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
                 keyPair.getPublicKey(),
                 keyPair.signMessage(rawTransaction.toHashByteArray())
             ), senderAddress.toHex(), sequenceNumber
+        )
+    }
+
+    suspend fun generateRawTransaction(
+        payload: TransactionPayload,
+        senderAddress: String,
+        sequenceNumber: Long = -1L,
+        maxGasAmount: Long = 1_000_000,
+        gasUnitPrice: Long = 0,
+        delayed: Long = 1000
+    ): RawTransaction {
+        var sequenceNumber = sequenceNumber
+
+//        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
+//            throw ViolasException.AccountNoControl()
+//        }
+
+        if (sequenceNumber == -1L) {
+            val accountState = getAccountState(senderAddress)
+                ?: throw ViolasException.AccountNoActivation()
+
+            sequenceNumber = accountState.sequenceNumber
+        }
+
+        return RawTransaction.optionTransaction(
+            senderAddress, payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
         )
     }
 
@@ -162,7 +200,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     suspend fun getBalanceInMicroLibra(address: String): Long {
         val response = getAccountState(address)
 //        return response?.balance?.amount ?: 0
-        return response?.balance?: 0
+        return response?.balance ?: 0
     }
 
     suspend fun getAccountState(

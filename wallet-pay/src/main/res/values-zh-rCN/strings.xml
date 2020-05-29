@@ -263,6 +263,8 @@
     <string name="hint_load_exchange_pair">查询支持的交易对</string>
 
     <string name="desc_scan_login">网页ViolasPay登录确认</string>
+    <string name="desc_scan_wallet_connect_login">登录确认</string>
+    <string name="desc_scan_wallet_connect_login_info">网页 %1$s 正在申请访问你的钱包地址 你确认将钱包地址公开给此网站吗?</string>
     <string name="hint_input_login_pwd">请输入支付密码</string>
     <string name="tips_login_pwd_error">密码错误，请重新输入</string>
     <string name="action_confirm_login">确认登录</string>
@@ -270,6 +272,12 @@
     <string name="tips_scan_login_success">网页ViolasPay已登录</string>
     <string name="tips_scan_login_desktop">请在州长SSO钱包上操作扫码登录</string>
     <string name="tips_scan_login_not_support">不支持该扫码登录操作</string>
+    <string name="wallet_connect_transfer_amount">金额：</string>
+    <string name="wallet_connect_transfer_address">转账地址：</string>
+    <string name="wallet_connect_use_behavior">*其使用行为同样适用《用户协议》和《隐私条款》</string>
+    <string name="wallet_connect_user_agreement">《用户协议》</string>
+    <string name="wallet_connect_privacy_policy">《隐私条款》</string>
+    <string name="wallet_connect_transaction">转账确认</string>
 
     <string name="title_open_fingerprint_verification">开启指纹验证</string>
     <string name="action_cancel_nbsp">取&#160;消</string>

@@ -147,6 +147,7 @@ dependencies {
     implementation project(':module-violas')
 //    implementation project(':lib-violas-core')
     implementation project(':lib-btc-core')
+    implementation project(':lib-wallet-connect')
     implementation project(':lib-biometric')
 
     testImplementation libraries.test_junit
@@ -166,4 +167,8 @@ dependencies {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
     }
+
+    implementation libraries.glide
+    implementation libraries.glide_okhttp3_integration
+    kapt libraries.glide_compiler
 }

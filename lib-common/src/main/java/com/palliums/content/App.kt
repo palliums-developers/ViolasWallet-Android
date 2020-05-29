@@ -34,6 +34,13 @@ open class App : Application() {
         ContextProvider.init(this)
     }
 
+    fun getTopActivity(): Activity? {
+        if(activityStore.empty()){
+            return null
+        }
+        return activityStore.lastElement()
+    }
+
     override fun onTerminate() {
         super.onTerminate()
         while (!activityStore.isEmpty()) {

@@ -34,10 +34,7 @@ data class RawTransaction(
     }
 
     fun toHashByteArray(): ByteArray {
-        val sha3256 = SHA3.Digest256()
-        sha3256.update(SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()))
-        sha3256.update(toByteArray())
-        return sha3256.digest()
+        return hashByteArray(toByteArray())
     }
 
     companion object {
@@ -51,6 +48,13 @@ data class RawTransaction(
                 TypeTag.decode(input),
                 input.readLong()
             )
+        }
+
+        fun hashByteArray(txBytes: ByteArray): ByteArray {
+            val sha3256 = SHA3.Digest256()
+            sha3256.update(SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()))
+            sha3256.update(txBytes)
+            return sha3256.digest()
         }
     }
 }
@@ -75,6 +79,15 @@ data class SignedTransaction(
     val rawTxn: RawTransaction,
     val authenticator: TransactionAuthenticator
 ) {
+    companion object {
+        fun decode(input: LCSInputStream): SignedTransaction {
+            return SignedTransaction(
+                RawTransaction.decode(input),
+                TransactionAuthenticator.decode(input)
+            )
+        }
+    }
+
     val transactionLength: Long
 
     init {
@@ -102,7 +115,7 @@ data class AccountAddress(val byte: ByteArray) {
         val DEFAULT = AccountAddress(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 
         fun decode(input: LCSInputStream): AccountAddress {
-            val value = ByteArray(32)
+            val value = ByteArray(16)
             input.read(value)
             return AccountAddress(
                 value
