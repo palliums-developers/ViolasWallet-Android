@@ -22,16 +22,9 @@ import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ID
 import com.violas.wallet.ui.account.AccountType
 import com.violas.wallet.ui.account.operations.AccountOperationsActivity
 import com.violas.wallet.ui.outsideExchange.orders.MappingExchangeOrdersActivity
+import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.widget.dialog.ExchangeMappingPasswordDialog
-import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.outside_exchange_fragment.*
-import kotlinx.android.synthetic.main.outside_exchange_fragment.btnExchange
-import kotlinx.android.synthetic.main.outside_exchange_fragment.editFromCoin
-import kotlinx.android.synthetic.main.outside_exchange_fragment.editToCoin
-import kotlinx.android.synthetic.main.outside_exchange_fragment.layoutFromCoin
-import kotlinx.android.synthetic.main.outside_exchange_fragment.tvFromCoin
-import kotlinx.android.synthetic.main.outside_exchange_fragment.tvParitiesInfo
-import kotlinx.android.synthetic.main.outside_exchange_fragment.tvToCoin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -310,24 +303,10 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
                 handlerInitiateChange(sendAccountKey, receiveAccountKey)
             }
         } else {
-            showPasswordDialog { sendAccountKey ->
-                handlerInitiateChange(sendAccountKey, null)
+            authenticateAccount(viewModel.getExchangeFromAccount()) {
+                handlerInitiateChange(it, null)
             }
         }
-    }
-
-    private fun showPasswordDialog(callback: (ByteArray) -> Unit) {
-        PasswordInputDialog()
-            .setConfirmListener { password, dialogFragment ->
-                val decryptSendAccountKey = viewModel.decryptSendAccountKey(password)
-                if (decryptSendAccountKey == null) {
-                    showToast(R.string.hint_password_error)
-                    return@setConfirmListener
-                }
-                callback.invoke(decryptSendAccountKey)
-                dialogFragment.dismiss()
-            }
-            .show(childFragmentManager)
     }
 
     private fun handlerInitiateChange(

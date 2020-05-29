@@ -24,13 +24,17 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
         @JvmStatic
         fun start(
             context: Context,
-            mnemonicWords: ArrayList<String>,
+            mnemonicWords: List<String>,
             @BackupMnemonicFrom
             mnemonicFrom: Int,
             requestCode: Int = -100
         ) {
             val intent = Intent(context, BackupPromptActivity::class.java).apply {
-                putStringArrayListExtra(INTENT_KET_MNEMONIC_WORDS, mnemonicWords)
+                val mnemonics = if(mnemonicWords is ArrayList<String>)
+                    mnemonicWords
+                else
+                    ArrayList(mnemonicWords)
+                putStringArrayListExtra(INTENT_KET_MNEMONIC_WORDS, mnemonics)
                 putExtra(INTENT_KET_MNEMONIC_FROM, mnemonicFrom)
             }
 

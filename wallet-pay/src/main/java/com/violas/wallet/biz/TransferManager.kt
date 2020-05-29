@@ -2,13 +2,11 @@ package com.violas.wallet.biz
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.palliums.content.ContextProvider.getContext
 import com.palliums.utils.getString
 import com.palliums.violas.error.ViolasException
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
-import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
@@ -16,9 +14,9 @@ import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
 import com.violas.wallet.utils.validationViolasAddress
 import org.palliums.libracore.http.LibraException
+import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
-import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.wallet.Account
 
 class ToTheirException : RuntimeException(getString(R.string.hint_to_their_error))
@@ -92,8 +90,8 @@ class TransferManager {
         context: Context,
         address: String,
         amountStr: String,
-        password: ByteArray,
-        account: AccountDO,
+        privateKey: ByteArray,
+        accountDO: AccountDO,
         progress: Int,
         token: Boolean = false,
         tokenId: Long = 0,
@@ -102,21 +100,14 @@ class TransferManager {
     ) {
         val amount = amountStr.trim().toDouble()
 
-        val decryptPrivateKey = SimpleSecurity.instance(getContext())
-            .decrypt(password, account.privateKey)
-        if (decryptPrivateKey == null) {
-            error.invoke(WrongPasswordException())
-            return
-        }
-
-        when (account.coinNumber) {
+        when (accountDO.coinNumber) {
             CoinTypes.Libra.coinType() -> {
                 transferLibra(
                     context,
                     address,
                     amount,
-                    decryptPrivateKey,
-                    account,
+                    privateKey,
+                    accountDO,
                     success,
                     error
                 )
@@ -127,8 +118,8 @@ class TransferManager {
                         context,
                         address,
                         amount,
-                        decryptPrivateKey,
-                        account,
+                        privateKey,
+                        accountDO,
                         tokenId,
                         success,
                         error
@@ -138,8 +129,8 @@ class TransferManager {
                         context,
                         address,
                         amount,
-                        decryptPrivateKey,
-                        account,
+                        privateKey,
+                        accountDO,
                         success,
                         error
                     )
@@ -153,28 +144,21 @@ class TransferManager {
         transactionManager: TransactionManager,
         address: String,
         amount: Double,
-        password: ByteArray,
-        account: AccountDO,
+        privateKey: ByteArray,
+        accountDO: AccountDO,
         progress: Int,
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        val decryptPrivateKey = SimpleSecurity.instance(getContext())
-            .decrypt(password, account.privateKey)
-        if (decryptPrivateKey == null) {
-            error.invoke(WrongPasswordException())
-            return
-        }
-
         transactionManager.checkBalance(amount, 1, progress)
             .flatMap {
                 if (it) {
                     transactionManager.obtainTransaction(
-                        decryptPrivateKey,
-                        account.publicKey.hexToBytes(),
+                        privateKey,
+                        accountDO.publicKey.hexToBytes(),
                         it,
                         address,
-                        account.address
+                        accountDO.address
                     )
                 } else {
                     throw LackOfBalanceException()

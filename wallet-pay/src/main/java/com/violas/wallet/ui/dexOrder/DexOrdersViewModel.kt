@@ -2,16 +2,13 @@ package com.violas.wallet.ui.dexOrder
 
 import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.palliums.content.ContextProvider
 import com.palliums.extensions.getShowErrorMessage
 import com.palliums.net.LoadState
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.biz.ExchangeManager
-import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,10 +40,8 @@ class DexOrdersViewModel(
     }
 
     fun revokeOrder(
-        walletAccount: AccountDO,
-        password: ByteArray,
+        privateKey: ByteArray,
         dexOrder: DexOrderDTO,
-        onCheckPassword: (Boolean) -> Unit,
         onRevokeSuccess: () -> Unit
     ): Boolean {
         synchronized(lock) {
@@ -57,21 +52,10 @@ class DexOrdersViewModel(
             }
         }
 
+        loadState.postValueSupport(LoadState.RUNNING)
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val decryptPrivateKey =
-                    SimpleSecurity.instance(ContextProvider.getContext())
-                        .decrypt(password, walletAccount.privateKey)
-                if (decryptPrivateKey == null) {
-                    tipsMessage.postValueSupport(getString(R.string.hint_password_error))
-                    onCheckPassword.invoke(false)
-                    return@launch
-                }
-
-                onCheckPassword.invoke(true)
-                loadState.postValueSupport(LoadState.RUNNING)
-
-                val result = exchangeManager.revokeOrder(decryptPrivateKey, dexOrder, dexService)
+                val result = exchangeManager.revokeOrder(privateKey, dexOrder, dexService)
                 if (result) {
                     withContext(Dispatchers.Main) {
                         onRevokeSuccess.invoke()

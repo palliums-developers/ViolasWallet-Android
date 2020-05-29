@@ -54,10 +54,8 @@ class DexOrderDetailsViewModel(
     }
 
     fun revokeOrder(
-        walletAccount: AccountDO,
-        password: ByteArray,
+        privateKey: ByteArray,
         dexOrder: DexOrderDTO,
-        onCheckPassword: (Boolean) -> Unit,
         onRevokeSuccess: () -> Unit
     ): Boolean {
         synchronized(lock) {
@@ -68,21 +66,10 @@ class DexOrderDetailsViewModel(
             }
         }
 
+        loadState.postValueSupport(LoadState.RUNNING)
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val decryptPrivateKey =
-                    SimpleSecurity.instance(ContextProvider.getContext())
-                        .decrypt(password, walletAccount.privateKey)
-                if (decryptPrivateKey == null) {
-                    tipsMessage.postValueSupport(getString(R.string.hint_password_error))
-                    onCheckPassword.invoke(false)
-                    return@launch
-                }
-
-                onCheckPassword.invoke(true)
-                loadState.postValueSupport(LoadState.RUNNING)
-
-                val result = exchangeManager.revokeOrder(decryptPrivateKey, dexOrder, dexService)
+                val result = exchangeManager.revokeOrder(privateKey, dexOrder, dexService)
                 if (result) {
                     withContext(Dispatchers.Main) {
                         onRevokeSuccess.invoke()

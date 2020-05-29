@@ -10,8 +10,8 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
+import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
-import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_transfer_btc.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -158,33 +158,29 @@ class BTCTransferActivity : TransferActivity() {
     }
 
     private fun showPasswordSend(amount: String, address: String) {
-        PasswordInputDialog()
-            .setConfirmListener { bytes, dialogFragment ->
-                dialogFragment.dismiss()
-                account?.let {
-                    showProgress()
-                    launch(Dispatchers.IO) {
-                        mTransferManager.transferBtc(
-                            mTransactionManager,
-                            address.trim(),
-                            amount.trim().toDouble(),
-                            bytes,
-                            account!!,
-                            sbQuota.progress,
-                            {
-                                showToast(getString(R.string.hint_transfer_broadcast_success))
-                                dismissProgress()
-                                print(it)
-                                finish()
-                            },
-                            {
-                                it.message?.let { it1 -> showToast(it1) }
-                                dismissProgress()
-                                it.printStackTrace()
-                            })
-                    }
-                }
-            }.show(supportFragmentManager)
+        if (account == null) return
+        authenticateAccount(account!!) {
+            launch(Dispatchers.IO) {
+                mTransferManager.transferBtc(
+                    mTransactionManager,
+                    address.trim(),
+                    amount.trim().toDouble(),
+                    it,
+                    account!!,
+                    sbQuota.progress,
+                    success = {
+                        showToast(getString(R.string.hint_transfer_broadcast_success))
+                        dismissProgress()
+                        print(it)
+                        finish()
+                    },
+                    error = {
+                        it.message?.let { it1 -> showToast(it1) }
+                        dismissProgress()
+                        it.printStackTrace()
+                    })
+            }
+        }
     }
 
     private fun initViewData() {

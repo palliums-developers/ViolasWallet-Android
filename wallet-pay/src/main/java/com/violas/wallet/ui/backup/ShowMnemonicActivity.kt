@@ -22,11 +22,15 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
 
         fun start(
             context: Activity,
-            mnemonic: ArrayList<String>,
+            mnemonicWords: List<String>,
             requestCode: Int = -1
         ) {
             Intent(context, ShowMnemonicActivity::class.java).apply {
-                putStringArrayListExtra(INTENT_KET_MNEMONIC_WORDS, mnemonic)
+                val mnemonics = if (mnemonicWords is ArrayList<String>)
+                    mnemonicWords
+                else
+                    ArrayList(mnemonicWords)
+                putStringArrayListExtra(INTENT_KET_MNEMONIC_WORDS, mnemonics)
                 putExtra(INTENT_KET_MNEMONIC_FROM, BackupMnemonicFrom.ONLY_SHOW_MNEMONIC)
                 putExtra(INTENT_KET_JUST_SHOW, true)
             }.start(context, requestCode)

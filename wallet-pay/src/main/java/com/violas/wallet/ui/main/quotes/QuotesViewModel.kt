@@ -9,15 +9,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.palliums.content.ContextProvider
-import com.palliums.utils.exceptionAsync
 import com.palliums.utils.coroutineExceptionHandler
+import com.palliums.utils.exceptionAsync
 import com.palliums.utils.getString
 import com.palliums.utils.toMutableMap
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
-import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.event.TokenPublishEvent
@@ -29,7 +27,10 @@ import com.violas.wallet.ui.main.quotes.bean.ExchangeToken
 import com.violas.wallet.ui.main.quotes.bean.IOrder
 import com.violas.wallet.ui.main.quotes.bean.IOrderStatus
 import com.violas.wallet.ui.main.quotes.bean.IToken
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.palliums.violascore.crypto.KeyPair
@@ -92,7 +93,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         ExchangeManager()
     }
 
-    private var mAccount: AccountDO? = null
+    var mAccount: AccountDO? = null
 
     private var mDefToken = object : IToken {
         override fun setNetEnable(enable: Boolean) {
@@ -634,15 +635,11 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         TransferUnknownException::class
     )
     suspend fun handleExchange(
-        password: ByteArray,
+        privateKey: ByteArray,
         fromCoinAmount: BigDecimal,
         toCoinAmount: BigDecimal
     ) = withContext(Dispatchers.IO) {
-        val decryptPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
-            .decrypt(password, mAccount?.privateKey)
-            ?: throw WrongPasswordException()
-
-        val account = Account(KeyPair.fromSecretKey(decryptPrivateKey))
+        val account = Account(KeyPair.fromSecretKey(privateKey))
         val isPublish = mTokenManager.isPublish(account.getAddress().toHex())
 
         // exchange

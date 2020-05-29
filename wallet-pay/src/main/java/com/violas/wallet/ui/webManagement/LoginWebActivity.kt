@@ -102,16 +102,16 @@ class LoginWebActivity : BaseViewModelActivity() {
     private fun login() {
         val accountDO = mViewModel.mAccountLD.value ?: return
 
-        val pwd = etLoginPwd.text.toString().trim()
-        if (pwd.isEmpty()) {
+        val password = etLoginPwd.text.toString().trim()
+        if (password.isEmpty()) {
             showToast(R.string.hint_input_login_pwd)
             return
         }
 
         decryptAccount(
             accountDO = accountDO,
-            pwd = pwd,
-            pwdErrorCallback = {
+            password = password,
+            passwordErrorCallback = {
                 if (tvLoginPwdErrorTips.visibility != View.VISIBLE) {
                     tvLoginPwdErrorTips.visibility = View.VISIBLE
                 }

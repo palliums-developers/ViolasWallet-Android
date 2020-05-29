@@ -25,7 +25,7 @@ import com.violas.wallet.biz.TransferUnknownException
 import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.ui.dexOrder.DexOrdersActivity
 import com.violas.wallet.ui.main.quotes.tokenList.TokenBottomSheetDialogFragment
-import com.violas.wallet.widget.dialog.PasswordInputDialog
+import com.violas.wallet.utils.authenticateAccount
 import kotlinx.android.synthetic.main.fragment_quotes.*
 import kotlinx.android.synthetic.main.fragment_quotes_content.*
 import kotlinx.android.synthetic.main.fragment_quotes_did_not_open.*
@@ -178,41 +178,38 @@ class QuotesFragment : BaseFragment() {
         fromBigDecimal: BigDecimal,
         toBigDecimal: BigDecimal
     ) {
-        PasswordInputDialog()
-            .setConfirmListener { password, dialogFragment ->
-                launch(coroutineExceptionHandler()) {
-                    showProgress()
-                    try {
-                        val handleExchange =
-                            mQuotesViewModel.handleExchange(password, fromBigDecimal, toBigDecimal)
-                        if (handleExchange) {
-                            showToast(getString(R.string.hint_exchange_successful))
-                            mQuotesViewModel.mFromCoinAmountLiveData.postValue(BigDecimal("0"))
-                            mQuotesViewModel.mToCoinAmountLiveData.postValue(BigDecimal("0"))
-                        } else {
-                            showToast(getString(R.string.hint_exchange_error))
+        authenticateAccount(mQuotesViewModel.mAccount!!) {
+            launch(coroutineExceptionHandler()) {
+                showProgress()
+                try {
+                    val handleExchange =
+                        mQuotesViewModel.handleExchange(it, fromBigDecimal, toBigDecimal)
+                    if (handleExchange) {
+                        showToast(getString(R.string.hint_exchange_successful))
+                        mQuotesViewModel.mFromCoinAmountLiveData.postValue(BigDecimal("0"))
+                        mQuotesViewModel.mToCoinAmountLiveData.postValue(BigDecimal("0"))
+                    } else {
+                        showToast(getString(R.string.hint_exchange_error))
+                    }
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                    when (e) {
+                        is ExchangeCoinEqualException -> {
+                            showToast("${tvFromCoin.text}${getString(R.string.hint_unable_change)}${tvToCoin.text}")
                         }
-                    } catch (e: Throwable) {
-                        e.printStackTrace()
-                        when (e) {
-                            is ExchangeCoinEqualException -> {
-                                showToast("${tvFromCoin.text}${getString(R.string.hint_unable_change)}${tvToCoin.text}")
-                            }
-                            is WrongPasswordException,
-                            is LackOfBalanceException,
-                            is TransferUnknownException -> {
-                                e.message?.let { showToast(it) }
-                            }
-                            else -> {
-                                showToast(getString(R.string.hint_unknown_error))
-                            }
+                        is WrongPasswordException,
+                        is LackOfBalanceException,
+                        is TransferUnknownException -> {
+                            e.message?.let { showToast(it) }
+                        }
+                        else -> {
+                            showToast(getString(R.string.hint_unknown_error))
                         }
                     }
-                    dismissProgress()
                 }
-                dialogFragment.dismiss()
+                dismissProgress()
             }
-            .show(childFragmentManager)
+        }
     }
 
     private fun showTokenFragment(view: View?, fromCoin: Boolean) = launch(Dispatchers.IO) {

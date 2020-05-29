@@ -28,7 +28,7 @@
             android:layout_marginHorizontal="@dimen/dp_28"
             android:layout_marginTop="@dimen/dp_26"
             android:gravity="center_horizontal"
-            android:text="@string/desc_fingerprint_authenticate_start"
+            android:text="@string/desc_fingerprint_authenticate_title_start"
             android:textColor="@color/color_413D4D"
             android:textSize="@dimen/sp_18"
             android:textStyle="bold"
@@ -48,7 +48,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvFingerprintTitle"
-            tools:text="@string/desc_fingerprint_authenticate_retry" />
+            tools:text="@string/desc_fingerprint_authenticate_error_retry" />
 
         <View
             android:id="@+id/vHorizontalLine1"

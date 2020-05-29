@@ -23,9 +23,9 @@ import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexOrderTradeDTO
+import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertViolasTokenPrice
 import com.violas.wallet.utils.convertViolasTokenUnit
-import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_dex_order_details.*
 import kotlinx.android.synthetic.main.item_dex_order_details_header.*
 import kotlinx.coroutines.Dispatchers
@@ -216,37 +216,21 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.tvState -> {
-
                 dexOrder?.let { dexOrder ->
                     if (dexOrder.isOpen()) {
+                        authenticateAccount(currentAccount) {
+                            mViewModel.revokeOrder(it, dexOrder) {
+                                dexOrder.updateStateToRevoking()
+                                initHeaderView(dexOrder)
 
-                        PasswordInputDialog().setConfirmListener { password, dialog ->
-
-                            if (!mViewModel.revokeOrder(
-                                    currentAccount,
-                                    password,
-                                    dexOrder,
-                                    onCheckPassword = {
-                                        if (it) {
-                                            dialog.dismiss()
-                                        }
-                                    }
-                                ) {
-                                    dexOrder.updateStateToRevoking()
-                                    initHeaderView(dexOrder)
-
-                                    EventBus.getDefault().post(
-                                        RevokeDexOrderEvent(
-                                            dexOrder.id,
-                                            dexOrder.updateDate
-                                        )
+                                EventBus.getDefault().post(
+                                    RevokeDexOrderEvent(
+                                        dexOrder.id,
+                                        dexOrder.updateDate
                                     )
-                                }
-                            ) {
-                                dialog.dismiss()
+                                )
                             }
-
-                        }.show(this@DexOrderDetails2Activity.supportFragmentManager)
+                        }
                     }
                 }
             }

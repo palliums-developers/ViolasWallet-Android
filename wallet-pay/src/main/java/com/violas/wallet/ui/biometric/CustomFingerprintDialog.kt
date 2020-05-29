@@ -124,37 +124,37 @@ class CustomFingerprintDialog : BaseFingerprintDialogFragment() {
     }
 
     override fun onShowFailed(msg: CharSequence) {
-        super.onShowFailed(getString(R.string.desc_fingerprint_authenticate_retry))
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_failed))
+        super.onShowFailed(getString(R.string.desc_fingerprint_authenticate_error_retry))
+        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_failed))
     }
 
     override fun onShowHelp(msg: CharSequence) {
-        super.onShowHelp(getString(R.string.desc_fingerprint_authenticate_retry))
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_failed))
+        super.onShowHelp(getString(R.string.desc_fingerprint_authenticate_error_retry))
+        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_failed))
     }
 
     override fun onResetMessage() {
         updateFingerprintIcon(STATE_FINGERPRINT)
-        updateErrorText(getString(R.string.desc_fingerprint_authenticate_retry))
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_start))
+        updateErrorText(getString(R.string.desc_fingerprint_authenticate_error_retry))
+        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_start))
     }
 
     override fun onShowLockout(msg: CharSequence) {
         super.onShowLockout(getString(R.string.desc_fingerprint_authenticate_error_lockout))
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_failed))
+        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_failed))
         updatePositiveBtn(true)
     }
 
     override fun onShowLockoutPermanent(msg: CharSequence) {
         super.onShowLockoutPermanent(getString(R.string.desc_fingerprint_authenticate_error_lockout_permanent))
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_failed))
+        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_failed))
         updatePositiveBtn(true)
     }
 
     override fun onBiometricReactivated() {
         updateFingerprintIcon(STATE_FINGERPRINT)
         updateErrorText("")
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_start))
+        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_start))
         updatePositiveBtn(false)
     }
 

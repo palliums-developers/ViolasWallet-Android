@@ -11,9 +11,9 @@ import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
+import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertViolasTokenUnit
-import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -157,36 +157,33 @@ class LibraTransferActivity : TransferActivity() {
     }
 
     private fun showPasswordSend(amount: String, address: String) {
-        PasswordInputDialog()
-            .setConfirmListener { bytes, dialogFragment ->
-                dialogFragment.dismiss()
-                account?.let {
-                    showProgress()
-                    launch(Dispatchers.IO) {
-                        mTransferManager.transfer(
-                            this@LibraTransferActivity,
-                            address.trim(),
-                            amount.trim(),
-                            bytes,
-                            account!!,
-                            sbQuota.progress,
-                            isToken,
-                            tokenId,
-                            {
-                                showToast(getString(R.string.hint_transfer_broadcast_success))
-                                EventBus.getDefault().post(RefreshBalanceEvent())
-                                dismissProgress()
-                                print(it)
-                                finish()
-                            },
-                            {
-                                it.message?.let { it1 -> showToast(it1) }
-                                dismissProgress()
-                                it.printStackTrace()
-                            })
-                    }
-                }
-            }.show(supportFragmentManager)
+        if (account == null) return
+
+        authenticateAccount(account!!) {
+            launch(Dispatchers.IO) {
+                mTransferManager.transfer(
+                    this@LibraTransferActivity,
+                    address.trim(),
+                    amount.trim(),
+                    it,
+                    account!!,
+                    sbQuota.progress,
+                    isToken,
+                    tokenId,
+                    {
+                        showToast(getString(R.string.hint_transfer_broadcast_success))
+                        EventBus.getDefault().post(RefreshBalanceEvent())
+                        dismissProgress()
+                        print(it)
+                        finish()
+                    },
+                    {
+                        it.message?.let { it1 -> showToast(it1) }
+                        dismissProgress()
+                        it.printStackTrace()
+                    })
+            }
+        }
     }
 
     private fun initViewData() {

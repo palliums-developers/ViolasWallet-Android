@@ -34,9 +34,9 @@ import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.ClipboardUtils
+import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
-import com.violas.wallet.widget.dialog.PasswordInputDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
@@ -207,33 +207,23 @@ class WalletFragment : BaseFragment() {
 
             R.id.btnConfirm -> {
                 layoutBackupNow.visibility = View.GONE
-                PasswordInputDialog()
-                    .setConfirmListener { bytes, dialogFragment ->
-                        launch(Dispatchers.IO) {
-                            activity?.applicationContext?.let {
-                                try {
-                                    val currentAccount =
-                                        mAccountManager.getIdentityWalletMnemonic(it, bytes)
-
-                                    withContext(Dispatchers.Main) {
-                                        if (currentAccount != null) {
-                                            dialogFragment.dismiss()
-                                            BackupPromptActivity.start(
-                                                requireActivity(),
-                                                currentAccount,
-                                                BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
-                                            )
-                                        } else {
-                                            showToast(R.string.hint_password_error)
-                                        }
-                                    }
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                }
-                            }
-                        }
+                launch(Dispatchers.Main) {
+                    val identityAccount = withContext(Dispatchers.IO) {
+                        mAccountManager.getIdentityAccount()
                     }
-                    .show(requireActivity().supportFragmentManager)
+
+                    authenticateAccount(
+                        identityAccount,
+                        dismissLoadingWhenDecryptEnd = true,
+                        mnemonicCallback = {
+                            BackupPromptActivity.start(
+                                requireActivity(),
+                                it,
+                                BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
+                            )
+                        }
+                    )
+                }
             }
         }
     }

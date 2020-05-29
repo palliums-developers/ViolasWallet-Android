@@ -18,7 +18,7 @@ import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexOrderTradeDTO
-import com.violas.wallet.widget.dialog.PasswordInputDialog
+import com.violas.wallet.utils.authenticateAccount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -67,34 +67,19 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
                 //showToast(R.string.transaction_record_not_supported_query)
             },
             onClickRevokeOrder = { dexOrder, position ->
+                authenticateAccount(currentAccount) {
+                    mViewModel.revokeOrder(it, dexOrder) {
+                        dexOrder.updateStateToRevoking()
+                        getViewAdapter().notifyItemChanged(position)
 
-                PasswordInputDialog().setConfirmListener { password, dialog ->
-
-                    if (!mViewModel.revokeOrder(
-                            currentAccount,
-                            password,
-                            dexOrder,
-                            onCheckPassword = {
-                                if (it) {
-                                    dialog.dismiss()
-                                }
-                            }
-                        ) {
-                            dexOrder.updateStateToRevoking()
-                            getViewAdapter().notifyItemChanged(position)
-
-                            EventBus.getDefault().post(
-                                RevokeDexOrderEvent(
-                                    dexOrder.id,
-                                    dexOrder.updateDate
-                                )
+                        EventBus.getDefault().post(
+                            RevokeDexOrderEvent(
+                                dexOrder.id,
+                                dexOrder.updateDate
                             )
-                        }
-                    ) {
-                        dialog.dismiss()
+                        )
                     }
-
-                }.show(this@DexOrderDetailsActivity.supportFragmentManager)
+                }
             }
         )
     }

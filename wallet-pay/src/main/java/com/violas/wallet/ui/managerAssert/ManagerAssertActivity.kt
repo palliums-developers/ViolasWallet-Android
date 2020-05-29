@@ -18,11 +18,10 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertToken
-import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.TokenPublishEvent
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.widget.dialog.PasswordInputDialog
+import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.activity_manager_assert.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
@@ -32,7 +31,6 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.wallet.Account
-import java.util.*
 
 class ManagerAssertActivity : BaseAppActivity() {
     override fun getLayoutResId() = R.layout.activity_manager_assert
@@ -111,46 +109,34 @@ class ManagerAssertActivity : BaseAppActivity() {
         checkbox: SwitchButton,
         checked: Boolean
     ) {
-        PasswordInputDialog()
-            .setConfirmListener { bytes, dialogFragment ->
-                dialogFragment.dismiss()
-                showProgress()
-                launch(Dispatchers.IO) {
-                    val decrypt = SimpleSecurity.instance(applicationContext)
-                        .decrypt(bytes, mAccount.privateKey)
-                    Arrays.fill(bytes, 0.toByte())
-                    if (decrypt == null) {
-                        dismissProgress()
-                        showToast(R.string.hint_password_error)
-                        this@ManagerAssertActivity.runOnUiThread {
-                            checkbox.isChecked = false
-                        }
-                        return@launch
-                    }
-                    try {
-                        mTokenManager.publishToken(Account(KeyPair.fromSecretKey(decrypt)))
-                        isPublish = true
-                        EventBus.getDefault().post(TokenPublishEvent())
-                        EventBus.getDefault().post(RefreshBalanceEvent())
-                        mTokenManager.insert(checked, assertToken)
-                    } catch (e: Exception) {
-                        this@ManagerAssertActivity.runOnUiThread {
-                            checkbox.isChecked = false
-                            Toast.makeText(
-                                this@ManagerAssertActivity, String.format(
-                                    getString(R.string.hint_not_none_coin_or_net_error),
-                                    CoinTypes.Violas.coinName()
-                                ), Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                    dismissProgress()
-                }
-            }
-            .setCancelListener {
+        authenticateAccount(
+            mAccount,
+            cancelCallback = {
                 checkbox.isChecked = false
             }
-            .show(supportFragmentManager)
+        ) {
+            launch(Dispatchers.IO) {
+                try {
+                    mTokenManager.publishToken(Account(KeyPair.fromSecretKey(it)))
+                    isPublish = true
+                    EventBus.getDefault().post(TokenPublishEvent())
+                    EventBus.getDefault().post(RefreshBalanceEvent())
+                    mTokenManager.insert(checked, assertToken)
+                } catch (e: Exception) {
+                    launch(Dispatchers.Main) {
+                        checkbox.isChecked = false
+                        showToast(
+                            getString(
+                                R.string.hint_not_none_coin_or_net_error,
+                                CoinTypes.Violas.coinName()
+                            ),
+                            Toast.LENGTH_LONG
+                        )
+                    }
+                }
+                dismissProgress()
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

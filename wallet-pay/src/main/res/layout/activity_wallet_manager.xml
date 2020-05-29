@@ -102,7 +102,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_fingerprint_payment"
+                android:text="@string/label_fingerprint_verification"
                 android:textColor="@color/def_text_color"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"

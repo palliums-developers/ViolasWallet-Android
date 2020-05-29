@@ -14,7 +14,7 @@ import com.violas.wallet.event.RevokeDexOrderEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.ui.dexOrder.details.DexOrderDetails2Activity
-import com.violas.wallet.widget.dialog.PasswordInputDialog
+import com.violas.wallet.utils.authenticateAccount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -71,28 +71,12 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
                 DexOrderDetails2Activity.start(requireContext(), it)
             },
             onClickRevokeOrder = { dexOrder, position ->
-
-                PasswordInputDialog().setConfirmListener { password, dialog ->
-
-                    if (!mViewModel.revokeOrder(
-                            currentAccount,
-                            password,
-                            dexOrder,
-                            onCheckPassword = {
-                                if (it) {
-                                    dialog.dismiss()
-                                }
-                            }
-                        ) {
-                            dexOrder.updateStateToRevoking()
-                            getViewAdapter().notifyItemChanged(position)
-                        }
-
-                    ) {
-                        dialog.dismiss()
+                authenticateAccount(currentAccount) {
+                    mViewModel.revokeOrder(it, dexOrder) {
+                        dexOrder.updateStateToRevoking()
+                        getViewAdapter().notifyItemChanged(position)
                     }
-
-                }.show(this@DexOrdersFragment.childFragmentManager)
+                }
             })
     }
 

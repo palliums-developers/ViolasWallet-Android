@@ -88,6 +88,10 @@ class AccountManager {
         return mAccountStorage.findByCoinTypeByIdentity(coinType)
     }
 
+    fun getIdentityAccount(): AccountDO {
+         return mAccountStorage.loadByWalletType(0)!!
+    }
+
     /**
      * 切换当前钱包账户
      */

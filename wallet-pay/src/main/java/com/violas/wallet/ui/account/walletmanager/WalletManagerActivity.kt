@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.biometric.BiometricManager
 import androidx.fragment.app.Fragment
@@ -13,9 +12,7 @@ import com.palliums.extensions.show
 import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.ChangeAccountNameEvent
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.event.WalletChangeEvent
@@ -27,7 +24,8 @@ import com.violas.wallet.ui.backup.ShowMnemonicActivity
 import com.violas.wallet.ui.biometric.CloseBiometricPaymentDialog
 import com.violas.wallet.ui.biometric.CustomFingerprintDialog
 import com.violas.wallet.ui.biometric.UnableBiometricPromptDialog
-import com.violas.wallet.utils.showPwdInputDialog
+import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.utils.authenticateAccountByPassword
 import kotlinx.android.synthetic.main.activity_wallet_manager.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -109,21 +107,19 @@ class WalletManagerActivity : BaseAppActivity() {
         }
 
         layoutBack.setOnClickListener {
-            PasswordInputDialog()
-                .setConfirmListener { password, dialog ->
-                    backWallet(mAccountDO, password)
-                    dialog.dismiss()
+            authenticateAccount(
+                mAccountDO,
+                dismissLoadingWhenDecryptEnd = true,
+                mnemonicCallback = {
+                    backWallet(mAccountDO, it)
                 }
-                .show(supportFragmentManager)
+            )
         }
 
         btnRemoveWallet.setOnClickListener {
-            PasswordInputDialog()
-                .setConfirmListener { password, dialog ->
-                    removeWallet(mAccountDO)
-                    dialog.dismiss()
-                }
-                .show(supportFragmentManager)
+            authenticateAccount(mAccountDO) {
+                removeWallet(mAccountDO)
+            }
         }
 
         clBiometric.setOnClickListener {
@@ -131,21 +127,22 @@ class WalletManagerActivity : BaseAppActivity() {
         }
 
         swtBtnBiometric.setOnCheckedChangeListener { _, isChecked ->
-            Log.e("TEST", "onCheckedChanged. isChecked = $isChecked")
             if (isChecked) {
-                if(!canBiometric()){
+                if (!canBiometric()) {
                     swtBtnBiometric.setCheckedNoEvent(false)
                     return@setOnCheckedChangeListener
                 }
 
-                showPwdInputDialog(mAccountDO,
+                authenticateAccountByPassword(
+                    mAccountDO,
+                    dismissLoadingWhenDecryptEnd = true,
                     cancelCallback = {
                         swtBtnBiometric.setCheckedNoEvent(false)
                     },
                     passwordCallback = {
-                        dismissProgress()
                         openBiometricPayment(it)
-                    })
+                    }
+                )
             } else {
                 closeBiometricPayment()
             }
@@ -178,14 +175,14 @@ class WalletManagerActivity : BaseAppActivity() {
     private fun openBiometricPayment(password: String) {
         val promptParams =
             BiometricCompat.PromptParams.Builder(this)
-                .title(getString(R.string.title_open_fingerprint_payment))
+                .title(getString(R.string.title_open_fingerprint_verification))
                 .negativeButtonText(getString(R.string.action_cancel_nbsp))
                 .positiveButtonText(getString(R.string.action_start_now_enable))
                 .customFingerprintDialogClass(CustomFingerprintDialog::class.java)
                 .reactivateBiometricWhenLockout(true)
                 .build()
 
-        val key = "address_${mAccountDO.address}"
+        val key = mAccountDO.getBiometricKey()
         mBiometricCompat.encrypt(promptParams, key, password) {
             if (it.type == BiometricCompat.Type.INFO) return@encrypt
 
@@ -219,38 +216,19 @@ class WalletManagerActivity : BaseAppActivity() {
             ).show(supportFragmentManager)
     }
 
-    private fun backWallet(account: AccountDO, password: ByteArray) {
-        launch(Dispatchers.IO) {
-            try {
-                val decrypt = SimpleSecurity.instance(this@WalletManagerActivity.applicationContext)
-                    .decrypt(password, account.mnemonic)
-                if (decrypt == null) {
-                    showToast(getString(R.string.hint_password_error))
-                    return@launch
-                }
-                val decryptStr = String(decrypt)
-                val mnemonic = decryptStr.substring(1, decryptStr.length - 1)
-                    .split(",")
-                    .map { it.trim() }
-                    .toMutableList() as ArrayList
-
-                if (account.walletType == 0 && !mAccountManager.isIdentityMnemonicBackup()) {
-                    BackupPromptActivity.start(
-                        this@WalletManagerActivity,
-                        mnemonic,
-                        BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
-                    )
-                } else {
-                    ShowMnemonicActivity.start(this@WalletManagerActivity, mnemonic)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+    private fun backWallet(account: AccountDO, mnemonics: List<String>) {
+        if (account.walletType == 0 && !mAccountManager.isIdentityMnemonicBackup()) {
+            BackupPromptActivity.start(
+                this@WalletManagerActivity,
+                mnemonics,
+                BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
+            )
+        } else {
+            ShowMnemonicActivity.start(this@WalletManagerActivity, mnemonics)
         }
     }
 
     private fun removeWallet(account: AccountDO) {
-        showProgress()
         launch(Dispatchers.IO) {
             val removeAccountID = account.id
             val currentAccountID = mAccountManager.currentAccount().id
@@ -261,6 +239,7 @@ class WalletManagerActivity : BaseAppActivity() {
             }
             EventBus.getDefault().post(WalletChangeEvent())
             withContext(Dispatchers.Main) {
+                dismissProgress()
                 finish()
             }
         }
