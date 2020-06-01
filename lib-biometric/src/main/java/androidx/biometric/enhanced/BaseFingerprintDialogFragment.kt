@@ -81,6 +81,8 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
 
     internal inner class H : Handler() {
         override fun handleMessage(msg: Message) {
+            if (context == null) return
+
             when (msg.what) {
                 MSG_SHOW_HELP ->
                     onShowHelp(msg.obj as CharSequence)

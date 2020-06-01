@@ -200,6 +200,7 @@ class WalletManagerActivity : BaseAppActivity() {
 
             swtBtnBiometric.setCheckedNoEvent(false)
             if (it.reason == BiometricCompat.Reason.USER_CANCELED
+                || it.reason == BiometricCompat.Reason.CANCELED
                 || it.reason == BiometricCompat.Reason.NEGATIVE_BUTTON
             ) {
                 mBiometricCompat.cancel()

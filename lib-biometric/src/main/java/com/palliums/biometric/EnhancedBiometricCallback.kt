@@ -38,6 +38,7 @@ internal class EnhancedBiometricCallback(
 
         val reason = errorToReason(errorCode)
         val type = if (reason == BiometricCompat.Reason.USER_CANCELED
+            || reason == BiometricCompat.Reason.CANCELED
             || reason == BiometricCompat.Reason.NEGATIVE_BUTTON
             || reason == BiometricCompat.Reason.POSITIVE_BUTTON
             || (reason == BiometricCompat.Reason.LOCKOUT_PERMANENT && !reactivateWhenLockoutPermanent)

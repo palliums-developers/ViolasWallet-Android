@@ -290,8 +290,8 @@
     <string name="desc_fingerprint_authenticate_title_start">请验证已有指纹</string>
     <string name="desc_fingerprint_authenticate_title_failed">未能识别指纹</string>
     <string name="desc_fingerprint_authenticate_error_retry">再试一次</string>
-    <string name="desc_fingerprint_authenticate_error_lockout">尝试次数过多，指纹传感器已暂停使用，请稍后重试。</string>
-    <string name="desc_fingerprint_authenticate_error_lockout_permanent">尝试次数过多，指纹传感器已停用，需要验证手机密码。</string>
+    <string name="desc_fingerprint_authenticate_error_lockout">指纹传感器已暂停使用，请稍后重试。</string>
+    <string name="desc_fingerprint_authenticate_error_lockout_permanent">指纹传感器已停用，需要验证手机密码。</string>
     <string name="label_fingerprint_verification">指纹验证</string>
     <string name="title_prompt">提示</string>
     <string name="desc_close_fingerprint_verification">确定关闭指纹验证？</string>

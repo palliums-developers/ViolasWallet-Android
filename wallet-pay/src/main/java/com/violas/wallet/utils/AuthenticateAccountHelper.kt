@@ -180,7 +180,7 @@ fun BaseActivity.authenticateAccountByBiometric(
             return@decrypt
         }
 
-        // 其它error原因, 直接通过密码验证
+        // 其它error原因
         biometricErrorCallback?.invoke()
     }
 }
@@ -258,7 +258,7 @@ fun BaseFragment.authenticateAccountByBiometric(
             return@decrypt
         }
 
-        // 其它error原因, 直接通过密码验证
+        // 其它error原因
         biometricErrorCallback?.invoke()
     }
 }
