@@ -194,14 +194,14 @@ class TransferManager {
         val token = DataRepository.getTokenStorage().findById(tokenId)
         token?.let {
             try {
-                mTokenManager.sendViolasToken(
-                    token.tokenIdx,
-                    Account(
-                        KeyPair.fromSecretKey(decryptPrivateKey)
-                    ),
-                    address,
-                    (amount * 1000000L).toLong()
-                )
+//                mTokenManager.sendViolasToken(
+//                    token.tokenIdx,
+//                    Account(
+//                        KeyPair.fromSecretKey(decryptPrivateKey)
+//                    ),
+//                    address,
+//                    (amount * 1000000L).toLong()
+//                )
                 success.invoke("")
             } catch (e: Exception) {
                 error.invoke(convertViolasTransferException(e))

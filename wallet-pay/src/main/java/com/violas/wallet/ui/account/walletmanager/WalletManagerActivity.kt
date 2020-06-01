@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.biometric.BiometricManager
 import androidx.fragment.app.Fragment
-import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.show
 import com.palliums.utils.start
 import com.violas.wallet.R
@@ -59,9 +57,9 @@ class WalletManagerActivity : BaseAppActivity() {
     private val mAccountManager by lazy {
         AccountManager()
     }
-    private val mBiometricCompat by lazy {
-        BiometricCompat.Builder(this).build()
-    }
+//    private val mBiometricCompat by lazy {
+//        BiometricCompat.Builder(this).build()
+//    }
 
     override fun getLayoutResId() = R.layout.activity_wallet_manager
 
@@ -150,65 +148,65 @@ class WalletManagerActivity : BaseAppActivity() {
     }
 
     private fun canBiometric(): Boolean {
-        val canAuthenticate = mBiometricCompat.canAuthenticate()
-        if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
-            return true
-        }
-
-        val prompt = when (canAuthenticate) {
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
-                getString(R.string.desc_biometric_error_no_hardware)
-            }
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                getString(R.string.desc_biometric_error_none_enrolled)
-            }
-            else -> {
-                getString(R.string.desc_biometric_error_hardware_unavailable)
-            }
-        }
-        UnableBiometricPromptDialog()
-            .setPromptText(prompt)
-            .show(supportFragmentManager)
+//        val canAuthenticate = mBiometricCompat.canAuthenticate()
+//        if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
+//            return true
+//        }
+//
+//        val prompt = when (canAuthenticate) {
+//            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+//                getString(R.string.desc_biometric_error_no_hardware)
+//            }
+//            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+//                getString(R.string.desc_biometric_error_none_enrolled)
+//            }
+//            else -> {
+//                getString(R.string.desc_biometric_error_hardware_unavailable)
+//            }
+//        }
+//        UnableBiometricPromptDialog()
+//            .setPromptText(prompt)
+//            .show(supportFragmentManager)
         return false
     }
 
     private fun openBiometricPayment(password: String) {
-        val promptParams =
-            BiometricCompat.PromptParams.Builder(this)
-                .title(getString(R.string.title_open_fingerprint_verification))
-                .negativeButtonText(getString(R.string.action_cancel_nbsp))
-                .positiveButtonText(getString(R.string.action_start_now_enable))
-                .customFingerprintDialogClass(CustomFingerprintDialog::class.java)
-                .reactivateBiometricWhenLockout(true)
-                .build()
+//        val promptParams =
+//            BiometricCompat.PromptParams.Builder(this)
+//                .title(getString(R.string.title_open_fingerprint_verification))
+//                .negativeButtonText(getString(R.string.action_cancel_nbsp))
+//                .positiveButtonText(getString(R.string.action_start_now_enable))
+//                .customFingerprintDialogClass(CustomFingerprintDialog::class.java)
+//                .reactivateBiometricWhenLockout(true)
+//                .build()
 
-        val key = mAccountDO.getBiometricKey()
-        mBiometricCompat.encrypt(promptParams, key, password) {
-            if (it.type == BiometricCompat.Type.INFO) return@encrypt
-
-            if (it.type == BiometricCompat.Type.SUCCESS) {
-                launch(Dispatchers.Main) {
-                    val encryptedPassword = it.value!!
-                    mAccountDO.encryptedPassword = encryptedPassword.toByteArray()
-                    withContext(Dispatchers.IO) {
-                        mAccountManager.updateAccountPassword(mAccountDO.id, encryptedPassword)
-                    }
-                }
-                return@encrypt
-            }
+//        val key = mAccountDO.getBiometricKey()
+//        mBiometricCompat.encrypt(promptParams, key, password) {
+//            if (it.type == BiometricCompat.Type.INFO) return@encrypt
+//
+//            if (it.type == BiometricCompat.Type.SUCCESS) {
+//                launch(Dispatchers.Main) {
+//                    val encryptedPassword = it.value!!
+//                    mAccountDO.encryptedPassword = encryptedPassword.toByteArray()
+//                    withContext(Dispatchers.IO) {
+//                        mAccountManager.updateAccountPassword(mAccountDO.id, encryptedPassword)
+//                    }
+//                }
+//                return@encrypt
+//            }
 
             swtBtnBiometric.setCheckedNoEvent(false)
-        }
+//        }
     }
 
     private fun closeBiometricPayment() {
         CloseBiometricsDialog()
             .setCallback(
                 confirmCallback = {
-                    mAccountDO.encryptedPassword = "".toByteArray()
-                    launch(Dispatchers.IO) {
-                        mAccountManager.updateAccountPassword(mAccountDO.id, "")
-                    }
+//                    mAccountDO.encryptedPassword = "".toByteArray()
+//                    launch(Dispatchers.IO) {
+//                        mAccountManager.updateAccountPassword(mAccountDO.id, "")
+//                    }
                 },
                 cancelCallback = {
                     swtBtnBiometric.setCheckedNoEvent(true)

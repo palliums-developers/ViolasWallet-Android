@@ -30,10 +30,6 @@ data class AccountDO(
     var address: String = "",
     @ColumnInfo(name = "amount")
     var amount: Long = 0,
-    @ColumnInfo(name = "encrypted_password", typeAffinity = ColumnInfo.BLOB)
-    var encryptedPassword: ByteArray? = null,
-    @ColumnInfo(name = "avoid_password")
-    var avoidPassword: Boolean = false,
     @ColumnInfo(name = "modify_date")
     var modifyDate: Date = Date(System.currentTimeMillis())
 ) {
@@ -42,58 +38,14 @@ data class AccountDO(
     }
 
     fun getEncryptedPasswordStr(): String? {
-        return try {
-            if (encryptedPassword != null) String(encryptedPassword!!) else null
-        } catch (ignore: Exception) {
-            null
-        }
+        return null
     }
 
     fun isOpenedBiometricPayment(): Boolean {
-        return !getEncryptedPasswordStr().isNullOrBlank()
+        return false
     }
 
     fun getBiometricKey(): String {
         return "account_${id}_$address"
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as AccountDO
-
-        if (id != other.id) return false
-        if (!privateKey.contentEquals(other.privateKey)) return false
-        if (publicKey != other.publicKey) return false
-        if (authKeyPrefix != other.authKeyPrefix) return false
-        if (!mnemonic.contentEquals(other.mnemonic)) return false
-        if (walletNickname != other.walletNickname) return false
-        if (walletType != other.walletType) return false
-        if (coinNumber != other.coinNumber) return false
-        if (address != other.address) return false
-        if (amount != other.amount) return false
-        if (encryptedPassword != other.encryptedPassword) return false
-        if (avoidPassword != other.avoidPassword) return false
-        if (modifyDate != other.modifyDate) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + privateKey.contentHashCode()
-        result = 31 * result + publicKey.hashCode()
-        result = 31 * result + authKeyPrefix.hashCode()
-        result = 31 * result + mnemonic.contentHashCode()
-        result = 31 * result + walletNickname.hashCode()
-        result = 31 * result + walletType
-        result = 31 * result + coinNumber
-        result = 31 * result + address.hashCode()
-        result = 31 * result + amount.hashCode()
-        result = 31 * result + encryptedPassword.hashCode()
-        result = 31 * result + avoidPassword.hashCode()
-        result = 31 * result + modifyDate.hashCode()
-        return result
     }
 }

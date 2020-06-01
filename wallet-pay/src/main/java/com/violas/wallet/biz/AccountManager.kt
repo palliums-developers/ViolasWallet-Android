@@ -47,7 +47,6 @@ class AccountManager {
     }
 
     fun updateAccountPassword(accountId: Long, encryptedPassword: String) {
-        mAccountStorage.updateEncryptedPassword(accountId, encryptedPassword.toByteArray())
     }
 
     /**

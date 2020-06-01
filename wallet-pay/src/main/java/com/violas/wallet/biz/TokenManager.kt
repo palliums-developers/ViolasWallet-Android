@@ -98,19 +98,19 @@ class TokenManager {
         }
 
         localToken.map {
-            if (it.enable && !localSupportTokenMap.contains(it.tokenIdx)) {
-                mutableList.add(
-                    AssertToken(
-                        account_id = account.id,
-                        enable = true,
-                        tokenIdx = it.tokenIdx,
-                        isToken = true,
-                        name = it.name,
-                        fullName = "",
-                        amount = 0
-                    )
-                )
-            }
+//            if (it.enable && !localSupportTokenMap.contains(it.tokenIdx)) {
+//                mutableList.add(
+//                    AssertToken(
+//                        account_id = account.id,
+//                        enable = true,
+//                        tokenIdx = it.tokenIdx,
+//                        isToken = true,
+//                        name = it.name,
+//                        fullName = "",
+//                        amount = 0
+//                    )
+//                )
+//            }
         }
 
         return mutableList
@@ -121,17 +121,17 @@ class TokenManager {
         val enableToken = mTokenStorage
             .findEnableTokenByAccountId(account.id)
             .map {
-                AssertToken(
-                    id = it.id!!,
-                    account_id = it.account_id,
-                    coinType = account.coinNumber,
-                    enable = it.enable,
-                    isToken = true,
-                    tokenIdx = it.tokenIdx,
-                    name = it.name,
-                    fullName = "",
-                    amount = it.amount
-                )
+//                AssertToken(
+//                    id = it.id!!,
+//                    account_id = it.account_id,
+//                    coinType = account.coinNumber,
+//                    enable = it.enable,
+//                    isToken = true,
+//                    tokenIdx = it.tokenIdx,
+//                    name = it.name,
+//                    fullName = "",
+//                    amount = it.amount
+//                )
             }.toList()
 
         val mutableList = mutableListOf<AssertToken>()
@@ -147,31 +147,31 @@ class TokenManager {
                 amount = account.amount
             )
         )
-        mutableList.addAll(enableToken)
+//        mutableList.addAll(enableToken)
         return mutableList
     }
 
     @WorkerThread
     fun insert(checked: Boolean, accountId: Long, tokenName: String, tokenIdx: Long) {
         mTokenStorage.insert(
-            TokenDo(
-                enable = checked,
-                account_id = accountId,
-                name = tokenName,
-                tokenIdx = tokenIdx
-            )
+//            TokenDo(
+//                enable = checked,
+//                account_id = accountId,
+//                name = tokenName,
+//                tokenIdx = tokenIdx
+//            )
         )
     }
 
     @WorkerThread
     fun insert(checked: Boolean, assertToken: AssertToken) {
         mTokenStorage.insert(
-            TokenDo(
-                enable = checked,
-                account_id = assertToken.account_id,
-                name = assertToken.name,
-                tokenIdx = assertToken.tokenIdx
-            )
+//            TokenDo(
+//                enable = checked,
+//                account_id = assertToken.account_id,
+//                name = assertToken.name,
+//                tokenIdx = assertToken.tokenIdx
+//            )
         )
     }
 
@@ -179,13 +179,14 @@ class TokenManager {
         address: String,
         tokenDo: TokenDo
     ): Long {
-        val amount = getTokenBalance(address, tokenDo.tokenIdx)
-
-        mExecutor.submit {
-            tokenDo.amount = amount
-            mTokenStorage.update(tokenDo)
-        }
-        return amount
+//        val amount = getTokenBalance(address, tokenDo.tokenIdx)
+//
+//        mExecutor.submit {
+//            tokenDo.amount = amount
+//            mTokenStorage.update(tokenDo)
+//        }
+//        return amount
+        return 1000
     }
 
     suspend fun getTokenBalance(
@@ -236,19 +237,19 @@ class TokenManager {
         val localTokens = enableTokens
             .filter { it.isToken }
             .map {
-                TokenDo(
-                    id = it.id,
-                    account_id = it.account_id,
-                    tokenIdx = it.tokenIdx,
-                    name = it.name,
-                    enable = it.enable,
-                    amount = it.amount
-                )
+//                TokenDo(
+//                    id = it.id,
+//                    account_id = it.account_id,
+//                    tokenIdx = it.tokenIdx,
+//                    name = it.name,
+//                    enable = it.enable,
+//                    amount = it.amount
+//                )
             }
 
         // 更新本地token资产余额，钱包资产余额交由AccountManager更新
         mExecutor.submit {
-            mTokenStorage.update(*localTokens.toTypedArray())
+//            mTokenStorage.update(*localTokens.toTypedArray())
         }
 
         return Pair(accountBalance, enableTokens)
