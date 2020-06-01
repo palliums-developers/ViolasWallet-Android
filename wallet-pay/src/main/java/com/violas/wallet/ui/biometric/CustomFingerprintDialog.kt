@@ -9,9 +9,13 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.biometric.enhanced.BaseFingerprintDialogFragment
+import androidx.biometric.enhanced.BiometricPrompt
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.dialog_custom_fingerprint.*
 
@@ -59,7 +63,7 @@ class CustomFingerprintDialog : BaseFingerprintDialogFragment() {
         val positiveButtonText = when {
             isDeviceCredentialAllowed() ->
                 getString(R.string.action_use_password)
-            isReactivateBiometricWhenLock() -> {
+            isReactivateWhenLockoutPermanent() -> {
                 val setText = getPositiveButtonText()
                 if (setText.isNullOrBlank()) {
                     getString(R.string.action_start_now_enable)
@@ -71,7 +75,7 @@ class CustomFingerprintDialog : BaseFingerprintDialogFragment() {
         }
         if (!positiveButtonText.isNullOrBlank()) {
             tvPositiveBtn.text = positiveButtonText
-            if(isReactivateBiometricWhenLock()){
+            if (isReactivateWhenLockoutPermanent()) {
                 updatePositiveBtn(false)
             }
             tvPositiveBtn.setOnClickListener {
@@ -82,7 +86,7 @@ class CustomFingerprintDialog : BaseFingerprintDialogFragment() {
                             DialogInterface.BUTTON_POSITIVE
                         )
                     }
-                    isReactivateBiometricWhenLock() -> {
+                    isReactivateWhenLockoutPermanent() -> {
                         mReactivateBiometricButtonListener.onClick(
                             dialog,
                             DialogInterface.BUTTON_POSITIVE
@@ -99,7 +103,7 @@ class CustomFingerprintDialog : BaseFingerprintDialogFragment() {
                     }
                 }
             }
-        }else{
+        } else {
             updatePositiveBtn(false)
         }
     }
@@ -133,16 +137,22 @@ class CustomFingerprintDialog : BaseFingerprintDialogFragment() {
         updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_failed))
     }
 
+    override fun onShowError(msg: CharSequence, errorId: Int) {
+        if (errorId == BiometricPrompt.ERROR_LOCKOUT) {
+            super.onShowError(
+                getString(R.string.desc_fingerprint_authenticate_error_lockout),
+                errorId
+            )
+        } else {
+            super.onShowError(msg, errorId)
+        }
+        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_failed))
+    }
+
     override fun onResetMessage() {
         updateFingerprintIcon(STATE_FINGERPRINT)
         updateErrorText(getString(R.string.desc_fingerprint_authenticate_error_retry))
         updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_start))
-    }
-
-    override fun onShowLockout(msg: CharSequence) {
-        super.onShowLockout(getString(R.string.desc_fingerprint_authenticate_error_lockout))
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_failed))
-        updatePositiveBtn(true)
     }
 
     override fun onShowLockoutPermanent(msg: CharSequence) {

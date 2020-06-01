@@ -172,8 +172,7 @@ fun BaseActivity.authenticateAccountByBiometric(
         }
 
         // error case
-        if (result.reason == BiometricCompat.Reason.CANCELED
-            || result.reason == BiometricCompat.Reason.USER_CANCELED
+        if (result.reason == BiometricCompat.Reason.USER_CANCELED
             || result.reason == BiometricCompat.Reason.NEGATIVE_BUTTON
         ) {
             // 用户取消操作
@@ -251,8 +250,7 @@ fun BaseFragment.authenticateAccountByBiometric(
         }
 
         // error case
-        if (result.reason == BiometricCompat.Reason.CANCELED
-            || result.reason == BiometricCompat.Reason.USER_CANCELED
+        if (result.reason == BiometricCompat.Reason.USER_CANCELED
             || result.reason == BiometricCompat.Reason.NEGATIVE_BUTTON
         ) {
             // 用户取消操作

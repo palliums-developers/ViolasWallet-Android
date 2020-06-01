@@ -91,7 +91,7 @@ class DefaultFingerprintDialogFragment : BaseFingerprintDialogFragment() {
         val positiveButtonText = when {
             isDeviceCredentialAllowed() ->
                 getString(R.string.confirm_device_credential_password)
-            isReactivateBiometricWhenLock() -> {
+            isReactivateWhenLockoutPermanent() -> {
                 val setText = getPositiveButtonText()
                 if (setText.isNullOrBlank()) {
                     getString(R.string.action_fingerprint_error_lockout)
@@ -107,7 +107,7 @@ class DefaultFingerprintDialogFragment : BaseFingerprintDialogFragment() {
                     isDeviceCredentialAllowed() -> {
                         mDeviceCredentialButtonListener.onClick(dialog, which)
                     }
-                    isReactivateBiometricWhenLock() -> {
+                    isReactivateWhenLockoutPermanent() -> {
                         mReactivateBiometricButtonListener.onClick(dialog, which)
                     }
                     mPositiveButtonListener != null -> {
@@ -123,7 +123,7 @@ class DefaultFingerprintDialogFragment : BaseFingerprintDialogFragment() {
         val dialog: AlertDialog = builder.create()
         dialog.setCancelable(false)
         dialog.setCanceledOnTouchOutside(false)
-        if (isReactivateBiometricWhenLock()) {
+        if (isReactivateWhenLockoutPermanent()) {
             dialog.setOnShowListener {
                 mFingerprintIcon?.postDelayed({
                     disableAlertDialogAutoDismiss(dialog)
@@ -185,13 +185,6 @@ class DefaultFingerprintDialogFragment : BaseFingerprintDialogFragment() {
             ContextCompat.getColor(mContext!!, R.color.biometric_error_color)
         }
         mTextColor = getThemedColorFor(android.R.attr.textColorSecondary)
-    }
-
-    override fun onShowLockout(msg: CharSequence) {
-        super.onShowLockoutPermanent(msg)
-        (dialog as AlertDialog?)?.let {
-            updatePositiveBtn(true, it)
-        }
     }
 
     override fun onShowLockoutPermanent(msg: CharSequence) {

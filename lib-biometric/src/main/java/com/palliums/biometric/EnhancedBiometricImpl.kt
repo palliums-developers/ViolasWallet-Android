@@ -159,7 +159,8 @@ internal class EnhancedBiometricImpl(
             crypterProxy,
             mode,
             value,
-            params.reactivateBiometricWhenLockout
+            params.reactivateWhenLockoutPermanent,
+            params.autoCloseWhenError
         ) {
             if (it.type == BiometricCompat.Type.ERROR || it.type == BiometricCompat.Type.SUCCESS) {
                 cancel()
@@ -239,7 +240,8 @@ internal class EnhancedBiometricImpl(
             .setDeviceCredentialAllowed(params.deviceCredentialsAllowed)
             .setConfirmationRequired(params.confirmationRequired)
             .setUseFingerprint(params.useFingerprint)
-            .setReactivateBiometricWhenLockout(params.reactivateBiometricWhenLockout)
+            .setReactivateWhenLockoutPermanent(params.reactivateWhenLockoutPermanent)
+            .setAutoCloseWhenError(params.autoCloseWhenError)
         if (!params.deviceCredentialsAllowed) {
             builder.setNegativeButtonText(params.negativeButtonText!!)
         }
