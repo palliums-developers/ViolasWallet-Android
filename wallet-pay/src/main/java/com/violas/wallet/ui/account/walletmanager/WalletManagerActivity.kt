@@ -177,9 +177,10 @@ class WalletManagerActivity : BaseAppActivity() {
 //                .negativeButtonText(getString(R.string.action_cancel_nbsp))
 //                .positiveButtonText(getString(R.string.action_start_now_enable))
 //                .customFingerprintDialogClass(CustomFingerprintDialog::class.java)
-//                .reactivateBiometricWhenLockout(true)
+//                .reactivateWhenLockoutPermanent(true)
+//                .autoCloseWhenError(false)
 //                .build()
-
+//
 //        val key = mAccountDO.getBiometricKey()
 //        mBiometricCompat.encrypt(promptParams, key, password) {
 //            if (it.type == BiometricCompat.Type.INFO) return@encrypt
@@ -194,9 +195,16 @@ class WalletManagerActivity : BaseAppActivity() {
 //                }
 //                return@encrypt
 //            }
-
-            swtBtnBiometric.setCheckedNoEvent(false)
+//
+//            swtBtnBiometric.setCheckedNoEvent(false)
+//            if (it.reason == BiometricCompat.Reason.USER_CANCELED
+//                || it.reason == BiometricCompat.Reason.CANCELED
+//                || it.reason == BiometricCompat.Reason.NEGATIVE_BUTTON
+//            ) {
+//                mBiometricCompat.cancel()
+//            }
 //        }
+        swtBtnBiometric.setCheckedNoEvent(false)
     }
 
     private fun closeBiometricPayment() {

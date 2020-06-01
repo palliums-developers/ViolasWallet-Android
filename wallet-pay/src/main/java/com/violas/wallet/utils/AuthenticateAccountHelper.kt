@@ -172,8 +172,7 @@ fun BaseActivity.authenticateAccountByBiometric(
         }
 
         // error case
-        if (result.reason == BiometricCompat.Reason.CANCELED
-            || result.reason == BiometricCompat.Reason.USER_CANCELED
+        if (result.reason == BiometricCompat.Reason.USER_CANCELED
             || result.reason == BiometricCompat.Reason.NEGATIVE_BUTTON
         ) {
             // 用户取消操作
@@ -181,7 +180,7 @@ fun BaseActivity.authenticateAccountByBiometric(
             return@decrypt
         }
 
-        // 其它error原因, 直接通过密码验证
+        // 其它error原因
         biometricErrorCallback?.invoke()
     }
 }
@@ -251,8 +250,7 @@ fun BaseFragment.authenticateAccountByBiometric(
         }
 
         // error case
-        if (result.reason == BiometricCompat.Reason.CANCELED
-            || result.reason == BiometricCompat.Reason.USER_CANCELED
+        if (result.reason == BiometricCompat.Reason.USER_CANCELED
             || result.reason == BiometricCompat.Reason.NEGATIVE_BUTTON
         ) {
             // 用户取消操作
@@ -260,7 +258,7 @@ fun BaseFragment.authenticateAccountByBiometric(
             return@decrypt
         }
 
-        // 其它error原因, 直接通过密码验证
+        // 其它error原因
         biometricErrorCallback?.invoke()
     }
 }

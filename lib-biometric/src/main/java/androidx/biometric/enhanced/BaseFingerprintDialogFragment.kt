@@ -58,11 +58,7 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
         /**
          * @see BiometricConstants.ERROR_LOCKOUT_PERMANENT
          */
-        const val MSG_SHOW_LOCKOUT = 8
-        /**
-         * @see BiometricConstants.ERROR_LOCKOUT_PERMANENT
-         */
-        const val MSG_SHOW_LOCKOUT_PERMANENT = 9
+        const val MSG_SHOW_LOCKOUT_PERMANENT = 8
 
         // States for icon animation
         const val STATE_NONE = 0
@@ -85,11 +81,13 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
 
     internal inner class H : Handler() {
         override fun handleMessage(msg: Message) {
+            if (context == null) return
+
             when (msg.what) {
                 MSG_SHOW_HELP ->
                     onShowHelp(msg.obj as CharSequence)
                 MSG_SHOW_ERROR ->
-                    onShowError(msg.obj as CharSequence)
+                    onShowError(msg.obj as CharSequence, msg.arg1)
                 MSG_DISMISS_DIALOG_ERROR ->
                     handleDismissDialogError(msg.obj as CharSequence?)
                 MSG_DISMISS_DIALOG_AUTHENTICATED ->
@@ -103,8 +101,6 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
                 }
                 MSG_SHOW_FAILED ->
                     onShowFailed(msg.obj as CharSequence)
-                MSG_SHOW_LOCKOUT ->
-                    onShowLockout(msg.obj as CharSequence)
                 MSG_SHOW_LOCKOUT_PERMANENT ->
                     onShowLockoutPermanent(msg.obj as CharSequence)
             }
@@ -201,9 +197,7 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
             getFingerprintHelperFragment()?.reset()
             onBiometricReactivated()
         } else {
-            dialog?.let {
-                mNegativeButtonListener?.onClick(it, DialogInterface.BUTTON_NEGATIVE)
-            }
+            getFingerprintHelperFragment()?.cancel(FingerprintHelperFragment.USER_CANCELED_FROM_USER)
         }
     }
 
@@ -258,8 +252,8 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
         return mBundle!!.getBoolean(BiometricPrompt.KEY_ALLOW_DEVICE_CREDENTIAL)
     }
 
-    protected fun isReactivateBiometricWhenLock(): Boolean {
-        return mBundle!!.getBoolean(BiometricPrompt.KEY_REACTIVATE_BIOMETRIC_WHEN_LOCKOUT)
+    protected fun isReactivateWhenLockoutPermanent(): Boolean {
+        return mBundle!!.getBoolean(BiometricPrompt.KEY_REACTIVATE_WHEN_LOCKOUT_PERMANENT)
     }
 
     protected open fun updateFingerprintIcon(newState: Int) {
@@ -271,8 +265,8 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
     }
 
     protected open fun onShowFailed(msg: CharSequence) {
-        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
         mHandler.removeMessages(MSG_RESET_MESSAGE)
+        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
 
         // May be null if we're intentionally suppressing the dialog.
         updateErrorText(msg)
@@ -285,8 +279,8 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
     }
 
     protected open fun onShowHelp(msg: CharSequence) {
-        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
         mHandler.removeMessages(MSG_RESET_MESSAGE)
+        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
 
         // May be null if we're intentionally suppressing the dialog.
         updateErrorText(msg)
@@ -298,38 +292,30 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
         )
     }
 
-    protected open fun onShowError(msg: CharSequence) {
-        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
+    protected open fun onShowError(msg: CharSequence, errorId: Int) {
         mHandler.removeMessages(MSG_RESET_MESSAGE)
+        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
 
         // May be null if we're intentionally suppressing the dialog.
         updateErrorText(msg)
 
         // Dismiss the dialog after a delay
-        mHandler.sendMessageDelayed(
+        /*mHandler.sendMessageDelayed(
             mHandler.obtainMessage(MSG_DISMISS_DIALOG_ERROR),
             getHideDialogDelay(mContext).toLong()
-        )
+        )*/
     }
 
-    protected open  fun onResetMessage() {
+    protected open fun onResetMessage() {
         updateFingerprintIcon(STATE_FINGERPRINT)
 
         // May be null if we're intentionally suppressing the dialog.
         updateErrorText(mContext!!.getString(R.string.fingerprint_dialog_touch_sensor))
     }
 
-    protected open fun onShowLockout(msg: CharSequence) {
-        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
-        mHandler.removeMessages(MSG_RESET_MESSAGE)
-
-        // May be null if we're intentionally suppressing the dialog.
-        updateErrorText(msg)
-    }
-
     protected open fun onShowLockoutPermanent(msg: CharSequence) {
-        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
         mHandler.removeMessages(MSG_RESET_MESSAGE)
+        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
 
         // May be null if we're intentionally suppressing the dialog.
         updateErrorText(msg)
@@ -342,16 +328,6 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
         updateErrorText(mContext!!.getString(R.string.fingerprint_dialog_touch_sensor))
     }
 
-    private fun dismissAfterDelay(msg: CharSequence?) {
-        // May be null if we're intentionally suppressing the dialog.
-        updateErrorText(msg ?: mContext!!.getString(R.string.fingerprint_error_lockout))
-
-        mHandler.postDelayed(
-            { dismissSafely() },
-            getHideDialogDelay(mContext).toLong()
-        )
-    }
-
     private fun handleDismissDialogError(msg: CharSequence?) {
         if (mDismissInstantly) {
             dismissSafely()
@@ -361,5 +337,18 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
         // Always set this to true. In case the user tries to authenticate again the UI will not be
         // shown.
         mDismissInstantly = true
+    }
+
+    private fun dismissAfterDelay(msg: CharSequence?) {
+        mHandler.removeMessages(MSG_RESET_MESSAGE)
+        updateFingerprintIcon(STATE_FINGERPRINT_ERROR)
+
+        // May be null if we're intentionally suppressing the dialog.
+        updateErrorText(msg ?: mContext!!.getString(R.string.fingerprint_error_lockout))
+
+        mHandler.postDelayed(
+            { dismissSafely() },
+            getHideDialogDelay(mContext).toLong()
+        )
     }
 }

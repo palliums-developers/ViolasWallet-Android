@@ -291,8 +291,8 @@
     <string name="desc_fingerprint_authenticate_title_start">Please verify that you have a fingerprint</string>
     <string name="desc_fingerprint_authenticate_error_retry">Try again</string>
     <string name="desc_fingerprint_authenticate_title_failed">Fingerprint not recognized</string>
-    <string name="desc_fingerprint_authenticate_error_lockout">Too many attempts. The fingerprint sensor is temporarily suspended. Please try again later.</string>
-    <string name="desc_fingerprint_authenticate_error_lockout_permanent">Too many attempts, the fingerprint sensor is disabled, and the phone password needs to be verified.</string>
+    <string name="desc_fingerprint_authenticate_error_lockout">The fingerprint sensor is temporarily suspended. Please try again later.</string>
+    <string name="desc_fingerprint_authenticate_error_lockout_permanent">The fingerprint sensor is disabled, and the phone password needs to be verified.</string>
     <string name="label_fingerprint_verification">Fingerprint Verification</string>
     <string name="title_prompt">Prompt</string>
     <string name="desc_close_fingerprint_verification">Are you sure to turn off fingerprint verification?</string>

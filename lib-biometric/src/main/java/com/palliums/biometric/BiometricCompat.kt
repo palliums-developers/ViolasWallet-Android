@@ -235,7 +235,8 @@ interface BiometricCompat {
         val confirmationRequired: Boolean,
         val deviceCredentialsAllowed: Boolean,
         val useFingerprint: Boolean,
-        val reactivateBiometricWhenLockout: Boolean,
+        val reactivateWhenLockoutPermanent: Boolean,
+        val autoCloseWhenError: Boolean,
         val customFingerprintDialogClass: Class<out BaseFingerprintDialogFragment>?
     ) {
 
@@ -250,7 +251,8 @@ interface BiometricCompat {
             private var confirmationRequired = false
             private var deviceCredentialsAllowed = false
             private var useFingerprint = true
-            private var reactivateBiometricWhenLockout = false
+            private var reactivateWhenLockoutPermanent = false
+            private var autoCloseWhenError = true
             private var customFingerprintDialogClass: Class<out BaseFingerprintDialogFragment>? =
                 null
 
@@ -273,7 +275,8 @@ interface BiometricCompat {
                     confirmationRequired,
                     deviceCredentialsAllowed,
                     useFingerprint,
-                    reactivateBiometricWhenLockout,
+                    reactivateWhenLockoutPermanent,
+                    autoCloseWhenError,
                     customFingerprintDialogClass
                 )
             }
@@ -349,22 +352,31 @@ interface BiometricCompat {
             /**
              * Only valid when using enhanced biometrics.
              *
-             * @see androidx.biometric.enhanced.BiometricPrompt.PromptInfo.Builder.setCustomFingerprintDialogClass
+             * @see androidx.biometric.enhanced.BiometricPrompt.PromptInfo.Builder.setReactivateWhenLockoutPermanent
+             * @see androidx.biometric.enhanced.BiometricConstants.ERROR_LOCKOUT_PERMANENT
              */
-            fun customFingerprintDialogClass(clazz: Class<out BaseFingerprintDialogFragment>): Builder {
-                this.customFingerprintDialogClass = clazz
+            fun reactivateWhenLockoutPermanent(reactivateWhenLockoutPermanent: Boolean): Builder {
+                this.reactivateWhenLockoutPermanent = reactivateWhenLockoutPermanent
                 return this
             }
 
             /**
              * Only valid when using enhanced biometrics.
              *
-             * @see androidx.biometric.enhanced.BiometricPrompt.PromptInfo.Builder.setReactivateBiometricWhenLockout
-             * @see androidx.biometric.enhanced.BiometricConstants.ERROR_LOCKOUT
-             * @see androidx.biometric.enhanced.BiometricConstants.ERROR_LOCKOUT_PERMANENT
+             * @see androidx.biometric.enhanced.BiometricPrompt.PromptInfo.Builder.setAutoCloseWhenError
              */
-            fun reactivateBiometricWhenLockout(reactivateBiometricWhenLockout: Boolean): Builder {
-                this.reactivateBiometricWhenLockout = reactivateBiometricWhenLockout
+            fun autoCloseWhenError(autoCloseWhenError: Boolean): Builder {
+                this.autoCloseWhenError = autoCloseWhenError
+                return this
+            }
+
+            /**
+             * Only valid when using enhanced biometrics.
+             *
+             * @see androidx.biometric.enhanced.BiometricPrompt.PromptInfo.Builder.setCustomFingerprintDialogClass
+             */
+            fun customFingerprintDialogClass(clazz: Class<out BaseFingerprintDialogFragment>): Builder {
+                this.customFingerprintDialogClass = clazz
                 return this
             }
         }

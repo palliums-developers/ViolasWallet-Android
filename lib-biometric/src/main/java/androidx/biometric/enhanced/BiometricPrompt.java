@@ -90,7 +90,8 @@ public class BiometricPrompt implements BiometricConstants {
     static final String KEY_HANDLING_DEVICE_CREDENTIAL_RESULT = "handling_device_credential_result";
     static final String KEY_USE_FINGERPRINT = "use_fingerprint";
     static final String KEY_CUSTOM_FINGERPRINT_DIALOG_CLASS = "custom_fingerprint_dialog_class";
-    static final String KEY_REACTIVATE_BIOMETRIC_WHEN_LOCKOUT = "reactivate_biometric_when_lockout";
+    static final String KEY_REACTIVATE_WHEN_LOCKOUT_PERMANENT = "reactivate_when_lockout_permanent";
+    static final String KEY_AUTO_CLOSE_WHEN_ERROR = "auto_close_when_error";
 
     @Retention(SOURCE)
     @IntDef({ERROR_HW_UNAVAILABLE,
@@ -377,16 +378,27 @@ public class BiometricPrompt implements BiometricConstants {
             }
 
             /**
-             * 设置生物识别功能被锁定后可以通过强身份验证解锁重新启用
+             * 设置生物识别功能被永久锁定后可以通过强身份验证解锁重新启用（PIN/Pattern/Password）
              *
-             * @param reactivateBiometricWhenLockout true: 失败时重新启用; false: 失败时直接返回给调用着
+             * @param reactivateWhenLockoutPermanent true: 失败时重新启用; false: 失败时直接返回给调用着
              * @return
-             * @see {@link BiometricConstants#ERROR_LOCKOUT}
              * @see {@link BiometricConstants#ERROR_LOCKOUT_PERMANENT}
              */
             @NonNull
-            public Builder setReactivateBiometricWhenLockout(boolean reactivateBiometricWhenLockout) {
-                mBundle.putBoolean(KEY_REACTIVATE_BIOMETRIC_WHEN_LOCKOUT, reactivateBiometricWhenLockout);
+            public Builder setReactivateWhenLockoutPermanent(boolean reactivateWhenLockoutPermanent) {
+                mBundle.putBoolean(KEY_REACTIVATE_WHEN_LOCKOUT_PERMANENT, reactivateWhenLockoutPermanent);
+                return this;
+            }
+
+            /**
+             * 设置生物识别功能被永久锁定后可以通过强身份验证解锁重新启用（PIN/Pattern/Password）
+             *
+             * @param autoCloseWhenError true: 失败时自动关闭对话框; false: 失败时不关闭对话框
+             * @return
+             */
+            @NonNull
+            public Builder setAutoCloseWhenError(boolean autoCloseWhenError) {
+                mBundle.putBoolean(KEY_AUTO_CLOSE_WHEN_ERROR, autoCloseWhenError);
                 return this;
             }
 
@@ -499,7 +511,7 @@ public class BiometricPrompt implements BiometricConstants {
          * @return See {@link Builder#setUseFingerprint(boolean)}.
          */
         public boolean isUseFingerprint() {
-            return mBundle.getBoolean(KEY_USE_FINGERPRINT);
+            return mBundle.getBoolean(KEY_USE_FINGERPRINT, true);
         }
 
         /**
@@ -511,10 +523,17 @@ public class BiometricPrompt implements BiometricConstants {
         }
 
         /**
-         * @return See {@link Builder#setReactivateBiometricWhenLockout(boolean)}.
+         * @return See {@link Builder#setReactivateWhenLockoutPermanent(boolean)}.
          */
-        public boolean isReactivateBiometricWhenLockout() {
-            return mBundle.getBoolean(KEY_REACTIVATE_BIOMETRIC_WHEN_LOCKOUT);
+        public boolean isReactivateWhenLockoutPermanent() {
+            return mBundle.getBoolean(KEY_REACTIVATE_WHEN_LOCKOUT_PERMANENT);
+        }
+
+        /**
+         * @return See {@link Builder#setAutoCloseWhenError(boolean)}.
+         */
+        public boolean isAutoCloseWhenError() {
+            return mBundle.getBoolean(KEY_AUTO_CLOSE_WHEN_ERROR, true);
         }
     }
 
@@ -639,7 +658,7 @@ public class BiometricPrompt implements BiometricConstants {
                     mBiometricFragment.cancel();
                 }
             } else if (mFingerprintDialogFragment != null && mFingerprintHelperFragment != null) {
-                if (!mFingerprintDialogFragment.isReactivateBiometricWhenLock()) {
+                if (!mFingerprintDialogFragment.isReactivateWhenLockoutPermanent()) {
                     dismissFingerprintFragments(mFingerprintDialogFragment, mFingerprintHelperFragment);
                 }
             }
@@ -913,8 +932,10 @@ public class BiometricPrompt implements BiometricConstants {
             final Handler fingerprintDialogHandler = mFingerprintDialogFragment.getHandler();
             mFingerprintHelperFragment.setHandler(fingerprintDialogHandler);
             mFingerprintHelperFragment.setCryptoObject(crypto);
-            mFingerprintHelperFragment.setReactivateBiometricWhenLockout(
-                    info.isReactivateBiometricWhenLockout());
+            mFingerprintHelperFragment.setReactivateWhenLockoutPermanent(
+                    info.isReactivateWhenLockoutPermanent()
+            );
+            mFingerprintHelperFragment.setAutoCloseWhenError(info.isAutoCloseWhenError());
             fingerprintDialogHandler.sendMessageDelayed(
                     fingerprintDialogHandler.obtainMessage(
                             BaseFingerprintDialogFragment.DISPLAYED_FOR_500_MS), DELAY_MILLIS);

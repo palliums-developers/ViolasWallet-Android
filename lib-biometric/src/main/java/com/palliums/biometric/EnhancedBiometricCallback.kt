@@ -24,7 +24,8 @@ internal class EnhancedBiometricCallback(
     private val crypterProxy: CrypterProxy,
     private val mode: Mode,
     private val value: String?,
-    private val reactivateBiometricWhenLockout: Boolean,
+    private val reactivateWhenLockoutPermanent: Boolean,
+    private val autoCloseWhenError: Boolean,
     private val callback: (BiometricCompat.Result) -> Unit
 ) : BiometricPrompt.AuthenticationCallback() {
 
@@ -36,18 +37,20 @@ internal class EnhancedBiometricCallback(
         if (!isAuthenticationActive) return
 
         val reason = errorToReason(errorCode)
-        val type =
-            if ((reason == BiometricCompat.Reason.LOCKOUT
-                        || reason == BiometricCompat.Reason.LOCKOUT_PERMANENT)
-                && reactivateBiometricWhenLockout
-            ) {
-                LogUtils.log("onAuthenticationFailed [$reason, $errString]")
-                BiometricCompat.Type.INFO
-            } else {
-                LogUtils.log("onAuthenticationError [$reason, $errString]")
-                isAuthenticationActive = false
-                BiometricCompat.Type.ERROR
-            }
+        val type = if (reason == BiometricCompat.Reason.USER_CANCELED
+            || reason == BiometricCompat.Reason.CANCELED
+            || reason == BiometricCompat.Reason.NEGATIVE_BUTTON
+            || reason == BiometricCompat.Reason.POSITIVE_BUTTON
+            || (reason == BiometricCompat.Reason.LOCKOUT_PERMANENT && !reactivateWhenLockoutPermanent)
+            || (reason != BiometricCompat.Reason.LOCKOUT_PERMANENT && autoCloseWhenError)
+        ) {
+            LogUtils.log("onAuthenticationError [$reason, $errString]")
+            isAuthenticationActive = false
+            BiometricCompat.Type.ERROR
+        } else {
+            LogUtils.log("onAuthenticationFailed [$reason, $errString]")
+            BiometricCompat.Type.INFO
+        }
 
         mainHandler.post {
             callback.invoke(
