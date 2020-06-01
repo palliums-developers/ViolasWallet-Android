@@ -30,7 +30,7 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
                     CoinTypes.Libra.coinType() -> "libra"
                     else -> "bitcoin"
                 },
-                walletName = it.walletNickname,
+                walletName = "",
                 walletAddress = it.address
             )
         }

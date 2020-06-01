@@ -3,9 +3,11 @@ package com.palliums.content
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import java.util.*
 
-open class App : Application() {
+open class App : Application(), ViewModelStoreOwner {
     companion object {
         val activityStore = Stack<Activity>()
 
@@ -28,6 +30,10 @@ open class App : Application() {
         }
     }
 
+    private val mViewModelStore by lazy {
+        ViewModelStore()
+    }
+
     override fun onCreate() {
         super.onCreate()
         initActivityStack()
@@ -35,7 +41,7 @@ open class App : Application() {
     }
 
     fun getTopActivity(): Activity? {
-        if(activityStore.empty()){
+        if (activityStore.empty()) {
             return null
         }
         return activityStore.lastElement()
@@ -77,4 +83,6 @@ open class App : Application() {
             }
         })
     }
+
+    override fun getViewModelStore() = mViewModelStore
 }

@@ -64,7 +64,7 @@ class CollectionActivity : BaseAppActivity() {
 
             withContext(Dispatchers.Main) {
                 tvAddress.text = currentAccount.address
-                tvWalletName.text = currentAccount.walletNickname
+//                tvWalletName.text = currentAccount.walletNickname
                 btnCopy.setOnClickListener {
                     ClipboardUtils.copy(this@CollectionActivity, currentAccount.address)
                 }
@@ -74,7 +74,7 @@ class CollectionActivity : BaseAppActivity() {
                 val tokenDo = mTokenManager.findTokenById(mTokenId)
                 if (tokenDo != null) {
                     withContext(Dispatchers.Main) {
-                        tvWalletName.text = "${currentAccount.walletNickname}-${tokenDo.name}"
+//                        tvWalletName.text = "${currentAccount.walletNickname}-${tokenDo.name}"
                     }
                     "-${tokenDo.name.toLowerCase(Locale.CHINA)}"
                 } else {

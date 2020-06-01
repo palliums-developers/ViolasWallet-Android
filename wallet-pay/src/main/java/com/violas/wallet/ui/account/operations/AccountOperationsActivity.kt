@@ -222,7 +222,7 @@ class AccountOperationsActivity : BaseAppActivity() {
             accountVo = itemData as? AccountVo
 
             accountVo?.let {
-                rootView.tvAccountName.text = it.accountDO.walletNickname
+//                rootView.tvAccountName.text = it.accountDO.walletNickname
                 rootView.tvAccountAddress.text = it.accountDO.address
                 rootView.setBackgroundResource(
                     when (it.accountDO.coinNumber) {

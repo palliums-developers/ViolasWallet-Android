@@ -220,7 +220,6 @@ class AccountManager {
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "$walletName",
                 walletType = 1
             )
         )
@@ -249,7 +248,6 @@ class AccountManager {
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "$walletName",
                 walletType = 1
             )
         )
@@ -282,7 +280,6 @@ class AccountManager {
                     CoinTypes.Bitcoin.coinType()
                 },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "$walletName",
                 walletType = 1
             )
         )
@@ -339,7 +336,6 @@ class AccountManager {
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Violas.fullName()}-$walletName",
                 walletType = 0
             ),
             AccountDO(
@@ -352,7 +348,6 @@ class AccountManager {
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Libra.fullName()}-$walletName",
                 walletType = 0
             ),
             AccountDO(
@@ -365,7 +360,6 @@ class AccountManager {
                     CoinTypes.Bitcoin.coinType()
                 },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletNickname = "${CoinTypes.Bitcoin.fullName()}-$walletName",
                 walletType = 0
             )
         )

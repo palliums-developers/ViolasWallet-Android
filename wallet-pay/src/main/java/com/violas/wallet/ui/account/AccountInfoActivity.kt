@@ -42,7 +42,7 @@ class AccountInfoActivity : BaseAppActivity() {
                 val account =
                     mAccountManager.getAccountById(intent.getLongExtra(EXT_ACCOUNT_ID, 1))
                 withContext(Dispatchers.Main) {
-                    editName.hint = account.walletNickname
+//                    editName.hint = account.walletNickname
                 }
             } catch (e: AccountNotExistsException) {
                 e.printStackTrace()
@@ -60,7 +60,7 @@ class AccountInfoActivity : BaseAppActivity() {
                 try {
                     val account =
                         mAccountManager.getAccountById(intent.getLongExtra(EXT_ACCOUNT_ID, 1))
-                    account.walletNickname = name
+//                    account.walletNickname = name
                     DataRepository.getAccountStorage().update(account)
                     EventBus.getDefault().post(ChangeAccountNameEvent())
                     showToast(getString(R.string.hint_modify_success))

@@ -3,28 +3,58 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="38dp"
-    android:background="@android:color/white">
+    android:layout_height="60dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    android:background="@drawable/bg_wallet_main_assets_list_item">
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#3D3949"
-        android:textSize="16sp"
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="14dp"
+        android:background="#59AD81"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:textColor="#333333"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ivLogo"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="VToken" />
 
     <TextView
-        android:id="@+id/amount"
+        android:id="@+id/tvAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#3D3949"
+        android:layout_marginEnd="13dp"
+        android:textColor="#333333"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tvFiatAmount"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:text="0.00001" />
+
+    <TextView
+        android:id="@+id/tvFiatAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="13dp"
+        android:textColor="#ADADAD"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvAmount"
+        tools:text="≈$0.00" />
 </androidx.constraintlayout.widget.ConstraintLayout>

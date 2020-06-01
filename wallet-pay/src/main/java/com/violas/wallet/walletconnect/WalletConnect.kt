@@ -120,7 +120,8 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                         CoinTypes.Libra.coinType() -> "libra"
                         else -> "bitcoin"
                     },
-                    name = it.walletNickname,
+//                    name = it.walletNickname,
+                    name = "",
                     address = it.address
                 )
             }

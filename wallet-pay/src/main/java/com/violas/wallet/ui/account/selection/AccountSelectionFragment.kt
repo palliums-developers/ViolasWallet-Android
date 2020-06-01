@@ -201,7 +201,7 @@ class AccountSelectionFragment : BaseFragment() {
             accountVo = itemData as? AccountVo
 
             accountVo?.let {
-                tvName.text = it.accountDO.walletNickname
+//                tvName.text = it.accountDO.walletNickname
                 tvAddress.text = it.accountDO.address
                 ivSelected.visibility = if (it.selected) View.VISIBLE else View.GONE
                 rootView.setBackgroundResource(

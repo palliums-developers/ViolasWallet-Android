@@ -6,6 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.biometric.BiometricManager
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
@@ -40,6 +44,8 @@ import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.walletconnect.WalletConnect
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
@@ -58,20 +64,21 @@ class WalletFragment : BaseFragment() {
         private const val REQUEST_TOKEN_INFO = 2
     }
 
+    private val mWalletAppViewModel by lazy {
+        context?.let { WalletAppViewModel.getViewModelInstance(it) }
+    }
+
     private var refreshAssertJob: Job? = null
 
     private val mAccountManager by lazy {
         AccountManager()
     }
 
-    private val mTokenManger by lazy {
-        TokenManager()
-    }
 
     private val mEnableTokens = mutableListOf<AssertToken>()
     private val mAssertAdapter by lazy {
-        AssertAdapter(mEnableTokens) {
-            TokenInfoActivity.start(this@WalletFragment, it.id, REQUEST_TOKEN_INFO)
+        AssertAdapter {
+//            TokenInfoActivity.start(this@WalletFragment, it.id, REQUEST_TOKEN_INFO)
         }
     }
 
@@ -86,18 +93,22 @@ class WalletFragment : BaseFragment() {
 
         recyclerAssert.adapter = mAssertAdapter
 
+        mWalletAppViewModel?.mAssetsListLiveData?.observe(this, Observer {
+            mAssertAdapter.submitList(it)
+        })
+
         // 初始化钱包当作是切换钱包逻辑
-        refreshAssert(true)
+//        refreshAssert(true)
 
         ivAddAssert.setOnClickListener(this)
-        ivCopy.setOnClickListener(this)
+//        ivCopy.setOnClickListener(this)
         ivScan.setOnClickListener(this)
-        ivWalletInfo.setOnClickListener(this)
-        layoutWalletType.setOnClickListener(this)
-        btnCollection.setOnClickListener(this)
-        btnTransfer.setOnClickListener(this)
-        vCrossChainExchangeLayout.setOnClickListener(this)
-        vTransactionRecordLayout.setOnClickListener(this)
+//        ivWalletInfo.setOnClickListener(this)
+//        layoutWalletType.setOnClickListener(this)
+//        btnCollection.setOnClickListener(this)
+//        btnTransfer.setOnClickListener(this)
+//        vCrossChainExchangeLayout.setOnClickListener(this)
+//        vTransactionRecordLayout.setOnClickListener(this)
 
         if (mAccountManager.isFastIntoWallet()) {
             FastIntoWalletDialog()
@@ -117,21 +128,9 @@ class WalletFragment : BaseFragment() {
             handleOpenBiometricsPrompt()
         }
 
-        swipeRefreshLayout.setOnRefreshListener {
-            refreshAssert(false)
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        cancelRefreshAssertJob()
-    }
-
-    private fun cancelRefreshAssertJob() {
-        try {
-            refreshAssertJob?.cancel()
-        } catch (ignore: Exception) {
-        }
+//        swipeRefreshLayout.setOnRefreshListener {
+//            refreshAssert(false)
+//        }
     }
 
     override fun onViewClick(view: View) {
@@ -166,21 +165,21 @@ class WalletFragment : BaseFragment() {
                 }
             }
 
-            R.id.ivWalletInfo -> {
-                launch(Dispatchers.IO) {
-                    val currentAccount = mAccountManager.currentAccount()
-                    WalletManagerActivity.start(this@WalletFragment, currentAccount.id)
-                }
-            }
+//            R.id.ivWalletInfo -> {
+//                launch(Dispatchers.IO) {
+//                    val currentAccount = mAccountManager.currentAccount()
+//                    WalletManagerActivity.start(this@WalletFragment, currentAccount.id)
+//                }
+//            }
 
-            R.id.layoutWalletType -> {
-                activity?.let { it1 ->
-                    Intent(
-                        activity,
-                        AccountSelectionActivity::class.java
-                    ).start(it1)
-                }
-            }
+//            R.id.layoutWalletType -> {
+//                activity?.let { it1 ->
+//                    Intent(
+//                        activity,
+//                        AccountSelectionActivity::class.java
+//                    ).start(it1)
+//                }
+//            }
 
             R.id.btnCollection -> {
                 launch(Dispatchers.IO) {
@@ -200,19 +199,19 @@ class WalletFragment : BaseFragment() {
                 }
             }
 
-            R.id.vCrossChainExchangeLayout -> {
-                launch(Dispatchers.IO) {
-                    val currentAccount = mAccountManager.currentAccount()
-                    activity?.let { OutsideExchangeActivity.start(it, currentAccount.id) }
-                }
-            }
-
-            R.id.vTransactionRecordLayout -> {
-                launch(Dispatchers.IO) {
-                    val currentAccount = mAccountManager.currentAccount()
-                    activity?.let { TransactionRecordActivity.start(it, currentAccount.id) }
-                }
-            }
+//            R.id.vCrossChainExchangeLayout -> {
+//                launch(Dispatchers.IO) {
+//                    val currentAccount = mAccountManager.currentAccount()
+//                    activity?.let { OutsideExchangeActivity.start(it, currentAccount.id) }
+//                }
+//            }
+//
+//            R.id.vTransactionRecordLayout -> {
+//                launch(Dispatchers.IO) {
+//                    val currentAccount = mAccountManager.currentAccount()
+//                    activity?.let { TransactionRecordActivity.start(it, currentAccount.id) }
+//                }
+//            }
 
             R.id.btnConfirm -> {
                 layoutBackupNow.visibility = View.GONE
@@ -258,168 +257,10 @@ class WalletFragment : BaseFragment() {
             .show(childFragmentManager)
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onRefreshBalanceEvent(event: RefreshBalanceEvent) {
-        launch(Dispatchers.IO) {
-            if (event.delay >= 1) {
-                delay(event.delay * 1000L)
-            }
-
-            withContext(Dispatchers.Main) {
-                refreshAssert(false)
-            }
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSwitchAccountEvent(event: SwitchAccountEvent) {
-        refreshAssert(true)
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onBackupIdentityMnemonicEvent(event: BackupIdentityMnemonicEvent) {
         layoutBackupNow.visibility = View.GONE
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onTokenBalanceUpdateEvent(event: TokenBalanceUpdateEvent) {
-        launch(Dispatchers.IO) {
-            val currentAccount = mAccountManager.currentAccount()
-            if (currentAccount.address != event.accountAddress) {
-                return@launch
-            }
-
-            mEnableTokens.forEachIndexed { index, assertToken ->
-                if (assertToken.tokenIdx == event.tokenIdx) {
-                    withContext(Dispatchers.Main) {
-                        assertToken.amount = event.tokenBalance
-                        mAssertAdapter.notifyItemChanged(index)
-                    }
-                    return@launch
-                }
-            }
-        }
-    }
-
-    private fun refreshAssert(switchWallet: Boolean) {
-        cancelRefreshAssertJob()
-
-        refreshAssertJob = launch(Dispatchers.IO) {
-            val currentAccount = mAccountManager.currentAccount()
-            val enableTokens = mTokenManger.loadEnableToken(currentAccount)
-            val violasAccount = currentAccount.coinNumber == CoinTypes.Violas.coinType()
-
-            // 刷新当前钱包的信息和当前平台的资产
-            if (switchWallet) {
-                withContext(Dispatchers.Main) {
-                    mEnableTokens.clear()
-                    mEnableTokens.addAll(enableTokens)
-                    mAssertAdapter.notifyDataSetChanged()
-                    updateWalletInfo(currentAccount)
-                }
-            }
-
-            supervisorScope {
-                try {
-                    mAccountManager.activateAccount(currentAccount)
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
-            }
-
-            if (violasAccount) {
-                refreshViolasAssert(currentAccount, enableTokens)
-            } else {
-                val result = try {
-                    mAccountManager.refreshAccount(currentAccount)
-                    true
-                } catch (e: Exception) {
-                    if (e.isActiveCancellation()) {
-                        return@launch
-                    }
-
-                    showToast(e.getShowErrorMessage(true))
-                    false
-                }
-
-                withContext(Dispatchers.Main) {
-                    if (swipeRefreshLayout.isRefreshing) {
-                        swipeRefreshLayout.isRefreshing = false
-                    }
-
-                    if (!result) return@withContext
-
-                    // 刷新当前钱包的信息
-                    updateWalletInfo(currentAccount)
-
-                    // 刷新当前平台的资产
-                    if (mEnableTokens.size >= 1) {
-                        mEnableTokens[0].amount = currentAccount.amount
-                        mAssertAdapter.notifyItemChanged(0)
-                    }
-                }
-            }
-        }
-    }
-
-    private suspend fun refreshViolasAssert(
-        accountDO: AccountDO? = null,
-        tokens: List<AssertToken>? = null
-    ) {
-        val currentAccount = accountDO ?: mAccountManager.currentAccount()
-        val enableTokens = tokens ?: mTokenManger.loadEnableToken(currentAccount)
-        val balanceInfos =
-            try {
-                mTokenManger.refreshBalance(currentAccount.address, enableTokens)
-            } catch (e: Exception) {
-                if (e.isActiveCancellation()) {
-                    return
-                }
-
-                showToast(e.getShowErrorMessage(true))
-                null
-            }
-
-        // 更新钱包余额
-        balanceInfos?.first?.let {
-            currentAccount.amount = it
-            mAccountManager.updateAccount(currentAccount)
-        }
-
-        withContext(Dispatchers.Main) {
-            if (swipeRefreshLayout.isRefreshing) {
-                swipeRefreshLayout.isRefreshing = false
-            }
-
-            if (balanceInfos == null) return@withContext
-
-            // 刷新当前钱包的信息
-            updateWalletInfo(currentAccount)
-
-            // 刷新当前平台的资产
-            mEnableTokens.clear()
-            mEnableTokens.addAll(balanceInfos.second)
-            mAssertAdapter.notifyDataSetChanged()
-        }
-    }
-
-    private fun updateWalletInfo(currentAccount: AccountDO) {
-        tvAddress.text = currentAccount.address
-
-        val coinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
-        tvWalletType.text = getString(R.string.format_wallet_name, coinType.fullName())
-        tvUnit.text = coinType.coinUnit()
-
-        val parseCoinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
-        val convertAmountToDisplayUnit =
-            convertAmountToDisplayUnit(currentAccount.amount, parseCoinType)
-        tvAmount.text = convertAmountToDisplayUnit.first
-
-        if (coinType == CoinTypes.Violas) {
-            ivAddAssert.visibility = View.VISIBLE
-        } else {
-            ivAddAssert.visibility = View.GONE
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -427,7 +268,7 @@ class WalletFragment : BaseFragment() {
         when (requestCode) {
             REQUEST_ADD_ASSERT -> {
                 refreshAssertJob = launch(Dispatchers.IO) {
-                    refreshViolasAssert()
+//                    refreshViolasAssert()
                 }
             }
             REQUEST_SCAN_QR_CODE -> {
@@ -482,10 +323,16 @@ class WalletFragment : BaseFragment() {
 }
 
 class AssertAdapter(
-    val data: List<AssertToken>,
-    val call: (AssertToken) -> Unit
-) :
-    RecyclerView.Adapter<AssertAdapter.ViewHolder>() {
+    val call: (AssetsVo) -> Unit
+) : ListAdapter<AssetsVo, AssertAdapter.ViewHolder>(object : DiffUtil.ItemCallback<AssetsVo>() {
+    override fun areItemsTheSame(oldItem: AssetsVo, newItem: AssetsVo): Boolean {
+        return oldItem.getAccountId() == newItem.getAccountId() || oldItem.getId() == newItem.getId()
+    }
+
+    override fun areContentsTheSame(oldItem: AssetsVo, newItem: AssetsVo): Boolean {
+        return oldItem.getAccountId() == newItem.getAccountId() || oldItem.getId() == newItem.getId()
+    }
+}) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context).inflate(
@@ -496,24 +343,14 @@ class AssertAdapter(
         )
     }
 
-    override fun getItemCount() = data.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val itemData = data[position]
-        holder.itemView.name.text = itemData.name
+        val itemData = getItem(position)
+        holder.itemView.tvName.text = itemData.getAssetsName()
 
-        val parseCoinType = CoinTypes.parseCoinType(itemData.coinType)
-        val convertAmountToDisplayUnit =
-            convertAmountToDisplayUnit(itemData.amount, parseCoinType)
-        holder.itemView.amount.text = convertAmountToDisplayUnit.first
-        holder.itemView.setOnClickListener {
-
-            if (!isFastMultiClick(it)) {
-                if (itemData.isToken) {
-                    call.invoke(itemData)
-                }
-            }
-        }
+//        val parseCoinType = CoinTypes.parseCoinType(itemData.coinType)
+//        val convertAmountToDisplayUnit =
+//            convertAmountToDisplayUnit(itemData.amount, parseCoinType)
+        holder.itemView.tvAmount.text = itemData.getAmountWithUnit().amount
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)

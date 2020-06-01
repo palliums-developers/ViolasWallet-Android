@@ -90,7 +90,7 @@ class WalletManagerActivity : BaseAppActivity() {
     }
 
     private fun initView() {
-        tvName.text = mAccountDO.walletNickname
+//        tvName.text = mAccountDO.walletNickname
         tvAddress.text = mAccountDO.address
         if (mAccountDO.walletType == 1) {
             btnRemoveWallet.visibility = View.VISIBLE
