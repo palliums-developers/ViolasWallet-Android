@@ -1,8 +1,9 @@
 package com.violas.wallet.viewModel.bean
 
 abstract class AssetsVo {
-    private var amountWithUnit: AmountWithUnit = AmountWithUnit("0.00", "")
-    private var fiatAmountWithUnit: FiatAmountWithUnit = FiatAmountWithUnit("0.00", "", "")
+    val amountWithUnit: AmountWithUnit = AmountWithUnit("0.00", "")
+    val fiatAmountWithUnit: FiatAmountWithUnit = FiatAmountWithUnit(0,"$", "")
+    var name: String = ""
 
     abstract fun getId(): Long
     abstract fun getAccountId(): Long
@@ -11,29 +12,21 @@ abstract class AssetsVo {
     abstract fun setAmount(amount: Long)
     abstract fun getLogoUrl(): String
 
-    fun getAmountWithUnit() = amountWithUnit
-    fun setAmountWithUnit(unit: AmountWithUnit) {
-        amountWithUnit = unit
-    }
 
-    fun getFiatAmountWithUnit() = fiatAmountWithUnit
-    fun setFiatAmountWithUnit(unit: FiatAmountWithUnit) {
-        fiatAmountWithUnit = unit
-    }
 }
 
 data class FiatAmountWithUnit(
-    val amount: String,
+    val amount: Long,
     val symbol: String,
     val unit: String
 )
 
 data class AmountWithUnit(
-    val amount: String,
-    val unit: String
+    var amount: String,
+    var unit: String
 )
 
-data class AssetsCoinVo(
+open class AssetsCoinVo(
     private val id: Long,
     var publicKey: String = "",
     var authKeyPrefix: String = "",
@@ -44,7 +37,7 @@ data class AssetsCoinVo(
 ) : AssetsVo() {
     override fun getId() = id
     override fun getAccountId() = id
-    override fun getAssetsName() = "BTC"
+    override fun getAssetsName() = name
 
     override fun getAmount() = amount
     override fun setAmount(amount: Long) {
@@ -54,12 +47,24 @@ data class AssetsCoinVo(
     override fun getLogoUrl() = logo
 }
 
+class AssetsLibraCoinVo(
+    id: Long,
+    publicKey: String = "",
+    authKeyPrefix: String = "",
+    coinNumber: Int = 0,
+    address: String = "",
+    amount: Long = 0,
+    logo: String = "",
+    var delegatedKeyRotationCapability: Boolean = false,
+    var delegatedWithdrawalCapability: Boolean = false
+) : AssetsCoinVo(id, publicKey, authKeyPrefix, coinNumber, address, amount, logo)
+
 data class AssetsTokenVo(
     private val id: Long,
     private val account_id: Long,
     val address: String = "00000000000000000000000000000000",
     val module: String = "LBR",
-    val name: String = "T",
+//    val name: String = "T",
     val enable: Boolean = false,
     private var amount: Long = 0,
     private var logo: String = ""

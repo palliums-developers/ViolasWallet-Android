@@ -1,8 +1,11 @@
 package com.violas.wallet.ui.main.wallet
 
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
 import androidx.biometric.BiometricManager
@@ -11,39 +14,26 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
-import com.palliums.extensions.getShowErrorMessage
-import com.palliums.extensions.isActiveCancellation
 import com.palliums.extensions.show
-import com.palliums.utils.isFastMultiClick
-import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.event.BackupIdentityMnemonicEvent
-import com.violas.wallet.event.RefreshBalanceEvent
-import com.violas.wallet.event.SwitchAccountEvent
-import com.violas.wallet.event.TokenBalanceUpdateEvent
-import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.ui.account.selection.AccountSelectionActivity
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
 import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
-import com.violas.wallet.ui.outsideExchange.OutsideExchangeActivity
-import com.violas.wallet.ui.record.TransactionRecordActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
-import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
@@ -67,6 +57,9 @@ class WalletFragment : BaseFragment() {
 
     private val mWalletAppViewModel by lazy {
         context?.let { WalletAppViewModel.getViewModelInstance(it) }
+    }
+    private val mWalletViewModel by lazy {
+        ViewModelProvider(this).get(WalletViewModel::class.java)
     }
 
     private var refreshAssertJob: Job? = null
@@ -96,7 +89,34 @@ class WalletFragment : BaseFragment() {
 
         mWalletAppViewModel?.mAssetsListLiveData?.observe(this, Observer {
             mAssertAdapter.submitList(it)
+            mWalletViewModel.calculateFiat(it)
         })
+        mWalletAppViewModel?.mExistsAccountLiveData?.observe(this, Observer {
+            if (it) {
+                viewAssetsGroup.visibility = View.VISIBLE
+                viewAddAccount.visibility = View.GONE
+            } else {
+                viewAssetsGroup.visibility = View.GONE
+                viewAddAccount.visibility = View.VISIBLE
+            }
+        })
+        mWalletViewModel.mTotalFiatBalanceStrLiveData.observe(this, Observer {
+            tvAmount.text = it
+        })
+        mWalletViewModel.mHiddenTotalFiatBalanceLiveData.observe(this, Observer {
+            if (it) {
+                ivTotalHidden.setImageResource(R.drawable.ic_total_balance_hidden)
+            } else {
+                ivTotalHidden.setImageResource(R.drawable.ic_total_balance_show)
+            }
+        })
+        tvTotalAssetsTitle.setOnClickListener {
+            mWalletViewModel.taggerTotalDisplay()
+        }
+
+        val bounds = Rect()
+        ivTotalHidden.getHitRect(bounds)
+        setTouchDelegate(tvTotalAssetsTitle,100)
 
         // 初始化钱包当作是切换钱包逻辑
 //        refreshAssert(true)
@@ -132,6 +152,20 @@ class WalletFragment : BaseFragment() {
 //        swipeRefreshLayout.setOnRefreshListener {
 //            refreshAssert(false)
 //        }
+    }
+
+    fun setTouchDelegate(view: View, expandTouchWidth: Int) {
+        val parentView = view.parent as View
+        parentView.post {
+            val rect = Rect()
+            view.getHitRect(rect)
+            rect.top -= expandTouchWidth
+            rect.bottom += expandTouchWidth
+            rect.left -= expandTouchWidth
+            rect.right += expandTouchWidth
+            val touchDelegate = TouchDelegate(rect, view)
+            parentView.touchDelegate = touchDelegate
+        }
     }
 
     override fun onViewClick(view: View) {
@@ -335,11 +369,19 @@ class AssertAdapter(
     }
 
     override fun areContentsTheSame(oldItem: AssetsVo, newItem: AssetsVo): Boolean {
-        return if (oldItem is AssetsCoinVo && newItem is AssetsCoinVo) {
-            oldItem.getId() == newItem.getId()
-        } else {
-            oldItem.getAccountId() == newItem.getAccountId() && oldItem.getId() == newItem.getId()
-        }
+        val ssss = oldItem.getId() == newItem.getId() &&
+                oldItem.amountWithUnit.amount == newItem.amountWithUnit.amount &&
+                oldItem.amountWithUnit.unit == newItem.amountWithUnit.unit &&
+                oldItem.fiatAmountWithUnit.unit == newItem.fiatAmountWithUnit.unit &&
+                oldItem.fiatAmountWithUnit.symbol == newItem.fiatAmountWithUnit.symbol &&
+                oldItem.fiatAmountWithUnit.amount == newItem.fiatAmountWithUnit.amount &&
+                oldItem.name == newItem.name &&
+                oldItem.getAmount() == newItem.getAmount() &&
+                oldItem.getAssetsName() == newItem.getAssetsName() &&
+                oldItem.getAccountId() == newItem.getAccountId() &&
+                oldItem.getLogoUrl() == newItem.getLogoUrl()
+        Log.e("areContentsTheSame", "${oldItem.getAssetsName()}   $ssss")
+        return false
     }
 }) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -354,12 +396,16 @@ class AssertAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemData = getItem(position)
+        Glide.with(holder.itemView.context)
+            .load(itemData.getLogoUrl())
+            .error(R.drawable.assets_default)
+            .placeholder(R.drawable.assets_default)
+            .into(holder.itemView.ivLogo)
         holder.itemView.tvName.text = itemData.getAssetsName()
 
-//        val parseCoinType = CoinTypes.parseCoinType(itemData.coinType)
-//        val convertAmountToDisplayUnit =
-//            convertAmountToDisplayUnit(itemData.amount, parseCoinType)
-        holder.itemView.tvAmount.text = itemData.getAmountWithUnit().amount
+        holder.itemView.tvAmount.text = itemData.amountWithUnit.amount
+        holder.itemView.tvFiatAmount.text =
+            "≈${itemData.fiatAmountWithUnit.symbol}${itemData.fiatAmountWithUnit.amount}"
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)

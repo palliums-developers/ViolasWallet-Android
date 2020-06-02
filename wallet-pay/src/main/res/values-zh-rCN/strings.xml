@@ -301,4 +301,6 @@
     <string name="title_open_fingerprint_verification_prompt">设置指纹识别让交易更方便</string>
     <string name="action_set_up_now">马上设置</string>
     <string name="action_talk_about_later">稍后再说</string>
+    <string name="create_account">创建钱包</string>
+    <string name="import_account">导入钱包</string>
 </resources>

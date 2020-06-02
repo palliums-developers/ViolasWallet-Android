@@ -3,6 +3,8 @@ package com.violas.wallet.biz
 import android.content.Context
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.exceptions.RequestException
+import com.palliums.utils.exceptionAsync
+import com.palliums.utils.toMap
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip32.ExtendedKey
 import com.quincysx.crypto.bip44.BIP44
@@ -13,7 +15,10 @@ import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.viewModel.bean.*
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount
@@ -36,7 +41,7 @@ class AccountManager {
         private const val KEY_PROMPT_OPEN_BIOMETRICS = "PROMPT_OPEN_BIOMETRICS"
     }
 
-    private val mExecutor by lazy { Executors.newFixedThreadPool(2) }
+    private val mExecutor by lazy { Executors.newFixedThreadPool(4) }
 
     private val mConfigSharedPreferences by lazy {
         getContext().getSharedPreferences("config", Context.MODE_PRIVATE)
@@ -44,6 +49,10 @@ class AccountManager {
 
     private val mAccountStorage by lazy {
         DataRepository.getAccountStorage()
+    }
+
+    private val mAccountTokenStorage by lazy {
+        DataRepository.getTokenStorage()
     }
 
     fun updateAccountPassword(accountId: Long, encryptedPassword: String) {
@@ -123,7 +132,7 @@ class AccountManager {
 
     /**
      * 设置已提示开启指纹
-    */
+     */
     fun setOpenBiometricsPrompted() {
         mConfigSharedPreferences.edit().putBoolean(KEY_PROMPT_OPEN_BIOMETRICS, true).apply()
     }
@@ -459,5 +468,165 @@ class AccountManager {
             return false
         }
         return true
+    }
+
+    fun getLocalAssets(): List<AssetsVo> {
+        val localAssets = mutableListOf<AssetsVo>()
+
+        val loadAll = mAccountStorage.loadAll()
+        loadAll.forEach {
+            when (it.coinNumber) {
+                CoinTypes.Libra.coinType() -> {
+                    localAssets.add(
+                        AssetsLibraCoinVo(
+                            it.id,
+                            it.publicKey,
+                            it.authKeyPrefix,
+                            it.coinNumber,
+                            it.address,
+                            it.amount,
+                            it.logo
+                        ).also {
+                            it.name = CoinTypes.Libra.coinName()
+                        }
+                    )
+                }
+                CoinTypes.Violas.coinType() -> {
+                    localAssets.add(
+                        AssetsLibraCoinVo(
+                            it.id,
+                            it.publicKey,
+                            it.authKeyPrefix,
+                            it.coinNumber,
+                            it.address,
+                            it.amount,
+                            it.logo
+                        ).also {
+                            it.name = CoinTypes.Violas.coinName()
+                        }
+                    )
+                }
+                else -> {
+                    localAssets.add(
+                        AssetsCoinVo(
+                            it.id,
+                            it.publicKey,
+                            it.authKeyPrefix,
+                            it.coinNumber,
+                            it.address,
+                            it.amount,
+                            it.logo
+                        ).also {
+                            it.name = CoinTypes.Bitcoin.coinName()
+                        }
+                    )
+                }
+            }
+        }
+
+        val localTokenAssets = mAccountTokenStorage.loadAll()
+
+        localTokenAssets.forEach {
+            localAssets.add(
+                AssetsTokenVo(
+                    it.id!!,
+                    it.account_id,
+                    it.address,
+                    it.module,
+                    it.enable,
+                    it.amount,
+                    it.logo
+                ).also { tokenVo ->
+                    tokenVo.name = it.name
+                }
+            )
+        }
+
+        return localAssets
+    }
+
+    suspend fun refreshAssetsAmount(localAssets: List<AssetsVo>): List<AssetsVo> {
+        val assets = localAssets.toMutableList()
+        val exceptionAsync = GlobalScope.exceptionAsync { queryBTCBalance(assets) }
+        val exceptionAsync1 = GlobalScope.exceptionAsync { queryLibraBalance(assets) }
+        val exceptionAsync2 = GlobalScope.exceptionAsync { queryViolasBalance(assets) }
+
+        exceptionAsync.await()
+        exceptionAsync1.await()
+        exceptionAsync2.await()
+        return assets
+    }
+
+    private fun queryBTCBalance(localAssets: List<AssetsVo>) {
+        localAssets.filter { it is AssetsCoinVo && (it.coinNumber == CoinTypes.BitcoinTest.coinType() || it.coinNumber == CoinTypes.Bitcoin.coinType()) }
+            .forEach { assets ->
+                assets as AssetsCoinVo
+                val subscribe = DataRepository.getBitcoinService()
+                    .getBalance(assets.address)
+                    .subscribe({ balance ->
+                        assets.setAmount(balance.toLong())
+                        val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
+                            balance.toLong(),
+                            CoinTypes.parseCoinType(assets.coinNumber)
+                        )
+                        assets.amountWithUnit.amount = convertAmountToDisplayUnit.first
+                        assets.amountWithUnit.unit = convertAmountToDisplayUnit.second
+                    }, {
+                        it.printStackTrace()
+                    })
+            }
+    }
+
+    private suspend fun queryLibraBalance(localAssets: List<AssetsVo>) {
+        localAssets.filter { it is AssetsLibraCoinVo && it.coinNumber == CoinTypes.Libra.coinType() }
+            .forEach { assets ->
+                assets as AssetsLibraCoinVo
+                DataRepository.getLibraService().getAccountState(assets.address)?.let { it ->
+                    assets.authKeyPrefix = it.authenticationKey ?: ""
+                    assets.delegatedKeyRotationCapability =
+                        it.delegatedKeyRotationCapability ?: false
+                    assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability ?: false
+
+                    val filter =
+                        localAssets.filter { assetsToken -> assetsToken is AssetsTokenVo && assetsToken.getAccountId() == assets.getAccountId() }
+                            .toMap { assetsToken -> (assetsToken as AssetsTokenVo).module }
+                    it.balances?.forEach { balance ->
+                        filter[balance.currency]?.apply {
+                            this as AssetsTokenVo
+                            setAmount(balance.amount)
+                            val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
+                                balance.amount,
+                                CoinTypes.parseCoinType(assets.coinNumber)
+                            )
+                            assets.amountWithUnit.amount = convertAmountToDisplayUnit.first
+                            assets.amountWithUnit.unit = convertAmountToDisplayUnit.second
+                        }
+                    }
+                }
+            }
+    }
+
+    private suspend fun queryViolasBalance(localAssets: List<AssetsVo>) {
+        localAssets.filter { it is AssetsLibraCoinVo && it.coinNumber == CoinTypes.Violas.coinType() }
+            .forEach { assets ->
+                assets as AssetsLibraCoinVo
+                DataRepository.getViolasService().getAccountState(assets.address)?.let {
+                    assets.authKeyPrefix = it.authenticationKey ?: ""
+                    assets.delegatedKeyRotationCapability =
+                        it.delegatedKeyRotationCapability ?: false
+                    assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability ?: false
+
+                    it.balance?.let { it1 ->
+                        assets.setAmount(it1)
+                        val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
+                            it1,
+                            CoinTypes.parseCoinType(assets.coinNumber)
+                        )
+                        assets.amountWithUnit.amount = convertAmountToDisplayUnit.first
+                        assets.amountWithUnit.unit = convertAmountToDisplayUnit.second
+                    }
+
+                }
+            }
     }
 }

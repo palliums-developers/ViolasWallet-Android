@@ -31,20 +31,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
-                    android:text="总资产"
                     android:layout_marginTop="56dp"
+                    android:text="总资产"
                     android:textColor="#9A91BE"
                     android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:layout_width="40dp"
+                <ImageView
+                    android:id="@+id/ivTotalHidden"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="可见"
                     android:textColor="#9A91BE"
-                    android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="@+id/tvTotalAssetsTitle"
                     app:layout_constraintStart_toEndOf="@+id/tvTotalAssetsTitle"
                     app:layout_constraintTop_toTopOf="@+id/tvTotalAssetsTitle" />
@@ -65,7 +64,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="18dp"
-                    android:text="0.00000000"
                     android:textColor="#FFFFFF"
                     android:textSize="28sp"
                     android:textStyle="bold"
@@ -76,6 +74,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/viewAssetsGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="-30dp"
@@ -118,6 +117,72 @@
                     tools:itemCount="30"
                     tools:listitem="@layout/item_wallet_assert" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/viewAddAccount"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="-30dp"
+                android:background="@drawable/bg_wallet_main_assets_list"
+                android:orientation="vertical"
+                android:paddingStart="14dp"
+                android:paddingTop="32dp"
+                android:paddingEnd="14dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/viewCreateAccount"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/selector_bg_wallet_main_assets_list_item"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:src="@drawable/ic_create_account" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="22dp"
+                        android:text="@string/create_account"
+                        android:textColor="#261372"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/viewImportAccount"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/selector_bg_wallet_main_assets_list_item"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:src="@drawable/ic_import_account" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="22dp"
+                        android:text="@string/import_account"
+                        android:textColor="#261372"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </LinearLayout>
         </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

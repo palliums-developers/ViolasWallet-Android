@@ -302,4 +302,6 @@
     <string name="title_open_fingerprint_verification_prompt">Set up fingerprint recognition to make transactions more convenient</string>
     <string name="action_set_up_now">Set Up Now</string>
     <string name="action_talk_about_later">Talk About Later</string>
+    <string name="create_account">创建钱包</string>
+    <string name="import_account">导入钱包</string>
 </resources>
