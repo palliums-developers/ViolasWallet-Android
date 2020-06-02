@@ -70,14 +70,14 @@ class AccountManager {
      * 是否存在账户
      */
     fun existsWalletAccount(): Boolean {
-        if (mAccountStorage.loadByWalletType(0) == null) {
+        if (mAccountStorage.loadByWalletType() == null) {
             return false
         }
         return true
     }
 
     private fun getDefWallet(): Long {
-        return mAccountStorage.loadByWalletType(0)?.id ?: 1L
+        return mAccountStorage.loadByWalletType()?.id ?: 1L
     }
 
     fun removeWallet(accountId: AccountDO) {
@@ -89,7 +89,7 @@ class AccountManager {
     }
 
     fun getIdentityAccount(): AccountDO {
-        return mAccountStorage.loadByWalletType(0)!!
+        return mAccountStorage.loadByWalletType()!!
     }
 
     /**
@@ -139,7 +139,7 @@ class AccountManager {
      * 获取身份钱包的助记词
      */
     fun getIdentityWalletMnemonic(context: Context, password: ByteArray): ArrayList<String>? {
-        val account = mAccountStorage.loadByWalletType(0)!!
+        val account = mAccountStorage.loadByWalletType()!!
         val security = SimpleSecurity.instance(context)
         val bytes = security.decrypt(password, account.mnemonic) ?: return null
         val mnemonic = String(bytes)
@@ -219,8 +219,7 @@ class AccountManager {
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletType = 1
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
             )
         )
     }
@@ -247,8 +246,7 @@ class AccountManager {
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletType = 1
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
             )
         )
     }
@@ -279,8 +277,7 @@ class AccountManager {
                 } else {
                     CoinTypes.Bitcoin.coinType()
                 },
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletType = 1
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
             )
         )
     }
@@ -335,8 +332,7 @@ class AccountManager {
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletType = 0
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
             ),
             AccountDO(
                 privateKey = security.encrypt(
@@ -347,8 +343,7 @@ class AccountManager {
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletType = 0
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
             ),
             AccountDO(
                 privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
@@ -359,8 +354,7 @@ class AccountManager {
                 } else {
                     CoinTypes.Bitcoin.coinType()
                 },
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                walletType = 0
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
             )
         )
         if (insertIds.isNotEmpty()) {

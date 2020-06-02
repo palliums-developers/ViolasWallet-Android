@@ -23,9 +23,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/titleBar"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@drawable/bg_wallet_main"
-                android:paddingTop="64dp">
+                android:layout_height="196dp"
+                android:background="@drawable/bg_wallet_main">
 
                 <TextView
                     android:id="@+id/tvTotalAssetsTitle"
@@ -33,6 +32,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="总资产"
+                    android:layout_marginTop="56dp"
                     android:textColor="#9A91BE"
                     android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -52,9 +52,8 @@
                 <ImageView
                     android:id="@+id/ivScan"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/crop__bar_height"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
-                    android:gravity="center"
                     android:padding="8dp"
                     android:src="@drawable/icon_scan_white"
                     app:layout_constraintBottom_toBottomOf="@id/tvTotalAssetsTitle"

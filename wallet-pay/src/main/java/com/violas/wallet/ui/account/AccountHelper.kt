@@ -31,7 +31,7 @@ fun loadAccounts(
     if (accountType == AccountType.ALL) {
 
         val identityAccountLabel = getString(R.string.account_label_identity)
-        val identityAccounts = accountDao.loadAllByWalletType(0)
+        val identityAccounts = accountDao.loadAllByWalletType()
             .map {
                 AccountVo(it).apply {
                     selected = it.id == currentAccount.id
@@ -41,7 +41,7 @@ fun loadAccounts(
         data[identityAccountLabel] = identityAccounts
 
         val otherAccountLabel = getString(R.string.account_label_other)
-        val otherAccounts = accountDao.loadAllByWalletType(1)
+        val otherAccounts = accountDao.loadAllByWalletType()
             .map {
                 AccountVo(it).apply {
                     selected = it.id == currentAccount.id
@@ -55,7 +55,7 @@ fun loadAccounts(
         if (differentiateIdentityIfNotAllAccountType) {
             val identityAccountLabel = getString(R.string.account_label_identity)
             val identityAccounts =
-                accountDao.findAllByWalletTypeAndCoinType(0, coinTypes.coinType())
+                accountDao.findAllByWalletTypeAndCoinType(coinTypes.coinType())
                     ?.map {
                         AccountVo(it).apply {
                             selected = it.id == currentAccount.id
@@ -68,7 +68,7 @@ fun loadAccounts(
 
             val otherAccountLabel = getString(R.string.account_label_other)
             val otherAccounts =
-                accountDao.findAllByWalletTypeAndCoinType(1, coinTypes.coinType())
+                accountDao.findAllByWalletTypeAndCoinType(coinTypes.coinType())
                     ?.map {
                         AccountVo(it).apply {
                             selected = it.id == currentAccount.id
@@ -108,7 +108,6 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
                 AccountDO(
                     id = 0,
 //                    walletNickname = "${CoinTypes.Violas.coinName()}-Wallet",
-                    walletType = 0,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.Violas.coinType()
                 ),
@@ -118,7 +117,6 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
                 AccountDO(
                     id = 1,
 //                    walletNickname = "${CoinTypes.Libra.coinName()}-Wallet",
-                    walletType = 0,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.Libra.coinType()
                 )
@@ -127,7 +125,6 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
                 AccountDO(
                     id = 2,
 //                    walletNickname = "${CoinTypes.Bitcoin.coinName()}-Wallet",
-                    walletType = 0,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.Bitcoin.coinType()
                 )
@@ -139,7 +136,6 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
                 AccountDO(
                     id = 3,
 //                    walletNickname = "${CoinTypes.Violas.coinName()}-Wallet 2",
-                    walletType = 1,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.Violas.coinType()
                 )
@@ -148,7 +144,6 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
                 AccountDO(
                     id = 4,
 //                    walletNickname = "${CoinTypes.Libra.coinName()}-Wallet 2",
-                    walletType = 1,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.Libra.coinType()
                 )
@@ -157,7 +152,6 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
                 AccountDO(
                     id = 5,
 //                    walletNickname = "${CoinTypes.Bitcoin.coinName()}-Wallet 2",
-                    walletType = 1,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = CoinTypes.Bitcoin.coinType()
                 )
@@ -173,7 +167,6 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
                 AccountDO(
                     id = 0,
 //                    walletNickname = "$${coinTypes.coinName()}-Wallet",
-                    walletType = 0,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = coinTypes.coinType()
                 ),
@@ -183,7 +176,6 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
                 AccountDO(
                     id = 1,
 //                    walletNickname = "${coinTypes.coinName()}-Wallet 2",
-                    walletType = 1,
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
                     coinNumber = coinTypes.coinType()
                 )

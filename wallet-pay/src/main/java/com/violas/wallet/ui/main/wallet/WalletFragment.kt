@@ -45,6 +45,7 @@ import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.walletconnect.WalletConnect
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
@@ -326,11 +327,19 @@ class AssertAdapter(
     val call: (AssetsVo) -> Unit
 ) : ListAdapter<AssetsVo, AssertAdapter.ViewHolder>(object : DiffUtil.ItemCallback<AssetsVo>() {
     override fun areItemsTheSame(oldItem: AssetsVo, newItem: AssetsVo): Boolean {
-        return oldItem.getAccountId() == newItem.getAccountId() || oldItem.getId() == newItem.getId()
+        return if (oldItem is AssetsCoinVo && newItem is AssetsCoinVo) {
+            oldItem.getId() == newItem.getId()
+        } else {
+            oldItem.getAccountId() == newItem.getAccountId() && oldItem.getId() == newItem.getId()
+        }
     }
 
     override fun areContentsTheSame(oldItem: AssetsVo, newItem: AssetsVo): Boolean {
-        return oldItem.getAccountId() == newItem.getAccountId() || oldItem.getId() == newItem.getId()
+        return if (oldItem is AssetsCoinVo && newItem is AssetsCoinVo) {
+            oldItem.getId() == newItem.getId()
+        } else {
+            oldItem.getAccountId() == newItem.getAccountId() && oldItem.getId() == newItem.getId()
+        }
     }
 }) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

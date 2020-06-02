@@ -114,7 +114,6 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         mWCClient.onGetAccounts = { id ->
             val accounts = mAccountStorage.loadAll().map {
                 WCViolasAccount(
-                    walletType = it.walletType,
                     coinType = when (it.coinNumber) {
                         CoinTypes.Violas.coinType() -> "violas"
                         CoinTypes.Libra.coinType() -> "libra"
@@ -122,7 +121,8 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                     },
 //                    name = it.walletNickname,
                     name = "",
-                    address = it.address
+                    address = it.address,
+                    walletType = 0
                 )
             }
             sendSuccessMessage(id, accounts)

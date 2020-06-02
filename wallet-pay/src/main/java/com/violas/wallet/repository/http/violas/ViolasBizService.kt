@@ -24,14 +24,14 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
     ): Response<Any> {
         val walletAccounts = accounts.map {
             WalletAccountDTO(
-                walletType = it.walletType,
                 coinType = when (it.coinNumber) {
                     CoinTypes.Violas.coinType() -> "violas"
                     CoinTypes.Libra.coinType() -> "libra"
                     else -> "bitcoin"
                 },
                 walletName = "",
-                walletAddress = it.address
+                walletAddress = it.address,
+                walletType = 0
             )
         }
         return mViolasRepository.loginWeb(loginType, sessionId, walletAccounts)

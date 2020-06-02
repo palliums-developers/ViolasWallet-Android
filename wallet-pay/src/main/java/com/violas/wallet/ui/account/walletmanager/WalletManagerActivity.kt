@@ -92,9 +92,9 @@ class WalletManagerActivity : BaseAppActivity() {
     private fun initView() {
 //        tvName.text = mAccountDO.walletNickname
         tvAddress.text = mAccountDO.address
-        if (mAccountDO.walletType == 1) {
-            btnRemoveWallet.visibility = View.VISIBLE
-        }
+//        if (mAccountDO.walletType == 1) {
+//            btnRemoveWallet.visibility = View.VISIBLE
+//        }
 
         swtBtnBiometric.setCheckedImmediatelyNoEvent(mAccountDO.isOpenedBiometricPayment())
     }
@@ -223,15 +223,15 @@ class WalletManagerActivity : BaseAppActivity() {
     }
 
     private fun backWallet(account: AccountDO, mnemonics: List<String>) {
-        if (account.walletType == 0 && !mAccountManager.isIdentityMnemonicBackup()) {
+//        if (account.walletType == 0 && !mAccountManager.isIdentityMnemonicBackup()) {
             BackupPromptActivity.start(
                 this@WalletManagerActivity,
                 mnemonics,
                 BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
             )
-        } else {
-            ShowMnemonicActivity.start(this@WalletManagerActivity, mnemonics)
-        }
+//        } else {
+//            ShowMnemonicActivity.start(this@WalletManagerActivity, mnemonics)
+//        }
     }
 
     private fun removeWallet(account: AccountDO) {

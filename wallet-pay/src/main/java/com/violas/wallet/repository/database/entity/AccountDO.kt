@@ -20,8 +20,6 @@ data class AccountDO(
     var authKeyPrefix: String = "",
     @ColumnInfo(name = "mnemonic", typeAffinity = ColumnInfo.BLOB)
     var mnemonic: ByteArray = ByteArray(0),
-    @ColumnInfo(name = "wallet_type")
-    var walletType: Int = 0,
     @ColumnInfo(name = "coin_number")
     var coinNumber: Int = 0,
     @ColumnInfo(name = "address")
@@ -60,7 +58,6 @@ data class AccountDO(
         if (publicKey != other.publicKey) return false
         if (authKeyPrefix != other.authKeyPrefix) return false
         if (!mnemonic.contentEquals(other.mnemonic)) return false
-        if (walletType != other.walletType) return false
         if (coinNumber != other.coinNumber) return false
         if (address != other.address) return false
         if (modifyDate != other.modifyDate) return false
@@ -74,7 +71,6 @@ data class AccountDO(
         result = 31 * result + publicKey.hashCode()
         result = 31 * result + authKeyPrefix.hashCode()
         result = 31 * result + mnemonic.contentHashCode()
-        result = 31 * result + walletType
         result = 31 * result + coinNumber
         result = 31 * result + address.hashCode()
         result = 31 * result + modifyDate.hashCode()
