@@ -5,15 +5,21 @@ import android.os.Bundle
 import android.view.View
 import com.palliums.base.BaseFragment
 import com.violas.wallet.R
-import com.violas.wallet.ui.account.operations.AccountOperationsActivity
+import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.setting.SettingActivity
 import kotlinx.android.synthetic.main.fragment_me.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 我的页面
  */
 class MeFragment : BaseFragment() {
+
+    private val mAccountManager by lazy { AccountManager() }
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_me
@@ -23,7 +29,6 @@ class MeFragment : BaseFragment() {
         super.onLazyInitView(savedInstanceState)
 
         mivWalletManagement.setOnClickListener(this)
-        mivTransferRecord.setOnClickListener(this)
         mivAddressBook.setOnClickListener(this)
         mivSettings.setOnClickListener(this)
     }
@@ -31,7 +36,22 @@ class MeFragment : BaseFragment() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.mivWalletManagement -> {
-                AccountOperationsActivity.manageAccount(_mActivity)
+                launch {
+                    val currentAccount = withContext(Dispatchers.IO) {
+                        try {
+                            mAccountManager.currentAccount()
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
+
+                    if (currentAccount == null) {
+                        showToast(R.string.tips_create_or_import_wallet)
+                        return@launch
+                    }
+
+                    WalletManagerActivity.start(this@MeFragment, currentAccount.id)
+                }
             }
 
             R.id.mivAddressBook -> {
