@@ -19,7 +19,7 @@
         android:id="@+id/ivAvatar"
         android:layout_width="@dimen/dp_75"
         android:layout_height="@dimen/dp_75"
-        android:layout_marginTop="@dimen/dp_64"
+        android:layout_marginTop="@dimen/dp_65"
         android:src="@drawable/ic_avatar_logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +32,7 @@
         android:id="@+id/tvNickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_9"
+        android:layout_marginTop="@dimen/dp_8"
         android:text="@string/app_name"
         android:textColor="@color/white"
         android:textSize="@dimen/sp_15"
@@ -43,6 +43,7 @@
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivWalletManagement"
         style="@style/MenuItemView"
+        android:layout_marginTop="@dimen/dp_10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivHeader"
@@ -51,23 +52,12 @@
         app:mivStartTitleText="@string/me_wallet_management" />
 
     <com.palliums.widget.MenuItemView
-        android:id="@+id/mivTransferRecord"
-        style="@style/MenuItemView"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mivWalletManagement"
-        app:mivShowBottomLine="false"
-        app:mivStartIcon="@mipmap/ic_me_transfer_record"
-        app:mivStartTitleText="@string/me_transfer_record" />
-
-    <com.palliums.widget.MenuItemView
         android:id="@+id/mivAddressBook"
         style="@style/MenuItemView"
         android:layout_marginTop="@dimen/item_spacing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mivTransferRecord"
+        app:layout_constraintTop_toBottomOf="@+id/mivWalletManagement"
         app:mivShowBottomLine="false"
         app:mivStartIcon="@mipmap/ic_me_address_book"
         app:mivStartTitleText="@string/me_address_book" />

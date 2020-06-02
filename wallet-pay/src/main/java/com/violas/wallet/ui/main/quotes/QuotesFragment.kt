@@ -178,7 +178,7 @@ class QuotesFragment : BaseFragment() {
         fromBigDecimal: BigDecimal,
         toBigDecimal: BigDecimal
     ) {
-        authenticateAccount(mQuotesViewModel.mAccount!!) {
+        authenticateAccount(mQuotesViewModel.mAccount!!, mQuotesViewModel.mAccountManager) {
             launch(coroutineExceptionHandler()) {
                 showProgress()
                 try {

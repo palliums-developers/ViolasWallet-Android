@@ -8,63 +8,18 @@
     android:orientation="vertical"
     tools:context=".ui.account.walletmanager.WalletManagerActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutChangeName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:background="@color/white"
-        android:paddingStart="17dp"
-        android:paddingEnd="17dp">
-
-        <TextView
-            android:id="@+id/tvName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="11dp"
-            android:textColor="@color/def_text_color"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Libra-wallet1" />
-
-        <TextView
-            android:id="@+id/tvAddress"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="10dp"
-            android:textColor="@color/def_text_color_50"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvName"
-            tools:text="bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_right_arrow_grey"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/dp_10"
         android:background="@color/white"
         android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutBack"
+            android:id="@+id/clExportMnemonics"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:paddingStart="17dp"
-            android:paddingEnd="17dp">
+            android:layout_height="@dimen/dp_60"
+            android:paddingHorizontal="@dimen/dp_17">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -88,7 +43,7 @@
         <View
             android:id="@+id/vLine1"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_1"
+            android:layout_height="@dimen/dp_0.5"
             android:layout_marginHorizontal="@dimen/dp_18"
             android:background="@color/color_DEDFE0" />
 
@@ -124,10 +79,9 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnRemoveWallet"
+        android:id="@+id/btnDeleteWallet"
         style="@style/BaseButtonPrimary"
-        android:layout_marginTop="@dimen/dp_50"
-        android:text="@string/action_delete_wallet"
-        android:visibility="gone" />
+        android:layout_marginTop="@dimen/dp_62"
+        android:text="@string/action_delete_wallet" />
 
 </LinearLayout>

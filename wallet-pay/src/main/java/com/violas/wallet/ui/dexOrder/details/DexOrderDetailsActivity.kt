@@ -46,6 +46,7 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
 
     private var dexOrder: DexOrderDTO? = null
     private lateinit var currentAccount: AccountDO
+    private val mAccountManager by lazy { AccountManager() }
 
     private val mViewModel by viewModels<DexOrderDetailsViewModel> {
         object : ViewModelProvider.Factory {
@@ -67,7 +68,7 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
                 //showToast(R.string.transaction_record_not_supported_query)
             },
             onClickRevokeOrder = { dexOrder, position ->
-                authenticateAccount(currentAccount) {
+                authenticateAccount(currentAccount, mAccountManager) {
                     mViewModel.revokeOrder(it, dexOrder) {
                         dexOrder.updateStateToRevoking()
                         getViewAdapter().notifyItemChanged(position)
@@ -120,7 +121,7 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
         }
 
         return try {
-            currentAccount = AccountManager().currentAccount()
+            currentAccount = mAccountManager.currentAccount()
 
             true
         } catch (e: Exception) {

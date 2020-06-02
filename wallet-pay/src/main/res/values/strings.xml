@@ -99,7 +99,7 @@
     <string name="title_assert_manager">Manage Assert</string>
     <string name="title_manager">Manage</string>
     <string name="hint_output_back">Export Mnemonic Words</string>
-    <string name="action_delete_wallet">Remove Wallet</string>
+    <string name="action_delete_wallet">Delete Wallet</string>
     <string name="hint_change_wallet_name">Change Wallet Name</string>
     <string name="hint_input_password">Input Access Code</string>
     <string name="hint_delete_address_book">Remove Address Book</string>
@@ -304,4 +304,7 @@
     <string name="action_talk_about_later">Talk About Later</string>
     <string name="create_account">创建钱包</string>
     <string name="import_account">导入钱包</string>
+
+    <string name="tips_create_or_import_wallet">Please create/import wallet first</string>
+    <string name="desc_delete_wallet">请谨慎使用此操作，删除前确认你的钱包已安全备份，否则数字资产将无法找回！</string>
 </resources>

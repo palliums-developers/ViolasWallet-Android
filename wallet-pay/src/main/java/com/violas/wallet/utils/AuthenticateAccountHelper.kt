@@ -6,6 +6,7 @@ import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.utils.*
 import com.violas.wallet.R
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.biometric.CustomFingerprintDialog
@@ -32,6 +33,7 @@ import org.palliums.violascore.wallet.Account
  */
 fun BaseActivity.authenticateAccount(
     accountDO: AccountDO,
+    accountManager: AccountManager,
     retryWhenPwdInputError: Boolean = true,
     showLoadingWhenDecryptStart: Boolean = true,
     dismissLoadingWhenDecryptEnd: Boolean = false,
@@ -43,10 +45,10 @@ fun BaseActivity.authenticateAccount(
 ) {
     authenticateAccountByBiometric(
         accountDO = accountDO,
+        accountManager = accountManager,
         showLoadingWhenDecryptStart = showLoadingWhenDecryptStart,
         dismissLoadingWhenDecryptEnd = dismissLoadingWhenDecryptEnd,
         useFingerprint = useFingerprintWhenBiometric,
-        cancelCallback = cancelCallback,
         biometricErrorCallback = {
             authenticateAccountByPassword(
                 accountDO = accountDO,
@@ -59,6 +61,7 @@ fun BaseActivity.authenticateAccount(
                 privateKeyCallback = privateKeyCallback
             )
         },
+        cancelCallback = cancelCallback,
         passwordCallback = passwordCallback,
         mnemonicCallback = mnemonicCallback,
         privateKeyCallback = privateKeyCallback
@@ -74,6 +77,7 @@ fun BaseActivity.authenticateAccount(
  */
 fun BaseFragment.authenticateAccount(
     accountDO: AccountDO,
+    accountManager: AccountManager,
     retryWhenPwdInputError: Boolean = true,
     showLoadingWhenDecryptStart: Boolean = true,
     dismissLoadingWhenDecryptEnd: Boolean = false,
@@ -85,10 +89,10 @@ fun BaseFragment.authenticateAccount(
 ) {
     authenticateAccountByBiometric(
         accountDO = accountDO,
+        accountManager = accountManager,
         showLoadingWhenDecryptStart = showLoadingWhenDecryptStart,
         dismissLoadingWhenDecryptEnd = dismissLoadingWhenDecryptEnd,
         useFingerprint = useFingerprintWhenBiometric,
-        cancelCallback = cancelCallback,
         biometricErrorCallback = {
             authenticateAccountByPassword(
                 accountDO = accountDO,
@@ -101,6 +105,7 @@ fun BaseFragment.authenticateAccount(
                 privateKeyCallback = privateKeyCallback
             )
         },
+        cancelCallback = cancelCallback,
         passwordCallback = passwordCallback,
         mnemonicCallback = mnemonicCallback,
         privateKeyCallback = privateKeyCallback
@@ -117,17 +122,18 @@ fun BaseFragment.authenticateAccount(
  */
 fun BaseActivity.authenticateAccountByBiometric(
     accountDO: AccountDO,
+    accountManager: AccountManager,
     showLoadingWhenDecryptStart: Boolean = true,
     dismissLoadingWhenDecryptEnd: Boolean = false,
     useFingerprint: Boolean = true,
-    cancelCallback: (() -> Unit)? = null,
     biometricErrorCallback: (() -> Unit)? = null,
+    cancelCallback: (() -> Unit)? = null,
     passwordCallback: ((password: String) -> Unit)? = null,
     mnemonicCallback: ((mnemonics: List<String>) -> Unit)? = null,
     privateKeyCallback: ((privateKey: ByteArray) -> Unit)? = null
 ) {
-    val encryptedPassword = accountDO.getEncryptedPasswordStr()
-    if (encryptedPassword.isNullOrBlank()) {
+    val securityPassword = accountManager.getSecurityPassword()
+    if (securityPassword.isNullOrBlank()) {
         // 没有开启生物验证功能
         biometricErrorCallback?.invoke()
         return
@@ -149,8 +155,8 @@ fun BaseActivity.authenticateAccountByBiometric(
             .useFingerprint(useFingerprint)
             .build()
 
-    val key = accountDO.getBiometricKey()
-    biometricCompat.decrypt(promptParams, key, encryptedPassword) { result ->
+    val key = AccountManager.getBiometricKey()
+    biometricCompat.decrypt(promptParams, key, securityPassword) { result ->
         if (result.type == BiometricCompat.Type.INFO) return@decrypt
 
         if (result.type == BiometricCompat.Type.SUCCESS) {
@@ -195,17 +201,18 @@ fun BaseActivity.authenticateAccountByBiometric(
  */
 fun BaseFragment.authenticateAccountByBiometric(
     accountDO: AccountDO,
+    accountManager: AccountManager,
     showLoadingWhenDecryptStart: Boolean = true,
     dismissLoadingWhenDecryptEnd: Boolean = false,
     useFingerprint: Boolean = true,
-    cancelCallback: (() -> Unit)? = null,
     biometricErrorCallback: (() -> Unit)? = null,
+    cancelCallback: (() -> Unit)? = null,
     passwordCallback: ((password: String) -> Unit)? = null,
     mnemonicCallback: ((mnemonics: List<String>) -> Unit)? = null,
     privateKeyCallback: ((privateKey: ByteArray) -> Unit)? = null
 ) {
-    val encryptedPassword = accountDO.getEncryptedPasswordStr()
-    if (encryptedPassword.isNullOrBlank()) {
+    val securityPassword = accountManager.getSecurityPassword()
+    if (securityPassword.isNullOrBlank()) {
         // 没有开启生物验证功能
         biometricErrorCallback?.invoke()
         return
@@ -227,8 +234,8 @@ fun BaseFragment.authenticateAccountByBiometric(
             .useFingerprint(useFingerprint)
             .build()
 
-    val key = accountDO.getBiometricKey()
-    biometricCompat.decrypt(promptParams, key, encryptedPassword) { result ->
+    val key = AccountManager.getBiometricKey()
+    biometricCompat.decrypt(promptParams, key, securityPassword) { result ->
         if (result.type == BiometricCompat.Type.INFO) return@decrypt
 
         if (result.type == BiometricCompat.Type.SUCCESS) {

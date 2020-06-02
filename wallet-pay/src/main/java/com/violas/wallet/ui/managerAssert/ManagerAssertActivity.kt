@@ -111,6 +111,7 @@ class ManagerAssertActivity : BaseAppActivity() {
     ) {
         authenticateAccount(
             mAccount,
+            mAccountManager,
             cancelCallback = {
                 checkbox.isChecked = false
             }

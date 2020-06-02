@@ -35,18 +35,6 @@ data class AccountDO(
         const val TABLE_NAME = "account"
     }
 
-    fun getEncryptedPasswordStr(): String? {
-        return null
-    }
-
-    fun isOpenedBiometricPayment(): Boolean {
-        return false
-    }
-
-    fun getBiometricKey(): String {
-        return "account_${id}_$address"
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

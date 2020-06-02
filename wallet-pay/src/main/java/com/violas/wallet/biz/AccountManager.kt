@@ -1,6 +1,7 @@
 package com.violas.wallet.biz
 
 import android.content.Context
+import androidx.annotation.WorkerThread
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.exceptions.RequestException
 import com.palliums.utils.exceptionAsync
@@ -39,6 +40,14 @@ class AccountManager {
         private const val IDENTITY_MNEMONIC_BACKUP = "IDENTITY_MNEMONIC_BACKUP"
         private const val FAST_INTO_WALLET = "ab2"
         private const val KEY_PROMPT_OPEN_BIOMETRICS = "PROMPT_OPEN_BIOMETRICS"
+        private const val KEY_SECURITY_PASSWORD = "SECURITY_PASSWORD"
+
+        /**
+         * 获取生物识别加解密所用的key
+         */
+        fun getBiometricKey(): String {
+            return KEY_SECURITY_PASSWORD
+        }
     }
 
     private val mExecutor by lazy { Executors.newFixedThreadPool(4) }
@@ -55,7 +64,12 @@ class AccountManager {
         DataRepository.getTokenStorage()
     }
 
-    fun updateAccountPassword(accountId: Long, encryptedPassword: String) {
+    fun updateSecurityPassword(securityPassword: String) {
+        mConfigSharedPreferences.edit().putString(KEY_SECURITY_PASSWORD, securityPassword).apply()
+    }
+
+    fun getSecurityPassword(): String? {
+        return mConfigSharedPreferences.getString(KEY_SECURITY_PASSWORD, null)
     }
 
     /**
@@ -91,6 +105,11 @@ class AccountManager {
 
     fun removeWallet(accountId: AccountDO) {
         mAccountStorage.delete(accountId)
+    }
+
+    @WorkerThread
+    fun deleteAllAccount() {
+        mAccountStorage.deleteAll()
     }
 
     fun getIdentityByCoinType(coinType: Int): AccountDO? {

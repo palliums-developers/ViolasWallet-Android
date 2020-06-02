@@ -85,7 +85,7 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
         TokenManager()
     }
 
-    private val mAccountManager by lazy {
+    val mAccountManager by lazy {
         AccountManager()
     }
 
