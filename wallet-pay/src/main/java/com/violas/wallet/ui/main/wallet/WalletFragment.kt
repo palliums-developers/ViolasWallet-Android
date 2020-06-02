@@ -223,6 +223,7 @@ class WalletFragment : BaseFragment() {
 
                     authenticateAccount(
                         identityAccount,
+                        mAccountManager,
                         dismissLoadingWhenDecryptEnd = true,
                         mnemonicCallback = {
                             BackupPromptActivity.start(

@@ -159,7 +159,7 @@ class LibraTransferActivity : TransferActivity() {
     private fun showPasswordSend(amount: String, address: String) {
         if (account == null) return
 
-        authenticateAccount(account!!) {
+        authenticateAccount(account!!, mAccountManager) {
             launch(Dispatchers.IO) {
                 mTransferManager.transfer(
                     this@LibraTransferActivity,

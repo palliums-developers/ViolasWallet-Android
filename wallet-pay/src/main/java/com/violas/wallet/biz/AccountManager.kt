@@ -1,6 +1,7 @@
 package com.violas.wallet.biz
 
 import android.content.Context
+import androidx.annotation.WorkerThread
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.exceptions.RequestException
 import com.quincysx.crypto.CoinTypes
@@ -34,6 +35,14 @@ class AccountManager {
         private const val IDENTITY_MNEMONIC_BACKUP = "IDENTITY_MNEMONIC_BACKUP"
         private const val FAST_INTO_WALLET = "ab2"
         private const val KEY_PROMPT_OPEN_BIOMETRICS = "PROMPT_OPEN_BIOMETRICS"
+        private const val KEY_SECURITY_PASSWORD = "SECURITY_PASSWORD"
+
+        /**
+         * 获取生物识别加解密所用的key
+         */
+        fun getBiometricKey(): String {
+            return KEY_SECURITY_PASSWORD
+        }
     }
 
     private val mExecutor by lazy { Executors.newFixedThreadPool(2) }
@@ -46,7 +55,12 @@ class AccountManager {
         DataRepository.getAccountStorage()
     }
 
-    fun updateAccountPassword(accountId: Long, encryptedPassword: String) {
+    fun updateSecurityPassword(securityPassword: String) {
+        mConfigSharedPreferences.edit().putString(KEY_SECURITY_PASSWORD, securityPassword).apply()
+    }
+
+    fun getSecurityPassword(): String? {
+        return mConfigSharedPreferences.getString(KEY_SECURITY_PASSWORD, null)
     }
 
     /**
@@ -82,6 +96,11 @@ class AccountManager {
 
     fun removeWallet(accountId: AccountDO) {
         mAccountStorage.delete(accountId)
+    }
+
+    @WorkerThread
+    fun deleteAllAccount() {
+        mAccountStorage.deleteAll()
     }
 
     fun getIdentityByCoinType(coinType: Int): AccountDO? {
@@ -123,7 +142,7 @@ class AccountManager {
 
     /**
      * 设置已提示开启指纹
-    */
+     */
     fun setOpenBiometricsPrompted() {
         mConfigSharedPreferences.edit().putBoolean(KEY_PROMPT_OPEN_BIOMETRICS, true).apply()
     }

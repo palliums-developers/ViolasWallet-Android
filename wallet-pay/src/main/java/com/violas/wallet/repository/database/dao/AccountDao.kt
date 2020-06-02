@@ -50,4 +50,7 @@ interface AccountDao : BaseDao<AccountDO> {
 
     @Query("SELECT * FROM account WHERE coin_number = :coinType AND address = :address LIMIT 1")
     fun findByCoinTypeAndCoinAddress(coinType: Int, address: String): AccountDO?
+
+    @Query("DELETE FROM account")
+    fun deleteAll()
 }

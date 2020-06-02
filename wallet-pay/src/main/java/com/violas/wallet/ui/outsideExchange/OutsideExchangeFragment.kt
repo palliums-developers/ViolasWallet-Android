@@ -303,7 +303,7 @@ class OutsideExchangeFragment : BaseFragment(), OutsideExchangeInitException {
                 handlerInitiateChange(sendAccountKey, receiveAccountKey)
             }
         } else {
-            authenticateAccount(viewModel.getExchangeFromAccount()) {
+            authenticateAccount(viewModel.getExchangeFromAccount(), viewModel.mAccountManager) {
                 handlerInitiateChange(it, null)
             }
         }

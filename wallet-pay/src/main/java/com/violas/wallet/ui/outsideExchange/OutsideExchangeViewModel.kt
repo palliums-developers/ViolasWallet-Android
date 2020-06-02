@@ -45,7 +45,7 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
     private lateinit var mAccount: AccountDO
 
     //    private lateinit var mMappingType: MappingType
-    private val mAccountManager = AccountManager()
+    val mAccountManager = AccountManager()
     private val mTokenManager = TokenManager()
 
     private val mCurrentExchangePairLiveData = MutableLiveData<ExchangePair>()

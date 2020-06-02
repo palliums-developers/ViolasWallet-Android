@@ -55,6 +55,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
 
     private var dexOrder: DexOrderDTO? = null
     private lateinit var currentAccount: AccountDO
+    private val mAccountManager by lazy { AccountManager() }
 
     private val mViewModel by viewModels<DexOrderDetailsViewModel> {
         object : ViewModelProvider.Factory {
@@ -130,7 +131,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
         }
 
         return try {
-            currentAccount = AccountManager().currentAccount()
+            currentAccount = mAccountManager.currentAccount()
 
             true
         } catch (e: Exception) {
@@ -218,7 +219,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
             R.id.tvState -> {
                 dexOrder?.let { dexOrder ->
                     if (dexOrder.isOpen()) {
-                        authenticateAccount(currentAccount) {
+                        authenticateAccount(currentAccount, mAccountManager) {
                             mViewModel.revokeOrder(it, dexOrder) {
                                 dexOrder.updateStateToRevoking()
                                 initHeaderView(dexOrder)

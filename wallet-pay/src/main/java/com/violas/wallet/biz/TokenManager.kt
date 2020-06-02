@@ -175,6 +175,11 @@ class TokenManager {
         )
     }
 
+    @WorkerThread
+    fun deleteAllToken() {
+        mTokenStorage.deleteAll()
+    }
+
     suspend fun getTokenBalance(
         address: String,
         tokenDo: TokenDo

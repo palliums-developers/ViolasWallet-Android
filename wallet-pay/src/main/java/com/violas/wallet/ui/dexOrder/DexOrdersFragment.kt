@@ -54,6 +54,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
     @DexOrderState
     private var orderState: String? = null
     private lateinit var currentAccount: AccountDO
+    private val mAccountManager by lazy { AccountManager() }
 
     private val mViewModel by lazy {
         DexOrdersViewModel(
@@ -71,7 +72,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
                 DexOrderDetails2Activity.start(requireContext(), it)
             },
             onClickRevokeOrder = { dexOrder, position ->
-                authenticateAccount(currentAccount) {
+                authenticateAccount(currentAccount, mAccountManager) {
                     mViewModel.revokeOrder(it, dexOrder) {
                         dexOrder.updateStateToRevoking()
                         getViewAdapter().notifyItemChanged(position)
@@ -156,7 +157,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
         }
 
         return try {
-            currentAccount = AccountManager().currentAccount()
+            currentAccount = mAccountManager.currentAccount()
 
             true
         } catch (e: Exception) {
