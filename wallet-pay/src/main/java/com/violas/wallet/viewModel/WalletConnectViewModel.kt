@@ -26,10 +26,6 @@ class WalletConnectViewModel : ViewModel(), CoroutineScope by CustomMainScope() 
     init {
         mWalletConnect.restore()
         mWalletConnect.mWalletConnectListener = object : WalletConnectListener {
-            override fun onConnect() {
-                mWalletConnectStatusLiveData.postValue(WalletConnectStatus.Connected)
-            }
-
             override fun onLogin() {
                 mWalletConnectStatusLiveData.postValue(WalletConnectStatus.Login)
             }

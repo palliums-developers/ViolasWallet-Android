@@ -39,14 +39,13 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         var localAssets = mAccountManager.getLocalAssets()
         if (localAssets.isEmpty()) {
             mExistsAccountLiveData.postValue(false)
-            mDataRefreshingLiveData.postValue(false)
         } else {
             if (isFirst) {
                 mAssetsListLiveData.postValue(localAssets)
             }
             localAssets = mAccountManager.refreshAssetsAmount(localAssets)
             mAssetsListLiveData.postValue(localAssets)
-            mDataRefreshingLiveData.postValue(false)
         }
+        mDataRefreshingLiveData.postValue(false)
     }
 }

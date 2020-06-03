@@ -77,6 +77,7 @@ class WalletFragment : BaseFragment() {
     private val mEnableTokens = mutableListOf<AssertToken>()
     private val mAssertAdapter by lazy {
         AssertAdapter {
+            showToast(it.getAssetsName())
 //            TokenInfoActivity.start(this@WalletFragment, it.id, REQUEST_TOKEN_INFO)
         }
     }
@@ -128,10 +129,6 @@ class WalletFragment : BaseFragment() {
             when (status) {
                 WalletConnectStatus.None -> {
                     viewWalletConnect.visibility = View.GONE
-                }
-                WalletConnectStatus.Connected -> {
-                    viewWalletConnect.visibility = View.VISIBLE
-                    tvWalletConnectStatus.text = "连接成功等待响应"
                 }
                 WalletConnectStatus.Login -> {
                     tvWalletConnectStatus.text = "网页钱包已登录"
@@ -423,7 +420,11 @@ class AssertAdapter(
                 parent,
                 false
             )
-        )
+        ).also { viewHolder ->
+            viewHolder.itemView.setOnClickListener {
+                call.invoke(getItem(viewHolder.adapterPosition))
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

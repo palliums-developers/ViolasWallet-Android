@@ -42,11 +42,10 @@ import org.palliums.violascore.transaction.storage.TypeTag
 import java.lang.Exception
 
 enum class WalletConnectStatus {
-    None, Connected, Login
+    None, Login
 }
 
 interface WalletConnectListener {
-    fun onConnect()
     fun onLogin()
     fun onDisconnect()
 }
@@ -84,7 +83,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
 
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 super.onOpen(webSocket, response)
-                mWalletConnectListener?.onConnect()
+                mWalletConnectListener?.onLogin()
             }
         })
     }
@@ -325,11 +324,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     }
 
     fun approveSession(accounts: List<String>, chainId: String): Boolean {
-        return mWCClient.approveSession(accounts, chainId).also {
-            if (it) {
-                mWalletConnectListener?.onLogin()
-            }
-        }
+        return mWCClient.approveSession(accounts, chainId)
     }
 
     fun rejectSession(message: String = "Session rejected"): Boolean {
