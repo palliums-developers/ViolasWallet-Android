@@ -31,13 +31,16 @@ import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.transfer.TransferActivity
+import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.walletconnect.WalletConnect
+import com.violas.wallet.walletconnect.WalletConnectStatus
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
@@ -58,6 +61,9 @@ class WalletFragment : BaseFragment() {
     private val mWalletAppViewModel by lazy {
         context?.let { WalletAppViewModel.getViewModelInstance(it) }
     }
+    private val mWalletConnectViewModel by lazy {
+        context?.let { WalletConnectViewModel.getViewModelInstance(it) }
+    }
     private val mWalletViewModel by lazy {
         ViewModelProvider(this).get(WalletViewModel::class.java)
     }
@@ -72,6 +78,7 @@ class WalletFragment : BaseFragment() {
     private val mEnableTokens = mutableListOf<AssertToken>()
     private val mAssertAdapter by lazy {
         AssertAdapter {
+            showToast(it.getAssetsName())
 //            TokenInfoActivity.start(this@WalletFragment, it.id, REQUEST_TOKEN_INFO)
         }
     }
@@ -87,6 +94,9 @@ class WalletFragment : BaseFragment() {
 
         recyclerAssert.adapter = mAssertAdapter
 
+        mWalletAppViewModel?.mDataRefreshingLiveData?.observe(this, Observer {
+            swipeRefreshLayout.isRefreshing = it
+        })
         mWalletAppViewModel?.mAssetsListLiveData?.observe(this, Observer {
             mAssertAdapter.submitList(it)
             mWalletViewModel.calculateFiat(it)
@@ -114,10 +124,19 @@ class WalletFragment : BaseFragment() {
             mWalletViewModel.taggerTotalDisplay()
         }
 
-        val bounds = Rect()
-        ivTotalHidden.getHitRect(bounds)
-        setTouchDelegate(tvTotalAssetsTitle,100)
+        setTouchDelegate(tvTotalAssetsTitle, 100)
 
+        mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(this, Observer { status ->
+            when (status) {
+                WalletConnectStatus.None -> {
+                    viewWalletConnect.visibility = View.GONE
+                }
+                WalletConnectStatus.Login -> {
+                    tvWalletConnectStatus.text = "网页钱包已登录"
+                    viewWalletConnect.visibility = View.VISIBLE
+                }
+            }
+        })
         // 初始化钱包当作是切换钱包逻辑
 //        refreshAssert(true)
 
@@ -149,9 +168,10 @@ class WalletFragment : BaseFragment() {
             handleOpenBiometricsPrompt()
         }
 
-//        swipeRefreshLayout.setOnRefreshListener {
+        swipeRefreshLayout.setOnRefreshListener {
 //            refreshAssert(false)
-//        }
+            mWalletAppViewModel?.refreshAssetsList()
+        }
     }
 
     fun setTouchDelegate(view: View, expandTouchWidth: Int) {
@@ -332,9 +352,10 @@ class WalletFragment : BaseFragment() {
 
                             ScanCodeType.WalletConnectSocket -> {
                                 context?.let {
-                                    WalletConnect.getInstance(it.applicationContext).connect(
-                                        msg
-                                    )
+                                    WalletConnectAuthorizationActivity.startActivity(it, msg)
+//                                    WalletConnect.getInstance(it.applicationContext).connect(
+//                                        msg
+//                                    )
                                 }
                             }
 
@@ -370,7 +391,7 @@ class AssertAdapter(
     }
 
     override fun areContentsTheSame(oldItem: AssetsVo, newItem: AssetsVo): Boolean {
-        val ssss = oldItem.getId() == newItem.getId() &&
+        val isChange = oldItem.getId() == newItem.getId() &&
                 oldItem.amountWithUnit.amount == newItem.amountWithUnit.amount &&
                 oldItem.amountWithUnit.unit == newItem.amountWithUnit.unit &&
                 oldItem.fiatAmountWithUnit.unit == newItem.fiatAmountWithUnit.unit &&
@@ -381,7 +402,16 @@ class AssertAdapter(
                 oldItem.getAssetsName() == newItem.getAssetsName() &&
                 oldItem.getAccountId() == newItem.getAccountId() &&
                 oldItem.getLogoUrl() == newItem.getLogoUrl()
-        Log.e("areContentsTheSame", "${oldItem.getAssetsName()}   $ssss")
+        Log.e("areContentsTheSame", "${oldItem.getAssetsName()}   $isChange")
+        /**
+         * 此处接收到数据刷新做全列表刷新，列表因为列表加载逻辑分三步。
+         * 1、记载本地列表
+         * 2、网络查询填充币种阅
+         * 3、网络查询填充法币价值
+         * 为了考虑未来币种数量变多，所以不是每执行一步都创建一个对象数组，三步全程操作同一组对象，就会导致该对比方法失效。
+         *
+         * 先忽略此操作不做对比，全列表刷新。
+         */
         return false
     }
 }) {
@@ -392,7 +422,11 @@ class AssertAdapter(
                 parent,
                 false
             )
-        )
+        ).also { viewHolder ->
+            viewHolder.itemView.setOnClickListener {
+                call.invoke(getItem(viewHolder.adapterPosition))
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

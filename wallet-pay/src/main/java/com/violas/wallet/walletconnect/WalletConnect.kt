@@ -28,15 +28,30 @@ import com.violas.walletconnect.models.violas.WCViolasSignRawTransaction
 import com.violas.walletconnect.models.violasprivate.WCViolasAccount
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
 import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionArgument
 import org.palliums.violascore.transaction.TransactionPayload
-import org.palliums.violascore.transaction.storage.StructTag
 import org.palliums.violascore.transaction.storage.TypeTag
 import java.lang.Exception
+
+enum class WalletConnectStatus {
+    None, Login
+}
+
+interface WalletConnectListener {
+    fun onLogin()
+    fun onDisconnect()
+}
+
+interface WalletConnectSessionListener {
+    fun onRequest(id: Long, peer: WCPeerMeta)
+}
 
 class WalletConnect private constructor(val context: Context) : CoroutineScope by MainScope() {
 
@@ -53,6 +68,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         }
     }
 
+    var mWalletConnectListener: WalletConnectListener? = null
+    var mWalletConnectSessionListener: WalletConnectSessionListener? = null
+
     private val mGsonBuilder = GsonBuilder()
     private val httpClient: OkHttpClient = OkHttpClient()
     val mWCClient: WCClient = WCClient(httpClient, mGsonBuilder)
@@ -61,6 +79,17 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
 
     init {
         listenerClientEvent()
+        mWCClient.addSocketListener(object : WebSocketListener() {
+            override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                super.onClosed(webSocket, code, reason)
+                mWalletConnectListener?.onDisconnect()
+            }
+
+            override fun onOpen(webSocket: WebSocket, response: Response) {
+                super.onOpen(webSocket, response)
+                mWalletConnectListener?.onLogin()
+            }
+        })
     }
 
     //    private val mAccountManager by lazy { AccountManager() }
@@ -97,10 +126,12 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                 )
                 mWCSessionStoreType.session = wcSessionStoreItem
             }
-            WalletConnectAuthorizationActivity.startActivity(context, id, peer)
+            mWalletConnectSessionListener?.onRequest(id, peer) ?: rejectSession()
+//            WalletConnectAuthorizationActivity.startActivity(context, id, peer)
         }
         mWCClient.onDisconnect = { _, _ ->
             mWCSessionStoreType.session = null
+            mWalletConnectListener?.onDisconnect()
         }
         mWCClient.onViolasSendRawTransaction = { id, violasSendRawTransaction ->
             convertAndCheckTransaction(id, violasSendRawTransaction)
@@ -295,6 +326,18 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         )
         val toJson = Gson().toJson(response)
         return mWCClient.encryptAndSend(toJson)
+    }
+
+    fun approveSession(accounts: List<String>, chainId: String): Boolean {
+        return mWCClient.approveSession(accounts, chainId)
+    }
+
+    fun rejectSession(message: String = "Session rejected"): Boolean {
+        return mWCClient.rejectSession(message)
+    }
+
+    fun isConnected(): Boolean {
+        return mWCClient.isConnected
     }
 
     /**

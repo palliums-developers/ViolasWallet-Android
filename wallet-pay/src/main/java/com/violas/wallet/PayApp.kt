@@ -4,6 +4,7 @@ import android.content.Context
 import com.palliums.content.App
 import com.tencent.bugly.Bugly
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
+import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.walletconnect.WalletConnect
 
 class PayApp : App() {
@@ -21,6 +22,6 @@ class PayApp : App() {
 
     fun resetWalletConnect() {
         // 暂时不考虑多进程
-        WalletConnect.getInstance(this).restore()
+        WalletConnectViewModel.getViewModelInstance(this)
     }
 }
