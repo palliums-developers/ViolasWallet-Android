@@ -84,8 +84,8 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
         return R.layout.activity_wallet_connect_authorization
     }
 
-    private val mWcClient by lazy {
-        WalletConnect.getInstance(this.applicationContext).mWCClient
+    private val mWalletConnect by lazy {
+        WalletConnect.getInstance(this.applicationContext)
     }
 
     override fun getTitleStyle() = TITLE_STYLE_CUSTOM
@@ -137,7 +137,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
                     } else {
                         "violas"
                     }
-                    if (mWcClient.approveSession(accounts, chainId)) {
+                    if (mWalletConnect.approveSession(accounts, chainId)) {
                         mRequestHandle = true
                         finish()
                     }
@@ -149,7 +149,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
             launch {
                 showProgress()
                 withContext(Dispatchers.IO) {
-                    if (mWcClient.rejectSession("reject")) {
+                    if (mWalletConnect.rejectSession("reject")) {
                         mRequestHandle = true
                         finish()
                     }
@@ -162,7 +162,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
     override fun onDestroy() {
         if (!mRequestHandle) {
             GlobalScope.launch {
-                mWcClient.rejectSession("reject")
+                mWalletConnect.rejectSession("reject")
             }
         }
         super.onDestroy()

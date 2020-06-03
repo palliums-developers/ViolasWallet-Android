@@ -35,9 +35,11 @@ import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.walletconnect.WalletConnect
+import com.violas.wallet.walletconnect.WalletConnectStatus
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
@@ -57,6 +59,9 @@ class WalletFragment : BaseFragment() {
 
     private val mWalletAppViewModel by lazy {
         context?.let { WalletAppViewModel.getViewModelInstance(it) }
+    }
+    private val mWalletConnectViewModel by lazy {
+        context?.let { WalletConnectViewModel.getViewModelInstance(it) }
     }
     private val mWalletViewModel by lazy {
         ViewModelProvider(this).get(WalletViewModel::class.java)
@@ -114,10 +119,23 @@ class WalletFragment : BaseFragment() {
             mWalletViewModel.taggerTotalDisplay()
         }
 
-        val bounds = Rect()
-        ivTotalHidden.getHitRect(bounds)
-        setTouchDelegate(tvTotalAssetsTitle,100)
+        setTouchDelegate(tvTotalAssetsTitle, 100)
 
+        mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(this, Observer { status ->
+            when (status) {
+                WalletConnectStatus.None -> {
+                    viewWalletConnect.visibility = View.GONE
+                }
+                WalletConnectStatus.Connected -> {
+                    viewWalletConnect.visibility = View.VISIBLE
+                    tvWalletConnectStatus.text = "连接成功等待响应"
+                }
+                WalletConnectStatus.Login -> {
+                    tvWalletConnectStatus.text = "网页钱包已登录"
+                    viewWalletConnect.visibility = View.VISIBLE
+                }
+            }
+        })
         // 初始化钱包当作是切换钱包逻辑
 //        refreshAssert(true)
 

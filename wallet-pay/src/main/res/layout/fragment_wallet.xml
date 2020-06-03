@@ -70,6 +70,36 @@
                     app:layout_constraintStart_toStartOf="@+id/tvTotalAssetsTitle"
                     app:layout_constraintTop_toBottomOf="@+id/tvTotalAssetsTitle"
                     tools:text="120.00000000" />
+
+                <LinearLayout
+                    android:id="@+id/viewWalletConnect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/shape_bg_main_wallet_connect"
+                    android:gravity="center"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvAmount">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_wallet_connect_indicator" />
+
+                    <TextView
+                        android:id="@+id/tvWalletConnectStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:gravity="center"
+                        android:text="网页钱包已登录"
+                        android:textColor="#FB8F0B"
+                        android:textSize="12sp" />
+                </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
