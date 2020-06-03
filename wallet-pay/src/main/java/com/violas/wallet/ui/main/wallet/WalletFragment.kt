@@ -92,6 +92,9 @@ class WalletFragment : BaseFragment() {
 
         recyclerAssert.adapter = mAssertAdapter
 
+        mWalletAppViewModel?.mDataRefreshingLiveData?.observe(this, Observer {
+            swipeRefreshLayout.isRefreshing = it
+        })
         mWalletAppViewModel?.mAssetsListLiveData?.observe(this, Observer {
             mAssertAdapter.submitList(it)
             mWalletViewModel.calculateFiat(it)
@@ -167,9 +170,10 @@ class WalletFragment : BaseFragment() {
             handleOpenBiometricsPrompt()
         }
 
-//        swipeRefreshLayout.setOnRefreshListener {
+        swipeRefreshLayout.setOnRefreshListener {
 //            refreshAssert(false)
-//        }
+            mWalletAppViewModel?.refreshAssetsList()
+        }
     }
 
     fun setTouchDelegate(view: View, expandTouchWidth: Int) {
@@ -388,7 +392,7 @@ class AssertAdapter(
     }
 
     override fun areContentsTheSame(oldItem: AssetsVo, newItem: AssetsVo): Boolean {
-        val ssss = oldItem.getId() == newItem.getId() &&
+        val isChange = oldItem.getId() == newItem.getId() &&
                 oldItem.amountWithUnit.amount == newItem.amountWithUnit.amount &&
                 oldItem.amountWithUnit.unit == newItem.amountWithUnit.unit &&
                 oldItem.fiatAmountWithUnit.unit == newItem.fiatAmountWithUnit.unit &&
@@ -399,7 +403,16 @@ class AssertAdapter(
                 oldItem.getAssetsName() == newItem.getAssetsName() &&
                 oldItem.getAccountId() == newItem.getAccountId() &&
                 oldItem.getLogoUrl() == newItem.getLogoUrl()
-        Log.e("areContentsTheSame", "${oldItem.getAssetsName()}   $ssss")
+        Log.e("areContentsTheSame", "${oldItem.getAssetsName()}   $isChange")
+        /**
+         * 此处接收到数据刷新做全列表刷新，列表因为列表加载逻辑分三步。
+         * 1、记载本地列表
+         * 2、网络查询填充币种阅
+         * 3、网络查询填充法币价值
+         * 为了考虑未来币种数量变多，所以不是每执行一步都创建一个对象数组，三步全程操作同一组对象，就会导致该对比方法失效。
+         *
+         * 先忽略此操作不做对比，全列表刷新。
+         */
         return false
     }
 }) {
