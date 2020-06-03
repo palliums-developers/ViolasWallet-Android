@@ -37,7 +37,6 @@ import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionArgument
 import org.palliums.violascore.transaction.TransactionPayload
-import org.palliums.violascore.transaction.storage.StructTag
 import org.palliums.violascore.transaction.storage.TypeTag
 import java.lang.Exception
 
@@ -48,6 +47,10 @@ enum class WalletConnectStatus {
 interface WalletConnectListener {
     fun onLogin()
     fun onDisconnect()
+}
+
+interface WalletConnectSessionListener {
+    fun onRequest(id: Long, peer: WCPeerMeta)
 }
 
 class WalletConnect private constructor(val context: Context) : CoroutineScope by MainScope() {
@@ -66,6 +69,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     }
 
     var mWalletConnectListener: WalletConnectListener? = null
+    var mWalletConnectSessionListener: WalletConnectSessionListener? = null
 
     private val mGsonBuilder = GsonBuilder()
     private val httpClient: OkHttpClient = OkHttpClient()
@@ -122,7 +126,8 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                 )
                 mWCSessionStoreType.session = wcSessionStoreItem
             }
-            WalletConnectAuthorizationActivity.startActivity(context, id, peer)
+            mWalletConnectSessionListener?.onRequest(id, peer) ?: rejectSession()
+//            WalletConnectAuthorizationActivity.startActivity(context, id, peer)
         }
         mWCClient.onDisconnect = { _, _ ->
             mWCSessionStoreType.session = null
@@ -329,6 +334,10 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
 
     fun rejectSession(message: String = "Session rejected"): Boolean {
         return mWCClient.rejectSession(message)
+    }
+
+    fun isConnected(): Boolean {
+        return mWCClient.isConnected
     }
 
     /**

@@ -22,6 +22,7 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.walletconnect.WalletConnect
+import com.violas.wallet.walletconnect.WalletConnectSessionListener
 import com.violas.walletconnect.models.WCPeerMeta
 import kotlinx.android.synthetic.main.activity_wallet_connect_authorization.*
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
     companion object {
         private const val CONNECT_ID = "connect_id"
         private const val CONNECT_PEER_DATA = "connect_peer_data"
+        private const val CONNECT_MSG = "connect_msg"
 
         private fun getContext(context: Context, result: (Boolean, Context) -> Unit) {
             var newTaskTag = false
@@ -52,6 +54,16 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
                 else -> context.also { newTaskTag = true }
             }
             return result.invoke(newTaskTag, contextWrapper)
+        }
+
+        fun startActivity(context: Context, msg: String) {
+            context.startActivity(
+                Intent(
+                    context,
+                    WalletConnectAuthorizationActivity::class.java
+                ).apply {
+                    putExtra(CONNECT_MSG, msg)
+                })
         }
 
         fun startActivity(
@@ -88,44 +100,52 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
         WalletConnect.getInstance(this.applicationContext)
     }
 
+    private val mMsg by lazy {
+        intent.getStringExtra(CONNECT_MSG)
+    }
+
     override fun getTitleStyle() = TITLE_STYLE_CUSTOM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitleLeftViewVisibility(View.GONE)
-
-        launch(Dispatchers.IO) {
-            val parcelableExtra = intent.getParcelableExtra<WCPeerMeta>(CONNECT_PEER_DATA)
-
-            if (parcelableExtra != null) {
-                withContext(Dispatchers.Main) {
-                    tvScanLoginDescribe.text = String.format(
-                        getString(R.string.desc_scan_wallet_connect_login_info),
-                        parcelableExtra.name
-                    )
-
-                    tvPrivacyPolicy.movementMethod = LinkMovementMethod.getInstance()
-                    tvPrivacyPolicy.text = buildUseBehaviorSpan()
-
-//                    tvScanLoginDescribe.text = parcelableExtra.description
-                    if (parcelableExtra.icons.isNotEmpty()) {
-                        Glide.with(this@WalletConnectAuthorizationActivity)
-                            .load(parcelableExtra.icons[0])
-                            .centerCrop()
-                            .placeholder(R.drawable.ic_web)
-                            .error(R.drawable.ic_web)
-                            .into(ivDeskIcon)
-                    }
-                }
-            } else {
-                finish()
-            }
+        launch {
+            tvPrivacyPolicy.movementMethod = LinkMovementMethod.getInstance()
+            tvPrivacyPolicy.text = buildUseBehaviorSpan()
         }
 
-        btnConfirmLogin.setOnClickListener {
-            launch {
-                showProgress()
-                withContext(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
+            if (mWalletConnect.isConnected()) {
+                viewWalletConnectLoginWarning.visibility = View.VISIBLE
+            } else {
+                viewWalletConnectLoginWarning.visibility = View.INVISIBLE
+            }
+//            val parcelableExtra = intent.getParcelableExtra<WCPeerMeta>(CONNECT_PEER_DATA)
+//
+//            if (parcelableExtra != null) {
+//                withContext(Dispatchers.Main) {
+//                    tvScanLoginDescribe.text = String.format(
+//                        getString(R.string.desc_scan_wallet_connect_login_info),
+//                        parcelableExtra.name
+//                    )
+//
+////                    tvScanLoginDescribe.text = parcelableExtra.description
+//                    if (parcelableExtra.icons.isNotEmpty()) {
+//                        Glide.with(this@WalletConnectAuthorizationActivity)
+//                            .load(parcelableExtra.icons[0])
+//                            .centerCrop()
+//                            .placeholder(R.drawable.ic_web)
+//                            .error(R.drawable.ic_web)
+//                            .into(ivDeskIcon)
+//                    }
+//                }
+//            } else {
+//                finish()
+//            }
+        }
+        mWalletConnect.mWalletConnectSessionListener = object : WalletConnectSessionListener {
+            override fun onRequest(id: Long, peer: WCPeerMeta) {
+                launch(Dispatchers.IO) {
                     val findByCoinTypeByIdentity =
                         mAccountStorage.loadAllByCoinType(CoinTypes.Violas.coinType())
                     val accounts =
@@ -139,32 +159,48 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
                     }
                     if (mWalletConnect.approveSession(accounts, chainId)) {
                         mRequestHandle = true
+                        viewLoading.visibility = View.GONE
                         finish()
+                    }else{
+                        showToast("连接失败")
                     }
                 }
-                dismissProgress()
+            }
+        }
+        tvCancel.setOnClickListener {
+            viewLoading.visibility = View.GONE
+            launch(Dispatchers.IO) {
+                mWalletConnect.mWCClient.disconnect()
+            }
+        }
+        btnConfirmLogin.setOnClickListener {
+            viewLoading.visibility = View.VISIBLE
+            launch(Dispatchers.IO) {
+                mWalletConnect.connect(mMsg)
             }
         }
         tvCancelLogin.setOnClickListener {
-            launch {
-                showProgress()
-                withContext(Dispatchers.IO) {
-                    if (mWalletConnect.rejectSession("reject")) {
-                        mRequestHandle = true
-                        finish()
-                    }
-                }
-                dismissProgress()
-            }
+            finish()
+//            launch {
+//                showProgress()
+//                withContext(Dispatchers.IO) {
+//                    if (mWalletConnect.rejectSession("reject")) {
+//                        mRequestHandle = true
+//                        finish()
+//                    }
+//                }
+//                dismissProgress()
+//            }
         }
     }
 
     override fun onDestroy() {
-        if (!mRequestHandle) {
-            GlobalScope.launch {
-                mWalletConnect.rejectSession("reject")
-            }
-        }
+        mWalletConnect.mWalletConnectSessionListener = null
+//        if (!mRequestHandle) {
+//            GlobalScope.launch {
+//                mWalletConnect.rejectSession("reject")
+//            }
+//        }
         super.onDestroy()
     }
 

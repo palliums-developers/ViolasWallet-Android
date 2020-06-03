@@ -31,6 +31,7 @@ import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.transfer.TransferActivity
+import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
@@ -351,9 +352,10 @@ class WalletFragment : BaseFragment() {
 
                             ScanCodeType.WalletConnectSocket -> {
                                 context?.let {
-                                    WalletConnect.getInstance(it.applicationContext).connect(
-                                        msg
-                                    )
+                                    WalletConnectAuthorizationActivity.startActivity(it, msg)
+//                                    WalletConnect.getInstance(it.applicationContext).connect(
+//                                        msg
+//                                    )
                                 }
                             }
 
