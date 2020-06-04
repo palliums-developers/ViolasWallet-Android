@@ -32,6 +32,7 @@ import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
+import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
@@ -137,6 +138,9 @@ class WalletFragment : BaseFragment() {
                 }
             }
         })
+        viewWalletConnect.setOnClickListener {
+            activity?.let { it1 -> WalletConnectManagerActivity.startActivity(it1) }
+        }
         // 初始化钱包当作是切换钱包逻辑
 //        refreshAssert(true)
 

@@ -20,11 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <activity android:name=".ui.walletconnect.WalletConnectActivity"
-            android:launchMode="singleInstance"/>
-        <activity android:name=".ui.walletconnect.WalletConnectAuthorizationActivity"
-            android:launchMode="singleInstance"/>
-
         <activity
             android:name=".ui.launch.LaunchActivity"
             android:screenOrientation="portrait"
@@ -126,9 +121,10 @@
         <activity
             android:name=".ui.tokenInfo.TokenInfoActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.tokenInfo.TokenInfoTempActivity"
+        <activity
+            android:name=".ui.tokenInfo.TokenInfoTempActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Full"/>
+            android:theme="@style/AppTheme.Full" />
         <activity
             android:name=".ui.dexOrder.DexOrdersActivity"
             android:screenOrientation="portrait" />
@@ -151,8 +147,16 @@
             android:name=".ui.webManagement.LoginWebActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.ScanLogin" />
-
-        <!-- 设计图尺寸，用于今日头条适配方案 -->
+        <activity
+            android:name=".ui.walletconnect.WalletConnectManagerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.walletconnect.WalletConnectActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.walletconnect.WalletConnectAuthorizationActivity"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait" /><!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="375" />

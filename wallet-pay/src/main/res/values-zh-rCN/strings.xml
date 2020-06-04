@@ -315,4 +315,5 @@
     <string name="action_exchange_nbsp">闪&#160;兑</string>
     <string name="label_transfer_in">转入</string>
     <string name="label_transfer_out">转出</string>
+    <string name="wallet_connect_log_out">退出网页钱包</string>
 </resources>

@@ -149,6 +149,8 @@ dependencies {
     implementation project(':lib-btc-core')
     implementation project(':lib-wallet-connect')
     implementation project(':lib-biometric')
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     testImplementation libraries.test_junit
     androidTestImplementation libraries.androidTest_junit
