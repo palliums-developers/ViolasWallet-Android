@@ -14,6 +14,7 @@
     <dimen name="sp_21">21sp</dimen>
     <dimen name="sp_22">22sp</dimen>
     <dimen name="sp_24.5" tools:ignore="MissingDefaultResource">24.5sp</dimen>
+    <dimen name="sp_28">28sp</dimen>
     <dimen name="sp_30">30sp</dimen>
     <dimen name="sp_36">36sp</dimen>
     <dimen name="sp_56">56sp</dimen>
@@ -117,6 +118,7 @@
     <dimen name="dp_120">120dp</dimen>
     <dimen name="dp_123">123dp</dimen>
     <dimen name="dp_135">135dp</dimen>
+    <dimen name="dp_140">140dp</dimen>
     <dimen name="dp_142">142dp</dimen>
     <dimen name="dp_143">143dp</dimen>
     <dimen name="dp_145">145dp</dimen>

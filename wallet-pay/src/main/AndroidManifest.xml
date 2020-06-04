@@ -126,6 +126,9 @@
         <activity
             android:name=".ui.tokenInfo.TokenInfoActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".ui.tokenInfo.TokenInfoTempActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Full"/>
         <activity
             android:name=".ui.dexOrder.DexOrdersActivity"
             android:screenOrientation="portrait" />
