@@ -17,6 +17,8 @@ data class TokenDo(
     var id: Long? = null,
     @ColumnInfo(name = "account_id")
     var account_id: Long = 0,
+    @ColumnInfo(name = "assets_name")
+    var assetsName: String = "",
     @ColumnInfo(name = "address")
     var address: String = "00000000000000000000000000000000",
     @ColumnInfo(name = "module")

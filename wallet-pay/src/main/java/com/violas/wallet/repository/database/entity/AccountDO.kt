@@ -5,6 +5,18 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
 
+enum class AccountType(val value: Int) {
+    Normal(0), NoDollars(1);
+
+    companion object {
+        fun convert(int: Int) = when (int) {
+            0 -> Normal
+            1 -> NoDollars
+            else -> Normal
+        }
+    }
+}
+
 @Entity(
     tableName = AccountDO.TABLE_NAME
 )
@@ -20,6 +32,8 @@ data class AccountDO(
     var authKeyPrefix: String = "",
     @ColumnInfo(name = "mnemonic", typeAffinity = ColumnInfo.BLOB)
     var mnemonic: ByteArray = ByteArray(0),
+    @ColumnInfo(name = "account_type")
+    var accountType: AccountType = AccountType.Normal,
     @ColumnInfo(name = "coin_number")
     var coinNumber: Int = 0,
     @ColumnInfo(name = "address")

@@ -2,12 +2,16 @@ package com.violas.wallet.viewModel.bean
 
 abstract class AssetsVo {
     val amountWithUnit: AmountWithUnit = AmountWithUnit("0.00", "")
-    val fiatAmountWithUnit: FiatAmountWithUnit = FiatAmountWithUnit(0,"$", "")
-    var name: String = ""
+    val fiatAmountWithUnit: FiatAmountWithUnit = FiatAmountWithUnit(0, "$", "")
+    private var assetsName: String = ""
+
+    fun getAssetsName() = assetsName
+    fun setAssetsName(assetsName: String) {
+        this.assetsName = assetsName
+    }
 
     abstract fun getId(): Long
     abstract fun getAccountId(): Long
-    abstract fun getAssetsName(): String
     abstract fun getAmount(): Long
     abstract fun setAmount(amount: Long)
     abstract fun getLogoUrl(): String
@@ -37,7 +41,6 @@ open class AssetsCoinVo(
 ) : AssetsVo() {
     override fun getId() = id
     override fun getAccountId() = id
-    override fun getAssetsName() = name
 
     override fun getAmount() = amount
     override fun setAmount(amount: Long) {
@@ -64,7 +67,7 @@ data class AssetsTokenVo(
     private val account_id: Long,
     val address: String = "00000000000000000000000000000000",
     val module: String = "LBR",
-//    val name: String = "T",
+    val name: String = "T",
     val enable: Boolean = false,
     private var amount: Long = 0,
     private var logo: String = ""
@@ -77,5 +80,4 @@ data class AssetsTokenVo(
     }
 
     override fun getLogoUrl() = logo
-    override fun getAssetsName() = module
 }

@@ -1,13 +1,16 @@
 package com.violas.wallet.ui.main.wallet
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
 import androidx.biometric.BiometricManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +18,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.show
@@ -40,13 +46,14 @@ import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
-import com.violas.wallet.walletconnect.WalletConnect
 import com.violas.wallet.walletconnect.WalletConnectStatus
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
 import kotlinx.coroutines.*
+import me.jessyan.autosize.AutoSize
+import me.jessyan.autosize.utils.AutoSizeUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -401,7 +408,6 @@ class AssertAdapter(
                 oldItem.fiatAmountWithUnit.unit == newItem.fiatAmountWithUnit.unit &&
                 oldItem.fiatAmountWithUnit.symbol == newItem.fiatAmountWithUnit.symbol &&
                 oldItem.fiatAmountWithUnit.amount == newItem.fiatAmountWithUnit.amount &&
-                oldItem.name == newItem.name &&
                 oldItem.getAmount() == newItem.getAmount() &&
                 oldItem.getAssetsName() == newItem.getAssetsName() &&
                 oldItem.getAccountId() == newItem.getAccountId() &&
@@ -433,12 +439,39 @@ class AssertAdapter(
         }
     }
 
+    private fun loadTransform(
+        context: Context,
+        @DrawableRes placeholderId: Int,
+        radius: Int
+    ): RequestBuilder<Drawable?>? {
+        return Glide.with(context)
+            .load(placeholderId)
+            .apply(RequestOptions.bitmapTransform(RoundedCorners(radius)))
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemData = getItem(position)
         Glide.with(holder.itemView.context)
             .load(itemData.getLogoUrl())
             .error(R.drawable.assets_default)
             .placeholder(R.drawable.assets_default)
+            .thumbnail(
+                loadTransform(
+                    holder.itemView.context,
+                    R.drawable.assets_default,
+                    AutoSizeUtils.dp2px(holder.itemView.context, 14F)
+                )
+            )
+            .apply(
+                RequestOptions.bitmapTransform(
+                    RoundedCorners(
+                        AutoSizeUtils.dp2px(
+                            holder.itemView.context,
+                            14F
+                        )
+                    )
+                )
+            )
             .into(holder.itemView.ivLogo)
         holder.itemView.tvName.text = itemData.getAssetsName()
 

@@ -506,7 +506,7 @@ class AccountManager {
                             it.amount,
                             it.logo
                         ).also {
-                            it.name = CoinTypes.Libra.coinName()
+                            it.setAssetsName(CoinTypes.Libra.coinName())
                         }
                     )
                 }
@@ -521,7 +521,7 @@ class AccountManager {
                             it.amount,
                             it.logo
                         ).also {
-                            it.name = CoinTypes.Violas.coinName()
+                            it.setAssetsName(CoinTypes.Violas.coinName())
                         }
                     )
                 }
@@ -536,7 +536,7 @@ class AccountManager {
                             it.amount,
                             it.logo
                         ).also {
-                            it.name = CoinTypes.Bitcoin.coinName()
+                            it.setAssetsName(CoinTypes.Bitcoin.coinName())
                         }
                     )
                 }
@@ -552,11 +552,12 @@ class AccountManager {
                     it.account_id,
                     it.address,
                     it.module,
+                    it.name,
                     it.enable,
                     it.amount,
                     it.logo
                 ).also { tokenVo ->
-                    tokenVo.name = it.name
+                    tokenVo.setAssetsName(it.assetsName)
                 }
             )
         }

@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.ViewTreeObserver
 import android.widget.TextView
 import android.widget.Toast
@@ -65,7 +64,7 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
                 amount = 10233399,
                 address = "dhhoiweidjoiejodjoiejodjo"
             )
-        mAssetsVo.name = "vtoken"
+        mAssetsVo.setAssetsName("vtoken")
     }
 
     private fun initView() {
@@ -95,9 +94,9 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
         }
 
         title = null
-        tvTitle.text = mAssetsVo.name
+        tvTitle.text = mAssetsVo.getAssetsName()
 
-        tvTokenName.text = mAssetsVo.name
+        tvTokenName.text = mAssetsVo.getAssetsName()
         tvTokenAmount.text = mAssetsVo.getAmount().toString()
         tvFiatAmount.text = "≈\$0.00"
         tvTokenAddress.text = "dhhoiweidjoiejodjoiejodjo"

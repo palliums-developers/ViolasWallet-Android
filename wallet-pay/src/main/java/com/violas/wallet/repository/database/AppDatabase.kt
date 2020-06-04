@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.violas.wallet.repository.database.converter.AccountTypeConverter
 import com.violas.wallet.repository.database.converter.DateConverter
 import com.violas.wallet.repository.database.dao.AccountDao
 import com.violas.wallet.repository.database.dao.AddressBookDao
@@ -17,10 +18,10 @@ import com.violas.wallet.repository.database.entity.TokenDo
 
 @Database(
     entities = [AccountDO::class, TokenDo::class, AddressBookDo::class],
-    version = 2,
+    version = 1,
     exportSchema = false
 )
-@TypeConverters(DateConverter::class)
+@TypeConverters(DateConverter::class, AccountTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun accountDao(): AccountDao
@@ -29,6 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     companion object {
         private const val DATABASE_NAME = "timeDb"
+
         @Volatile
         private var sInstance: AppDatabase? = null
 
@@ -47,14 +49,14 @@ abstract class AppDatabase : RoomDatabase() {
 //                        WorkManager.getInstance(context).enqueue(request)
                     }
                 })
-                .addMigrations(migration1To2())
+//                .addMigrations(migration1To2())
                 .build()
         }
 
-        private fun migration1To2() = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE account ADD COLUMN encrypted_password BLOB")
-            }
-        }
+//        private fun migration1To2() = object : Migration(1, 2) {
+//            override fun migrate(database: SupportSQLiteDatabase) {
+//                database.execSQL("ALTER TABLE account ADD COLUMN encrypted_password BLOB")
+//            }
+//        }
     }
 }
