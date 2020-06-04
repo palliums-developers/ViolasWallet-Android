@@ -42,6 +42,7 @@
     <dimen name="dp_14.5" tools:ignore="MissingDefaultResource">14.5dp</dimen>
     <dimen name="dp_15">15dp</dimen>
     <dimen name="dp_16">16dp</dimen>
+    <dimen name="dp_16.5" tools:ignore="MissingDefaultResource">16.5dp</dimen>
     <dimen name="dp_17">17dp</dimen>
     <dimen name="dp_18">18dp</dimen>
     <dimen name="dp_19">19dp</dimen>
