@@ -97,7 +97,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
                         mRequestHandle = true
                         finish()
                     } else {
-                        showToast("连接失败")
+                        showToast(String.format(getString(R.string.common_http_request_fail), ""))
                     }
                     dismissProgress()
                 }
@@ -110,7 +110,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
             }
             btnConfirmLogin.postDelayed({
                 dismissProgress()
-                showToast("连接失败，请重试")
+                showToast(String.format(getString(R.string.common_http_request_fail), ""))
                 launch(Dispatchers.IO) {
                     mWalletConnect.mWCClient.disconnect()
                 }

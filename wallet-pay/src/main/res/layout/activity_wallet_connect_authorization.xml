@@ -44,7 +44,7 @@
         android:paddingTop="8dp"
         android:paddingEnd="22dp"
         android:paddingBottom="8dp"
-        android:text="网页 Vlolas Pay 正在申请访问你的钱包地址 你确认将钱包地址公开给此网站吗?"
+        android:text="@string/hint_wallet_connect_prompt"
         android:textColor="@color/color_333333"
         android:textSize="@dimen/sp_14"
         android:textStyle="bold"
@@ -88,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="您已有登录状态的网页钱包，确认登录将强制退出之前的网页钱包"
+            android:text="@string/hint_wallet_connect_repeated_connection"
             android:textColor="#FB8F0B"
             android:textSize="12sp" />
     </LinearLayout>

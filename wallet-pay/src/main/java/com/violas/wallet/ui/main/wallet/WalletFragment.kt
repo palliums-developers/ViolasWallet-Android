@@ -132,7 +132,7 @@ class WalletFragment : BaseFragment() {
                     viewWalletConnect.visibility = View.GONE
                 }
                 WalletConnectStatus.Login -> {
-                    tvWalletConnectStatus.text = "网页钱包已登录"
+                    tvWalletConnectStatus.text = getString(R.string.wallet_connect_have_landed)
                     viewWalletConnect.visibility = View.VISIBLE
                 }
             }
