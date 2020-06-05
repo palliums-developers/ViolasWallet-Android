@@ -129,6 +129,7 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
         tvFiatAmount.text = "≈\$0.00"
         tvTokenAddress.text = "dhhoiweidjoiejodjoiejodjo"
 
+        viewPager.offscreenPageLimit = 2
         viewPager.adapter = TransactionRecordFragmentAdapter(
             fragmentManager = supportFragmentManager,
             titles = arrayListOf(
@@ -234,8 +235,10 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
     ) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
         override fun getItem(position: Int): Fragment {
-            return supportFragmentManager.findFragmentByTag(titles[position].first)
-                ?: TransactionRecordFragment.newInstance("", coinTypes = CoinTypes.Libra)
+            return TransactionRecordFragment.newInstance(
+                "$position",
+                coinTypes = CoinTypes.Libra
+            )
         }
 
         override fun getCount(): Int {

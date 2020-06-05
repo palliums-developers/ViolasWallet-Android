@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.record
 
 import android.os.Bundle
+import android.view.View
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getDrawable
@@ -27,6 +28,9 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     private lateinit var mCoinTypes: CoinTypes
     private var mTokenIdx: Long? = null
     private var mTokenName: String? = null
+
+    private var savedInstanceState: Bundle? = null
+    private var lazyInitTag = false
 
     companion object {
         fun newInstance(
@@ -76,9 +80,21 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         return mViewAdapter
     }
 
-    override fun onLazyInitView(savedInstanceState: Bundle?) {
-        super.onLazyInitView(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        this.savedInstanceState = savedInstanceState
+    }
 
+    override fun onResume() {
+        super.onResume()
+        if (!lazyInitTag) {
+            lazyInitTag = true
+            onLazy2InitView(savedInstanceState)
+        }
+    }
+
+    private fun onLazy2InitView(savedInstanceState: Bundle?) {
+        super.onLazyInitView(savedInstanceState)
         if (initData()) {
             getStatusLayout()?.setTipsWithStatus(
                 IStatusLayout.Status.STATUS_EMPTY,
