@@ -24,7 +24,7 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
         val response =
-            mViolasRepository.getTransactionRecord(
+            mViolasRepository.getTransactionRecords(
                 address,
                 pageSize,
                 (pageNumber - 1) * pageSize,

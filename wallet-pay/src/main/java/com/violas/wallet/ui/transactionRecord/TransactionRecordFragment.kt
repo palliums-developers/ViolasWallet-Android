@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.record
+package com.violas.wallet.ui.transactionRecord
 
 import android.os.Bundle
 import android.view.View
@@ -20,14 +20,16 @@ import com.violas.wallet.ui.web.WebCommonActivity
  * Created by elephant on 2019-12-16 15:14.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc:
+ * desc: 交易记录视图
  */
 class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
-    private lateinit var mAccountAddress: String
+    private lateinit var mWalletAddress: String
     private lateinit var mCoinTypes: CoinTypes
-    private var mTokenIdx: Long? = null
-    private var mTokenName: String? = null
+
+    @TransactionType
+    private var mTransactionType: Int = TransactionType.ALL
+    private var mTokenAddress: String? = null
 
     private var savedInstanceState: Bundle? = null
     private var lazyInitTag = false
@@ -36,14 +38,15 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         fun newInstance(
             accountAddress: String,
             coinTypes: CoinTypes,
-            tokenIdx: Long? = null,
-            tokenName: String? = null
+            @TransactionType
+            transactionType: Int,
+            tokenAddress: String? = null
         ): TransactionRecordFragment {
             val args = Bundle().apply {
                 putString(KEY_ONE, accountAddress)
                 putSerializable(KEY_TWO, coinTypes)
-                tokenIdx?.let { putLong(KEY_THREE, it) }
-                tokenName?.let { putString(KEY_FOUR, it) }
+                putInt(KEY_THREE, transactionType)
+                tokenAddress?.let { putString(KEY_FOUR, it) }
             }
 
             return TransactionRecordFragment().apply {
@@ -53,7 +56,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     }
 
     private val mViewModel by lazy {
-        TransactionRecordViewModel(mAccountAddress, mTokenIdx, mTokenName, mCoinTypes)
+        TransactionRecordViewModel(mWalletAddress, mTokenAddress, mTransactionType, mCoinTypes)
     }
 
     private val mViewAdapter by lazy {
@@ -61,7 +64,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
             retryCallback = {
                 mViewModel.retry()
             },
-            onClickQuery = {
+            onItemClick = {
                 if (it.url.isNullOrEmpty()) {
                     showToast(R.string.transaction_record_not_supported_query)
                 } else {
@@ -95,7 +98,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
     private fun onLazy2InitView(savedInstanceState: Bundle?) {
         super.onLazyInitView(savedInstanceState)
-        if (initData()) {
+        if (initData(savedInstanceState)) {
             getStatusLayout()?.setTipsWithStatus(
                 IStatusLayout.Status.STATUS_EMPTY,
                 getString(R.string.tips_no_transaction_record)
@@ -110,19 +113,23 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         }
     }
 
-    private fun initData(): Boolean {
-        try {
-            if (arguments == null) {
-                return false
-            }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(KEY_ONE, mWalletAddress)
+        outState.putSerializable(KEY_TWO, mCoinTypes)
+        outState.putInt(KEY_THREE, mTransactionType)
+        mTokenAddress?.let { outState.putString(KEY_FOUR, it) }
+    }
 
-            mAccountAddress = arguments!!.getString(KEY_ONE, null) ?: return false
-            mCoinTypes = arguments!!.getSerializable(KEY_TWO) as CoinTypes
-            if (arguments!!.containsKey(KEY_THREE)) {
-                mTokenIdx = arguments!!.getLong(KEY_THREE)
-            }
-            if (arguments!!.containsKey(KEY_FOUR)) {
-                mTokenName = arguments!!.getString(KEY_FOUR)
+    private fun initData(savedInstanceState: Bundle?): Boolean {
+        try {
+            val bundle = savedInstanceState ?: arguments ?: return false
+
+            mWalletAddress = bundle.getString(KEY_ONE, null) ?: return false
+            mCoinTypes = bundle.getSerializable(KEY_TWO) as CoinTypes
+            mTransactionType = bundle.getInt(KEY_THREE, TransactionType.ALL)
+            if (bundle.containsKey(KEY_FOUR)) {
+                mTokenAddress = bundle.getString(KEY_FOUR)
             }
 
             // code for test

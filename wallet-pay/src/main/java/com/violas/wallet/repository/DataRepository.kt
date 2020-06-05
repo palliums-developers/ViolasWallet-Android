@@ -9,9 +9,9 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.BaseBizUrl.getViolasBaseUrl
 import com.violas.wallet.repository.database.AppDatabase
-import com.violas.wallet.repository.http.bitcoin.BitmainApi
-import com.violas.wallet.repository.http.bitcoin.BitmainRepository
-import com.violas.wallet.repository.http.bitcoin.BitmainService
+import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorApi
+import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorRepository
+import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorService
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.repository.http.dex.DexApi
 import com.violas.wallet.repository.http.dex.DexRepository
@@ -83,18 +83,22 @@ object DataRepository {
     fun getViolasService() =
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
-    fun getTransactionService(coinTypes: CoinTypes) =
+    fun getTransactionRecordService(coinTypes: CoinTypes) =
         when (coinTypes) {
             CoinTypes.Violas -> {
                 getViolasBizService()
             }
 
             CoinTypes.Libra -> {
-                LibraViolasService(LibraViolasRepository(retrofit.create(LibraViolasApi::class.java)))
+                LibraViolasService(
+                    LibraViolasRepository(retrofit.create(LibraViolasApi::class.java))
+                )
             }
 
             else -> {
-                BitmainService(BitmainRepository(retrofit.create(BitmainApi::class.java)))
+                BitcoinTrezorService(
+                    BitcoinTrezorRepository(retrofit.create(BitcoinTrezorApi::class.java))
+                )
             }
         }
 

@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.record
+package com.violas.wallet.ui.transactionRecord
 
 import com.palliums.paging.PagingViewModel
 import com.quincysx.crypto.CoinTypes
@@ -15,14 +15,16 @@ import kotlin.random.Random
  * desc: 交易记录的ViewModel
  */
 class TransactionRecordViewModel(
-    private val mAddress: String,
-    private val mTokenIdx: Long?,
-    private val mTokenName: String?,
+    private val mWalletAddress: String,
+    private val mTokenAddress: String?,
+    @TransactionType
+    private val mTransactionType: Int,
     coinTypes: CoinTypes
 ) : PagingViewModel<TransactionRecordVO>() {
 
-    private val mTransactionRepository =
-        DataRepository.getTransactionService(coinTypes)
+    private val mTransactionRecordService by lazy {
+        DataRepository.getTransactionRecordService(coinTypes)
+    }
 
     override suspend fun loadData(
         pageSize: Int,
@@ -30,13 +32,19 @@ class TransactionRecordViewModel(
         pageKey: Any?,
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
-        if (pageNumber == 1 && mTokenIdx != null) {
+        if (pageNumber == 1 && !mTokenAddress.isNullOrBlank()) {
             // 在币种信息页面刷新时，通知Activity刷新余额
             EventBus.getDefault().post(RefreshBalanceEvent(0))
         }
 
-        mTransactionRepository.getTransactionRecord(
-            mAddress, mTokenIdx?.toString(), mTokenName, pageSize, pageNumber, pageKey, onSuccess
+        mTransactionRecordService.getTransactionRecords(
+            mWalletAddress,
+            mTokenAddress,
+            mTransactionType,
+            pageSize,
+            pageNumber,
+            pageKey,
+            onSuccess
         )
 
         //onSuccess.invoke(fakeData(mAddress, pageSize, pageNumber), null)
@@ -58,16 +66,25 @@ class TransactionRecordViewModel(
 
             val vo = TransactionRecordVO(
                 id = id,
-                coinTypes = when (it % 3) {
+                coinType = when (it % 3) {
                     0 -> CoinTypes.Bitcoin
                     1 -> CoinTypes.Libra
                     else -> CoinTypes.Violas
                 },
-                transactionType = it % 2,
+                transactionType = when (it % 3) {
+                    0 -> TransactionType.TRANSFER
+                    1 -> TransactionType.COLLECTION
+                    else -> TransactionType.REGISTER
+                },
+                transactionState = when (it % 3) {
+                    0 -> TransactionState.FAILURE
+                    1 -> TransactionState.SUCCESS
+                    else -> TransactionState.PENDING
+                },
                 time = System.currentTimeMillis(),
+                address = "${address}00$id",
                 amount = Random.nextLong(100000).toString(),
                 gas = "0",
-                address = "${address}00$id",
                 url = "https://www.baidu.com/"
             )
 

@@ -9,6 +9,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.setting.SettingActivity
+import com.violas.wallet.ui.tokenInfo.TokenInfoTempActivity
 import kotlinx.android.synthetic.main.fragment_me.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,7 +56,9 @@ class MeFragment : BaseFragment() {
             }
 
             R.id.mivAddressBook -> {
-                AddressBookActivity.start(_mActivity)
+//                AddressBookActivity.start(_mActivity)
+
+                startActivity(Intent(_mActivity, TokenInfoTempActivity::class.java))
             }
 
             R.id.mivSettings -> {

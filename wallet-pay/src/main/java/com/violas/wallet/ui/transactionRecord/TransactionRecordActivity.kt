@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.record
+package com.violas.wallet.ui.transactionRecord
 
 import android.content.Context
 import android.content.Intent
@@ -9,7 +9,6 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.common.KEY_THREE
 import com.violas.wallet.common.KEY_TWO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,24 +26,22 @@ class TransactionRecordActivity : BaseAppActivity() {
         fun start(
             context: Context,
             accountId: Long,
-            tokenIdx: Long? = null,
-            tokenName: String? = null
+            tokenAddress: String? = null
         ) {
             Intent(context, TransactionRecordActivity::class.java)
                 .apply {
                     putExtra(KEY_ONE, accountId)
-                    tokenIdx?.let { putExtra(KEY_TWO, it) }
-                    tokenName?.let { putExtra(KEY_THREE, it) }
+                    tokenAddress?.let { putExtra(KEY_TWO, it) }
                 }
                 .start(context)
         }
     }
 
-    private var mAccountId = -100L
-    private var mTokenIdx: Long? = null
-    private var mTokenName: String? = null
     private lateinit var mWalletAddress: String
     private lateinit var mCoinTypes: CoinTypes
+
+    private var mAccountId = -100L
+    private var mTokenAddress: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,8 +59,8 @@ class TransactionRecordActivity : BaseAppActivity() {
                         TransactionRecordFragment.newInstance(
                             mWalletAddress,
                             mCoinTypes,
-                            mTokenIdx,
-                            mTokenName
+                            TransactionType.ALL,
+                            mTokenAddress
                         )
                     )
                 } else {
@@ -81,26 +78,19 @@ class TransactionRecordActivity : BaseAppActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putLong(KEY_ONE, mAccountId)
-        mTokenIdx?.let { outState.putLong(KEY_TWO, it) }
-        mTokenName?.let { outState.putString(KEY_THREE, it) }
+        mTokenAddress?.let { outState.putString(KEY_TWO, it) }
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
         if (savedInstanceState != null) {
             mAccountId = savedInstanceState.getLong(KEY_ONE, -100)
             if (savedInstanceState.containsKey(KEY_TWO)) {
-                mTokenIdx = savedInstanceState.getLong(KEY_TWO)
-            }
-            if (savedInstanceState.containsKey(KEY_THREE)) {
-                mTokenName = savedInstanceState.getString(KEY_THREE)
+                mTokenAddress = savedInstanceState.getString(KEY_TWO)
             }
         } else if (intent != null) {
             mAccountId = intent.getLongExtra(KEY_ONE, -100)
             if (intent.hasExtra(KEY_TWO)) {
-                mTokenIdx = intent.getLongExtra(KEY_TWO, 0)
-            }
-            if (intent.hasExtra(KEY_THREE)) {
-                mTokenName = intent.getStringExtra(KEY_THREE)
+                mTokenAddress = intent.getStringExtra(KEY_TWO)
             }
         }
 

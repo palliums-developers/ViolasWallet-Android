@@ -22,7 +22,7 @@ interface LibraViolasApi {
      * @param offset 稳定币地址，不为空时查询该稳定币的交易记录，为空时查询平台币的交易记录
      */
     @GET("/1.0/libra/transaction")
-    suspend fun getTransactionRecord(
+    suspend fun getTransactionRecords(
         @Query("addr") address: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int

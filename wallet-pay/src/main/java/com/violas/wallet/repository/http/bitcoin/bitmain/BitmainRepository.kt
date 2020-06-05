@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.bitcoin
+package com.violas.wallet.repository.http.bitcoin.bitmain
 
 import com.palliums.exceptions.RequestException
 import com.palliums.net.checkResponse
@@ -9,17 +9,16 @@ import com.palliums.net.checkResponse
  * <p>
  * desc: 比特大陆 repository
  */
-class BitmainRepository(private val mBitmainApi: BitmainApi) {
+class BitmainRepository(private val api: BitmainApi) {
 
     @Throws(RequestException::class)
-    suspend fun getTransactionRecord(
+    suspend fun getTransactionRecords(
         address: String,
         pageSize: Int,
         pageNumber: Int
-    ): ListResponse<TransactionRecordDTO> {
+    ) =
         // {"data":null,"err_no":1,"err_msg":"Resource Not Found"}
-        return checkResponse(1) {
-            mBitmainApi.getTransactionRecord(address, pageSize, pageNumber)
+        checkResponse(1) {
+            api.getTransactionRecords(address, pageSize, pageNumber)
         }
-    }
 }

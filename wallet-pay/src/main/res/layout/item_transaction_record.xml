@@ -3,137 +3,77 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/dp_29"
+    android:paddingEnd="@dimen/dp_27">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/vContentContainer"
+    <ImageView
+        android:id="@+id/ivType"
+        android:layout_width="@dimen/dp_24"
+        android:layout_height="@dimen/dp_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvAddress"
+        app:layout_constraintBottom_toBottomOf="@id/tvTime"
+        tools:src="@drawable/ic_transaction_type_collection" />
+
+    <TextView
+        android:id="@+id/tvAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_16"
+        android:textColor="@color/color_333333"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintStart_toEndOf="@id/ivType"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="dhhoiwei…djoiejodjo" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_6"
+        android:textColor="@color/color_BCBCBC"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintStart_toStartOf="@id/tvAddress"
+        app:layout_constraintTop_toBottomOf="@id/tvAddress"
+        tools:text="01/18  12:06:23" />
+
+    <TextView
+        android:id="@+id/tvAmount"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/dp_20"
-        android:paddingTop="@dimen/dp_16"
-        android:paddingEnd="@dimen/dp_20"
-        android:paddingBottom="@dimen/dp_15"
+        android:layout_marginStart="@dimen/dp_15"
+        android:gravity="end"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvAddress"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toEndOf="@id/tvAddress"
+        tools:text="99900"
+        tools:textColor="@color/color_FB8F0B" />
 
-        <TextView
-            android:id="@+id/vTimeLabel"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:text="@string/transaction_record_time"
-            android:textColor="@color/black_50"
-            android:textSize="@dimen/sp_12"
-            app:layout_constraintEnd_toStartOf="@id/vAmountLabel"
-            app:layout_constraintHorizontal_weight="4"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/vTime"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_5"
-            android:ellipsize="middle"
-            android:singleLine="true"
-            android:textColor="@color/black"
-            android:textSize="@dimen/sp_14"
-            app:layout_constraintEnd_toEndOf="@id/vTimeLabel"
-            app:layout_constraintStart_toStartOf="@id/vTimeLabel"
-            app:layout_constraintTop_toBottomOf="@id/vTimeLabel"
-            tools:text="18.05.23 15:42" />
-
-        <TextView
-            android:id="@+id/vAmountLabel"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:text="@string/transaction_record_amount"
-            android:textColor="@color/black_50"
-            android:textSize="@dimen/sp_12"
-            app:layout_constraintBaseline_toBaselineOf="@id/vTimeLabel"
-            app:layout_constraintEnd_toStartOf="@id/vType"
-            app:layout_constraintHorizontal_weight="4"
-            app:layout_constraintStart_toEndOf="@id/vTimeLabel" />
-
-        <TextView
-            android:id="@+id/vAmount"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:ellipsize="middle"
-            android:singleLine="true"
-            android:textColor="@color/black"
-            android:textSize="@dimen/sp_14"
-            app:layout_constraintBaseline_toBaselineOf="@id/vTime"
-            app:layout_constraintEnd_toEndOf="@id/vAmountLabel"
-            app:layout_constraintStart_toStartOf="@id/vAmountLabel"
-            app:layout_constraintTop_toBottomOf="@id/vAmountLabel"
-            tools:text="1.906321 BTC" />
-
-        <TextView
-            android:id="@+id/vType"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:textColor="@color/black_50"
-            android:textSize="@dimen/sp_12"
-            app:layout_constraintBaseline_toBaselineOf="@id/vTimeLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="2.5"
-            app:layout_constraintStart_toEndOf="@id/vAmountLabel"
-            tools:text="@string/transaction_record_transfer"
-            tools:textColor="@color/color_E54040" />
-
-        <TextView
-            android:id="@+id/vCoinName"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:ellipsize="middle"
-            android:gravity="end"
-            android:singleLine="true"
-            android:textColor="@color/black"
-            android:textSize="@dimen/sp_14"
-            app:layout_constraintBaseline_toBaselineOf="@id/vTime"
-            app:layout_constraintEnd_toEndOf="@id/vType"
-            app:layout_constraintStart_toStartOf="@id/vType"
-            app:layout_constraintTop_toBottomOf="@id/vType"
-            tools:text="BTC" />
-
-        <TextView
-            android:id="@+id/vAddress"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_10"
-            android:ellipsize="middle"
-            android:singleLine="true"
-            android:textColor="@color/black_50"
-            android:textSize="@dimen/sp_12"
-            app:layout_constraintEnd_toStartOf="@id/vQuery"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/vTime"
-            tools:text="mkYUsJ8N1AidNUySQGCpwswQUaoyL2Mu8L" />
-
-        <TextView
-            android:id="@+id/vQuery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/dp_10"
-            android:text="@string/transaction_record_query"
-            android:textColor="@color/color_7A7AEE"
-            android:textSize="@dimen/sp_12"
-            app:layout_constraintBaseline_toBaselineOf="@id/vAddress"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/vAddress"
-            app:layout_constraintTop_toBottomOf="@id/vTime" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/tvDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/sp_10"
+        android:visibility="gone"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="@string/state_trading"
+        tools:textColor="@color/color_FB8F0B"
+        tools:visibility="visible" />
 
     <View
         android:id="@+id/vDivider"
         android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_5"
-        android:background="@color/dividing_line"
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginEnd="@dimen/dp_2"
+        android:layout_marginTop="@dimen/dp_16"
+        app:layout_constraintTop_toBottomOf="@id/tvTime"
+        android:background="@color/color_DEDFE0"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vContentContainer" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

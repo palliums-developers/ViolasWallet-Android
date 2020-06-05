@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.bitcoin
+package com.violas.wallet.repository.http.bitcoin.bitmain
 
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URLNAME
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_BITMAIN
@@ -28,7 +28,7 @@ interface BitmainApi {
      */
     @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_BITMAIN}"])
     @GET("address/{address}/tx")
-    suspend fun getTransactionRecord(
+    suspend fun getTransactionRecords(
         @Path("address") address: String,
         @Query("pagesize") pageSize: Int,
         @Query("page") pageNumber: Int,

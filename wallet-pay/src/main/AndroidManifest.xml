@@ -118,7 +118,7 @@
             android:name=".ui.changeLanguage.ChangeLanguageActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.record.TransactionRecordActivity"
+            android:name=".ui.transactionRecord.TransactionRecordActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.setting.FeedbackActivity"

@@ -4,19 +4,14 @@ import android.content.Context
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.core.view.get
-import androidx.core.view.marginBottom
-import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.tabs.TabLayout
 import com.palliums.base.ViewController
@@ -29,8 +24,8 @@ import com.palliums.widget.loading.LoadingDialog
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
-import com.violas.wallet.ui.record.TransactionRecordFragment
-import com.violas.wallet.ui.record.TransactionRecordType
+import com.violas.wallet.ui.transactionRecord.TransactionRecordFragment
+import com.violas.wallet.ui.transactionRecord.TransactionType
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
@@ -68,7 +63,7 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
             AssetsLibraCoinVo(
                 id = 1,
                 amount = 10233399,
-                address = "dhhoiweidjoiejodjoiejodjo"
+                address = "f4174e9eabcb2e968e22da4c75ac653b"
             )
         mAssetsVo.name = "vtoken"
     }
@@ -132,10 +127,28 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
         viewPager.offscreenPageLimit = 2
         viewPager.adapter = TransactionRecordFragmentAdapter(
             fragmentManager = supportFragmentManager,
-            titles = arrayListOf(
-                Pair(getString(R.string.label_all), TransactionRecordType.ALL),
-                Pair(getString(R.string.label_transfer_in), TransactionRecordType.TRANSFER_IN),
-                Pair(getString(R.string.label_transfer_out), TransactionRecordType.TRANSFER_OUT)
+            fragments = arrayListOf(
+                Pair(
+                    getString(R.string.label_all), TransactionRecordFragment.newInstance(
+                        accountAddress = "f4174e9eabcb2e968e22da4c75ac653b",
+                        coinTypes = CoinTypes.Violas,
+                        transactionType = TransactionType.ALL
+                    )
+                ),
+                Pair(
+                    getString(R.string.label_transfer_in), TransactionRecordFragment.newInstance(
+                        accountAddress = "f4174e9eabcb2e968e22da4c75ac653b",
+                        coinTypes = CoinTypes.Libra,
+                        transactionType = TransactionType.ALL
+                    )
+                ),
+                Pair(
+                    getString(R.string.label_transfer_out), TransactionRecordFragment.newInstance(
+                        accountAddress = "2NGZrVvZG92qGYqzTLjCAewvPZ7JE8S8VxE",
+                        coinTypes = CoinTypes.BitcoinTest,
+                        transactionType = TransactionType.ALL
+                    )
+                )
             )
         )
         tabLayout.setupWithViewPager(viewPager)
@@ -231,22 +244,19 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
 
     inner class TransactionRecordFragmentAdapter(
         fragmentManager: FragmentManager,
-        private val titles: List<Pair<String, TransactionRecordType>>
+        private val fragments: List<Pair<String, TransactionRecordFragment>>
     ) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
         override fun getItem(position: Int): Fragment {
-            return TransactionRecordFragment.newInstance(
-                "$position",
-                coinTypes = CoinTypes.Libra
-            )
+            return fragments[position].second
         }
 
         override fun getCount(): Int {
-            return titles.size
+            return fragments.size
         }
 
         override fun getPageTitle(position: Int): CharSequence? {
-            return titles[position].first
+            return fragments[position].first
         }
     }
 }

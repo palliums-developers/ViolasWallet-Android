@@ -27,6 +27,17 @@ object BaseBizUrl {
     private const val LIBEXPLORER_BASE_URL_MAIN_NET = "https://api-test.libexplorer.com/api"
     private const val LIBEXPLORER_BASE_URL_TEST_NET = "https://api-test.libexplorer.com/api"
 
+    // Trezor base url
+    private const val TREZOR_BASE_URL_MAIN_NET = "https://tbtc1.trezor.io/api"
+    private const val TREZOR_BASE_URL_TEST_NET = "https://tbtc1.trezor.io/api"
+
+    fun getTrezorBaseUrl(): String {
+        return if (Vm.TestNet)
+            TREZOR_BASE_URL_TEST_NET
+        else
+            TREZOR_BASE_URL_MAIN_NET
+    }
+
     fun getViolasBaseUrl(): String {
         return if (Vm.TestNet)
             VIOLAS_BASE_URL_TEST_NET
