@@ -1,5 +1,7 @@
 package com.violas.wallet.viewModel.bean
 
+import com.violas.wallet.repository.database.entity.AccountType
+
 abstract class AssetsVo {
     val amountWithUnit: AmountWithUnit = AmountWithUnit("0.00", "")
     val fiatAmountWithUnit: FiatAmountWithUnit = FiatAmountWithUnit(0, "$", "")
@@ -37,6 +39,7 @@ open class AssetsCoinVo(
     var coinNumber: Int = 0,
     var address: String = "",
     private var amount: Long = 0,
+    var accountType: AccountType = AccountType.Normal,
     private val logo: String
 ) : AssetsVo() {
     override fun getId() = id
@@ -60,7 +63,16 @@ class AssetsLibraCoinVo(
     logo: String = "",
     var delegatedKeyRotationCapability: Boolean = false,
     var delegatedWithdrawalCapability: Boolean = false
-) : AssetsCoinVo(id, publicKey, authKeyPrefix, coinNumber, address, amount, logo)
+) : AssetsCoinVo(
+    id,
+    publicKey,
+    authKeyPrefix,
+    coinNumber,
+    address,
+    amount,
+    AccountType.NoDollars,
+    logo
+)
 
 data class AssetsTokenVo(
     private val id: Long,

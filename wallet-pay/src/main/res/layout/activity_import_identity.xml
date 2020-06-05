@@ -21,28 +21,13 @@
         android:paddingTop="22dp"
         android:paddingEnd="15dp"
         android:paddingBottom="22dp"
-        android:textColor="#3B3847"
+        android:textColor="#0E0051"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editName"
-        android:layout_width="match_parent"
-        android:layout_height="51dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/selector_edit_bg_line"
-        android:maxLength="20"
-        android:hint="@string/hint_input_nickname"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editMnemonicWord" />
-
-    <EditText
+    <com.violas.wallet.widget.PasswordEditText
         android:id="@+id/editPassword"
         style="@style/PasswordRules"
         android:layout_width="match_parent"
@@ -55,9 +40,9 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editName" />
+        app:layout_constraintTop_toBottomOf="@+id/editMnemonicWord" />
 
-    <EditText
+    <com.violas.wallet.widget.PasswordEditText
         android:id="@+id/editConfirmPassword"
         style="@style/PasswordRules"
         android:layout_width="match_parent"

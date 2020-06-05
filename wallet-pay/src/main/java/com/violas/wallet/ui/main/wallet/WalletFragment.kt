@@ -28,11 +28,14 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.event.BackupIdentityMnemonicEvent
+import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
 import com.violas.wallet.ui.collection.CollectionActivity
+import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
+import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
@@ -106,8 +109,16 @@ class WalletFragment : BaseFragment() {
             swipeRefreshLayout.isRefreshing = it
         })
         mWalletAppViewModel?.mAssetsListLiveData?.observe(this, Observer {
-            mAssertAdapter.submitList(it)
-            mWalletViewModel.calculateFiat(it)
+            val filter =
+                it.filter {
+                    if (it !is AssetsCoinVo) {
+                        true
+                    } else {
+                        it.accountType != AccountType.NoDollars
+                    }
+                }
+            mAssertAdapter.submitList(filter)
+            mWalletViewModel.calculateFiat(filter)
         })
         mWalletAppViewModel?.mExistsAccountLiveData?.observe(this, Observer {
             if (it) {
@@ -148,18 +159,12 @@ class WalletFragment : BaseFragment() {
         viewWalletConnect.setOnClickListener {
             activity?.let { it1 -> WalletConnectManagerActivity.startActivity(it1) }
         }
-        // 初始化钱包当作是切换钱包逻辑
-//        refreshAssert(true)
 
         ivAddAssert.setOnClickListener(this)
-//        ivCopy.setOnClickListener(this)
         ivScan.setOnClickListener(this)
-//        ivWalletInfo.setOnClickListener(this)
-//        layoutWalletType.setOnClickListener(this)
-//        btnCollection.setOnClickListener(this)
-//        btnTransfer.setOnClickListener(this)
-//        vCrossChainExchangeLayout.setOnClickListener(this)
-//        vTransactionRecordLayout.setOnClickListener(this)
+        viewCreateAccount.setOnClickListener(this)
+        viewImportAccount.setOnClickListener(this)
+
 
         if (mAccountManager.isFastIntoWallet()) {
             FastIntoWalletDialog()
@@ -230,7 +235,12 @@ class WalletFragment : BaseFragment() {
                     ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
                 }
             }
-
+            R.id.viewCreateAccount -> {
+                activity?.let { CreateIdentityActivity.start(it) }
+            }
+            R.id.viewImportAccount -> {
+                activity?.let { ImportIdentityActivity.start(it) }
+            }
 //            R.id.ivWalletInfo -> {
 //                launch(Dispatchers.IO) {
 //                    val currentAccount = mAccountManager.currentAccount()

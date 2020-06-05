@@ -40,6 +40,7 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         if (localAssets.isEmpty()) {
             mExistsAccountLiveData.postValue(false)
         } else {
+            mExistsAccountLiveData.postValue(true)
             if (isFirst) {
                 mAssetsListLiveData.postValue(localAssets)
             }
