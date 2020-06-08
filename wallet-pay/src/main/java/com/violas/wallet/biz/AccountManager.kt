@@ -1,7 +1,9 @@
 package com.violas.wallet.biz
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.WorkerThread
+import com.palliums.content.ContextProvider
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.exceptions.RequestException
 import com.palliums.utils.exceptionAsync
@@ -15,7 +17,10 @@ import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.database.entity.AccountType
+import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.*
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.GlobalScope
@@ -27,7 +32,9 @@ import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.crypto.KeyFactory
 import org.palliums.libracore.crypto.Seed
 import org.palliums.violascore.serialization.toHex
+import java.util.*
 import java.util.concurrent.Executors
+import kotlin.collections.ArrayList
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -313,9 +320,9 @@ class AccountManager {
     /**
      * 创建身份
      */
-    fun createIdentity(context: Context, walletName: String, password: ByteArray): List<String> {
+    fun createIdentity(context: Context, password: ByteArray): List<String> {
         val generate = Mnemonic.English().generate()
-        importIdentity(context, generate, walletName, password)
+        importIdentity(context, generate, password)
         return generate
     }
 
@@ -337,7 +344,6 @@ class AccountManager {
     fun importIdentity(
         context: Context,
         wordList: List<String>,
-        walletName: String,
         password: ByteArray
     ) {
         checkMnemonicCount(wordList)
@@ -360,7 +366,8 @@ class AccountManager {
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
+                accountType = AccountType.NoDollars
             ),
             AccountDO(
                 privateKey = security.encrypt(
@@ -371,7 +378,8 @@ class AccountManager {
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
                 coinNumber = CoinTypes.Libra.coinType(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
+                accountType = AccountType.NoDollars
             ),
             AccountDO(
                 privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
@@ -387,6 +395,19 @@ class AccountManager {
         )
         if (insertIds.isNotEmpty()) {
             switchCurrentAccount(insertIds[0])
+            WalletAppViewModel.getViewModelInstance(getContext()).refreshAssetsList(true)
+        }
+        if (insertIds.size > 1) {
+            mAccountTokenStorage.insert(
+                TokenDo(
+                    account_id = insertIds[0],
+                    assetsName = "vToken"
+                ),
+                TokenDo(
+                    account_id = insertIds[1],
+                    assetsName = "Libra"
+                )
+            )
         }
     }
 
@@ -506,7 +527,7 @@ class AccountManager {
                             it.amount,
                             it.logo
                         ).also {
-                            it.name = CoinTypes.Libra.coinName()
+                            it.setAssetsName(CoinTypes.Libra.coinName())
                         }
                     )
                 }
@@ -521,7 +542,7 @@ class AccountManager {
                             it.amount,
                             it.logo
                         ).also {
-                            it.name = CoinTypes.Violas.coinName()
+                            it.setAssetsName(CoinTypes.Violas.coinName())
                         }
                     )
                 }
@@ -534,9 +555,10 @@ class AccountManager {
                             it.coinNumber,
                             it.address,
                             it.amount,
+                            it.accountType,
                             it.logo
                         ).also {
-                            it.name = CoinTypes.Bitcoin.coinName()
+                            it.setAssetsName(CoinTypes.Bitcoin.coinName())
                         }
                     )
                 }
@@ -552,11 +574,12 @@ class AccountManager {
                     it.account_id,
                     it.address,
                     it.module,
+                    it.name,
                     it.enable,
                     it.amount,
                     it.logo
                 ).also { tokenVo ->
-                    tokenVo.name = it.name
+                    tokenVo.setAssetsName(it.assetsName)
                 }
             )
         }
@@ -601,24 +624,25 @@ class AccountManager {
             .forEach { assets ->
                 assets as AssetsLibraCoinVo
                 DataRepository.getLibraService().getAccountState(assets.address)?.let { it ->
-                    assets.authKeyPrefix = it.authenticationKey ?: ""
-                    assets.delegatedKeyRotationCapability =
-                        it.delegatedKeyRotationCapability ?: false
-                    assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability ?: false
+                    assets.authKeyPrefix = it.authenticationKey
+                    assets.delegatedKeyRotationCapability = it.delegatedKeyRotationCapability
+                    assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability
 
                     val filter =
                         localAssets.filter { assetsToken -> assetsToken is AssetsTokenVo && assetsToken.getAccountId() == assets.getAccountId() }
-                            .toMap { assetsToken -> (assetsToken as AssetsTokenVo).module }
+                            .toMap { assetsToken ->
+                                (assetsToken as AssetsTokenVo).module.toUpperCase(Locale.getDefault())
+                            }
                     it.balances?.forEach { balance ->
-                        filter[balance.currency]?.apply {
+                        filter[balance.currency.toUpperCase(Locale.getDefault())]?.apply {
                             this as AssetsTokenVo
                             setAmount(balance.amount)
                             val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
                                 balance.amount,
                                 CoinTypes.parseCoinType(assets.coinNumber)
                             )
-                            assets.amountWithUnit.amount = convertAmountToDisplayUnit.first
-                            assets.amountWithUnit.unit = convertAmountToDisplayUnit.second
+                            amountWithUnit.amount = convertAmountToDisplayUnit.first
+                            amountWithUnit.unit = convertAmountToDisplayUnit.second
                         }
                     }
                 }
@@ -626,7 +650,7 @@ class AccountManager {
     }
 
     private suspend fun queryViolasBalance(localAssets: List<AssetsVo>) {
-        localAssets.filter { it is AssetsLibraCoinVo && it.coinNumber == CoinTypes.Violas.coinType() }
+        localAssets.filter { it is AssetsCoinVo && it.coinNumber == CoinTypes.Violas.coinType() }
             .forEach { assets ->
                 assets as AssetsLibraCoinVo
                 DataRepository.getViolasService().getAccountState(assets.address)?.let {
@@ -635,14 +659,21 @@ class AccountManager {
                         it.delegatedKeyRotationCapability ?: false
                     assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability ?: false
 
+                    val filter =
+                        localAssets.filter { assetsToken -> assetsToken is AssetsTokenVo && assetsToken.getAccountId() == assets.getAccountId() }
+                            .toMap { assetsToken ->
+                                (assetsToken as AssetsTokenVo).module.toUpperCase(Locale.getDefault())
+                            }
                     it.balance?.let { it1 ->
-                        assets.setAmount(it1)
-                        val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
-                            it1,
-                            CoinTypes.parseCoinType(assets.coinNumber)
-                        )
-                        assets.amountWithUnit.amount = convertAmountToDisplayUnit.first
-                        assets.amountWithUnit.unit = convertAmountToDisplayUnit.second
+                        filter["LBR"]?.apply {
+                            setAmount(it1)
+                            val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
+                                it1,
+                                CoinTypes.parseCoinType(assets.coinNumber)
+                            )
+                            amountWithUnit.amount = convertAmountToDisplayUnit.first
+                            amountWithUnit.unit = convertAmountToDisplayUnit.second
+                        }
                     }
 
                 }

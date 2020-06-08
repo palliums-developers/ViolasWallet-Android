@@ -23,17 +23,17 @@ class LaunchActivity : BaseAppActivity(), CoroutineScope by MainScope() {
 
         launch(Dispatchers.IO) {
             delay(1000)
-            if (AccountManager().existsWalletAccount()) {
+//            if (AccountManager().existsWalletAccount()) {
                 withContext(Dispatchers.Main) {
                     MainActivity.start(this@LaunchActivity)
                     finish()
                 }
-            } else {
-                withContext(Dispatchers.Main) {
-                    IdentityActivity.start(this@LaunchActivity)
-                    finish()
-                }
-            }
+//            } else {
+//                withContext(Dispatchers.Main) {
+//                    IdentityActivity.start(this@LaunchActivity)
+//                    finish()
+//                }
+//            }
         }
     }
 }

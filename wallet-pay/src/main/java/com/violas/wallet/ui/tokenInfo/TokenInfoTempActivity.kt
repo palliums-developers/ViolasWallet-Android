@@ -65,7 +65,7 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
                 amount = 10233399,
                 address = "f4174e9eabcb2e968e22da4c75ac653b"
             )
-        mAssetsVo.name = "vtoken"
+        mAssetsVo.setAssetsName("vtoken")
     }
 
     private fun initView() {
@@ -119,7 +119,7 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
             }
         })
 
-        tvTokenName.text = mAssetsVo.name
+        tvTokenName.text = mAssetsVo.getAssetsName()
         tvTokenAmount.text = mAssetsVo.getAmount().toString()
         tvFiatAmount.text = "≈\$0.00"
         tvTokenAddress.text = "dhhoiweidjoiejodjoiejodjo"

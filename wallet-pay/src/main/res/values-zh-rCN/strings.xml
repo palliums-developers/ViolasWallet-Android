@@ -46,8 +46,8 @@
     <string name="copy_success">复制成功</string>
     <string name="hint_insufficient_or_trading_fees_are_confirmed">余额不足或资产还未确认</string>
     <string name="title_colletction">收款</string>
-    <string name="title_import_the_wallet">导入身份</string>
-    <string name="title_create_the_wallet">创建身份</string>
+    <string name="title_import_the_wallet">导入钱包</string>
+    <string name="title_create_the_wallet">创建钱包</string>
     <string name="create_identity">创建身份</string>
     <string name="import_identity">导入身份</string>
     <string name="action_create">创建</string>
@@ -306,10 +306,15 @@
 
     <string name="tips_create_or_import_wallet">请先创建/导入钱包</string>
     <string name="desc_delete_wallet">请谨慎使用此操作，删除前确认你的钱包已安全备份，否则数字资产将无法找回！</string>
+    <string name="hint_wallet_connect_repeated_connection">您已有登录状态的网页钱包，确认登录将强制退出之前的网页钱包</string>
+    <string name="hint_wallet_connect_prompt">网页 Vlolas Pay 正在申请访问你的钱包地址 你确认将钱包地址公开给此网站吗?</string>
+    <string name="wallet_connect_have_landed">网页钱包已登录</string>
+    <string name="main_wallet_total_fiat_balance">总资产</string>
     <string name="action_transfer_nbsp">转&#160;账</string>
     <string name="action_collection_nbsp">收&#160;款</string>
     <string name="action_exchange_nbsp">闪&#160;兑</string>
     <string name="label_transfer_in">转入</string>
     <string name="label_transfer_out">转出</string>
+    <string name="wallet_connect_log_out">退出网页钱包</string>
     <string name="state_trading">交易中</string>
 </resources>

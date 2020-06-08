@@ -136,6 +136,7 @@ open class WCClient(
     ) {
         if (this.session != null && this.session?.topic != session.topic) {
             killSession()
+            Thread.sleep(1500)
         }
 
         this.session = session

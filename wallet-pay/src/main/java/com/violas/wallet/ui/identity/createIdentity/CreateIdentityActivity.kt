@@ -24,22 +24,12 @@ class CreateIdentityActivity : BaseAppActivity() {
 
     override fun getLayoutResId() = R.layout.activity_create_identity
 
-    override fun getTitleStyle(): Int {
-        return TITLE_STYLE_MAIN_COLOR
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_create_the_wallet)
         btnConfirm.setOnClickListener {
-            val walletName = editName.text.toString().trim()
             val password = editPassword.text.toString().trim()
             val passwordConfirm = editConfirmPassword.text.toString().trim()
-
-            if (walletName.isEmpty()) {
-                showToast(getString(R.string.hint_nickname_empty))
-                return@setOnClickListener
-            }
 
             try {
                 PasswordCheckUtil.check(password)
@@ -51,7 +41,6 @@ class CreateIdentityActivity : BaseAppActivity() {
                 launch(Dispatchers.IO) {
                     val mnemonicWords = AccountManager().createIdentity(
                         this@CreateIdentityActivity,
-                        walletName,
                         password.toByteArray()
                     )
                     withContext(Dispatchers.Main) {

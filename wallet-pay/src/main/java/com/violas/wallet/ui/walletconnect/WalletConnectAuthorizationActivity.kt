@@ -34,27 +34,7 @@ import kotlinx.coroutines.withContext
 class WalletConnectAuthorizationActivity : BaseAppActivity() {
 
     companion object {
-        private const val CONNECT_ID = "connect_id"
-        private const val CONNECT_PEER_DATA = "connect_peer_data"
         private const val CONNECT_MSG = "connect_msg"
-
-        private fun getContext(context: Context, result: (Boolean, Context) -> Unit) {
-            var newTaskTag = false
-            val contextWrapper: Context = when (context) {
-                is App -> context.getTopActivity() ?: context.also { newTaskTag = true }
-                is Activity -> context
-                is Fragment -> {
-                    if (context.activity == null) {
-                        newTaskTag = true
-                        context.applicationContext
-                    } else {
-                        context.activity!!
-                    }
-                }
-                else -> context.also { newTaskTag = true }
-            }
-            return result.invoke(newTaskTag, contextWrapper)
-        }
 
         fun startActivity(context: Context, msg: String) {
             context.startActivity(
@@ -64,26 +44,6 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
                 ).apply {
                     putExtra(CONNECT_MSG, msg)
                 })
-        }
-
-        fun startActivity(
-            context: Context,
-            id: Long,
-            peer: WCPeerMeta
-        ) {
-            getContext(context) { newTaskTag, newContext ->
-                newContext.startActivity(
-                    Intent(
-                        context,
-                        WalletConnectAuthorizationActivity::class.java
-                    ).apply {
-                        if (newTaskTag) {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        }
-                        putExtra(CONNECT_ID, id)
-                        putExtra(CONNECT_PEER_DATA, peer)
-                    })
-            }
         }
     }
 
@@ -114,34 +74,10 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
             tvPrivacyPolicy.text = buildUseBehaviorSpan()
         }
 
-        launch(Dispatchers.IO) {
-            if (mWalletConnect.isConnected()) {
-                viewWalletConnectLoginWarning.visibility = View.VISIBLE
-            } else {
-                viewWalletConnectLoginWarning.visibility = View.INVISIBLE
-            }
-//            val parcelableExtra = intent.getParcelableExtra<WCPeerMeta>(CONNECT_PEER_DATA)
-//
-//            if (parcelableExtra != null) {
-//                withContext(Dispatchers.Main) {
-//                    tvScanLoginDescribe.text = String.format(
-//                        getString(R.string.desc_scan_wallet_connect_login_info),
-//                        parcelableExtra.name
-//                    )
-//
-////                    tvScanLoginDescribe.text = parcelableExtra.description
-//                    if (parcelableExtra.icons.isNotEmpty()) {
-//                        Glide.with(this@WalletConnectAuthorizationActivity)
-//                            .load(parcelableExtra.icons[0])
-//                            .centerCrop()
-//                            .placeholder(R.drawable.ic_web)
-//                            .error(R.drawable.ic_web)
-//                            .into(ivDeskIcon)
-//                    }
-//                }
-//            } else {
-//                finish()
-//            }
+        if (mWalletConnect.isConnected()) {
+            viewWalletConnectLoginWarning.visibility = View.VISIBLE
+        } else {
+            viewWalletConnectLoginWarning.visibility = View.INVISIBLE
         }
         mWalletConnect.mWalletConnectSessionListener = object : WalletConnectSessionListener {
             override fun onRequest(id: Long, peer: WCPeerMeta) {
@@ -159,38 +95,29 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
                     }
                     if (mWalletConnect.approveSession(accounts, chainId)) {
                         mRequestHandle = true
-                        viewLoading.visibility = View.GONE
                         finish()
-                    }else{
-                        showToast("连接失败")
+                    } else {
+                        showToast(String.format(getString(R.string.common_http_request_fail), ""))
                     }
+                    dismissProgress()
                 }
             }
         }
-        tvCancel.setOnClickListener {
-            viewLoading.visibility = View.GONE
-            launch(Dispatchers.IO) {
-                mWalletConnect.mWCClient.disconnect()
-            }
-        }
         btnConfirmLogin.setOnClickListener {
-            viewLoading.visibility = View.VISIBLE
+            showProgress()
             launch(Dispatchers.IO) {
                 mWalletConnect.connect(mMsg)
             }
+            btnConfirmLogin.postDelayed({
+                dismissProgress()
+                showToast(String.format(getString(R.string.common_http_request_fail), ""))
+                launch(Dispatchers.IO) {
+                    mWalletConnect.mWCClient.disconnect()
+                }
+            }, 10 * 1000)
         }
         tvCancelLogin.setOnClickListener {
             finish()
-//            launch {
-//                showProgress()
-//                withContext(Dispatchers.IO) {
-//                    if (mWalletConnect.rejectSession("reject")) {
-//                        mRequestHandle = true
-//                        finish()
-//                    }
-//                }
-//                dismissProgress()
-//            }
         }
     }
 

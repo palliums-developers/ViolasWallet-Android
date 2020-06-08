@@ -1,13 +1,16 @@
 package com.violas.wallet.ui.main.wallet
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
 import androidx.biometric.BiometricManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +18,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.show
@@ -22,16 +28,20 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.event.BackupIdentityMnemonicEvent
+import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
 import com.violas.wallet.ui.collection.CollectionActivity
+import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
+import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
+import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
@@ -39,13 +49,14 @@ import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
-import com.violas.wallet.walletconnect.WalletConnect
 import com.violas.wallet.walletconnect.WalletConnectStatus
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
 import kotlinx.coroutines.*
+import me.jessyan.autosize.AutoSize
+import me.jessyan.autosize.utils.AutoSizeUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -98,8 +109,16 @@ class WalletFragment : BaseFragment() {
             swipeRefreshLayout.isRefreshing = it
         })
         mWalletAppViewModel?.mAssetsListLiveData?.observe(this, Observer {
-            mAssertAdapter.submitList(it)
-            mWalletViewModel.calculateFiat(it)
+            val filter =
+                it.filter {
+                    if (it !is AssetsCoinVo) {
+                        true
+                    } else {
+                        it.accountType != AccountType.NoDollars
+                    }
+                }
+            mAssertAdapter.submitList(filter)
+            mWalletViewModel.calculateFiat(filter)
         })
         mWalletAppViewModel?.mExistsAccountLiveData?.observe(this, Observer {
             if (it) {
@@ -132,23 +151,20 @@ class WalletFragment : BaseFragment() {
                     viewWalletConnect.visibility = View.GONE
                 }
                 WalletConnectStatus.Login -> {
-                    tvWalletConnectStatus.text = "网页钱包已登录"
+                    tvWalletConnectStatus.text = getString(R.string.wallet_connect_have_landed)
                     viewWalletConnect.visibility = View.VISIBLE
                 }
             }
         })
-        // 初始化钱包当作是切换钱包逻辑
-//        refreshAssert(true)
+        viewWalletConnect.setOnClickListener {
+            activity?.let { it1 -> WalletConnectManagerActivity.startActivity(it1) }
+        }
 
         ivAddAssert.setOnClickListener(this)
-//        ivCopy.setOnClickListener(this)
         ivScan.setOnClickListener(this)
-//        ivWalletInfo.setOnClickListener(this)
-//        layoutWalletType.setOnClickListener(this)
-//        btnCollection.setOnClickListener(this)
-//        btnTransfer.setOnClickListener(this)
-//        vCrossChainExchangeLayout.setOnClickListener(this)
-//        vTransactionRecordLayout.setOnClickListener(this)
+        viewCreateAccount.setOnClickListener(this)
+        viewImportAccount.setOnClickListener(this)
+
 
         if (mAccountManager.isFastIntoWallet()) {
             FastIntoWalletDialog()
@@ -219,7 +235,12 @@ class WalletFragment : BaseFragment() {
                     ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
                 }
             }
-
+            R.id.viewCreateAccount -> {
+                activity?.let { CreateIdentityActivity.start(it) }
+            }
+            R.id.viewImportAccount -> {
+                activity?.let { ImportIdentityActivity.start(it) }
+            }
 //            R.id.ivWalletInfo -> {
 //                launch(Dispatchers.IO) {
 //                    val currentAccount = mAccountManager.currentAccount()
@@ -397,7 +418,6 @@ class AssertAdapter(
                 oldItem.fiatAmountWithUnit.unit == newItem.fiatAmountWithUnit.unit &&
                 oldItem.fiatAmountWithUnit.symbol == newItem.fiatAmountWithUnit.symbol &&
                 oldItem.fiatAmountWithUnit.amount == newItem.fiatAmountWithUnit.amount &&
-                oldItem.name == newItem.name &&
                 oldItem.getAmount() == newItem.getAmount() &&
                 oldItem.getAssetsName() == newItem.getAssetsName() &&
                 oldItem.getAccountId() == newItem.getAccountId() &&
@@ -429,12 +449,39 @@ class AssertAdapter(
         }
     }
 
+    private fun loadTransform(
+        context: Context,
+        @DrawableRes placeholderId: Int,
+        radius: Int
+    ): RequestBuilder<Drawable?>? {
+        return Glide.with(context)
+            .load(placeholderId)
+            .apply(RequestOptions.bitmapTransform(RoundedCorners(radius)))
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemData = getItem(position)
         Glide.with(holder.itemView.context)
             .load(itemData.getLogoUrl())
             .error(R.drawable.assets_default)
             .placeholder(R.drawable.assets_default)
+            .thumbnail(
+                loadTransform(
+                    holder.itemView.context,
+                    R.drawable.assets_default,
+                    AutoSizeUtils.dp2px(holder.itemView.context, 14F)
+                )
+            )
+            .apply(
+                RequestOptions.bitmapTransform(
+                    RoundedCorners(
+                        AutoSizeUtils.dp2px(
+                            holder.itemView.context,
+                            14F
+                        )
+                    )
+                )
+            )
             .into(holder.itemView.ivLogo)
         holder.itemView.tvName.text = itemData.getAssetsName()
 

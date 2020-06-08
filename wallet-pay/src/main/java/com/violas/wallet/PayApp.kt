@@ -9,6 +9,7 @@ import com.violas.wallet.walletconnect.WalletConnect
 
 class PayApp : App() {
     override fun onCreate() {
+        System.setProperty("kotlinx.coroutines.debug", "on")
         super.onCreate()
         Bugly.init(applicationContext, "f4d9c546fa", false)
         resetWalletConnect()
