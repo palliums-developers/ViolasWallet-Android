@@ -6,6 +6,8 @@ import org.palliums.libracore.BuildConfig
 import org.palliums.libracore.crypto.*
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.*
+import org.palliums.libracore.transaction.storage.TypeTag
+import org.palliums.libracore.transaction.storage.TypeTagStructTag
 import org.palliums.libracore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -27,7 +29,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
      * 适用于有私钥的情况下使用该方法
      *
      * @param payload 交易内容，通常情况下一般使用 @{link TransactionPayload.Script}
-     * @param keyPair 公钥，单签使用 {@link Ed25519KeyPair}，多签使用{@link MultiEd25519KeyPair}
+     * @param account 公钥，单签使用 {@link Ed25519KeyPair}，多签使用{@link MultiEd25519KeyPair}
      * @param sequenceNumber 账户 sequenceNumber
      * @param maxGasAmount 该交易可使用的最大 gas 数量
      * @param gasUnitPrice gas 的价格
@@ -38,6 +40,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         payload: TransactionPayload,
         account: Account,
         sequenceNumber: Long = -1,
+        gasCurrencyCode: String = lbrStructTagType(),
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
         delayed: Long = 1000
@@ -56,7 +59,13 @@ class LibraService(private val mLibraRepository: LibraRepository) {
             sequenceNumber = accountState.sequenceNumber
         }
         val rawTransaction = RawTransaction.optionTransaction(
-            senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
+            senderAddress.toHex(),
+            payload,
+            sequenceNumber,
+            gasCurrencyCode,
+            maxGasAmount,
+            gasUnitPrice,
+            delayed
         )
         sendTransaction(
             rawTransaction.toByteArray().toHex(),
@@ -108,18 +117,19 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         mLibraRepository.submitTransaction(hexSignedTransaction)
     }
 
-    suspend fun sendCoin(
+    suspend fun sendLibraToken(
         context: Context,
         account: Account,
         address: String,
-        amount: Long
+        amount: Long,
+        typeTag: TypeTag = lbrStructTag(),
+        gasCurrencyCode: String = lbrStructTagType()
     ) {
         val transactionPayload =
             TransactionPayload.optionTransactionPayload(
-                context, address, amount
+                context, address, amount, typeTag = typeTag
             )
-
-        sendTransaction(transactionPayload, account)
+        sendTransaction(transactionPayload, account, gasCurrencyCode = gasCurrencyCode)
     }
 
     suspend fun getBalance(address: String): String {

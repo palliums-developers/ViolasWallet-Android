@@ -39,6 +39,7 @@ import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
+import com.violas.wallet.ui.tokenInfo.TokenInfoTempActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
@@ -89,6 +90,14 @@ class WalletFragment : BaseFragment() {
     private val mEnableTokens = mutableListOf<AssertToken>()
     private val mAssertAdapter by lazy {
         AssertAdapter {
+            activity?.let { it1 ->
+
+                TransferActivity.start(
+                    it1,
+                    it
+                )
+            }
+//            activity?.let { it1 -> TokenInfoTempActivity.start(it1, it) }
             showToast(it.getAssetsName())
 //            TokenInfoActivity.start(this@WalletFragment, it.id, REQUEST_TOKEN_INFO)
         }
@@ -267,10 +276,10 @@ class WalletFragment : BaseFragment() {
             R.id.btnTransfer -> {
                 launch(Dispatchers.IO) {
                     activity?.let { it1 ->
-                        TransferActivity.start(
-                            it1,
-                            mAccountManager.currentAccount().id
-                        )
+//                        TransferActivity.start(
+//                            it1,
+//                            mAccountManager.currentAccount().id
+//                        )
                     }
                 }
             }

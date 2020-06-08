@@ -143,14 +143,14 @@ class TokenInfoActivity : BaseAppActivity() {
 
             R.id.btnTransfer -> {
                 launch(Dispatchers.IO) {
-                    TransferActivity.start(
-                        this@TokenInfoActivity,
-                        mTokenDo.account_id,
-                        "",
-                        0,
-                        true,
-                        mTokenDo.id!!
-                    )
+//                    TransferActivity.start(
+//                        this@TokenInfoActivity,
+//                        mTokenDo.account_id,
+//                        "",
+//                        0,
+//                        true,
+//                        mTokenDo.id!!
+//                    )
                 }
             }
 

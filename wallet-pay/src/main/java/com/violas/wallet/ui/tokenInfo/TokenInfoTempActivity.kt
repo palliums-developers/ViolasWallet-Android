@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.tokenInfo
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.os.Bundle
