@@ -1,9 +1,15 @@
 package com.violas.wallet.ui.transactionDetails
 
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewTreeObserver
@@ -26,9 +32,22 @@ import com.violas.wallet.ui.web.WebCommonActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.activity_transaction_details.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.android.synthetic.main.activity_transaction_details.clDetails
+import kotlinx.android.synthetic.main.activity_transaction_details.ivState
+import kotlinx.android.synthetic.main.activity_transaction_details.llPaymentAddress
+import kotlinx.android.synthetic.main.activity_transaction_details.llReceiptAddress
+import kotlinx.android.synthetic.main.activity_transaction_details.llTransactionNumber
+import kotlinx.android.synthetic.main.activity_transaction_details.tvAmount
+import kotlinx.android.synthetic.main.activity_transaction_details.tvDesc
+import kotlinx.android.synthetic.main.activity_transaction_details.tvGas
+import kotlinx.android.synthetic.main.activity_transaction_details.tvPaymentAddress
+import kotlinx.android.synthetic.main.activity_transaction_details.tvReceiptAddress
+import kotlinx.android.synthetic.main.activity_transaction_details.tvTime
+import kotlinx.android.synthetic.main.activity_transaction_details.tvTransactionNumber
+import kotlinx.coroutines.*
 import me.yokeyword.fragmentation.SupportActivity
+import java.io.File
+import java.io.OutputStream
 
 /**
  * Created by elephant on 2020/6/8 15:05.
@@ -76,8 +95,13 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.app_bar_share -> {
-                // TODO 展示分享弹窗
-                showToast(R.string.title_share)
+                ShareTransactionDetailsDialog.start(
+                    supportFragmentManager, mTransactionRecordVO
+                ) {
+                    when (it) {
+                        0 -> saveIntoAlbum()
+                    }
+                }
             }
         }
         return true
@@ -126,7 +150,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     }
 
     private fun initView(record: TransactionRecordVO) {
-        StatusBarUtil.setLightStatusBarMode(this, true)
+        StatusBarUtil.setLightStatusBarMode(this.window, true)
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -236,6 +260,78 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     private fun noneContent(textView: TextView) {
         textView.text = "— —"
         textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+    }
+
+    private fun saveIntoAlbum() {
+        launch {
+            showProgress()
+
+            val result = withContext(Dispatchers.IO) {
+                val bitmap = viewConversionBitmap()
+                return@withContext saveBitmap(bitmap, "${System.currentTimeMillis()}.png")
+            }
+
+            delay(500)
+
+            dismissProgress()
+            if (result) {
+                showToast(R.string.tips_save_into_album_success)
+            } else {
+                showToast(R.string.tips_save_into_album_failure)
+            }
+        }
+    }
+
+    private fun viewConversionBitmap(): Bitmap {
+        val width = clDetails.width
+        val height = clDetails.height
+
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        canvas.drawColor(Color.WHITE)
+        clDetails.draw(canvas)
+
+        return bitmap
+    }
+
+    private fun saveBitmap(bitmap: Bitmap, fileName: String): Boolean {
+        var outputStream: OutputStream? = null
+        try {
+            val picDir =
+                this.getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: return false
+
+            if (!picDir.exists()) {
+                picDir.mkdirs()
+            }
+
+            val picPath = File(picDir, fileName).absolutePath
+            val contentValues = ContentValues()
+            contentValues.put(MediaStore.Images.ImageColumns.DATA, picPath)
+            contentValues.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, fileName)
+            contentValues.put(MediaStore.Images.ImageColumns.MIME_TYPE, "image/png")
+            contentValues.put(MediaStore.Images.ImageColumns.DATE_TAKEN, System.currentTimeMillis())
+
+            val contentResolver = this.contentResolver
+            val uri = contentResolver.insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                contentValues
+            ) ?: return false
+
+            outputStream = contentResolver.openOutputStream(uri)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            return true
+        } catch (e: Exception) {
+            return false
+        } finally {
+            try {
+                outputStream?.let {
+                    it.flush()
+                    it.close()
+                }
+            } catch (ignore: Exception) {
+            }
+        }
     }
 
     override fun attachBaseContext(newBase: Context) {

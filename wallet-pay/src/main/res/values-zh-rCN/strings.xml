@@ -334,4 +334,7 @@
     <string name="desc_transaction_state_transaction_failure">交易失败</string>
     <string name="desc_view_by_browser">浏览器查询更详细信息 ></string>
     <string name="title_share">分享</string>
+    <string name="desc_save_into_album">保存到相册</string>
+    <string name="tips_save_into_album_success">已保存到相册</string>
+    <string name="tips_save_into_album_failure">保存到相册失败</string>
 </resources>

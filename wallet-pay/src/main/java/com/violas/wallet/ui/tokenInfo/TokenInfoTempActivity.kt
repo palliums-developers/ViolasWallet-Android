@@ -70,7 +70,7 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
     }
 
     private fun initView() {
-        StatusBarUtil.setLightStatusBarMode(this, true)
+        StatusBarUtil.setLightStatusBarMode(this.window, true)
 
         setSupportActionBar(toolbar)
         toolbar.viewTreeObserver.addOnGlobalLayoutListener(object :

@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Build
 import android.text.TextUtils
 import android.view.View
+import android.view.Window
 import android.view.WindowManager
 import com.palliums.content.ContextProvider
 import java.io.IOException
@@ -42,27 +43,26 @@ class StatusBarUtil {
 
         /**
          * 设置状态是否显示浅色模式（深色字体）
-         * @param activity
+         * @param window
          * @param light 是否为浅色模式
          */
         @JvmStatic
-        fun setLightStatusBarMode(activity: Activity, light: Boolean) {
+        fun setLightStatusBarMode(window: Window, light: Boolean) {
             if (isMIUI()) {
-                setStatusBarLightModeForMIUI(activity, light)
+                setStatusBarLightModeForMIUI(window, light)
             } else if (isFlyme()) {
-                setStatusBarLightModeForFlyme(activity, light)
+                setStatusBarLightModeForFlyme(window, light)
             }
 
             //6.0 +
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                lightStatusBarMode(activity, light)
+                lightStatusBarMode(window, light)
             }
         }
 
         @TargetApi(23)
-        private fun lightStatusBarMode(activity: Activity, enable: Boolean) {
-            val decorView = activity.window.decorView
-            var visibility = decorView.systemUiVisibility
+        private fun lightStatusBarMode(window: Window, enable: Boolean) {
+            var visibility = window.decorView.systemUiVisibility
 
             visibility = if (enable) {
                 visibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -70,7 +70,7 @@ class StatusBarUtil {
                 visibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
             }
 
-            decorView.systemUiVisibility = visibility
+            window.decorView.systemUiVisibility = visibility
         }
 
         /**
@@ -80,60 +80,55 @@ class StatusBarUtil {
          * @param dark     是否把状态栏字体及图标颜色设置为深色
          * @return boolean 成功执行返回true
          */
-        private fun setStatusBarLightModeForMIUI(activity: Activity, dark: Boolean): Boolean {
+        private fun setStatusBarLightModeForMIUI(window: Window, dark: Boolean): Boolean {
             var result = false
-            val window = activity.window
-            activity.window?.let {
-                try {
-                    val clazz = window.javaClass
-                    val layoutParams = Class.forName("android.view.MiuiWindowManager\$LayoutParams")
-                    val field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE")
-                    val darkModeFlag = field.getInt(layoutParams)
-                    val extraFlagField = clazz.getMethod(
-                        "setExtraFlags",
-                        Int::class.javaPrimitiveType,
-                        Int::class.javaPrimitiveType
-                    )
-                    if (dark) {
-                        extraFlagField.invoke(window, darkModeFlag, darkModeFlag)//状态栏透明且黑色字体
-                    } else {
-                        extraFlagField.invoke(window, 0, darkModeFlag)//清除黑色字体
-                    }
-
-                    result = true
-                } catch (e: Exception) {
-                    // ignore
+            try {
+                val clazz = window.javaClass
+                val layoutParams = Class.forName("android.view.MiuiWindowManager\$LayoutParams")
+                val field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE")
+                val darkModeFlag = field.getInt(layoutParams)
+                val extraFlagField = clazz.getMethod(
+                    "setExtraFlags",
+                    Int::class.javaPrimitiveType,
+                    Int::class.javaPrimitiveType
+                )
+                if (dark) {
+                    extraFlagField.invoke(window, darkModeFlag, darkModeFlag)//状态栏透明且黑色字体
+                } else {
+                    extraFlagField.invoke(window, 0, darkModeFlag)//清除黑色字体
                 }
+
+                result = true
+            } catch (e: Exception) {
+                // ignore
             }
 
             return result
         }
 
-        private fun setStatusBarLightModeForFlyme(activity: Activity, dark: Boolean): Boolean {
+        private fun setStatusBarLightModeForFlyme(window: Window, dark: Boolean): Boolean {
             var result = false
-            activity.window?.let {
-                try {
-                    val layoutParams = it.attributes
-                    val darkFlag = WindowManager.LayoutParams::class.java
-                        .getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON")
-                    val meizuFlags = WindowManager.LayoutParams::class.java
-                        .getDeclaredField("meizuFlags")
-                    darkFlag.isAccessible = true
-                    meizuFlags.isAccessible = true
-                    val bit = darkFlag.getInt(null)
-                    var value = meizuFlags.getInt(layoutParams)
-                    value = if (dark) {
-                        value or bit
-                    } else {
-                        value and bit.inv()
-                    }
-                    meizuFlags.setInt(layoutParams, value)
-                    it.attributes = layoutParams
-
-                    result = true
-                } catch (e: Exception) {
-                    // ignore
+            try {
+                val layoutParams = window.attributes
+                val darkFlag = WindowManager.LayoutParams::class.java
+                    .getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON")
+                val meizuFlags = WindowManager.LayoutParams::class.java
+                    .getDeclaredField("meizuFlags")
+                darkFlag.isAccessible = true
+                meizuFlags.isAccessible = true
+                val bit = darkFlag.getInt(null)
+                var value = meizuFlags.getInt(layoutParams)
+                value = if (dark) {
+                    value or bit
+                } else {
+                    value and bit.inv()
                 }
+                meizuFlags.setInt(layoutParams, value)
+                window.attributes = layoutParams
+
+                result = true
+            } catch (e: Exception) {
+                // ignore
             }
 
             return result
