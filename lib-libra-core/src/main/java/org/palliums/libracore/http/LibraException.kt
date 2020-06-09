@@ -42,5 +42,10 @@ abstract class LibraException : RuntimeException() {
      * 节点反应失败
      */
     class NodeResponseException : LibraException()
+
+    /**
+     * 币种不存在
+     */
+    class CurrencyNotExistException : LibraException()
 }
 

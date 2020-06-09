@@ -1,9 +1,7 @@
 package com.violas.wallet.biz
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.WorkerThread
-import com.palliums.content.ContextProvider
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.exceptions.RequestException
 import com.palliums.utils.exceptionAsync
@@ -24,7 +22,6 @@ import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.*
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount
@@ -565,23 +562,27 @@ class AccountManager {
             }
         }
 
+        val localCoinMap = loadAll.toMap { accountDO -> accountDO.id.toString() }
         val localTokenAssets = mAccountTokenStorage.loadAll()
 
         localTokenAssets.forEach {
-            localAssets.add(
-                AssetsTokenVo(
-                    it.id!!,
-                    it.account_id,
-                    it.address,
-                    it.module,
-                    it.name,
-                    it.enable,
-                    it.amount,
-                    it.logo
-                ).also { tokenVo ->
-                    tokenVo.setAssetsName(it.assetsName)
-                }
-            )
+            if (localCoinMap.containsKey(it.account_id.toString())) {
+                localAssets.add(
+                    AssetsTokenVo(
+                        it.id!!,
+                        it.account_id,
+                        localCoinMap[it.account_id.toString()]?.coinNumber ?: 0,
+                        it.address,
+                        it.module,
+                        it.name,
+                        it.enable,
+                        it.amount,
+                        it.logo
+                    ).also { tokenVo ->
+                        tokenVo.setAssetsName(it.assetsName)
+                    }
+                )
+            }
         }
 
         return localAssets
@@ -600,7 +601,7 @@ class AccountManager {
     }
 
     private fun queryBTCBalance(localAssets: List<AssetsVo>) {
-        localAssets.filter { it is AssetsCoinVo && (it.coinNumber == CoinTypes.BitcoinTest.coinType() || it.coinNumber == CoinTypes.Bitcoin.coinType()) }
+        localAssets.filter { it is AssetsCoinVo && (it.getCoinNumber() == CoinTypes.BitcoinTest.coinType() || it.getCoinNumber() == CoinTypes.Bitcoin.coinType()) }
             .forEach { assets ->
                 assets as AssetsCoinVo
                 val subscribe = DataRepository.getBitcoinService()
@@ -609,7 +610,7 @@ class AccountManager {
                         assets.setAmount(balance.toLong())
                         val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
                             balance.toLong(),
-                            CoinTypes.parseCoinType(assets.coinNumber)
+                            CoinTypes.parseCoinType(assets.getCoinNumber())
                         )
                         assets.amountWithUnit.amount = convertAmountToDisplayUnit.first
                         assets.amountWithUnit.unit = convertAmountToDisplayUnit.second
@@ -620,7 +621,7 @@ class AccountManager {
     }
 
     private suspend fun queryLibraBalance(localAssets: List<AssetsVo>) {
-        localAssets.filter { it is AssetsLibraCoinVo && it.coinNumber == CoinTypes.Libra.coinType() }
+        localAssets.filter { it is AssetsLibraCoinVo && it.getCoinNumber() == CoinTypes.Libra.coinType() }
             .forEach { assets ->
                 assets as AssetsLibraCoinVo
                 DataRepository.getLibraService().getAccountState(assets.address)?.let { it ->
@@ -639,7 +640,7 @@ class AccountManager {
                             setAmount(balance.amount)
                             val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
                                 balance.amount,
-                                CoinTypes.parseCoinType(assets.coinNumber)
+                                CoinTypes.parseCoinType(assets.getCoinNumber())
                             )
                             amountWithUnit.amount = convertAmountToDisplayUnit.first
                             amountWithUnit.unit = convertAmountToDisplayUnit.second
@@ -650,7 +651,7 @@ class AccountManager {
     }
 
     private suspend fun queryViolasBalance(localAssets: List<AssetsVo>) {
-        localAssets.filter { it is AssetsCoinVo && it.coinNumber == CoinTypes.Violas.coinType() }
+        localAssets.filter { it is AssetsCoinVo && it.getCoinNumber() == CoinTypes.Violas.coinType() }
             .forEach { assets ->
                 assets as AssetsLibraCoinVo
                 DataRepository.getViolasService().getAccountState(assets.address)?.let {
@@ -669,7 +670,7 @@ class AccountManager {
                             setAmount(it1)
                             val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
                                 it1,
-                                CoinTypes.parseCoinType(assets.coinNumber)
+                                CoinTypes.parseCoinType(assets.getCoinNumber())
                             )
                             amountWithUnit.amount = convertAmountToDisplayUnit.first
                             amountWithUnit.unit = convertAmountToDisplayUnit.second

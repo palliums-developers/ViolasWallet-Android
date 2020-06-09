@@ -13,7 +13,11 @@ import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
 import com.violas.wallet.utils.validationViolasAddress
+import com.violas.walletconnect.extensions.hexStringToByteArray
 import org.palliums.libracore.http.LibraException
+import org.palliums.libracore.transaction.AccountAddress
+import org.palliums.libracore.transaction.storage.StructTag
+import org.palliums.libracore.transaction.storage.TypeTag
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
@@ -108,6 +112,7 @@ class TransferManager {
                     amount,
                     privateKey,
                     accountDO,
+                    tokenId,
                     success,
                     error
                 )
@@ -215,17 +220,32 @@ class TransferManager {
         amount: Double,
         decryptPrivateKey: ByteArray,
         account: AccountDO,
+        tokenId: Long,
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
         try {
-            DataRepository.getLibraService().sendCoin(
+            val token = DataRepository.getTokenStorage().findById(tokenId)
+            if (token == null) {
+                error.invoke(LibraException.CurrencyNotExistException())
+                return
+            }
+            DataRepository.getLibraService().sendLibraToken(
                 context,
                 org.palliums.libracore.wallet.Account(
                     org.palliums.libracore.crypto.Ed25519KeyPair(decryptPrivateKey)
                 ),
                 address,
-                (amount * 1000000L).toLong()
+                (amount * 1000000L).toLong(),
+                TypeTag.newStructTag(
+                    StructTag(
+                        AccountAddress(token.address.hexStringToByteArray()),
+                        token.module,
+                        token.name,
+                        arrayListOf()
+                    )
+                ),
+                token.module
             )
             success.invoke("")
         } catch (e: Exception) {

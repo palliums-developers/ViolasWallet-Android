@@ -172,7 +172,7 @@ class TransferManager {
         error: (Throwable) -> Unit
     ) {
         try {
-            DataRepository.getLibraService().sendCoin(
+            DataRepository.getLibraService().sendLibraToken(
                 context,
                 org.palliums.libracore.wallet.Account(
                     org.palliums.libracore.crypto.Ed25519KeyPair(decryptPrivateKey)

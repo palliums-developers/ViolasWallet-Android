@@ -3,6 +3,7 @@ package com.violas.wallet.ui.transfer
 import android.accounts.AccountsException
 import android.os.Bundle
 import android.text.AmountInputFilter
+import androidx.lifecycle.Observer
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
@@ -14,6 +15,9 @@ import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertViolasTokenUnit
+import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.bean.AssetsCoinVo
+import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,48 +28,66 @@ import java.math.BigDecimal
 class LibraTransferActivity : TransferActivity() {
     override fun getLayoutResId() = R.layout.activity_transfer
 
-    private val mTokenManager by lazy {
-        TokenManager()
-    }
-
-    private var mTokenDo: TokenDo? = null
     private var mBalance: BigDecimal? = null
+    private lateinit var mAssetsVo: AssetsVo
+
+    private val mWalletAppViewModel by lazy {
+        WalletAppViewModel.getViewModelInstance(this@LibraTransferActivity)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_transfer)
-        accountId = intent.getLongExtra(EXT_ACCOUNT_ID, 0)
-        tokenId = intent.getLongExtra(EXT_TOKEN_ID, 0)
+        assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
+        coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
         isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
-        launch(Dispatchers.IO) {
-            try {
-                account = mAccountManager.getAccountById(accountId)
-                mTokenDo = mTokenManager.findTokenById(tokenId)
-                refreshCurrentAmount()
-                val amount = intent.getLongExtra(
-                    EXT_AMOUNT,
-                    0
-                )
 
-                val parseCoinType = CoinTypes.parseCoinType(account!!.coinNumber)
-                withContext(Dispatchers.Main) {
-                    if (amount > 0) {
-                        val convertAmountToDisplayUnit =
-                            convertAmountToDisplayUnit(amount, parseCoinType)
-                        editAmountInput.setText(convertAmountToDisplayUnit.first)
-                    }
-                    if (isToken) {
-                        title = "${mTokenDo?.name ?: ""} ${getString(R.string.transfer)}"
-                        tvHintCoinName.text = mTokenDo?.name ?: ""
-                    } else {
-                        title = "${parseCoinType.coinName()} ${getString(R.string.transfer)}"
-                        tvHintCoinName.text = parseCoinType.coinName()
-                    }
+        mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
+            var exists = false
+            for (item in it) {
+                val isCoinTrue =
+                    assetsName == null && item is AssetsCoinVo && item.getCoinNumber() == coinNumber
+                val isTokenTrue =
+                    assetsName != null && item !is AssetsCoinVo && item.getCoinNumber() == coinNumber && item.getAssetsName() == assetsName
+                if (isCoinTrue || isTokenTrue) {
+                    mAssetsVo = item
+                    exists = true
+                    break
                 }
-            } catch (e: AccountsException) {
+            }
+            if (!exists) {
+                showToast(getString(R.string.hint_unsupported_tokens))
                 finish()
             }
-        }
+            launch(Dispatchers.IO) {
+                try {
+                    account = mAccountManager.getAccountById(mAssetsVo.getAccountId())
+                    refreshCurrentAmount()
+                    val amount = intent.getLongExtra(
+                        EXT_AMOUNT,
+                        0
+                    )
+
+                    val parseCoinType = CoinTypes.parseCoinType(account!!.coinNumber)
+                    withContext(Dispatchers.Main) {
+                        if (amount > 0) {
+                            val convertAmountToDisplayUnit =
+                                convertAmountToDisplayUnit(amount, parseCoinType)
+                            editAmountInput.setText(convertAmountToDisplayUnit.first)
+                        }
+                        if (isToken) {
+                            title = "${mAssetsVo.getAssetsName()} ${getString(R.string.transfer)}"
+                            tvHintCoinName.text = mAssetsVo.getAssetsName()
+                        } else {
+                            title = "${parseCoinType.coinName()} ${getString(R.string.transfer)}"
+                            tvHintCoinName.text = parseCoinType.coinName()
+                        }
+                    }
+                } catch (e: AccountsException) {
+                    finish()
+                }
+            }
+        })
         initViewData()
         editAmountInput.filters = arrayOf(AmountInputFilter(12, 6))
         ivScan.setOnClickListener {
@@ -87,36 +109,22 @@ class LibraTransferActivity : TransferActivity() {
         }
     }
 
+    private fun initViewData() {
+        editAddressInput.setText(intent.getStringExtra(EXT_ADDRESS))
+    }
+
     private suspend fun refreshCurrentAmount() {
-        account?.let {
-            showProgress()
-            if (isToken) {
-                mTokenDo?.apply {
-                    val tokenAmount = mTokenManager.getTokenBalance(it.address, this)
-                    withContext(Dispatchers.Main) {
-                        val displayAmount = convertViolasTokenUnit(tokenAmount)
-                        tvCoinAmount.text = String.format(
-                            getString(R.string.hint_transfer_amount),
-                            displayAmount,
-                            name
-                        )
-                        mBalance = BigDecimal(displayAmount)
-                        dismissProgress()
-                    }
-                }
-            } else {
-                val balanceWithUnit = mAccountManager.getBalanceWithUnit(it)
-                withContext(Dispatchers.Main) {
-                    tvCoinAmount.text = String.format(
-                        getString(R.string.hint_transfer_amount),
-                        balanceWithUnit.first,
-                        balanceWithUnit.second
-                    )
-                    mBalance = BigDecimal(balanceWithUnit.first)
-                    dismissProgress()
-                }
-            }
+        mWalletAppViewModel.refreshAssetsList()
+        withContext(Dispatchers.Main) {
+            mAssetsVo.amountWithUnit
+            tvCoinAmount.text = String.format(
+                getString(R.string.hint_transfer_amount),
+                mAssetsVo.amountWithUnit.amount,
+                mAssetsVo.amountWithUnit.unit
+            )
         }
+
+        mBalance = BigDecimal(mAssetsVo.getAmount())
     }
 
     private fun checkBalance(): Boolean {
@@ -169,7 +177,7 @@ class LibraTransferActivity : TransferActivity() {
                     account!!,
                     sbQuota.progress,
                     isToken,
-                    tokenId,
+                    mAssetsVo.getId(),
                     {
                         showToast(getString(R.string.hint_transfer_broadcast_success))
                         EventBus.getDefault().post(RefreshBalanceEvent())
@@ -184,10 +192,6 @@ class LibraTransferActivity : TransferActivity() {
                     })
             }
         }
-    }
-
-    private fun initViewData() {
-        editAddressInput.setText(intent.getStringExtra(EXT_ADDRESS))
     }
 
     override fun onSelectAddress(address: String) {

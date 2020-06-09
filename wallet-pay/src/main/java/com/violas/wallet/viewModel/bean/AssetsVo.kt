@@ -2,6 +2,7 @@ package com.violas.wallet.viewModel.bean
 
 import com.violas.wallet.repository.database.entity.AccountType
 
+// todo 暂时使用 Serializable
 abstract class AssetsVo {
     val amountWithUnit: AmountWithUnit = AmountWithUnit("0.00", "")
     val fiatAmountWithUnit: FiatAmountWithUnit = FiatAmountWithUnit(0, "$", "")
@@ -17,8 +18,7 @@ abstract class AssetsVo {
     abstract fun getAmount(): Long
     abstract fun setAmount(amount: Long)
     abstract fun getLogoUrl(): String
-
-
+    abstract fun getCoinNumber(): Int
 }
 
 data class FiatAmountWithUnit(
@@ -36,7 +36,7 @@ open class AssetsCoinVo(
     private val id: Long,
     var publicKey: String = "",
     var authKeyPrefix: String = "",
-    var coinNumber: Int = 0,
+    private val coinNumber: Int,
     var address: String = "",
     private var amount: Long = 0,
     var accountType: AccountType = AccountType.Normal,
@@ -51,6 +51,7 @@ open class AssetsCoinVo(
     }
 
     override fun getLogoUrl() = logo
+    override fun getCoinNumber(): Int = coinNumber
 }
 
 class AssetsLibraCoinVo(
@@ -76,7 +77,8 @@ class AssetsLibraCoinVo(
 
 data class AssetsTokenVo(
     private val id: Long,
-    private val account_id: Long,
+    private val accountId: Long,
+    private val coinNumber: Int,
     val address: String = "00000000000000000000000000000000",
     val module: String = "LBR",
     val name: String = "T",
@@ -85,11 +87,12 @@ data class AssetsTokenVo(
     private var logo: String = ""
 ) : AssetsVo() {
     override fun getId() = id
-    override fun getAccountId() = account_id
+    override fun getAccountId() = accountId
     override fun getAmount() = amount
     override fun setAmount(amount: Long) {
         this.amount = amount
     }
 
+    override fun getCoinNumber(): Int = coinNumber
     override fun getLogoUrl() = logo
 }
