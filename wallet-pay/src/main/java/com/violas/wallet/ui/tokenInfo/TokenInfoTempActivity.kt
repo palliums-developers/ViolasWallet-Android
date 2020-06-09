@@ -99,7 +99,7 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
         }
 
         title = null
-        tvTitle.text = mAssetsVo.name
+        tvTitle.text = mAssetsVo.getAssetsName()
         collapsingToolbarLayout.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
             override fun onLayoutChange(
                 v: View?,

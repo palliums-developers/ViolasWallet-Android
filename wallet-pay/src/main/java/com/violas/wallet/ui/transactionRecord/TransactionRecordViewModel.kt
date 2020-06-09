@@ -82,7 +82,7 @@ class TransactionRecordViewModel(
                     else -> TransactionState.PENDING
                 },
                 time = System.currentTimeMillis(),
-                address = "${address}00$id",
+                fromAddress = "${address}00$id",
                 amount = Random.nextLong(100000).toString(),
                 gas = "0",
                 url = "https://www.baidu.com/"

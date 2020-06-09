@@ -95,7 +95,7 @@ class ViolasBizService(
                 transactionType = transactionType,
                 transactionState = transactionState,
                 time = dto.expiration_time,
-                address = showAddress,
+                fromAddress = showAddress,
                 amount = dto.amount,
                 gas = dto.gas,
                 url = BaseBrowserUrl.getViolasBrowserUrl(dto.version.toString())

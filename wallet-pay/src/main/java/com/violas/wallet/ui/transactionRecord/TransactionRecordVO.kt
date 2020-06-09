@@ -1,6 +1,8 @@
 package com.violas.wallet.ui.transactionRecord
 
+import android.os.Parcelable
 import com.quincysx.crypto.CoinTypes
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by elephant on 2019-11-07 11:44.
@@ -8,6 +10,7 @@ import com.quincysx.crypto.CoinTypes
  * <p>
  * desc: 交易记录的ViewObject
  */
+@Parcelize
 data class TransactionRecordVO(
     val id: Int,
     val coinType: CoinTypes,
@@ -16,8 +19,11 @@ data class TransactionRecordVO(
     @TransactionState
     val transactionState: Int,
     val time: Long,
-    val address: String,
+    val fromAddress: String,
+    val toAddress: String = "",
     val amount: String,
     val gas: String,
-    val url: String? = null
-)
+    val transactionId: String = "",
+    val url: String? = null,
+    val tokenName: String? = null
+) : Parcelable

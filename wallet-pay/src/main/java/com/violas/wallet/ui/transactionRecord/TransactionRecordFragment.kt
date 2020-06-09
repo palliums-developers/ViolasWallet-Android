@@ -5,7 +5,6 @@ import android.view.View
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getDrawable
-import com.palliums.utils.openBrowser
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -14,7 +13,7 @@ import com.violas.wallet.common.KEY_FOUR
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_THREE
 import com.violas.wallet.common.KEY_TWO
-import com.violas.wallet.ui.web.WebCommonActivity
+import com.violas.wallet.ui.transactionDetails.TransactionDetailsActivity
 
 /**
  * Created by elephant on 2019-12-16 15:14.
@@ -24,9 +23,8 @@ import com.violas.wallet.ui.web.WebCommonActivity
  */
 class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
-    private lateinit var mWalletAddress: String
-    private lateinit var mCoinTypes: CoinTypes
-
+    private var mWalletAddress: String? = null
+    private var mCoinTypes: CoinTypes? = null
     @TransactionType
     private var mTransactionType: Int = TransactionType.ALL
     private var mTokenAddress: String? = null
@@ -56,7 +54,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     }
 
     private val mViewModel by lazy {
-        TransactionRecordViewModel(mWalletAddress, mTokenAddress, mTransactionType, mCoinTypes)
+        TransactionRecordViewModel(mWalletAddress!!, mTokenAddress, mTransactionType, mCoinTypes!!)
     }
 
     private val mViewAdapter by lazy {
@@ -65,13 +63,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
                 mViewModel.retry()
             },
             onItemClick = {
-                if (it.url.isNullOrEmpty()) {
-                    showToast(R.string.transaction_record_not_supported_query)
-                } else {
-                    if (!openBrowser(requireActivity(), it.url)) {
-                        WebCommonActivity.start(requireActivity(), it.url)
-                    }
-                }
+                TransactionDetailsActivity.start(requireContext(), it)
             })
     }
 
@@ -115,8 +107,8 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(KEY_ONE, mWalletAddress)
-        outState.putSerializable(KEY_TWO, mCoinTypes)
+        mWalletAddress?.let { outState.putString(KEY_ONE, it) }
+        mCoinTypes?.let { outState.putSerializable(KEY_TWO, it) }
         outState.putInt(KEY_THREE, mTransactionType)
         mTokenAddress?.let { outState.putString(KEY_FOUR, it) }
     }

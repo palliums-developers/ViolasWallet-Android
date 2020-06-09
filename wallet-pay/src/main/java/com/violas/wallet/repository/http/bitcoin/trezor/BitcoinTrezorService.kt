@@ -128,7 +128,7 @@ class BitcoinTrezorService(
                 transactionType = transactionType,
                 transactionState = transactionState,
                 time = dto.blockTime,
-                address = showAddress,
+                fromAddress = showAddress,
                 amount = showAmount.toString(),
                 gas = dto.fees,
                 url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.txid)

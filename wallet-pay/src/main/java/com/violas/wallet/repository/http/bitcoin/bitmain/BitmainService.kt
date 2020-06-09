@@ -128,7 +128,7 @@ class BitmainService(
                 transactionType = transactionType,
                 transactionState = transactionState,
                 time = dto.block_time,
-                address = showAddress,
+                fromAddress = showAddress,
                 amount = showAmount.toString(),
                 gas = dto.fee.toString(),
                 url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.hash)

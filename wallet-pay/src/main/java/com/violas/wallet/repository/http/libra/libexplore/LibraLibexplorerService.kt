@@ -73,7 +73,7 @@ class LibraLibexplorerService(
                 transactionType = transactionType,
                 transactionState = transactionState,
                 time = dto.expirationTime,
-                address = showAddress,
+                fromAddress = showAddress,
                 amount = dto.value,
                 gas = dto.gasUsed.toString(),
                 url = BaseBrowserUrl.getLibraBrowserUrl(dto.version)

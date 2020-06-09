@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_F7F7F9"
+    tools:context=".ui.transactionDetails.TransactionDetailsActivity">
+
+    <ImageView
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/bg_transaction_details_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/bg_transaction_details_footer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="?android:attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back_gray"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        tools:menu="@menu/menu_transaction_details">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/title_transaction_details_nbsp"
+            android:textColor="@color/color_333333"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="bold" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp_38"
+        android:layout_marginTop="@dimen/dp_6"
+        android:background="@mipmap/bg_transaction_details_content"
+        android:paddingHorizontal="@dimen/dp_24"
+        android:paddingTop="@dimen/dp_40"
+        android:paddingBottom="@dimen/dp_34"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <ImageView
+            android:id="@+id/ivState"
+            android:layout_width="@dimen/dp_38"
+            android:layout_height="@dimen/dp_38"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_transaction_state_pending" />
+
+        <TextView
+            android:id="@+id/tvDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_14"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivState"
+            tools:text="@string/desc_transaction_state_transaction_pending"
+            tools:textColor="@color/color_FAA030" />
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_19"
+            android:textColor="@color/color_999999"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvDesc"
+            tools:text="2018-11-06  16:30:44" />
+
+        <TextView
+            android:id="@+id/tvAmount"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_94"
+            android:layout_marginTop="@dimen/dp_69"
+            android:paddingVertical="@dimen/dp_5"
+            android:textColor="@color/def_text_title"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTime"
+            tools:text="123 BTC" />
+
+        <TextView
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:paddingTop="@dimen/dp_5"
+            android:text="@string/label_transaction_details_amount"
+            android:textColor="@color/color_999999"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toStartOf="@id/tvAmount"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvAmount" />
+
+        <TextView
+            android:id="@+id/tvGas"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/dp_5"
+            android:textColor="@color/color_999999"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvAmount"
+            app:layout_constraintTop_toBottomOf="@id/tvAmount"
+            tools:text="0.0012 BTC" />
+
+        <TextView
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:paddingTop="@dimen/dp_5"
+            android:text="@string/label_transaction_details_gas"
+            android:textColor="@color/color_999999"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toStartOf="@id/tvGas"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvGas" />
+
+        <LinearLayout
+            android:id="@+id/llReceiptAddress"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvAmount"
+            app:layout_constraintTop_toBottomOf="@id/tvGas">
+
+            <TextView
+                android:id="@+id/tvReceiptAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@drawable/ic_token_info_copy"
+                android:drawablePadding="@dimen/dp_5"
+                android:paddingVertical="@dimen/dp_5"
+                android:textColor="@color/color_999999"
+                android:textSize="@dimen/sp_12"
+                tools:text="dioewdji3ie9wOid30wdue" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:paddingTop="@dimen/dp_5"
+            android:text="@string/label_transaction_details_receipt_address"
+            android:textColor="@color/color_999999"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toStartOf="@id/llReceiptAddress"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/llReceiptAddress" />
+
+        <LinearLayout
+            android:id="@+id/llPaymentAddress"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvAmount"
+            app:layout_constraintTop_toBottomOf="@id/llReceiptAddress">
+
+            <TextView
+                android:id="@+id/tvPaymentAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@drawable/ic_token_info_copy"
+                android:drawablePadding="@dimen/dp_5"
+                android:paddingVertical="@dimen/dp_5"
+                android:textColor="@color/color_999999"
+                android:textSize="@dimen/sp_12"
+                tools:text="dioewdji3ie9wOid30wdueji3ie9wOid9wOid" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:paddingTop="@dimen/dp_5"
+            android:text="@string/label_transaction_details_payment_address"
+            android:textColor="@color/color_999999"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toStartOf="@id/llPaymentAddress"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/llPaymentAddress" />
+
+        <LinearLayout
+            android:id="@+id/llTransactionNumber"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvAmount"
+            app:layout_constraintTop_toBottomOf="@id/llPaymentAddress">
+
+            <TextView
+                android:id="@+id/tvTransactionNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@drawable/ic_token_info_copy"
+                android:drawablePadding="@dimen/dp_5"
+                android:paddingVertical="@dimen/dp_5"
+                android:textColor="@color/color_999999"
+                android:textSize="@dimen/sp_12"
+                tools:text="122322" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:paddingTop="@dimen/dp_5"
+            android:text="@string/label_transaction_details_transaction_number"
+            android:textColor="@color/color_999999"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintEnd_toStartOf="@id/llTransactionNumber"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/llTransactionNumber" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tvViewByBrowser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_16"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="@dimen/dp_10"
+        android:text="@string/desc_view_by_browser"
+        android:textColor="@color/color_7038FD"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

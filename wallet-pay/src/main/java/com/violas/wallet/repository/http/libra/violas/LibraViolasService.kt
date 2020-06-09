@@ -67,7 +67,7 @@ class LibraViolasService(
                 coinType = CoinTypes.Libra,
                 transactionType = transactionType,
                 transactionState = transactionState,
-                address = showAddress,
+                fromAddress = showAddress,
                 time = dto.expiration_time,
                 amount = dto.amount,
                 gas = dto.gas,

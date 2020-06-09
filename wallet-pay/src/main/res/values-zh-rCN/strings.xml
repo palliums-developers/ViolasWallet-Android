@@ -317,4 +317,21 @@
     <string name="label_transfer_out">转出</string>
     <string name="wallet_connect_log_out">退出网页钱包</string>
     <string name="state_trading">交易中</string>
+    <string name="title_transaction_details_nbsp">详 情</string>
+    <string name="label_transaction_details_amount">金额：</string>
+    <string name="label_transaction_details_gas">矿工费用：</string>
+    <string name="label_transaction_details_receipt_address">收款地址：</string>
+    <string name="label_transaction_details_payment_address">付款地址：</string>
+    <string name="label_transaction_details_transaction_number">交易号：</string>
+    <string name="desc_transaction_state_transaction_pending">交易中</string>
+    <string name="desc_transaction_state_transfer_success">转账成功</string>
+    <string name="desc_transaction_state_transfer_failure">转账失败</string>
+    <string name="desc_transaction_state_collection_success">收款成功</string>
+    <string name="desc_transaction_state_collection_failure">收款失败</string>
+    <string name="desc_transaction_state_register_success">稳定币激活成功</string>
+    <string name="desc_transaction_state_register_failure">稳定币激活失败</string>
+    <string name="desc_transaction_state_transaction_success">交易成功</string>
+    <string name="desc_transaction_state_transaction_failure">交易失败</string>
+    <string name="desc_view_by_browser">浏览器查询更详细信息 ></string>
+    <string name="title_share">分享</string>
 </resources>

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:foreground="?attr/selectableItemBackground"
     android:paddingStart="@dimen/dp_29"
     android:paddingEnd="@dimen/dp_27">
 
@@ -11,9 +12,9 @@
         android:id="@+id/ivType"
         android:layout_width="@dimen/dp_24"
         android:layout_height="@dimen/dp_24"
+        app:layout_constraintBottom_toBottomOf="@id/tvTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvAddress"
-        app:layout_constraintBottom_toBottomOf="@id/tvTime"
         tools:src="@drawable/ic_transaction_type_collection" />
 
     <TextView
@@ -68,12 +69,12 @@
         android:id="@+id/vDivider"
         android:layout_width="@dimen/dp_0"
         android:layout_height="@dimen/dp_1"
-        android:layout_marginEnd="@dimen/dp_2"
         android:layout_marginTop="@dimen/dp_16"
-        app:layout_constraintTop_toBottomOf="@id/tvTime"
+        android:layout_marginEnd="@dimen/dp_2"
         android:background="@color/color_DEDFE0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTime" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
