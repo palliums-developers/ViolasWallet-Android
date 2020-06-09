@@ -36,19 +36,19 @@ class WalletManagerActivity : BaseAppActivity() {
     companion object {
         private const val EXT_ACCOUNT_ID = "b1"
 
-        fun start(context: Activity, accountId: Long) {
-            generateIntent(context, accountId).start(context)
+        fun start(context: Activity) {
+            generateIntent(context).start(context)
         }
 
-        fun start(context: Fragment, accountId: Long, requestCode: Int = -1) {
+        fun start(context: Fragment, requestCode: Int = -1) {
             context.context?.let {
-                context.activity?.let { it1 -> generateIntent(it, accountId).start(it1) }
+                context.activity?.let { it1 -> generateIntent(it).start(it1) }
             }
         }
 
-        private fun generateIntent(context: Context, accountId: Long): Intent {
+        private fun generateIntent(context: Context): Intent {
             return Intent(context, WalletManagerActivity::class.java).apply {
-                putExtra(EXT_ACCOUNT_ID, accountId)
+//                putExtra(EXT_ACCOUNT_ID, accountId)
             }
         }
     }
@@ -70,16 +70,9 @@ class WalletManagerActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_manager)
-
-        val accountId = intent.getLongExtra(EXT_ACCOUNT_ID, -1L)
+        
         launch(Dispatchers.IO) {
-            val account = if (accountId == -1L) {
-                mAccountManager.currentAccount()
-            } else {
-                mAccountManager.getAccountById(accountId)
-            }
-
-            mAccountDO = account
+            mAccountDO = mAccountManager.getAccountById()
 
             withContext(Dispatchers.Main) {
                 initView()

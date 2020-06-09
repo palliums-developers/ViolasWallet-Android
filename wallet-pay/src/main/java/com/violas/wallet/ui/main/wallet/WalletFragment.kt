@@ -137,6 +137,7 @@ class WalletFragment : BaseFragment() {
                 viewAssetsGroup.visibility = View.GONE
                 viewAddAccount.visibility = View.VISIBLE
             }
+            checkBackup()
         })
         mWalletViewModel.mTotalFiatBalanceStrLiveData.observe(this, Observer {
             tvAmount.text = it
@@ -188,8 +189,8 @@ class WalletFragment : BaseFragment() {
         } else if (!mAccountManager.isIdentityMnemonicBackup()) {
             launch(Dispatchers.IO) {
                 delay(1000)
-                withContext(Dispatchers.Main) {
-                    if (!mAccountManager.isIdentityMnemonicBackup() && mWalletAppViewModel?.isExistsAccount() == true) {
+                if (!mAccountManager.isIdentityMnemonicBackup() && mWalletAppViewModel?.isExistsAccount() == true) {
+                    withContext(Dispatchers.Main) {
                         layoutBackupNow.visibility = View.VISIBLE
                         btnConfirm.setOnClickListener(this@WalletFragment)
 
@@ -218,28 +219,18 @@ class WalletFragment : BaseFragment() {
         when (view.id) {
             R.id.ivAddAssert -> {
                 launch(Dispatchers.IO) {
-                    val currentAccount = mAccountManager.currentAccount()
-                    withContext(Dispatchers.Main) {
-                        activity?.let { activity ->
-                            ManagerAssertActivity.start(
-                                this@WalletFragment,
-                                currentAccount.id,
-                                REQUEST_ADD_ASSERT
-                            )
-                        }
-                    }
+//                    val currentAccount = mAccountManager.currentAccount()
+//                    withContext(Dispatchers.Main) {
+//                        activity?.let { activity ->
+//                            ManagerAssertActivity.start(
+//                                this@WalletFragment,
+//                                currentAccount.id,
+//                                REQUEST_ADD_ASSERT
+//                            )
+//                        }
+//                    }
                 }
             }
-
-            R.id.ivCopy -> {
-                launch(Dispatchers.IO) {
-                    val currentAccount = mAccountManager.currentAccount()
-                    withContext(Dispatchers.Main) {
-                        activity?.let { it1 -> ClipboardUtils.copy(it1, currentAccount.address) }
-                    }
-                }
-            }
-
             R.id.ivScan -> {
                 activity?.let { it1 ->
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
@@ -262,21 +253,12 @@ class WalletFragment : BaseFragment() {
 //                }
 //            }
 
-//            R.id.layoutWalletType -> {
-//                activity?.let { it1 ->
-//                    Intent(
-//                        activity,
-//                        AccountSelectionActivity::class.java
-//                    ).start(it1)
+//            R.id.btnCollection -> {
+//                launch(Dispatchers.IO) {
+//                    val currentAccount = mAccountManager.currentAccount()
+//                    activity?.let { it1 -> CollectionActivity.start(it1, currentAccount.id) }
 //                }
 //            }
-
-            R.id.btnCollection -> {
-                launch(Dispatchers.IO) {
-                    val currentAccount = mAccountManager.currentAccount()
-                    activity?.let { it1 -> CollectionActivity.start(it1, currentAccount.id) }
-                }
-            }
 
             R.id.btnTransfer -> {
                 launch(Dispatchers.IO) {
@@ -341,8 +323,7 @@ class WalletFragment : BaseFragment() {
         OpenBiometricsPromptDialog()
             .setCallback {
                 launch(Dispatchers.IO) {
-                    val currentAccount = mAccountManager.currentAccount()
-                    WalletManagerActivity.start(this@WalletFragment, currentAccount.id)
+                    WalletManagerActivity.start(this@WalletFragment)
                 }
             }
             .show(childFragmentManager)

@@ -9,6 +9,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.setting.SettingActivity
+import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.fragment_me.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,6 +21,10 @@ import kotlinx.coroutines.withContext
 class MeFragment : BaseFragment() {
 
     private val mAccountManager by lazy { AccountManager() }
+
+    private val mWalletAppViewModel by lazy {
+        context?.let { WalletAppViewModel.getViewModelInstance(it) }
+    }
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_me
@@ -36,22 +41,11 @@ class MeFragment : BaseFragment() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.mivWalletManagement -> {
-                launch {
-                    val currentAccount = withContext(Dispatchers.IO) {
-                        try {
-                            mAccountManager.currentAccount()
-                        } catch (e: Exception) {
-                            null
-                        }
-                    }
-
-                    if (currentAccount == null) {
-                        showToast(R.string.tips_create_or_import_wallet)
-                        return@launch
-                    }
-
-                    WalletManagerActivity.start(this@MeFragment, currentAccount.id)
+                if (mWalletAppViewModel?.isExistsAccount() != true) {
+                    showToast(R.string.tips_create_or_import_wallet)
+                    return
                 }
+                WalletManagerActivity.start(this@MeFragment)
             }
 
             R.id.mivAddressBook -> {

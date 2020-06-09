@@ -79,6 +79,7 @@ class AccountManager {
     /**
      * 获取当前账户账户
      */
+    @Deprecated("功能删除")
     @Throws(AccountNotExistsException::class)
     fun currentAccount(): AccountDO {
         val currentWallet = mConfigSharedPreferences.getLong(CURRENT_ACCOUNT, 1)
@@ -89,13 +90,14 @@ class AccountManager {
      * 获取当前账户账户
      */
     @Throws(AccountNotExistsException::class)
-    fun getAccountById(accountId: Long): AccountDO {
+    fun getAccountById(accountId: Long = 1): AccountDO {
         return mAccountStorage.findById(accountId) ?: throw AccountNotExistsException()
     }
 
     /**
      * 是否存在账户
      */
+    @Deprecated("功能删除")
     fun existsWalletAccount(): Boolean {
         if (mAccountStorage.loadByWalletType() == null) {
             return false
@@ -127,6 +129,7 @@ class AccountManager {
     /**
      * 切换当前钱包账户
      */
+    @Deprecated("功能删除")
     fun switchCurrentAccount(currentAccountID: Long = getDefWallet()) {
         mConfigSharedPreferences.edit().putLong(CURRENT_ACCOUNT, currentAccountID).apply()
     }
