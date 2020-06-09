@@ -144,7 +144,7 @@ class AccountOperationsActivity : BaseAppActivity() {
                     when (operationMode) {
                         AccountOperationMode.MANAGEMENT -> {
                             WalletManagerActivity.start(
-                                this@AccountOperationsActivity, it.accountDO.id
+                                this@AccountOperationsActivity
                             )
                         }
 

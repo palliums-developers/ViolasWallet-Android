@@ -79,6 +79,7 @@ class AccountManager {
     /**
      * 获取当前账户账户
      */
+    @Deprecated("功能删除")
     @Throws(AccountNotExistsException::class)
     fun currentAccount(): AccountDO {
         val currentWallet = mConfigSharedPreferences.getLong(CURRENT_ACCOUNT, 1)
@@ -89,13 +90,14 @@ class AccountManager {
      * 获取当前账户账户
      */
     @Throws(AccountNotExistsException::class)
-    fun getAccountById(accountId: Long): AccountDO {
+    fun getAccountById(accountId: Long = 1): AccountDO {
         return mAccountStorage.findById(accountId) ?: throw AccountNotExistsException()
     }
 
     /**
      * 是否存在账户
      */
+    @Deprecated("功能删除")
     fun existsWalletAccount(): Boolean {
         if (mAccountStorage.loadByWalletType() == null) {
             return false
@@ -127,6 +129,7 @@ class AccountManager {
     /**
      * 切换当前钱包账户
      */
+    @Deprecated("功能删除")
     fun switchCurrentAccount(currentAccountID: Long = getDefWallet()) {
         mConfigSharedPreferences.edit().putLong(CURRENT_ACCOUNT, currentAccountID).apply()
     }
@@ -432,20 +435,6 @@ class AccountManager {
         }
     }
 
-    suspend fun refreshAccount(currentAccount: AccountDO) {
-        val balance = getBalance(currentAccount)
-        if (balance != currentAccount.amount) {
-            currentAccount.amount = balance
-            updateAccount(currentAccount)
-        }
-    }
-
-    suspend fun getBalanceWithUnit(account: AccountDO): Pair<String, String> {
-        val balance = getBalance(account)
-        val coinType = CoinTypes.parseCoinType(account.coinNumber)
-        return convertAmountToDisplayUnit(balance, coinType)
-    }
-
     suspend fun getBalance(account: AccountDO): Long {
         return when (account.coinNumber) {
             CoinTypes.Violas.coinType() -> {
@@ -477,24 +466,18 @@ class AccountManager {
         }
     }
 
-    suspend fun activateAccount(account: AccountDO) {
-        when (account.coinNumber) {
+    suspend fun activateAccount(assets: AssetsLibraCoinVo) {
+        when (assets.getCoinNumber()) {
             CoinTypes.Violas.coinType() -> {
-                //todo 等后台接口做完修改
-                val accountState =
-                    DataRepository.getViolasService().getAccountState(account.address)
-                if (!isActivate(accountState?.authenticationKey)) {
+                if (!isActivate(assets.authKey)) {
                     DataRepository.getViolasService()
-                        .activateAccount(account.address, account.authKeyPrefix)
+                        .activateAccount(assets.address, assets.authKeyPrefix)
                 }
             }
-
             CoinTypes.Libra.coinType() -> {
-                val accountState =
-                    DataRepository.getLibraService().getAccountState(account.address)
-                if (!isActivate(accountState?.authenticationKey)) {
+                if (!isActivate(assets.authKey)) {
                     DataRepository.getLibraBizService()
-                        .activateAccount(account.address, account.authKeyPrefix)
+                        .activateAccount(assets.address, assets.authKeyPrefix)
                 }
             }
         }
@@ -518,6 +501,7 @@ class AccountManager {
                         AssetsLibraCoinVo(
                             it.id,
                             it.publicKey,
+                            "",
                             it.authKeyPrefix,
                             it.coinNumber,
                             it.address,
@@ -533,6 +517,7 @@ class AccountManager {
                         AssetsLibraCoinVo(
                             it.id,
                             it.publicKey,
+                            "",
                             it.authKeyPrefix,
                             it.coinNumber,
                             it.address,
@@ -548,7 +533,6 @@ class AccountManager {
                         AssetsCoinVo(
                             it.id,
                             it.publicKey,
-                            it.authKeyPrefix,
                             it.coinNumber,
                             it.address,
                             it.amount,
@@ -625,7 +609,7 @@ class AccountManager {
             .forEach { assets ->
                 assets as AssetsLibraCoinVo
                 DataRepository.getLibraService().getAccountState(assets.address)?.let { it ->
-                    assets.authKeyPrefix = it.authenticationKey
+                    assets.authKey = it.authenticationKey
                     assets.delegatedKeyRotationCapability = it.delegatedKeyRotationCapability
                     assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability
 
@@ -655,7 +639,7 @@ class AccountManager {
             .forEach { assets ->
                 assets as AssetsLibraCoinVo
                 DataRepository.getViolasService().getAccountState(assets.address)?.let {
-                    assets.authKeyPrefix = it.authenticationKey ?: ""
+                    assets.authKey = it.authenticationKey ?: ""
                     assets.delegatedKeyRotationCapability =
                         it.delegatedKeyRotationCapability ?: false
                     assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability ?: false

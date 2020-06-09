@@ -3,6 +3,7 @@ package com.violas.wallet.ui.transfer
 import android.accounts.AccountsException
 import android.os.Bundle
 import android.text.AmountInputFilter
+import android.util.Log
 import android.widget.SeekBar
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
@@ -63,6 +64,7 @@ class BTCTransferActivity : TransferActivity() {
                     break
                 }
             }
+            Log.e("=======",exists.toString())
             if (!exists) {
                 showToast(getString(R.string.hint_unsupported_tokens))
                 finish()

@@ -5,14 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.content.App
-import com.palliums.content.ContextProvider
 import com.palliums.utils.CustomMainScope
-import com.palliums.utils.exceptionAsync
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
+import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
-import com.violas.wallet.walletconnect.WalletConnect
-import com.violas.wallet.walletconnect.WalletConnectStatus
 import kotlinx.coroutines.*
 
 class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
@@ -34,11 +32,14 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         refreshAssetsList(true)
     }
 
+    fun isExistsAccount() = mExistsAccountLiveData.value == true
+
     fun refreshAssetsList(isFirst: Boolean = false) = launch(Dispatchers.IO) {
         mDataRefreshingLiveData.postValue(true)
         var localAssets = mAccountManager.getLocalAssets()
         if (localAssets.isEmpty()) {
             mExistsAccountLiveData.postValue(false)
+            mAssetsListLiveData.postValue(arrayListOf())
         } else {
             mExistsAccountLiveData.postValue(true)
             if (isFirst) {
@@ -48,5 +49,17 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
             mAssetsListLiveData.postValue(localAssets)
         }
         mDataRefreshingLiveData.postValue(false)
+        checkAccountActivate(localAssets)
+    }
+
+    private suspend fun checkAccountActivate(localAssets: List<AssetsVo>) {
+        withContext(Dispatchers.IO) {
+            localAssets.filter {
+                it is AssetsCoinVo && (it.getCoinNumber() == CoinTypes.Violas.coinType() || it.getCoinNumber() == CoinTypes.Libra.coinType())
+            }.forEach {
+                it as AssetsLibraCoinVo
+                mAccountManager.activateAccount(it)
+            }
+        }
     }
 }

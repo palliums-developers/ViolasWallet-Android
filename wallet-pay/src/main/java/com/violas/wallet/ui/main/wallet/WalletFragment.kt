@@ -137,6 +137,7 @@ class WalletFragment : BaseFragment() {
                 viewAssetsGroup.visibility = View.GONE
                 viewAddAccount.visibility = View.VISIBLE
             }
+            checkBackup()
         })
         mWalletViewModel.mTotalFiatBalanceStrLiveData.observe(this, Observer {
             tvAmount.text = it
@@ -174,32 +175,33 @@ class WalletFragment : BaseFragment() {
         viewCreateAccount.setOnClickListener(this)
         viewImportAccount.setOnClickListener(this)
 
+        swipeRefreshLayout.setOnRefreshListener {
+            mWalletAppViewModel?.refreshAssetsList()
+        }
 
+        checkBackup()
+    }
+
+    private fun checkBackup() {
         if (mAccountManager.isFastIntoWallet()) {
             FastIntoWalletDialog()
-                .setConfirmCallback {
-                    if (!mAccountManager.isIdentityMnemonicBackup()) {
+                .show(requireActivity().supportFragmentManager, "fast")
+        } else if (!mAccountManager.isIdentityMnemonicBackup()) {
+            launch(Dispatchers.IO) {
+                delay(1000)
+                if (!mAccountManager.isIdentityMnemonicBackup() && mWalletAppViewModel?.isExistsAccount() == true) {
+                    withContext(Dispatchers.Main) {
                         layoutBackupNow.visibility = View.VISIBLE
-                        btnConfirm.setOnClickListener(this)
+                        btnConfirm.setOnClickListener(this@WalletFragment)
 
                         handleOpenBiometricsPrompt()
                     }
                 }
-                .show(requireActivity().supportFragmentManager, "fast")
-        } else if (!mAccountManager.isIdentityMnemonicBackup()) {
-            layoutBackupNow.visibility = View.VISIBLE
-            btnConfirm.setOnClickListener(this)
-
-            handleOpenBiometricsPrompt()
-        }
-
-        swipeRefreshLayout.setOnRefreshListener {
-//            refreshAssert(false)
-            mWalletAppViewModel?.refreshAssetsList()
+            }
         }
     }
 
-    fun setTouchDelegate(view: View, expandTouchWidth: Int) {
+    private fun setTouchDelegate(view: View, expandTouchWidth: Int) {
         val parentView = view.parent as View
         parentView.post {
             val rect = Rect()
@@ -217,31 +219,25 @@ class WalletFragment : BaseFragment() {
         when (view.id) {
             R.id.ivAddAssert -> {
                 launch(Dispatchers.IO) {
-                    val currentAccount = mAccountManager.currentAccount()
-                    withContext(Dispatchers.Main) {
-                        activity?.let { activity ->
-                            ManagerAssertActivity.start(
-                                this@WalletFragment,
-                                currentAccount.id,
-                                REQUEST_ADD_ASSERT
-                            )
-                        }
-                    }
+//                    val currentAccount = mAccountManager.currentAccount()
+//                    withContext(Dispatchers.Main) {
+//                        activity?.let { activity ->
+//                            ManagerAssertActivity.start(
+//                                this@WalletFragment,
+//                                currentAccount.id,
+//                                REQUEST_ADD_ASSERT
+//                            )
+//                        }
+//                    }
                 }
             }
-
-            R.id.ivCopy -> {
-                launch(Dispatchers.IO) {
-                    val currentAccount = mAccountManager.currentAccount()
-                    withContext(Dispatchers.Main) {
-                        activity?.let { it1 -> ClipboardUtils.copy(it1, currentAccount.address) }
-                    }
-                }
-            }
-
             R.id.ivScan -> {
                 activity?.let { it1 ->
-                    ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
+                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                        ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
+                    } else {
+                        showToast(R.string.tips_create_or_import_wallet)
+                    }
                 }
             }
             R.id.viewCreateAccount -> {
@@ -257,21 +253,12 @@ class WalletFragment : BaseFragment() {
 //                }
 //            }
 
-//            R.id.layoutWalletType -> {
-//                activity?.let { it1 ->
-//                    Intent(
-//                        activity,
-//                        AccountSelectionActivity::class.java
-//                    ).start(it1)
+//            R.id.btnCollection -> {
+//                launch(Dispatchers.IO) {
+//                    val currentAccount = mAccountManager.currentAccount()
+//                    activity?.let { it1 -> CollectionActivity.start(it1, currentAccount.id) }
 //                }
 //            }
-
-            R.id.btnCollection -> {
-                launch(Dispatchers.IO) {
-                    val currentAccount = mAccountManager.currentAccount()
-                    activity?.let { it1 -> CollectionActivity.start(it1, currentAccount.id) }
-                }
-            }
 
             R.id.btnTransfer -> {
                 launch(Dispatchers.IO) {
@@ -299,7 +286,6 @@ class WalletFragment : BaseFragment() {
 //            }
 
             R.id.btnConfirm -> {
-                layoutBackupNow.visibility = View.GONE
                 launch(Dispatchers.Main) {
                     val identityAccount = withContext(Dispatchers.IO) {
                         mAccountManager.getIdentityAccount()
@@ -336,8 +322,7 @@ class WalletFragment : BaseFragment() {
         OpenBiometricsPromptDialog()
             .setCallback {
                 launch(Dispatchers.IO) {
-                    val currentAccount = mAccountManager.currentAccount()
-                    WalletManagerActivity.start(this@WalletFragment, currentAccount.id)
+                    WalletManagerActivity.start(this@WalletFragment)
                 }
             }
             .show(childFragmentManager)
@@ -352,6 +337,9 @@ class WalletFragment : BaseFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
+            BackupMnemonicFrom.BACKUP_IDENTITY_WALLET -> {
+                layoutBackupNow.visibility = View.GONE
+            }
             REQUEST_ADD_ASSERT -> {
                 refreshAssertJob = launch(Dispatchers.IO) {
 //                    refreshViolasAssert()
