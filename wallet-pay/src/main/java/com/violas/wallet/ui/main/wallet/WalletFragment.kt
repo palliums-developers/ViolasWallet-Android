@@ -174,32 +174,33 @@ class WalletFragment : BaseFragment() {
         viewCreateAccount.setOnClickListener(this)
         viewImportAccount.setOnClickListener(this)
 
+        swipeRefreshLayout.setOnRefreshListener {
+            mWalletAppViewModel?.refreshAssetsList()
+        }
 
+        checkBackup()
+    }
+
+    private fun checkBackup() {
         if (mAccountManager.isFastIntoWallet()) {
             FastIntoWalletDialog()
-                .setConfirmCallback {
-                    if (!mAccountManager.isIdentityMnemonicBackup()) {
+                .show(requireActivity().supportFragmentManager, "fast")
+        } else if (!mAccountManager.isIdentityMnemonicBackup()) {
+            launch(Dispatchers.IO) {
+                delay(1000)
+                withContext(Dispatchers.Main) {
+                    if (!mAccountManager.isIdentityMnemonicBackup() && mWalletAppViewModel?.isExistsAccount() == true) {
                         layoutBackupNow.visibility = View.VISIBLE
-                        btnConfirm.setOnClickListener(this)
+                        btnConfirm.setOnClickListener(this@WalletFragment)
 
                         handleOpenBiometricsPrompt()
                     }
                 }
-                .show(requireActivity().supportFragmentManager, "fast")
-        } else if (!mAccountManager.isIdentityMnemonicBackup()) {
-            layoutBackupNow.visibility = View.VISIBLE
-            btnConfirm.setOnClickListener(this)
-
-            handleOpenBiometricsPrompt()
-        }
-
-        swipeRefreshLayout.setOnRefreshListener {
-//            refreshAssert(false)
-            mWalletAppViewModel?.refreshAssetsList()
+            }
         }
     }
 
-    fun setTouchDelegate(view: View, expandTouchWidth: Int) {
+    private fun setTouchDelegate(view: View, expandTouchWidth: Int) {
         val parentView = view.parent as View
         parentView.post {
             val rect = Rect()
@@ -241,7 +242,11 @@ class WalletFragment : BaseFragment() {
 
             R.id.ivScan -> {
                 activity?.let { it1 ->
-                    ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
+                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                        ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
+                    } else {
+                        showToast(R.string.tips_create_or_import_wallet)
+                    }
                 }
             }
             R.id.viewCreateAccount -> {

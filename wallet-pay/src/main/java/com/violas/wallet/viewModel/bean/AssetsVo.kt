@@ -35,7 +35,6 @@ data class AmountWithUnit(
 open class AssetsCoinVo(
     private val id: Long,
     var publicKey: String = "",
-    var authKeyPrefix: String = "",
     private val coinNumber: Int,
     var address: String = "",
     private var amount: Long = 0,
@@ -57,7 +56,8 @@ open class AssetsCoinVo(
 class AssetsLibraCoinVo(
     id: Long,
     publicKey: String = "",
-    authKeyPrefix: String = "",
+    var authKey: String = "",
+    var authKeyPrefix: String = "",
     coinNumber: Int = 0,
     address: String = "",
     amount: Long = 0,
@@ -67,7 +67,6 @@ class AssetsLibraCoinVo(
 ) : AssetsCoinVo(
     id,
     publicKey,
-    authKeyPrefix,
     coinNumber,
     address,
     amount,

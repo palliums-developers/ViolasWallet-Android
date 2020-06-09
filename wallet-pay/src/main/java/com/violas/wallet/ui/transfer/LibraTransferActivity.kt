@@ -3,6 +3,7 @@ package com.violas.wallet.ui.transfer
 import android.accounts.AccountsException
 import android.os.Bundle
 import android.text.AmountInputFilter
+import android.util.Log
 import androidx.lifecycle.Observer
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
