@@ -286,7 +286,6 @@ class WalletFragment : BaseFragment() {
 //            }
 
             R.id.btnConfirm -> {
-                layoutBackupNow.visibility = View.GONE
                 launch(Dispatchers.Main) {
                     val identityAccount = withContext(Dispatchers.IO) {
                         mAccountManager.getIdentityAccount()
@@ -338,6 +337,9 @@ class WalletFragment : BaseFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
+            BackupMnemonicFrom.BACKUP_IDENTITY_WALLET -> {
+                layoutBackupNow.visibility = View.GONE
+            }
             REQUEST_ADD_ASSERT -> {
                 refreshAssertJob = launch(Dispatchers.IO) {
 //                    refreshViolasAssert()
