@@ -154,6 +154,9 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbar.setNavigationOnClickListener {
+            onBackPressedSupport()
+        }
         toolbar.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
