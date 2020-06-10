@@ -49,7 +49,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clDetails"
+        android:id="@+id/clTransactionInfo"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_39"

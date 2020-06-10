@@ -60,7 +60,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         }
     }
 
-    private lateinit var mTransactionRecordVO: TransactionRecordVO
+    private lateinit var mTransactionRecord: TransactionRecordVO
 
     private var mLoadingDialog: LoadingDialog? = null
 
@@ -70,7 +70,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         setContentView(R.layout.activity_transaction_details)
         if (initData(savedInstanceState)) {
             initEvent()
-            initView(mTransactionRecordVO)
+            initView(mTransactionRecord)
         } else {
             close()
         }
@@ -78,7 +78,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_ONE, mTransactionRecordVO)
+        outState.putParcelable(KEY_ONE, mTransactionRecord)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -90,7 +90,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         when (item.itemId) {
             R.id.app_bar_share -> {
                 ShareTransactionDetailsDialog.start(
-                    supportFragmentManager, mTransactionRecordVO
+                    supportFragmentManager, mTransactionRecord, clTransactionInfo.y
                 ) {
                     when (it) {
                         0 -> checkStoragePermission()
@@ -112,38 +112,38 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         return if (record == null) {
             false
         } else {
-            mTransactionRecordVO = record
+            mTransactionRecord = record
             true
         }
     }
 
     private fun initEvent() {
         tvViewByBrowser.setOnClickListener {
-            if (!openBrowser(this, mTransactionRecordVO.url!!)) {
-                WebCommonActivity.start(this, mTransactionRecordVO.url!!)
+            if (!openBrowser(this, mTransactionRecord.url!!)) {
+                WebCommonActivity.start(this, mTransactionRecord.url!!)
             }
         }
 
         llReceiptAddress.setOnClickListener {
-            if (!mTransactionRecordVO.toAddress.isBlank()) {
-                ClipboardUtils.copy(this, mTransactionRecordVO.toAddress)
+            if (!mTransactionRecord.toAddress.isBlank()) {
+                ClipboardUtils.copy(this, mTransactionRecord.toAddress)
             }
         }
 
         llPaymentAddress.setOnClickListener {
-            if (!mTransactionRecordVO.fromAddress.isBlank()) {
-                ClipboardUtils.copy(this, mTransactionRecordVO.fromAddress)
+            if (!mTransactionRecord.fromAddress.isBlank()) {
+                ClipboardUtils.copy(this, mTransactionRecord.fromAddress)
             }
         }
 
         llTransactionNumber.setOnClickListener {
-            if (!mTransactionRecordVO.transactionId.isBlank()) {
-                ClipboardUtils.copy(this, mTransactionRecordVO.transactionId)
+            if (!mTransactionRecord.transactionId.isBlank()) {
+                ClipboardUtils.copy(this, mTransactionRecord.transactionId)
             }
         }
     }
 
-    private fun initView(record: TransactionRecordVO) {
+    private fun initView(transactionRecord: TransactionRecordVO) {
         StatusBarUtil.setLightStatusBarMode(this.window, true)
 
         setSupportActionBar(toolbar)
@@ -169,7 +169,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             }
         })
 
-        when (record.transactionState) {
+        when (transactionRecord.transactionState) {
             TransactionState.PENDING -> {
                 ivState.setImageResource(R.drawable.ic_transaction_state_pending)
                 tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_FAA030))
@@ -180,7 +180,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 ivState.setImageResource(R.drawable.ic_transaction_state_failure)
                 tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_F55753))
                 tvDesc.setText(
-                    when (record.transactionType) {
+                    when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
                             R.string.desc_transaction_state_transfer_failure
                         }
@@ -204,7 +204,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 ivState.setImageResource(R.drawable.ic_transaction_state_success)
                 tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_00D1AF))
                 tvDesc.setText(
-                    when (record.transactionType) {
+                    when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
                             R.string.desc_transaction_state_transfer_success
                         }
@@ -225,32 +225,32 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             }
         }
 
-        tvTime.text = formatDate(record.time, pattern = "yyyy-MM-dd HH:mm:ss")
+        tvTime.text = formatDate(transactionRecord.time, pattern = "yyyy-MM-dd HH:mm:ss")
 
         val amountWithUnit =
-            convertAmountToDisplayUnit(record.amount, record.coinType)
-        tvAmount.text = "${amountWithUnit.first} ${record.tokenName ?: amountWithUnit.second}"
+            convertAmountToDisplayUnit(transactionRecord.amount, transactionRecord.coinType)
+        tvAmount.text = "${amountWithUnit.first} ${transactionRecord.tokenName ?: amountWithUnit.second}"
 
         val gasWithUnit =
-            convertAmountToDisplayUnit(record.gas, record.coinType)
+            convertAmountToDisplayUnit(transactionRecord.gas, transactionRecord.coinType)
         tvGas.text = "${gasWithUnit.first} ${gasWithUnit.second}"
 
-        if (record.toAddress.isBlank()) {
+        if (transactionRecord.toAddress.isBlank()) {
             noneContent(tvReceiptAddress)
         } else {
-            tvReceiptAddress.text = record.toAddress
+            tvReceiptAddress.text = transactionRecord.toAddress
         }
 
-        if (record.fromAddress.isBlank()) {
+        if (transactionRecord.fromAddress.isBlank()) {
             noneContent(tvPaymentAddress)
         } else {
-            tvPaymentAddress.text = record.fromAddress
+            tvPaymentAddress.text = transactionRecord.fromAddress
         }
 
-        if (record.transactionId.isBlank()) {
+        if (transactionRecord.transactionId.isBlank()) {
             noneContent(tvTransactionNumber)
         } else {
-            tvTransactionNumber.text = record.transactionId
+            tvTransactionNumber.text = transactionRecord.transactionId
         }
     }
 
@@ -298,14 +298,14 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     }
 
     private fun viewConversionBitmap(): Bitmap {
-        val width = clDetails.width
-        val height = clDetails.height
+        val width = clTransactionInfo.width
+        val height = clTransactionInfo.height
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
         canvas.drawColor(Color.WHITE)
-        clDetails.draw(canvas)
+        clTransactionInfo.draw(canvas)
 
         return bitmap
     }
