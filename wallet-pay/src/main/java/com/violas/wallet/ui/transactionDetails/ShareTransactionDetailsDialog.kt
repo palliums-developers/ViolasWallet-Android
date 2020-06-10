@@ -44,8 +44,6 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
     private var shareCallback: ((shareType: Int) -> Unit)? = null
 
     companion object {
-        private const val PIC_DIR_NAME = "ViolasPay Photos"
-
         fun start(
             fragmentManager: FragmentManager,
             record: TransactionRecordVO,
