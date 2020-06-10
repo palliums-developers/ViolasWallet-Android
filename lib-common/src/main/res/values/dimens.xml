@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- ==================尺寸表规范 start ================== -->
+    <dimen name="sp_10">10sp</dimen>
     <dimen name="sp_11">11sp</dimen>
     <dimen name="sp_12">12sp</dimen>
     <dimen name="sp_13">13sp</dimen>
@@ -42,6 +43,7 @@
     <dimen name="dp_14.5" tools:ignore="MissingDefaultResource">14.5dp</dimen>
     <dimen name="dp_15">15dp</dimen>
     <dimen name="dp_16">16dp</dimen>
+    <dimen name="dp_16.5" tools:ignore="MissingDefaultResource">16.5dp</dimen>
     <dimen name="dp_17">17dp</dimen>
     <dimen name="dp_18">18dp</dimen>
     <dimen name="dp_19">19dp</dimen>
@@ -92,6 +94,7 @@
     <dimen name="dp_65">65dp</dimen>
     <dimen name="dp_66">66dp</dimen>
     <dimen name="dp_68">68dp</dimen>
+    <dimen name="dp_69">69dp</dimen>
     <dimen name="dp_70">70dp</dimen>
     <dimen name="dp_72">72dp</dimen>
     <dimen name="dp_73">73dp</dimen>
@@ -103,12 +106,14 @@
     <dimen name="dp_80">80dp</dimen>
     <dimen name="dp_81">81dp</dimen>
     <dimen name="dp_82">82dp</dimen>
+    <dimen name="dp_84">84dp</dimen>
     <dimen name="dp_85">85dp</dimen>
     <dimen name="dp_86">86dp</dimen>
     <dimen name="dp_87">87dp</dimen>
     <dimen name="dp_88">88dp</dimen>
     <dimen name="dp_89">89dp</dimen>
     <dimen name="dp_90">90dp</dimen>
+    <dimen name="dp_94">94dp</dimen>
     <dimen name="dp_100">100dp</dimen>
     <dimen name="dp_105">105dp</dimen>
     <dimen name="dp_106">106dp</dimen>

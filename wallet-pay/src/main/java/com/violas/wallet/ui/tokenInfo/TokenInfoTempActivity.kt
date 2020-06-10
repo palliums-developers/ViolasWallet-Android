@@ -5,18 +5,19 @@ import android.content.Intent
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.os.Bundle
+import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.tabs.TabLayout
 import com.palliums.base.ViewController
 import com.palliums.extensions.close
+import com.palliums.extensions.setTitleToCenter
 import com.palliums.extensions.show
 import com.palliums.utils.CustomMainScope
 import com.palliums.utils.StatusBarUtil
@@ -24,8 +25,8 @@ import com.palliums.widget.loading.LoadingDialog
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
-import com.violas.wallet.ui.record.TransactionRecordFragment
-import com.violas.wallet.ui.record.TransactionRecordType
+import com.violas.wallet.ui.transactionRecord.TransactionRecordFragment
+import com.violas.wallet.ui.transactionRecord.TransactionType
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
@@ -54,8 +55,8 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
         setContentView(R.layout.activity_token_info_temp)
 
         initData(savedInstanceState)
-        initView()
         initEvent()
+        initView()
     }
 
     private fun initData(savedInstanceState: Bundle?) {
@@ -63,16 +64,15 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
             AssetsLibraCoinVo(
                 id = 1,
                 amount = 10233399,
-                address = "dhhoiweidjoiejodjoiejodjo"
+                address = "f4174e9eabcb2e968e22da4c75ac653b"
             )
         mAssetsVo.setAssetsName("vtoken")
     }
 
     private fun initView() {
-        StatusBarUtil.setLightStatusBarMode(this, true)
+        StatusBarUtil.setLightStatusBarMode(this.window, true)
 
         setSupportActionBar(toolbar)
-        toolbar.setNavigationIcon(R.drawable.ic_back_dark)
         toolbar.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -81,11 +81,16 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
                 window.decorView.getWindowVisibleDisplayFrame(rectangle)
                 val statusBarHeight = rectangle.top
 
-                val layoutParams =
-                    toolbar.layoutParams as AppBarLayout.LayoutParams
-                layoutParams.height = layoutParams.height + statusBarHeight
-                toolbar.layoutParams = layoutParams
+                val toolbarLayoutParams =
+                    toolbar.layoutParams as CollapsingToolbarLayout.LayoutParams
+                toolbarLayoutParams.height = toolbarLayoutParams.height + statusBarHeight
+                toolbar.layoutParams = toolbarLayoutParams
                 toolbar.setPadding(0, statusBarHeight, 0, 0)
+
+                val tokenInfoLayoutParams =
+                    clTokenInfo.layoutParams as CollapsingToolbarLayout.LayoutParams
+                tokenInfoLayoutParams.topMargin = toolbar.height + statusBarHeight
+                clTokenInfo.layoutParams = tokenInfoLayoutParams
 
                 toolbar.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
@@ -96,22 +101,59 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
 
         title = null
         tvTitle.text = mAssetsVo.getAssetsName()
+        collapsingToolbarLayout.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+            override fun onLayoutChange(
+                v: View?,
+                left: Int,
+                top: Int,
+                right: Int,
+                bottom: Int,
+                oldLeft: Int,
+                oldTop: Int,
+                oldRight: Int,
+                oldBottom: Int
+            ) {
+                if (oldBottom == bottom) {
+                    collapsingToolbarLayout.removeOnLayoutChangeListener(this)
+                    toolbar.setTitleToCenter(tvTitle)
+                }
+            }
+        })
 
         tvTokenName.text = mAssetsVo.getAssetsName()
         tvTokenAmount.text = mAssetsVo.getAmount().toString()
         tvFiatAmount.text = "≈\$0.00"
         tvTokenAddress.text = "dhhoiweidjoiejodjoiejodjo"
 
-
+        viewPager.offscreenPageLimit = 2
         viewPager.adapter = TransactionRecordFragmentAdapter(
             fragmentManager = supportFragmentManager,
-            titles = arrayListOf(
-                Pair(getString(R.string.label_all), TransactionRecordType.ALL),
-                Pair(getString(R.string.label_transfer_in), TransactionRecordType.TRANSFER_IN),
-                Pair(getString(R.string.label_transfer_out), TransactionRecordType.TRANSFER_OUT)
+            fragments = arrayListOf(
+                Pair(
+                    getString(R.string.label_all), TransactionRecordFragment.newInstance(
+                        accountAddress = "f4174e9eabcb2e968e22da4c75ac653b",
+                        coinTypes = CoinTypes.Violas,
+                        transactionType = TransactionType.ALL
+                    )
+                ),
+                Pair(
+                    getString(R.string.label_transfer_in), TransactionRecordFragment.newInstance(
+                        accountAddress = "f4174e9eabcb2e968e22da4c75ac653b",
+                        coinTypes = CoinTypes.Libra,
+                        transactionType = TransactionType.ALL
+                    )
+                ),
+                Pair(
+                    getString(R.string.label_transfer_out), TransactionRecordFragment.newInstance(
+                        accountAddress = "2NGZrVvZG92qGYqzTLjCAewvPZ7JE8S8VxE",
+                        coinTypes = CoinTypes.BitcoinTest,
+                        transactionType = TransactionType.ALL
+                    )
+                )
             )
         )
         tabLayout.setupWithViewPager(viewPager)
+        tabLayout.getTabAt(0)?.select()
     }
 
     private fun initEvent() {
@@ -120,20 +162,17 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
             override fun onTabReselected(tab: TabLayout.Tab?) {
             }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                getTextView(tab)?.let {
+                    it.setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
+                }
             }
 
             override fun onTabSelected(tab: TabLayout.Tab) {
                 viewPager.setCurrentItem(tab.position, true)
 
-                val tabCount = tabLayout.tabCount
-                for (i in 0 until tabCount) {
-                    val textView = getTextView(tab) ?: return
-                    if (i == tab.position) {
-                        textView.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
-                    } else {
-                        textView.setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
-                    }
+                getTextView(tab)?.let {
+                    it.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
                 }
             }
 
@@ -206,20 +245,19 @@ class TokenInfoTempActivity : SupportActivity(), ViewController,
 
     inner class TransactionRecordFragmentAdapter(
         fragmentManager: FragmentManager,
-        private val titles: List<Pair<String, TransactionRecordType>>
+        private val fragments: List<Pair<String, TransactionRecordFragment>>
     ) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
         override fun getItem(position: Int): Fragment {
-            return supportFragmentManager.findFragmentByTag(titles[position].first)
-                ?: TransactionRecordFragment.newInstance("", coinTypes = CoinTypes.Libra)
+            return fragments[position].second
         }
 
         override fun getCount(): Int {
-            return titles.size
+            return fragments.size
         }
 
         override fun getPageTitle(position: Int): CharSequence? {
-            return titles[position].first
+            return fragments[position].first
         }
     }
 }

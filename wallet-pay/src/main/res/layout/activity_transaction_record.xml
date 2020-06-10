@@ -4,4 +4,4 @@
     android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
-    tools:context=".ui.record.TransactionRecordActivity"/>
+    tools:context=".ui.transactionRecord.TransactionRecordActivity"/>

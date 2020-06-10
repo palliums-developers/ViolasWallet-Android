@@ -288,7 +288,7 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
      * 浅色状态模式，设置字体为深色
      */
     protected fun setLightStatusBar(isLightStatusBar: Boolean) {
-        StatusBarUtil.setLightStatusBarMode(this, isLightStatusBar)
+        StatusBarUtil.setLightStatusBarMode(this.window, isLightStatusBar)
     }
 
     fun setStatusBarMode(darkMode: Boolean): Int {

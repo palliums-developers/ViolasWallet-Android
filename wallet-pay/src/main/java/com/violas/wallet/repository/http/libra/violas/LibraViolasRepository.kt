@@ -10,19 +10,19 @@ import com.palliums.violas.http.Response
  * <p>
  * desc: Violas repository
  */
-class LibraViolasRepository(private val mLibraViolasApi: LibraViolasApi) {
+class LibraViolasRepository(private val api: LibraViolasApi) {
 
     /**
      * 获取交易记录
      */
     @Throws(RequestException::class)
-    suspend fun getTransactionRecord(
+    suspend fun getTransactionRecords(
         address: String,
         pageSize: Int,
         offset: Int
     ) =
         checkResponse {
-            mLibraViolasApi.getTransactionRecord(address, pageSize, offset)
+            api.getTransactionRecords(address, pageSize, offset)
         }
 
     @Throws(RequestException::class)
@@ -30,7 +30,7 @@ class LibraViolasRepository(private val mLibraViolasApi: LibraViolasApi) {
         address: String, authKeyPrefix: String
     ): Response<Any> {
         return checkResponse {
-            mLibraViolasApi.activateAccount(address, authKeyPrefix)
+            api.activateAccount(address, authKeyPrefix)
         }
     }
 }

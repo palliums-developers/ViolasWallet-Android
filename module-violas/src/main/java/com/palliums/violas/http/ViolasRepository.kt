@@ -50,16 +50,15 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
      * 获取交易记录
      */
     @Throws(RequestException::class)
-    suspend fun getTransactionRecord(
+    suspend fun getTransactionRecords(
         address: String,
         pageSize: Int,
         offset: Int,
         tokenAddress: String?
-    ): ListResponse<TransactionRecordDTO> {
-        return checkResponse {
-            mViolasApi.getTransactionRecord(address, pageSize, offset, tokenAddress)
+    ) =
+        checkResponse {
+            mViolasApi.getTransactionRecords(address, pageSize, offset, tokenAddress)
         }
-    }
 
     /**
      * 获取账户信息

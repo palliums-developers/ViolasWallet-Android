@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.bitcoin
+package com.violas.wallet.repository.http.bitcoin.bitmain
 
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName

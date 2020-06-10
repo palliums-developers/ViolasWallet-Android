@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.libra
+package com.violas.wallet.repository.http.libra.libexplore
 
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URLNAME
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_LIBEXPLORER
@@ -13,7 +13,7 @@ import retrofit2.http.Query
  * desc: LibExplorer api
  * @see <a href="https://libexplorer.com/apis">link</a>
  */
-interface LibexplorerApi {
+interface LibraLibexplorerApi {
 
     /**
      * 获取指定地址的交易记录，分页查询
@@ -23,7 +23,7 @@ interface LibexplorerApi {
      */
     @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_LIBEXPLORER}"])
     @GET("?module=account&action=txlist&sort=desc")
-    suspend fun getTransactionRecord(
+    suspend fun getTransactionRecords(
         @Query("address") address: String,
         @Query("offset") pageSize: Int,
         @Query("page") pageNumber: Int

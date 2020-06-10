@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.libra
+package com.violas.wallet.repository.http.libra.libexplore
 
 import com.palliums.exceptions.RequestException
 import com.palliums.net.checkResponse
@@ -9,17 +9,16 @@ import com.palliums.net.checkResponse
  * <p>
  * desc: LibExplorer repository
  */
-class LibexplorerRepository(private val mLibexplorerApi: LibexplorerApi) {
+class LibraLibexplorerRepository(private val api: LibraLibexplorerApi) {
 
     @Throws(RequestException::class)
-    suspend fun getTransactionRecord(
+    suspend fun getTransactionRecords(
         address: String,
         pageSize: Int,
         pageNumber: Int
-    ): ListResponse<TransactionRecordDTO> {
+    ) =
         // {"status":"0","message":"No transactions found","result":[]}
-        return checkResponse("0") {
-            mLibexplorerApi.getTransactionRecord(address, pageSize, pageNumber)
+        checkResponse("0") {
+            api.getTransactionRecords(address, pageSize, pageNumber)
         }
-    }
 }

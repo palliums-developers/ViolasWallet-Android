@@ -2,8 +2,10 @@ package com.violas.wallet.repository.http.libra.violas
 
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.BaseBrowserUrl
-import com.violas.wallet.repository.http.TransactionService
-import com.violas.wallet.ui.record.TransactionRecordVO
+import com.violas.wallet.repository.http.TransactionRecordService
+import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
+import com.violas.wallet.ui.transactionRecord.TransactionState
+import com.violas.wallet.ui.transactionRecord.TransactionType
 
 /**
  * Created by elephant on 2020/4/22 19:02.
@@ -12,23 +14,25 @@ import com.violas.wallet.ui.record.TransactionRecordVO
  * desc:
  */
 class LibraViolasService(
-    private val mRepository: LibraViolasRepository
-) : TransactionService {
+    private val repository: LibraViolasRepository
+) : TransactionRecordService {
 
-    override suspend fun getTransactionRecord(
-        address: String,
+    override suspend fun getTransactionRecords(
+        walletAddress: String,
         tokenAddress: String?,
-        tokenName: String?,
+        transactionType: Int,
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
-        val response = mRepository.getTransactionRecord(
-            address,
-            pageSize,
-            (pageNumber - 1) * pageSize
-        )
+        // TODO 接口需要升级，需要支持查询指定交易类型的交易记录
+        val response =
+            repository.getTransactionRecords(
+                walletAddress,
+                pageSize,
+                (pageNumber - 1) * pageSize
+            )
 
         if (response.data.isNullOrEmpty()) {
             onSuccess.invoke(emptyList(), null)
@@ -36,28 +40,37 @@ class LibraViolasService(
         }
 
         val list = response.data!!.mapIndexed { index, dto ->
+
+            // TODO 解析交易状态
+            val transactionState = TransactionState.SUCCESS
+
             // 解析交易类型，暂时只分收款和付款
-            val transactionType = if (dto.sender == address) {
-                TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
+            val transactionType = if (dto.sender == walletAddress) {
+                if (dto.receiver.isNullOrBlank()) {
+                    TransactionType.REGISTER
+                } else {
+                    TransactionType.TRANSFER
+                }
             } else {
-                TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
+                TransactionType.COLLECTION
             }
 
             // 解析展示地址，收款付款均为对方地址
-            val showAddress = if (dto.sender == address) {
-                dto.receiver ?: ""
+            val showAddress = if (transactionType == TransactionType.TRANSFER) {
+                dto.receiver!!
             } else {
                 dto.sender
             }
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
-                coinTypes = CoinTypes.Libra,
+                coinType = CoinTypes.Libra,
                 transactionType = transactionType,
-                time = dto.expiration_time * 1000,
+                transactionState = transactionState,
+                fromAddress = showAddress,
+                time = dto.expiration_time,
                 amount = dto.amount,
                 gas = dto.gas,
-                address = showAddress,
                 url = BaseBrowserUrl.getLibraBrowserUrl(dto.version.toString())
             )
         }
@@ -68,6 +81,6 @@ class LibraViolasService(
         address: String,
         authKeyPrefix: String
     ) =
-        mRepository.activateAccount(address, authKeyPrefix)
+        repository.activateAccount(address, authKeyPrefix)
 
 }

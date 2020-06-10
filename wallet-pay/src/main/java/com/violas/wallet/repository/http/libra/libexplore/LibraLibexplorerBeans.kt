@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.libra
+package com.violas.wallet.repository.http.libra.libexplore
 
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName

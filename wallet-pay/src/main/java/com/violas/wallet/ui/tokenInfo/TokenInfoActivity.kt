@@ -14,7 +14,8 @@ import com.violas.wallet.event.TokenBalanceUpdateEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.collection.CollectionActivity
-import com.violas.wallet.ui.record.TransactionRecordFragment
+import com.violas.wallet.ui.transactionRecord.TransactionRecordFragment
+import com.violas.wallet.ui.transactionRecord.TransactionType
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.convertAmountToDisplayUnit
@@ -121,9 +122,8 @@ class TokenInfoActivity : BaseAppActivity() {
             TransactionRecordFragment.newInstance(
                 mAccountDO.address,
                 CoinTypes.Violas,
-//                mTokenDo.tokenIdx,
-                0,
-                mTokenDo.name
+                TransactionType.ALL,
+                mTokenDo.address
             )
         )
     }
