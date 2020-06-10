@@ -210,9 +210,6 @@ class WalletConnectActivity : BaseAppActivity() {
                 WalletConnect.TransactionDataType.None.value -> {
 
                 }
-                WalletConnect.TransactionDataType.Normal.value -> {
-
-                }
                 WalletConnect.TransactionDataType.Transfer.value -> {
                     val viewData = transactionSwapVo.viewData
                     println("transfer data: $viewData")

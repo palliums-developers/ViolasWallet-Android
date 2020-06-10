@@ -22,6 +22,7 @@ import com.violas.wallet.ui.biometric.CustomFingerprintDialog
 import com.violas.wallet.ui.biometric.UnableBiometricPromptDialog
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.authenticateAccountByPassword
+import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_wallet_manager.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,6 +57,9 @@ class WalletManagerActivity : BaseAppActivity() {
     private lateinit var mAccountDO: AccountDO
     private val mAccountManager by lazy {
         AccountManager()
+    }
+    private val mWalletAppViewModel by lazy {
+        WalletAppViewModel.getViewModelInstance(this)
     }
     private val mBiometricCompat by lazy {
         BiometricCompat.Builder(this).build()
@@ -103,6 +107,7 @@ class WalletManagerActivity : BaseAppActivity() {
             DeleteWalletPromptDialog().setCallback {
                 authenticateAccount(mAccountDO, mAccountManager) {
                     deleteWallet()
+                    mWalletAppViewModel.refreshAssetsList()
                 }
             }.show(supportFragmentManager)
         }
