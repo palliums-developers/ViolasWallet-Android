@@ -71,13 +71,18 @@ class TransactionRecordViewHolder(
                 }
             )
 
-            itemView.tvAddress.text = if (it.fromAddress.length > 20)
-                "${it.fromAddress.substring(0, 10)}...${it.fromAddress.substring(
-                    it.fromAddress.length - 10,
-                    it.fromAddress.length
+            val showAddress = if (it.transactionType == TransactionType.COLLECTION) {
+                it.fromAddress
+            } else {
+                it.toAddress ?: it.fromAddress
+            }
+            itemView.tvAddress.text = if (showAddress.length > 20)
+                "${showAddress.substring(0, 10)}...${showAddress.substring(
+                    showAddress.length - 10,
+                    showAddress.length
                 )}"
             else
-                it.fromAddress
+                showAddress
 
             itemView.tvTime.text = mSimpleDateFormat.format(it.time)
 

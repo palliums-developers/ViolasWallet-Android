@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.transactionDetails
 
+import android.Manifest
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -8,7 +9,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
@@ -32,20 +32,11 @@ import com.violas.wallet.ui.web.WebCommonActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.activity_transaction_details.*
-import kotlinx.android.synthetic.main.activity_transaction_details.clDetails
-import kotlinx.android.synthetic.main.activity_transaction_details.ivState
-import kotlinx.android.synthetic.main.activity_transaction_details.llPaymentAddress
-import kotlinx.android.synthetic.main.activity_transaction_details.llReceiptAddress
-import kotlinx.android.synthetic.main.activity_transaction_details.llTransactionNumber
-import kotlinx.android.synthetic.main.activity_transaction_details.tvAmount
-import kotlinx.android.synthetic.main.activity_transaction_details.tvDesc
-import kotlinx.android.synthetic.main.activity_transaction_details.tvGas
-import kotlinx.android.synthetic.main.activity_transaction_details.tvPaymentAddress
-import kotlinx.android.synthetic.main.activity_transaction_details.tvReceiptAddress
-import kotlinx.android.synthetic.main.activity_transaction_details.tvTime
-import kotlinx.android.synthetic.main.activity_transaction_details.tvTransactionNumber
 import kotlinx.coroutines.*
 import me.yokeyword.fragmentation.SupportActivity
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
+import pub.devrel.easypermissions.PermissionRequest
 import java.io.File
 import java.io.OutputStream
 
@@ -56,9 +47,12 @@ import java.io.OutputStream
  * desc: 交易详情页面
  */
 class TransactionDetailsActivity : SupportActivity(), ViewController,
-    CoroutineScope by CustomMainScope() {
+    EasyPermissions.PermissionCallbacks, CoroutineScope by CustomMainScope() {
 
     companion object {
+        private const val PIC_DIR_NAME = "ViolasPay Photos"
+        private const val REQUEST_CODE_SAVE_PICTURE = 100
+
         fun start(context: Context, record: TransactionRecordVO) {
             Intent(context, TransactionDetailsActivity::class.java)
                 .apply { putExtra(KEY_ONE, record) }
@@ -66,7 +60,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         }
     }
 
-    private lateinit var mTransactionRecordVO: TransactionRecordVO
+    private lateinit var mTransactionRecord: TransactionRecordVO
 
     private var mLoadingDialog: LoadingDialog? = null
 
@@ -76,7 +70,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         setContentView(R.layout.activity_transaction_details)
         if (initData(savedInstanceState)) {
             initEvent()
-            initView(mTransactionRecordVO)
+            initView(mTransactionRecord)
         } else {
             close()
         }
@@ -84,7 +78,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_ONE, mTransactionRecordVO)
+        outState.putParcelable(KEY_ONE, mTransactionRecord)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -96,10 +90,10 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         when (item.itemId) {
             R.id.app_bar_share -> {
                 ShareTransactionDetailsDialog.start(
-                    supportFragmentManager, mTransactionRecordVO
+                    supportFragmentManager, mTransactionRecord, clTransactionInfo.y
                 ) {
                     when (it) {
-                        0 -> saveIntoAlbum()
+                        0 -> checkStoragePermission()
                     }
                 }
             }
@@ -118,38 +112,38 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         return if (record == null) {
             false
         } else {
-            mTransactionRecordVO = record
+            mTransactionRecord = record
             true
         }
     }
 
     private fun initEvent() {
         tvViewByBrowser.setOnClickListener {
-            if (!openBrowser(this, mTransactionRecordVO.url!!)) {
-                WebCommonActivity.start(this, mTransactionRecordVO.url!!)
+            if (!openBrowser(this, mTransactionRecord.url!!)) {
+                WebCommonActivity.start(this, mTransactionRecord.url!!)
             }
         }
 
         llReceiptAddress.setOnClickListener {
-            if (!mTransactionRecordVO.toAddress.isBlank()) {
-                ClipboardUtils.copy(this, mTransactionRecordVO.toAddress)
+            if (!mTransactionRecord.toAddress.isNullOrBlank()) {
+                ClipboardUtils.copy(this, mTransactionRecord.toAddress!!)
             }
         }
 
         llPaymentAddress.setOnClickListener {
-            if (!mTransactionRecordVO.fromAddress.isBlank()) {
-                ClipboardUtils.copy(this, mTransactionRecordVO.fromAddress)
+            if (!mTransactionRecord.fromAddress.isBlank()) {
+                ClipboardUtils.copy(this, mTransactionRecord.fromAddress)
             }
         }
 
         llTransactionNumber.setOnClickListener {
-            if (!mTransactionRecordVO.transactionId.isBlank()) {
-                ClipboardUtils.copy(this, mTransactionRecordVO.transactionId)
+            if (!mTransactionRecord.transactionId.isBlank()) {
+                ClipboardUtils.copy(this, mTransactionRecord.transactionId)
             }
         }
     }
 
-    private fun initView(record: TransactionRecordVO) {
+    private fun initView(transactionRecord: TransactionRecordVO) {
         StatusBarUtil.setLightStatusBarMode(this.window, true)
 
         setSupportActionBar(toolbar)
@@ -175,7 +169,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             }
         })
 
-        when (record.transactionState) {
+        when (transactionRecord.transactionState) {
             TransactionState.PENDING -> {
                 ivState.setImageResource(R.drawable.ic_transaction_state_pending)
                 tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_FAA030))
@@ -186,7 +180,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 ivState.setImageResource(R.drawable.ic_transaction_state_failure)
                 tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_F55753))
                 tvDesc.setText(
-                    when (record.transactionType) {
+                    when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
                             R.string.desc_transaction_state_transfer_failure
                         }
@@ -210,7 +204,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 ivState.setImageResource(R.drawable.ic_transaction_state_success)
                 tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_00D1AF))
                 tvDesc.setText(
-                    when (record.transactionType) {
+                    when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
                             R.string.desc_transaction_state_transfer_success
                         }
@@ -231,32 +225,32 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             }
         }
 
-        tvTime.text = formatDate(record.time, pattern = "yyyy-MM-dd HH:mm:ss")
+        tvTime.text = formatDate(transactionRecord.time, pattern = "yyyy-MM-dd HH:mm:ss")
 
         val amountWithUnit =
-            convertAmountToDisplayUnit(record.amount, record.coinType)
-        tvAmount.text = "${amountWithUnit.first} ${record.tokenName ?: amountWithUnit.second}"
+            convertAmountToDisplayUnit(transactionRecord.amount, transactionRecord.coinType)
+        tvAmount.text = "${amountWithUnit.first} ${transactionRecord.tokenName ?: amountWithUnit.second}"
 
         val gasWithUnit =
-            convertAmountToDisplayUnit(record.gas, record.coinType)
+            convertAmountToDisplayUnit(transactionRecord.gas, transactionRecord.coinType)
         tvGas.text = "${gasWithUnit.first} ${gasWithUnit.second}"
 
-        if (record.toAddress.isBlank()) {
+        if (transactionRecord.toAddress.isNullOrBlank()) {
             noneContent(tvReceiptAddress)
         } else {
-            tvReceiptAddress.text = record.toAddress
+            tvReceiptAddress.text = transactionRecord.toAddress
         }
 
-        if (record.fromAddress.isBlank()) {
+        if (transactionRecord.fromAddress.isBlank()) {
             noneContent(tvPaymentAddress)
         } else {
-            tvPaymentAddress.text = record.fromAddress
+            tvPaymentAddress.text = transactionRecord.fromAddress
         }
 
-        if (record.transactionId.isBlank()) {
+        if (transactionRecord.transactionId.isBlank()) {
             noneContent(tvTransactionNumber)
         } else {
-            tvTransactionNumber.text = record.transactionId
+            tvTransactionNumber.text = transactionRecord.transactionId
         }
     }
 
@@ -265,16 +259,34 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
     }
 
+    private fun checkStoragePermission() {
+        val perms = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        if (EasyPermissions.hasPermissions(this, *perms)) {
+            saveIntoAlbum()
+        } else {
+            EasyPermissions.requestPermissions(
+                PermissionRequest.Builder(this, REQUEST_CODE_SAVE_PICTURE, *perms)
+                    .setRationale(R.string.save_picture_hint_need_permissions)
+                    .setNegativeButtonText(R.string.action_cancel)
+                    .setPositiveButtonText(R.string.action_ok)
+                    .build()
+            )
+        }
+    }
+
     private fun saveIntoAlbum() {
         launch {
             showProgress()
 
             val result = withContext(Dispatchers.IO) {
                 val bitmap = viewConversionBitmap()
-                return@withContext saveBitmap(bitmap, "${System.currentTimeMillis()}.png")
+                return@withContext saveBitmap(bitmap)
             }
 
-            delay(500)
+            delay(300)
 
             dismissProgress()
             if (result) {
@@ -286,34 +298,38 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     }
 
     private fun viewConversionBitmap(): Bitmap {
-        val width = clDetails.width
-        val height = clDetails.height
+        val width = clTransactionInfo.width
+        val height = clTransactionInfo.height
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
         canvas.drawColor(Color.WHITE)
-        clDetails.draw(canvas)
+        clTransactionInfo.draw(canvas)
 
         return bitmap
     }
 
-    private fun saveBitmap(bitmap: Bitmap, fileName: String): Boolean {
+    private fun saveBitmap(bitmap: Bitmap): Boolean {
         var outputStream: OutputStream? = null
         try {
             val picDir =
-                this.getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: return false
+                this.getExternalFilesDir(PIC_DIR_NAME) ?: return false
 
             if (!picDir.exists()) {
                 picDir.mkdirs()
             }
 
-            val picPath = File(picDir, fileName).absolutePath
+            val curTime = System.currentTimeMillis()
+            val picName = "$curTime.png"
+            val picPath = File(picDir, picName).absolutePath
             val contentValues = ContentValues()
             contentValues.put(MediaStore.Images.ImageColumns.DATA, picPath)
-            contentValues.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, fileName)
+            contentValues.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, picName)
             contentValues.put(MediaStore.Images.ImageColumns.MIME_TYPE, "image/png")
-            contentValues.put(MediaStore.Images.ImageColumns.DATE_TAKEN, System.currentTimeMillis())
+            contentValues.put(MediaStore.Images.ImageColumns.DATE_ADDED, curTime)
+            contentValues.put(MediaStore.Images.ImageColumns.DATE_MODIFIED, curTime)
+            contentValues.put(MediaStore.Images.ImageColumns.SIZE, bitmap.allocationByteCount)
 
             val contentResolver = this.contentResolver
             val uri = contentResolver.insert(
@@ -370,6 +386,35 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     override fun showToast(msg: String, duration: Int) {
         launch {
             Toast.makeText(this@TransactionDetailsActivity, msg, duration).show()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            AppSettingsDialog.Builder(this)
+                .setTitle(getString(R.string.save_picture_title_get_permissions))
+                .setRationale(getString(R.string.save_picture_hint_set_permissions))
+                .setNegativeButton(R.string.action_cancel)
+                .setPositiveButton(R.string.action_ok)
+                .build()
+                .show()
+        }
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        when (requestCode) {
+            REQUEST_CODE_SAVE_PICTURE -> {
+                saveIntoAlbum()
+            }
         }
     }
 }

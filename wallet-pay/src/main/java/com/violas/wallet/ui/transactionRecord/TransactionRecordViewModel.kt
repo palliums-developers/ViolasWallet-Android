@@ -17,6 +17,7 @@ import kotlin.random.Random
 class TransactionRecordViewModel(
     private val mWalletAddress: String,
     private val mTokenAddress: String?,
+    private val mTokenName: String?,
     @TransactionType
     private val mTransactionType: Int,
     coinTypes: CoinTypes
@@ -40,6 +41,7 @@ class TransactionRecordViewModel(
         mTransactionRecordService.getTransactionRecords(
             mWalletAddress,
             mTokenAddress,
+            mTokenName,
             mTransactionType,
             pageSize,
             pageNumber,
@@ -83,9 +85,12 @@ class TransactionRecordViewModel(
                 },
                 time = System.currentTimeMillis(),
                 fromAddress = "${address}00$id",
+                toAddress = "${address}00$id",
                 amount = Random.nextLong(100000).toString(),
                 gas = "0",
-                url = "https://www.baidu.com/"
+                transactionId = it.toString(),
+                url = "https://www.baidu.com/",
+                tokenName = mTokenName
             )
 
             list.add(vo)

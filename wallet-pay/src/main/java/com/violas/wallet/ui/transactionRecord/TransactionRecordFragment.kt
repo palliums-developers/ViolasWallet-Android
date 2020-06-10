@@ -7,12 +7,10 @@ import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getDrawable
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.bip44.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
-import com.violas.wallet.common.KEY_FOUR
-import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.common.KEY_THREE
-import com.violas.wallet.common.KEY_TWO
+import com.violas.wallet.common.*
 import com.violas.wallet.ui.transactionDetails.TransactionDetailsActivity
 
 /**
@@ -24,27 +22,30 @@ import com.violas.wallet.ui.transactionDetails.TransactionDetailsActivity
 class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
     private var mWalletAddress: String? = null
-    private var mCoinTypes: CoinTypes? = null
+    private var mCoinNumber: Int = CoinTypes.Violas.coinType()
     @TransactionType
     private var mTransactionType: Int = TransactionType.ALL
     private var mTokenAddress: String? = null
+    private var mTokenName: String? = null
 
     private var savedInstanceState: Bundle? = null
     private var lazyInitTag = false
 
     companion object {
         fun newInstance(
-            accountAddress: String,
-            coinTypes: CoinTypes,
+            walletAddress: String,
+            coinNumber: Int,
             @TransactionType
             transactionType: Int,
-            tokenAddress: String? = null
+            tokenAddress: String? = null,
+            tokenName: String? = null
         ): TransactionRecordFragment {
             val args = Bundle().apply {
-                putString(KEY_ONE, accountAddress)
-                putSerializable(KEY_TWO, coinTypes)
+                putString(KEY_ONE, walletAddress)
+                putInt(KEY_TWO, coinNumber)
                 putInt(KEY_THREE, transactionType)
                 tokenAddress?.let { putString(KEY_FOUR, it) }
+                tokenName?.let { putString(KEY_FIVE, it) }
             }
 
             return TransactionRecordFragment().apply {
@@ -54,7 +55,13 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     }
 
     private val mViewModel by lazy {
-        TransactionRecordViewModel(mWalletAddress!!, mTokenAddress, mTransactionType, mCoinTypes!!)
+        TransactionRecordViewModel(
+            mWalletAddress!!,
+            mTokenAddress,
+            mTokenName,
+            mTransactionType,
+            CoinTypes.parseCoinType(mCoinNumber)
+        )
     }
 
     private val mViewAdapter by lazy {
@@ -108,9 +115,10 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mWalletAddress?.let { outState.putString(KEY_ONE, it) }
-        mCoinTypes?.let { outState.putSerializable(KEY_TWO, it) }
+        outState.putInt(KEY_TWO, mCoinNumber)
         outState.putInt(KEY_THREE, mTransactionType)
         mTokenAddress?.let { outState.putString(KEY_FOUR, it) }
+        mTokenName?.let { outState.putString(KEY_FIVE, it) }
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
@@ -118,20 +126,20 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
             val bundle = savedInstanceState ?: arguments ?: return false
 
             mWalletAddress = bundle.getString(KEY_ONE, null) ?: return false
-            mCoinTypes = bundle.getSerializable(KEY_TWO) as CoinTypes
-            mTransactionType = bundle.getInt(KEY_THREE, TransactionType.ALL)
-            if (bundle.containsKey(KEY_FOUR)) {
-                mTokenAddress = bundle.getString(KEY_FOUR)
-            }
+            mCoinNumber = bundle.getInt(KEY_TWO, mCoinNumber)
+            mTransactionType = bundle.getInt(KEY_THREE, mTransactionType)
+            mTokenAddress = bundle.getString(KEY_FOUR)
+            mTokenName = bundle.getString(KEY_FIVE)
 
             // code for test
-            /*if (mCoinTypes == CoinTypes.Violas) {
-
-                } else if (mCoinTypes == CoinTypes.Libra) {
-                    mAddress = "000000000000000000000000000000000000000000000000000000000a550c18"
+            mWalletAddress =
+                if (mCoinNumber == CoinTypes.Violas.coinType()
+                    || mCoinNumber == CoinTypes.Libra.coinType()
+                ) {
+                    "f4174e9eabcb2e968e22da4c75ac653b"
                 } else {
-                    mAddress = "15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew"
-                }*/
+                    "2NGZrVvZG92qGYqzTLjCAewvPZ7JE8S8VxE"
+                }
 
             return true
         } catch (e: Exception) {

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +23,7 @@ import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.formatDate
 import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
 import com.violas.wallet.ui.transactionRecord.TransactionType
@@ -39,21 +41,24 @@ import kotlinx.coroutines.CoroutineScope
  */
 class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by CustomMainScope() {
 
-    private lateinit var mTransactionRecordVO: TransactionRecordVO
+    private lateinit var mTransactionRecord: TransactionRecordVO
+    private var mTransactionInfoViewY: Float = 0f
 
     private var shareCallback: ((shareType: Int) -> Unit)? = null
 
     companion object {
-        private const val PIC_DIR_NAME = "ViolasPay Photos"
-
         fun start(
             fragmentManager: FragmentManager,
-            record: TransactionRecordVO,
+            transactionRecord: TransactionRecordVO,
+            transactionInfoViewY: Float,
             shareCallback: (shareType: Int) -> Unit
         ) {
             ShareTransactionDetailsDialog()
                 .apply {
-                    arguments = Bundle().apply { putParcelable(KEY_ONE, record) }
+                    arguments = Bundle().apply {
+                        putParcelable(KEY_ONE, transactionRecord)
+                        putFloat(KEY_TWO, transactionInfoViewY)
+                    }
                     this.shareCallback = shareCallback
                 }
                 .show(fragmentManager)
@@ -99,7 +104,7 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
 
         if (initData(savedInstanceState)) {
             initEvent()
-            initView(mTransactionRecordVO)
+            initView(mTransactionRecord)
         } else {
             close()
         }
@@ -107,7 +112,8 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
         val bundle = savedInstanceState ?: arguments ?: return false
-        mTransactionRecordVO = bundle.getParcelable(KEY_ONE) ?: return false
+        mTransactionRecord = bundle.getParcelable(KEY_ONE) ?: return false
+        mTransactionInfoViewY = bundle.getFloat(KEY_TWO)
         return true
     }
 
@@ -117,7 +123,14 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
         }
     }
 
-    private fun initView(record: TransactionRecordVO) {
+    private fun initView(transactionRecord: TransactionRecordVO) {
+        if (mTransactionInfoViewY > 0) {
+            val layoutParams =
+                clTransactionInfo.layoutParams as ConstraintLayout.LayoutParams
+            layoutParams.topMargin = mTransactionInfoViewY.toInt()
+            clTransactionInfo.layoutParams = layoutParams
+        }
+
         rvShareTypes.layoutManager =
             LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
         rvShareTypes.adapter = ShareViewAdapter(
@@ -129,7 +142,7 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
             shareCallback?.invoke(it)
         }
 
-        when (record.transactionState) {
+        when (transactionRecord.transactionState) {
             TransactionState.PENDING -> {
                 ivState.setImageResource(R.drawable.ic_transaction_state_pending)
                 tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_FAA030))
@@ -140,7 +153,7 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
                 ivState.setImageResource(R.drawable.ic_transaction_state_failure)
                 tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_F55753))
                 tvDesc.setText(
-                    when (record.transactionType) {
+                    when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
                             R.string.desc_transaction_state_transfer_failure
                         }
@@ -164,7 +177,7 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
                 ivState.setImageResource(R.drawable.ic_transaction_state_success)
                 tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_00D1AF))
                 tvDesc.setText(
-                    when (record.transactionType) {
+                    when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
                             R.string.desc_transaction_state_transfer_success
                         }
@@ -185,32 +198,32 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
             }
         }
 
-        tvTime.text = formatDate(record.time, pattern = "yyyy-MM-dd HH:mm:ss")
+        tvTime.text = formatDate(transactionRecord.time, pattern = "yyyy-MM-dd HH:mm:ss")
 
         val amountWithUnit =
-            convertAmountToDisplayUnit(record.amount, record.coinType)
-        tvAmount.text = "${amountWithUnit.first} ${record.tokenName ?: amountWithUnit.second}"
+            convertAmountToDisplayUnit(transactionRecord.amount, transactionRecord.coinType)
+        tvAmount.text = "${amountWithUnit.first} ${transactionRecord.tokenName ?: amountWithUnit.second}"
 
         val gasWithUnit =
-            convertAmountToDisplayUnit(record.gas, record.coinType)
+            convertAmountToDisplayUnit(transactionRecord.gas, transactionRecord.coinType)
         tvGas.text = "${gasWithUnit.first} ${gasWithUnit.second}"
 
-        if (record.toAddress.isBlank()) {
+        if (transactionRecord.toAddress.isNullOrBlank()) {
             noneContent(tvReceiptAddress)
         } else {
-            tvReceiptAddress.text = record.toAddress
+            tvReceiptAddress.text = transactionRecord.toAddress
         }
 
-        if (record.fromAddress.isBlank()) {
+        if (transactionRecord.fromAddress.isBlank()) {
             noneContent(tvPaymentAddress)
         } else {
-            tvPaymentAddress.text = record.fromAddress
+            tvPaymentAddress.text = transactionRecord.fromAddress
         }
 
-        if (record.transactionId.isBlank()) {
+        if (transactionRecord.transactionId.isBlank()) {
             noneContent(tvTransactionNumber)
         } else {
-            tvTransactionNumber.text = record.transactionId
+            tvTransactionNumber.text = transactionRecord.transactionId
         }
     }
 

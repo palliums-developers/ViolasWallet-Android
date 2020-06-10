@@ -1,219 +1,375 @@
 package com.violas.wallet.ui.tokenInfo
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
+import android.view.ViewTreeObserver
+import android.widget.TextView
+import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
+import androidx.lifecycle.Observer
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.tabs.TabLayout
+import com.palliums.base.ViewController
+import com.palliums.extensions.close
+import com.palliums.extensions.setTitleToCenter
+import com.palliums.extensions.show
+import com.palliums.utils.CustomMainScope
+import com.palliums.utils.StatusBarUtil
+import com.palliums.utils.start
+import com.palliums.widget.loading.LoadingDialog
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.TokenManager
-import com.violas.wallet.event.RefreshBalanceEvent
-import com.violas.wallet.event.TokenBalanceUpdateEvent
+import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.repository.database.entity.TokenDo
+import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.transactionRecord.TransactionRecordFragment
 import com.violas.wallet.ui.transactionRecord.TransactionType
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
-import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.bean.AssetsCoinVo
+import com.violas.wallet.viewModel.bean.AssetsTokenVo
+import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_token_info.*
-import kotlinx.coroutines.*
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import me.yokeyword.fragmentation.SupportActivity
 
-class TokenInfoActivity : BaseAppActivity() {
+/**
+ * Created by elephant on 2020/6/3 15:27.
+ * Copyright © 2019-2020. All rights reserved.
+ * <p>
+ * desc: 币种信息页面（包括当前币的交易记录）
+ */
+class TokenInfoActivity : SupportActivity(), ViewController,
+    CoroutineScope by CustomMainScope() {
+
     companion object {
-        private const val EXT_TOKEN_ID = "1"
-        fun start(fragment: Fragment, tokenId: Long = 0, responseCode: Int) {
-            val intent = Intent(fragment.activity, TokenInfoActivity::class.java)
+        fun start(context: Context, assetsVo: AssetsVo) {
+            Intent(context, TokenInfoActivity::class.java)
                 .apply {
-                    putExtra(EXT_TOKEN_ID, tokenId)
+                    putExtra(KEY_ONE, assetsVo.getCoinNumber())
+                    if (assetsVo is AssetsTokenVo) {
+                        putExtra(KEY_TWO, assetsVo.getAssetsName())
+                    }
                 }
-            fragment.startActivityForResult(intent, responseCode)
+                .start(context)
         }
     }
 
-    private var refreshBalanceJob: Job? = null
-
-    override fun getLayoutResId(): Int {
-        return R.layout.activity_token_info
+    private val mWalletAppViewModel by lazy {
+        WalletAppViewModel.getViewModelInstance(this)
     }
 
-    override fun getTitleStyle(): Int {
-        return TITLE_STYLE_DARK_TITLE_PLIGHT_CONTENT
-    }
+    private var mCoinNumber = Int.MIN_VALUE
+    private var mTokenName: String? = null
 
-    private var mTokenId: Long = -100
-    private lateinit var mTokenDo: TokenDo
+    private lateinit var mAssetsVo: AssetsVo
     private lateinit var mAccountDO: AccountDO
 
-    private val mTokenManager by lazy {
-        TokenManager()
-    }
-
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
+    private var mLoadingDialog: LoadingDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        findFragment(TransactionRecordFragment::class.java)?.pop()
+        setContentView(R.layout.activity_token_info)
+        initView()
+        initEvent()
+        initData(savedInstanceState)
+    }
 
-        launch(Dispatchers.IO) {
-            val result = initData(savedInstanceState)
-            withContext(Dispatchers.Main) {
-                if (result) {
-                    initView()
-                } else {
-                    showToast(getString(R.string.hint_unknown_error))
-                    finish()
+    private fun initData(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            mCoinNumber = savedInstanceState.getInt(KEY_ONE, mCoinNumber)
+            mTokenName = savedInstanceState.getString(KEY_TWO)
+        } else if (intent != null) {
+            mCoinNumber = intent.getIntExtra(KEY_ONE, mCoinNumber)
+            mTokenName = intent.getStringExtra(KEY_TWO)
+        }
+        if (mCoinNumber == Int.MIN_VALUE) {
+            close()
+            return
+        }
+
+        mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
+            var exists = false
+            for (item in it) {
+                if (item.getCoinNumber() == mCoinNumber
+                    && ((item is AssetsCoinVo && mTokenName.isNullOrBlank())
+                            || (item is AssetsTokenVo && item.getAssetsName() == mTokenName))
+                ) {
+                    mAssetsVo = item
+                    exists = true
+                    break
                 }
             }
-        }
+
+            if (!exists) {
+                close()
+                return@Observer
+            }
+
+            if (viewPager.adapter != null) {
+                setTokenInfo()
+                return@Observer
+            }
+
+            launch {
+                val accountDO = withContext(Dispatchers.IO) {
+                    try {
+                        mWalletAppViewModel.mAccountManager
+                            .getAccountById(mAssetsVo.getAccountId())
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+
+                if (accountDO == null) {
+                    close()
+                } else {
+                    mAccountDO = accountDO
+                    setTokenInfo()
+                }
+            }
+        })
     }
 
-    override fun onDestroy() {
-        if (EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().unregister(this)
-        }
-        super.onDestroy()
-    }
+    private fun setTokenInfo() {
+        tvTitle.text = mAssetsVo.getAssetsName()
 
-    private fun initData(savedInstanceState: Bundle?): Boolean {
-        if (savedInstanceState != null) {
-            mTokenId = savedInstanceState.getLong(EXT_TOKEN_ID, mTokenId)
-        } else if (intent != null) {
-            mTokenId = intent.getLongExtra(EXT_TOKEN_ID, mTokenId)
+        tvTokenName.text = mAssetsVo.getAssetsName()
+        tvTokenAmount.text = mAssetsVo.amountWithUnit.amount
+        tvFiatAmount.text =
+            "≈${mAssetsVo.fiatAmountWithUnit.symbol}${mAssetsVo.fiatAmountWithUnit.amount}"
+        tvTokenAddress.text = mAccountDO.address
+
+        val tokenAddress =
+            if (mAssetsVo is AssetsTokenVo) (mAssetsVo as AssetsTokenVo).address else null
+        val fragments = mutableListOf(
+            Pair(
+                getString(R.string.label_all),
+                TransactionRecordFragment.newInstance(
+                    walletAddress = mAccountDO.address,
+                    coinNumber = mCoinNumber,
+                    transactionType = TransactionType.ALL,
+                    tokenAddress = tokenAddress,
+                    tokenName = mTokenName
+                )
+            )
+        )
+        if (mCoinNumber == CoinTypes.Libra.coinType()
+            || mCoinNumber == CoinTypes.Violas.coinType()
+        ) {
+            fragments.add(
+                Pair(
+                    getString(R.string.label_transfer_in),
+                    TransactionRecordFragment.newInstance(
+                        walletAddress = mAccountDO.address,
+                        coinNumber = mCoinNumber,
+                        transactionType = TransactionType.TRANSFER,
+                        tokenAddress = tokenAddress,
+                        tokenName = mTokenName
+                    )
+                )
+            )
+            fragments.add(
+                Pair(
+                    getString(R.string.label_transfer_out),
+                    TransactionRecordFragment.newInstance(
+                        walletAddress = mAccountDO.address,
+                        coinNumber = mCoinNumber,
+                        transactionType = TransactionType.COLLECTION,
+                        tokenAddress = tokenAddress,
+                        tokenName = mTokenName
+                    )
+                )
+            )
         }
 
-        if (mTokenId == -100L) {
-            return false
-        }
+        viewPager.offscreenPageLimit = 2
+        viewPager.adapter = TransactionRecordFragmentAdapter(supportFragmentManager, fragments)
 
-        try {
-            mTokenDo = mTokenManager.findTokenById(mTokenId) ?: return false
-            mAccountDO = mAccountManager.getAccountById(mTokenDo.account_id)
-
-            return true
-        } catch (e: Exception) {
-            return false
-        }
+        tabLayout.setupWithViewPager(viewPager)
+        tabLayout.getTabAt(0)?.select()
     }
 
     private fun initView() {
-        EventBus.getDefault().register(this)
+        StatusBarUtil.setLightStatusBarMode(this.window, true)
 
-        title = mTokenDo.name
-        tvUnit.text = mTokenDo.name
-        tvAddress.text = mAccountDO.address
-        setAmount(mTokenDo.amount)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbar.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val rectangle = Rect()
+                val window = window
+                window.decorView.getWindowVisibleDisplayFrame(rectangle)
+                val statusBarHeight = rectangle.top
 
-        ivCopy.setOnClickListener(this)
-        btnTransfer.setOnClickListener(this)
-        btnCollection.setOnClickListener(this)
+                val toolbarLayoutParams =
+                    toolbar.layoutParams as CollapsingToolbarLayout.LayoutParams
+                toolbarLayoutParams.height = toolbarLayoutParams.height + statusBarHeight
+                toolbar.layoutParams = toolbarLayoutParams
+                toolbar.setPadding(0, statusBarHeight, 0, 0)
 
-        loadRootFragment(
-            R.id.flFragmentContainer,
-            TransactionRecordFragment.newInstance(
-                mAccountDO.address,
-                CoinTypes.Violas,
-                TransactionType.ALL,
-                mTokenDo.address
-            )
-        )
-    }
+                val tokenInfoLayoutParams =
+                    clTokenInfo.layoutParams as CollapsingToolbarLayout.LayoutParams
+                tokenInfoLayoutParams.topMargin = toolbar.height + statusBarHeight
+                clTokenInfo.layoutParams = tokenInfoLayoutParams
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (mTokenId != -100L) {
-            outState.putLong(EXT_TOKEN_ID, mTokenId)
+                toolbar.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
+        toolbar.setNavigationOnClickListener {
+            onBackPressedSupport()
         }
+
+        collapsingToolbarLayout.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+            override fun onLayoutChange(
+                v: View?,
+                left: Int,
+                top: Int,
+                right: Int,
+                bottom: Int,
+                oldLeft: Int,
+                oldTop: Int,
+                oldRight: Int,
+                oldBottom: Int
+            ) {
+                if (oldBottom == bottom) {
+                    collapsingToolbarLayout.removeOnLayoutChangeListener(this)
+                    toolbar.setTitleToCenter(tvTitle)
+                }
+            }
+        })
     }
 
-    override fun onViewClick(view: View) {
-        when (view.id) {
-            R.id.ivCopy -> {
-                ClipboardUtils.copy(applicationContext, mAccountDO.address)
+    private fun initEvent() {
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
             }
 
-            R.id.btnTransfer -> {
-                launch(Dispatchers.IO) {
-//                    TransferActivity.start(
-//                        this@TokenInfoActivity,
-//                        mTokenDo.account_id,
-//                        "",
-//                        0,
-//                        true,
-//                        mTokenDo.id!!
-//                    )
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                getTextView(tab)?.let {
+                    it.setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
                 }
             }
 
-            R.id.btnCollection -> {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                viewPager.setCurrentItem(tab.position, true)
+
+                getTextView(tab)?.let {
+                    it.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
+                }
+            }
+
+            private fun getTextView(tab: TabLayout.Tab): TextView? {
+                return try {
+                    val textViewField = tab.view.javaClass.getDeclaredField("textView")
+                    textViewField.isAccessible = true
+                    val textView = textViewField.get(tab.view) as TextView
+                    textViewField.isAccessible = false
+                    textView
+                } catch (e: Exception) {
+                    null
+                }
+            }
+        })
+
+        tvTokenAddress.setOnClickListener {
+            ClipboardUtils.copy(this, mAccountDO.address)
+        }
+
+        btnTransfer.setOnClickListener {
+            TransferActivity.start(this, mAssetsVo)
+        }
+
+        btnCollection.setOnClickListener {
+            if (mAssetsVo is AssetsTokenVo) {
                 CollectionActivity.start(
-                    this,
-                    mAccountDO.id,
-                    true,
-                    mTokenDo.id!!
+                    context = this,
+                    accountId = mAssetsVo.getAccountId(),
+                    isToken = true,
+                    tokenId = mAssetsVo.getId()
+                )
+            } else {
+                CollectionActivity.start(
+                    context = this,
+                    accountId = mAssetsVo.getAccountId(),
+                    isToken = false
                 )
             }
         }
-    }
 
-    @Subscribe(threadMode = ThreadMode.POSTING, priority = 100)
-    fun onRefreshBalanceEvent(event: RefreshBalanceEvent) {
-        try {
-            // 币种信息页面和钱包首页都注册了该事件，只需要一处请求服务器刷新，在通知另一处更新UI
-            EventBus.getDefault().cancelEventDelivery(event)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        launch(Dispatchers.IO) {
-            if (event.delay >= 1) {
-                delay(event.delay * 1000L)
-            }
-
-            withContext(Dispatchers.Main) {
-                refreshTokenBalance()
-            }
+        flExchange.setOnClickListener {
+            // TODO 跳转到闪兑页面
         }
     }
 
-    private fun refreshTokenBalance() {
-        refreshBalanceJob?.cancel()
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(MultiLanguageUtility.attachBaseContext(newBase))
+    }
 
-        refreshBalanceJob = launch(Dispatchers.IO) {
-            val tokenBalance = mTokenManager.getTokenBalance(
-                mAccountDO.address,
-                mTokenDo
-            )
-            if (tokenBalance != 0L) {
-                withContext(Dispatchers.Main) {
-                    setAmount(tokenBalance)
+    override fun showProgress(@StringRes resId: Int) {
+        showProgress(getString(resId))
+    }
 
-                    // 通知钱包首页更新当前币种余额UI
-                    EventBus.getDefault().post(
-                        TokenBalanceUpdateEvent(
-                            mAccountDO.address,
-//                            mTokenDo.tokenIdx,
-                            0,
-                            tokenBalance
-                        )
-                    )
-                }
+    override fun showProgress(msg: String?) {
+        launch {
+            if (mLoadingDialog == null) {
+                mLoadingDialog = LoadingDialog()
+                    .setMessage(msg)
+                mLoadingDialog!!.show(supportFragmentManager)
+            } else {
+                mLoadingDialog!!.setMessage(msg)
             }
         }
     }
 
-    private fun setAmount(currentAccount: Long) {
-        val convertAmountToDisplayUnit =
-            convertAmountToDisplayUnit(currentAccount, CoinTypes.Violas)
-        tvAmount.text = convertAmountToDisplayUnit.first
+    override fun dismissProgress() {
+        launch {
+            mLoadingDialog?.close()
+            mLoadingDialog = null
+        }
+    }
+
+    override fun showToast(@StringRes msgId: Int, duration: Int) {
+        showToast(getString(msgId), duration)
+    }
+
+    override fun showToast(msg: String, duration: Int) {
+        launch {
+            Toast.makeText(this@TokenInfoActivity, msg, duration).show()
+        }
+    }
+
+    inner class TransactionRecordFragmentAdapter(
+        fragmentManager: FragmentManager,
+        private val fragments: List<Pair<String, TransactionRecordFragment>>
+    ) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+
+        override fun getItem(position: Int): Fragment {
+            return fragments[position].second
+        }
+
+        override fun getCount(): Int {
+            return fragments.size
+        }
+
+        override fun getPageTitle(position: Int): CharSequence? {
+            return fragments[position].first
+        }
     }
 }

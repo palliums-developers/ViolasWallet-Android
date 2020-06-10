@@ -337,4 +337,8 @@
     <string name="desc_save_into_album">保存到相册</string>
     <string name="tips_save_into_album_success">已保存到相册</string>
     <string name="tips_save_into_album_failure">保存到相册失败</string>
+    <string name="save_picture_hint_need_permissions">保存图片需要获取存储权限</string>
+    <string name="save_picture_title_get_permissions">获取存储权限</string>
+    <string name="save_picture_hint_set_permissions">需要获取存储权限才能保存图片，前往开启。</string>
+    <string name="action_ok">确定</string>
 </resources>

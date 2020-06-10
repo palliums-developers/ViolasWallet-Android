@@ -11,9 +11,6 @@ import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.setting.SettingActivity
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.fragment_me.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * 我的页面
