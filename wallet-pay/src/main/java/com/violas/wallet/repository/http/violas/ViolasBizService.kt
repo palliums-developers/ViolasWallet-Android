@@ -44,6 +44,7 @@ class ViolasBizService(
     override suspend fun getTransactionRecords(
         walletAddress: String,
         tokenAddress: String?,
+        tokenName: String?,
         transactionType: Int,
         pageSize: Int,
         pageNumber: Int,
@@ -82,23 +83,19 @@ class ViolasBizService(
                 TransactionType.COLLECTION
             }
 
-            // 解析展示地址，收款付款均为对方地址
-            val showAddress = if (transactionType == TransactionType.TRANSFER) {
-                dto.receiver!!
-            } else {
-                dto.sender
-            }
-
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
                 coinType = CoinTypes.Violas,
                 transactionType = transactionType,
                 transactionState = transactionState,
                 time = dto.expiration_time,
-                fromAddress = showAddress,
+                fromAddress = dto.sender,
+                toAddress = dto.receiver,
                 amount = dto.amount,
                 gas = dto.gas,
-                url = BaseBrowserUrl.getViolasBrowserUrl(dto.version.toString())
+                transactionId = dto.version.toString(),
+                url = BaseBrowserUrl.getViolasBrowserUrl(dto.version.toString()),
+                tokenName = tokenName
             )
         }
         onSuccess.invoke(list, null)

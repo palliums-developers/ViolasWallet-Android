@@ -208,7 +208,7 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
             convertAmountToDisplayUnit(transactionRecord.gas, transactionRecord.coinType)
         tvGas.text = "${gasWithUnit.first} ${gasWithUnit.second}"
 
-        if (transactionRecord.toAddress.isBlank()) {
+        if (transactionRecord.toAddress.isNullOrBlank()) {
             noneContent(tvReceiptAddress)
         } else {
             tvReceiptAddress.text = transactionRecord.toAddress

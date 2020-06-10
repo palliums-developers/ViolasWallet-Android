@@ -13,17 +13,19 @@ interface TransactionRecordService {
 
     /**
      * 获取交易记录
-     * @param walletAddress  钱包地址
-     * @param tokenAddress  token地址
-     * @param transactionType  交易类型
-     * @param pageSize 分页大小，默认为10
-     * @param pageNumber 页码，从1开始
-     * @param pageKey 页面键，来源上一次[onSuccess]返回的第二个数据，开始为null
-     * @param onSuccess 成功回调
+     * @param walletAddress         钱包地址
+     * @param tokenAddress          token地址
+     * @param tokenName             token名称
+     * @param transactionType       交易类型
+     * @param pageSize              分页大小，默认为10
+     * @param pageNumber            页码，从1开始
+     * @param pageKey               页面键，来源上一次[onSuccess]返回的第二个数据，开始为null
+     * @param onSuccess             成功回调
      */
     suspend fun getTransactionRecords(
         walletAddress: String,
         tokenAddress: String?,
+        tokenName: String?,
         @TransactionType
         transactionType: Int,
         pageSize: Int,

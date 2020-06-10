@@ -58,7 +58,7 @@ class TransactionRecordActivity : BaseAppActivity() {
                         R.id.flFragmentContainer,
                         TransactionRecordFragment.newInstance(
                             mWalletAddress,
-                            mCoinTypes,
+                            mCoinTypes.coinType(),
                             TransactionType.ALL,
                             mTokenAddress
                         )

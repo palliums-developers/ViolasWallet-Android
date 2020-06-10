@@ -21,6 +21,7 @@ class BitcoinTrezorService(
     override suspend fun getTransactionRecords(
         walletAddress: String,
         tokenAddress: String?,
+        tokenName: String?,
         transactionType: Int,
         pageSize: Int,
         pageNumber: Int,
@@ -53,22 +54,28 @@ class BitcoinTrezorService(
                 }
             }
 
-            // 解析展示地址，收款付款均为对方第一个地址
-            var showAddress = if (transactionType == TransactionType.COLLECTION) {
-                if (dto.vin.isNotEmpty()
-                    && dto.vin[0].addresses.isNotEmpty()
-                ) {
-                    dto.vin[0].addresses[0]
-                } else {
-                    walletAddress
+            // 解析地址
+            var fromAddress = ""
+            var toAddress = ""
+            if (transactionType == TransactionType.COLLECTION) {
+                toAddress = walletAddress
+                for (input in dto.vin) {
+                    for (address in input.addresses) {
+                        if (address.isNotBlank() && address != walletAddress) {
+                            fromAddress = address
+                            break
+                        }
+                    }
                 }
             } else {
-                if (dto.vout.isNotEmpty()
-                    && dto.vout[0].addresses.isNotEmpty()
-                ) {
-                    dto.vout[0].addresses[0]
-                } else {
-                    walletAddress
+                fromAddress = walletAddress
+                for (output in dto.vout) {
+                    for (address in output.addresses) {
+                        if (address.isNotBlank() && address != walletAddress) {
+                            toAddress = address
+                            break
+                        }
+                    }
                 }
             }
 
@@ -128,10 +135,13 @@ class BitcoinTrezorService(
                 transactionType = transactionType,
                 transactionState = transactionState,
                 time = dto.blockTime,
-                fromAddress = showAddress,
+                fromAddress = fromAddress,
+                toAddress = toAddress,
                 amount = showAmount.toString(),
                 gas = dto.fees,
-                url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.txid)
+                transactionId = dto.txid,
+                url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.txid),
+                tokenName = null
             )
         }
         onSuccess.invoke(list, null)

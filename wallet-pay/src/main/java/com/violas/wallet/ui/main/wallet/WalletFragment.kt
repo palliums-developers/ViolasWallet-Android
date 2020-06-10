@@ -33,18 +33,15 @@ import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
-import com.violas.wallet.ui.collection.CollectionActivity
 import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
-import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
-import com.violas.wallet.ui.tokenInfo.TokenInfoTempActivity
+import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
-import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
@@ -56,7 +53,6 @@ import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
 import kotlinx.coroutines.*
-import me.jessyan.autosize.AutoSize
 import me.jessyan.autosize.utils.AutoSizeUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -91,15 +87,8 @@ class WalletFragment : BaseFragment() {
     private val mAssertAdapter by lazy {
         AssertAdapter {
             activity?.let { it1 ->
-
-                TransferActivity.start(
-                    it1,
-                    it
-                )
+                TokenInfoActivity.start(it1, it)
             }
-//            activity?.let { it1 -> TokenInfoTempActivity.start(it1, it) }
-            showToast(it.getAssetsName())
-//            TokenInfoActivity.start(this@WalletFragment, it.id, REQUEST_TOKEN_INFO)
         }
     }
 
@@ -219,7 +208,7 @@ class WalletFragment : BaseFragment() {
         when (view.id) {
             R.id.ivAddAssert -> {
                 launch(Dispatchers.IO) {
-//                    val currentAccount = mAccountManager.currentAccount()
+                    //                    val currentAccount = mAccountManager.currentAccount()
 //                    withContext(Dispatchers.Main) {
 //                        activity?.let { activity ->
 //                            ManagerAssertActivity.start(
@@ -263,7 +252,7 @@ class WalletFragment : BaseFragment() {
             R.id.btnTransfer -> {
                 launch(Dispatchers.IO) {
                     activity?.let { it1 ->
-//                        TransferActivity.start(
+                        //                        TransferActivity.start(
 //                            it1,
 //                            mAccountManager.currentAccount().id
 //                        )
@@ -342,7 +331,7 @@ class WalletFragment : BaseFragment() {
             }
             REQUEST_ADD_ASSERT -> {
                 refreshAssertJob = launch(Dispatchers.IO) {
-//                    refreshViolasAssert()
+                    //                    refreshViolasAssert()
                 }
             }
             REQUEST_SCAN_QR_CODE -> {

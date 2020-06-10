@@ -21,6 +21,7 @@ class BitmainService(
     override suspend fun getTransactionRecords(
         walletAddress: String,
         tokenAddress: String?,
+        tokenName: String?,
         transactionType: Int,
         pageSize: Int,
         pageNumber: Int,
@@ -53,22 +54,28 @@ class BitmainService(
                 }
             }
 
-            // 解析展示地址，收款付款均为对方第一个地址
-            var showAddress = if (transactionType == TransactionType.COLLECTION) {
-                if (dto.inputs.isNotEmpty()
-                    && dto.inputs[0].prev_addresses.isNotEmpty()
-                ) {
-                    dto.inputs[0].prev_addresses[0]
-                } else {
-                    walletAddress
+            // 解析地址
+            var fromAddress = ""
+            var toAddress = ""
+            if (transactionType == TransactionType.COLLECTION) {
+                toAddress = walletAddress
+                for (input in dto.inputs) {
+                    for (prevAddress in input.prev_addresses) {
+                        if (prevAddress.isNotBlank() && prevAddress != walletAddress) {
+                            fromAddress = prevAddress
+                            break
+                        }
+                    }
                 }
             } else {
-                if (dto.outputs.isNotEmpty()
-                    && dto.outputs[0].addresses.isNotEmpty()
-                ) {
-                    dto.outputs[0].addresses[0]
-                } else {
-                    walletAddress
+                fromAddress = walletAddress
+                for (output in dto.outputs) {
+                    for (address in output.addresses) {
+                        if (address.isNotBlank() && address != walletAddress) {
+                            toAddress = address
+                            break
+                        }
+                    }
                 }
             }
 
@@ -128,10 +135,13 @@ class BitmainService(
                 transactionType = transactionType,
                 transactionState = transactionState,
                 time = dto.block_time,
-                fromAddress = showAddress,
+                fromAddress = fromAddress,
+                toAddress = toAddress,
                 amount = showAmount.toString(),
                 gas = dto.fee.toString(),
-                url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.hash)
+                transactionId = dto.hash,
+                url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.hash),
+                tokenName = null
             )
         }
         onSuccess.invoke(list, null)

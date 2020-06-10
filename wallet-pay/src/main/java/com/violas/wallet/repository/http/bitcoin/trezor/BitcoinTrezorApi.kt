@@ -27,7 +27,7 @@ interface BitcoinTrezorApi {
     @GET("v2/address/{address}")
     suspend fun getTransactionRecords(
         @Path("address") address: String,
-        @Query("pagesize") pageSize: Int,
+        @Query("pageSize") pageSize: Int,
         @Query("page") pageNumber: Int,
         @Query("details") details: String = "txs"
     ): TransactionRecordResponse

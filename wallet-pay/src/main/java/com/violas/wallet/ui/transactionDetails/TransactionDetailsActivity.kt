@@ -125,8 +125,8 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         }
 
         llReceiptAddress.setOnClickListener {
-            if (!mTransactionRecord.toAddress.isBlank()) {
-                ClipboardUtils.copy(this, mTransactionRecord.toAddress)
+            if (!mTransactionRecord.toAddress.isNullOrBlank()) {
+                ClipboardUtils.copy(this, mTransactionRecord.toAddress!!)
             }
         }
 
@@ -235,7 +235,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             convertAmountToDisplayUnit(transactionRecord.gas, transactionRecord.coinType)
         tvGas.text = "${gasWithUnit.first} ${gasWithUnit.second}"
 
-        if (transactionRecord.toAddress.isBlank()) {
+        if (transactionRecord.toAddress.isNullOrBlank()) {
             noneContent(tvReceiptAddress)
         } else {
             tvReceiptAddress.text = transactionRecord.toAddress

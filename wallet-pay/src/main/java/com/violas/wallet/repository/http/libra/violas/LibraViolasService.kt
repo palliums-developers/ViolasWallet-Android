@@ -20,6 +20,7 @@ class LibraViolasService(
     override suspend fun getTransactionRecords(
         walletAddress: String,
         tokenAddress: String?,
+        tokenName: String?,
         transactionType: Int,
         pageSize: Int,
         pageNumber: Int,
@@ -55,23 +56,19 @@ class LibraViolasService(
                 TransactionType.COLLECTION
             }
 
-            // 解析展示地址，收款付款均为对方地址
-            val showAddress = if (transactionType == TransactionType.TRANSFER) {
-                dto.receiver!!
-            } else {
-                dto.sender
-            }
-
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
                 coinType = CoinTypes.Libra,
                 transactionType = transactionType,
                 transactionState = transactionState,
-                fromAddress = showAddress,
+                fromAddress = dto.sender,
+                toAddress = dto.receiver,
                 time = dto.expiration_time,
                 amount = dto.amount,
                 gas = dto.gas,
-                url = BaseBrowserUrl.getLibraBrowserUrl(dto.version.toString())
+                transactionId = dto.version.toString(),
+                url = BaseBrowserUrl.getLibraBrowserUrl(dto.version.toString()),
+                tokenName = tokenName
             )
         }
         onSuccess.invoke(list, null)
