@@ -119,7 +119,7 @@
             android:name=".ui.setting.FeedbackActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.tokenInfo.TokenInfoActivity"
+            android:name=".ui.tokenDetails.TokenDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Full" />
         <activity

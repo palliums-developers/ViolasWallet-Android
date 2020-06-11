@@ -37,7 +37,7 @@ import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
-import com.violas.wallet.ui.tokenInfo.TokenInfoActivity
+import com.violas.wallet.ui.tokenDetails.TokenDetailsActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
@@ -87,7 +87,7 @@ class WalletFragment : BaseFragment() {
     private val mAssertAdapter by lazy {
         AssertAdapter {
             activity?.let { it1 ->
-                TokenInfoActivity.start(it1, it)
+                TokenDetailsActivity.start(it1, it)
             }
         }
     }

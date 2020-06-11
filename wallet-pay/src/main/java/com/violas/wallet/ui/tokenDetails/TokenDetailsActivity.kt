@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.tokenInfo
+package com.violas.wallet.ui.tokenDetails
 
 import android.content.Context
 import android.content.Intent
@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.tabs.TabLayout
 import com.palliums.base.ViewController
@@ -39,7 +40,7 @@ import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
-import kotlinx.android.synthetic.main.activity_token_info.*
+import kotlinx.android.synthetic.main.activity_token_details.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,14 +51,14 @@ import me.yokeyword.fragmentation.SupportActivity
  * Created by elephant on 2020/6/3 15:27.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 币种信息页面（包括当前币的交易记录）
+ * desc: 币种详情页面（包括当前币的币种信息和交易记录）
  */
-class TokenInfoActivity : SupportActivity(), ViewController,
+class TokenDetailsActivity : SupportActivity(), ViewController,
     CoroutineScope by CustomMainScope() {
 
     companion object {
         fun start(context: Context, assetsVo: AssetsVo) {
-            Intent(context, TokenInfoActivity::class.java)
+            Intent(context, TokenDetailsActivity::class.java)
                 .apply {
                     putExtra(KEY_ONE, assetsVo.getCoinNumber())
                     if (assetsVo is AssetsTokenVo) {
@@ -83,7 +84,7 @@ class TokenInfoActivity : SupportActivity(), ViewController,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_token_info)
+        setContentView(R.layout.activity_token_details)
         initView()
         initEvent()
         initData(savedInstanceState)
@@ -121,7 +122,7 @@ class TokenInfoActivity : SupportActivity(), ViewController,
             }
 
             if (viewPager.adapter != null) {
-                setTokenInfo()
+                initTokenInfoView()
                 return@Observer
             }
 
@@ -139,21 +140,30 @@ class TokenInfoActivity : SupportActivity(), ViewController,
                     close()
                 } else {
                     mAccountDO = accountDO
-                    setTokenInfo()
+                    initTokenInfoView()
+                    initTransactionRecordsView()
                 }
             }
         })
     }
 
-    private fun setTokenInfo() {
+    private fun initTokenInfoView() {
         tvTitle.text = mAssetsVo.getAssetsName()
+
+        Glide.with(this)
+            .load(mAssetsVo.getLogoUrl())
+            .error(R.drawable.ic_token_info_logo_default)
+            .placeholder(R.drawable.ic_token_info_logo_default)
+            .into(ivTokenLogo)
 
         tvTokenName.text = mAssetsVo.getAssetsName()
         tvTokenAmount.text = mAssetsVo.amountWithUnit.amount
         tvFiatAmount.text =
             "≈${mAssetsVo.fiatAmountWithUnit.symbol}${mAssetsVo.fiatAmountWithUnit.amount}"
         tvTokenAddress.text = mAccountDO.address
+    }
 
+    private fun initTransactionRecordsView(){
         val tokenAddress =
             if (mAssetsVo is AssetsTokenVo) (mAssetsVo as AssetsTokenVo).address else null
         val fragments = mutableListOf(
@@ -351,7 +361,7 @@ class TokenInfoActivity : SupportActivity(), ViewController,
 
     override fun showToast(msg: String, duration: Int) {
         launch {
-            Toast.makeText(this@TokenInfoActivity, msg, duration).show()
+            Toast.makeText(this@TokenDetailsActivity, msg, duration).show()
         }
     }
 
