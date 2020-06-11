@@ -46,84 +46,61 @@ class BitcoinTrezorService(
 
             // 解析交易类型，暂时只分收款和付款
             var transactionType = TransactionType.COLLECTION
+
+            var totalInputAmount = 0L
+            val inputAddressesExcludeSelf = arrayListOf<String>()
             dto.vin.forEach { inputInfo ->
-                inputInfo.addresses.forEach { inputAddress ->
-                    if (inputAddress == walletAddress) {
+                totalInputAmount += inputInfo.value.toLong()
+
+                inputInfo.addresses.forEach { address ->
+                    if (address == walletAddress) {
                         transactionType = TransactionType.TRANSFER
+                    } else {
+                        inputAddressesExcludeSelf.add(address)
                     }
+                }
+            }
+
+            var outputAmountToSelf = 0L
+            val outputAddressesExcludeSelf = arrayListOf<String>()
+            dto.vout.forEach { outputInfo ->
+                var self = false
+                outputInfo.addresses.forEach { address ->
+                    if (address == walletAddress) {
+                        self = true
+                    } else {
+                        outputAddressesExcludeSelf.add(address)
+                    }
+                }
+
+                if (self) {
+                    outputAmountToSelf += outputInfo.value.toLong()
                 }
             }
 
             // 解析地址
-            var fromAddress = ""
-            var toAddress = ""
-            if (transactionType == TransactionType.COLLECTION) {
-                toAddress = walletAddress
-                for (input in dto.vin) {
-                    for (address in input.addresses) {
-                        if (address.isNotBlank() && address != walletAddress) {
-                            fromAddress = address
-                            break
-                        }
-                    }
+            val fromAddress =
+                if (transactionType == TransactionType.COLLECTION
+                    && inputAddressesExcludeSelf.isNotEmpty()
+                ) {
+                    inputAddressesExcludeSelf[0]
+                } else {
+                    walletAddress
                 }
+            val toAddress =
+                if (transactionType != TransactionType.COLLECTION
+                    && outputAddressesExcludeSelf.isNotEmpty()
+                ) {
+                    outputAddressesExcludeSelf[0]
+                } else {
+                    walletAddress
+                }
+
+            // 解析展示金额，收款:自己接收的金额, 付款:自己交付的总金额 - 自己接收的金额（系统找零）- 矿工费
+            var showAmount = if (transactionType == TransactionType.COLLECTION) {
+                outputAmountToSelf
             } else {
-                fromAddress = walletAddress
-                for (output in dto.vout) {
-                    for (address in output.addresses) {
-                        if (address.isNotBlank() && address != walletAddress) {
-                            toAddress = address
-                            break
-                        }
-                    }
-                }
-            }
-
-            // 解析展示金额，收款:自己接收的金额, 付款:自己交付的金额 - 自己接收的金额（系统找零）- 手续费
-            var showAmount = 0L
-            if (transactionType == TransactionType.COLLECTION) {
-                dto.vout.forEach { outputInfo ->
-                    var me = false
-                    outputInfo.addresses.forEach { outputAddress ->
-                        if (outputAddress == walletAddress) {
-                            me = true
-                        }
-                    }
-
-                    if (me) {
-                        showAmount = outputInfo.value.toLong()
-                    }
-                }
-            } else {
-                var inputAmount = 0L
-                dto.vin.forEach { inputInfo ->
-                    var me = false
-                    inputInfo.addresses.forEach { inputAddress ->
-                        if (inputAddress == walletAddress) {
-                            me = true
-                        }
-                    }
-
-                    if (me) {
-                        inputAmount += inputInfo.value.toLong()
-                    }
-                }
-
-                var outputAmount = 0L
-                dto.vout.forEach { outputInfo ->
-                    var me = false
-                    outputInfo.addresses.forEach { outputAddress ->
-                        if (outputAddress == walletAddress) {
-                            me = true
-                        }
-                    }
-
-                    if (me) {
-                        outputAmount += outputInfo.value.toLong()
-                    }
-                }
-
-                showAmount = inputAmount - outputAmount - dto.fees.toLong()
+                totalInputAmount - outputAmountToSelf - dto.fees.toLong()
             }
             if (showAmount < 0) {
                 showAmount = 0
