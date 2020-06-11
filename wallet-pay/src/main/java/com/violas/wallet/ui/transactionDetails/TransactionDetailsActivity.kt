@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
 import android.provider.MediaStore
@@ -306,7 +305,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        canvas.drawColor(Color.WHITE)
+        //canvas.drawColor(Color.WHITE)
         clTransactionInfo.draw(canvas)
 
         return bitmap
@@ -315,9 +314,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     private fun saveBitmap(bitmap: Bitmap): Boolean {
         var outputStream: OutputStream? = null
         try {
-            val picDir =
-                this.getExternalFilesDir(PIC_DIR_NAME) ?: return false
-
+            val picDir = this.getExternalFilesDir(PIC_DIR_NAME) ?: return false
             if (!picDir.exists()) {
                 picDir.mkdirs()
             }
@@ -329,9 +326,9 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             contentValues.put(MediaStore.Images.ImageColumns.DATA, picPath)
             contentValues.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, picName)
             contentValues.put(MediaStore.Images.ImageColumns.MIME_TYPE, "image/png")
-            contentValues.put(MediaStore.Images.ImageColumns.DATE_ADDED, curTime)
-            contentValues.put(MediaStore.Images.ImageColumns.DATE_MODIFIED, curTime)
-            contentValues.put(MediaStore.Images.ImageColumns.SIZE, bitmap.allocationByteCount)
+            contentValues.put(MediaStore.Images.ImageColumns.DATE_ADDED, curTime / 1000)
+            contentValues.put(MediaStore.Images.ImageColumns.DATE_MODIFIED, curTime / 1000)
+            contentValues.put(MediaStore.Images.ImageColumns.SIZE, bitmap.byteCount)
 
             val contentResolver = this.contentResolver
             val uri = contentResolver.insert(
@@ -351,6 +348,12 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                     it.close()
                 }
             } catch (ignore: Exception) {
+            }
+            try {
+                if (!bitmap.isRecycled) {
+                    bitmap.recycle()
+                }
+            } catch (e: Exception) {
             }
         }
     }
