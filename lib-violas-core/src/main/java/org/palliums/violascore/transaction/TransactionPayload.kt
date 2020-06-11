@@ -3,6 +3,7 @@ package org.palliums.violascore.transaction
 import org.palliums.violascore.serialization.LCS
 import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.LCSOutputStream
+import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.storage.TypeTag
 import org.palliums.violascore.utils.HexUtils
 
@@ -232,7 +233,7 @@ data class TransactionArgument(
         return when (argType) {
             ArgType.U64 -> LCS.decodeLong(data)
             ArgType.ADDRESS -> {
-                data
+                data.toHex()
             }
             ArgType.BYTEARRAY -> {
                 val lcsInputStream = LCSInputStream(data)

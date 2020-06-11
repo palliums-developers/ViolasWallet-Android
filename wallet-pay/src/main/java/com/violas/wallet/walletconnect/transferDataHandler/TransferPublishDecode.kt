@@ -7,13 +7,13 @@ import org.palliums.libracore.move.Move
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionPayload
 
-class TransferP2PDecode(private val transaction: RawTransaction) : TransferDecode {
+class TransferPublishDecode(private val transaction: RawTransaction) : TransferDecode {
 
     override fun isHandle(): Boolean {
         val payload = transaction.payload?.payload
         return payload is TransactionPayload.Script && payload.code.contentEquals(
             Move.decode(
-                ContextProvider.getContext().assets.open("move/violas_peer_to_peer.mv")
+                ContextProvider.getContext().assets.open("move/violas_publish.mv")
             )
         )
     }
@@ -22,24 +22,9 @@ class TransferP2PDecode(private val transaction: RawTransaction) : TransferDecod
         return WalletConnect.TransactionDataType.Transfer
     }
 
-    override fun handle(): WalletConnect.TransferDataType {
-        val payload = transaction.payload?.payload as TransactionPayload.Script
-        val coinName = decodeCoinName(
-            0,
-            payload
-        )
-
-        val data = decodeWithData(
-            3,
-            payload
-        )
-
-        return WalletConnect.TransferDataType(
-            transaction.sender.toHex(),
-            payload.args[0].decodeToValue() as String,
-            payload.args[2].decodeToValue() as Long,
-            coinName,
-            Base64.encode(data)
+    override fun handle(): WalletConnect.PublishDataType {
+        return WalletConnect.PublishDataType(
+            transaction.sender.toHex()
         )
     }
 }

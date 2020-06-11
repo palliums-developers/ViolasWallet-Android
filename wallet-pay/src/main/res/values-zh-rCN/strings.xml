@@ -278,7 +278,7 @@
     <string name="wallet_connect_use_behavior">*其使用行为同样适用《用户协议》和《隐私条款》</string>
     <string name="wallet_connect_user_agreement">《用户协议》</string>
     <string name="wallet_connect_privacy_policy">《隐私条款》</string>
-    <string name="wallet_connect_transaction">转账确认</string>
+    <string name="wallet_connect_transaction">交易确认</string>
 
     <string name="title_open_fingerprint_verification">开启指纹验证</string>
     <string name="action_cancel_nbsp">取&#160;消</string>

@@ -328,16 +328,19 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
      * 传递给转账确认页面的数据类型
      */
     enum class TransactionDataType(val value: Int) {
-        Transfer(0), None(1);
+        Transfer(0), None(1), PUBLISH(2);
 
         companion object {
             fun decode(value: Int): TransactionDataType {
                 return when (value) {
-                    0 -> {
+                    Transfer.value -> {
                         Transfer
                     }
-                    1 -> {
+                    None.value -> {
                         None
+                    }
+                    PUBLISH.value -> {
+                        PUBLISH
                     }
                     else -> {
                         None
@@ -354,6 +357,10 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         val coinName: String,
         // base64
         val data: String
+    )
+
+    data class PublishDataType(
+        val form: String
     )
 
     /**
