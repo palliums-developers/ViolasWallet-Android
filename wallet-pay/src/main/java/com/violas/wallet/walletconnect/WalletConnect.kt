@@ -12,7 +12,10 @@ import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.utils.Base64
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.walletconnect.WalletConnectActivity
-import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
+import com.violas.wallet.walletconnect.transferDataHandler.TransferDecodeEngine
+import com.violas.wallet.walletconnect.transferDataHandler.TransferP2PDecode
+import com.violas.wallet.walletconnect.transferDataHandler.decodeCoinName
+import com.violas.wallet.walletconnect.transferDataHandler.decodeWithData
 import com.violas.walletconnect.WCClient
 import com.violas.walletconnect.WCSessionStoreItem
 import com.violas.walletconnect.WCSessionStoreType
@@ -176,26 +179,16 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
 
                     val rawTransaction =
                         RawTransaction.decode(LCSInputStream(tx.message.hexStringToByteArray()))
-                    val payload = rawTransaction.payload?.payload as TransactionPayload.Script
 
-                    val coinName = decodeCoinName(payload)
+                    val decode = TransferDecodeEngine(rawTransaction).decode()
 
-                    val data = decodeWithData(payload)
-
-                    val transferDataType = TransferDataType(
-                        rawTransaction.sender.toHex(),
-                        payload.args[0].decodeToValue() as String,
-                        payload.args[2].decodeToValue() as Long,
-                        coinName,
-                        Base64.encode(data)
-                    )
                     TransactionSwapVo(
                         requestID,
                         rawTransaction.toByteArray().toHex(),
                         false,
                         account.id,
-                        TransactionDataType.Transfer.value,
-                        Gson().toJson(transferDataType)
+                        decode.first.value,
+                        decode.second
                     )
                 }
                 is WCViolasSendRawTransaction -> {
@@ -259,24 +252,15 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                         expirationTime - System.currentTimeMillis()
                     )
 
-                    val coinName = decodeCoinName(payload)
+                    val decode = TransferDecodeEngine(generateRawTransaction).decode()
 
-                    val data = decodeWithData(payload)
-
-                    val transferDataType = TransferDataType(
-                        tx.from,
-                        (payload.args[0].decodeToValue() as ByteArray).toHex(),
-                        payload.args[2].decodeToValue() as Long,
-                        coinName,
-                        Base64.encode(data)
-                    )
                     TransactionSwapVo(
                         requestID,
                         generateRawTransaction.toByteArray().toHex(),
                         false,
                         account.id,
-                        TransactionDataType.Transfer.value,
-                        Gson().toJson(transferDataType)
+                        decode.first.value,
+                        decode.second
                     )
                 }
                 else -> null
@@ -344,19 +328,19 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
      * 传递给转账确认页面的数据类型
      */
     enum class TransactionDataType(val value: Int) {
-        Normal(0), Transfer(1), None(2);
+        Transfer(0), None(1), PUBLISH(2);
 
         companion object {
             fun decode(value: Int): TransactionDataType {
                 return when (value) {
-                    0 -> {
-                        Normal
-                    }
-                    1 -> {
+                    Transfer.value -> {
                         Transfer
                     }
-                    2 -> {
+                    None.value -> {
                         None
+                    }
+                    PUBLISH.value -> {
+                        PUBLISH
                     }
                     else -> {
                         None
@@ -373,6 +357,10 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         val coinName: String,
         // base64
         val data: String
+    )
+
+    data class PublishDataType(
+        val form: String
     )
 
     /**

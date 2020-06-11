@@ -4,41 +4,41 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
 import com.palliums.content.App
 import com.palliums.content.ContextProvider
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.utils.decryptAccount
 import com.violas.wallet.walletconnect.WalletConnect
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import com.violas.walletconnect.jsonrpc.JsonRpcError
-import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.android.synthetic.main.activity_wallet_connect.*
+import kotlinx.android.synthetic.main.view_wallet_connect_none.view.*
 import kotlinx.android.synthetic.main.view_wallet_connect_transfer.view.*
 import kotlinx.coroutines.*
-import org.greenrobot.eventbus.EventBus
 import org.palliums.violascore.crypto.Ed25519PublicKey
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.crypto.Signature
-import org.palliums.violascore.transaction.*
-import java.lang.Exception
+import org.palliums.violascore.transaction.RawTransaction
+import org.palliums.violascore.transaction.SignedTransactionHex
+import org.palliums.violascore.transaction.TransactionSignAuthenticator
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+
 
 class WalletConnectActivity : BaseAppActivity() {
 
@@ -208,10 +208,34 @@ class WalletConnectActivity : BaseAppActivity() {
         withContext(Dispatchers.IO) {
             when (transactionSwapVo.viewType) {
                 WalletConnect.TransactionDataType.None.value -> {
+                    val create = GsonBuilder().setPrettyPrinting().create()
+                    val viewData = transactionSwapVo.viewData
 
+                    val je: JsonElement = JsonParser.parseString(viewData)
+                    val prettyJsonStr2: String = create.toJson(je)
+                    val view = LayoutInflater.from(this@WalletConnectActivity)
+                        .inflate(R.layout.view_wallet_connect_none, viewGroupContent, false)
+                    withContext(Dispatchers.Main) {
+                        view.tvContent.text = prettyJsonStr2
+                        viewGroupContent.removeAllViews()
+                        viewGroupContent.addView(view)
+                    }
                 }
-                WalletConnect.TransactionDataType.Normal.value -> {
+                WalletConnect.TransactionDataType.PUBLISH.value -> {
+                    val viewData = transactionSwapVo.viewData
+                    println("transfer data: $viewData")
+                    val mPublishDataType = Gson().fromJson(
+                        viewData,
+                        WalletConnect.PublishDataType::class.java
+                    )
+                    val view = LayoutInflater.from(this@WalletConnectActivity)
+                        .inflate(R.layout.view_wallet_connect_publish, viewGroupContent, false)
+                    withContext(Dispatchers.Main) {
+                        view.tvDescribeSender.text = mPublishDataType.form
 
+                        viewGroupContent.removeAllViews()
+                        viewGroupContent.addView(view)
+                    }
                 }
                 WalletConnect.TransactionDataType.Transfer.value -> {
                     val viewData = transactionSwapVo.viewData
@@ -226,7 +250,7 @@ class WalletConnectActivity : BaseAppActivity() {
                     ).stripTrailingZeros().toPlainString()
 
                     val view = LayoutInflater.from(this@WalletConnectActivity)
-                        .inflate(R.layout.view_wallet_connect_transfer, null)
+                        .inflate(R.layout.view_wallet_connect_transfer, viewGroupContent, false)
                     withContext(Dispatchers.Main) {
                         view.tvDescribeSender.text = mTransferDataType.form
                         view.tvDescribeAddress.text = mTransferDataType.to

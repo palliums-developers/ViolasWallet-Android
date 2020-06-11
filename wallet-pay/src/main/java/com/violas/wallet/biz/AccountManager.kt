@@ -484,7 +484,7 @@ class AccountManager {
     }
 
     private fun isActivate(authKey: String?): Boolean {
-        if (authKey == null || authKey.substring(0, 32) == "00000000000000000000000000000000") {
+        if (authKey == null || authKey.length < 32 || authKey.substring(0, 32) == "00000000000000000000000000000000") {
             return false
         }
         return true
@@ -607,29 +607,33 @@ class AccountManager {
     private suspend fun queryLibraBalance(localAssets: List<AssetsVo>) {
         localAssets.filter { it is AssetsLibraCoinVo && it.getCoinNumber() == CoinTypes.Libra.coinType() }
             .forEach { assets ->
-                assets as AssetsLibraCoinVo
-                DataRepository.getLibraService().getAccountState(assets.address)?.let { it ->
-                    assets.authKey = it.authenticationKey
-                    assets.delegatedKeyRotationCapability = it.delegatedKeyRotationCapability
-                    assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability
+                try {
+                    assets as AssetsLibraCoinVo
+                    DataRepository.getLibraService().getAccountState(assets.address)?.let { it ->
+                        assets.authKey = it.authenticationKey
+                        assets.delegatedKeyRotationCapability = it.delegatedKeyRotationCapability
+                        assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability
 
-                    val filter =
-                        localAssets.filter { assetsToken -> assetsToken is AssetsTokenVo && assetsToken.getAccountId() == assets.getAccountId() }
-                            .toMap { assetsToken ->
-                                (assetsToken as AssetsTokenVo).module.toUpperCase(Locale.getDefault())
+                        val filter =
+                            localAssets.filter { assetsToken -> assetsToken is AssetsTokenVo && assetsToken.getAccountId() == assets.getAccountId() }
+                                .toMap { assetsToken ->
+                                    (assetsToken as AssetsTokenVo).module.toUpperCase(Locale.getDefault())
+                                }
+                        it.balances?.forEach { balance ->
+                            filter[balance.currency.toUpperCase(Locale.getDefault())]?.apply {
+                                this as AssetsTokenVo
+                                setAmount(balance.amount)
+                                val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
+                                    balance.amount,
+                                    CoinTypes.parseCoinType(assets.getCoinNumber())
+                                )
+                                amountWithUnit.amount = convertAmountToDisplayUnit.first
+                                amountWithUnit.unit = convertAmountToDisplayUnit.second
                             }
-                    it.balances?.forEach { balance ->
-                        filter[balance.currency.toUpperCase(Locale.getDefault())]?.apply {
-                            this as AssetsTokenVo
-                            setAmount(balance.amount)
-                            val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
-                                balance.amount,
-                                CoinTypes.parseCoinType(assets.getCoinNumber())
-                            )
-                            amountWithUnit.amount = convertAmountToDisplayUnit.first
-                            amountWithUnit.unit = convertAmountToDisplayUnit.second
                         }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
     }
@@ -638,29 +642,33 @@ class AccountManager {
         localAssets.filter { it is AssetsCoinVo && it.getCoinNumber() == CoinTypes.Violas.coinType() }
             .forEach { assets ->
                 assets as AssetsLibraCoinVo
-                DataRepository.getViolasService().getAccountState(assets.address)?.let {
-                    assets.authKey = it.authenticationKey ?: ""
-                    assets.delegatedKeyRotationCapability =
-                        it.delegatedKeyRotationCapability ?: false
-                    assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability ?: false
+                try {
+                    DataRepository.getViolasService().getAccountState(assets.address)?.let {
+                        assets.authKey = it.authenticationKey ?: ""
+                        assets.delegatedKeyRotationCapability =
+                            it.delegatedKeyRotationCapability ?: false
+                        assets.delegatedWithdrawalCapability =
+                            it.delegatedWithdrawalCapability ?: false
 
-                    val filter =
-                        localAssets.filter { assetsToken -> assetsToken is AssetsTokenVo && assetsToken.getAccountId() == assets.getAccountId() }
-                            .toMap { assetsToken ->
-                                (assetsToken as AssetsTokenVo).module.toUpperCase(Locale.getDefault())
+                        val filter =
+                            localAssets.filter { assetsToken -> assetsToken is AssetsTokenVo && assetsToken.getAccountId() == assets.getAccountId() }
+                                .toMap { assetsToken ->
+                                    (assetsToken as AssetsTokenVo).module.toUpperCase(Locale.getDefault())
+                                }
+                        it.balance?.let { it1 ->
+                            filter["LBR"]?.apply {
+                                setAmount(it1)
+                                val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
+                                    it1,
+                                    CoinTypes.parseCoinType(assets.getCoinNumber())
+                                )
+                                amountWithUnit.amount = convertAmountToDisplayUnit.first
+                                amountWithUnit.unit = convertAmountToDisplayUnit.second
                             }
-                    it.balance?.let { it1 ->
-                        filter["LBR"]?.apply {
-                            setAmount(it1)
-                            val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
-                                it1,
-                                CoinTypes.parseCoinType(assets.getCoinNumber())
-                            )
-                            amountWithUnit.amount = convertAmountToDisplayUnit.first
-                            amountWithUnit.unit = convertAmountToDisplayUnit.second
                         }
                     }
-
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
     }

@@ -50,7 +50,7 @@ class ImportIdentityActivity : BaseAppActivity() {
                             wordList,
                             password.toByteArray()
                         )
-//                        accountManager.setIdentityMnemonicBackup()
+                        accountManager.setIdentityMnemonicBackup()
                         withContext(Dispatchers.Main) {
                             dismissProgress()
                             finish()

@@ -1,21 +1,21 @@
-package com.violas.wallet.walletconnect
+package com.violas.wallet.walletconnect.transferDataHandler
 
 import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.transaction.storage.TypeTagStructTag
 
-fun decodeCoinName(payload: TransactionPayload.Payload): String {
+fun decodeCoinName(index: Int,payload: TransactionPayload.Payload): String {
     return if (payload is TransactionPayload.Script) {
-        if (payload.tyArgs.isNotEmpty() && payload.tyArgs[0] is TypeTagStructTag) {
-            (payload.tyArgs[0] as TypeTagStructTag).value.module
+        if (payload.tyArgs.isNotEmpty() && payload.tyArgs[index] is TypeTagStructTag) {
+            (payload.tyArgs[index] as TypeTagStructTag).value.module
         } else {
             ""
         }
     } else ""
 }
 
-fun decodeWithData(payload: TransactionPayload.Payload): ByteArray {
+fun decodeWithData(index: Int, payload: TransactionPayload.Payload): ByteArray {
     return if (payload is TransactionPayload.Script) {
-        payload.args.getOrNull(3)?.let {
+        payload.args.getOrNull(index)?.let {
             val decodeToValue = it.decodeToValue()
             if (decodeToValue !is ByteArray) {
                 byteArrayOf()

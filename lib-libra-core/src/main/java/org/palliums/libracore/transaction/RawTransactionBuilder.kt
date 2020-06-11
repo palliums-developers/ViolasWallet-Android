@@ -92,31 +92,6 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     )
 }
 
-@Deprecated("看 Libra 的更新情况是否删除")
-fun TransactionPayload.Companion.optionWithDataPayload(
-    context: Context,
-    receiveAddress: String,
-    exchangeSendAmount: Long,
-    data: ByteArray
-): TransactionPayload {
-
-    val addressArgument = TransactionArgument.newAddress(receiveAddress)
-    val amountArgument = TransactionArgument.newU64(exchangeSendAmount)
-    val dateArgument = TransactionArgument.newByteArray(data)
-
-    val moveEncode = Move.decode(
-        context.assets.open("move/libra_peer_to_peer_with_metadata.mv")
-    )
-
-    return TransactionPayload(
-        TransactionPayload.Script(
-            moveEncode,
-            arrayListOf(lbrStructTag()),
-            arrayListOf(addressArgument, amountArgument, dateArgument)
-        )
-    )
-}
-
 fun lbrStructTagType(): String {
     return "LBR"
 }
