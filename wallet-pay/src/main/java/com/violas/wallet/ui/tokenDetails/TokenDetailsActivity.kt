@@ -90,6 +90,14 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
         initData(savedInstanceState)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (mCoinNumber != Int.MIN_VALUE) {
+            outState.putInt(KEY_ONE, mCoinNumber)
+        }
+        mTokenName?.let { outState.putString(KEY_TWO, it) }
+    }
+
     private fun initData(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             mCoinNumber = savedInstanceState.getInt(KEY_ONE, mCoinNumber)
@@ -163,7 +171,7 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
         tvTokenAddress.text = mAccountDO.address
     }
 
-    private fun initTransactionRecordsView(){
+    private fun initTransactionRecordsView() {
         val tokenAddress =
             if (mAssetsVo is AssetsTokenVo) (mAssetsVo as AssetsTokenVo).address else null
         val fragments = mutableListOf(

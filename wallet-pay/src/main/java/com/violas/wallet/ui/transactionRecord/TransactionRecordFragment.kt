@@ -28,7 +28,6 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     private var mTokenAddress: String? = null
     private var mTokenName: String? = null
 
-    private var savedInstanceState: Bundle? = null
     private var lazyInitTag = false
 
     companion object {
@@ -84,32 +83,30 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        this.savedInstanceState = savedInstanceState
+
+        if (!initData(savedInstanceState)) {
+            finishActivity()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         if (!lazyInitTag) {
             lazyInitTag = true
-            onLazy2InitView(savedInstanceState)
+            onLazy2InitView()
         }
     }
 
-    private fun onLazy2InitView(savedInstanceState: Bundle?) {
-        super.onLazyInitView(savedInstanceState)
-        if (initData(savedInstanceState)) {
-            getStatusLayout()?.setTipsWithStatus(
-                IStatusLayout.Status.STATUS_EMPTY,
-                getString(R.string.tips_no_transaction_record)
-            )
-            getDrawable(R.mipmap.ic_no_transaction_record)?.let {
-                getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
-            }
-
-            mPagingHandler.start()
-        } else {
-            finishActivity()
+    private fun onLazy2InitView() {
+        getStatusLayout()?.setTipsWithStatus(
+            IStatusLayout.Status.STATUS_EMPTY,
+            getString(R.string.tips_no_transaction_record)
+        )
+        getDrawable(R.mipmap.ic_no_transaction_record)?.let {
+            getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
         }
+
+        mPagingHandler.start()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
