@@ -30,6 +30,12 @@
         <item name="android:windowAnimationStyle">@style/ScanLoginWindowAnimation</item>
     </style>
 
+    <style name="AppAlertDialog" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <!-- Minor指竖屏模式下的宽度 -->
+        <item name="android:windowMinWidthMinor">375dp</item>
+        <item name="windowFixedWidthMinor">375dp</item>
+    </style>
+
     <style name="Style_Spinner" parent="Widget.AppCompat.Spinner">
         <item name="android:background">@null</item>
     </style>

@@ -20,6 +20,7 @@ import com.violas.wallet.base.BaseAppActivity
 import kotlinx.android.synthetic.main.activity_scan.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import pub.devrel.easypermissions.PermissionRequest
 import qiu.niorgai.StatusBarCompat
 
 class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
@@ -77,8 +78,12 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
             }
         } else {
             EasyPermissions.requestPermissions(
-                this, getString(R.string.hint_scan_need_camera_permissions),
-                REQUEST_PERMISSION_CAMERA, *perms
+                PermissionRequest.Builder(this, REQUEST_PERMISSION_CAMERA, *perms)
+                    .setRationale(R.string.hint_scan_need_camera_permissions)
+                    .setNegativeButtonText(R.string.action_cancel)
+                    .setPositiveButtonText(R.string.action_ok)
+                    .setTheme(R.style.AppAlertDialog)
+                    .build()
             )
         }
     }
@@ -157,6 +162,9 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
             AppSettingsDialog.Builder(this)
                 .setTitle(getString(R.string.hint_get_the_camera_permissions))
                 .setRationale(getString(R.string.hint_set_permissions_to_open))
+                .setNegativeButton(R.string.action_cancel)
+                .setPositiveButton(R.string.action_ok)
+                .setThemeResId(R.style.AppAlertDialog)
                 .build().show();
         }
     }

@@ -229,7 +229,8 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
 
         val amountWithUnit =
             convertAmountToDisplayUnit(transactionRecord.amount, transactionRecord.coinType)
-        tvAmount.text = "${amountWithUnit.first} ${transactionRecord.tokenName ?: amountWithUnit.second}"
+        tvAmount.text =
+            "${amountWithUnit.first} ${transactionRecord.tokenName ?: amountWithUnit.second}"
 
         val gasWithUnit =
             convertAmountToDisplayUnit(transactionRecord.gas, transactionRecord.coinType)
@@ -272,6 +273,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                     .setRationale(R.string.save_picture_hint_need_permissions)
                     .setNegativeButtonText(R.string.action_cancel)
                     .setPositiveButtonText(R.string.action_ok)
+                    .setTheme(R.style.AppAlertDialog)
                     .build()
             )
         }
@@ -405,6 +407,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 .setRationale(getString(R.string.save_picture_hint_set_permissions))
                 .setNegativeButton(R.string.action_cancel)
                 .setPositiveButton(R.string.action_ok)
+                .setThemeResId(R.style.AppAlertDialog)
                 .build()
                 .show()
         }
