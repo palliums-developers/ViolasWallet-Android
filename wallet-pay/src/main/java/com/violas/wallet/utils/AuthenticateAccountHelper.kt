@@ -377,7 +377,7 @@ fun BaseFragment.authenticateAccountByPassword(
  * @param accountDO                     本地账号
  * @param password                      明文密码
  * @param showLoadingWhenDecryptStart   解密开始时是否显示 loading，解密较耗时，默认显示 loading
- * @param dismissLoadingWhenDecryptEnd  解密开始时是否隐藏 loading，密码错误时会自动隐藏 loading
+ * @param dismissLoadingWhenDecryptEnd  解密结束时是否隐藏 loading，密码错误时会自动隐藏 loading
  * @param passwordFromUserInput         密码来源，true 表示来源于用户输入，false 表示来源于生物验证通过后
  *                                      解密 [AccountDO.encryptedPassword]。
  * @param passwordErrorCallback         密码错误回调，密码规则不符合或解密 [AccountDO.privateKey] 失败时回调
@@ -454,7 +454,7 @@ fun BaseActivity.decryptAccount(
             when {
                 passwordCallback != null || privateKeyCallback != null -> {
                     privateKey = simpleSecurity.decrypt(
-                        password!!.toByteArray(), accountDO.privateKey
+                        password.toByteArray(), accountDO.privateKey
                     )
 
                     if (privateKey == null) {
@@ -466,7 +466,7 @@ fun BaseActivity.decryptAccount(
 
                 mnemonicCallback != null -> {
                     val mnemonicBytes = simpleSecurity.decrypt(
-                        password!!.toByteArray(), accountDO.mnemonic
+                        password.toByteArray(), accountDO.mnemonic
                     )
 
                     if (mnemonicBytes != null) {
@@ -489,7 +489,7 @@ fun BaseActivity.decryptAccount(
             if (showLoadingWhenDecryptStart && dismissLoadingWhenDecryptEnd) {
                 dismissProgress()
             }
-            passwordCallback.invoke(password!!)
+            passwordCallback.invoke(password)
         } else if (mnemonicCallback != null
             && !mnemonics.isNullOrEmpty()
         ) {
@@ -525,7 +525,7 @@ fun BaseActivity.decryptAccount(
  * @param accountDO                     本地账号
  * @param password                      明文密码
  * @param showLoadingWhenDecryptStart   解密开始时是否显示 loading，解密较耗时，默认显示 loading
- * @param dismissLoadingWhenDecryptEnd  解密开始时是否隐藏 loading，密码错误时会自动隐藏 loading
+ * @param dismissLoadingWhenDecryptEnd  解密结束时是否隐藏 loading，密码错误时会自动隐藏 loading
  * @param passwordFromUserInput         密码来源，true 表示来源于用户输入，false 表示来源于生物验证通过后
  *                                      解密 [AccountDO.encryptedPassword]。
  * @param passwordErrorCallback         密码错误回调，密码规则不符合或解密 [AccountDO.privateKey] 失败时回调
@@ -603,7 +603,7 @@ fun BaseFragment.decryptAccount(
             when {
                 passwordCallback != null || privateKeyCallback != null -> {
                     privateKey = simpleSecurity.decrypt(
-                        password!!.toByteArray(), accountDO.privateKey
+                        password.toByteArray(), accountDO.privateKey
                     )
 
                     if (privateKey == null) {
@@ -615,7 +615,7 @@ fun BaseFragment.decryptAccount(
 
                 mnemonicCallback != null -> {
                     val mnemonicBytes = simpleSecurity.decrypt(
-                        password!!.toByteArray(), accountDO.mnemonic
+                        password.toByteArray(), accountDO.mnemonic
                     )
 
                     if (mnemonicBytes != null) {
@@ -638,7 +638,7 @@ fun BaseFragment.decryptAccount(
             if (showLoadingWhenDecryptStart && dismissLoadingWhenDecryptEnd) {
                 dismissProgress()
             }
-            passwordCallback.invoke(password!!)
+            passwordCallback.invoke(password)
         } else if (mnemonicCallback != null
             && !mnemonics.isNullOrEmpty()
         ) {

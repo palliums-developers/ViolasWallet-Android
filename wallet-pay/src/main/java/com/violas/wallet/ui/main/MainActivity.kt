@@ -8,10 +8,14 @@ import com.palliums.utils.DensityUtility
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.event.HomePageType
+import com.violas.wallet.event.SwitchHomePageEvent
 import com.violas.wallet.ui.main.me.MeFragment
 import com.violas.wallet.ui.main.quotes.QuotesFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 class MainActivity : BaseAppActivity() {
 
@@ -36,6 +40,8 @@ class MainActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        EventBus.getDefault().register(this)
 
         bottom_navigation.setIconsMarginTop(DensityUtility.dp2px(this, 5f))
         bottom_navigation.enableAnimation(false)
@@ -82,6 +88,21 @@ class MainActivity : BaseAppActivity() {
         bottom_navigation.menu.findItem(R.id.tab_me).setIcon(R.drawable.table_me_normal)
     }
 
+    @Subscribe
+    fun onSwitchHomePageEvent(event: SwitchHomePageEvent) {
+        when (event.homePageType) {
+            HomePageType.Wallet -> {
+                view_pager.currentItem = 0
+            }
+            HomePageType.Market -> {
+                view_pager.currentItem = 1
+            }
+            HomePageType.Me -> {
+                view_pager.currentItem = 2
+            }
+        }
+    }
+
     override fun onBackPressedSupport() {
         if (System.currentTimeMillis() - mQuitTimePoint > QUIT_CHECK_INTERNAL) {
             Toast.makeText(
@@ -98,5 +119,10 @@ class MainActivity : BaseAppActivity() {
                 ex.printStackTrace()
             }
         }
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 }

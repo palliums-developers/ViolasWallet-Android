@@ -1,11 +1,9 @@
 package com.violas.wallet.ui.account.walletmanager
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.biometric.BiometricManager
-import androidx.fragment.app.Fragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.show
 import com.palliums.utils.start
@@ -13,6 +11,8 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.event.HomePageType
+import com.violas.wallet.event.SwitchHomePageEvent
 import com.violas.wallet.event.WalletChangeEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
@@ -25,6 +25,7 @@ import com.violas.wallet.utils.authenticateAccountByPassword
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_wallet_manager.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
@@ -35,22 +36,8 @@ import org.greenrobot.eventbus.EventBus
 class WalletManagerActivity : BaseAppActivity() {
 
     companion object {
-        private const val EXT_ACCOUNT_ID = "b1"
-
-        fun start(context: Activity) {
-            generateIntent(context).start(context)
-        }
-
-        fun start(context: Fragment, requestCode: Int = -1) {
-            context.context?.let {
-                context.activity?.let { it1 -> generateIntent(it).start(it1) }
-            }
-        }
-
-        private fun generateIntent(context: Context): Intent {
-            return Intent(context, WalletManagerActivity::class.java).apply {
-//                putExtra(EXT_ACCOUNT_ID, accountId)
-            }
+        fun start(context: Context) {
+            Intent(context, WalletManagerActivity::class.java).start(context)
         }
     }
 
@@ -74,13 +61,14 @@ class WalletManagerActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_manager)
-        
-        launch(Dispatchers.IO) {
-            mAccountDO = mAccountManager.getAccountById()
 
-            withContext(Dispatchers.Main) {
+        launch {
+            try {
+                mAccountDO = mAccountManager.getDefaultAccount()
                 initView()
                 initEvent()
+            } catch (e: Exception) {
+                close()
             }
         }
     }
@@ -107,7 +95,6 @@ class WalletManagerActivity : BaseAppActivity() {
             DeleteWalletPromptDialog().setCallback {
                 authenticateAccount(mAccountDO, mAccountManager) {
                     deleteWallet()
-                    mWalletAppViewModel.refreshAssetsList()
                 }
             }.show(supportFragmentManager)
         }
@@ -213,16 +200,24 @@ class WalletManagerActivity : BaseAppActivity() {
     }
 
     private fun deleteWallet() {
-        launch(Dispatchers.IO) {
-            // 删除本地所有的account和token
-            mAccountManager.deleteAllAccount()
-            TokenManager().deleteAllToken()
-            // 发送删除钱包事件，通知刷新UI
-            EventBus.getDefault().post(WalletChangeEvent())
-            withContext(Dispatchers.Main) {
-                dismissProgress()
-                finish()
+        launch {
+            withContext(Dispatchers.IO) {
+                // 删除本地所有的account和token
+                mAccountManager.deleteAllAccount()
+                TokenManager().deleteAllToken()
+                // 清除本地配置
+                mAccountManager.clearLocalConfig()
             }
+
+            // 发送删除钱包事件，通知钱包首页刷新UI
+            EventBus.getDefault().post(WalletChangeEvent())
+            EventBus.getDefault().post(SwitchHomePageEvent(HomePageType.Wallet))
+            mWalletAppViewModel.refreshAssetsList()
+
+            delay(500)
+
+            dismissProgress()
+            finish()
         }
     }
 }
