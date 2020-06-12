@@ -182,7 +182,7 @@ class StructureTest {
             transactionPayload,
             10000,
             20000,
-            lbrStructTag(),
+            lbrStructTagType(),
             86400
         )
 

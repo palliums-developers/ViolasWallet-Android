@@ -216,10 +216,12 @@ data class TransactionArgument(
     val data: ByteArray
 ) {
     enum class ArgType(val number: Int) {
-        U64(0),
-        ADDRESS(1),
-        BYTEARRAY(2),
-        BOOL(3),
+        U8(0),
+        U64(1),
+        U128(2),
+        ADDRESS(3),
+        BYTEARRAY(4),
+        BOOL(5),
     }
 
     fun toByteArray(): ByteArray {
@@ -231,7 +233,9 @@ data class TransactionArgument(
 
     fun decodeToValue(): Any {
         return when (argType) {
+            ArgType.U8 -> LCS.decodeByte(data)
             ArgType.U64 -> LCS.decodeLong(data)
+            ArgType.U128 -> LCS.decodeLong(data)
             ArgType.ADDRESS -> {
                 data.toHex()
             }

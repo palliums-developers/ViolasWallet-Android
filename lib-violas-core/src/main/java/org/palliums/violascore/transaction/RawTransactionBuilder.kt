@@ -32,7 +32,7 @@ fun RawTransaction.Companion.optionTransaction(
     payload: TransactionPayload,
     sequenceNumber: Long,
     gasCurrencyCode: String = lbrStructTagType(),
-    maxGasAmount: Long = 400_000,
+    maxGasAmount: Long = 1_000_000,
     gasUnitPrice: Long = 0,
     delayed: Long = 1000
 ): RawTransaction {

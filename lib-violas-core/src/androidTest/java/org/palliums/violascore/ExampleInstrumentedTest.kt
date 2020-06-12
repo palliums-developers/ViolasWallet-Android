@@ -54,7 +54,7 @@ class ExampleInstrumentedTest {
             program,
             280000,
             0,
-            lbrStructTag(),
+            lbrStructTagType(),
             0
         )
 
