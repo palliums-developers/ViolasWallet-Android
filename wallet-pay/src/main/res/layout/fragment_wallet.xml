@@ -50,11 +50,12 @@
 
                 <ImageView
                     android:id="@+id/ivScan"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:padding="8dp"
-                    android:src="@drawable/icon_scan_white"
+                    android:layout_width="@dimen/dp_42"
+                    android:layout_height="@dimen/dp_42"
+                    android:layout_marginEnd="@dimen/dp_17"
+                    android:foreground="?attr/actionBarItemBackground"
+                    android:padding="@dimen/dp_10"
+                    android:src="@drawable/icon_sacn_white"
                     app:layout_constraintBottom_toBottomOf="@id/tvTotalAssetsTitle"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tvTotalAssetsTitle" />
@@ -75,14 +76,14 @@
                     android:id="@+id/viewWalletConnect"
                     android:layout_width="wrap_content"
                     android:layout_height="24dp"
-                    android:layout_marginTop="5dp"
                     android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="@dimen/dp_45"
                     android:background="@drawable/shape_bg_main_wallet_connect"
                     android:gravity="center"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvAmount">
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent">
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -107,7 +108,7 @@
                 android:id="@+id/viewAssetsGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="-30dp"
+                android:layout_marginTop="-33dp"
                 android:background="@drawable/bg_wallet_main_assets_list">
 
                 <TextView
@@ -124,11 +125,11 @@
 
                 <ImageView
                     android:id="@+id/ivAddAssert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="9dp"
-                    android:layout_marginEnd="8dp"
-                    android:padding="6dp"
+                    android:layout_width="@dimen/dp_42"
+                    android:layout_height="@dimen/dp_42"
+                    android:layout_marginEnd="@dimen/dp_18"
+                    android:foreground="?attr/actionBarItemBackground"
+                    android:padding="@dimen/dp_10"
                     android:src="@drawable/icon_add_assert"
                     app:layout_constraintBottom_toBottomOf="@+id/tvAssert"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -138,6 +139,7 @@
                     android:id="@+id/recyclerAssert"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:overScrollMode="never"
                     android:paddingStart="14dp"
                     android:paddingTop="16dp"
                     android:paddingEnd="14dp"
@@ -152,7 +154,7 @@
                 android:id="@+id/viewAddAccount"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="-30dp"
+                android:layout_marginTop="-33dp"
                 android:background="@drawable/bg_wallet_main_assets_list"
                 android:orientation="vertical"
                 android:paddingStart="14dp"
