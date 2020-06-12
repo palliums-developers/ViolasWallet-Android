@@ -25,8 +25,8 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
     }
 
     val mAssetsListLiveData = MutableLiveData<List<AssetsVo>>()
-    val mExistsAccountLiveData = MutableLiveData(true)
-    val mDataRefreshingLiveData = MutableLiveData(false)
+    val mExistsAccountLiveData = MutableLiveData<Boolean>()
+    val mDataRefreshingLiveData = MutableLiveData<Boolean>()
 
     init {
         refreshAssetsList(true)

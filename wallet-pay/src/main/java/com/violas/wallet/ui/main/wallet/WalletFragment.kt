@@ -52,7 +52,10 @@ import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import me.jessyan.autosize.utils.AutoSizeUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -126,7 +129,8 @@ class WalletFragment : BaseFragment() {
                 viewAssetsGroup.visibility = View.GONE
                 viewAddAccount.visibility = View.VISIBLE
             }
-            checkBackup()
+            handleBackupMnemonicWarn(it)
+            handleDialogShow(it)
         })
         mWalletViewModel.mTotalFiatBalanceStrLiveData.observe(this, Observer {
             tvAmount.text = it
@@ -167,27 +171,45 @@ class WalletFragment : BaseFragment() {
         swipeRefreshLayout.setOnRefreshListener {
             mWalletAppViewModel?.refreshAssetsList()
         }
-
-        checkBackup()
     }
 
-    private fun checkBackup() {
+    private fun handleBackupMnemonicWarn(existsAccount: Boolean) {
+        if (!existsAccount) {
+            layoutBackupNow.visibility = View.GONE
+            return
+        }
+
+        if (!mAccountManager.isIdentityMnemonicBackup()) {
+            layoutBackupNow.visibility = View.VISIBLE
+            btnConfirm.setOnClickListener(this)
+
+        }
+    }
+
+    private fun handleDialogShow(existsAccount: Boolean) {
         if (mAccountManager.isFastIntoWallet()) {
             FastIntoWalletDialog()
-                .show(requireActivity().supportFragmentManager, "fast")
-        } else if (!mAccountManager.isIdentityMnemonicBackup()) {
-            launch(Dispatchers.IO) {
-                delay(1000)
-                if (!mAccountManager.isIdentityMnemonicBackup() && mWalletAppViewModel?.isExistsAccount() == true) {
-                    withContext(Dispatchers.Main) {
-                        layoutBackupNow.visibility = View.VISIBLE
-                        btnConfirm.setOnClickListener(this@WalletFragment)
-
-                        handleOpenBiometricsPrompt()
-                    }
+                .setConfirmCallback {
+                    handleOpenBiometricsPrompt(existsAccount)
                 }
-            }
+                .show(childFragmentManager)
+        } else {
+            handleOpenBiometricsPrompt(existsAccount)
         }
+    }
+
+    private fun handleOpenBiometricsPrompt(existsAccount: Boolean) {
+        if (!existsAccount || mAccountManager.isOpenBiometricsPrompted()) return
+
+        val biometricCompat = BiometricCompat.Builder(requireContext()).build()
+        if (biometricCompat.canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS) return
+
+        mAccountManager.setOpenBiometricsPrompted()
+        OpenBiometricsPromptDialog()
+            .setCallback {
+                WalletManagerActivity.start(requireContext())
+            }
+            .show(childFragmentManager)
     }
 
     private fun setTouchDelegate(view: View, expandTouchWidth: Int) {
@@ -229,94 +251,37 @@ class WalletFragment : BaseFragment() {
                     }
                 }
             }
+
             R.id.viewCreateAccount -> {
                 activity?.let { CreateIdentityActivity.start(it) }
             }
+
             R.id.viewImportAccount -> {
                 activity?.let { ImportIdentityActivity.start(it) }
             }
-//            R.id.ivWalletInfo -> {
-//                launch(Dispatchers.IO) {
-//                    val currentAccount = mAccountManager.currentAccount()
-//                    WalletManagerActivity.start(this@WalletFragment, currentAccount.id)
-//                }
-//            }
-
-//            R.id.btnCollection -> {
-//                launch(Dispatchers.IO) {
-//                    val currentAccount = mAccountManager.currentAccount()
-//                    activity?.let { it1 -> CollectionActivity.start(it1, currentAccount.id) }
-//                }
-//            }
-
-            R.id.btnTransfer -> {
-                launch(Dispatchers.IO) {
-                    activity?.let { it1 ->
-                        //                        TransferActivity.start(
-//                            it1,
-//                            mAccountManager.currentAccount().id
-//                        )
-                    }
-                }
-            }
-
-//            R.id.vCrossChainExchangeLayout -> {
-//                launch(Dispatchers.IO) {
-//                    val currentAccount = mAccountManager.currentAccount()
-//                    activity?.let { OutsideExchangeActivity.start(it, currentAccount.id) }
-//                }
-//            }
-//
-//            R.id.vTransactionRecordLayout -> {
-//                launch(Dispatchers.IO) {
-//                    val currentAccount = mAccountManager.currentAccount()
-//                    activity?.let { TransactionRecordActivity.start(it, currentAccount.id) }
-//                }
-//            }
 
             R.id.btnConfirm -> {
-                launch(Dispatchers.Main) {
-                    val identityAccount = withContext(Dispatchers.IO) {
-                        mAccountManager.getIdentityAccount()
+                launch {
+                    try {
+                        val accountDO = mAccountManager.getDefaultAccount()
+                        authenticateAccount(
+                            accountDO,
+                            mAccountManager,
+                            dismissLoadingWhenDecryptEnd = true,
+                            mnemonicCallback = {
+                                BackupPromptActivity.start(
+                                    requireContext(),
+                                    it,
+                                    BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
+                                )
+                            }
+                        )
+                    } catch (e: Exception) {
                     }
-
-                    authenticateAccount(
-                        identityAccount,
-                        mAccountManager,
-                        dismissLoadingWhenDecryptEnd = true,
-                        mnemonicCallback = {
-                            BackupPromptActivity.start(
-                                requireActivity(),
-                                it,
-                                BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
-                            )
-                        }
-                    )
                 }
             }
         }
     }
-
-    private fun handleOpenBiometricsPrompt() {
-        if (mAccountManager.isOpenBiometricsPrompted()) {
-            return
-        }
-
-        val biometricCompat = BiometricCompat.Builder(requireContext()).build()
-        if (biometricCompat.canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS) {
-            return
-        }
-
-        mAccountManager.setOpenBiometricsPrompted()
-        OpenBiometricsPromptDialog()
-            .setCallback {
-                launch(Dispatchers.IO) {
-                    WalletManagerActivity.start(this@WalletFragment)
-                }
-            }
-            .show(childFragmentManager)
-    }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onBackupIdentityMnemonicEvent(event: BackupIdentityMnemonicEvent) {
@@ -326,14 +291,12 @@ class WalletFragment : BaseFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            BackupMnemonicFrom.BACKUP_IDENTITY_WALLET -> {
-                layoutBackupNow.visibility = View.GONE
-            }
             REQUEST_ADD_ASSERT -> {
                 refreshAssertJob = launch(Dispatchers.IO) {
                     //                    refreshViolasAssert()
                 }
             }
+
             REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
                     decodeScanQRCode(msg) { scanType, scanBean ->

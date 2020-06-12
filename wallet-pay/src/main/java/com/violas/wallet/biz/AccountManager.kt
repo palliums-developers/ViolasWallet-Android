@@ -21,8 +21,10 @@ import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.*
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount
 import org.palliums.libracore.wallet.Account
@@ -40,11 +42,11 @@ class AccountNotExistsException : RuntimeException()
 
 class AccountManager {
     companion object {
-        private const val CURRENT_ACCOUNT = "ab1"
-        private const val IDENTITY_MNEMONIC_BACKUP = "IDENTITY_MNEMONIC_BACKUP"
-        private const val FAST_INTO_WALLET = "ab2"
-        private const val KEY_PROMPT_OPEN_BIOMETRICS = "PROMPT_OPEN_BIOMETRICS"
-        private const val KEY_SECURITY_PASSWORD = "SECURITY_PASSWORD"
+        private const val CURRENT_ACCOUNT = "key_0"
+        private const val KEY_FAST_INTO_WALLET = "key_1"
+        private const val KEY_IDENTITY_MNEMONIC_BACKUP = "key_2"
+        private const val KEY_PROMPT_OPEN_BIOMETRICS = "key_3"
+        private const val KEY_SECURITY_PASSWORD = "key_4"
 
         /**
          * 获取生物识别加解密所用的key
@@ -95,6 +97,18 @@ class AccountManager {
     }
 
     /**
+     * 获取当前账户账户
+     */
+    @Throws(AccountNotExistsException::class)
+    suspend fun getDefaultAccount(): AccountDO = withContext(Dispatchers.IO) {
+        val accounts = mAccountStorage.loadAll()
+        if (accounts.isEmpty()) {
+            throw AccountNotExistsException()
+        }
+        return@withContext accounts[0]
+    }
+
+    /**
      * 是否存在账户
      */
     @Deprecated("功能删除")
@@ -118,6 +132,14 @@ class AccountManager {
         mAccountStorage.deleteAll()
     }
 
+    fun clearLocalConfig() {
+        mConfigSharedPreferences.edit()
+            .putBoolean(KEY_IDENTITY_MNEMONIC_BACKUP, false)
+            .putBoolean(KEY_PROMPT_OPEN_BIOMETRICS, false)
+            .putString(KEY_SECURITY_PASSWORD, "")
+            .apply()
+    }
+
     fun getIdentityByCoinType(coinType: Int): AccountDO? {
         return mAccountStorage.findByCoinTypeByIdentity(coinType)
     }
@@ -138,20 +160,20 @@ class AccountManager {
      * 身份钱包助记词是否备份
      */
     fun isIdentityMnemonicBackup(): Boolean {
-        return mConfigSharedPreferences.getBoolean(IDENTITY_MNEMONIC_BACKUP, false)
+        return mConfigSharedPreferences.getBoolean(KEY_IDENTITY_MNEMONIC_BACKUP, false)
     }
 
     /**
      * 设置身份钱包助记词已备份
      */
     fun setIdentityMnemonicBackup() {
-        mConfigSharedPreferences.edit().putBoolean(IDENTITY_MNEMONIC_BACKUP, true).apply()
+        mConfigSharedPreferences.edit().putBoolean(KEY_IDENTITY_MNEMONIC_BACKUP, true).apply()
     }
 
     fun isFastIntoWallet(): Boolean {
-        val fastInto = mConfigSharedPreferences.getBoolean(FAST_INTO_WALLET, true)
+        val fastInto = mConfigSharedPreferences.getBoolean(KEY_FAST_INTO_WALLET, true)
         if (fastInto) {
-            mConfigSharedPreferences.edit().putBoolean(FAST_INTO_WALLET, false).apply()
+            mConfigSharedPreferences.edit().putBoolean(KEY_FAST_INTO_WALLET, false).apply()
         }
         return fastInto
     }
@@ -484,7 +506,11 @@ class AccountManager {
     }
 
     private fun isActivate(authKey: String?): Boolean {
-        if (authKey == null || authKey.length < 32 || authKey.substring(0, 32) == "00000000000000000000000000000000") {
+        if (authKey == null || authKey.length < 32 || authKey.substring(
+                0,
+                32
+            ) == "00000000000000000000000000000000"
+        ) {
             return false
         }
         return true
