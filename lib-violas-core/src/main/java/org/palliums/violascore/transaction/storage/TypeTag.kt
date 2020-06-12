@@ -11,8 +11,9 @@ enum class TypeTagEnum(val value: Int) {
     U64(2),
     U128(3),
     Address(4),
-    ListTypeTag(5),//Vector(Box<TypeTag>),
-    StructTag(6);
+    Signer(5),
+    ListTypeTag(6),//Vector(Box<TypeTag>),
+    StructTag(7);
 
     companion object {
         fun convert(value: Int): TypeTagEnum {
@@ -22,8 +23,9 @@ enum class TypeTagEnum(val value: Int) {
                 2 -> U64
                 3 -> U128
                 4 -> Address
-                5 -> ListTypeTag
-                6 -> StructTag
+                5 -> Signer
+                6 -> ListTypeTag
+                7 -> StructTag
                 else -> U64
             }
         }
@@ -33,7 +35,7 @@ enum class TypeTagEnum(val value: Int) {
 interface TypeTag {
     companion object {
         fun decode(input: LCSInputStream): TypeTag {
-            return when (input.readIntAsLEB128()) {
+            return when (input.readInt()) {
                 TypeTagEnum.Bool.value -> TypeTagBool(input.readBool())
                 TypeTagEnum.U8.value -> TypeTagU8(input.readShort())
                 TypeTagEnum.U64.value -> TypeTagU64(input.readLong())
@@ -43,6 +45,11 @@ interface TypeTag {
                     TypeTagU128(input.readLong())
                 }
                 TypeTagEnum.Address.value -> TypeTagAddress(AccountAddress(input.readAddress()))
+                TypeTagEnum.Signer.value -> {
+                    val list = ByteArray(32)
+                    input.read(list)
+                    TypeTagSigner(list)
+                }
                 TypeTagEnum.ListTypeTag.value -> {
                     val size = input.readIntAsLEB128()
                     val list = ArrayList<TypeTag>(size)
@@ -52,8 +59,7 @@ interface TypeTag {
                     TypeTagListTypeTag(list)
                 }
                 TypeTagEnum.StructTag.value -> {
-                    val decode = StructTag.decode(input)
-                    TypeTagStructTag(decode)
+                    TypeTagStructTag(StructTag.decode(input))
                 }
                 else -> {
                     TypeTagBool(false)
@@ -79,6 +85,10 @@ interface TypeTag {
 
         fun newAddress(value: AccountAddress): TypeTag {
             return TypeTagAddress(value)
+        }
+
+        fun newSigner(value: ByteArray): TypeTag {
+            return TypeTagSigner(value)
         }
 
         fun newListTypeTag(value: List<TypeTag>): TypeTag {
@@ -156,6 +166,15 @@ class TypeTagStructTag(val value: StructTag) : TypeTag {
         val output = LCSOutputStream()
         output.writeIntAsLEB128(TypeTagEnum.StructTag.value)
         output.write(value.toByteArray())
+        return output.toByteArray()
+    }
+}
+
+class TypeTagSigner(val value: ByteArray) : TypeTag {
+    override fun toByteArray(): ByteArray {
+        val output = LCSOutputStream()
+        output.writeIntAsLEB128(TypeTagEnum.StructTag.value)
+        output.write(value)
         return output.toByteArray()
     }
 }

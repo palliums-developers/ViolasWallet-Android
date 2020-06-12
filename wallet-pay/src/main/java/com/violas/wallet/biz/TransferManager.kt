@@ -18,10 +18,8 @@ import org.palliums.libracore.http.LibraException
 import org.palliums.libracore.transaction.AccountAddress
 import org.palliums.libracore.transaction.storage.StructTag
 import org.palliums.libracore.transaction.storage.TypeTag
-import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
-import org.palliums.violascore.wallet.Account
 
 class ToTheirException : RuntimeException(getString(R.string.hint_to_their_error))
 class WrongPasswordException : RuntimeException(getString(R.string.hint_password_error))
@@ -31,10 +29,6 @@ class LackOfBalanceException :
     RuntimeException(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
 
 class TransferManager {
-    private val mTokenManager by lazy {
-        TokenManager()
-    }
-
     private fun convertViolasTransferException(e: Exception): Exception {
         e.printStackTrace()
         return when (e) {
@@ -118,28 +112,28 @@ class TransferManager {
                 )
             }
             CoinTypes.Violas.coinType() -> {
-                if (token) {
-                    transferViolasToken(
-                        context,
-                        address,
-                        amount,
-                        privateKey,
-                        accountDO,
-                        tokenId,
-                        success,
-                        error
-                    )
-                } else {
-                    transferViolas(
-                        context,
-                        address,
-                        amount,
-                        privateKey,
-                        accountDO,
-                        success,
-                        error
-                    )
-                }
+//                if (token) {
+                transferViolas(
+                    context,
+                    address,
+                    amount,
+                    privateKey,
+                    accountDO,
+                    tokenId,
+                    success,
+                    error
+                )
+//                } else {
+//                    transferViolas(
+//                        context,
+//                        address,
+//                        amount,
+//                        privateKey,
+//                        accountDO,
+//                        success,
+//                        error
+//                    )
+//                }
             }
         }
     }
@@ -259,17 +253,32 @@ class TransferManager {
         amount: Double,
         decryptPrivateKey: ByteArray,
         account: AccountDO,
+        tokenId: Long,
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
         try {
-            DataRepository.getViolasService().sendCoin(
+            val token = DataRepository.getTokenStorage().findById(tokenId)
+            if (token == null) {
+                error.invoke(LibraException.CurrencyNotExistException())
+                return
+            }
+            DataRepository.getViolasService().sendViolasToken(
                 context,
-                Account(
-                    KeyPair.fromSecretKey(decryptPrivateKey)
+                org.palliums.violascore.wallet.Account(
+                    org.palliums.violascore.crypto.Ed25519KeyPair(decryptPrivateKey)
                 ),
                 address,
-                (amount * 1000000L).toLong()
+                (amount * 1000000L).toLong(),
+                org.palliums.violascore.transaction.storage.TypeTag.newStructTag(
+                    org.palliums.violascore.transaction.storage.StructTag(
+                        org.palliums.violascore.transaction.AccountAddress(token.address.hexStringToByteArray()),
+                        token.module,
+                        token.name,
+                        arrayListOf()
+                    )
+                ),
+                token.module
             )
             success.invoke("")
         } catch (e: Exception) {

@@ -196,7 +196,7 @@ class TransferManager {
         error: (Throwable) -> Unit
     ) {
         try {
-            mTokenManager.mViolasService.sendCoin(
+            mTokenManager.mViolasService.sendViolasToken(
                 context,
                 Account(
                     KeyPair.fromSecretKey(decryptPrivateKey)

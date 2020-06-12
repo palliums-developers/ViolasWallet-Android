@@ -6,6 +6,7 @@ open class WCViolasSendTransaction(
     val maxGasAmount: Long?,
     val gasUnitPrice: Long?,
     val sequenceNumber: Long?,
+    val gasCurrencyCode: String?,
     val expirationTime: Long?
 )
 

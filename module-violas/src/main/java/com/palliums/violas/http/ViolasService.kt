@@ -7,6 +7,7 @@ import org.palliums.violascore.BuildConfig
 import org.palliums.violascore.crypto.*
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
+import org.palliums.violascore.transaction.storage.TypeTag
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -38,6 +39,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         payload: TransactionPayload,
         account: Account,
         sequenceNumber: Long = -1L,
+        gasCurrencyCode: String = lbrStructTagType(),
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
         delayed: Long = 1000
@@ -47,6 +49,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
                 payload,
                 account,
                 sequenceNumber,
+                gasCurrencyCode,
                 maxGasAmount,
                 gasUnitPrice,
                 delayed
@@ -84,6 +87,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         payload: TransactionPayload,
         account: Account,
         sequenceNumber: Long = -1L,
+        gasCurrencyCode: String = lbrStructTagType(),
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
         delayed: Long = 1000
@@ -103,7 +107,13 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         }
 
         val rawTransaction = RawTransaction.optionTransaction(
-            senderAddress.toHex(), payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
+            senderAddress.toHex(),
+            payload,
+            sequenceNumber,
+            gasCurrencyCode,
+            maxGasAmount,
+            gasUnitPrice,
+            delayed
         )
         return GenerateTransactionResult(
             generateTransaction(
@@ -118,6 +128,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         payload: TransactionPayload,
         senderAddress: String,
         sequenceNumber: Long = -1L,
+        gasCurrencyCode: String = lbrStructTagType(),
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
         delayed: Long = 1000
@@ -136,7 +147,13 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         }
 
         return RawTransaction.optionTransaction(
-            senderAddress, payload, sequenceNumber, maxGasAmount, gasUnitPrice, delayed
+            senderAddress,
+            payload,
+            sequenceNumber,
+            gasCurrencyCode,
+            maxGasAmount,
+            gasUnitPrice,
+            delayed
         )
     }
 
@@ -173,18 +190,19 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         return hexSignedTransaction
     }
 
-    suspend fun sendCoin(
+    suspend fun sendViolasToken(
         context: Context,
         account: Account,
         address: String,
-        amount: Long
+        amount: Long,
+        typeTag: TypeTag = lbrStructTag(),
+        gasCurrencyCode: String = lbrStructTagType()
     ) {
         val transactionPayload =
             TransactionPayload.optionTransactionPayload(
-                context, address, amount
+                context, address, amount, typeTag = typeTag
             )
-
-        sendTransaction(transactionPayload, account)
+        sendTransaction(transactionPayload, account, gasCurrencyCode = gasCurrencyCode)
     }
 
     suspend fun getBalance(address: String): BigDecimal {

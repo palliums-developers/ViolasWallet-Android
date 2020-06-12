@@ -16,7 +16,7 @@ data class RawTransaction(
     val payload: TransactionPayload?,
     val max_gas_amount: Long,
     val gas_unit_price: Long,
-    val gas_specifier: TypeTag,
+    val gas_currency_code: String,
     val expiration_time: Long
 ) {
     fun toByteArray(): ByteArray {
@@ -28,7 +28,7 @@ data class RawTransaction(
         }
         stream.writeLong(max_gas_amount)
         stream.writeLong(gas_unit_price)
-        stream.write(gas_specifier.toByteArray())
+        stream.writeBytes(gas_currency_code.toByteArray())
         stream.writeLong(expiration_time)
         return stream.toByteArray()
     }
@@ -45,7 +45,7 @@ data class RawTransaction(
                 TransactionPayload.decode(input),
                 input.readLong(),
                 input.readLong(),
-                TypeTag.decode(input),
+                input.readString(),
                 input.readLong()
             )
         }

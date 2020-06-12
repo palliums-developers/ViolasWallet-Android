@@ -20,6 +20,10 @@ fun lbrStructTag(): TypeTag {
     )
 }
 
+fun lbrStructTagType(): String {
+    return "LBR"
+}
+
 /**
  * 创建交易
  */
@@ -27,7 +31,8 @@ fun RawTransaction.Companion.optionTransaction(
     senderAddress: String,
     payload: TransactionPayload,
     sequenceNumber: Long,
-    maxGasAmount: Long = 1_000_000,
+    gasCurrencyCode: String = lbrStructTagType(),
+    maxGasAmount: Long = 400_000,
     gasUnitPrice: Long = 0,
     delayed: Long = 1000
 ): RawTransaction {
@@ -37,7 +42,7 @@ fun RawTransaction.Companion.optionTransaction(
         payload,
         maxGasAmount,
         gasUnitPrice,
-        lbrStructTag(),
+        gasCurrencyCode,
         (Date().time / 1000) + delayed
     )
     println("rawTransaction ${HexUtils.toHex(rawTransaction.toByteArray())}")
@@ -51,7 +56,9 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     context: Context,
     address: String,
     amount: Long,
-    metaData: ByteArray = byteArrayOf()
+    metaData: ByteArray = byteArrayOf(),
+    metadataSignature: ByteArray = byteArrayOf(),
+    typeTag: TypeTag = lbrStructTag()
 ): TransactionPayload {
     val convert = AccountAddress.convert(address)
     return optionTransactionPayload(
@@ -59,7 +66,9 @@ fun TransactionPayload.Companion.optionTransactionPayload(
         convert.address,
         convert.authenticationKeyPrefix,
         amount,
-        metaData
+        metaData,
+        metadataSignature,
+        typeTag
     )
 }
 
@@ -71,25 +80,26 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     address: String,
     authenticationKeyPrefix: String,
     amount: Long,
-    metaData: ByteArray = byteArrayOf()
+    metaData: ByteArray = byteArrayOf(),
+    metadataSignature: ByteArray = byteArrayOf(),
+    typeTag: TypeTag = lbrStructTag()
 ): TransactionPayload {
     val moveEncode = Move.decode(context.assets.open("move/violas_peer_to_peer_with_metadata.mv"))
 
     val addressArgument = TransactionArgument.newAddress(address)
-    val authenticationKeyPrefixArgument =
-        TransactionArgument.newByteArray(authenticationKeyPrefix.hexToBytes())
     val amountArgument = TransactionArgument.newU64(amount)
-    val metaDataArgument = TransactionArgument.newByteArray(metaData)
+    val metadataArgument = TransactionArgument.newByteArray(metaData)
+    val metadataSignatureArgument = TransactionArgument.newByteArray(metadataSignature)
 
     return TransactionPayload(
         TransactionPayload.Script(
             moveEncode,
-            arrayListOf(lbrStructTag()),
+            arrayListOf(typeTag),
             arrayListOf(
                 addressArgument,
-                authenticationKeyPrefixArgument,
                 amountArgument,
-                metaDataArgument
+                metadataArgument,
+                metadataSignatureArgument
             )
         )
     )

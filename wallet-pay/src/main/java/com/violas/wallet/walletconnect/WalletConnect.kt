@@ -40,6 +40,7 @@ import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionArgument
 import org.palliums.violascore.transaction.TransactionPayload
+import org.palliums.violascore.transaction.lbrStructTagType
 import org.palliums.violascore.transaction.storage.TypeTag
 import java.lang.Exception
 
@@ -215,6 +216,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                     val gasUnitPrice = tx.gasUnitPrice ?: 0
                     val maxGasAmount = tx.maxGasAmount ?: 400_000
                     val expirationTime = tx.expirationTime ?: System.currentTimeMillis() + 1000
+                    val gasCurrencyCode = tx.gasCurrencyCode ?: lbrStructTagType()
                     val sequenceNumber = tx.sequenceNumber ?: -1
 
                     val payload = TransactionPayload.Script(
@@ -247,6 +249,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                         TransactionPayload(payload),
                         tx.from,
                         sequenceNumber,
+                        gasCurrencyCode,
                         maxGasAmount,
                         gasUnitPrice,
                         expirationTime - System.currentTimeMillis()
