@@ -5,10 +5,12 @@ import org.palliums.libracore.serialization.LCSOutputStream
 import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.storage.TypeTag
+import org.palliums.libracore.wallet.LIBRA_HASH_PREFIX
 import org.palliums.libracore.wallet.RAW_TRANSACTION_HASH_SALT
 import org.spongycastle.jcajce.provider.digest.SHA3
 import java.lang.IllegalArgumentException
 import java.lang.RuntimeException
+import java.nio.charset.Charset
 
 
 data class RawTransaction(
