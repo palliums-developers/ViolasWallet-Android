@@ -423,11 +423,13 @@ class AccountManager {
             mAccountTokenStorage.insert(
                 TokenDo(
                     account_id = insertIds[0],
-                    assetsName = "vToken"
+                    assetsName = "vToken",
+                    enable = true
                 ),
                 TokenDo(
                     account_id = insertIds[1],
-                    assetsName = "Libra"
+                    assetsName = "Libra",
+                    enable = true
                 )
             )
         }

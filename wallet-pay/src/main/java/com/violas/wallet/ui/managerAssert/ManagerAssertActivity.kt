@@ -17,7 +17,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
-import com.violas.wallet.biz.bean.AssertToken
+import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.TokenPublishEvent
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -36,16 +36,16 @@ class ManagerAssertActivity : BaseAppActivity() {
     override fun getLayoutResId() = R.layout.activity_manager_assert
 
     companion object {
-        private const val EXT_ACCOUNT_ID = "0"
-        fun start(context: Fragment, accountId: Long, requestId: Int) {
+//        private const val EXT_ACCOUNT_ID = "0"
+        fun start(context: Fragment, requestId: Int) {
             val intent = Intent(context.activity, ManagerAssertActivity::class.java)
-            intent.putExtra(EXT_ACCOUNT_ID, accountId)
+//            intent.putExtra(EXT_ACCOUNT_ID, accountId)
             context.startActivityForResult(intent, requestId)
         }
 
-        fun start(context: Activity, accountId: Long, requestId: Int) {
+        fun start(context: Activity, requestId: Int) {
             val intent = Intent(context, ManagerAssertActivity::class.java)
-            intent.putExtra(EXT_ACCOUNT_ID, accountId)
+//            intent.putExtra(EXT_ACCOUNT_ID, accountId)
             context.startActivityForResult(intent, requestId)
         }
     }
@@ -59,7 +59,7 @@ class ManagerAssertActivity : BaseAppActivity() {
         TokenManager()
     }
     private var isPublish = false
-    private val mSupportTokens = mutableListOf<AssertToken>()
+    private val mSupportTokens = mutableListOf<AssertOriginateToken>()
     private val mAdapter by lazy {
         MyAdapter(mSupportTokens) { checkbox, checked, assertToken ->
             if (checked) {
@@ -76,16 +76,16 @@ class ManagerAssertActivity : BaseAppActivity() {
         return mTokenManager.isPublish(mAccount.address)
     }
 
-    private fun openToken(checkbox: SwitchButton, checked: Boolean, assertToken: AssertToken) {
+    private fun openToken(checkbox: SwitchButton, checked: Boolean, assertOriginateToken: AssertOriginateToken) {
         launch(Dispatchers.IO) {
             try {
                 if (isPublish || isPublish()) {
-                    mTokenManager.insert(checked, assertToken)
+                    mTokenManager.insert(checked, assertOriginateToken)
                     checkbox.isChecked = true
                 } else {
                     withContext(Dispatchers.Main) {
                         PublishTokenDialog().setConfirmListener {
-                            showPasswordDialog(assertToken, checkbox, checked)
+                            showPasswordDialog(assertOriginateToken, checkbox, checked)
                             it.dismiss()
                         }.setCancelListener {
                             checkbox.isChecked = false
@@ -105,7 +105,7 @@ class ManagerAssertActivity : BaseAppActivity() {
     }
 
     private fun showPasswordDialog(
-        assertToken: AssertToken,
+        assertOriginateToken: AssertOriginateToken,
         checkbox: SwitchButton,
         checked: Boolean
     ) {
@@ -122,7 +122,7 @@ class ManagerAssertActivity : BaseAppActivity() {
                     isPublish = true
                     EventBus.getDefault().post(TokenPublishEvent())
                     EventBus.getDefault().post(RefreshBalanceEvent())
-                    mTokenManager.insert(checked, assertToken)
+                    mTokenManager.insert(checked, assertOriginateToken)
                 } catch (e: Exception) {
                     launch(Dispatchers.Main) {
                         checkbox.isChecked = false
@@ -157,9 +157,7 @@ class ManagerAssertActivity : BaseAppActivity() {
         showProgress()
         launch(Dispatchers.IO + handler) {
             mSupportTokens.clear()
-            val currentAccountLong = intent.getLongExtra(EXT_ACCOUNT_ID, -1)
-            mAccount = mAccountManager.getAccountById(currentAccountLong)
-            mSupportTokens.addAll(mTokenManager.loadSupportToken(mAccount))
+            mSupportTokens.addAll(mTokenManager.loadSupportToken())
             withContext(Dispatchers.Main) {
                 mAdapter.notifyDataSetChanged()
                 dismissProgress()
@@ -174,8 +172,8 @@ class ManagerAssertActivity : BaseAppActivity() {
 }
 
 class MyAdapter(
-    val data: List<AssertToken>,
-    private val callbacks: (SwitchButton, Boolean, AssertToken) -> Unit
+    val data: List<AssertOriginateToken>,
+    private val callbacks: (SwitchButton, Boolean, AssertOriginateToken) -> Unit
 ) :
     RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
