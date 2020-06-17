@@ -263,7 +263,7 @@ class TransferManager {
                 error.invoke(LibraException.CurrencyNotExistException())
                 return
             }
-            DataRepository.getViolasService().sendViolasToken(
+            DataRepository.getViolasChainRpcService().sendViolasToken(
                 context,
                 org.palliums.violascore.wallet.Account(
                     org.palliums.violascore.crypto.Ed25519KeyPair(decryptPrivateKey)

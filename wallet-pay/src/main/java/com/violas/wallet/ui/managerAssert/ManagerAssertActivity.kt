@@ -18,10 +18,12 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
+import com.violas.wallet.biz.bean.TokenMark
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.TokenPublishEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.activity_manager_assert.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
@@ -36,7 +38,7 @@ class ManagerAssertActivity : BaseAppActivity() {
     override fun getLayoutResId() = R.layout.activity_manager_assert
 
     companion object {
-//        private const val EXT_ACCOUNT_ID = "0"
+        //        private const val EXT_ACCOUNT_ID = "0"
         fun start(context: Fragment, requestId: Int) {
             val intent = Intent(context.activity, ManagerAssertActivity::class.java)
 //            intent.putExtra(EXT_ACCOUNT_ID, accountId)
@@ -50,7 +52,8 @@ class ManagerAssertActivity : BaseAppActivity() {
         }
     }
 
-    private lateinit var mAccount: AccountDO
+    private var mChange = false
+
     private val mAccountManager by lazy {
         AccountManager()
     }
@@ -58,7 +61,11 @@ class ManagerAssertActivity : BaseAppActivity() {
     private val mTokenManager by lazy {
         TokenManager()
     }
-    private var isPublish = false
+
+    private val mWalletAppViewModel by lazy {
+        WalletAppViewModel.getViewModelInstance(this)
+    }
+
     private val mSupportTokens = mutableListOf<AssertOriginateToken>()
     private val mAdapter by lazy {
         MyAdapter(mSupportTokens) { checkbox, checked, assertToken ->
@@ -68,24 +75,40 @@ class ManagerAssertActivity : BaseAppActivity() {
                 launch(Dispatchers.IO) {
                     mTokenManager.insert(checked, assertToken)
                 }
+                mChange = true
             }
         }
     }
 
-    private suspend fun isPublish(): Boolean {
-        return mTokenManager.isPublish(mAccount.address)
+    private suspend fun isPublish(
+        accountId: Long,
+        tokenMark: TokenMark?
+    ): Boolean {
+        if (tokenMark == null) {
+            return false
+        }
+        return mTokenManager.isPublish(accountId, tokenMark)
     }
 
-    private fun openToken(checkbox: SwitchButton, checked: Boolean, assertOriginateToken: AssertOriginateToken) {
+    private fun openToken(
+        checkbox: SwitchButton,
+        checked: Boolean,
+        assertOriginateToken: AssertOriginateToken
+    ) {
+        showProgress()
         launch(Dispatchers.IO) {
             try {
-                if (isPublish || isPublish()) {
+                if (isPublish(assertOriginateToken.account_id, assertOriginateToken.tokenMark)) {
                     mTokenManager.insert(checked, assertOriginateToken)
+                    dismissProgress()
                     checkbox.isChecked = true
+                    mChange = true
                 } else {
+                    val account = mAccountManager.getAccountById(assertOriginateToken.account_id)
+                    dismissProgress()
                     withContext(Dispatchers.Main) {
                         PublishTokenDialog().setConfirmListener {
-                            showPasswordDialog(assertOriginateToken, checkbox, checked)
+                            showPasswordDialog(account, assertOriginateToken, checkbox, checked)
                             it.dismiss()
                         }.setCancelListener {
                             checkbox.isChecked = false
@@ -93,6 +116,7 @@ class ManagerAssertActivity : BaseAppActivity() {
                     }
                 }
             } catch (e: Exception) {
+                dismissProgress()
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
                     checkbox.isChecked = false
@@ -105,12 +129,13 @@ class ManagerAssertActivity : BaseAppActivity() {
     }
 
     private fun showPasswordDialog(
+        account: AccountDO,
         assertOriginateToken: AssertOriginateToken,
         checkbox: SwitchButton,
         checked: Boolean
     ) {
         authenticateAccount(
-            mAccount,
+            account,
             mAccountManager,
             cancelCallback = {
                 checkbox.isChecked = false
@@ -118,13 +143,15 @@ class ManagerAssertActivity : BaseAppActivity() {
         ) {
             launch(Dispatchers.IO) {
                 try {
-                    mTokenManager.publishToken(Account(KeyPair.fromSecretKey(it)))
-                    isPublish = true
-                    EventBus.getDefault().post(TokenPublishEvent())
-                    EventBus.getDefault().post(RefreshBalanceEvent())
+                    mChange = true
+                    mTokenManager.publishToken(
+                        assertOriginateToken.account_id,
+                        it,
+                        assertOriginateToken.tokenMark!!
+                    )
                     mTokenManager.insert(checked, assertOriginateToken)
                 } catch (e: Exception) {
-                    launch(Dispatchers.Main) {
+                    withContext(Dispatchers.Main) {
                         checkbox.isChecked = false
                         showToast(
                             getString(
@@ -166,6 +193,9 @@ class ManagerAssertActivity : BaseAppActivity() {
     }
 
     override fun onBackPressedSupport() {
+        if (mChange) {
+            mWalletAppViewModel.refreshAssetsList()
+        }
         setResult(Activity.RESULT_OK)
         super.onBackPressedSupport()
     }
@@ -203,11 +233,25 @@ class MyAdapter(
         holder.itemView.setOnClickListener { view ->
             if (itemData.isToken) {
                 holder.itemView.checkBox.isChecked = !holder.itemView.checkBox.isChecked
+                callbacks.invoke(
+                    holder.itemView.checkBox,
+                    holder.itemView.checkBox.isChecked,
+                    itemData
+                )
             }
         }
-        holder.itemView.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-            callbacks.invoke(holder.itemView.checkBox, isChecked, itemData)
+        holder.itemView.checkBox.setOnClickListener { view ->
+            if (itemData.isToken) {
+                callbacks.invoke(
+                    holder.itemView.checkBox,
+                    holder.itemView.checkBox.isChecked,
+                    itemData
+                )
+            }
         }
+//        holder.itemView.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+//            callbacks.invoke(holder.itemView.checkBox, isChecked, itemData)
+//        }
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)

@@ -1,4 +1,4 @@
-package org.palliums.libracore.http
+package org.palliums.violascore.http
 
 import androidx.annotation.StringDef
 import com.palliums.net.checkResponse
@@ -9,7 +9,7 @@ import com.palliums.net.checkResponse
  * <p>
  * desc:
  */
-class LibraRepository(private val mLibraApi: LibraApi) {
+class ViolasRpcRepository(private val mViolasRpcApi: ViolasRpcApi) {
 
     @StringDef(
         Method.SUBMIT, Method.GET_ACCOUNT_STATE
@@ -23,7 +23,7 @@ class LibraRepository(private val mLibraApi: LibraApi) {
     }
 
     suspend fun getCurrencies() = checkResponse {
-        mLibraApi.getCurrencies(
+        mViolasRpcApi.getCurrencies(
             RequestDTO(
                 method = Method.GET_CURRENCIES,
                 params = listOf()
@@ -35,7 +35,7 @@ class LibraRepository(private val mLibraApi: LibraApi) {
         address: String
     ) =
         checkResponse {
-            mLibraApi.getAccountState(
+            mViolasRpcApi.getAccountState(
                 RequestDTO(
                     method = Method.GET_ACCOUNT_STATE,
                     params = listOf(address)
@@ -47,7 +47,7 @@ class LibraRepository(private val mLibraApi: LibraApi) {
         hexSignedTransaction: String
     ) =
         checkResponse {
-            mLibraApi.submitTransaction(
+            mViolasRpcApi.submitTransaction(
                 RequestDTO(
                     method = Method.SUBMIT,
                     params = listOf(hexSignedTransaction)

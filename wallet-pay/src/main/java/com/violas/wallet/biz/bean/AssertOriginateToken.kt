@@ -14,6 +14,10 @@ data class TokenMark(
         result = result * 31 + name.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return module + "   " + address + "     " + name
+    }
 }
 
 data class AssertOriginateToken(

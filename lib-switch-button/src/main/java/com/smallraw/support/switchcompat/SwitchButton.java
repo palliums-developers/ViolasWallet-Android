@@ -15,7 +15,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.core.content.ContextCompat;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -28,6 +27,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewParent;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.CompoundButton;
+
+import androidx.core.content.ContextCompat;
 
 @SuppressWarnings("unused")
 public class SwitchButton extends CompoundButton {
@@ -291,7 +292,7 @@ public class SwitchButton extends CompoundButton {
 
     /**
      * SwitchButton use this formula to determine the final size of thumb, background and itself.
-     *
+     * <p>
      * textWidth = max(onWidth, offWidth)
      * thumbRange = thumbWidth * rangeRatio
      * textExtraSpace = textWidth + textExtra - (moveRange - thumbWidth + max(thumbMargin.left, thumbMargin.right) + textThumbInset)
@@ -665,8 +666,8 @@ public class SwitchButton extends CompoundButton {
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
+//    @Override
+    public boolean ssonTouchEvent(MotionEvent event) {
 
         if (!isEnabled() || !isClickable() || !isFocusable() || !mReady) {
             return false;

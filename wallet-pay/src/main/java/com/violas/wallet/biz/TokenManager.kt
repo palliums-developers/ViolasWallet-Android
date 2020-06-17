@@ -1,23 +1,25 @@
 package com.violas.wallet.biz
 
+import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.collection.ArrayMap
 import com.palliums.violas.http.ViolasMultiTokenRepository
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.R
 import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.biz.bean.TokenMark
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.database.entity.TokenDo
+import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.wallet.Account
 import java.util.concurrent.Executors
 
 class TokenManager {
-
-    private val mExecutor by lazy { Executors.newFixedThreadPool(2) }
 
     private val mTokenStorage by lazy { DataRepository.getTokenStorage() }
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
@@ -42,17 +44,16 @@ class TokenManager {
      */
     private suspend fun loadNetWorkSupportViolasToken(): List<AssertOriginateToken> {
         val list = mutableListOf<AssertOriginateToken>()
-//        val supportCurrency = mViolasMultiTokenService.getSupportCurrency()
-//        supportCurrency?.forEach { item ->
-//            list.add(
-//                AssertOriginateToken(
-//                    tokenMark = TokenMark("LBR", "00000000000000000000000000000000", "T"),
-//                    fullName = item.name,
-//                    name = item.name,
-//                    isToken = true
-//                )
-//            )
-//        }
+        DataRepository.getViolasChainRpcService().getCurrencies()?.forEach {
+            list.add(
+                AssertOriginateToken(
+                    tokenMark = TokenMark(it.code, "00000000000000000000000000000000", "T"),
+                    name = it.code,
+                    fullName = it.code,
+                    isToken = true
+                )
+            )
+        }
         return list
     }
 
@@ -61,17 +62,16 @@ class TokenManager {
      */
     private suspend fun loadNetWorkSupportLibraToken(): List<AssertOriginateToken> {
         val list = mutableListOf<AssertOriginateToken>()
-//        val supportCurrency = mViolasMultiTokenService.getSupportCurrency()
-//        supportCurrency?.forEach { item ->
-//            list.add(
-//                AssertToken(
-//                    fullName = item.name,
-//                    name = item.name,
-//                    tokenIdx = item.tokenIdentity,
-//                    isToken = true
-//                )
-//            )
-//        }
+        DataRepository.getLibraService().getCurrencies()?.forEach {
+            list.add(
+                AssertOriginateToken(
+                    tokenMark = TokenMark(it.code, "00000000000000000000000000000000", "T"),
+                    name = it.code,
+                    fullName = it.code,
+                    isToken = true
+                )
+            )
+        }
         return list
     }
 
@@ -99,20 +99,32 @@ class TokenManager {
 
         val resultTokenList = mutableListOf<AssertOriginateToken>()
 
-//        val coinTypes = CoinTypes.parseCoinType(CoinTypes.Bitcoin.coinType())
-//        mutableList.add(
-//            0, AssertOriginateToken(
-//                id = 0,
-//                account_id = account.id,
-//                enable = true,
-//                isToken = false,
-//                name = coinTypes.coinName(),
-//                fullName = coinTypes.fullName(),
-//                amount = 0
-//            )
-//        )
-
         accounts.forEach { account ->
+
+            val logo = when (account.coinNumber) {
+                CoinTypes.Violas.coinType() -> R.drawable.ic_violas_big
+                CoinTypes.Libra.coinType() -> R.drawable.ic_libra_big
+                CoinTypes.Bitcoin.coinType() -> R.drawable.ic_bitcoin_big
+                CoinTypes.BitcoinTest.coinType() -> R.drawable.ic_bitcoin_big
+                else -> R.drawable.ic_violas_big
+            }
+
+            if (account.accountType == AccountType.Normal) {
+                val coinTypes = CoinTypes.parseCoinType(CoinTypes.Bitcoin.coinType())
+                resultTokenList.add(
+                    0, AssertOriginateToken(
+                        id = 0,
+                        account_id = account.id,
+                        enable = true,
+                        isToken = false,
+                        name = coinTypes.coinName(),
+                        fullName = coinTypes.fullName(),
+                        amount = 0,
+                        logo = logo
+                    )
+                )
+            }
+
             var loadSupportToken: List<AssertOriginateToken>? = null
             when (account.coinNumber) {
                 CoinTypes.Bitcoin.coinType(),
@@ -127,20 +139,7 @@ class TokenManager {
                 }
             }
 
-            val localSupportTokenMap = ArrayMap<TokenMark, Int>()
-
-            loadSupportToken?.forEach { token ->
-                localSupportTokenMap[token.tokenMark] = 0
-                token.account_id = account.id
-                supportTokenMap[CoinTokenMark(token.tokenMark, account.id)]?.let {
-                    token.enable = it.enable
-                }
-            }
-
-
-            if (loadSupportToken != null) {
-                resultTokenList.addAll(loadSupportToken)
-            }
+            val localSupportTokenMap = HashMap<TokenMark?, Int>()
 
             val localToken = mTokenStorage.findByAccountId(account.id)
             localToken.map {
@@ -148,6 +147,19 @@ class TokenManager {
                     TokenMark(it.module, it.address, it.name),
                     it.account_id
                 )] = it
+            }
+
+            loadSupportToken?.forEach { token ->
+                localSupportTokenMap[token.tokenMark] = 0
+                token.account_id = account.id
+                token.logo = logo
+                supportTokenMap[CoinTokenMark(token.tokenMark, account.id)]?.let {
+                    token.enable = it.enable
+                }
+            }
+
+            if (loadSupportToken != null) {
+                resultTokenList.addAll(loadSupportToken)
             }
 
             localToken.map {
@@ -165,7 +177,8 @@ class TokenManager {
                             isToken = true,
                             name = it.assetsName,
                             fullName = "",
-                            amount = 0
+                            amount = 0,
+                            logo = logo
                         )
                     )
                 }
@@ -210,6 +223,7 @@ class TokenManager {
         return mutableList
     }
 
+    @Deprecated("")
     @WorkerThread
     fun insert(checked: Boolean, accountId: Long, tokenName: String, tokenIdx: Long) {
         mTokenStorage.insert(
@@ -225,12 +239,14 @@ class TokenManager {
     @WorkerThread
     fun insert(checked: Boolean, assertOriginateToken: AssertOriginateToken) {
         mTokenStorage.insert(
-//            TokenDo(
-//                enable = checked,
-//                account_id = assertToken.account_id,
-//                name = assertToken.name,
-//                tokenIdx = assertToken.tokenIdx
-//            )
+            TokenDo(
+                enable = checked,
+                account_id = assertOriginateToken.account_id,
+                assetsName = assertOriginateToken.name,
+                name = assertOriginateToken.tokenMark?.name ?: "",
+                address = assertOriginateToken.tokenMark?.address ?: "",
+                module = assertOriginateToken.tokenMark?.module ?: ""
+            )
         )
     }
 
@@ -270,13 +286,67 @@ class TokenManager {
         return amount
     }
 
+    @Deprecated("删除")
     suspend fun publishToken(account: Account) {
         val publishTokenPayload = mViolasMultiTokenService.publishTokenPayload()
         mViolasService.sendTransaction(publishTokenPayload, account)
     }
 
+    suspend fun publishToken(accountId: Long, account: ByteArray, tokenMark: TokenMark) {
+        mAccountStorage.findById(accountId)?.let {
+            when (it.coinNumber) {
+                CoinTypes.Violas.coinType() -> {
+                    DataRepository.getViolasChainRpcService()
+                        .addCurrency(
+                            Account(KeyPair.fromSecretKey(account)),
+                            tokenMark.address,
+                            tokenMark.module,
+                            tokenMark.name
+                        )
+                }
+                CoinTypes.Libra.coinType() -> {
+                    DataRepository.getLibraService()
+                        .addCurrency(
+                            org.palliums.libracore.wallet.Account(
+                                org.palliums.libracore.crypto.KeyPair.fromSecretKey(
+                                    account
+                                )
+                            ), tokenMark.address, tokenMark.module, tokenMark.name
+                        )
+                }
+                else -> RuntimeException("error")
+            }
+        }
+    }
+
+    @Deprecated("删除")
     suspend fun isPublish(address: String): Boolean {
         return mViolasMultiTokenService.getRegisterToken(address)
+    }
+
+    suspend fun isPublish(accountId: Long, tokenMark: TokenMark): Boolean {
+        return mAccountStorage.findById(accountId)?.let {
+            var isPublish = false
+            when (it.coinNumber) {
+                CoinTypes.Violas.coinType() -> {
+                    DataRepository.getViolasChainRpcService()
+                        .getAccountState(it.address)?.balances?.forEach { accountBalance ->
+                            if (tokenMark.module == accountBalance.currency) {
+                                isPublish = true
+                            }
+                        }
+                }
+                CoinTypes.Libra.coinType() -> {
+                    DataRepository.getLibraService()
+                        .getAccountState(it.address)?.balances?.forEach { accountBalance ->
+                            if (tokenMark.module == accountBalance.currency) {
+                                isPublish = true
+                            }
+                        }
+                }
+            }
+            isPublish
+        } ?: false
     }
 
     suspend fun sendViolasToken(

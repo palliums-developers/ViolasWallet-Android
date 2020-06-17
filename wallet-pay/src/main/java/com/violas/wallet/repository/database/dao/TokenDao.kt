@@ -17,7 +17,10 @@ interface TokenDao : BaseDao<TokenDo> {
 
     @Query("SELECT * FROM token WHERE account_id = :accountId AND name = :tokenName COLLATE NOCASE LIMIT 1")
     fun findByName(accountId: Long, tokenName: String): TokenDo?
-    
+
+    @Query("SELECT * FROM token WHERE enable = 1")
+    fun loadEnableAll(): List<TokenDo>
+
     @Query("SELECT * FROM token")
     fun loadAll():List<TokenDo>
 
