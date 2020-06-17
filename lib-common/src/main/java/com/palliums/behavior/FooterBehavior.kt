@@ -21,6 +21,8 @@ class FooterBehavior(
 
     private val interpolator by lazy { FastOutSlowInInterpolator() }
 
+    private var hideFlag = false
+
     private var sinceDirectionChange = 0
 
     override fun onStartNestedScroll(
@@ -59,6 +61,9 @@ class FooterBehavior(
     }
 
     private fun hide(view: View) {
+        if(hideFlag) return
+
+        hideFlag = true
         val animator = view.animate()
             .translationY(view.height.toFloat())
             .setInterpolator(interpolator)
@@ -84,6 +89,9 @@ class FooterBehavior(
     }
 
     private fun show(view: View) {
+        if(!hideFlag) return
+
+        hideFlag = false
         val animator = view.animate()
             .translationY(0f)
             .setInterpolator(interpolator)
