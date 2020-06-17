@@ -63,6 +63,7 @@ dependencies {
     api libraries.androidx_paging_runtime_ktx
     testImplementation libraries.androidx_paging_common
     api libraries.androidx_recyclerview
+    api libraries.androidx_swiperefreshlayout
 
     implementation libraries.okhttp3
     implementation libraries.retrofit2_converter_gson
