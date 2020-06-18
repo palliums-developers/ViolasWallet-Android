@@ -26,9 +26,7 @@ import com.violas.wallet.repository.http.violas.ViolasBizService
 import com.violas.wallet.repository.local.user.LocalUserService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.palliums.libracore.http.LibraApi
-import org.palliums.libracore.http.LibraRepository
-import org.palliums.libracore.http.LibraService
+import org.palliums.libracore.http.*
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory

@@ -25,9 +25,10 @@ import com.violas.wallet.repository.http.mappingExchange.MappingExchangeReposito
 import com.violas.wallet.repository.http.violas.ViolasBizService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.palliums.libracore.http.LibraApi
-import org.palliums.libracore.http.LibraRepository
-import org.palliums.libracore.http.LibraService
+import org.palliums.libracore.http.*
+import org.palliums.violascore.http.ViolasRpcApi
+import org.palliums.violascore.http.ViolasRpcRepository
+import org.palliums.violascore.http.ViolasRpcService
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -82,6 +83,9 @@ object DataRepository {
 
     fun getViolasService() =
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
+
+    fun getViolasChainRpcService() =
+        ViolasRpcService(ViolasRpcRepository(retrofit.create(ViolasRpcApi::class.java)))
 
     fun getTransactionRecordService(coinTypes: CoinTypes) =
         when (coinTypes) {

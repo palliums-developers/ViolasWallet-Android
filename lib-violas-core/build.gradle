@@ -24,6 +24,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -39,11 +43,17 @@ dependencies {
     implementation libraries.androidx_appcompat
     implementation libraries.androidx_core_ktx
 
+    implementation project(':lib-common')
+
     api libraries.spongycastle_core
     api libraries.spongycastle_prov
 
     implementation libraries.crypto_eddsa
     //implementation libraries.novacrypto_BIP39
+
+    api libraries.okhttp3
+    api libraries.retrofit2
+    api libraries.retrofit2_converter_gson
 }
 
 /*

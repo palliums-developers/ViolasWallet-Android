@@ -1,4 +1,4 @@
-package org.palliums.libracore.http
+package org.palliums.violascore.http
 
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName

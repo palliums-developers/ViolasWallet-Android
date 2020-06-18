@@ -45,9 +45,6 @@ interface ViolasApi {
     @POST("/1.0/violas/singin")
     suspend fun loginWeb(@Body body: RequestBody): Response<Any>
 
-    @GET("/1.0/violas/seqnum")
-    suspend fun getSequenceNumber(@Query("addr") address: String): Response<Long>
-
     @POST("/1.0/violas/transaction")
     suspend fun pushTx(@Body requestBody: RequestBody): Response<Any>
 

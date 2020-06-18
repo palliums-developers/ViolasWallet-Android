@@ -259,12 +259,12 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
                     val localEnableToken = exceptionAsync { TokenManager().loadEnableToken(it) }
 
                     val localEnableTokenSet =
-                        localEnableToken.await().map { it.tokenIdx }.toHashSet()
+                        localEnableToken.await().map { it.tokenMark }.toHashSet()
                     // todo network 异常
                     mTokenList.clear()
                     tokenPrices.await().forEach {
                         val tokenIdx = it.id
-                        val localEnable = localEnableTokenSet.contains(it.id.toLong())
+                        val localEnable = false// todo localEnableTokenSet.contains(it.id.toLong())
                         mTokenList.add(
                             ExchangeToken(
                                 tokenIdx.toLong(),

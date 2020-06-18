@@ -423,11 +423,13 @@ class AccountManager {
             mAccountTokenStorage.insert(
                 TokenDo(
                     account_id = insertIds[0],
-                    assetsName = "vToken"
+                    assetsName = "vToken",
+                    enable = true
                 ),
                 TokenDo(
                     account_id = insertIds[1],
-                    assetsName = "Libra"
+                    assetsName = "Libra",
+                    enable = true
                 )
             )
         }
@@ -573,7 +575,7 @@ class AccountManager {
         }
 
         val localCoinMap = loadAll.toMap { accountDO -> accountDO.id.toString() }
-        val localTokenAssets = mAccountTokenStorage.loadAll()
+        val localTokenAssets = mAccountTokenStorage.loadEnableAll()
 
         localTokenAssets.forEach {
             if (localCoinMap.containsKey(it.account_id.toString())) {
@@ -669,23 +671,22 @@ class AccountManager {
             .forEach { assets ->
                 assets as AssetsLibraCoinVo
                 try {
-                    DataRepository.getViolasService().getAccountState(assets.address)?.let {
-                        assets.authKey = it.authenticationKey ?: ""
-                        assets.delegatedKeyRotationCapability =
-                            it.delegatedKeyRotationCapability ?: false
-                        assets.delegatedWithdrawalCapability =
-                            it.delegatedWithdrawalCapability ?: false
+                    DataRepository.getViolasChainRpcService().getAccountState(assets.address)?.let {
+                        assets.authKey = it.authenticationKey
+                        assets.delegatedKeyRotationCapability = it.delegatedKeyRotationCapability
+                        assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability
 
                         val filter =
                             localAssets.filter { assetsToken -> assetsToken is AssetsTokenVo && assetsToken.getAccountId() == assets.getAccountId() }
                                 .toMap { assetsToken ->
                                     (assetsToken as AssetsTokenVo).module.toUpperCase(Locale.getDefault())
                                 }
-                        it.balance?.let { it1 ->
-                            filter["LBR"]?.apply {
-                                setAmount(it1)
+                        it.balances?.forEach { balance ->
+                            filter[balance.currency.toUpperCase(Locale.getDefault())]?.apply {
+                                this as AssetsTokenVo
+                                setAmount(balance.amount)
                                 val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
-                                    it1,
+                                    balance.amount,
                                     CoinTypes.parseCoinType(assets.getCoinNumber())
                                 )
                                 amountWithUnit.amount = convertAmountToDisplayUnit.first

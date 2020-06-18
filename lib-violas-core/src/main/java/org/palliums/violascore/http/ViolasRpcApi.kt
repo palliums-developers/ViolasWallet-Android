@@ -1,4 +1,4 @@
-package org.palliums.libracore.http
+package org.palliums.violascore.http
 
 import retrofit2.http.Body
 import retrofit2.http.Headers
@@ -10,17 +10,17 @@ import retrofit2.http.POST
  * <p>
  * desc:
  */
-interface LibraApi {
+interface ViolasRpcApi {
 
-    @Headers(value = ["urlname: libra", "Content-Type: application/json"])
+    @Headers(value = ["urlname: violas", "Content-Type: application/json"])
     @POST("/")
     suspend fun getAccountState(@Body body: RequestDTO): Response<AccountStateDTO>
 
-    @Headers(value = ["urlname: libra", "Content-Type: application/json"])
+    @Headers(value = ["urlname: violas", "Content-Type: application/json"])
     @POST("/")
     suspend fun getCurrencies(@Body body: RequestDTO): Response<List<CurrenciesDTO>>
 
-    @Headers(value = ["urlname: libra", "Content-Type: application/json"])
+    @Headers(value = ["urlname: violas", "Content-Type: application/json"])
     @POST("/")
     suspend fun submitTransaction(@Body body: RequestDTO): Response<Any>
 }

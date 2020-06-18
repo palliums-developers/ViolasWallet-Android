@@ -1,17 +1,16 @@
-package org.palliums.libracore.http
+package org.palliums.violascore.http
 
 import android.content.Context
 import android.util.Log
 import com.palliums.content.ContextProvider
-import org.palliums.libracore.BuildConfig
-import org.palliums.libracore.crypto.*
-import org.palliums.libracore.serialization.hexToBytes
-import org.palliums.libracore.serialization.toHex
-import org.palliums.libracore.transaction.*
-import org.palliums.libracore.transaction.storage.StructTag
-import org.palliums.libracore.transaction.storage.TypeTag
-import org.palliums.libracore.transaction.storage.TypeTagStructTag
-import org.palliums.libracore.wallet.Account
+import org.palliums.violascore.BuildConfig
+import org.palliums.violascore.crypto.*
+import org.palliums.violascore.serialization.hexToBytes
+import org.palliums.violascore.serialization.toHex
+import org.palliums.violascore.transaction.*
+import org.palliums.violascore.transaction.storage.StructTag
+import org.palliums.violascore.transaction.storage.TypeTag
+import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -21,7 +20,7 @@ import java.math.RoundingMode
  * <p>
  * desc:
  */
-class LibraService(private val mLibraRepository: LibraRepository) {
+class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
     data class TransactionResult(
         val sender: String,
         val sequenceNumber: Long
@@ -38,7 +37,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
      * @param gasUnitPrice gas 的价格
      * @param delayed 交易超时时间：当前时间的延迟，单位秒。例如当前时间延迟 1000 秒。
      */
-    @Throws(LibraException::class)
+    @Throws(ViolasException::class)
     suspend fun sendTransaction(
         payload: TransactionPayload,
         account: Account,
@@ -52,10 +51,10 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         val keyPair = account.keyPair
         val senderAddress = account.getAddress()
         val accountState = getAccountState(senderAddress.toHex())
-            ?: throw LibraException.AccountNoActivation()
+            ?: throw ViolasException.AccountNoActivation()
 
         if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
-            throw LibraException.AccountNoControl()
+            throw ViolasException.AccountNoControl()
         }
 
         if (sequenceNumber == -1L) {
@@ -87,7 +86,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
      * @param publicKey 公钥，单签使用 {@link Ed25519PublicKey}，多签使用{@link MultiEd25519PublicKey}
      * @param signature 签名，单签使用 {@link Ed25519Signature}，多签使用{@link MultiEd25519Signature}
      */
-    @Throws(LibraException::class)
+    @Throws(ViolasException::class)
     suspend fun sendTransaction(
         rawTransactionHex: String,
         publicKey: KeyPair.PublicKey,
@@ -117,10 +116,10 @@ class LibraService(private val mLibraRepository: LibraRepository) {
             Log.i(this.javaClass.name, "SignTransaction: $hexSignedTransaction")
         }
 
-        mLibraRepository.submitTransaction(hexSignedTransaction)
+        mViolasRpcRepository.submitTransaction(hexSignedTransaction)
     }
 
-    suspend fun sendLibraToken(
+    suspend fun sendViolasToken(
         context: Context,
         account: Account,
         address: String,
@@ -159,12 +158,12 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         return 0
     }
 
-    suspend fun getCurrencies() = mLibraRepository.getCurrencies().data
-    
+    suspend fun getCurrencies() = mViolasRpcRepository.getCurrencies().data
+
     suspend fun getAccountState(
         address: String
     ) =
-        mLibraRepository.getAccountState(address).data
+        mViolasRpcRepository.getAccountState(address).data
 
     suspend fun addCurrency(account: Account, address: String, module: String, name: String) {
         val transactionPayload =

@@ -92,6 +92,21 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     )
 }
 
+fun TransactionPayload.Companion.optionAddCurrencyPayload(
+    context: Context,
+    typeTag: TypeTag = lbrStructTag()
+): TransactionPayload {
+    val moveEncode = Move.decode(context.assets.open("move/libra_add_currency_to_account.mv"))
+
+    return TransactionPayload(
+        TransactionPayload.Script(
+            moveEncode,
+            arrayListOf(typeTag),
+            arrayListOf()
+        )
+    )
+}
+
 fun lbrStructTagType(): String {
     return "LBR"
 }

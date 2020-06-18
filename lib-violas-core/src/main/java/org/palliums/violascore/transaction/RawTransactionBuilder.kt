@@ -104,3 +104,18 @@ fun TransactionPayload.Companion.optionTransactionPayload(
         )
     )
 }
+
+fun TransactionPayload.Companion.optionAddCurrencyPayload(
+    context: Context,
+    typeTag: TypeTag
+): TransactionPayload {
+    val moveEncode = Move.decode(context.assets.open("move/violas_add_currency_to_account.mv"))
+
+    return TransactionPayload(
+        TransactionPayload.Script(
+            moveEncode,
+            arrayListOf(typeTag),
+            arrayListOf()
+        )
+    )
+}

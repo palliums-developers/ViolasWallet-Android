@@ -26,7 +26,7 @@ import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.show
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
-import com.violas.wallet.biz.bean.AssertToken
+import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.event.BackupIdentityMnemonicEvent
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
@@ -35,6 +35,7 @@ import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
 import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
+import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.tokenDetails.TokenDetailsActivity
@@ -52,10 +53,7 @@ import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.jessyan.autosize.utils.AutoSizeUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -86,7 +84,7 @@ class WalletFragment : BaseFragment() {
     }
 
 
-    private val mEnableTokens = mutableListOf<AssertToken>()
+    private val mEnableTokens = mutableListOf<AssertOriginateToken>()
     private val mAssertAdapter by lazy {
         AssertAdapter {
             activity?.let { it1 ->
@@ -229,18 +227,10 @@ class WalletFragment : BaseFragment() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.ivAddAssert -> {
-                launch(Dispatchers.IO) {
-                    //                    val currentAccount = mAccountManager.currentAccount()
-//                    withContext(Dispatchers.Main) {
-//                        activity?.let { activity ->
-//                            ManagerAssertActivity.start(
-//                                this@WalletFragment,
-//                                currentAccount.id,
-//                                REQUEST_ADD_ASSERT
-//                            )
-//                        }
-//                    }
-                }
+                ManagerAssertActivity.start(
+                    this@WalletFragment,
+                    REQUEST_ADD_ASSERT
+                )
             }
             R.id.ivScan -> {
                 activity?.let { it1 ->

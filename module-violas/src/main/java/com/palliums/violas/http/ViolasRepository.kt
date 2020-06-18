@@ -24,15 +24,6 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
             mViolasApi.getBalance(walletAddress)
         }.data?.balance ?: 0
 
-    /**
-     * 获取 sequence number
-     */
-    @Throws(RequestException::class)
-    suspend fun getSequenceNumber(address: String) =
-        checkResponse {
-            mViolasApi.getSequenceNumber(address)
-        }.data ?: 0
-
     @Throws(ViolasException::class, RequestException::class)
     suspend fun pushTx(tx: String): Response<Any> {
         return checkResponse(
