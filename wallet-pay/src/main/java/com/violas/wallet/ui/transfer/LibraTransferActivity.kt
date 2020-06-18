@@ -43,6 +43,7 @@ class LibraTransferActivity : TransferActivity() {
         coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
         isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
 
+        mWalletAppViewModel.refreshAssetsList()
         mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
             var exists = false
             for (item in it) {
@@ -115,7 +116,6 @@ class LibraTransferActivity : TransferActivity() {
     }
 
     private suspend fun refreshCurrentAmount() {
-        mWalletAppViewModel.refreshAssetsList()
         withContext(Dispatchers.Main) {
             mAssetsVo.amountWithUnit
             tvCoinAmount.text = String.format(
