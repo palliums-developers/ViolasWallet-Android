@@ -24,7 +24,7 @@ data class TokenDo(
     @ColumnInfo(name = "module")
     var module: String = "LBR",
     @ColumnInfo(name = "name")
-    var name: String = "T",
+    var name: String = "LBR",
     @ColumnInfo(name = "enable")
     var enable: Boolean = false,
     @ColumnInfo(name = "amount")
