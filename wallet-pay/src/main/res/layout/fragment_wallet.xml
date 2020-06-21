@@ -9,7 +9,6 @@
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#F7F7F9"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,7 +23,7 @@
                 android:id="@+id/titleBar"
                 android:layout_width="match_parent"
                 android:layout_height="196dp"
-                android:background="@drawable/bg_wallet_main">
+                android:background="?attr/homeFragmentTopBg">
 
                 <TextView
                     android:id="@+id/tvTotalAssetsTitle"
@@ -33,7 +32,7 @@
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="56dp"
                     android:text="@string/main_wallet_total_fiat_balance"
-                    android:textColor="#9A91BE"
+                    android:textColor="?attr/walletHomeTotalAssetsTextColor"
                     android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -43,7 +42,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:textColor="#9A91BE"
                     app:layout_constraintBottom_toBottomOf="@+id/tvTotalAssetsTitle"
                     app:layout_constraintStart_toEndOf="@+id/tvTotalAssetsTitle"
                     app:layout_constraintTop_toTopOf="@+id/tvTotalAssetsTitle" />
@@ -55,7 +53,7 @@
                     android:layout_marginEnd="@dimen/dp_17"
                     android:foreground="?attr/actionBarItemBackground"
                     android:padding="@dimen/dp_10"
-                    android:src="@drawable/icon_sacn_white"
+                    android:src="?attr/iconScanSecondary"
                     app:layout_constraintBottom_toBottomOf="@id/tvTotalAssetsTitle"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tvTotalAssetsTitle" />
@@ -65,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="18dp"
-                    android:textColor="#FFFFFF"
+                    android:textColor="?attr/colorOnPrimary"
                     android:textSize="28sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="@+id/tvTotalAssetsTitle"
@@ -89,7 +87,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1dp"
-                        android:src="@drawable/ic_wallet_connect_indicator" />
+                        android:src="?attr/walletHomeWalletConnectIcon" />
 
                     <TextView
                         android:id="@+id/tvWalletConnectStatus"
@@ -97,9 +95,9 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="5dp"
                         android:gravity="center"
-                        android:textColor="#FB8F0B"
+                        android:textColor="?attr/walletHomeWalletConnectTextColor"
                         android:textSize="12sp"
-                        tools:text="网页钱包已登录" />
+                        tools:text="@string/wallet_connect_have_landed" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -118,7 +116,7 @@
                     android:layout_marginStart="29dp"
                     android:layout_marginTop="34dp"
                     android:text="@string/label_assets"
-                    android:textColor="#7D71AA"
+                    android:textColor="?attr/walletHomeAssetsTextColor"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -130,7 +128,7 @@
                     android:layout_marginEnd="@dimen/dp_18"
                     android:foreground="?attr/actionBarItemBackground"
                     android:padding="@dimen/dp_10"
-                    android:src="@drawable/icon_add_assert"
+                    android:src="?attr/walletHomeAddAssetsIcon"
                     app:layout_constraintBottom_toBottomOf="@+id/tvAssert"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/tvAssert" />
@@ -176,14 +174,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
-                        android:src="@drawable/ic_create_account" />
+                        android:src="?attr/walletHomeCreateWalletIcon" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="22dp"
                         android:text="@string/create_account"
-                        android:textColor="#261372"
+                        android:textColor="?attr/walletHomeInitWalletTextColor"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -202,14 +200,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
-                        android:src="@drawable/ic_import_account" />
+                        android:src="?attr/walletHomeImportWalletIcon" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="22dp"
                         android:text="@string/import_account"
-                        android:textColor="#261372"
+                        android:textColor="?attr/walletHomeInitWalletTextColor"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>

@@ -19,7 +19,7 @@ class OutsideExchangeActivity : BaseAppActivity() {
     }
 
     override fun getTitleStyle(): Int {
-        return TITLE_STYLE_NOT_TITLE
+        return PAGE_STYLE_NOT_TITLE
     }
 
     override fun getLayoutResId() = R.layout.activity_outside_exchange

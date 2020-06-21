@@ -12,7 +12,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="22dp"
         android:layout_marginEnd="8dp"
-        android:background="@drawable/bg_transfer_white"
+        android:background="?attr/transferInfoBg"
         android:padding="22dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,17 +22,15 @@
             android:id="@+id/tvHintCoinName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="BTC"
-            android:textColor="@color/def_text_color"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="BTC" />
 
         <TextView
             android:id="@+id/tvCoinAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/def_text_color"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -47,7 +45,6 @@
             android:hint="@string/hint_input_amount"
             android:inputType="numberDecimal"
             android:padding="7dp"
-            android:textColorHint="@color/def_text_color_30"
             app:layout_constraintTop_toBottomOf="@+id/tvHintCoinName" />
 
         <TextView
@@ -56,7 +53,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:text="@string/hint_collection_address"
-            android:textColor="@color/def_text_color"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editAmountInput" />
@@ -85,7 +81,6 @@
             android:paddingTop="7dp"
             android:paddingEnd="38dp"
             android:paddingBottom="7dp"
-            android:textColorHint="@color/def_text_color_30"
             app:layout_constraintTop_toBottomOf="@+id/tvCollectionAddress" />
 
         <ImageView
@@ -94,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="7dp"
             android:padding="4dp"
-            android:src="@drawable/icon_scan_purple"
+            android:src="?attr/iconScanPrimary"
             app:layout_constraintBottom_toBottomOf="@+id/editAddressInput"
             app:layout_constraintEnd_toEndOf="@+id/editAddressInput"
             app:layout_constraintTop_toTopOf="@+id/editAddressInput" />
@@ -105,18 +100,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:text="@string/hint_fee"
-            android:textColor="@color/def_text_color"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editAddressInput" />
-
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
             android:text="@string/hint_slow"
-            android:textColor="@color/def_text_color"
             android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/sbQuota"
             app:layout_constraintStart_toStartOf="@+id/sbQuota" />
@@ -126,7 +118,6 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="18dp"
             android:text="@string/hint_fast"
-            android:textColor="@color/def_text_color"
             android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/sbQuota"
             app:layout_constraintEnd_toEndOf="@+id/sbQuota" />
@@ -144,7 +135,7 @@
             android:progress="35"
             android:progressDrawable="@drawable/progress_bar_transfer"
             android:splitTrack="false"
-            android:thumb="@drawable/icon_transfer_thumb"
+            android:thumb="?attr/transferSeekBarThumb"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvHintFee" />
@@ -154,7 +145,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
-            android:textColor="@color/def_text_color"
             android:textSize="10sp"
             app:layout_constraintStart_toStartOf="@+id/sbQuota"
             app:layout_constraintTop_toBottomOf="@+id/sbQuota" />

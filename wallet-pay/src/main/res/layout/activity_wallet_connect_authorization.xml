@@ -4,15 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:background="@color/def_activity_vice_bg"
-    tools:layout_marginTop="@dimen/height_top_bar">
+    tools:context=".ui.walletconnect.WalletConnectAuthorizationActivity">
 
     <ImageView
         android:id="@+id/ivDeskIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_55"
-        android:src="@drawable/ic_web"
+        android:src="?attr/walletConnectWebIcon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,7 +22,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_27"
         android:text="@string/desc_scan_wallet_connect_login"
-        android:textColor="@color/color_333333"
         android:textSize="@dimen/sp_16"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +35,7 @@
         android:layout_marginStart="22dp"
         android:layout_marginTop="@dimen/dp_42"
         android:layout_marginEnd="22dp"
-        android:background="@color/white"
+        android:background="@drawable/shape_bg_wallet_connect_show_info"
         android:gravity="center"
         android:padding="10dp"
         android:paddingStart="22dp"
@@ -45,7 +43,6 @@
         android:paddingEnd="22dp"
         android:paddingBottom="8dp"
         android:text="@string/hint_wallet_connect_prompt"
-        android:textColor="@color/color_333333"
         android:textSize="@dimen/sp_14"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,7 +57,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:gravity="center"
-        android:textColor="#999999"
+        android:textColor="?android:attr/textColorTertiary"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -82,14 +79,14 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_wallet_connect_info" />
+            android:src="?attr/walletConnectWarnIcon" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="@string/hint_wallet_connect_repeated_connection"
-            android:textColor="#FB8F0B"
+            android:textColor="?attr/textColorWarn"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -105,13 +102,14 @@
 
     <TextView
         android:id="@+id/tvCancelLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_40"
+        android:layout_width="@dimen/dp_238"
+        android:layout_height="@dimen/dp_40"
+        android:layout_marginTop="@dimen/dp_26"
         android:layout_marginBottom="@dimen/dp_20"
-        android:padding="@dimen/dp_15"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center"
         android:text="@string/action_cancel_login"
-        android:textColor="@color/selector_text_gray"
+        android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/sp_12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -2,11 +2,9 @@ package com.violas.wallet.ui.tokenDetails
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
-import android.view.ViewTreeObserver
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
@@ -15,14 +13,13 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.tabs.TabLayout
 import com.palliums.base.ViewController
 import com.palliums.extensions.close
 import com.palliums.extensions.setTitleToCenter
 import com.palliums.extensions.show
 import com.palliums.utils.CustomMainScope
-import com.palliums.utils.StatusBarUtil
+import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.palliums.widget.loading.LoadingDialog
 import com.quincysx.crypto.CoinTypes
@@ -158,10 +155,11 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
     private fun initTokenInfoView() {
         tvTitle.text = mAssetsVo.getAssetsName()
 
+        val defLogoResId = getResourceId(R.attr.tokenDetailsDefTokenLogo, this)
         Glide.with(this)
             .load(mAssetsVo.getLogoUrl())
-            .error(R.drawable.ic_token_info_logo_default)
-            .placeholder(R.drawable.ic_token_info_logo_default)
+            .error(defLogoResId)
+            .placeholder(defLogoResId)
             .into(ivTokenLogo)
 
         tvTokenName.text = mAssetsVo.getAssetsName()
@@ -223,32 +221,8 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
     }
 
     private fun initView() {
-        StatusBarUtil.setLightStatusBarMode(this.window, true)
-
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        toolbar.viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                val rectangle = Rect()
-                val window = window
-                window.decorView.getWindowVisibleDisplayFrame(rectangle)
-                val statusBarHeight = rectangle.top
-
-                val toolbarLayoutParams =
-                    toolbar.layoutParams as CollapsingToolbarLayout.LayoutParams
-                toolbarLayoutParams.height = toolbarLayoutParams.height + statusBarHeight
-                toolbar.layoutParams = toolbarLayoutParams
-                toolbar.setPadding(0, statusBarHeight, 0, 0)
-
-                val tokenInfoLayoutParams =
-                    clTokenInfo.layoutParams as CollapsingToolbarLayout.LayoutParams
-                tokenInfoLayoutParams.topMargin = toolbar.height + statusBarHeight
-                clTokenInfo.layoutParams = tokenInfoLayoutParams
-
-                toolbar.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
         toolbar.setNavigationOnClickListener {
             onBackPressedSupport()
         }
@@ -271,6 +245,11 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                 }
             }
         })
+
+        tabLayout.setTabTextColors(
+            com.palliums.utils.getColor(getResourceId(R.attr.tokenDetailsTabNormalTextColor, this)),
+            com.palliums.utils.getColor(getResourceId(R.attr.colorPrimary, this))
+        )
     }
 
     private fun initEvent() {

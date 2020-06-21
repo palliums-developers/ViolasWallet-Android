@@ -10,7 +10,7 @@
             <solid android:color="@android:color/transparent" />
             <stroke
                 android:width="0.7dp"
-                android:color="#22126C" />
+                android:color="?attr/boxStrokeColor" />
         </shape>
     </item>
 </layer-list>

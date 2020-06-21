@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="#3D3949"/>
+    <item android:color="?attr/homeBottomTabSelectedTextColor" android:state_checked="true" />
+    <item android:color="?attr/homeBottomTabSelectedTextColor" android:state_selected="true" />
+    <item android:color="?attr/homeBottomTabNormalTextColor" android:state_checked="false" />
+    <item android:color="?attr/homeBottomTabNormalTextColor" android:state_selected="false" />
 </selector>

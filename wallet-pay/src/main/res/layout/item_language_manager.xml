@@ -17,19 +17,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
+        android:background="?attr/colorSurface"
         android:onClick="@{clickListener}"
-        android:background="@color/white"
         android:orientation="vertical">
 
         <View
-            app:layout_constraintEnd_toEndOf="parent"
             android:id="@+id/viewStatus"
             android:layout_width="22dp"
             android:layout_height="22dp"
             android:layout_marginEnd="15dp"
-            android:background="@{item.select?@drawable/icon_check_selector:@drawable/icon_check_normal}"
             app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tvTitle" />
+<!--        android:background="@{item.select?@drawable/icon_check_selector:@drawable/icon_check_normal}"-->
 
         <TextView
             android:id="@+id/tvTitle"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="14dp"
             android:text='@{item.res}'
-            android:textColor="@color/def_text_color"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

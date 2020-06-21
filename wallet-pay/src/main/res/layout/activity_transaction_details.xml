@@ -4,13 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_F7F7F9"
     tools:context=".ui.transactionDetails.TransactionDetailsActivity">
 
     <ImageView
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:background="@mipmap/bg_transaction_details_header"
+        android:background="?attr/transDetailsTopBg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -18,7 +17,7 @@
     <ImageView
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:background="@mipmap/bg_transaction_details_footer"
+        android:background="?attr/transDetailsBottomBg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -30,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_back_gray"
+        app:navigationIcon="?attr/iconBackTertiary"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         tools:menu="@menu/menu_transaction_details">
 
@@ -42,7 +41,7 @@
             android:ellipsize="end"
             android:singleLine="true"
             android:text="@string/title_transaction_details_nbsp"
-            android:textColor="@color/color_333333"
+            android:textColor="?android:textColorPrimary"
             android:textSize="@dimen/sp_16"
             android:textStyle="bold" />
 
@@ -54,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_39"
         android:layout_marginTop="@dimen/dp_6"
-        android:background="@mipmap/bg_transaction_details_content"
+        android:background="?attr/transDetailsTransInfoBg"
         android:paddingHorizontal="@dimen/dp_24"
         android:paddingTop="@dimen/dp_40"
         android:paddingBottom="@dimen/dp_34"
@@ -69,7 +68,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_transaction_state_pending" />
+            tools:src="?attr/transDetailsProcessingIcon" />
 
         <TextView
             android:id="@+id/tvDesc"
@@ -82,14 +81,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivState"
             tools:text="@string/desc_transaction_state_transaction_pending"
-            tools:textColor="@color/color_FAA030" />
+            tools:textColor="?attr/textColorProcessing" />
 
         <TextView
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_19"
-            android:textColor="@color/color_999999"
+            android:textColor="?android:textColorTertiary"
             android:textSize="@dimen/sp_12"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -103,7 +102,7 @@
             android:layout_marginStart="@dimen/dp_94"
             android:layout_marginTop="@dimen/dp_69"
             android:paddingVertical="@dimen/dp_5"
-            android:textColor="@color/def_text_title"
+            android:textColor="?android:textColorPrimary"
             android:textSize="@dimen/sp_12"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -116,7 +115,7 @@
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
             android:text="@string/label_transaction_details_amount"
-            android:textColor="@color/color_999999"
+            android:textColor="?android:textColorTertiary"
             android:textSize="@dimen/sp_12"
             app:layout_constraintEnd_toStartOf="@id/tvAmount"
             app:layout_constraintStart_toStartOf="parent"
@@ -127,7 +126,7 @@
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_5"
-            android:textColor="@color/color_999999"
+            android:textColor="?android:textColorTertiary"
             android:textSize="@dimen/sp_12"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvAmount"
@@ -140,7 +139,7 @@
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
             android:text="@string/label_transaction_details_gas"
-            android:textColor="@color/color_999999"
+            android:textColor="?android:textColorTertiary"
             android:textSize="@dimen/sp_12"
             app:layout_constraintEnd_toStartOf="@id/tvGas"
             app:layout_constraintStart_toStartOf="parent"
@@ -158,10 +157,10 @@
                 android:id="@+id/tvReceiptAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableEnd="@drawable/ic_token_info_copy"
+                android:drawableEnd="?attr/iconCopy"
                 android:drawablePadding="@dimen/dp_5"
                 android:paddingVertical="@dimen/dp_5"
-                android:textColor="@color/color_999999"
+                android:textColor="?android:textColorTertiary"
                 android:textSize="@dimen/sp_12"
                 tools:text="dioewdji3ie9wOid30wdue" />
 
@@ -173,7 +172,7 @@
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
             android:text="@string/label_transaction_details_receipt_address"
-            android:textColor="@color/color_999999"
+            android:textColor="?android:textColorTertiary"
             android:textSize="@dimen/sp_12"
             app:layout_constraintEnd_toStartOf="@id/llReceiptAddress"
             app:layout_constraintStart_toStartOf="parent"
@@ -191,10 +190,10 @@
                 android:id="@+id/tvPaymentAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableEnd="@drawable/ic_token_info_copy"
+                android:drawableEnd="?attr/iconCopy"
                 android:drawablePadding="@dimen/dp_5"
                 android:paddingVertical="@dimen/dp_5"
-                android:textColor="@color/color_999999"
+                android:textColor="?android:textColorTertiary"
                 android:textSize="@dimen/sp_12"
                 tools:text="dioewdji3ie9wOid30wdueji3ie9wOid9wOid" />
 
@@ -206,7 +205,7 @@
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
             android:text="@string/label_transaction_details_payment_address"
-            android:textColor="@color/color_999999"
+            android:textColor="?android:textColorTertiary"
             android:textSize="@dimen/sp_12"
             app:layout_constraintEnd_toStartOf="@id/llPaymentAddress"
             app:layout_constraintStart_toStartOf="parent"
@@ -224,10 +223,10 @@
                 android:id="@+id/tvTransactionNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableEnd="@drawable/ic_token_info_copy"
+                android:drawableEnd="?attr/iconCopy"
                 android:drawablePadding="@dimen/dp_5"
                 android:paddingVertical="@dimen/dp_5"
-                android:textColor="@color/color_999999"
+                android:textColor="?android:textColorTertiary"
                 android:textSize="@dimen/sp_12"
                 tools:text="122322" />
 
@@ -239,7 +238,7 @@
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
             android:text="@string/label_transaction_details_transaction_number"
-            android:textColor="@color/color_999999"
+            android:textColor="?android:textColorTertiary"
             android:textSize="@dimen/sp_12"
             app:layout_constraintEnd_toStartOf="@id/llTransactionNumber"
             app:layout_constraintStart_toStartOf="parent"
@@ -255,7 +254,7 @@
         android:foreground="?attr/selectableItemBackground"
         android:padding="@dimen/dp_10"
         android:text="@string/desc_view_by_browser"
-        android:textColor="@color/color_7038FD"
+        android:textColor="?attr/colorPrimary"
         android:textSize="@dimen/sp_14"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

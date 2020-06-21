@@ -3,16 +3,16 @@
 
     <item android:id="@android:id/background">
         <shape>
-            <solid android:color="@color/black_06" />
+            <solid android:color="?attr/colorWebProgressBg" />
         </shape>
     </item>
 
     <item android:id="@android:id/secondaryProgress">
         <clip>
             <shape
-                android:tint="@color/view_pressed_tint"
+                android:tint="?attr/colorTint"
                 android:tintMode="multiply">
-                <solid android:color="@color/color_7038FD" />
+                <solid android:color="?attr/colorPrimary" />
             </shape>
         </clip>
     </item>
@@ -20,7 +20,7 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <solid android:color="@color/color_7038FD" />
+                <solid android:color="?attr/colorPrimary" />
             </shape>
         </clip>
     </item>

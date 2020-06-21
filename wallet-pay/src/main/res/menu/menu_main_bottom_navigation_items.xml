@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/tab_wallet"
-        android:icon="@android:drawable/ic_media_play"
+        android:icon="?attr/homeBottomWalletTabSelectedIcon"
         android:title="@string/tab_wallet" />
     <item
         android:id="@+id/tab_market"
-        android:icon="@android:drawable/ic_media_play"
+        android:icon="?attr/homeBottomMarketTabNormalIcon"
         android:title="@string/tab_market" />
     <item
         android:id="@+id/tab_me"
-        android:icon="@android:drawable/ic_media_play"
+        android:icon="?attr/homeBottomMeTabNormalIcon"
         android:title="@string/tab_me" />
 </menu>

@@ -24,6 +24,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.show
+import com.palliums.utils.getResourceId
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertOriginateToken
@@ -53,7 +54,10 @@ import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import me.jessyan.autosize.utils.AutoSizeUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -135,9 +139,19 @@ class WalletFragment : BaseFragment() {
         })
         mWalletViewModel.mHiddenTotalFiatBalanceLiveData.observe(this, Observer {
             if (it) {
-                ivTotalHidden.setImageResource(R.drawable.ic_total_balance_hidden)
+                ivTotalHidden.setImageResource(
+                    getResourceId(
+                        R.attr.iconHidePrimary,
+                        requireContext()
+                    )
+                )
             } else {
-                ivTotalHidden.setImageResource(R.drawable.ic_total_balance_show)
+                ivTotalHidden.setImageResource(
+                    getResourceId(
+                        R.attr.iconShowPrimary,
+                        requireContext()
+                    )
+                )
             }
         })
         tvTotalAssetsTitle.setOnClickListener {
@@ -400,14 +414,15 @@ class AssertAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemData = getItem(position)
+        val defLogoResId = getResourceId(R.attr.walletHomeDefTokenLogo, holder.itemView.context)
         Glide.with(holder.itemView.context)
             .load(itemData.getLogoUrl())
-            .error(R.drawable.assets_default)
-            .placeholder(R.drawable.assets_default)
+            .error(defLogoResId)
+            .placeholder(defLogoResId)
             .thumbnail(
                 loadTransform(
                     holder.itemView.context,
-                    R.drawable.assets_default,
+                    defLogoResId,
                     AutoSizeUtils.dp2px(holder.itemView.context, 14F)
                 )
             )

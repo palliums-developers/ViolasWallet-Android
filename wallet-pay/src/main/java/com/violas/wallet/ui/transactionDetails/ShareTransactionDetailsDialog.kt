@@ -18,9 +18,7 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.extensions.close
 import com.palliums.extensions.show
 import com.palliums.listing.ListingViewAdapter
-import com.palliums.utils.CustomMainScope
-import com.palliums.utils.StatusBarUtil
-import com.palliums.utils.formatDate
+import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_TWO
@@ -135,7 +133,10 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
             LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
         rvShareTypes.adapter = ShareViewAdapter(
             mutableListOf(
-                Pair(R.drawable.sel_share_type_download, R.string.desc_save_into_album)
+                Pair(
+                    getResourceId(R.attr.transDetailsSaveIcon, requireContext()),
+                    R.string.desc_save_into_album
+                )
             )
         ) {
             close()
@@ -144,14 +145,22 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
 
         when (transactionRecord.transactionState) {
             TransactionState.PENDING -> {
-                ivState.setImageResource(R.drawable.ic_transaction_state_pending)
-                tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_FAA030))
+                ivState.setImageResource(
+                    getResourceId(R.attr.transDetailsProcessingIcon, requireContext())
+                )
+                tvDesc.setTextColor(
+                    getColorByAttrId(R.attr.textColorProcessing, requireContext())
+                )
                 tvDesc.setText(R.string.desc_transaction_state_transaction_pending)
             }
 
             TransactionState.FAILURE -> {
-                ivState.setImageResource(R.drawable.ic_transaction_state_failure)
-                tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_F55753))
+                ivState.setImageResource(
+                    getResourceId(R.attr.transDetailsFailureIcon, requireContext())
+                )
+                tvDesc.setTextColor(
+                    getColorByAttrId(R.attr.textColorFailure, requireContext())
+                )
                 tvDesc.setText(
                     when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
@@ -174,8 +183,12 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
             }
 
             else -> {
-                ivState.setImageResource(R.drawable.ic_transaction_state_success)
-                tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_00D1AF))
+                ivState.setImageResource(
+                    getResourceId(R.attr.transDetailsSuccessIcon, requireContext())
+                )
+                tvDesc.setTextColor(
+                    getColorByAttrId(R.attr.textColorSuccess, requireContext())
+                )
                 tvDesc.setText(
                     when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
@@ -202,7 +215,8 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
 
         val amountWithUnit =
             convertAmountToDisplayUnit(transactionRecord.amount, transactionRecord.coinType)
-        tvAmount.text = "${amountWithUnit.first} ${transactionRecord.tokenName ?: amountWithUnit.second}"
+        tvAmount.text =
+            "${amountWithUnit.first} ${transactionRecord.tokenName ?: amountWithUnit.second}"
 
         val gasWithUnit =
             convertAmountToDisplayUnit(transactionRecord.gas, transactionRecord.coinType)

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity">
+    tools:context=".ui.walletconnect.WalletConnectManagerActivity">
 
     <ImageView
         android:id="@+id/ivClose"
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="29dp"
-        android:src="@drawable/ic_action_close"
+        android:src="?attr/iconClose"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_171"
-        android:src="@drawable/ic_web"
+        android:src="?attr/walletConnectWebIcon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -32,7 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_27"
         android:text="@string/wallet_connect_have_landed"
-        android:textColor="@color/color_333333"
         android:textSize="@dimen/sp_16"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -49,7 +48,7 @@
         android:background="@drawable/shape_bg_white_button"
         android:elevation="0dp"
         android:text="@string/wallet_connect_log_out"
-        android:textColor="#7038FD"
+        android:textColor="?attr/colorPrimary"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

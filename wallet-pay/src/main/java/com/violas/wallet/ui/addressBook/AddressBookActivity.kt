@@ -12,6 +12,7 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.listing.ListingViewModel
 import com.palliums.utils.coroutineExceptionHandler
+import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
@@ -104,7 +105,7 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
         super.onCreate(savedInstanceState)
 
         title = getString(R.string.title_address_book)
-        setTitleRightImageResource(R.drawable.icon_add_address)
+        setTitleRightImageResource(getResourceId(R.attr.iconAdd, this))
 
         mCoinType = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
         mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)

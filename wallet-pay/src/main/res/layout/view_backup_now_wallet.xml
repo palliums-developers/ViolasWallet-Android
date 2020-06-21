@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutBackupNow"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/layoutBackupNow"
-    android:background="@color/white"
+    android:background="?attr/colorSurface"
     android:orientation="vertical">
 
     <ImageView
         android:id="@+id/ivDialogTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_backup_title"
+        android:background="?attr/walletHomeBackupTopBg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -29,14 +29,14 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_security_backup" />
+            android:src="?attr/walletHomeBackupTopIcon" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="@string/backup_mnemonic_warn_title"
-            android:textColor="@color/white"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -50,7 +50,7 @@
         android:layout_marginEnd="42dp"
         android:lineHeight="24dp"
         android:text="@string/hint_back_up_mnemonic_words"
-        android:textColor="#3D3949"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -65,7 +65,7 @@
         android:layout_marginEnd="42dp"
         android:lineHeight="24dp"
         android:text="@string/hint_back_up_mnemonic_words_content"
-        android:textColor="#3D3949"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -79,7 +79,6 @@
         android:layout_marginTop="@dimen/dp_25"
         android:layout_marginBottom="@dimen/dp_25"
         android:text="@string/hint_backup_now"
-        android:textColor="@color/white"
         android:textSize="@dimen/sp_16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

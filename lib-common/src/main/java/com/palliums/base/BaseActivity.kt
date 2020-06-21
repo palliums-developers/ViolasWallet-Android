@@ -21,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import me.yokeyword.fragmentation.SupportActivity
-import qiu.niorgai.StatusBarCompat
 
 abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewController,
     CoroutineScope by CustomMainScope() {
@@ -29,17 +28,11 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
     private var mLoadingDialog: LoadingDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //透明状态栏，布局延伸到状态栏中
-        StatusBarCompat.translucentStatusBar(
-            this,
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-        )
         super.onCreate(savedInstanceState)
 
         setContentView(com.palliums.R.layout.activity_base)
-
-        val layoutView =
-            getLayoutView() ?: layoutInflater.inflate(getLayoutResId(), vContentContainer, false)
+        val layoutView = getLayoutView()
+            ?: layoutInflater.inflate(getLayoutResId(), vContentContainer, false)
         vContentContainer.addView(layoutView)
 
         val statusBarHeight = StatusBarUtil.getStatusBarHeight(this)
@@ -378,11 +371,11 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
     override fun showProgress(msg: String?) {
         try {
             launch {
-                if(mLoadingDialog == null){
+                if (mLoadingDialog == null) {
                     mLoadingDialog = LoadingDialog()
                         .setMessage(msg)
                     mLoadingDialog!!.show(supportFragmentManager, "load")
-                }else{
+                } else {
                     mLoadingDialog!!.setMessage(msg)
                 }
             }

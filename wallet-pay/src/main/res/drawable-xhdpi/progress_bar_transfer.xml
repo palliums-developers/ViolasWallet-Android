@@ -3,7 +3,7 @@
     <item android:id="@android:id/background">
         <shape>
             <corners android:radius="0dp" />
-            <solid android:color="#AFAFAF" />
+            <solid android:color="?attr/transferSeekBarBgColor" />
             <stroke
                 android:width="2dp"
                 android:color="@color/transparent" />
@@ -14,7 +14,7 @@
         <clip>
             <shape>
                 <corners android:radius="0dp" />
-                <solid android:color="@color/colorAccent" />
+                <solid android:color="?attr/colorAccent" />
                 <stroke
                     android:width="2dp"
                     android:color="@color/transparent" />
@@ -26,7 +26,7 @@
         <clip>
             <shape>
                 <corners android:radius="0dp" />
-                <solid android:color="@color/colorAccent" />
+                <solid android:color="?attr/colorAccent" />
                 <stroke
                     android:width="2dp"
                     android:color="@color/transparent" />

@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/app_bar_share"
-        android:icon="@mipmap/ic_share"
+        android:icon="?attr/iconShare"
         android:title="@string/title_share"
         app:showAsAction="always" />
 

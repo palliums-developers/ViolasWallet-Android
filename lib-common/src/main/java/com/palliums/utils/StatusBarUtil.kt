@@ -42,6 +42,15 @@ class StatusBarUtil {
         }
 
         /**
+         * 布局延伸到状态栏中
+         */
+        @JvmStatic
+        fun layoutExtendsToStatusBar(window: Window) {
+            window.decorView.systemUiVisibility =
+                window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        }
+
+        /**
          * 设置状态是否显示浅色模式（深色字体）
          * @param window
          * @param light 是否为浅色模式

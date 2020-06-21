@@ -43,7 +43,7 @@ class CollectionActivity : BaseAppActivity() {
     override fun getLayoutResId() = R.layout.activity_collection
 
     override fun getTitleStyle(): Int {
-        return TITLE_STYLE_GREY_BACKGROUND
+        return PAGE_STYLE_SECONDARY
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

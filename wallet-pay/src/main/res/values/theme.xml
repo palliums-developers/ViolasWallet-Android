@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.APP.DayNight.Home">
+        <item name="android:windowAnimationStyle">@style/MainWindowAnimation</item>
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
+    </style>
+
+    <style name="Theme.APP.DayNight.WalletConnect" parent="Theme.APP.DayNight.Secondary">
+        <item name="android:windowAnimationStyle">@style/ScanLoginWindowAnimation</item>
+    </style>
+
+    <style name="Theme.APP.DayNight.Launcher" parent="Theme.APP.DayNight.Tertiary">
+        <item name="android:windowAnimationStyle">@style/LauncherWindowAnimation</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="Theme.APP.DayNight.Tertiary">
+        <item name="android:windowBackground">@drawable/shape_win_bg_gradient</item>
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
+    </style>
+
+    <style name="Theme.APP.DayNight.Secondary">
+        <item name="android:colorBackground">@color/color_F7F7F9</item>
+    </style>
+
+    <style name="Theme.APP.DayNight" parent="Theme.APP" />
+
+    <style name="Theme.APP" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/color_7038FD</item>
+        <item name="colorPrimaryVariant">@color/color_2A00C9</item>
+        <item name="colorPrimaryDark">@color/color_2A00C9</item>
+        <item name="colorSecondary">@color/color_9339F3</item>
+        <item name="colorSecondaryVariant">@color/color_5C00BF</item>
+        <item name="colorAccent">@color/color_9339F3</item>
+
+        <item name="android:colorBackground">@color/white</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorError">@color/color_E54040</item>
+
+        <item name="boxStrokeColor">@color/color_DEDEDE</item>
+        <item name="boxBackgroundColor">?attr/colorSurfaceSecondary</item>
+
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnBackground">@color/black</item>
+        <item name="colorOnSurface">@color/black</item>
+        <item name="colorOnError">@color/white</item>
+
+        <item name="android:textColor">@color/color_333333</item>
+        <item name="android:textColorPrimary">@color/color_333333</item>
+        <item name="android:textColorSecondary">@color/color_5C5C5C</item>
+        <item name="android:textColorTertiary">@color/color_999999</item>
+        <item name="android:textColorPrimaryDisableOnly">@color/color_BABABA</item>
+        <item name="android:textColorHint">@color/color_BABABA</item>
+        <item name="android:textColorHighlight">@color/color_504ACB</item>
+        <item name="android:textColorLink">@color/color_504ACB</item>
+
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">?android:colorBackground</item>
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+
+        <item name="android:screenOrientation">portrait</item>
+        <item name="android:hyphenationFrequency" tools:ignore="NewApi">none</item>
+
+        <item name="android:windowAnimationStyle">@style/AppWindowAnimation</item>
+        <item name="actionOverflowButtonStyle">@style/ActionOverflowButtonStyle</item>
+        <item name="buttonStyle">@style/ButtonStyle</item>
+
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+
+        <!--App custom attrs-->
+        <!--App通用资源属性-->
+        <item name="colorSurfaceSecondary">@color/color_F7F7F9</item>
+        <item name="colorItemPressedPrimary">@color/color_C2C2C2</item>
+        <item name="colorItemPressedSecondary">@color/color_BABABA</item>
+        <item name="colorWebProgressBg">@color/black_06</item>
+        <item name="colorDivider">@color/color_DEDEDE</item>
+        <item name="colorTint">@color/color_DEDEDE</item>
+        <item name="colorSwitchBgNormal">@color/color_BDBDBD</item>
+        <item name="colorSwitchBgChecked">@color/color_4730A7</item>
+
+        <item name="textColorWarn">@color/color_FB8F0B</item>
+        <item name="textColorProcessing">@color/color_FB8F0B</item>
+        <item name="textColorSuccess">@color/color_13B788</item>
+        <item name="textColorFailure">@color/color_E54040</item>
+
+        <item name="iconBackPrimary">@drawable/ic_back_dark</item>
+        <item name="iconBackSecondary">@drawable/ic_back_light</item>
+        <item name="iconBackTertiary">@drawable/ic_back_gray</item>
+        <item name="iconClose">@drawable/ic_action_close</item>
+        <item name="iconShare">@mipmap/ic_share</item>
+        <item name="iconLogo">@drawable/ic_logo_corner</item>
+        <item name="iconAppName">@drawable/ic_violas</item>
+        <item name="iconAdd">@drawable/icon_add_address</item>
+        <item name="iconForward">@drawable/ic_right_arrow_gray</item>
+        <item name="iconCopy">@drawable/ic_token_info_copy</item>
+        <item name="iconShowPrimary">@drawable/ic_total_balance_show</item>
+        <item name="iconShowSecondary">@drawable/ic_password_text_show</item>
+        <item name="iconHidePrimary">@drawable/ic_total_balance_hidden</item>
+        <item name="iconHideSecondary">@drawable/ic_password_text_hidden</item>
+        <item name="iconScanPrimary">@drawable/icon_scan_purple</item>
+        <item name="iconScanSecondary">@drawable/icon_scan_white</item>
+        <item name="iconRecordInit">@drawable/ic_transaction_type_register</item>
+        <item name="iconRecordInput">@drawable/ic_transaction_type_collection</item>
+        <item name="iconRecordOutput">@drawable/ic_transaction_type_transfer</item>
+
+        <!--首页资源属性-->
+        <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
+        <item name="homeBottomTabNormalTextColor">@color/color_3D3949</item>
+        <item name="homeBottomWalletTabSelectedIcon">@drawable/table_wallet_selected</item>
+        <item name="homeBottomWalletTabNormalIcon">@drawable/table_wallet_normal</item>
+        <item name="homeBottomMarketTabSelectedIcon">@drawable/table_market_selected</item>
+        <item name="homeBottomMarketTabNormalIcon">@drawable/table_market_normal</item>
+        <item name="homeBottomMeTabSelectedIcon">@drawable/table_me_selected</item>
+        <item name="homeBottomMeTabNormalIcon">@drawable/table_me_normal</item>
+        <item name="homeBottomNavigationBg">@color/white</item>
+        <item name="homeFragmentTopBg">@drawable/bg_wallet_main</item>
+
+        <!--钱包首页资源属性-->
+        <item name="walletHomeTotalAssetsTextColor">@color/color_9A91BE</item>
+        <item name="walletHomeAssetsTextColor">@color/color_7D71AA</item>
+        <item name="walletHomeAddAssetsIcon">@drawable/icon_add_assert</item>
+        <item name="walletHomeInitWalletTextColor">@color/color_261372</item>
+        <item name="walletHomeCreateWalletIcon">@drawable/ic_create_account</item>
+        <item name="walletHomeImportWalletIcon">@drawable/ic_import_account</item>
+        <item name="walletHomeWalletConnectTextColor">@color/color_FB8F0B</item>
+        <item name="walletHomeWalletConnectBgColor">@color/color_463288</item>
+        <item name="walletHomeWalletConnectIcon">@drawable/ic_wallet_connect_indicator</item>
+        <item name="walletHomeDefTokenLogo">@drawable/assets_default</item>
+        <item name="walletHomeBackupTopBg">@drawable/bg_backup_title</item>
+        <item name="walletHomeBackupTopIcon">@drawable/icon_security_backup</item>
+
+        <!--我的首页资源属性-->
+        <item name="meHomeDefAvatarIcon">@drawable/ic_avatar_logo</item>
+        <item name="meHomeWalletMenuIcon">@mipmap/ic_me_wallet_management</item>
+        <item name="meHomeAddressMenuIcon">@mipmap/ic_me_address_book</item>
+        <item name="meHomeSettingsMenuIcon">@mipmap/ic_me_settings</item>
+
+        <!--币种详情页资源属性-->
+        <item name="tokenDetailsDefTokenLogo">@drawable/ic_token_info_logo_default</item>
+        <item name="tokenDetailsTokenInfoBg">@drawable/bg_token_info_head</item>
+        <item name="tokenDetailsTabNormalTextColor">@color/color_C2C2C2</item>
+
+        <!--交易详情页资源属性-->
+        <item name="transDetailsTopBg">@mipmap/bg_transaction_details_header</item>
+        <item name="transDetailsBottomBg">@mipmap/bg_transaction_details_footer</item>
+        <item name="transDetailsTransInfoBg">@mipmap/bg_transaction_details_content</item>
+        <item name="transDetailsProcessingIcon">@drawable/ic_transaction_state_pending</item>
+        <item name="transDetailsSuccessIcon">@drawable/ic_transaction_state_success</item>
+        <item name="transDetailsFailureIcon">@drawable/ic_transaction_state_failure</item>
+        <item name="transDetailsSaveIcon">@drawable/ic_share_type_download</item>
+
+        <!--多语言页面资源属性-->
+        <item name="languageSelectedIcon">@drawable/icon_check_selector</item>
+        <item name="languageNormalIcon">@drawable/icon_check_normal</item>
+
+        <!--地址相关页面资源属性-->
+        <item name="addressLabelBg">@color/black_06</item>
+        <item name="addressLabelTextColor">@color/color_C2C2C2</item>
+        <item name="addressTypeSelectedBg">@color/color_0085E4</item>
+
+        <!--转账收款页面资源属性-->
+        <item name="transferInfoBg">@drawable/bg_transfer_white</item>
+        <item name="transferSeekBarThumb">@drawable/icon_transfer_thumb</item>
+        <item name="transferSeekBarBgColor">@color/color_BABABA</item>
+        <item name="collectionInfoBg">@drawable/bg_collection_address</item>
+
+        <!--WalletConnect相关页面资源属性-->
+        <item name="walletConnectWebIcon">@drawable/ic_web</item>
+        <item name="walletConnectWarnIcon">@drawable/ic_wallet_connect_info</item>
+
+        <!--助记词备份相关页面资源属性-->
+        <item name="mnemonicBackupKeyIcon">@mipmap/ic_backup_prompt</item>
+        <item name="mnemonicBackupPointBgColor">@color/color_333333</item>
+        <item name="mnemonicBackupNoPhotographyIcon">@mipmap/ic_no_photography</item>
+        <item name="mnemonicBackupBoxStrokeColor">@color/color_333333_50</item>
+        <item name="mnemonicBackupBoxDisableBgColor">@color/gray_19</item>
+        <item name="mnemonicBackupBoxSelectedColor">@color/color_504ACB</item>
+
+        <!--添加币种页面资源属性-->
+        <item name="addCurrencyTextColor">@color/color_0E0051</item>
+    </style>
+
+    <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">
+        <item name="android:tint">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="ButtonStyle" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:insetTop">@dimen/dp_0</item>
+        <item name="android:insetBottom">@dimen/dp_0</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- Minor指竖屏模式下的宽度 -->
+        <item name="android:windowMinWidthMinor">375dp</item>
+        <item name="windowFixedWidthMinor">375dp</item>
+        <item name="windowMinWidthMinor">375dp</item>
+    </style>
+
+</resources>

@@ -109,7 +109,7 @@ public class MenuItemView extends FrameLayout {
         // 尾部图标
         Drawable endIcon = null;
         // 尾部箭头
-        Drawable endArrow = ResourcesUtilKt.getDrawable(R.drawable.ic_right_arrow_gray, context);
+        Drawable endArrow = ResourcesUtilKt.getDrawableCompat(R.drawable.ic_right_arrow_gray, context);
 
         // 分界线颜色
         int dividingLineColor = ResourcesUtilKt.getColor(R.color.black_06, context);

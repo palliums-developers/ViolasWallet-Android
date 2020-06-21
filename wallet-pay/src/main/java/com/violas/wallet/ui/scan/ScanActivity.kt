@@ -21,7 +21,6 @@ import kotlinx.android.synthetic.main.activity_scan.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.PermissionRequest
-import qiu.niorgai.StatusBarCompat
 
 class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
     companion object {
@@ -41,7 +40,6 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
     private val REQUEST_PERMISSION_CAMERA = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        StatusBarCompat.translucentStatusBar(this, true)
         super.onCreate(savedInstanceState)
 
         Symbol.scanType = 1

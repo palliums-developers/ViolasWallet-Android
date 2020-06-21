@@ -21,7 +21,7 @@ class IdentityActivity : BaseAppActivity() {
     }
 
     override fun getTitleStyle(): Int {
-        return TITLE_STYLE_NOT_TITLE
+        return PAGE_STYLE_NOT_TITLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

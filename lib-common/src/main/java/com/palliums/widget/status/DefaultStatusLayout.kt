@@ -147,7 +147,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
     }
 
     override fun setImageWithStatus(@IStatusLayout.Status status: Int, imageRes: Int): IStatusLayout {
-        getDrawable(imageRes, context = context)?.let {
+        getDrawableCompat(imageRes, context)?.let {
             setImageWithStatus(status, it)
         }
         return this

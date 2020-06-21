@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.palliums.utils.getResourceId
+import com.violas.wallet.R
 import com.violas.wallet.databinding.ItemLanguageManagerBinding
 
 internal class ChangeLanguageAdapter(private val viewModel: ChangeLanguageViewModel) :
@@ -46,6 +48,12 @@ internal class ChangeLanguageAdapter(private val viewModel: ChangeLanguageViewMo
             binding.apply {
                 this.clickListener = listener
                 this.item = item
+                binding.viewStatus.setBackgroundResource(
+                    getResourceId(
+                        if (item.select) R.attr.languageSelectedIcon else R.attr.languageNormalIcon,
+                        itemView.context
+                    )
+                )
                 executePendingBindings()
             }
         }

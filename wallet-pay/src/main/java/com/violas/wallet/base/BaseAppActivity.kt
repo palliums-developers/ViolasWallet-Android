@@ -5,21 +5,24 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.IntDef
 import com.palliums.base.BaseActivity
+import com.palliums.utils.StatusBarUtil
+import com.palliums.utils.getResourceId
 import com.violas.wallet.R
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 
 abstract class BaseAppActivity : BaseActivity() {
 
     companion object {
-        const val TITLE_STYLE_DEFAULT = 0
-        const val TITLE_STYLE_GREY_BACKGROUND = 1
-        const val TITLE_STYLE_MAIN_COLOR = 2
-        const val TITLE_STYLE_NOT_TITLE = 3
-        const val TITLE_STYLE_DARK_TITLE_PLIGHT_CONTENT = 4
-        const val TITLE_STYLE_CUSTOM = 5
+        const val PAGE_STYLE_PRIMARY = 0
+        const val PAGE_STYLE_SECONDARY = 1
+        const val PAGE_STYLE_TERTIARY = 2
+        const val PAGE_STYLE_NOT_TITLE = 3
+        const val PAGE_STYLE_CUSTOM = 4
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 布局延伸到状态栏中
+        StatusBarUtil.layoutExtendsToStatusBar(window)
         super.onCreate(savedInstanceState)
 
         setTitleStyle(getTitleStyle())
@@ -27,71 +30,44 @@ abstract class BaseAppActivity : BaseActivity() {
 
     @TitleStyle
     open fun getTitleStyle(): Int {
-        return TITLE_STYLE_DEFAULT
+        return PAGE_STYLE_PRIMARY
     }
 
     @IntDef(
-        TITLE_STYLE_DEFAULT,
-        TITLE_STYLE_GREY_BACKGROUND,
-        TITLE_STYLE_MAIN_COLOR,
-        TITLE_STYLE_NOT_TITLE,
-        /**
-         * 深色title 主浅色content
-         */
-        TITLE_STYLE_DARK_TITLE_PLIGHT_CONTENT,
-        TITLE_STYLE_CUSTOM
+        PAGE_STYLE_PRIMARY,
+        PAGE_STYLE_SECONDARY,
+        PAGE_STYLE_TERTIARY,
+        PAGE_STYLE_NOT_TITLE,
+        PAGE_STYLE_CUSTOM
     )
     annotation class TitleStyle
 
     private fun setTitleStyle(@TitleStyle style: Int) {
         when (style) {
-
-            TITLE_STYLE_GREY_BACKGROUND -> {
-                setStatusBarMode(true)
-
-                setContentBackgroundColor(R.color.def_activity_vice_bg)
-                setTitleBackgroundColor(R.color.white)
-
-                setTitleLeftImageResource(R.drawable.ic_back_dark)
-                setTitleRightTextColor(R.color.def_text_font_black)
-                titleColor = R.color.def_text_font_black
+            PAGE_STYLE_PRIMARY -> {
+                setTitleLeftImageResource(getResourceId(R.attr.iconBackPrimary, this))
+                setTitleRightTextColor(getResourceId(android.R.attr.textColor, this))
+                titleColor = getResourceId(android.R.attr.textColor, this)
             }
 
-            TITLE_STYLE_MAIN_COLOR -> {
-                setRootBackgroundResource(R.drawable.shape_deputy_background)
-
-                setTitleLeftImageResource(R.drawable.ic_back_light)
-                setTitleRightTextColor(R.color.white)
-                titleColor = R.color.white
+            PAGE_STYLE_SECONDARY -> {
+                setTitleBackgroundColor(getResourceId(R.attr.colorSurface, this))
+                setTitleLeftImageResource(getResourceId(R.attr.iconBackPrimary, this))
+                setTitleRightTextColor(getResourceId(android.R.attr.textColor, this))
+                titleColor = getResourceId(android.R.attr.textColor, this)
             }
 
-            TITLE_STYLE_NOT_TITLE -> {
-                setRootBackgroundColor(R.color.def_activity_bg)
+            PAGE_STYLE_TERTIARY -> {
+                setTitleLeftImageResource(getResourceId(R.attr.iconBackSecondary, this))
+                setTitleRightTextColor(getResourceId(R.attr.colorOnPrimary, this))
+                titleColor = getResourceId(R.attr.colorOnPrimary, this)
+            }
 
+            PAGE_STYLE_NOT_TITLE -> {
                 setTitleBarVisibility(View.GONE)
             }
 
-            TITLE_STYLE_DARK_TITLE_PLIGHT_CONTENT -> {
-                setTopBackgroundResource(R.drawable.bg_wallet_main)
-                setContentBackgroundColor(R.color.def_activity_bg)
-
-                setTitleLeftImageResource(R.drawable.ic_back_light)
-                setTitleRightTextColor(R.color.white)
-                titleColor = R.color.white
-            }
-
-            TITLE_STYLE_DEFAULT -> {
-                setStatusBarMode(true)
-
-                setContentBackgroundColor(R.color.def_activity_bg)
-                setTitleBackgroundColor(R.color.white)
-
-                setTitleLeftImageResource(R.drawable.ic_back_dark)
-                setTitleRightTextColor(R.color.def_text_font_black)
-                titleColor = R.color.def_text_font_black
-            }
-
-            TITLE_STYLE_CUSTOM -> {
+            PAGE_STYLE_CUSTOM -> {
 
             }
         }

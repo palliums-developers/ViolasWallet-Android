@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import com.palliums.utils.DensityUtility
+import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -28,7 +29,7 @@ class MainActivity : BaseAppActivity() {
     }
 
     override fun getTitleStyle(): Int {
-        return TITLE_STYLE_NOT_TITLE
+        return PAGE_STYLE_NOT_TITLE
     }
 
     override fun getLayoutResId(): Int {
@@ -59,13 +60,13 @@ class MainActivity : BaseAppActivity() {
             resetToDefaultIcon()
             when (it.itemId) {
                 R.id.tab_wallet -> {
-                    it.setIcon(R.drawable.table_wallet_selected);
+                    it.setIcon(getResourceId(R.attr.homeBottomWalletTabSelectedIcon, this))
                 }
                 R.id.tab_market -> {
-                    it.setIcon(R.drawable.table_market_selected);
+                    it.setIcon(getResourceId(R.attr.homeBottomMarketTabSelectedIcon, this))
                 }
                 R.id.tab_me -> {
-                    it.setIcon(R.drawable.table_me_selected);
+                    it.setIcon(getResourceId(R.attr.homeBottomMeTabSelectedIcon, this))
                 }
             }
             true
@@ -83,9 +84,12 @@ class MainActivity : BaseAppActivity() {
     }
 
     private fun resetToDefaultIcon() {
-        bottom_navigation.menu.findItem(R.id.tab_wallet).setIcon(R.drawable.table_wallet_normal)
-        bottom_navigation.menu.findItem(R.id.tab_market).setIcon(R.drawable.table_market_normal)
-        bottom_navigation.menu.findItem(R.id.tab_me).setIcon(R.drawable.table_me_normal)
+        bottom_navigation.menu.findItem(R.id.tab_wallet)
+            .setIcon(getResourceId(R.attr.homeBottomWalletTabNormalIcon, this))
+        bottom_navigation.menu.findItem(R.id.tab_market)
+            .setIcon(getResourceId(R.attr.homeBottomMarketTabNormalIcon, this))
+        bottom_navigation.menu.findItem(R.id.tab_me)
+            .setIcon(getResourceId(R.attr.homeBottomMeTabNormalIcon, this))
     }
 
     @Subscribe

@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
-import com.palliums.utils.getColor
+import com.palliums.utils.getColorByAttrId
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.item_mnemonic_word.view.*
 
@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.item_mnemonic_word.view.*
 data class WordVO(
     val word: String,
     val index: Int
-){
+) {
     var confirmed: Boolean = false
 }
 
@@ -39,21 +39,41 @@ class WordViewHolder(
         itemData?.let {
             itemView.vWord.text = it.word
             when {
-                onItemClick == null ->{
-                    itemView.vWord.setTextColor(getColor(R.color.color_3C3848, itemView.context))
+                onItemClick == null -> {
+                    itemView.vWord.setTextColor(
+                        getColorByAttrId(
+                            android.R.attr.textColor,
+                            itemView.context
+                        )
+                    )
                     itemView.vWord.setBackgroundResource(R.drawable.bg_mnemonic_word_normal)
                 }
                 confirmView -> {
-                    itemView.vWord.setTextColor(getColor(R.color.white, itemView.context))
+                    itemView.vWord.setTextColor(
+                        getColorByAttrId(
+                            R.attr.colorOnPrimary,
+                            itemView.context
+                        )
+                    )
                     itemView.vWord.setBackgroundResource(R.drawable.selector_bg_mnemonic_word_comfirmed)
                 }
                 it.confirmed -> {
-                    itemView.vWord.setTextColor(getColor(R.color.color_3C3848_50, itemView.context))
+                    itemView.vWord.setTextColor(
+                        getColorByAttrId(
+                            android.R.attr.textColorSecondary,
+                            itemView.context
+                        )
+                    )
                     itemView.vWord.setBackgroundResource(R.drawable.selector_bg_mnemonic_word)
                     itemView.vWord.isEnabled = false
                 }
                 else -> {
-                    itemView.vWord.setTextColor(getColor(R.color.color_3C3848, itemView.context))
+                    itemView.vWord.setTextColor(
+                        getColorByAttrId(
+                            android.R.attr.textColor,
+                            itemView.context
+                        )
+                    )
                     itemView.vWord.setBackgroundResource(R.drawable.selector_bg_mnemonic_word)
                     itemView.vWord.isEnabled = true
                 }

@@ -27,7 +27,7 @@
         android:id="@+id/vFailed"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/def_activity_vice_bg"
+        android:background="?attr/colorSurfaceSecondary"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="gone"
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_200"
             android:text="@string/web_load_failed_tips"
-            android:textColor="@color/def_text_desc"
+            android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/sp_17" />
 
         <TextView
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_8"
             android:text="@string/web_load_failed_retry"
-            android:textColor="@color/def_text_desc"
+            android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/sp_14" />
 
     </LinearLayout>

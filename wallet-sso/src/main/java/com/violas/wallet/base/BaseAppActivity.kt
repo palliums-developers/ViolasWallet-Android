@@ -7,6 +7,7 @@ import androidx.annotation.IntDef
 import com.palliums.base.BaseActivity
 import com.violas.wallet.R
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
+import qiu.niorgai.StatusBarCompat
 
 abstract class BaseAppActivity : BaseActivity() {
 
@@ -38,6 +39,8 @@ abstract class BaseAppActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //透明状态栏，布局延伸到状态栏中
+        StatusBarCompat.translucentStatusBar(this, true)
         super.onCreate(savedInstanceState)
 
         setPageStyle(getPageStyle())

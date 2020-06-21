@@ -65,7 +65,7 @@ class LoginWebActivity : BaseViewModelActivity() {
     }
 
     override fun getTitleStyle(): Int {
-        return TITLE_STYLE_CUSTOM
+        return PAGE_STYLE_CUSTOM
     }
 
     override fun getViewModel(): BaseViewModel {

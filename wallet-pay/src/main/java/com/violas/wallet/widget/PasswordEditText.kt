@@ -6,8 +6,8 @@ import android.text.Spannable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.core.content.res.ResourcesCompat
 import com.palliums.utils.DensityUtility
+import com.palliums.utils.getDrawableByAttrId
 import com.violas.wallet.R
 
 
@@ -22,12 +22,12 @@ class PasswordEditText : AppCompatEditText {
 
     private var mHiddenPwd = true
     private val mShowDrawable by lazy {
-        ResourcesCompat.getDrawable(resources, R.drawable.ic_password_text_show, null)?.apply {
+        getDrawableByAttrId(R.attr.iconShowSecondary, context)?.apply {
             setBounds(0, 0, intrinsicWidth, intrinsicHeight)
         }
     }
     private val mHideDrawable by lazy {
-        ResourcesCompat.getDrawable(resources, R.drawable.ic_password_text_hidden, null)?.apply {
+        getDrawableByAttrId(R.attr.iconHideSecondary, context)?.apply {
             setBounds(0, 0, intrinsicWidth, intrinsicHeight)
         }
     }

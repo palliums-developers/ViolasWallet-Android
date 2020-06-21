@@ -9,6 +9,7 @@ import com.palliums.utils.getColor
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.palliums.paging.PagingViewAdapter
+import com.palliums.utils.getResourceId
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.item_transaction_record.view.*
 import java.text.SimpleDateFormat
@@ -59,16 +60,19 @@ class TransactionRecordViewHolder(
         itemData?.let {
 
             itemView.ivType.setImageResource(
-                when (it.transactionType) {
-                    TransactionType.COLLECTION ->
-                        R.drawable.ic_transaction_type_collection
+                getResourceId(
+                    when (it.transactionType) {
+                        TransactionType.COLLECTION ->
+                            R.attr.iconRecordInput
 
-                    TransactionType.TRANSFER ->
-                        R.drawable.ic_transaction_type_transfer
+                        TransactionType.TRANSFER ->
+                            R.attr.iconRecordOutput
 
-                    else ->
-                        R.drawable.ic_transaction_type_register
-                }
+                        else ->
+                            R.attr.iconRecordInit
+                    },
+                    itemView.context
+                )
             )
 
             val showAddress = if (it.transactionType == TransactionType.COLLECTION) {
@@ -89,24 +93,36 @@ class TransactionRecordViewHolder(
             itemView.tvAmount.text = convertAmountToDisplayUnit(it.amount, it.coinType).first
             itemView.tvAmount.setTextColor(
                 getColor(
-                    when (it.transactionState) {
-                        TransactionState.SUCCESS -> {
-                            itemView.tvDesc.visibility = View.GONE
-                            R.color.color_13B788
-                        }
+                    getResourceId(
+                        when (it.transactionState) {
+                            TransactionState.SUCCESS -> {
+                                itemView.tvDesc.visibility = View.GONE
+                                R.attr.textColorSuccess
+                            }
 
-                        TransactionState.FAILURE -> {
-                            itemView.tvDesc.visibility = View.GONE
-                            R.color.color_E54040
-                        }
+                            TransactionState.FAILURE -> {
+                                itemView.tvDesc.visibility = View.GONE
+                                R.attr.textColorFailure
+                            }
 
-                        else -> {
-                            itemView.tvDesc.visibility = View.VISIBLE
-                            itemView.tvDesc.text = getString(R.string.state_trading)
-                            itemView.tvDesc.setTextColor(getColor(R.color.color_FB8F0B))
-                            R.color.color_FB8F0B
-                        }
-                    }
+                            else -> {
+                                itemView.tvDesc.visibility = View.VISIBLE
+                                itemView.tvDesc.text = getString(R.string.state_trading)
+                                itemView.tvDesc.setTextColor(
+                                    getColor(
+                                        getResourceId(
+                                            R.attr.textColorProcessing,
+                                            itemView.context
+                                        ),
+                                        itemView.context
+                                    )
+                                )
+                                R.attr.textColorProcessing
+                            }
+                        },
+                        itemView.context
+                    ),
+                    itemView.context
                 )
             )
         }

@@ -29,7 +29,6 @@
             android:layout_marginTop="@dimen/dp_26"
             android:gravity="center_horizontal"
             android:text="@string/desc_fingerprint_authenticate_title_start"
-            android:textColor="@color/color_413D4D"
             android:textSize="@dimen/sp_18"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -43,7 +42,6 @@
             android:layout_marginHorizontal="@dimen/dp_28"
             android:layout_marginTop="@dimen/dp_8"
             android:gravity="center_horizontal"
-            android:textColor="@color/def_text_title"
             android:textSize="@dimen/sp_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +53,7 @@
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_0.5"
             android:layout_marginBottom="@dimen/dp_39"
-            android:background="@color/color_EBEBEC"
+            android:background="?attr/colorDivider"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -77,14 +75,14 @@
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:text="@string/action_cancel_nbsp"
-                android:textColor="@color/color_999999"
+                android:textColor="?android:attr/textColorTertiary"
                 android:textStyle="bold" />
 
             <View
                 android:id="@+id/vVerticalLine1"
                 android:layout_width="@dimen/dp_0.5"
                 android:layout_height="match_parent"
-                android:background="@color/color_EBEBEC"
+                android:background="?attr/colorDivider"
                 android:visibility="visible" />
 
             <TextView
@@ -95,7 +93,7 @@
                 android:foreground="?android:attr/selectableItemBackground"
                 android:gravity="center"
                 android:text="@string/action_use_password"
-                android:textColor="@color/color_7038FD"
+                android:textColor="?attr/colorPrimary"
                 android:textStyle="bold"
                 android:visibility="visible" />
 
@@ -106,7 +104,7 @@
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_0.5"
             android:layout_marginBottom="@dimen/dp_39"
-            android:background="@color/color_EBEBEC"
+            android:background="?attr/colorDivider"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/vHorizontalLine1"
             app:layout_constraintEnd_toEndOf="parent"
@@ -120,7 +118,7 @@
             android:foreground="?android:attr/selectableItemBackground"
             android:gravity="center"
             android:text="@string/action_retry_fingerprint"
-            android:textColor="@color/color_7038FD"
+            android:textColor="?attr/colorPrimary"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/vHorizontalLine1"

@@ -1,6 +1,5 @@
 package com.violas.wallet.ui.walletconnect
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -13,9 +12,7 @@ import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
-import com.palliums.content.App
+import com.palliums.utils.getColorByAttrId
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -26,7 +23,6 @@ import com.violas.wallet.walletconnect.WalletConnectSessionListener
 import com.violas.walletconnect.models.WCPeerMeta
 import kotlinx.android.synthetic.main.activity_wallet_connect_authorization.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -64,7 +60,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
         intent.getStringExtra(CONNECT_MSG)
     }
 
-    override fun getTitleStyle() = TITLE_STYLE_CUSTOM
+    override fun getTitleStyle() = PAGE_STYLE_CUSTOM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -152,9 +148,9 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
             }
 
             override fun updateDrawState(ds: TextPaint) {
-                ds.color = ContextCompat.getColor(
-                    this@WalletConnectAuthorizationActivity,
-                    R.color.color_333333
+                ds.color = getColorByAttrId(
+                    android.R.attr.textColorSecondary,
+                    this@WalletConnectAuthorizationActivity
                 )
                 ds.isUnderlineText = false//去掉下划线
             }
@@ -165,9 +161,9 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
             }
 
             override fun updateDrawState(ds: TextPaint) {
-                ds.color = ContextCompat.getColor(
-                    this@WalletConnectAuthorizationActivity,
-                    R.color.color_333333
+                ds.color = getColorByAttrId(
+                    android.R.attr.textColorSecondary,
+                    this@WalletConnectAuthorizationActivity
                 )
                 ds.isUnderlineText = false//去掉下划线
             }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_deputy_background"
+    android:background="@drawable/shape_win_bg_gradient"
     tools:context=".ui.identity.IdentityActivity">
 
     <ImageView

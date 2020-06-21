@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:background="@color/color_F7F7F9"
-    tools:layout_marginTop="@dimen/height_top_bar">
-    <!--tools:context=".ui.desktopManagement.LoginDesktopActivity"-->
+    tools:context=".ui.walletconnect.WalletConnectActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -18,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
             android:layout_marginEnd="29dp"
-            android:src="@drawable/ic_action_close"
+            android:src="?attr/iconClose"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -27,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_55"
-            android:src="@drawable/ic_web"
+            android:src="?attr/walletConnectWebIcon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -38,7 +36,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_27"
             android:text="@string/wallet_connect_transaction"
-            android:textColor="@color/color_333333"
             android:textSize="@dimen/sp_16"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"

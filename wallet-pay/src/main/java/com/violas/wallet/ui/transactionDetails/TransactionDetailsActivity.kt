@@ -64,6 +64,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     private var mLoadingDialog: LoadingDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        StatusBarUtil.layoutExtendsToStatusBar(window)
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_transaction_details)
@@ -143,8 +144,6 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     }
 
     private fun initView(transactionRecord: TransactionRecordVO) {
-        StatusBarUtil.setLightStatusBarMode(this.window, true)
-
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.setNavigationOnClickListener {
@@ -170,14 +169,22 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
 
         when (transactionRecord.transactionState) {
             TransactionState.PENDING -> {
-                ivState.setImageResource(R.drawable.ic_transaction_state_pending)
-                tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_FAA030))
+                ivState.setImageResource(
+                    getResourceId(R.attr.transDetailsProcessingIcon, this)
+                )
+                tvDesc.setTextColor(
+                    getColorByAttrId(R.attr.textColorProcessing, this)
+                )
                 tvDesc.setText(R.string.desc_transaction_state_transaction_pending)
             }
 
             TransactionState.FAILURE -> {
-                ivState.setImageResource(R.drawable.ic_transaction_state_failure)
-                tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_F55753))
+                ivState.setImageResource(
+                    getResourceId(R.attr.transDetailsFailureIcon, this)
+                )
+                tvDesc.setTextColor(
+                    getColorByAttrId(R.attr.textColorFailure, this)
+                )
                 tvDesc.setText(
                     when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
@@ -200,8 +207,12 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             }
 
             else -> {
-                ivState.setImageResource(R.drawable.ic_transaction_state_success)
-                tvDesc.setTextColor(com.palliums.utils.getColor(R.color.color_00D1AF))
+                ivState.setImageResource(
+                    getResourceId(R.attr.transDetailsSuccessIcon, this)
+                )
+                tvDesc.setTextColor(
+                    getColorByAttrId(R.attr.textColorSuccess, this)
+                )
                 tvDesc.setText(
                     when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {

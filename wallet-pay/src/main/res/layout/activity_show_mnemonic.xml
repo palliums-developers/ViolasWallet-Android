@@ -20,7 +20,6 @@
             android:layout_marginTop="@dimen/dp_16"
             android:gravity="center"
             android:text="@string/show_mnemonic_content_01"
-            android:textColor="@color/def_text_font_black"
             android:textSize="@dimen/sp_14"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -57,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_20"
-                android:src="@mipmap/ic_no_photography" />
+                android:src="?attr/mnemonicBackupNoPhotographyIcon" />
 
             <TextView
                 android:id="@+id/vDesc2"
@@ -76,7 +75,7 @@
             android:id="@+id/vNextStep"
             style="@style/BaseButtonPrimary"
             android:layout_marginTop="@dimen/dp_72"
-            android:layout_marginBottom="@dimen/dp_170"
+            android:layout_marginBottom="@dimen/dp_20"
             android:text="@string/btn_next_step"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"

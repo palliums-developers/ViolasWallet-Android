@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="104dp"
+    android:layout_width="98dp"
     android:layout_height="wrap_content"
+    android:layout_margin="@dimen/dp_5"
+    android:foreground="?attr/selectableItemBackground"
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
@@ -10,17 +12,17 @@
         android:id="@+id/ivIcon"
         android:layout_width="@dimen/dp_38"
         android:layout_height="@dimen/dp_38"
-        android:layout_marginTop="@dimen/dp_17"
-        tools:src="@drawable/sel_share_type_download" />
+        android:layout_marginTop="@dimen/dp_12"
+        tools:src="?attr/transDetailsSaveIcon" />
 
     <TextView
         android:id="@+id/tvDesc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_9"
-        android:layout_marginBottom="@dimen/dp_13"
+        android:layout_marginBottom="@dimen/dp_8"
         android:text="@string/desc_save_into_album"
-        android:textColor="@color/sel_share_type_text_color"
+        android:textColor="?android:textColorTertiary"
         android:textSize="@dimen/sp_12" />
 
 </LinearLayout>

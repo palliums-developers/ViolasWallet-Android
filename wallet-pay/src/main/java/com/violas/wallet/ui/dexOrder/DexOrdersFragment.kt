@@ -5,7 +5,7 @@ import androidx.lifecycle.Observer
 import com.palliums.net.LoadState
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
-import com.palliums.utils.getDrawable
+import com.palliums.utils.getDrawableCompat
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
@@ -141,7 +141,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
                     R.string.tips_no_completed_orders
             )
         )
-        getDrawable(R.mipmap.ic_no_transaction_record)?.let {
+        getDrawableCompat(R.mipmap.ic_no_transaction_record, requireContext())?.let {
             getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
         }
 

@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/def_activity_vice_bg">
+    android:background="?attr/colorSurfaceSecondary">
 
     <ImageView
         android:id="@+id/ivHeader"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_196"
-        android:background="@drawable/bg_wallet_main"
+        android:background="?attr/homeFragmentTopBg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,7 +20,7 @@
         android:layout_width="@dimen/dp_75"
         android:layout_height="@dimen/dp_75"
         android:layout_marginTop="@dimen/dp_65"
-        android:src="@drawable/ic_avatar_logo"
+        android:src="?attr/meHomeDefAvatarIcon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_8"
         android:text="@string/app_name"
-        android:textColor="@color/white"
+        android:textColor="?attr/colorOnPrimary"
         android:textSize="@dimen/sp_15"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +48,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivHeader"
         app:mivShowBottomLine="false"
-        app:mivStartIcon="@mipmap/ic_me_wallet_management"
+        app:mivStartIcon="?attr/meHomeWalletMenuIcon"
         app:mivStartTitleText="@string/me_wallet_management" />
 
     <com.palliums.widget.MenuItemView
@@ -59,7 +59,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivWalletManagement"
         app:mivShowBottomLine="false"
-        app:mivStartIcon="@mipmap/ic_me_address_book"
+        app:mivStartIcon="?attr/meHomeAddressMenuIcon"
         app:mivStartTitleText="@string/me_address_book" />
 
     <com.palliums.widget.MenuItemView
@@ -70,7 +70,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivAddressBook"
         app:mivShowBottomLine="false"
-        app:mivStartIcon="@mipmap/ic_me_settings"
+        app:mivStartIcon="?attr/meHomeSettingsMenuIcon"
         app:mivStartTitleText="@string/me_settings" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
