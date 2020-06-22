@@ -72,7 +72,7 @@ class ViolasBizService(
         val list = response.data!!.mapIndexed { index, dto ->
 
             // 解析交易状态
-            val transactionState = if (dto.status == 0)
+            val transactionState = if (dto.status == 4001)
                 TransactionState.SUCCESS
             else
                 TransactionState.FAILURE

@@ -48,7 +48,7 @@ class LibraViolasService(
         val list = response.data!!.mapIndexed { index, dto ->
 
             // 解析交易状态
-            val transactionState = if (dto.status == 1)
+            val transactionState = if (dto.status == 4001)
                 TransactionState.SUCCESS
             else
                 TransactionState.FAILURE
