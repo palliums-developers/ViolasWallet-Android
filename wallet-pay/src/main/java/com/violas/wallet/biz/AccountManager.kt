@@ -430,7 +430,7 @@ class AccountManager {
                 TokenDo(
                     account_id = insertIds[1],
                     assetsName = "LBR",
-                    name = "LBR",
+                    name = "T",
                     enable = true
                 )
             )

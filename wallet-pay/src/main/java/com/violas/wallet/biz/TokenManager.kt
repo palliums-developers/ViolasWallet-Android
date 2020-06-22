@@ -110,7 +110,7 @@ class TokenManager {
             }
 
             if (account.accountType == AccountType.Normal) {
-                val coinTypes = CoinTypes.parseCoinType(CoinTypes.Bitcoin.coinType())
+                val coinTypes = CoinTypes.parseCoinType(account.coinNumber)
                 resultTokenList.add(
                     0, AssertOriginateToken(
                         id = 0,
