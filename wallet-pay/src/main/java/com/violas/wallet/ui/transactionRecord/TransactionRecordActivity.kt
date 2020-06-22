@@ -26,12 +26,12 @@ class TransactionRecordActivity : BaseAppActivity() {
         fun start(
             context: Context,
             accountId: Long,
-            tokenAddress: String? = null
+            tokenId: String? = null
         ) {
             Intent(context, TransactionRecordActivity::class.java)
                 .apply {
                     putExtra(KEY_ONE, accountId)
-                    tokenAddress?.let { putExtra(KEY_TWO, it) }
+                    tokenId?.let { putExtra(KEY_TWO, it) }
                 }
                 .start(context)
         }
@@ -41,7 +41,7 @@ class TransactionRecordActivity : BaseAppActivity() {
     private lateinit var mCoinTypes: CoinTypes
 
     private var mAccountId = -100L
-    private var mTokenAddress: String? = null
+    private var mTokenId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +60,7 @@ class TransactionRecordActivity : BaseAppActivity() {
                             mWalletAddress,
                             mCoinTypes.coinType(),
                             TransactionType.ALL,
-                            mTokenAddress
+                            mTokenId
                         )
                     )
                 } else {
@@ -78,19 +78,19 @@ class TransactionRecordActivity : BaseAppActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putLong(KEY_ONE, mAccountId)
-        mTokenAddress?.let { outState.putString(KEY_TWO, it) }
+        mTokenId?.let { outState.putString(KEY_TWO, it) }
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
         if (savedInstanceState != null) {
             mAccountId = savedInstanceState.getLong(KEY_ONE, -100)
             if (savedInstanceState.containsKey(KEY_TWO)) {
-                mTokenAddress = savedInstanceState.getString(KEY_TWO)
+                mTokenId = savedInstanceState.getString(KEY_TWO)
             }
         } else if (intent != null) {
             mAccountId = intent.getLongExtra(KEY_ONE, -100)
             if (intent.hasExtra(KEY_TWO)) {
-                mTokenAddress = intent.getStringExtra(KEY_TWO)
+                mTokenId = intent.getStringExtra(KEY_TWO)
             }
         }
 

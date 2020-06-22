@@ -13,7 +13,7 @@ interface TransactionService {
     /**
      * 获取交易记录
      * @param address  钱包地址
-     * @param tokenAddress  token地址
+     * @param tokenId  token唯一标识
      * @param tokenName  token名称
      * @param pageSize 分页大小，默认为10
      * @param pageNumber 页码，从1开始
@@ -22,7 +22,7 @@ interface TransactionService {
      */
     suspend fun getTransactionRecord(
         address: String,
-        tokenAddress: String?,
+        tokenId: String?,
         tokenName: String?,
         pageSize: Int,
         pageNumber: Int,

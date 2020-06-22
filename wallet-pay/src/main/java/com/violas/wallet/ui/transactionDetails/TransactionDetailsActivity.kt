@@ -195,8 +195,8 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                             R.string.desc_transaction_state_collection_failure
                         }
 
-                        TransactionType.REGISTER -> {
-                            R.string.desc_transaction_state_register_failure
+                        TransactionType.ADD_CURRENCY -> {
+                            R.string.desc_transaction_state_add_currency_failure
                         }
 
                         else -> {
@@ -223,8 +223,8 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                             R.string.desc_transaction_state_collection_success
                         }
 
-                        TransactionType.REGISTER -> {
-                            R.string.desc_transaction_state_register_success
+                        TransactionType.ADD_CURRENCY -> {
+                            R.string.desc_transaction_state_add_currency_success
                         }
 
                         else -> {
@@ -240,7 +240,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         val amountWithUnit =
             convertAmountToDisplayUnit(transactionRecord.amount, transactionRecord.coinType)
         tvAmount.text =
-            "${amountWithUnit.first} ${transactionRecord.tokenName ?: amountWithUnit.second}"
+            "${amountWithUnit.first} ${transactionRecord.tokenDisplayName ?: amountWithUnit.second}"
 
         val gasWithUnit =
             convertAmountToDisplayUnit(transactionRecord.gas, transactionRecord.coinType)

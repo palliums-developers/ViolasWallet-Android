@@ -25,5 +25,5 @@ data class TransactionRecordVO(
     val gas: String,
     val transactionId: String,     // libra/violas时为version，bitcoin时为txid
     val url: String?,
-    val tokenName: String?
+    val tokenDisplayName: String?
 ) : Parcelable

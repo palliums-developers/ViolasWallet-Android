@@ -20,8 +20,8 @@ class BitcoinTrezorService(
 
     override suspend fun getTransactionRecords(
         walletAddress: String,
-        tokenAddress: String?,
-        tokenName: String?,
+        tokenId: String?,
+        tokenDisplayName: String?,
         transactionType: Int,
         pageSize: Int,
         pageNumber: Int,
@@ -118,7 +118,7 @@ class BitcoinTrezorService(
                 gas = dto.fees,
                 transactionId = dto.txid,
                 url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.txid),
-                tokenName = null
+                tokenDisplayName = null
             )
         }
         onSuccess.invoke(list, null)

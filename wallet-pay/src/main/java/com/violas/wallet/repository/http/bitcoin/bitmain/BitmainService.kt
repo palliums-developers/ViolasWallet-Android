@@ -20,8 +20,8 @@ class BitmainService(
 
     override suspend fun getTransactionRecords(
         walletAddress: String,
-        tokenAddress: String?,
-        tokenName: String?,
+        tokenId: String?,
+        tokenDisplayName: String?,
         transactionType: Int,
         pageSize: Int,
         pageNumber: Int,
@@ -118,7 +118,7 @@ class BitmainService(
                 gas = dto.fee.toString(),
                 transactionId = dto.hash,
                 url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.hash),
-                tokenName = null
+                tokenDisplayName = null
             )
         }
         onSuccess.invoke(list, null)

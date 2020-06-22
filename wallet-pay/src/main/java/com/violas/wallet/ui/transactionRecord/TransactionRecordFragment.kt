@@ -24,8 +24,8 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     private var mCoinNumber: Int = CoinTypes.Violas.coinType()
     @TransactionType
     private var mTransactionType: Int = TransactionType.ALL
-    private var mTokenAddress: String? = null
-    private var mTokenName: String? = null
+    private var mTokenId: String? = null
+    private var mTokenDisplayName: String? = null
 
     private var lazyInitTag = false
 
@@ -35,15 +35,15 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
             coinNumber: Int,
             @TransactionType
             transactionType: Int,
-            tokenAddress: String? = null,
-            tokenName: String? = null
+            tokenId: String? = null,
+            tokenDisplayName: String? = null
         ): TransactionRecordFragment {
             val args = Bundle().apply {
                 putString(KEY_ONE, walletAddress)
                 putInt(KEY_TWO, coinNumber)
                 putInt(KEY_THREE, transactionType)
-                tokenAddress?.let { putString(KEY_FOUR, it) }
-                tokenName?.let { putString(KEY_FIVE, it) }
+                tokenId?.let { putString(KEY_FOUR, it) }
+                tokenDisplayName?.let { putString(KEY_FIVE, it) }
             }
 
             return TransactionRecordFragment().apply {
@@ -55,8 +55,8 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     private val mViewModel by lazy {
         TransactionRecordViewModel(
             mWalletAddress!!,
-            mTokenAddress,
-            mTokenName,
+            mTokenId,
+            mTokenDisplayName,
             mTransactionType,
             CoinTypes.parseCoinType(mCoinNumber)
         )
@@ -113,8 +113,8 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         mWalletAddress?.let { outState.putString(KEY_ONE, it) }
         outState.putInt(KEY_TWO, mCoinNumber)
         outState.putInt(KEY_THREE, mTransactionType)
-        mTokenAddress?.let { outState.putString(KEY_FOUR, it) }
-        mTokenName?.let { outState.putString(KEY_FIVE, it) }
+        mTokenId?.let { outState.putString(KEY_FOUR, it) }
+        mTokenDisplayName?.let { outState.putString(KEY_FIVE, it) }
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
@@ -124,18 +124,18 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
             mWalletAddress = bundle.getString(KEY_ONE, null) ?: return false
             mCoinNumber = bundle.getInt(KEY_TWO, mCoinNumber)
             mTransactionType = bundle.getInt(KEY_THREE, mTransactionType)
-            mTokenAddress = bundle.getString(KEY_FOUR)
-            mTokenName = bundle.getString(KEY_FIVE)
+            mTokenId = bundle.getString(KEY_FOUR)
+            mTokenDisplayName = bundle.getString(KEY_FIVE)
 
             // code for test
-            mWalletAddress =
+            /*mWalletAddress =
                 if (mCoinNumber == CoinTypes.Violas.coinType()
                     || mCoinNumber == CoinTypes.Libra.coinType()
                 ) {
                     "f4174e9eabcb2e968e22da4c75ac653b"
                 } else {
                     "2NGZrVvZG92qGYqzTLjCAewvPZ7JE8S8VxE"
-                }
+                }*/
 
             return true
         } catch (e: Exception) {

@@ -14,8 +14,8 @@ interface TransactionRecordService {
     /**
      * 获取交易记录
      * @param walletAddress         钱包地址
-     * @param tokenAddress          token地址
-     * @param tokenName             token名称
+     * @param tokenId               token唯一标识
+     * @param tokenDisplayName      token展示名称
      * @param transactionType       交易类型
      * @param pageSize              分页大小，默认为10
      * @param pageNumber            页码，从1开始
@@ -24,8 +24,8 @@ interface TransactionRecordService {
      */
     suspend fun getTransactionRecords(
         walletAddress: String,
-        tokenAddress: String?,
-        tokenName: String?,
+        tokenId: String?,
+        tokenDisplayName: String?,
         @TransactionType
         transactionType: Int,
         pageSize: Int,

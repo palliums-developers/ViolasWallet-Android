@@ -20,8 +20,8 @@ class LibraLibexplorerService(
 
     override suspend fun getTransactionRecords(
         walletAddress: String,
-        tokenAddress: String?,
-        tokenName: String?,
+        tokenId: String?,
+        tokenDisplayName: String?,
         transactionType: Int,
         pageSize: Int,
         pageNumber: Int,
@@ -50,10 +50,10 @@ class LibraLibexplorerService(
                     TransactionState.FAILURE
             }
 
-            // 解析交易类型，暂时只分收款和付款
-            val transactionType = if (dto.from == walletAddress) {
+            // 解析交易类型
+            val realTransactionType = if (dto.from == walletAddress) {
                 if (dto.to.isBlank()) {
-                    TransactionType.REGISTER
+                    TransactionType.ADD_CURRENCY
                 } else {
                     TransactionType.TRANSFER
                 }
@@ -64,7 +64,7 @@ class LibraLibexplorerService(
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
                 coinType = CoinTypes.Libra,
-                transactionType = transactionType,
+                transactionType = realTransactionType,
                 transactionState = transactionState,
                 time = dto.expirationTime,
                 fromAddress = dto.from,
@@ -73,7 +73,7 @@ class LibraLibexplorerService(
                 gas = dto.gasUsed.toString(),
                 transactionId = dto.version,
                 url = BaseBrowserUrl.getLibraBrowserUrl(dto.version),
-                tokenName = tokenName
+                tokenDisplayName = tokenDisplayName
             )
         }
         onSuccess.invoke(list, null)

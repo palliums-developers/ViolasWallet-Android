@@ -43,12 +43,13 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
     @Throws(RequestException::class)
     suspend fun getTransactionRecords(
         address: String,
+        tokenId: String?,
         pageSize: Int,
         offset: Int,
-        tokenAddress: String?
+        transactionType: Int?
     ) =
         checkResponse {
-            mViolasApi.getTransactionRecords(address, pageSize, offset, tokenAddress)
+            mViolasApi.getTransactionRecords(address, tokenId, pageSize, offset, transactionType)
         }
 
     /**

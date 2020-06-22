@@ -65,11 +65,11 @@ class TransactionRecordViewHolder(
                         TransactionType.COLLECTION ->
                             R.attr.iconRecordInput
 
-                        TransactionType.TRANSFER ->
-                            R.attr.iconRecordOutput
+                        TransactionType.ADD_CURRENCY ->
+                            R.attr.iconRecordAddCurrency
 
                         else ->
-                            R.attr.iconRecordInit
+                            R.attr.iconRecordOutput
                     },
                     itemView.context
                 )

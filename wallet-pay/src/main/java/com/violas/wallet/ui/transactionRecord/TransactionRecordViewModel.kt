@@ -16,8 +16,8 @@ import kotlin.random.Random
  */
 class TransactionRecordViewModel(
     private val mWalletAddress: String,
-    private val mTokenAddress: String?,
-    private val mTokenName: String?,
+    private val mTokenId: String?,
+    private val mTokenDisplayName: String?,
     @TransactionType
     private val mTransactionType: Int,
     coinTypes: CoinTypes
@@ -33,15 +33,15 @@ class TransactionRecordViewModel(
         pageKey: Any?,
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
-        if (pageNumber == 1 && !mTokenAddress.isNullOrBlank()) {
+        if (pageNumber == 1 && !mTokenId.isNullOrBlank()) {
             // 在币种信息页面刷新时，通知Activity刷新余额
             EventBus.getDefault().post(RefreshBalanceEvent(0))
         }
 
         mTransactionRecordService.getTransactionRecords(
             mWalletAddress,
-            mTokenAddress,
-            mTokenName,
+            mTokenId,
+            mTokenDisplayName,
             mTransactionType,
             pageSize,
             pageNumber,
@@ -76,7 +76,7 @@ class TransactionRecordViewModel(
                 transactionType = when (it % 3) {
                     0 -> TransactionType.TRANSFER
                     1 -> TransactionType.COLLECTION
-                    else -> TransactionType.REGISTER
+                    else -> TransactionType.ADD_CURRENCY
                 },
                 transactionState = when (it % 3) {
                     0 -> TransactionState.FAILURE
@@ -90,7 +90,7 @@ class TransactionRecordViewModel(
                 gas = "0",
                 transactionId = it.toString(),
                 url = "https://www.baidu.com/",
-                tokenName = mTokenName
+                tokenDisplayName = mTokenDisplayName
             )
 
             list.add(vo)
