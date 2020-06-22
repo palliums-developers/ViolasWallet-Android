@@ -16,7 +16,7 @@ class LibexplorerService(private val mLibexplorerRepository: LibexplorerReposito
 
     override suspend fun getTransactionRecord(
         address: String,
-        tokenAddress: String?,
+        tokenId: String?,
         tokenName: String?,
         pageSize: Int,
         pageNumber: Int,

@@ -12,13 +12,15 @@ import androidx.annotation.IntDef
     TransactionType.ALL,
     TransactionType.TRANSFER,
     TransactionType.COLLECTION,
-    TransactionType.REGISTER
+    TransactionType.ADD_CURRENCY,
+    TransactionType.OTHER
 )
 annotation class TransactionType {
     companion object {
         const val ALL = 1               // 全部
         const val TRANSFER = 2          // 转账
         const val COLLECTION = 3        // 收款
-        const val REGISTER = 4          // 注册token
+        const val ADD_CURRENCY = 4      // 添加币种
+        const val OTHER = 5             // 其它交易
     }
 }

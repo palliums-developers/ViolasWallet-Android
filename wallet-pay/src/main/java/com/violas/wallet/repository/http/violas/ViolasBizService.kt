@@ -43,21 +43,25 @@ class ViolasBizService(
 
     override suspend fun getTransactionRecords(
         walletAddress: String,
-        tokenAddress: String?,
-        tokenName: String?,
+        tokenId: String?,
+        tokenDisplayName: String?,
         transactionType: Int,
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
-        // TODO 接口需要升级，需要支持查询指定交易类型的交易记录
         val response =
             repository.getTransactionRecords(
                 walletAddress,
+                tokenId,
                 pageSize,
                 (pageNumber - 1) * pageSize,
-                tokenAddress
+                when (transactionType) {
+                    TransactionType.TRANSFER -> 0
+                    TransactionType.COLLECTION -> 1
+                    else -> null
+                }
             )
 
         if (response.data.isNullOrEmpty()) {
@@ -67,26 +71,27 @@ class ViolasBizService(
 
         val list = response.data!!.mapIndexed { index, dto ->
 
-            // TODO 解析交易状态
-            val transactionState = TransactionState.SUCCESS
+            // 解析交易状态
+            val transactionState = if (dto.status == 4001)
+                TransactionState.SUCCESS
+            else
+                TransactionState.FAILURE
 
             // 解析交易类型
-            val transactionType = if (dto.type == 9) {
-                TransactionType.REGISTER
-            } else if (dto.sender == walletAddress) {
-                if (dto.receiver.isNullOrBlank()) {
-                    TransactionType.REGISTER
-                } else {
-                    TransactionType.TRANSFER
-                }
-            } else {
+            val realTransactionType = if (dto.type == 0) {
+                TransactionType.ADD_CURRENCY
+            } else if (dto.sender != walletAddress && dto.receiver == walletAddress) {
                 TransactionType.COLLECTION
+            } else if (dto.sender == walletAddress && !dto.receiver.isNullOrBlank()) {
+                TransactionType.TRANSFER
+            } else {
+                TransactionType.OTHER
             }
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
                 coinType = CoinTypes.Violas,
-                transactionType = transactionType,
+                transactionType = realTransactionType,
                 transactionState = transactionState,
                 time = dto.expiration_time,
                 fromAddress = dto.sender,
@@ -95,7 +100,7 @@ class ViolasBizService(
                 gas = dto.gas,
                 transactionId = dto.version.toString(),
                 url = BaseBrowserUrl.getViolasBrowserUrl(dto.version.toString()),
-                tokenName = tokenName
+                tokenDisplayName = tokenDisplayName
             )
         }
         onSuccess.invoke(list, null)

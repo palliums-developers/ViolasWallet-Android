@@ -329,8 +329,8 @@
     <string name="desc_transaction_state_transfer_failure">转账失败</string>
     <string name="desc_transaction_state_collection_success">收款成功</string>
     <string name="desc_transaction_state_collection_failure">收款失败</string>
-    <string name="desc_transaction_state_register_success">稳定币激活成功</string>
-    <string name="desc_transaction_state_register_failure">稳定币激活失败</string>
+    <string name="desc_transaction_state_add_currency_success">稳定币激活成功</string>
+    <string name="desc_transaction_state_add_currency_failure">稳定币激活失败</string>
     <string name="desc_transaction_state_transaction_success">交易成功</string>
     <string name="desc_transaction_state_transaction_failure">交易失败</string>
     <string name="desc_view_by_browser">浏览器查询更详细信息 ></string>

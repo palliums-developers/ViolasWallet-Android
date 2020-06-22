@@ -101,7 +101,6 @@ class ManagerAssertActivity : BaseAppActivity() {
                 if (isPublish(assertOriginateToken.account_id, assertOriginateToken.tokenMark)) {
                     mTokenManager.insert(checked, assertOriginateToken)
                     dismissProgress()
-                    checkbox.isChecked = true
                     mChange = true
                 } else {
                     val account = mAccountManager.getAccountById(assertOriginateToken.account_id)
@@ -111,7 +110,7 @@ class ManagerAssertActivity : BaseAppActivity() {
                             showPasswordDialog(account, assertOriginateToken, checkbox, checked)
                             it.dismiss()
                         }.setCancelListener {
-                            checkbox.isChecked = false
+                            checkbox.setCheckedNoEvent(false)
                         }.show(supportFragmentManager)
                     }
                 }
@@ -119,7 +118,7 @@ class ManagerAssertActivity : BaseAppActivity() {
                 dismissProgress()
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    checkbox.isChecked = false
+                    checkbox.setCheckedNoEvent(false)
                     e.message?.let {
                         showToast(it)
                     }
@@ -138,7 +137,7 @@ class ManagerAssertActivity : BaseAppActivity() {
             account,
             mAccountManager,
             cancelCallback = {
-                checkbox.isChecked = false
+                checkbox.setCheckedNoEvent(false)
             }
         ) {
             launch(Dispatchers.IO) {
@@ -152,7 +151,7 @@ class ManagerAssertActivity : BaseAppActivity() {
                     mTokenManager.insert(checked, assertOriginateToken)
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
-                        checkbox.isChecked = false
+                        checkbox.setCheckedNoEvent(false)
                         showToast(
                             getString(
                                 R.string.hint_not_none_coin_or_net_error,
@@ -176,7 +175,8 @@ class ManagerAssertActivity : BaseAppActivity() {
                 top = DensityUtility.dp2px(this, 5),
                 bottom = DensityUtility.dp2px(this, 5),
                 left = DensityUtility.dp2px(this, 16),
-                right = DensityUtility.dp2px(this, 16)
+                right = DensityUtility.dp2px(this, 16),
+                showFirstTop = true
             )
         )
         recyclerView.adapter = mAdapter
@@ -224,7 +224,7 @@ class MyAdapter(
         holder.itemView.fullName.text = itemData.fullName
         if (itemData.isToken) {
             holder.itemView.checkBox.visibility = View.VISIBLE
-            holder.itemView.checkBox.isChecked = itemData.enable
+            holder.itemView.checkBox.setCheckedImmediatelyNoEvent(itemData.enable)
         } else {
             holder.itemView.checkBox.visibility = View.GONE
         }

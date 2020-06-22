@@ -108,9 +108,9 @@
         <item name="iconHideSecondary">@drawable/ic_password_text_hidden</item>
         <item name="iconScanPrimary">@drawable/icon_scan_purple</item>
         <item name="iconScanSecondary">@drawable/icon_scan_white</item>
-        <item name="iconRecordInit">@drawable/ic_transaction_type_register</item>
-        <item name="iconRecordInput">@drawable/ic_transaction_type_collection</item>
-        <item name="iconRecordOutput">@drawable/ic_transaction_type_transfer</item>
+        <item name="iconRecordAddCurrency">@drawable/ic_record_type_add_currency</item>
+        <item name="iconRecordInput">@drawable/ic_record_type_input</item>
+        <item name="iconRecordOutput">@drawable/ic_record_type_output</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>

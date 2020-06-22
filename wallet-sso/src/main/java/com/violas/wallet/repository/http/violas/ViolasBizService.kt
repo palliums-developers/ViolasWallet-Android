@@ -16,7 +16,7 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
 
     override suspend fun getTransactionRecord(
         address: String,
-        tokenAddress: String?,
+        tokenId: String?,
         tokenName: String?,
         pageSize: Int,
         pageNumber: Int,
@@ -26,9 +26,10 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
         val response =
             mViolasRepository.getTransactionRecords(
                 address,
+                tokenId,
                 pageSize,
                 (pageNumber - 1) * pageSize,
-                tokenAddress
+                null
             )
 
         if (response.data.isNullOrEmpty()) {
@@ -58,8 +59,8 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
                 }
 
                 else -> {
-                    if ((!bean.module_name.isNullOrEmpty()
-                                && !bean.module_name.equals(CoinTypes.Violas.coinName(), true))
+                    if ((!bean.currency.isNullOrEmpty()
+                                && !bean.currency.equals(CoinTypes.Violas.coinName(), true))
                         || !tokenName.isNullOrEmpty()
                     ) {
                         if (bean.sender == address) {
@@ -85,7 +86,7 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
 
             // 解析币名称
             val coinName = if (TransactionRecordVO.isTokenOpt(transactionType)) {
-                tokenName ?: bean.module_name
+                tokenName ?: bean.currency
             } else {
                 null
             }

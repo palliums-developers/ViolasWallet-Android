@@ -18,11 +18,13 @@ class LibraViolasRepository(private val api: LibraViolasApi) {
     @Throws(RequestException::class)
     suspend fun getTransactionRecords(
         address: String,
+        tokenId: String?,
         pageSize: Int,
-        offset: Int
+        offset: Int,
+        transactionType: Int?
     ) =
         checkResponse {
-            api.getTransactionRecords(address, pageSize, offset)
+            api.getTransactionRecords(address, tokenId, pageSize, offset, transactionType)
         }
 
     @Throws(RequestException::class)

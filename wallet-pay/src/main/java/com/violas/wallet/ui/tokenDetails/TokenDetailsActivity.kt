@@ -24,7 +24,9 @@ import com.palliums.utils.start
 import com.palliums.widget.loading.LoadingDialog
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
+import com.violas.wallet.common.KEY_FOUR
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.KEY_THREE
 import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
@@ -59,7 +61,9 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                 .apply {
                     putExtra(KEY_ONE, assetsVo.getCoinNumber())
                     if (assetsVo is AssetsTokenVo) {
-                        putExtra(KEY_TWO, assetsVo.getAssetsName())
+                        putExtra(KEY_TWO, assetsVo.address)
+                        putExtra(KEY_THREE, assetsVo.module)
+                        putExtra(KEY_FOUR, assetsVo.name)
                     }
                 }
                 .start(context)
@@ -71,6 +75,8 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
     }
 
     private var mCoinNumber = Int.MIN_VALUE
+    private var mTokenAddress: String? = null
+    private var mTokenModule: String? = null
     private var mTokenName: String? = null
 
     private lateinit var mAssetsVo: AssetsVo
@@ -92,16 +98,20 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
         if (mCoinNumber != Int.MIN_VALUE) {
             outState.putInt(KEY_ONE, mCoinNumber)
         }
-        mTokenName?.let { outState.putString(KEY_TWO, it) }
+        mTokenModule?.let { outState.putString(KEY_TWO, it) }
     }
 
     private fun initData(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             mCoinNumber = savedInstanceState.getInt(KEY_ONE, mCoinNumber)
-            mTokenName = savedInstanceState.getString(KEY_TWO)
+            mTokenAddress = savedInstanceState.getString(KEY_TWO)
+            mTokenModule = savedInstanceState.getString(KEY_THREE)
+            mTokenName = savedInstanceState.getString(KEY_FOUR)
         } else if (intent != null) {
             mCoinNumber = intent.getIntExtra(KEY_ONE, mCoinNumber)
-            mTokenName = intent.getStringExtra(KEY_TWO)
+            mTokenAddress = intent.getStringExtra(KEY_TWO)
+            mTokenModule = intent.getStringExtra(KEY_THREE)
+            mTokenName = intent.getStringExtra(KEY_FOUR)
         }
         if (mCoinNumber == Int.MIN_VALUE) {
             close()
@@ -112,8 +122,12 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
             var exists = false
             for (item in it) {
                 if (item.getCoinNumber() == mCoinNumber
-                    && ((item is AssetsCoinVo && mTokenName.isNullOrBlank())
-                            || (item is AssetsTokenVo && item.getAssetsName() == mTokenName))
+                    && ((item is AssetsCoinVo && mTokenModule.isNullOrBlank())
+                            || (item is AssetsTokenVo
+                            && item.address == mTokenAddress
+                            && item.module == mTokenModule
+                            && item.name == mTokenName)
+                            )
                 ) {
                     mAssetsVo = item
                     exists = true
@@ -170,8 +184,9 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
     }
 
     private fun initTransactionRecordsView() {
-        val tokenAddress =
-            if (mAssetsVo is AssetsTokenVo) (mAssetsVo as AssetsTokenVo).address else null
+        val tokenId =
+            if (mAssetsVo is AssetsTokenVo) (mAssetsVo as AssetsTokenVo).module else null
+        val tokenDisplayName = mAssetsVo.getAssetsName()
         val fragments = mutableListOf(
             Pair(
                 getString(R.string.label_all),
@@ -179,8 +194,8 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                     walletAddress = mAccountDO.address,
                     coinNumber = mCoinNumber,
                     transactionType = TransactionType.ALL,
-                    tokenAddress = tokenAddress,
-                    tokenName = mTokenName
+                    tokenId = tokenId,
+                    tokenDisplayName = tokenDisplayName
                 )
             )
         )
@@ -194,8 +209,8 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                         walletAddress = mAccountDO.address,
                         coinNumber = mCoinNumber,
                         transactionType = TransactionType.TRANSFER,
-                        tokenAddress = tokenAddress,
-                        tokenName = mTokenName
+                        tokenId = tokenId,
+                        tokenDisplayName = tokenDisplayName
                     )
                 )
             )
@@ -206,8 +221,8 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                         walletAddress = mAccountDO.address,
                         coinNumber = mCoinNumber,
                         transactionType = TransactionType.COLLECTION,
-                        tokenAddress = tokenAddress,
-                        tokenName = mTokenName
+                        tokenId = tokenId,
+                        tokenDisplayName = tokenDisplayName
                     )
                 )
             )

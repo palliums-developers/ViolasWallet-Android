@@ -37,7 +37,7 @@
     <attr name="iconHideSecondary" format="reference" />
     <attr name="iconScanPrimary" format="reference" />
     <attr name="iconScanSecondary" format="reference" />
-    <attr name="iconRecordInit" format="reference" />
+    <attr name="iconRecordAddCurrency" format="reference" />
     <attr name="iconRecordInput" format="reference" />
     <attr name="iconRecordOutput" format="reference" />
 

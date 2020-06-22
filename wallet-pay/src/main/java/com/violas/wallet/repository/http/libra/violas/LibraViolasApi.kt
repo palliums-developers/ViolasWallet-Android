@@ -16,16 +16,19 @@ interface LibraViolasApi {
 
     /**
      * 获取指定地址的交易记录，分页查询
-     * @param address 地址
-     * @param pageSize 分页大小
-     * @param offset 偏移量，从0开始
-     * @param offset 稳定币地址，不为空时查询该稳定币的交易记录，为空时查询平台币的交易记录
+     * @param address           地址
+     * @param tokenId           token唯一标识，null时表示查询平台币的交易记录
+     * @param pageSize          分页大小
+     * @param offset            偏移量，从0开始
+     * @param transactionType   交易类型，null：全部；0：转出；1：转入
      */
     @GET("/1.0/libra/transaction")
     suspend fun getTransactionRecords(
         @Query("addr") address: String,
+        @Query("currency") tokenId: String?,
         @Query("limit") pageSize: Int,
-        @Query("offset") offset: Int
+        @Query("offset") offset: Int,
+        @Query("flows") transactionType: Int?
     ): ListResponse<TransactionRecordDTO>
 
     @GET("/1.0/libra/mint")
@@ -40,7 +43,10 @@ data class TransactionRecordDTO(
     val gas: String,
     val receiver: String?,
     val sender: String,
+    val currency: String?,
     val expiration_time: Long,
     val sequence_number: Long,
-    val version: Long
+    val version: Long,
+    val type: Int,
+    val status: Int
 )
