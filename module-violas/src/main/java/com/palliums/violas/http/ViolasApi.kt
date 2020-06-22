@@ -31,6 +31,16 @@ interface ViolasApi {
      * @param offset 偏移量，从0开始
      * @param offset 稳定币地址，不为空时查询该稳定币的交易记录，为空时查询平台币的交易记录
      */
+    @GET("/1.0/violas/currency")
+    suspend fun getCurrency(): Response<CurrencysDTO>
+
+    /**
+     * 获取指定地址的交易记录，分页查询
+     * @param address 地址
+     * @param pageSize 分页大小
+     * @param offset 偏移量，从0开始
+     * @param offset 稳定币地址，不为空时查询该稳定币的交易记录，为空时查询平台币的交易记录
+     */
     @GET("/1.0/violas/transaction")
     suspend fun getTransactionRecords(
         @Query("addr") address: String,
@@ -49,7 +59,7 @@ interface ViolasApi {
     suspend fun pushTx(@Body requestBody: RequestBody): Response<Any>
 
     @GET("/1.0/violas/account/info")
-    suspend fun getAccountState(@Query("address") walletAddress: String):Response<AccountStateDTO>
+    suspend fun getAccountState(@Query("address") walletAddress: String): Response<AccountStateDTO>
 
     @GET("/1.0/violas/mint")
     suspend fun activateAccount(

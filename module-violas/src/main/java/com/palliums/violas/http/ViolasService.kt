@@ -223,12 +223,12 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
 
     suspend fun getAccountState(
         address: String
-    ) =
-        mViolasRepository.getAccountState(address).data
+    ) = mViolasRepository.getAccountState(address).data
 
     suspend fun activateAccount(
         address: String,
         authKeyPrefix: String
-    ) =
-        mViolasRepository.activateAccount(address, authKeyPrefix)
+    ) = mViolasRepository.activateAccount(address, authKeyPrefix)
+
+    suspend fun getCurrencies() = mViolasRepository.getCurrencies().data?.currencies
 }

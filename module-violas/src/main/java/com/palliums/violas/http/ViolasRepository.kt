@@ -83,4 +83,8 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
                 .toRequestBody("application/json".toMediaTypeOrNull())
             mViolasApi.loginWeb(requestBody)
         }
+
+    suspend fun getCurrencies() = checkResponse {
+        mViolasApi.getCurrency()
+    }
 }

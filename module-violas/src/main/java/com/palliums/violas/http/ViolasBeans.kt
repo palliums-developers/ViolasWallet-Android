@@ -41,6 +41,22 @@ open class Response<T> : ApiResponse {
 @Keep
 class ListResponse<T> : Response<List<T>>()
 
+@Keep
+data class CurrencysDTO(
+    val currencies: List<CurrencyDTO>
+)
+
+@Keep
+data class CurrencyDTO(
+    val address: String,
+    val module: String,
+    val name: String,
+    @SerializedName(value = "show_icon")
+    val showLogo: String,
+    @SerializedName(value = "show_name")
+    val showName: String
+)
+
 data class TransactionRecordDTO(
     val amount: String,
     val gas: String,

@@ -162,8 +162,7 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
 
     suspend fun getAccountState(
         address: String
-    ) =
-        mViolasRpcRepository.getAccountState(address).data
+    ) = mViolasRpcRepository.getAccountState(address).data
 
     suspend fun addCurrency(account: Account, address: String, module: String, name: String) {
         val transactionPayload =

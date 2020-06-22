@@ -33,8 +33,7 @@ class ViolasRpcRepository(private val mViolasRpcApi: ViolasRpcApi) {
 
     suspend fun getAccountState(
         address: String
-    ) =
-        checkResponse {
+    ) = checkResponse {
             mViolasRpcApi.getAccountState(
                 RequestDTO(
                     method = Method.GET_ACCOUNT_STATE,

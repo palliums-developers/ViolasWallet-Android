@@ -44,12 +44,12 @@ class TokenManager {
      */
     private suspend fun loadNetWorkSupportViolasToken(): List<AssertOriginateToken> {
         val list = mutableListOf<AssertOriginateToken>()
-        DataRepository.getViolasChainRpcService().getCurrencies()?.forEach {
+        DataRepository.getViolasService().getCurrencies()?.forEach {
             list.add(
                 AssertOriginateToken(
-                    tokenMark = TokenMark(it.code, "00000000000000000000000000000000", "T"),
-                    name = it.code,
-                    fullName = it.code,
+                    tokenMark = TokenMark(it.module, it.address, it.name),
+                    name = it.showName,
+                    fullName = it.showName,
                     isToken = true
                 )
             )
