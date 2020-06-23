@@ -88,4 +88,5 @@ class LibraViolasService(
     ) =
         repository.activateAccount(address, authKeyPrefix)
 
+    suspend fun getCurrencies() = repository.getCurrencies().data?.currencies
 }

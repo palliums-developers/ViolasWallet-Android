@@ -35,4 +35,9 @@ class LibraViolasRepository(private val api: LibraViolasApi) {
             api.activateAccount(address, authKeyPrefix)
         }
     }
+
+    @Throws(RequestException::class)
+    suspend fun getCurrencies() = checkResponse {
+        api.getCurrency()
+    }
 }

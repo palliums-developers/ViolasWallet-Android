@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.content.App
 import com.palliums.utils.CustomMainScope
+import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
@@ -53,7 +54,7 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
     }
 
     private suspend fun checkAccountActivate(localAssets: List<AssetsVo>) {
-        withContext(Dispatchers.IO) {
+        withContext(Dispatchers.IO + coroutineExceptionHandler()) {
             localAssets.filter {
                 it is AssetsCoinVo && (it.getCoinNumber() == CoinTypes.Violas.coinType() || it.getCoinNumber() == CoinTypes.Libra.coinType())
             }.forEach {

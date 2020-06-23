@@ -44,16 +44,20 @@ class TokenManager {
      */
     private suspend fun loadNetWorkSupportViolasToken(): List<AssertOriginateToken> {
         val list = mutableListOf<AssertOriginateToken>()
-        DataRepository.getViolasService().getCurrencies()?.forEach {
-            list.add(
-                AssertOriginateToken(
-                    tokenMark = TokenMark(it.module, it.address, it.name),
-                    name = it.showName,
-                    fullName = it.showName,
-                    isToken = true,
-                    logo = it.showLogo
+        try {
+            DataRepository.getViolasService().getCurrencies()?.forEach {
+                list.add(
+                    AssertOriginateToken(
+                        tokenMark = TokenMark(it.module, it.address, it.name),
+                        name = it.showName,
+                        fullName = it.showName,
+                        isToken = true,
+                        logo = it.showLogo
+                    )
                 )
-            )
+            }
+        } catch (e: Exception) {
+
         }
         return list
     }
@@ -63,15 +67,20 @@ class TokenManager {
      */
     private suspend fun loadNetWorkSupportLibraToken(): List<AssertOriginateToken> {
         val list = mutableListOf<AssertOriginateToken>()
-        DataRepository.getLibraService().getCurrencies()?.forEach {
-            list.add(
-                AssertOriginateToken(
-                    tokenMark = TokenMark(it.code, "00000000000000000000000000000000", "T"),
-                    name = it.code,
-                    fullName = it.code,
-                    isToken = true
+        try {
+            DataRepository.getLibraBizService().getCurrencies()?.forEach {
+                list.add(
+                    AssertOriginateToken(
+                        tokenMark = TokenMark(it.module, it.address, it.name),
+                        name = it.showName,
+                        fullName = it.showName,
+                        isToken = true,
+                        logo = it.showLogo
+                    )
                 )
-            )
+            }
+        } catch (e: Exception) {
+
         }
         return list
     }

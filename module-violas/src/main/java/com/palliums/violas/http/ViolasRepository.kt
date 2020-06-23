@@ -85,6 +85,7 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
             mViolasApi.loginWeb(requestBody)
         }
 
+    @Throws(RequestException::class)
     suspend fun getCurrencies() = checkResponse {
         mViolasApi.getCurrency()
     }

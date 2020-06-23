@@ -1,5 +1,7 @@
 package com.violas.wallet.repository.http.libra.violas
 
+import androidx.annotation.Keep
+import com.google.gson.annotations.SerializedName
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
 import retrofit2.http.GET
@@ -31,6 +33,12 @@ interface LibraViolasApi {
         @Query("flows") transactionType: Int?
     ): ListResponse<TransactionRecordDTO>
 
+    /**
+     * 获取 Violas 钱包支持的代币列表
+     */
+    @GET("/1.0/libra/currency")
+    suspend fun getCurrency(): Response<CurrencysDTO>
+
     @GET("/1.0/libra/mint")
     suspend fun activateAccount(
         @Query("address") address: String,
@@ -49,4 +57,20 @@ data class TransactionRecordDTO(
     val version: Long,
     val type: Int,
     val status: Int
+)
+
+@Keep
+data class CurrencysDTO(
+    val currencies: List<CurrencyDTO>
+)
+
+@Keep
+data class CurrencyDTO(
+    val address: String,
+    val module: String,
+    val name: String,
+    @SerializedName(value = "show_icon")
+    val showLogo: String,
+    @SerializedName(value = "show_name")
+    val showName: String
 )
