@@ -47,6 +47,8 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
                 mAssetsListLiveData.postValue(localAssets)
             }
             localAssets = mAccountManager.refreshAssetsAmount(localAssets)
+            mAssetsListLiveData.postValue(localAssets) // todo 尝试效果再决定是否删除
+            localAssets = mAccountManager.refreshFiatAssetsAmount(localAssets)
             mAssetsListLiveData.postValue(localAssets)
         }
         mDataRefreshingLiveData.postValue(false)

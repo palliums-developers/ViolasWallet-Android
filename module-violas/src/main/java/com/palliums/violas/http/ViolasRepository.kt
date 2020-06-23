@@ -89,4 +89,19 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
     suspend fun getCurrencies() = checkResponse {
         mViolasApi.getCurrency()
     }
+
+    @Throws(RequestException::class)
+    suspend fun getBTCChainFiatBalance(address: String) = checkResponse {
+        mViolasApi.getBTCChainFiatBalance(address)
+    }
+
+    @Throws(RequestException::class)
+    suspend fun getLibraChainFiatBalance(address: String) = checkResponse {
+        mViolasApi.getBTCChainFiatBalance(address)
+    }
+
+    @Throws(RequestException::class)
+    suspend fun getViolasChainFiatBalance(address: String) = checkResponse {
+        mViolasApi.getBTCChainFiatBalance(address)
+    }
 }

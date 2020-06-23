@@ -5,7 +5,7 @@ import com.violas.wallet.repository.database.entity.AccountType
 // todo 暂时使用 Serializable
 abstract class AssetsVo {
     val amountWithUnit: AmountWithUnit = AmountWithUnit("0.00", "")
-    val fiatAmountWithUnit: FiatAmountWithUnit = FiatAmountWithUnit(0, "$", "")
+    val fiatAmountWithUnit: FiatAmountWithUnit = FiatAmountWithUnit("0.00", "$", "")
     private var assetsName: String = ""
 
     fun getAssetsName() = assetsName
@@ -22,9 +22,9 @@ abstract class AssetsVo {
 }
 
 data class FiatAmountWithUnit(
-    val amount: Long,
-    val symbol: String,
-    val unit: String
+    var amount: String,
+    var symbol: String,
+    var unit: String
 )
 
 data class AmountWithUnit(
