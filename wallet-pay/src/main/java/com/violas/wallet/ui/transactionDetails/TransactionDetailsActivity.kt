@@ -159,9 +159,13 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
 
                 val toolbarLayoutParams =
                     toolbar.layoutParams as ConstraintLayout.LayoutParams
-                toolbarLayoutParams.height = toolbarLayoutParams.height + statusBarHeight
+                toolbarLayoutParams.setMargins(
+                    toolbarLayoutParams.leftMargin,
+                    statusBarHeight,
+                    toolbarLayoutParams.rightMargin,
+                    toolbarLayoutParams.bottomMargin
+                )
                 toolbar.layoutParams = toolbarLayoutParams
-                toolbar.setPadding(0, statusBarHeight, 0, 0)
 
                 toolbar.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }

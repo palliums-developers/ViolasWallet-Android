@@ -208,7 +208,7 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                     TransactionRecordFragment.newInstance(
                         walletAddress = mAccountDO.address,
                         coinNumber = mCoinNumber,
-                        transactionType = TransactionType.TRANSFER,
+                        transactionType = TransactionType.COLLECTION,
                         tokenId = tokenId,
                         tokenDisplayName = tokenDisplayName
                     )
@@ -220,7 +220,7 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                     TransactionRecordFragment.newInstance(
                         walletAddress = mAccountDO.address,
                         coinNumber = mCoinNumber,
-                        transactionType = TransactionType.COLLECTION,
+                        transactionType = TransactionType.TRANSFER,
                         tokenId = tokenId,
                         tokenDisplayName = tokenDisplayName
                     )
@@ -274,17 +274,11 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
-                getTextView(tab)?.let {
-                    it.setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
-                }
+                getTextView(tab)?.setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
             }
 
             override fun onTabSelected(tab: TabLayout.Tab) {
-                viewPager.setCurrentItem(tab.position, true)
-
-                getTextView(tab)?.let {
-                    it.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
-                }
+                getTextView(tab)?.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
             }
 
             private fun getTextView(tab: TabLayout.Tab): TextView? {
