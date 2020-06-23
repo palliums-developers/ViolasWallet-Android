@@ -25,12 +25,7 @@ interface ViolasApi {
     ): Response<BalanceDTO>
 
     /**
-     * 获取指定地址的交易记录，分页查询
-     * @param address           地址
-     * @param tokenId           token唯一标识，null时表示查询平台币的交易记录
-     * @param pageSize          分页大小
-     * @param offset            偏移量，从0开始
-     * @param transactionType   交易类型，null：全部；0：转出；1：转入
+     * 获取 Violas 钱包支持的代币列表
      */
     @GET("/1.0/violas/currency")
     suspend fun getCurrency(): Response<CurrencysDTO>

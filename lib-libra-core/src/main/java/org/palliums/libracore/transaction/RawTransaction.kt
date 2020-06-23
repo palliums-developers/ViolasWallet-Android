@@ -96,7 +96,7 @@ data class AccountAddress(val byte: ByteArray) {
     fun toHex() = toByteArray().toHex()
 
     companion object {
-        val DEFAULT = AccountAddress(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+        val DEFAULT = AccountAddress(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
 
         fun decode(input: LCSInputStream): AccountAddress {
             val value = ByteArray(16)

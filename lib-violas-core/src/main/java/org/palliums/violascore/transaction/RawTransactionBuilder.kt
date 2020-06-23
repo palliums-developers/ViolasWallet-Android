@@ -14,7 +14,7 @@ fun lbrStructTag(): TypeTag {
         StructTag(
             AccountAddress.DEFAULT,
             "LBR",
-            "T",
+            "LBR",
             arrayListOf()
         )
     )

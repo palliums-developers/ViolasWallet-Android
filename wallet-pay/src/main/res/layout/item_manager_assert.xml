@@ -6,12 +6,11 @@
     android:layout_height="60dp"
     android:background="@drawable/shape_bg_item_manager_assert">
 
-    <com.palliums.widget.NiceImageView
+    <ImageView
         android:id="@+id/ivCoinLogo"
         android:layout_width="@dimen/dp_39"
         android:layout_height="@dimen/dp_39"
         android:layout_marginStart="@dimen/dp_14"
-        app:is_circle="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

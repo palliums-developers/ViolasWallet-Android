@@ -9,7 +9,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.palliums.utils.DensityUtility
+import com.palliums.utils.getResourceId
 import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.quincysx.crypto.CoinTypes
 import com.smallraw.support.switchcompat.SwitchButton
@@ -19,17 +23,24 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.biz.bean.TokenMark
+import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.TokenPublishEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.ui.web.WebCommonActivity
 import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.utils.loadTransform
 import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.bean.AssetsCoinVo
+import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.activity_manager_assert.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
+import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.jessyan.autosize.utils.AutoSizeUtils
 import org.greenrobot.eventbus.EventBus
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.wallet.Account
@@ -76,6 +87,33 @@ class ManagerAssertActivity : BaseAppActivity() {
                     mTokenManager.insert(checked, assertToken)
                 }
                 mChange = true
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        title = getString(R.string.title_assert_manager)
+        setTitleRightText(R.string.action_get_experience_the_coin)
+
+        recyclerView.addItemDecoration(
+            RecycleViewItemDividers(
+                top = DensityUtility.dp2px(this, 5),
+                bottom = DensityUtility.dp2px(this, 5),
+                left = DensityUtility.dp2px(this, 16),
+                right = DensityUtility.dp2px(this, 16),
+                showFirstTop = true
+            )
+        )
+        recyclerView.adapter = mAdapter
+
+        showProgress()
+        launch(Dispatchers.IO + handler) {
+            mSupportTokens.clear()
+            mSupportTokens.addAll(mTokenManager.loadSupportToken())
+            withContext(Dispatchers.Main) {
+                mAdapter.notifyDataSetChanged()
+                dismissProgress()
             }
         }
     }
@@ -166,30 +204,19 @@ class ManagerAssertActivity : BaseAppActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        title = getString(R.string.title_assert_manager)
-
-        recyclerView.addItemDecoration(
-            RecycleViewItemDividers(
-                top = DensityUtility.dp2px(this, 5),
-                bottom = DensityUtility.dp2px(this, 5),
-                left = DensityUtility.dp2px(this, 16),
-                right = DensityUtility.dp2px(this, 16),
-                showFirstTop = true
-            )
-        )
-        recyclerView.adapter = mAdapter
-
-        showProgress()
-        launch(Dispatchers.IO + handler) {
-            mSupportTokens.clear()
-            mSupportTokens.addAll(mTokenManager.loadSupportToken())
-            withContext(Dispatchers.Main) {
-                mAdapter.notifyDataSetChanged()
-                dismissProgress()
+    override fun onTitleRightViewClick() {
+        var address: String? = null
+        mWalletAppViewModel.mAssetsListLiveData.value?.forEach {
+            if (it is AssetsLibraCoinVo) {
+                address = it.address
+                return@forEach
             }
         }
+        WebCommonActivity.start(
+            this,
+            BaseBrowserUrl.getViolasTestCoinUrl(address ?: ""),
+            getString(R.string.action_get_experience_the_coin)
+        )
     }
 
     override fun onBackPressedSupport() {
@@ -228,7 +255,14 @@ class MyAdapter(
         } else {
             holder.itemView.checkBox.visibility = View.GONE
         }
-        holder.itemView.ivCoinLogo.setImageResource(itemData.logo)
+
+        val defLogoResId =
+            getResourceId(R.attr.walletHomeDefTokenLogo, holder.itemView.context)
+        Glide.with(holder.itemView.context)
+            .load(itemData.logo)
+            .error(defLogoResId)
+            .placeholder(defLogoResId)
+            .into(holder.itemView.ivCoinLogo)
 
         holder.itemView.setOnClickListener { view ->
             if (itemData.isToken) {

@@ -23,8 +23,10 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
+import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.utils.getResourceId
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertOriginateToken
@@ -45,6 +47,7 @@ import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.utils.loadTransform
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
@@ -52,6 +55,7 @@ import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.walletconnect.WalletConnectStatus
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
+import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
 import kotlinx.coroutines.Dispatchers
@@ -154,11 +158,11 @@ class WalletFragment : BaseFragment() {
                 )
             }
         })
-        tvTotalAssetsTitle.setOnClickListener {
+
+        ivTotalHidden.setOnClickListener {
             mWalletViewModel.taggerTotalDisplay()
         }
-
-        setTouchDelegate(tvTotalAssetsTitle, 100)
+        ivTotalHidden.expandTouchArea(28)
 
         mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(this, Observer { status ->
             when (status) {
@@ -222,20 +226,6 @@ class WalletFragment : BaseFragment() {
                 WalletManagerActivity.start(requireContext())
             }
             .show(childFragmentManager)
-    }
-
-    private fun setTouchDelegate(view: View, expandTouchWidth: Int) {
-        val parentView = view.parent as View
-        parentView.post {
-            val rect = Rect()
-            view.getHitRect(rect)
-            rect.top -= expandTouchWidth
-            rect.bottom += expandTouchWidth
-            rect.left -= expandTouchWidth
-            rect.right += expandTouchWidth
-            val touchDelegate = TouchDelegate(rect, view)
-            parentView.touchDelegate = touchDelegate
-        }
     }
 
     override fun onViewClick(view: View) {
@@ -402,41 +392,25 @@ class AssertAdapter(
         }
     }
 
-    private fun loadTransform(
-        context: Context,
-        @DrawableRes placeholderId: Int,
-        radius: Int
-    ): RequestBuilder<Drawable?>? {
-        return Glide.with(context)
-            .load(placeholderId)
-            .apply(RequestOptions.bitmapTransform(RoundedCorners(radius)))
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemData = getItem(position)
-        val defLogoResId = getResourceId(R.attr.walletHomeDefTokenLogo, holder.itemView.context)
-        Glide.with(holder.itemView.context)
-            .load(itemData.getLogoUrl())
-            .error(defLogoResId)
-            .placeholder(defLogoResId)
-            .thumbnail(
-                loadTransform(
-                    holder.itemView.context,
-                    defLogoResId,
-                    AutoSizeUtils.dp2px(holder.itemView.context, 14F)
-                )
-            )
-            .apply(
-                RequestOptions.bitmapTransform(
-                    RoundedCorners(
-                        AutoSizeUtils.dp2px(
-                            holder.itemView.context,
-                            14F
-                        )
-                    )
-                )
-            )
-            .into(holder.itemView.ivLogo)
+
+        when (itemData.getCoinNumber()) {
+            CoinTypes.BitcoinTest.coinType(),
+            CoinTypes.Bitcoin.coinType() -> {
+                holder.itemView.ivLogo.setImageResource(R.drawable.ic_bitcoin_big)
+            }
+            else -> {
+                val defLogoResId =
+                    getResourceId(R.attr.walletHomeDefTokenLogo, holder.itemView.context)
+                Glide.with(holder.itemView.context)
+                    .load(itemData.getLogoUrl())
+                    .error(defLogoResId)
+                    .placeholder(defLogoResId)
+                    .into(holder.itemView.ivLogo)
+            }
+        }
+
         holder.itemView.tvName.text = itemData.getAssetsName()
 
         holder.itemView.tvAmount.text = itemData.amountWithUnit.amount

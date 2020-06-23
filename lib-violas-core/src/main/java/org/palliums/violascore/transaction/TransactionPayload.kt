@@ -25,15 +25,12 @@ data class TransactionPayload(val payload: Payload) {
             return TransactionPayload(
                 when (readInt) {
                     0 -> {
-                        Program.decode(input)
-                    }
-                    1 -> {
                         WriteSet.decode(input)
                     }
-                    2 -> {
+                    1 -> {
                         Script.decode(input)
                     }
-                    3 -> {
+                    2 -> {
                         Module.decode(input)
                     }
                     else -> {
@@ -44,44 +41,11 @@ data class TransactionPayload(val payload: Payload) {
         }
     }
 
-    data class Program(
-        val code: ByteArray,
-        val args: List<TransactionArgument>,
-        val modules: List<ByteArray>
-    ) : Payload(0) {
-        override fun toByteArray(): ByteArray {
-            val stream = LCSOutputStream()
-            stream.writeBytes(code)
-            stream.writeIntAsLEB128(args.size)
-            args.forEach {
-                stream.write(it.toByteArray())
-            }
-            stream.writeBytesList(modules)
-            return stream.toByteArray()
-        }
-
-        companion object {
-            fun decode(input: LCSInputStream): Program {
-                val code = input.readBytes()
-                val size = input.readIntAsLEB128()
-                val args = ArrayList<TransactionArgument>(size)
-                for (i in 0 until size) {
-                    args.add(TransactionArgument.decode(input))
-                }
-                return Program(
-                    code,
-                    args,
-                    input.readBytesList()
-                )
-            }
-        }
-    }
-
     data class Script(
         val code: ByteArray,
         val tyArgs: List<TypeTag>,
         val args: List<TransactionArgument>
-    ) : TransactionPayload.Payload(2) {
+    ) : TransactionPayload.Payload(1) {
         override fun toByteArray(): ByteArray {
             val stream = LCSOutputStream()
             stream.writeBytes(code)
@@ -121,7 +85,7 @@ data class TransactionPayload(val payload: Payload) {
 
     data class Module(
         val code: ByteArray
-    ) : TransactionPayload.Payload(3) {
+    ) : TransactionPayload.Payload(2) {
         override fun toByteArray(): ByteArray {
             return LCS.encodeBytes(code)
         }
@@ -137,7 +101,7 @@ data class TransactionPayload(val payload: Payload) {
 
     data class WriteSet(
         val writeSet: List<WriteOp>
-    ) : Payload(1) {
+    ) : Payload(0) {
         override fun toByteArray(): ByteArray {
             val stream = LCSOutputStream()
             stream.writeIntAsLEB128(writeSet.size)

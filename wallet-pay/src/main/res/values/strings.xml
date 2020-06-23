@@ -342,6 +342,10 @@
     <string name="save_picture_title_get_permissions">获取存储权限</string>
     <string name="save_picture_hint_set_permissions">需要获取存储权限才能保存图片，前往开启。</string>
     <string name="action_ok">OK</string>
+    <string name="action_get_experience_the_coin">获取体验币</string>
+    <string name="agreement_read_and_agree">我已阅读并同意《服务与隐私政策》</string>
+    <string name="wallet_privacy_policy_and_terms_of_service">《服务与隐私政策》</string>
+    <string name="hint_wallet_agree_terms">请同意服务与隐私政策</string>
 
     <string name="title_swap">兑换</string>
     <string name="title_fund_pool">资金池</string>
