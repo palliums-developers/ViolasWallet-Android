@@ -115,5 +115,11 @@
     <attr name="mnemonicBackupBoxSelectedColor" format="color" />
 
     <!--添加币种页面资源属性-->
-    <attr name="addCurrencyTextColor" format="color"/>
+    <attr name="addCurrencyTextColor" format="color" />
+
+    <!--市场相关页面资源属性-->
+    <attr name="marketMenuMyFundPoolIcon" format="reference" />
+    <attr name="marketCoinConversionIcon" format="reference" />
+    <attr name="marketSwapRecordIcon" format="reference" />
+
 </resources>
