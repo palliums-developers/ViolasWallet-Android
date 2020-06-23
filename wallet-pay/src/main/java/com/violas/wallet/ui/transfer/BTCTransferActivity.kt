@@ -28,9 +28,7 @@ import kotlinx.android.synthetic.main.activity_transfer_btc.tvAddressBook
 import kotlinx.android.synthetic.main.activity_transfer_btc.tvCoinAmount
 import kotlinx.android.synthetic.main.activity_transfer_btc.tvFee
 import kotlinx.android.synthetic.main.activity_transfer_btc.tvHintCoinName
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.math.BigDecimal
 
 class BTCTransferActivity : TransferActivity() {
@@ -64,7 +62,7 @@ class BTCTransferActivity : TransferActivity() {
                     break
                 }
             }
-            Log.e("=======",exists.toString())
+            Log.e("=======", exists.toString())
             if (!exists) {
                 showToast(getString(R.string.hint_unsupported_tokens))
                 finish()
@@ -207,6 +205,12 @@ class BTCTransferActivity : TransferActivity() {
                     success = {
                         showToast(getString(R.string.hint_transfer_broadcast_success))
                         dismissProgress()
+                        GlobalScope.launch {
+                            // todo 刷新单币种价格
+                            // todo 优化成命令模式
+                            delay(3000)
+                            mWalletAppViewModel.refreshAssetsList()
+                        }
                         print(it)
                         finish()
                     },

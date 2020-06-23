@@ -31,6 +31,8 @@ import org.palliums.libracore.wallet.Account
 import org.palliums.libracore.crypto.KeyFactory
 import org.palliums.libracore.crypto.Seed
 import org.palliums.violascore.serialization.toHex
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
@@ -703,6 +705,77 @@ class AccountManager {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
+                }
+            }
+    }
+
+    suspend fun refreshFiatAssetsAmount(localAssets: List<AssetsVo>): List<AssetsVo> {
+        val assets = localAssets.toMutableList()
+        val exceptionAsync =
+            GlobalScope.exceptionAsync { queryFiatBalance(assets) { it is AssetsCoinVo && it.getCoinNumber() == CoinTypes.Violas.coinType() } }
+        val exceptionAsync1 =
+            GlobalScope.exceptionAsync { queryFiatBalance(assets) { it is AssetsCoinVo && it.getCoinNumber() == CoinTypes.Libra.coinType() } }
+        val exceptionAsync2 =
+            GlobalScope.exceptionAsync { queryFiatBalance(assets) { it is AssetsCoinVo && (it.getCoinNumber() == CoinTypes.Bitcoin.coinType() || it.getCoinNumber() == CoinTypes.BitcoinTest.coinType()) } }
+
+        exceptionAsync.await()
+        exceptionAsync1.await()
+        exceptionAsync2.await()
+        return assets
+    }
+
+    private suspend fun queryFiatBalance(
+        localAssets: List<AssetsVo>,
+        filter: (AssetsVo) -> Boolean
+    ) {
+        localAssets.filter { filter.invoke(it) }
+            .forEach { assets ->
+                try {
+                    assets as AssetsCoinVo
+                    val fiatBalances = when (assets.getCoinNumber()) {
+                        CoinTypes.BitcoinTest.coinType(),
+                        CoinTypes.Bitcoin.coinType() -> {
+                            DataRepository.getViolasService().getBTCChainFiatBalance(assets.address)
+                        }
+                        CoinTypes.Violas.coinType() -> {
+                            DataRepository.getViolasService()
+                                .getViolasChainFiatBalance(assets.address)
+                        }
+                        CoinTypes.Libra.coinType() -> {
+                            DataRepository.getViolasService()
+                                .getLibraChainFiatBalance(assets.address)
+                        }
+                        else -> null
+                    }
+
+                    val fiatBalanceMap =
+                        fiatBalances?.toMap { fiatBalanceDTO -> fiatBalanceDTO.name }
+
+                    localAssets.filter { it.getCoinNumber() == assets.getCoinNumber() }
+                        .map { assetsVo ->
+                            val currentAssetsFiatBalance = when (assetsVo) {
+                                is AssetsTokenVo -> fiatBalanceMap?.get(assetsVo.module)
+                                is AssetsCoinVo -> fiatBalanceMap?.get(
+                                    CoinTypes.parseCoinType(assetsVo.getCoinNumber()).coinName()
+                                )
+                                else -> null
+                            }
+                            currentAssetsFiatBalance?.let {
+                                try {
+                                    if (assetsVo.amountWithUnit.amount.toDouble() == 0.0 || it.rate == 0.0) {
+                                        assetsVo.fiatAmountWithUnit.amount = "0.00"
+                                    } else {
+                                        assetsVo.fiatAmountWithUnit.amount =
+                                            BigDecimal(assetsVo.amountWithUnit.amount).multiply(
+                                                BigDecimal(it.rate.toString())
+                                            ).setScale(2, RoundingMode.DOWN).toPlainString()
+                                    }
+                                } catch (e: Exception) {
+                                    assetsVo.fiatAmountWithUnit.amount = "0.00"
+                                }
+                            }
+                        }
+                } catch (e: Exception) {
                 }
             }
     }

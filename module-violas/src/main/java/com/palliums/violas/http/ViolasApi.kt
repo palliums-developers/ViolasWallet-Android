@@ -63,4 +63,14 @@ interface ViolasApi {
         @Query("address") address: String,
         @Query("auth_key_perfix") authKeyPrefix: String
     ): Response<Any>
+
+    @GET("/1.0/violas/value/btc")
+    suspend fun getBTCChainFiatBalance(@Query("address") walletAddress: String): ListResponse<FiatBalanceDTO>
+
+    @GET("/1.0/violas/value/libra")
+    suspend fun getLibraChainFiatBalance(@Query("address") walletAddress: String): ListResponse<FiatBalanceDTO>
+
+    @GET("/1.0/violas/value/violas")
+    suspend fun getViolasChainFiatBalance(@Query("address") walletAddress: String): ListResponse<FiatBalanceDTO>
+
 }

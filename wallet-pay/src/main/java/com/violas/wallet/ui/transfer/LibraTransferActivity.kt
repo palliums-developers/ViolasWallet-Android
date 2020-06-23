@@ -20,9 +20,7 @@ import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_transfer.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import java.math.BigDecimal
 
@@ -182,6 +180,12 @@ class LibraTransferActivity : TransferActivity() {
                     {
                         showToast(getString(R.string.hint_transfer_broadcast_success))
                         EventBus.getDefault().post(RefreshBalanceEvent())
+                        GlobalScope.launch {
+                            // todo 刷新单币种价格
+                            // todo 优化成命令模式
+                            delay(3000)
+                            mWalletAppViewModel.refreshAssetsList()
+                        }
                         dismissProgress()
                         print(it)
                         finish()

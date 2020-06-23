@@ -117,7 +117,14 @@ data class AccountStateDTO(
     val delegatedKeyRotationCapability: Boolean?
 )
 
+@Keep
 data class AccountBalance(
     val amount: Long,
     val currency: String
+)
+
+@Keep
+data class FiatBalanceDTO(
+    val name: String,
+    val rate: Double
 )

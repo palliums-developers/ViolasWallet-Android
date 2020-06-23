@@ -188,7 +188,7 @@
     <string name="title_orders">Order</string>
     <string name="title_tab_uncompleted">Incomplete</string>
     <string name="title_tab_completed">Completed</string>
-    <string name="hint_quotes_not_open">Switch to Violas Wallet in order to use Exchange</string>
+    <string name="hint_quotes_not_open">The development is full of expectation</string>
     <string name="action_revoke">Revoke</string>
     <string name="label_total_amount">Amount</string>
     <string name="label_entrust_total_amount">Entrust Number</string>

@@ -231,4 +231,13 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     ) = mViolasRepository.activateAccount(address, authKeyPrefix)
 
     suspend fun getCurrencies() = mViolasRepository.getCurrencies().data?.currencies
+
+    suspend fun getBTCChainFiatBalance(address: String) =
+        mViolasRepository.getBTCChainFiatBalance(address).data
+
+    suspend fun getLibraChainFiatBalance(address: String) =
+        mViolasRepository.getLibraChainFiatBalance(address).data
+
+    suspend fun getViolasChainFiatBalance(address: String) =
+        mViolasRepository.getViolasChainFiatBalance(address).data
 }
