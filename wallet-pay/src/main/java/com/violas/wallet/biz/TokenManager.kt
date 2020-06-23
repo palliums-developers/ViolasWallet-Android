@@ -50,7 +50,8 @@ class TokenManager {
                     tokenMark = TokenMark(it.module, it.address, it.name),
                     name = it.showName,
                     fullName = it.showName,
-                    isToken = true
+                    isToken = true,
+                    logo = it.showLogo
                 )
             )
         }
@@ -101,13 +102,13 @@ class TokenManager {
 
         accounts.forEach { account ->
 
-            val logo = when (account.coinNumber) {
-                CoinTypes.Violas.coinType() -> R.drawable.ic_violas_big
-                CoinTypes.Libra.coinType() -> R.drawable.ic_libra_big
-                CoinTypes.Bitcoin.coinType() -> R.drawable.ic_bitcoin_big
-                CoinTypes.BitcoinTest.coinType() -> R.drawable.ic_bitcoin_big
-                else -> R.drawable.ic_violas_big
-            }
+//            val logo = when (account.coinNumber) {
+//                CoinTypes.Violas.coinType() -> R.drawable.ic_violas_big
+//                CoinTypes.Libra.coinType() -> R.drawable.ic_libra_big
+//                CoinTypes.Bitcoin.coinType() -> R.drawable.ic_bitcoin_big
+//                CoinTypes.BitcoinTest.coinType() -> R.drawable.ic_bitcoin_big
+//                else -> R.drawable.ic_violas_big
+//            }
 
             if (account.accountType == AccountType.Normal) {
                 val coinTypes = CoinTypes.parseCoinType(account.coinNumber)
@@ -119,8 +120,9 @@ class TokenManager {
                         isToken = false,
                         name = coinTypes.coinName(),
                         fullName = coinTypes.fullName(),
+                        coinType = coinTypes.coinType(),
                         amount = 0,
-                        logo = logo
+                        logo = "file:///android_asset/logo/ic_bitcoin_big.png"
                     )
                 )
             }
@@ -152,7 +154,7 @@ class TokenManager {
             loadSupportToken?.forEach { token ->
                 localSupportTokenMap[token.tokenMark] = 0
                 token.account_id = account.id
-                token.logo = logo
+//                token.logo = logo
                 supportTokenMap[CoinTokenMark(token.tokenMark, account.id)]?.let {
                     token.enable = it.enable
                 }
@@ -178,7 +180,7 @@ class TokenManager {
                             name = it.assetsName,
                             fullName = "",
                             amount = 0,
-                            logo = logo
+                            logo = it.logo
                         )
                     )
                 }
