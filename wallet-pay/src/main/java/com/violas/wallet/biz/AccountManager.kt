@@ -425,14 +425,16 @@ class AccountManager {
                 TokenDo(
                     account_id = insertIds[0],
                     assetsName = "LBR",
-                    name = "T",
+                    name = "LBR",
+                    address = "00000000000000000000000000000001",
                     enable = true,
                     logo = "file:///android_asset/logo/ic_violas_big.png"
                 ),
                 TokenDo(
                     account_id = insertIds[1],
                     assetsName = "LBR",
-                    name = "T",
+                    name = "LBR",
+                    address = "00000000000000000000000000000001",
                     enable = true,
                     logo = "file:///android_asset/logo/ic_libra_big.png"
                 )

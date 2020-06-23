@@ -256,7 +256,8 @@ class TokenManager {
                 assetsName = assertOriginateToken.name,
                 name = assertOriginateToken.tokenMark?.name ?: "",
                 address = assertOriginateToken.tokenMark?.address ?: "",
-                module = assertOriginateToken.tokenMark?.module ?: ""
+                module = assertOriginateToken.tokenMark?.module ?: "",
+                logo = assertOriginateToken.logo
             )
         )
     }

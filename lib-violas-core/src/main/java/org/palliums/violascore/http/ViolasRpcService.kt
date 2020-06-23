@@ -170,8 +170,8 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
                 ContextProvider.getContext(),
                 TypeTag.newStructTag(
                     StructTag(
-                        AccountAddress.DEFAULT, module, name,
-//                        AccountAddress(address.hexToBytes()), module, name,
+//                        AccountAddress.DEFAULT, module, name,
+                        AccountAddress(address.hexToBytes()), module, name,
                         arrayListOf()
                     )
                 )
