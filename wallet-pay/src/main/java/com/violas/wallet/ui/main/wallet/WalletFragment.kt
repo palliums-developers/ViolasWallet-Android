@@ -23,6 +23,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
+import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.utils.getResourceId
 import com.quincysx.crypto.CoinTypes
@@ -157,11 +158,11 @@ class WalletFragment : BaseFragment() {
                 )
             }
         })
-        tvTotalAssetsTitle.setOnClickListener {
+
+        ivTotalHidden.setOnClickListener {
             mWalletViewModel.taggerTotalDisplay()
         }
-
-        setTouchDelegate(tvTotalAssetsTitle, 100)
+        ivTotalHidden.expandTouchArea(28)
 
         mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(this, Observer { status ->
             when (status) {
@@ -225,20 +226,6 @@ class WalletFragment : BaseFragment() {
                 WalletManagerActivity.start(requireContext())
             }
             .show(childFragmentManager)
-    }
-
-    private fun setTouchDelegate(view: View, expandTouchWidth: Int) {
-        val parentView = view.parent as View
-        parentView.post {
-            val rect = Rect()
-            view.getHitRect(rect)
-            rect.top -= expandTouchWidth
-            rect.bottom += expandTouchWidth
-            rect.left -= expandTouchWidth
-            rect.right += expandTouchWidth
-            val touchDelegate = TouchDelegate(rect, view)
-            parentView.touchDelegate = touchDelegate
-        }
     }
 
     override fun onViewClick(view: View) {
