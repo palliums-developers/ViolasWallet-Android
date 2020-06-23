@@ -76,7 +76,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     private val mTokenList = ArrayList<IToken>()
 
     // 加载进度条状态
-    val mLoadingLiveData = MutableLiveData<Boolean>(true)
+//    val mLoadingLiveData = MutableLiveData<Boolean>(true)
+    val mLoadingLiveData = MutableLiveData<Boolean>(false)
 
     private var oldBaseToken: String? = null
     private var oldTokenQuote: String? = null
@@ -123,8 +124,8 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
     private val mDelayRefreshMarkTime = 20 * 1000L
 
     init {
-        EventBus.getDefault().register(this)
-        ExchangeSocket.addSubscriber(this)
+//        EventBus.getDefault().register(this)
+//        ExchangeSocket.addSubscriber(this)
         handleAccountEvent()
         initExchangeRateLiveData()
         initAllDisplayOrdersLiveData()
@@ -237,15 +238,16 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
      * 检查当前账户
      */
     private suspend fun checkIsEnable() {
-        mAccount = try {
-            mAccountManager.currentAccount()
-        } catch (e: Exception) {
-            null
-        }
-        val enable = mAccount?.coinNumber == CoinTypes.Violas.coinType()
-        withContext(Dispatchers.Main) {
-            isEnable.value = enable
-        }
+        isEnable.value = false
+//        mAccount = try {
+//            mAccountManager.currentAccount()
+//        } catch (e: Exception) {
+//            null
+//        }
+//        val enable = mAccount?.coinNumber == CoinTypes.Violas.coinType()
+//        withContext(Dispatchers.Main) {
+//            isEnable.value = enable
+//        }
     }
 
     private suspend fun loadTokenList() {
