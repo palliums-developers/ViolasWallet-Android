@@ -18,6 +18,7 @@ class PayApp : App() {
     override fun onCreate() {
         System.setProperty("kotlinx.coroutines.debug", "on")
         super.onCreate()
+        handlerError()
         handlerAppCenter()
         resetWalletConnect()
     }
@@ -38,6 +39,23 @@ class PayApp : App() {
             Crashes.setListener(customListener)
             Crashes.notifyUserConfirmation(Crashes.SEND)
         }
+    }
+
+    private fun handlerError() {
+        // 捕获主线程 catch 防止闪退
+        // 不能防止 Activity onCreate 主线程报错，这样会因为 Activity 生命周期没走完而崩溃。
+        Handler().post(Runnable {
+            while (true) {
+                try {
+                    Looper.loop()
+                } catch (e: Throwable) {
+                    // 异常发给 AppCenter
+                    Log.e("Main Thread Catch", "如果软件 ANR 请检查报错信息是否在 Activity 的 onCreate() 方法。")
+                    Crashes.trackError(e)
+                    e.printStackTrace()
+                }
+            }
+        })
     }
 
     override fun attachBaseContext(newBase: Context) {
