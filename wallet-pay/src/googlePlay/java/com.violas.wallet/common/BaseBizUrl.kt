@@ -10,6 +10,10 @@ object BaseBizUrl {
     private const val VIOLAS_DEX_BASE_URL_MAIN_NET = "https://dex.violas.io"
     private const val VIOLAS_DEX_BASE_URL_TEST_NET = "https://dex.violas.io"
 
+    // Violas chain url
+    private const val VIOLAS_CHAIN_URL_MAIN_NET = "https://client.testnet.violas.io"
+    private const val VIOLAS_CHAIN_URL_TEST_NET = "https://client.testnet.violas.io"
+
     // Libra base url
     private const val LIBRA_BASE_URL_MAIN_NET = "https://client.testnet.libra.org"
     private const val LIBRA_BASE_URL_TEST_NET = "https://client.testnet.libra.org"
@@ -64,6 +68,13 @@ object BaseBizUrl {
             LIBRA_BASE_URL_TEST_NET
         else
             LIBRA_BASE_URL_MAIN_NET
+    }
+
+    fun getViolasChainUrl(): String {
+        return if (Vm.TestNet)
+            VIOLAS_CHAIN_URL_TEST_NET
+        else
+            VIOLAS_CHAIN_URL_MAIN_NET
     }
 
     fun getBitmainOpenBaseUrl(): String {

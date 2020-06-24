@@ -12,6 +12,11 @@ object BaseBrowserUrl {
     private const val LIBRA_BROWSER_BASE_URL_LIBEXPLORER_TEST_NET =
         "https://libexplorer.com"
 
+    private const val VIOLAS_GET_TEST_COIN_MAIN_NET =
+        "https://testnet.violas.io/faucet"
+    private const val VIOLAS_GET_TEST_COIN_TEST_NET =
+        "https://testnet.violas.io/faucet"
+
     private const val VIOLAS_BROWSER_BASE_URL_MAIN_NET =
         "https://testnet.violas.io"
     private const val VIOLAS_BROWSER_BASE_URL_TEST_NET =
@@ -36,5 +41,12 @@ object BaseBrowserUrl {
             VIOLAS_BROWSER_BASE_URL_TEST_NET
         else
             VIOLAS_BROWSER_BASE_URL_MAIN_NET}/app/Violas_version/$version"
+    }
+
+    fun getViolasTestCoinUrl(address: String): String {
+        return "${if (Vm.TestNet)
+            VIOLAS_GET_TEST_COIN_TEST_NET
+        else
+            VIOLAS_GET_TEST_COIN_MAIN_NET}/$address"
     }
 }

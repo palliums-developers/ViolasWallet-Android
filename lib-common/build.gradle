@@ -78,5 +78,6 @@ dependencies {
     api libraries.SmartRefreshHeader
     api libraries.xpopup
 
-    api libraries.crashreport
+    api libraries.appcenter_analytics
+    api libraries.appcenter_crashes
 }

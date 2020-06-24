@@ -103,6 +103,7 @@ ext {
             jpinyin                                : 'v1.0',
             crashreport                            : '3.1.0',
             crashreport_upgrade                    : '1.4.2',
+            app_center_sdk                         : '3.2.2',
     ]
 
     libraries = [
@@ -157,7 +158,7 @@ ext {
             retrofit2                       : "com.squareup.retrofit2:retrofit:$versions.retrofit2",
             retrofit2_adapter_rxjava2       : "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit2",
             retrofit2_converter_gson        : "com.squareup.retrofit2:converter-gson:$versions.retrofit2",
-            gson                     : "com.google.code.gson:gson:$versions.gson",
+            gson                            : "com.google.code.gson:gson:$versions.gson",
             grpc_okhttp                     : "io.grpc:grpc-okhttp:$versions.grpc",
             grpc_protobuf                   : "io.grpc:grpc-protobuf:$versions.grpc",
             grpc_stub                       : "io.grpc:grpc-stub:$versions.grpc",
@@ -205,8 +206,8 @@ ext {
             // 汉字转拼音
             jpinyin                         : "com.github.SilenceDut:jpinyin:$versions.jpinyin",
             Luban                           : "top.zibin:Luban:$versions.Luban",
-            // see https://bugly.qq.com/docs/user-guide/instruction-manual-android/?v=20180709165613#_2
-            crashreport                     : "com.tencent.bugly:crashreport:$versions.crashreport",
-            crashreport_upgrade             : "com.tencent.bugly:crashreport_upgrade:$versions.crashreport_upgrade",
+            // see https://docs.microsoft.com/zh-cn/appcenter/sdk/getting-started/android
+            appcenter_analytics             : "com.microsoft.appcenter:appcenter-analytics:${versions.app_center_sdk}",
+            appcenter_crashes               : "com.microsoft.appcenter:appcenter-crashes:${versions.app_center_sdk}",
     ]
 }

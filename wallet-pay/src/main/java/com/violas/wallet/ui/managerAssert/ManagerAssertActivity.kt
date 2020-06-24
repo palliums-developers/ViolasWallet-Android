@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.microsoft.appcenter.crashes.Crashes
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.utils.openBrowser
