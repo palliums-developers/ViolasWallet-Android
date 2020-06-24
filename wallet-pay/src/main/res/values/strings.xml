@@ -276,9 +276,9 @@
     <string name="wallet_connect_transfer_sender_address">地址：</string>
     <string name="wallet_connect_transfer_amount">金额：</string>
     <string name="wallet_connect_transfer_address">转账地址：</string>
-    <string name="wallet_connect_use_behavior">*其使用行为同样适用《用户协议》和《隐私条款》</string>
-    <string name="wallet_connect_user_agreement">《用户协议》</string>
-    <string name="wallet_connect_privacy_policy">《隐私条款》</string>
+    <string name="wallet_connect_use_behavior">*其使用行为同样适用《服务协议》和《隐私条款》</string>
+    <string name="service_agreement">《服务协议》</string>
+    <string name="privacy_policy">《隐私条款》</string>
     <string name="wallet_connect_transaction">转账确认</string>
 
     <string name="title_open_fingerprint_verification">Open Fingerprint Verification</string>
@@ -343,9 +343,8 @@
     <string name="save_picture_hint_set_permissions">需要获取存储权限才能保存图片，前往开启。</string>
     <string name="action_ok">OK</string>
     <string name="action_get_experience_the_coin">获取体验币</string>
-    <string name="agreement_read_and_agree">我已阅读并同意《服务与隐私政策》</string>
-    <string name="wallet_privacy_policy_and_terms_of_service">《服务与隐私政策》</string>
-    <string name="hint_wallet_agree_terms">请同意服务与隐私政策</string>
+    <string name="agreement_read_and_agree">我已阅读并同意《服务协议》和《隐私条款》</string>
+    <string name="hint_wallet_agree_terms">请阅读并同意服务协议与隐私政策</string>
 
     <string name="title_swap">兑换</string>
     <string name="title_fund_pool">资金池</string>
