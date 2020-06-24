@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.wallet
 
+import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,12 +8,13 @@ import androidx.lifecycle.viewModelScope
 import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.math.RoundingMode
 
 class WalletViewModel : ViewModel() {
     val mTotalFiatBalanceStrLiveData = MediatorLiveData<String>()
 
-    private val mTotalFiatBalanceLiveData = MutableLiveData<Double>(0.0)
+    private val mTotalFiatBalanceLiveData = MutableLiveData(BigDecimal("0"))
     val mHiddenTotalFiatBalanceLiveData = MutableLiveData(false)
 
     init {
@@ -21,11 +23,13 @@ class WalletViewModel : ViewModel() {
                 mHiddenTotalFiatBalanceLiveData.value == true -> {
                     mTotalFiatBalanceStrLiveData.value = "$ ****"
                 }
-                mTotalFiatBalanceLiveData.value == 0.0 -> {
+                mTotalFiatBalanceLiveData.value == BigDecimal("0") -> {
                     mTotalFiatBalanceStrLiveData.value = "$ 0.00"
                 }
                 else -> {
-                    mTotalFiatBalanceStrLiveData.value = "$ ${mTotalFiatBalanceLiveData.value}"
+                    mTotalFiatBalanceStrLiveData.value =
+                        "$ ${mTotalFiatBalanceLiveData.value?.setScale(2, RoundingMode.DOWN)
+                            ?.toPlainString() ?: "0.00"}"
                 }
             }
         }
@@ -42,10 +46,10 @@ class WalletViewModel : ViewModel() {
     }
 
     fun calculateFiat(it: List<AssetsVo>?) = viewModelScope.launch {
-        var total = 0.0
+        var total = BigDecimal("0")
         it?.forEach {
             try {
-                total += it.fiatAmountWithUnit.amount.toDouble()
+                total = total.add(BigDecimal(it.fiatAmountWithUnit.amount))
             } catch (e: Exception) {
             }
         }
