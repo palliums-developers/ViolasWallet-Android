@@ -115,10 +115,13 @@ class BitcoinTrezorService(
                 fromAddress = fromAddress,
                 toAddress = toAddress,
                 amount = showAmount.toString(),
+                tokenId = tokenId,
+                tokenDisplayName = tokenDisplayName,
                 gas = dto.fees,
+                gasTokenId = tokenId,
+                gasTokenDisplayName = tokenDisplayName,
                 transactionId = dto.txid,
-                url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.txid),
-                tokenDisplayName = null
+                url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.txid)
             )
         }
         onSuccess.invoke(list, null)

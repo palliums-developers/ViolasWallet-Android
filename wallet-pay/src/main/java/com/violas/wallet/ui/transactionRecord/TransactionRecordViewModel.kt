@@ -87,10 +87,13 @@ class TransactionRecordViewModel(
                 fromAddress = "${address}00$id",
                 toAddress = "${address}00$id",
                 amount = Random.nextLong(100000).toString(),
+                tokenId = mTokenId,
+                tokenDisplayName = mTokenDisplayName,
                 gas = "0",
+                gasTokenId = mTokenId,
+                gasTokenDisplayName = mTokenDisplayName,
                 transactionId = it.toString(),
-                url = "https://www.baidu.com/",
-                tokenDisplayName = mTokenDisplayName
+                url = "https://www.baidu.com/"
             )
 
             list.add(vo)

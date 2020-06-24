@@ -6,6 +6,8 @@ import com.violas.wallet.repository.http.TransactionRecordService
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
 import com.violas.wallet.ui.transactionRecord.TransactionType
+import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.bean.AssetsTokenVo
 
 /**
  * Created by elephant on 2020/4/22 19:02.
@@ -16,6 +18,13 @@ import com.violas.wallet.ui.transactionRecord.TransactionType
 class LibraViolasService(
     private val repository: LibraViolasRepository
 ) : TransactionRecordService {
+
+    private val libraTokens by lazy {
+        WalletAppViewModel.getViewModelInstance().mAssetsListLiveData.value
+            ?.filter { it is AssetsTokenVo && it.getCoinNumber() == CoinTypes.Libra.coinType() }
+            ?.associate { (it as AssetsTokenVo).module to it.getAssetsName() }
+            ?: emptyMap()
+    }
 
     override suspend fun getTransactionRecords(
         walletAddress: String,
@@ -73,10 +82,13 @@ class LibraViolasService(
                 toAddress = dto.receiver,
                 time = dto.expiration_time,
                 amount = dto.amount,
+                tokenId = tokenId,
+                tokenDisplayName = tokenDisplayName,
                 gas = dto.gas,
+                gasTokenId = dto.gasCurrency,
+                gasTokenDisplayName = libraTokens[dto.gasCurrency] ?: tokenDisplayName,
                 transactionId = dto.version.toString(),
-                url = BaseBrowserUrl.getLibraBrowserUrl(dto.version.toString()),
-                tokenDisplayName = tokenDisplayName
+                url = BaseBrowserUrl.getLibraBrowserUrl(dto.version.toString())
             )
         }
         onSuccess.invoke(list, null)

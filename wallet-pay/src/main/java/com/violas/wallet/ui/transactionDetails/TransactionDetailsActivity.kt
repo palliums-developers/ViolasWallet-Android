@@ -249,7 +249,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         val gasWithUnit =
             convertAmountToDisplayUnit(transactionRecord.gas, transactionRecord.coinType)
         tvGas.text =
-            "${gasWithUnit.first} ${transactionRecord.tokenDisplayName ?: gasWithUnit.second}"
+            "${gasWithUnit.first} ${transactionRecord.gasTokenDisplayName ?: gasWithUnit.second}"
 
         if (transactionRecord.toAddress.isNullOrBlank()) {
             noneContent(tvReceiptAddress)

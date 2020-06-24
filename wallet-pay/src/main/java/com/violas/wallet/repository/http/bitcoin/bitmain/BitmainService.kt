@@ -115,10 +115,13 @@ class BitmainService(
                 fromAddress = fromAddress,
                 toAddress = toAddress,
                 amount = showAmount.toString(),
+                tokenId = tokenId,
+                tokenDisplayName = tokenDisplayName,
                 gas = dto.fee.toString(),
+                gasTokenId = tokenId,
+                gasTokenDisplayName = tokenDisplayName,
                 transactionId = dto.hash,
-                url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.hash),
-                tokenDisplayName = null
+                url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.hash)
             )
         }
         onSuccess.invoke(list, null)

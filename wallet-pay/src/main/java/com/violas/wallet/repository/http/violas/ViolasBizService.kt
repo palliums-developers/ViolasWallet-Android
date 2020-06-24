@@ -10,6 +10,8 @@ import com.violas.wallet.repository.http.TransactionRecordService
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
 import com.violas.wallet.ui.transactionRecord.TransactionType
+import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.bean.AssetsTokenVo
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -20,6 +22,13 @@ import com.violas.wallet.ui.transactionRecord.TransactionType
 class ViolasBizService(
     private val repository: ViolasRepository
 ) : TransactionRecordService {
+
+    private val violasTokens by lazy {
+        WalletAppViewModel.getViewModelInstance().mAssetsListLiveData.value
+            ?.filter { it is AssetsTokenVo && it.getCoinNumber() == CoinTypes.Violas.coinType() }
+            ?.associate { (it as AssetsTokenVo).module to it.getAssetsName() }
+            ?: emptyMap()
+    }
 
     suspend fun loginWeb(
         loginType: Int,
@@ -97,10 +106,13 @@ class ViolasBizService(
                 fromAddress = dto.sender,
                 toAddress = dto.receiver,
                 amount = dto.amount,
+                tokenId = tokenId,
+                tokenDisplayName = tokenDisplayName,
                 gas = dto.gas,
+                gasTokenId = dto.gasCurrency,
+                gasTokenDisplayName = violasTokens[dto.gasCurrency] ?: tokenDisplayName,
                 transactionId = dto.version.toString(),
-                url = BaseBrowserUrl.getViolasBrowserUrl(dto.version.toString()),
-                tokenDisplayName = tokenDisplayName
+                url = BaseBrowserUrl.getViolasBrowserUrl(dto.version.toString())
             )
         }
         onSuccess.invoke(list, null)

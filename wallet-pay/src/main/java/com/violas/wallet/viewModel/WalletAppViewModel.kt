@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.content.App
+import com.palliums.content.ContextProvider
 import com.palliums.utils.CustomMainScope
 import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
@@ -16,7 +17,7 @@ import kotlinx.coroutines.*
 
 class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
     companion object {
-        fun getViewModelInstance(context: Context): WalletAppViewModel {
+        fun getViewModelInstance(context: Context = ContextProvider.getContext()): WalletAppViewModel {
             return ViewModelProvider(context.applicationContext as App).get(WalletAppViewModel::class.java)
         }
     }

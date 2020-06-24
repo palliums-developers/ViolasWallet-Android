@@ -70,10 +70,13 @@ class LibraLibexplorerService(
                 fromAddress = dto.from,
                 toAddress = dto.to,
                 amount = dto.value,
+                tokenId = tokenId,
+                tokenDisplayName = tokenDisplayName,
                 gas = dto.gasUsed.toString(),
+                gasTokenId = tokenId,
+                gasTokenDisplayName = tokenDisplayName,
                 transactionId = dto.version,
-                url = BaseBrowserUrl.getLibraBrowserUrl(dto.version),
-                tokenDisplayName = tokenDisplayName
+                url = BaseBrowserUrl.getLibraBrowserUrl(dto.version)
             )
         }
         onSuccess.invoke(list, null)
