@@ -23,6 +23,8 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.biz.bean.TokenMark
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.event.TokenPublishEvent
@@ -221,7 +223,7 @@ class ManagerAssertActivity : BaseAppActivity() {
 
     override fun onBackPressedSupport() {
         if (mChange) {
-            mWalletAppViewModel.refreshAssetsList()
+            CommandActuator.post(RefreshAssetsAllListCommand())
         }
         setResult(Activity.RESULT_OK)
         super.onBackPressedSupport()

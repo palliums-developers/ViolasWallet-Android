@@ -11,6 +11,8 @@ import com.quincysx.crypto.bip32.ExtendedKey
 import com.quincysx.crypto.bip44.BIP44
 import com.quincysx.crypto.bip44.CoinPairDerive
 import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
@@ -420,7 +422,7 @@ class AccountManager {
         )
         if (insertIds.isNotEmpty()) {
             switchCurrentAccount(insertIds[0])
-            WalletAppViewModel.getViewModelInstance(getContext()).refreshAssetsList(true)
+            CommandActuator.post(RefreshAssetsAllListCommand(true))
         }
         if (insertIds.size > 1) {
             mAccountTokenStorage.insert(

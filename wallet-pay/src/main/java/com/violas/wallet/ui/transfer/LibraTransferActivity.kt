@@ -9,6 +9,8 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.addressBook.AddressBookActivity
@@ -41,7 +43,7 @@ class LibraTransferActivity : TransferActivity() {
         coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
         isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
 
-        mWalletAppViewModel.refreshAssetsList()
+        CommandActuator.post(RefreshAssetsAllListCommand())
         mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
             var exists = false
             for (item in it) {
@@ -180,12 +182,7 @@ class LibraTransferActivity : TransferActivity() {
                     {
                         showToast(getString(R.string.hint_transfer_broadcast_success))
                         EventBus.getDefault().post(RefreshBalanceEvent())
-                        GlobalScope.launch {
-                            // todo 刷新单币种价格
-                            // todo 优化成命令模式
-                            delay(3000)
-                            mWalletAppViewModel.refreshAssetsList()
-                        }
+                        CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                         dismissProgress()
                         print(it)
                         finish()

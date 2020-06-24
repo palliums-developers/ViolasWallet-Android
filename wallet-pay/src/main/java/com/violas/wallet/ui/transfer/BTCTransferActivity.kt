@@ -10,6 +10,8 @@ import androidx.lifecycle.Observer
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.authenticateAccount
@@ -163,7 +165,7 @@ class BTCTransferActivity : TransferActivity() {
     }
 
     private suspend fun refreshCurrentAmount() {
-        mWalletAppViewModel.refreshAssetsList()
+        CommandActuator.post(RefreshAssetsAllListCommand())
         withContext(Dispatchers.Main) {
             mAssetsVo.amountWithUnit
             tvCoinAmount.text = String.format(
@@ -205,12 +207,7 @@ class BTCTransferActivity : TransferActivity() {
                     success = {
                         showToast(getString(R.string.hint_transfer_broadcast_success))
                         dismissProgress()
-                        GlobalScope.launch {
-                            // todo 刷新单币种价格
-                            // todo 优化成命令模式
-                            delay(3000)
-                            mWalletAppViewModel.refreshAssetsList()
-                        }
+                        CommandActuator.postDelay(RefreshAssetsAllListCommand(),2000)
                         print(it)
                         finish()
                     },

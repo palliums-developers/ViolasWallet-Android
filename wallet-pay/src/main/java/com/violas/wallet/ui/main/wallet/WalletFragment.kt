@@ -30,6 +30,8 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.bean.AssertOriginateToken
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.event.BackupIdentityMnemonicEvent
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
@@ -185,7 +187,7 @@ class WalletFragment : BaseFragment() {
         viewImportAccount.setOnClickListener(this)
 
         swipeRefreshLayout.setOnRefreshListener {
-            mWalletAppViewModel?.refreshAssetsList()
+            CommandActuator.post(RefreshAssetsAllListCommand())
         }
     }
 
