@@ -42,10 +42,15 @@ class WalletViewModel : ViewModel() {
     }
 
     fun calculateFiat(it: List<AssetsVo>?) = viewModelScope.launch {
-        var total = 0.0
-        it?.forEach {
-            total += it.fiatAmountWithUnit.amount.toDouble()
-        }
-        mTotalFiatBalanceLiveData.value = total
+//        try {
+            var total = 0.0
+            it?.forEach {
+                total += it.fiatAmountWithUnit.amount.toDouble()
+            }
+            mTotalFiatBalanceLiveData.value = total
+//        } catch (e: Exception) {
+//            mTotalFiatBalanceLiveData.value = 0.0
+//        }
+
     }
 }
