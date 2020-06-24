@@ -97,11 +97,11 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
 
     @Throws(RequestException::class)
     suspend fun getLibraChainFiatBalance(address: String) = checkResponse {
-        mViolasApi.getBTCChainFiatBalance(address)
+        mViolasApi.getLibraChainFiatBalance(address)
     }
 
     @Throws(RequestException::class)
     suspend fun getViolasChainFiatBalance(address: String) = checkResponse {
-        mViolasApi.getBTCChainFiatBalance(address)
+        mViolasApi.getViolasChainFiatBalance(address)
     }
 }
