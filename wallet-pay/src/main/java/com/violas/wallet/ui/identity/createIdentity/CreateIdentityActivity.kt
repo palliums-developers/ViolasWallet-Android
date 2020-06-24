@@ -2,6 +2,7 @@ package com.violas.wallet.ui.identity.createIdentity
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
@@ -20,12 +21,9 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import kotlinx.android.synthetic.main.activity_create_identity.*
-import kotlinx.android.synthetic.main.activity_create_identity.tvPrivacyPolicy
-import kotlinx.android.synthetic.main.activity_import_identity.*
 import kotlinx.android.synthetic.main.activity_import_identity.btnConfirm
 import kotlinx.android.synthetic.main.activity_import_identity.editConfirmPassword
 import kotlinx.android.synthetic.main.activity_import_identity.editPassword
-import kotlinx.android.synthetic.main.activity_wallet_connect_authorization.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -46,6 +44,7 @@ class CreateIdentityActivity : BaseAppActivity() {
         launch {
             tvPrivacyPolicy.movementMethod = LinkMovementMethod.getInstance()
             tvPrivacyPolicy.text = buildUseBehaviorSpan()
+            tvPrivacyPolicy.highlightColor = Color.TRANSPARENT
             btnHasAgreePrivacyPolicy.expandTouchArea(28)
         }
 
@@ -105,11 +104,23 @@ class CreateIdentityActivity : BaseAppActivity() {
     }
 
     private suspend fun buildUseBehaviorSpan() = withContext(Dispatchers.IO) {
-
         val useBehavior = getString(R.string.agreement_read_and_agree)
-        val privacyPolicy = getString(R.string.wallet_privacy_policy_and_terms_of_service)
+        val privacyPolicy = getString(R.string.privacy_policy)
+        val userAgreement = getString(R.string.service_agreement)
         val spannableStringBuilder = SpannableStringBuilder(useBehavior)
+        val userAgreementClickSpanPrivacy = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                openWebPage(getString(R.string.service_agreement_url))
+            }
 
+            override fun updateDrawState(ds: TextPaint) {
+                ds.color = getColorByAttrId(
+                    android.R.attr.textColor,
+                    this@CreateIdentityActivity
+                )
+                ds.isUnderlineText = false//去掉下划线
+            }
+        }
         val privacyPolicyClickSpanPrivacy = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 openWebPage(getString(R.string.url_privacy_policy))
@@ -117,11 +128,20 @@ class CreateIdentityActivity : BaseAppActivity() {
 
             override fun updateDrawState(ds: TextPaint) {
                 ds.color = getColorByAttrId(
-                    android.R.attr.textColorSecondary,
+                    android.R.attr.textColor,
                     this@CreateIdentityActivity
                 )
                 ds.isUnderlineText = false//去掉下划线
             }
+        }
+
+        useBehavior.indexOf(userAgreement).also {
+            spannableStringBuilder.setSpan(
+                userAgreementClickSpanPrivacy,
+                it,
+                it + userAgreement.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
         }
 
         useBehavior.indexOf(privacyPolicy).also {

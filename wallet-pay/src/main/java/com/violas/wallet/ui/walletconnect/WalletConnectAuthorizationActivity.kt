@@ -2,6 +2,7 @@ package com.violas.wallet.ui.walletconnect
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
@@ -11,7 +12,6 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.View
-import androidx.core.content.ContextCompat
 import com.palliums.utils.getColorByAttrId
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -68,6 +68,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
         launch {
             tvPrivacyPolicy.movementMethod = LinkMovementMethod.getInstance()
             tvPrivacyPolicy.text = buildUseBehaviorSpan()
+            tvPrivacyPolicy.highlightColor = Color.TRANSPARENT
         }
 
         if (mWalletConnect.isConnected()) {
@@ -139,8 +140,8 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
 
     private suspend fun buildUseBehaviorSpan() = withContext(Dispatchers.IO) {
         val useBehavior = getString(R.string.wallet_connect_use_behavior)
-        val privacyPolicy = getString(R.string.wallet_connect_privacy_policy)
-        val userAgreement = getString(R.string.wallet_connect_user_agreement)
+        val privacyPolicy = getString(R.string.privacy_policy)
+        val userAgreement = getString(R.string.service_agreement)
         val spannableStringBuilder = SpannableStringBuilder(useBehavior)
         val userAgreementClickSpanPrivacy = object : ClickableSpan() {
             override fun onClick(widget: View) {
@@ -149,7 +150,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
 
             override fun updateDrawState(ds: TextPaint) {
                 ds.color = getColorByAttrId(
-                    android.R.attr.textColorSecondary,
+                    android.R.attr.textColor,
                     this@WalletConnectAuthorizationActivity
                 )
                 ds.isUnderlineText = false//去掉下划线
@@ -162,7 +163,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
 
             override fun updateDrawState(ds: TextPaint) {
                 ds.color = getColorByAttrId(
-                    android.R.attr.textColorSecondary,
+                    android.R.attr.textColor,
                     this@WalletConnectAuthorizationActivity
                 )
                 ds.isUnderlineText = false//去掉下划线
