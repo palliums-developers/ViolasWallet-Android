@@ -10,10 +10,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
+import com.palliums.utils.openBrowser
 import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.quincysx.crypto.CoinTypes
 import com.smallraw.support.switchcompat.SwitchButton
@@ -26,26 +25,17 @@ import com.violas.wallet.biz.bean.TokenMark
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.common.BaseBrowserUrl
-import com.violas.wallet.event.RefreshBalanceEvent
-import com.violas.wallet.event.TokenPublishEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.web.WebCommonActivity
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.loadTransform
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.activity_manager_assert.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
-import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.jessyan.autosize.utils.AutoSizeUtils
-import org.greenrobot.eventbus.EventBus
-import org.palliums.violascore.crypto.KeyPair
-import org.palliums.violascore.wallet.Account
 
 class ManagerAssertActivity : BaseAppActivity() {
     override fun getLayoutResId() = R.layout.activity_manager_assert
@@ -207,18 +197,22 @@ class ManagerAssertActivity : BaseAppActivity() {
     }
 
     override fun onTitleRightViewClick() {
-        var address: String? = null
+        var address = ""
         mWalletAppViewModel.mAssetsListLiveData.value?.forEach {
             if (it is AssetsLibraCoinVo) {
                 address = it.address
                 return@forEach
             }
         }
-        WebCommonActivity.start(
-            this,
-            BaseBrowserUrl.getViolasTestCoinUrl(address ?: ""),
-            getString(R.string.action_get_experience_the_coin)
-        )
+
+        val url = BaseBrowserUrl.getViolasTestCoinUrl(address)
+        if (!openBrowser(this, url)) {
+            WebCommonActivity.start(
+                this,
+                url,
+                getString(R.string.action_get_experience_the_coin)
+            )
+        }
     }
 
     override fun onBackPressedSupport() {
