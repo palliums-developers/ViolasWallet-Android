@@ -346,4 +346,8 @@
     <string name="agreement_read_and_agree">我已阅读并同意《服务与隐私政策》</string>
     <string name="wallet_privacy_policy_and_terms_of_service">《服务与隐私政策》</string>
     <string name="hint_wallet_agree_terms">请同意服务与隐私政策</string>
+
+    <string name="title_swap">兑换</string>
+    <string name="title_fund_pool">资金池</string>
+    <string name="title_my_fund_pool">我的资金池</string>
 </resources>

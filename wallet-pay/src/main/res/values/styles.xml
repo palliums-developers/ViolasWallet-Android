@@ -82,8 +82,12 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="TabTextAppearance_TokenInfo">
+    <style name="TextAppearance.TransactionRecordTab" parent="TextAppearance.AppCompat.Button">
         <item name="android:textSize">@dimen/sp_12</item>
+    </style>
+
+    <style name="TextAppearance.MarketTab" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textSize">@dimen/sp_14</item>
     </style>
 
     <style name="BaseButton" parent="ButtonStyle">

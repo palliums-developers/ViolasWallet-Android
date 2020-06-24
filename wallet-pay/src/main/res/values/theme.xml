@@ -187,6 +187,11 @@
 
         <!--添加币种页面资源属性-->
         <item name="addCurrencyTextColor">@color/color_0E0051</item>
+
+        <!--市场相关页面资源属性-->
+        <item name="marketMenuMyFundPoolIcon">@mipmap/ic_my_fund_pool</item>
+        <item name="marketCoinConversionIcon">@mipmap/ic_coin_conversion</item>
+        <item name="marketSwapRecordIcon">@mipmap/ic_swap_record</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">
