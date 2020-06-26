@@ -259,6 +259,7 @@ open class WCClient(
             }
         } catch (e: InvalidJsonRpcParamsException) {
             invalidParams(e.requestId)
+            e.printStackTrace()
         }
     }
 

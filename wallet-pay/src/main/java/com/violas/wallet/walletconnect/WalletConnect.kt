@@ -9,13 +9,9 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.palliums.violas.error.ViolasException
 import com.quincysx.crypto.CoinTypes
-import com.quincysx.crypto.utils.Base64
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.walletconnect.WalletConnectActivity
 import com.violas.wallet.walletconnect.transferDataHandler.TransferDecodeEngine
-import com.violas.wallet.walletconnect.transferDataHandler.TransferP2PDecode
-import com.violas.wallet.walletconnect.transferDataHandler.decodeCoinName
-import com.violas.wallet.walletconnect.transferDataHandler.decodeWithData
 import com.violas.walletconnect.WCClient
 import com.violas.walletconnect.WCSessionStoreItem
 import com.violas.walletconnect.WCSessionStoreType
@@ -214,7 +210,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                     }
 
                     val gasUnitPrice = tx.gasUnitPrice ?: 0
-                    val maxGasAmount = tx.maxGasAmount ?: 400_000
+                    val maxGasAmount = tx.maxGasAmount ?: 1_000_000
                     val expirationTime = tx.expirationTime ?: System.currentTimeMillis() + 1000
                     val gasCurrencyCode = tx.gasCurrencyCode ?: lbrStructTagType()
                     val sequenceNumber = tx.sequenceNumber ?: -1

@@ -34,7 +34,7 @@ class TransferP2PWithDataDecode(private val transaction: RawTransaction) : Trans
         return WalletConnect.TransferDataType(
             transaction.sender.toHex(),
             payload.args[0].decodeToValue() as String,
-            payload.args[2].decodeToValue() as Long,
+            payload.args[1].decodeToValue() as Long,
             coinName,
             Base64.encode(data)
         )

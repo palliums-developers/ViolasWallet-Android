@@ -160,6 +160,8 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
 
     suspend fun getCurrencies() = mViolasRpcRepository.getCurrencies().data
 
+    suspend fun submitTransaction(hex: String) = mViolasRpcRepository.submitTransaction(hex)
+
     suspend fun getAccountState(
         address: String
     ) = mViolasRpcRepository.getAccountState(address).data

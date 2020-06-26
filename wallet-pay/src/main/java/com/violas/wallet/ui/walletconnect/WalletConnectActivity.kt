@@ -15,10 +15,14 @@ import com.palliums.content.App
 import com.palliums.content.ContextProvider
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.WrongPasswordException
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.walletconnect.WalletConnect
 import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.walletconnect.extensions.hexStringToByteArray
@@ -85,6 +89,9 @@ class WalletConnectActivity : BaseAppActivity() {
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
     private val mWalletConnect by lazy {
         WalletConnect.getInstance(this)
+    }
+    private val mAccountManager by lazy {
+        AccountManager()
     }
 
     // 是否处理了请求
@@ -171,8 +178,9 @@ class WalletConnectActivity : BaseAppActivity() {
                     return@launch
                 }
 
-                DataRepository.getViolasService().sendTransaction(signedTx)
+                DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
                 mWalletConnect.sendSuccessMessage(transactionSwapVo.requestID, "success")
+                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2)
                 mRequestHandle = true
                 finish()
                 dismissProgress()
@@ -185,23 +193,19 @@ class WalletConnectActivity : BaseAppActivity() {
 
     private suspend fun showPasswordSignTx(account: AccountDO, hashByteArray: ByteArray) =
         suspendCancellableCoroutine<Signature?> { cont ->
-            PasswordInputDialog()
-                .setConfirmListener { password, dialogFragment ->
-                    dialogFragment.dismiss()
-                    showProgress()
-                    launch(Dispatchers.IO) {
-                        val decryptPrivateKey =
-                            SimpleSecurity.instance(ContextProvider.getContext())
-                                .decrypt(password, account.privateKey)
-                        if (decryptPrivateKey == null) {
-                            cont.resumeWithException(WrongPasswordException())
-                            return@launch
-                        }
-                        val keyPair = KeyPair.fromSecretKey(decryptPrivateKey)
-                        val signMessage = keyPair.signMessage(hashByteArray)
-                        cont.resume(signMessage)
+            authenticateAccount(account, mAccountManager) {
+                showProgress()
+                launch(Dispatchers.IO) {
+                    val decryptPrivateKey = it
+                    if (decryptPrivateKey == null) {
+                        cont.resumeWithException(WrongPasswordException())
+                        return@launch
                     }
-                }.show(supportFragmentManager)
+                    val keyPair = KeyPair.fromSecretKey(decryptPrivateKey)
+                    val signMessage = keyPair.signMessage(hashByteArray)
+                    cont.resume(signMessage)
+                }
+            }
         }
 
     private suspend fun showDisplay(transactionSwapVo: WalletConnect.TransactionSwapVo) =
@@ -246,7 +250,7 @@ class WalletConnectActivity : BaseAppActivity() {
                     )
 
                     val amount = BigDecimal(mTransferDataType.amount).divide(
-                        BigDecimal("1000000"), RoundingMode.DOWN
+                        BigDecimal("1000000"), 6, RoundingMode.DOWN
                     ).stripTrailingZeros().toPlainString()
 
                     val view = LayoutInflater.from(this@WalletConnectActivity)

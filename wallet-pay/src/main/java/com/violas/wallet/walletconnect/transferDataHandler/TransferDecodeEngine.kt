@@ -10,7 +10,6 @@ import java.lang.reflect.Type
 class TransferDecodeEngine(private val mRawTransaction: RawTransaction) {
     private val mDecode: ArrayList<TransferDecode> =
         arrayListOf(
-            TransferP2PDecode(mRawTransaction),
             TransferP2PWithDataDecode(mRawTransaction),
             TransferPublishDecode(mRawTransaction)
         )
