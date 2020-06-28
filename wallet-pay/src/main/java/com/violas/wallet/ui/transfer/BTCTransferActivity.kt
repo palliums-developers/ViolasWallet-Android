@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.SeekBar
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
+import com.palliums.extensions.expandTouchArea
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
@@ -19,19 +20,16 @@ import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
-import kotlinx.android.synthetic.main.activity_transfer.*
-import kotlinx.android.synthetic.main.activity_transfer_btc.*
 import kotlinx.android.synthetic.main.activity_transfer_btc.btnConfirm
 import kotlinx.android.synthetic.main.activity_transfer_btc.editAddressInput
 import kotlinx.android.synthetic.main.activity_transfer_btc.editAmountInput
 import kotlinx.android.synthetic.main.activity_transfer_btc.ivScan
 import kotlinx.android.synthetic.main.activity_transfer_btc.sbQuota
-import kotlinx.android.synthetic.main.activity_transfer_btc.tvAddressBook
+import kotlinx.android.synthetic.main.activity_transfer_btc.ivAddressBook
 import kotlinx.android.synthetic.main.activity_transfer_btc.tvCoinAmount
 import kotlinx.android.synthetic.main.activity_transfer_btc.tvFee
 import kotlinx.android.synthetic.main.activity_transfer_btc.tvHintCoinName
 import kotlinx.coroutines.*
-import java.math.BigDecimal
 
 class BTCTransferActivity : TransferActivity() {
 
@@ -114,7 +112,7 @@ class BTCTransferActivity : TransferActivity() {
         btnConfirm.setOnClickListener {
             send()
         }
-        tvAddressBook.setOnClickListener {
+        ivAddressBook.setOnClickListener {
             account?.coinNumber?.let { it1 ->
                 AddressBookActivity.start(
                     this@BTCTransferActivity,
@@ -124,6 +122,7 @@ class BTCTransferActivity : TransferActivity() {
                 )
             }
         }
+        ivAddressBook.expandTouchArea(8)
         editAmountInput.filters = arrayOf(AmountInputFilter(9, 8))
         sbQuota.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -207,7 +206,7 @@ class BTCTransferActivity : TransferActivity() {
                     success = {
                         showToast(getString(R.string.hint_transfer_broadcast_success))
                         dismissProgress()
-                        CommandActuator.postDelay(RefreshAssetsAllListCommand(),2000)
+                        CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                         print(it)
                         finish()
                     },

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.AmountInputFilter
 import android.util.Log
 import androidx.lifecycle.Observer
+import com.palliums.extensions.expandTouchArea
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
@@ -99,7 +100,7 @@ class LibraTransferActivity : TransferActivity() {
         btnConfirm.setOnClickListener {
             send()
         }
-        tvAddressBook.setOnClickListener {
+        ivAddressBook.setOnClickListener {
             account?.coinNumber?.let { it1 ->
                 AddressBookActivity.start(
                     this@LibraTransferActivity,
@@ -109,6 +110,7 @@ class LibraTransferActivity : TransferActivity() {
                 )
             }
         }
+        ivAddressBook.expandTouchArea(8)
     }
 
     private fun initViewData() {

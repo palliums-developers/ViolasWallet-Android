@@ -57,14 +57,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editAmountInput" />
 
-        <TextView
-            android:id="@+id/tvAddressBook"
+        <ImageView
+            android:id="@+id/ivAddressBook"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:text="@string/hint_address_book"
+            android:src="@drawable/ic_address_book"
             app:layout_constraintBottom_toBottomOf="@+id/tvCollectionAddress"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/ivScan"
+            app:layout_constraintStart_toStartOf="@+id/ivScan"
             app:layout_constraintTop_toTopOf="@+id/tvCollectionAddress" />
 
         <EditText
