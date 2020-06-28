@@ -97,6 +97,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
     fun restore() {
         launch(Dispatchers.IO) {
+            Log.e("Wallet Connwct","Restore Connect")
             mWCSessionStoreType
                 .session?.let {
                     mWCClient.connect(it.session, it.remotePeerMeta, it.peerId, it.remotePeerId)
@@ -293,34 +294,68 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         sendErrorMessage(id, JsonRpcError.invalidParams("Invalid Parameter:$msg"))
     }
 
-    fun <T> sendSuccessMessage(id: Long, result: T) {
-        val response = JsonRpcResponse(
-            id = id,
-            result = result
-        )
-        val toJson = Gson().toJson(response)
-        mWCClient.encryptAndSend(toJson)
+    fun <T> sendSuccessMessage(id: Long, result: T): Boolean {
+        return try {
+            val response = JsonRpcResponse(
+                id = id,
+                result = result
+            )
+            val toJson = Gson().toJson(response)
+            mWCClient.encryptAndSend(toJson).also {
+                restore()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     fun sendErrorMessage(id: Long, result: JsonRpcError): Boolean {
-        val response = JsonRpcErrorResponse(
-            id = id,
-            error = result
-        )
-        val toJson = Gson().toJson(response)
-        return mWCClient.encryptAndSend(toJson)
+        return try {
+            val response = JsonRpcErrorResponse(
+                id = id,
+                error = result
+            )
+            val toJson = Gson().toJson(response)
+            mWCClient.encryptAndSend(toJson).also {
+                restore()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     fun approveSession(accounts: List<String>, chainId: String): Boolean {
-        return mWCClient.approveSession(accounts, chainId)
+        return try {
+            mWCClient.approveSession(accounts, chainId).also {
+                restore()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     fun rejectSession(message: String = "Session rejected"): Boolean {
-        return mWCClient.rejectSession(message)
+        return try {
+            mWCClient.rejectSession(message).also {
+                restore()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     fun isConnected(): Boolean {
         return mWCClient.isConnected
+    }
+
+    fun disconnect(): Boolean {
+        return mWCClient.disconnect().also {
+            restore()
+        }
     }
 
     /**

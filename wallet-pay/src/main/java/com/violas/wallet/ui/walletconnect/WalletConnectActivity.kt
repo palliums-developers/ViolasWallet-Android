@@ -180,7 +180,7 @@ class WalletConnectActivity : BaseAppActivity() {
 
                 DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
                 mWalletConnect.sendSuccessMessage(transactionSwapVo.requestID, "success")
-                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2)
+                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 mRequestHandle = true
                 finish()
                 dismissProgress()

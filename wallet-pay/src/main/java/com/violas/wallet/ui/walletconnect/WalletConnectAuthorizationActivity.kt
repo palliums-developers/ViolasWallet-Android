@@ -109,7 +109,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
                 dismissProgress()
                 showToast(String.format(getString(R.string.common_http_request_fail), ""))
                 launch(Dispatchers.IO) {
-                    mWalletConnect.mWCClient.disconnect()
+                    mWalletConnect.disconnect()
                 }
             }, 10 * 1000)
         }

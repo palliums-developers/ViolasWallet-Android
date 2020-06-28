@@ -238,7 +238,9 @@ class QuotesViewModel(application: Application) : AndroidViewModel(application),
      * 检查当前账户
      */
     private suspend fun checkIsEnable() {
-        isEnable.value = false
+        withContext(Dispatchers.Main) {
+            isEnable.value = false
+        }
 //        mAccount = try {
 //            mAccountManager.currentAccount()
 //        } catch (e: Exception) {

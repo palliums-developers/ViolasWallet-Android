@@ -428,7 +428,7 @@ class AccountManager {
             mAccountTokenStorage.insert(
                 TokenDo(
                     account_id = insertIds[0],
-                    assetsName = "LBR",
+                    assetsName = "VLS",
                     name = "LBR",
                     address = "00000000000000000000000000000001",
                     enable = true,

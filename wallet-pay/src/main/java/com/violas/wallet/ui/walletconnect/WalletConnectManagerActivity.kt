@@ -28,7 +28,7 @@ class WalletConnectManagerActivity : BaseAppActivity() {
         setTitleLeftViewVisibility(View.GONE)
 
         btnLogout.setOnClickListener {
-            if (WalletConnect.getInstance(this).mWCClient.disconnect()) {
+            if (WalletConnect.getInstance(this).disconnect()) {
                 finish()
             }else{
                 showToast(String.format(getString(R.string.common_http_request_fail), ""))
