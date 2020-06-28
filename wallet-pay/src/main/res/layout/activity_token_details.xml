@@ -193,7 +193,6 @@
             android:visibility="visible" />
 
         <FrameLayout
-            android:id="@+id/flExchange"
             android:layout_width="@dimen/dp_0"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -202,6 +201,7 @@
             android:visibility="visible">
 
             <Button
+                android:id="@+id/flExchange"
                 style="@style/BaseButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

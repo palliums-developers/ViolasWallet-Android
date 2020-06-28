@@ -115,7 +115,7 @@ class CreateIdentityActivity : BaseAppActivity() {
 
             override fun updateDrawState(ds: TextPaint) {
                 ds.color = getColorByAttrId(
-                    android.R.attr.textColor,
+                    R.attr.colorPrimary,
                     this@CreateIdentityActivity
                 )
                 ds.isUnderlineText = false//去掉下划线
@@ -128,7 +128,7 @@ class CreateIdentityActivity : BaseAppActivity() {
 
             override fun updateDrawState(ds: TextPaint) {
                 ds.color = getColorByAttrId(
-                    android.R.attr.textColor,
+                    R.attr.colorPrimary,
                     this@CreateIdentityActivity
                 )
                 ds.isUnderlineText = false//去掉下划线

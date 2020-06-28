@@ -11,7 +11,7 @@ class TransferDecodeEngine(private val mRawTransaction: RawTransaction) {
     private val mDecode: ArrayList<TransferDecode> =
         arrayListOf(
             TransferP2PWithDataDecode(mRawTransaction),
-            TransferPublishDecode(mRawTransaction)
+            TransferViolasAddCurrencyToAccountDecode(mRawTransaction)
         )
 
     fun decode(): Pair<WalletConnect.TransactionDataType, String> {

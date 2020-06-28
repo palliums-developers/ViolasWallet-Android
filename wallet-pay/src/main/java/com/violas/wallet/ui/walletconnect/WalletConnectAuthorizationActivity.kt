@@ -150,7 +150,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
 
             override fun updateDrawState(ds: TextPaint) {
                 ds.color = getColorByAttrId(
-                    android.R.attr.textColor,
+                    R.attr.colorPrimary,
                     this@WalletConnectAuthorizationActivity
                 )
                 ds.isUnderlineText = false//去掉下划线
@@ -163,7 +163,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
 
             override fun updateDrawState(ds: TextPaint) {
                 ds.color = getColorByAttrId(
-                    android.R.attr.textColor,
+                    R.attr.colorPrimary,
                     this@WalletConnectAuthorizationActivity
                 )
                 ds.isUnderlineText = false//去掉下划线
