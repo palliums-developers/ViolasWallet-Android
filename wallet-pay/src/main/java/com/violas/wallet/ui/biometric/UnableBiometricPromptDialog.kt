@@ -39,6 +39,10 @@ class UnableBiometricPromptDialog : DialogFragment() {
         } else {
             tvDesc.text = promptText
         }
+
+        tvPositiveBtn.setOnClickListener {
+            close()
+        }
     }
 
     override fun onStart() {
