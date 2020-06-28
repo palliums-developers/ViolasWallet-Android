@@ -21,7 +21,7 @@ class WalletViewModel : ViewModel() {
         val calculate = {
             when {
                 mHiddenTotalFiatBalanceLiveData.value == true -> {
-                    mTotalFiatBalanceStrLiveData.value = "$ ****"
+                    mTotalFiatBalanceStrLiveData.value = "****"
                 }
                 mTotalFiatBalanceLiveData.value == BigDecimal("0") -> {
                     mTotalFiatBalanceStrLiveData.value = "$ 0.00"

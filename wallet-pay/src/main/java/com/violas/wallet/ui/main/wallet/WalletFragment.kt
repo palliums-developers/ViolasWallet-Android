@@ -87,14 +87,11 @@ class WalletFragment : BaseFragment() {
         ViewModelProvider(this).get(WalletViewModel::class.java)
     }
 
-    private var refreshAssertJob: Job? = null
-
     private val mAccountManager by lazy {
         AccountManager()
     }
 
 
-    private val mEnableTokens = mutableListOf<AssertOriginateToken>()
     private val mAssertAdapter by lazy {
         AssertAdapter {
             activity?.let { it1 ->
@@ -119,11 +116,11 @@ class WalletFragment : BaseFragment() {
         })
         mWalletAppViewModel?.mAssetsListLiveData?.observe(this, Observer {
             val filter =
-                it.filter {
-                    if (it !is AssetsCoinVo) {
+                it.filter { asset ->
+                    if (asset !is AssetsCoinVo) {
                         true
                     } else {
-                        it.accountType != AccountType.NoDollars
+                        asset.accountType != AccountType.NoDollars
                     }
                 }
             mAssertAdapter.submitList(filter)
@@ -144,6 +141,7 @@ class WalletFragment : BaseFragment() {
             tvAmount.text = it
         })
         mWalletViewModel.mHiddenTotalFiatBalanceLiveData.observe(this, Observer {
+            mAssertAdapter.assetsHidden(it)
             if (it) {
                 ivTotalHidden.setImageResource(
                     getResourceId(
@@ -288,9 +286,7 @@ class WalletFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_ADD_ASSERT -> {
-                refreshAssertJob = launch(Dispatchers.IO) {
-                    //                    refreshViolasAssert()
-                }
+                mWalletAppViewModel?.refreshAssetsList()
             }
 
             REQUEST_SCAN_QR_CODE -> {
@@ -380,6 +376,7 @@ class AssertAdapter(
         return false
     }
 }) {
+    private var mAssetsHidden: Boolean = false
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context).inflate(
@@ -415,9 +412,20 @@ class AssertAdapter(
 
         holder.itemView.tvName.text = itemData.getAssetsName()
 
-        holder.itemView.tvAmount.text = itemData.amountWithUnit.amount
-        holder.itemView.tvFiatAmount.text =
-            "≈${itemData.fiatAmountWithUnit.symbol}${itemData.fiatAmountWithUnit.amount}"
+        if (mAssetsHidden) {
+            holder.itemView.tvAmount.text = "****"
+            holder.itemView.tvFiatAmount.text = "****"
+        } else {
+            holder.itemView.tvAmount.text = itemData.amountWithUnit.amount
+            holder.itemView.tvFiatAmount.text =
+                "≈${itemData.fiatAmountWithUnit.symbol}${itemData.fiatAmountWithUnit.amount}"
+        }
+
+    }
+
+    fun assetsHidden(it: Boolean) {
+        mAssetsHidden = it
+        notifyDataSetChanged()
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)
