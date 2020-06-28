@@ -13,7 +13,7 @@ class SSOApp : App() {
         if (!AppCenter.isConfigured()) {
             AppCenter.start(
                 this,
-                "90ae9fd6-30f2-4779-bd8c-4b0c63f1aa6a",
+                "edeeace7-24ad-4170-8691-08fedee09d02",
                 Analytics::class.java, Crashes::class.java
             )
         }

@@ -27,7 +27,7 @@ class PayApp : App() {
         if (!AppCenter.isConfigured()) {
             AppCenter.start(
                 this,
-                "90ae9fd6-30f2-4779-bd8c-4b0c63f1aa6a",
+                "3ea4dea9-9be1-4423-ada7-99f5ca24457a",
                 Analytics::class.java, Crashes::class.java
             )
             val customListener: CrashesListener =
