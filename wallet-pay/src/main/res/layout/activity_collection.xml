@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="43dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="30dp"
         android:background="?attr/collectionInfoBg"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,7 +32,7 @@
             android:id="@+id/ivQRCode"
             android:layout_width="164dp"
             android:layout_height="164dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="50dp"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
             app:layout_constraintEnd_toEndOf="parent"
@@ -55,26 +55,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="33dp"
             android:gravity="center"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
+            android:maxWidth="268dp"
             android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvWalletName"
-            tools:text="sdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf" />
-
-        <Button
-            android:id="@+id/btnCopy"
-            style="@style/BaseButtonPrimary"
-            android:layout_marginTop="@dimen/dp_52"
-            android:layout_marginBottom="@dimen/dp_28"
-            android:text="@string/action_copy"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnCopy"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvAddress" />
+            app:layout_constraintTop_toBottomOf="@+id/ivQRCode"
+            tools:text="sdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf" />
+
+        <ImageView
+            android:id="@+id/btnCopy"
+            android:layout_width="12dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/icon_copy"
+            app:layout_constraintBottom_toBottomOf="@+id/tvAddress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvAddress"
+            app:layout_constraintTop_toTopOf="@id/tvAddress" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
