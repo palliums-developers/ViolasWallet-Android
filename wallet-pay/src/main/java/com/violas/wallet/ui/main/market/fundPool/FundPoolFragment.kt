@@ -2,6 +2,7 @@ package com.violas.wallet.ui.main.market.fundPool
 
 import com.palliums.base.BaseFragment
 import com.violas.wallet.R
+import kotlinx.android.synthetic.main.fragment_fund_pool.*
 
 /**
  * Created by elephant on 2020/6/23 17:18.
@@ -26,6 +27,23 @@ class FundPoolFragment : BaseFragment() {
     }
 
     private fun onLazy2InitView() {
+        tvExchangeRate.text = getString(R.string.exchange_rate_format, "- -")
+        tvMyFundPoolAmount.text = getString(R.string.my_fund_pool_amount_format, "- -")
 
+        llSwitchType.setOnClickListener {
+
+        }
+
+        llFirstSelectToken.setOnClickListener {
+
+        }
+
+        llSecondSelectToken.setOnClickListener {
+
+        }
+
+        btnPositive.setOnClickListener {
+
+        }
     }
 }

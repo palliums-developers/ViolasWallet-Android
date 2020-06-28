@@ -26,10 +26,11 @@
     <attr name="iconBackTertiary" format="reference" />
     <attr name="iconClose" format="reference" />
     <attr name="iconShare" format="reference" />
+    <attr name="iconAdd" format="reference" />
     <attr name="iconLogo" format="reference" />
     <attr name="iconAppName" format="reference" />
-    <attr name="iconAdd" format="reference" />
     <attr name="iconForward" format="reference" />
+    <attr name="iconArrow" format="reference" />
     <attr name="iconCopy" format="reference" />
     <attr name="iconShowPrimary" format="reference" />
     <attr name="iconShowSecondary" format="reference" />
@@ -121,5 +122,6 @@
     <attr name="marketMenuMyFundPoolIcon" format="reference" />
     <attr name="marketCoinConversionIcon" format="reference" />
     <attr name="marketSwapRecordIcon" format="reference" />
+    <attr name="marketSwitchTypeBgColor" format="color" />
 
 </resources>

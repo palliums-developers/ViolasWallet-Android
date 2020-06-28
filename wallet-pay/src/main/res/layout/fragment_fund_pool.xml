@@ -1,16 +1,225 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/llSwitchType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_fund_pool"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="@dimen/dp_35"
+        android:layout_marginTop="@dimen/dp_5"
+        android:background="@drawable/sel_bg_market_switch_type"
+        android:paddingHorizontal="@dimen/dp_10"
+        android:paddingVertical="@dimen/dp_5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvSwitchType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/transfer_in"
+            android:textColor="@color/sel_color_market_switch_type"
+            android:textSize="@dimen/sp_12" />
+
+        <ImageView
+            android:id="@+id/ivSwitchType"
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_6"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/dp_3"
+            android:background="@drawable/sel_market_downward" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/etFirstAmount"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_6"
+        android:background="@drawable/sel_bg_market_edit_box"
+        android:inputType="numberDecimal"
+        android:paddingStart="@dimen/dp_15"
+        android:paddingTop="@dimen/dp_48"
+        android:paddingEnd="@dimen/dp_85"
+        android:paddingBottom="@dimen/dp_14"
+        android:textSize="@dimen/sp_20"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/llSwitchType"
+        tools:hint="0.00" />
+
+    <TextView
+        android:id="@+id/tvFirstLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_16"
+        android:text="@string/transfer_in"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintStart_toStartOf="@id/etFirstAmount"
+        app:layout_constraintTop_toTopOf="@id/etFirstAmount" />
+
+    <LinearLayout
+        android:id="@+id/llFirstSelectToken"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_11"
+        android:layout_marginBottom="@dimen/dp_13"
+        android:background="@drawable/sel_bg_market_select_token"
+        android:paddingHorizontal="@dimen/dp_10"
+        android:paddingVertical="@dimen/dp_5"
+        app:layout_constraintBottom_toBottomOf="@id/etFirstAmount"
+        app:layout_constraintEnd_toEndOf="@id/etFirstAmount">
+
+        <TextView
+            android:id="@+id/tvFirstToken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_token"
+            android:textColor="@color/sel_color_market_select_token"
+            android:textSize="@dimen/sp_12" />
+
+        <ImageView
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_6"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/dp_3"
+            android:background="?attr/iconArrow"
+            android:backgroundTint="?attr/colorPrimary" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvAnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_9"
+        android:text="&amp;"
+        android:textColor="?android:attr/textColorTertiary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etFirstAmount"
+        tools:ignore="HardcodedText" />
+
+    <EditText
+        android:id="@+id/etSecondAmount"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_8"
+        android:background="@drawable/sel_bg_market_edit_box"
+        android:inputType="numberDecimal"
+        android:paddingStart="@dimen/dp_15"
+        android:paddingTop="@dimen/dp_48"
+        android:paddingEnd="@dimen/dp_85"
+        android:paddingBottom="@dimen/dp_14"
+        android:textSize="@dimen/sp_20"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvAnd"
+        tools:hint="0.00" />
+
+    <TextView
+        android:id="@+id/tvSecondLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_16"
+        android:text="@string/transfer_in"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintStart_toStartOf="@id/etSecondAmount"
+        app:layout_constraintTop_toTopOf="@id/etSecondAmount" />
+
+    <LinearLayout
+        android:id="@+id/llSecondSelectToken"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_11"
+        android:layout_marginBottom="@dimen/dp_13"
+        android:background="@drawable/sel_bg_market_select_token"
+        android:paddingHorizontal="@dimen/dp_10"
+        android:paddingVertical="@dimen/dp_5"
+        app:layout_constraintBottom_toBottomOf="@id/etSecondAmount"
+        app:layout_constraintEnd_toEndOf="@id/etSecondAmount">
+
+        <TextView
+            android:id="@+id/tvSecondToken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_token"
+            android:textColor="@color/sel_color_market_select_token"
+            android:textSize="@dimen/sp_12" />
+
+        <ImageView
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_6"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/dp_3"
+            android:background="?attr/iconArrow"
+            android:backgroundTint="?attr/colorPrimary" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvExchangeRate"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp_45"
+        android:layout_marginTop="@dimen/dp_10"
+        android:textColor="?android:textColorSecondary"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etSecondAmount"
+        tools:text="@string/exchange_rate_format" />
+
+    <TextView
+        android:id="@+id/tvMyFundPoolAmount"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp_45"
+        android:layout_marginTop="@dimen/dp_6"
+        android:textColor="?android:textColorSecondary"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvExchangeRate"
+        tools:text="@string/my_fund_pool_amount_format" />
+
+    <Button
+        android:id="@+id/btnPositive"
+        style="@style/BaseButtonPrimary"
+        android:layout_marginTop="@dimen/dp_24"
+        android:text="@string/action_transfer_in_nbsp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvMyFundPoolAmount" />
+
+    <TextView
+        android:id="@+id/tvFundPoolRecords"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_14"
+        android:layout_marginTop="@dimen/dp_47"
+        android:text="@string/fund_pool_records"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnPositive" />
+
+    <View
+        android:id="@+id/vTabIndicator"
+        android:layout_width="@dimen/dp_12"
+        android:layout_height="@dimen/dp_2"
+        android:layout_marginTop="@dimen/dp_6"
+        android:background="@drawable/shape_market_record_tab_indicator"
+        app:layout_constraintStart_toStartOf="@id/tvFundPoolRecords"
+        app:layout_constraintTop_toBottomOf="@id/tvFundPoolRecords" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -97,10 +97,11 @@
         <item name="iconBackTertiary">@drawable/ic_back_gray</item>
         <item name="iconClose">@drawable/ic_action_close</item>
         <item name="iconShare">@mipmap/ic_share</item>
+        <item name="iconAdd">@drawable/icon_add_address</item>
         <item name="iconLogo">@drawable/ic_logo_corner</item>
         <item name="iconAppName">@drawable/ic_violas</item>
-        <item name="iconAdd">@drawable/icon_add_address</item>
         <item name="iconForward">@drawable/ic_right_arrow_gray</item>
+        <item name="iconArrow">@drawable/icon_down_arrow_white</item>
         <item name="iconCopy">@drawable/ic_token_info_copy</item>
         <item name="iconShowPrimary">@drawable/ic_total_balance_show</item>
         <item name="iconShowSecondary">@drawable/ic_password_text_show</item>
@@ -192,6 +193,7 @@
         <item name="marketMenuMyFundPoolIcon">@mipmap/ic_my_fund_pool</item>
         <item name="marketCoinConversionIcon">@mipmap/ic_coin_conversion</item>
         <item name="marketSwapRecordIcon">@mipmap/ic_swap_record</item>
+        <item name="marketSwitchTypeBgColor">@color/color_F1EEFB</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">

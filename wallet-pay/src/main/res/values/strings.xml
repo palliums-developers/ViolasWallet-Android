@@ -349,4 +349,19 @@
     <string name="title_swap">Exchange</string>
     <string name="title_fund_pool">Pool</string>
     <string name="title_my_fund_pool">My Pool</string>
+    <string name="fee_rate_format">费率：%1$s</string>
+    <string name="exchange_rate_format">兑换率：%1$s</string>
+    <string name="gas_format">矿工费用：%1$s</string>
+    <string name="input">输入</string>
+    <string name="output">输出</string>
+    <string name="action_swap_nbsp">兑&#160;换</string>
+    <string name="select_token">选择通证</string>
+    <string name="swap_records">兑换记录</string>
+    <string name="transfer_in">转入</string>
+    <string name="transfer_out">转出</string>
+    <string name="fund_pool_token">资金池通证</string>
+    <string name="my_fund_pool_amount_format">你的资金池共有：%1$s</string>
+    <string name="action_transfer_in_nbsp">转&#160;入</string>
+    <string name="action_transfer_out_nbsp">转&#160;出</string>
+    <string name="fund_pool_records">资金池记录</string>
 </resources>
