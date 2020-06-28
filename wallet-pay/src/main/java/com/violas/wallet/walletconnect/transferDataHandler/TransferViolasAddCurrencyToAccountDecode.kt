@@ -7,13 +7,13 @@ import org.palliums.libracore.move.Move
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionPayload
 
-class TransferPublishDecode(private val transaction: RawTransaction) : TransferDecode {
+class TransferViolasAddCurrencyToAccountDecode(private val transaction: RawTransaction) : TransferDecode {
 
     override fun isHandle(): Boolean {
         val payload = transaction.payload?.payload
         return payload is TransactionPayload.Script && payload.code.contentEquals(
             Move.decode(
-                ContextProvider.getContext().assets.open("move/violas_publish.mv")
+                ContextProvider.getContext().assets.open("move/violas_add_currency_to_account.mv")
             )
         )
     }
