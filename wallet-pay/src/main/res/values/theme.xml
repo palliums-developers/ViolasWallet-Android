@@ -165,7 +165,7 @@
         <!--地址相关页面资源属性-->
         <item name="addressLabelBg">@color/black_06</item>
         <item name="addressLabelTextColor">@color/color_C2C2C2</item>
-        <item name="addressTypeSelectedBg">@color/color_0085E4</item>
+        <item name="addressTypeSelectedBg">@color/color_4730A7</item>
 
         <!--转账收款页面资源属性-->
         <item name="transferInfoBg">@drawable/bg_transfer_white</item>
