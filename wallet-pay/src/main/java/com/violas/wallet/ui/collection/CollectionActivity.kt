@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import cn.bertsir.zbar.utils.QRUtils
+import com.palliums.extensions.expandTouchArea
 import com.palliums.utils.DensityUtility
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -68,6 +69,10 @@ class CollectionActivity : BaseAppActivity() {
                 btnCopy.setOnClickListener {
                     ClipboardUtils.copy(this@CollectionActivity, currentAccount.address)
                 }
+                btnCopy.expandTouchArea(20)
+                tvAddress.setOnClickListener {
+                    ClipboardUtils.copy(this@CollectionActivity, currentAccount.address)
+                }
             }
 
             val prefix = if (isToken) {
@@ -85,7 +90,8 @@ class CollectionActivity : BaseAppActivity() {
             }
 
             val collectionAddress =
-                "${CoinTypes.parseCoinType(currentAccount.coinNumber).fullName().toLowerCase(Locale.CHINA)}${prefix}:${currentAccount.address}"
+                "${CoinTypes.parseCoinType(currentAccount.coinNumber).fullName()
+                    .toLowerCase(Locale.CHINA)}${prefix}:${currentAccount.address}"
             val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
                 collectionAddress,
                 DensityUtility.dp2px(this@CollectionActivity, 164),
