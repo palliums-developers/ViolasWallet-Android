@@ -7,6 +7,7 @@ import android.os.Parcelable
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.microsoft.appcenter.crashes.Crashes
 import com.palliums.violas.error.ViolasException
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
@@ -275,18 +276,21 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                 requestID,
                 "Parameters of the abnormal"
             )
+            Crashes.trackError(e)
         } catch (e: ViolasException.AccountNoActivation) {
             e.printStackTrace()
             sendErrorMessage(
                 requestID,
                 JsonRpcError.accountNotActivationError("Please check whether the account is activated.")
             )
+            Crashes.trackError(e)
         } catch (e: Exception) {
             e.printStackTrace()
             sendInvalidParameterErrorMessage(
                 requestID,
                 "Transaction resolution failed"
             )
+            Crashes.trackError(e)
         }
     }
 
@@ -306,6 +310,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            Crashes.trackError(e)
             false
         }
     }
@@ -321,6 +326,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                 restore()
             }
         } catch (e: Exception) {
+            Crashes.trackError(e)
             e.printStackTrace()
             false
         }
@@ -332,6 +338,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                 restore()
             }
         } catch (e: Exception) {
+            Crashes.trackError(e)
             e.printStackTrace()
             false
         }
@@ -343,6 +350,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                 restore()
             }
         } catch (e: Exception) {
+            Crashes.trackError(e)
             e.printStackTrace()
             false
         }
