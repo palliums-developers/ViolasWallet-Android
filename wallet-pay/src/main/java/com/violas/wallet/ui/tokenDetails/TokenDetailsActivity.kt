@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -321,6 +322,8 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
 
         flExchange.setOnClickListener {
             // TODO 跳转到闪兑页面
+            Log.d("dddddddddd","click")
+            showToast(R.string.hint_quotes_not_open)
         }
     }
 
