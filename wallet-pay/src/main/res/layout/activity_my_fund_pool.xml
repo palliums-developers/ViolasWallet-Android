@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.main.market.fundPool.MyFundPoolActivity">
+
+    <LinearLayout
+        android:id="@+id/llTopViewGroup"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_29"
+        android:layout_marginTop="@dimen/dp_12"
+        android:layout_marginEnd="@dimen/dp_30"
+        android:background="@drawable/bg_my_fund_pool_top"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/dp_16"
+        android:paddingTop="@dimen/dp_17"
+        android:paddingBottom="@dimen/dp_20"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fund_pool_token"
+            android:textColor="?android:attr/textColorTertiary"
+            android:textSize="@dimen/sp_12" />
+
+        <TextView
+            android:id="@+id/tvTotalAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_14"
+            android:textSize="@dimen/sp_24"
+            android:textStyle="bold"
+            tools:text="1000" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnTransferIn"
+        android:layout_width="@dimen/dp_120"
+        android:layout_height="@dimen/dp_28"
+        android:layout_marginStart="@dimen/dp_45"
+        android:layout_marginTop="@dimen/dp_19"
+        android:background="@drawable/sel_bg_my_fund_pool_btn"
+        android:text="@string/action_transfer_in_nbsp"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintEnd_toStartOf="@id/btnTransferOut"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/llTopViewGroup" />
+
+    <Button
+        android:id="@+id/btnTransferOut"
+        android:layout_width="@dimen/dp_120"
+        android:layout_height="@dimen/dp_28"
+        android:layout_marginEnd="@dimen/dp_45"
+        android:background="@drawable/sel_bg_my_fund_pool_btn"
+        android:text="@string/action_transfer_out_nbsp"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnTransferIn"
+        app:layout_constraintTop_toTopOf="@id/btnTransferIn" />
+
+    <TextView
+        android:id="@+id/tvLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_29"
+        android:layout_marginTop="@dimen/dp_32"
+        android:text="@string/label_assets"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnTransferIn" />
+
+    <View
+        android:id="@+id/vLine"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0.5"
+        android:layout_marginHorizontal="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_15"
+        android:background="?attr/colorDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLabel" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0"
+        android:layout_marginTop="@dimen/dp_15"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vLine" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

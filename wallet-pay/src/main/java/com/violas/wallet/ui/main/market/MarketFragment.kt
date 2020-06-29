@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.market
 
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.*
@@ -11,14 +12,17 @@ import androidx.fragment.app.FragmentPagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.palliums.base.BaseFragment
 import com.palliums.utils.StatusBarUtil
+import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.event.MarketPageType
 import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.ui.main.market.fundPool.FundPoolFragment
+import com.violas.wallet.ui.main.market.fundPool.MyFundPoolActivity
 import com.violas.wallet.ui.main.market.swap.SwapFragment
 import kotlinx.android.synthetic.main.fragment_market.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Created by elephant on 2020/6/23 14:11.
@@ -47,7 +51,9 @@ class MarketFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.market_my_fund_pool -> {
-                showToast(R.string.title_my_fund_pool)
+                context?.let {
+                    Intent(it, MyFundPoolActivity::class.java).start(it)
+                }
                 return true
             }
         }
@@ -124,8 +130,8 @@ class MarketFragment : BaseFragment() {
         tabLayout.getTabAt(0)?.select()
     }
 
-    @Subscribe
-    fun onSwitchHomePageEvent(event: SwitchMarketPageEvent) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSwitchMarketPageEvent(event: SwitchMarketPageEvent) {
         when (event.marketPageType) {
             MarketPageType.Swap -> {
                 tabLayout.getTabAt(0)?.select()
