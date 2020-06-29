@@ -6,27 +6,27 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/llSwitchType"
+        android:id="@+id/llSwitchOperationMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_35"
         android:layout_marginTop="@dimen/dp_5"
-        android:background="@drawable/sel_bg_market_switch_type"
+        android:background="@drawable/sel_bg_market_switch"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tvSwitchType"
+            android:id="@+id/tvOperationMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/transfer_in"
-            android:textColor="@color/sel_color_market_switch_type"
+            android:textColor="@color/sel_color_market_switch"
             android:textSize="@dimen/sp_12" />
 
         <ImageView
-            android:id="@+id/ivSwitchType"
+            android:id="@+id/ivOperationModeArrow"
             android:layout_width="@dimen/dp_10"
             android:layout_height="@dimen/dp_6"
             android:layout_gravity="center"
@@ -51,7 +51,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/llSwitchType"
+        app:layout_constraintTop_toBottomOf="@id/llSwitchOperationMode"
         tools:hint="0.00" />
 
     <TextView

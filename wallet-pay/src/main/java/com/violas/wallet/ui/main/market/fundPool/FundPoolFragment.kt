@@ -1,7 +1,11 @@
 package com.violas.wallet.ui.main.market.fundPool
 
+import com.lxj.xpopup.XPopup
+import com.lxj.xpopup.enums.PopupAnimation
+import com.lxj.xpopup.impl.AttachListPopupView
 import com.palliums.base.BaseFragment
 import com.violas.wallet.R
+import com.violas.wallet.ui.main.market.MarketSwitchPopupView
 import kotlinx.android.synthetic.main.fragment_fund_pool.*
 
 /**
@@ -30,8 +34,8 @@ class FundPoolFragment : BaseFragment() {
         tvExchangeRate.text = getString(R.string.exchange_rate_format, "- -")
         tvMyFundPoolAmount.text = getString(R.string.my_fund_pool_amount_format, "- -")
 
-        llSwitchType.setOnClickListener {
-
+        llSwitchOperationMode.setOnClickListener {
+            showSwitchTypePopup()
         }
 
         llFirstSelectToken.setOnClickListener {
@@ -45,5 +49,25 @@ class FundPoolFragment : BaseFragment() {
         btnPositive.setOnClickListener {
 
         }
+    }
+
+    private fun showSwitchTypePopup() {
+        XPopup.Builder(requireContext())
+            .hasShadowBg(false)
+            .popupAnimation(PopupAnimation.ScrollAlphaFromTop)
+            .atView(llSwitchOperationMode)
+            .asCustom(
+                MarketSwitchPopupView(
+                    requireContext(),
+                    0,
+                    mutableListOf(
+                        getString(R.string.transfer_in),
+                        getString(R.string.transfer_out)
+                    )
+                ) {
+
+                }
+            )
+            .show()
     }
 }
