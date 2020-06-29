@@ -9,6 +9,7 @@ import com.palliums.utils.getColor
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.palliums.paging.PagingViewAdapter
+import com.palliums.utils.formatDate
 import com.palliums.utils.getResourceId
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.item_transaction_record.view.*
@@ -88,7 +89,7 @@ class TransactionRecordViewHolder(
             else
                 showAddress
 
-            itemView.tvTime.text = mSimpleDateFormat.format(it.time)
+            itemView.tvTime.text = formatDate(it.time, mSimpleDateFormat)
 
             itemView.tvAmount.text = convertAmountToDisplayUnit(it.amount, it.coinType).first
             itemView.tvAmount.setTextColor(
