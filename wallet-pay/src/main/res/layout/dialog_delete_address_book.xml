@@ -19,7 +19,8 @@
     <TextView
         android:id="@+id/editPassword"
         android:layout_width="244dp"
-        android:layout_height="49dp"
+        android:layout_height="wrap_content"
+        android:minHeight="49dp"
         android:layout_marginTop="21dp"
         android:gravity="center"
         android:paddingStart="14dp"
