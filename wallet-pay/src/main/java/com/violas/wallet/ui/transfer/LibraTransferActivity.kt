@@ -13,6 +13,7 @@ import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.event.RefreshBalanceEvent
+import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
@@ -21,6 +22,7 @@ import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
+import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.*
@@ -65,6 +67,11 @@ class LibraTransferActivity : TransferActivity() {
             launch(Dispatchers.IO) {
                 try {
                     account = mAccountManager.getAccountById(mAssetsVo.getAccountId())
+                    if (account?.accountType == AccountType.NoDollars && mAssetsVo is AssetsCoinVo) {
+                        showToast(getString(R.string.hint_unsupported_coin))
+                        finish()
+                        return@launch
+                    }
                     refreshCurrentAmount()
                     val amount = intent.getLongExtra(
                         EXT_AMOUNT,
