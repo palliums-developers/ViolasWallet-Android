@@ -24,7 +24,8 @@
     <attr name="iconBackPrimary" format="reference" />
     <attr name="iconBackSecondary" format="reference" />
     <attr name="iconBackTertiary" format="reference" />
-    <attr name="iconClose" format="reference" />
+    <attr name="iconClosePrimary" format="reference" />
+    <attr name="iconCloseSecondary" format="reference" />
     <attr name="iconShare" format="reference" />
     <attr name="iconAdd" format="reference" />
     <attr name="iconLogo" format="reference" />

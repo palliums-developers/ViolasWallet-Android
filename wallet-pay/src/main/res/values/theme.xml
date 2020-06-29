@@ -95,7 +95,8 @@
         <item name="iconBackPrimary">@drawable/ic_back_dark</item>
         <item name="iconBackSecondary">@drawable/ic_back_light</item>
         <item name="iconBackTertiary">@drawable/ic_back_gray</item>
-        <item name="iconClose">@drawable/ic_action_close</item>
+        <item name="iconClosePrimary">@mipmap/ic_close_primary</item>
+        <item name="iconCloseSecondary">@mipmap/ic_close_secondary</item>
         <item name="iconShare">@mipmap/ic_share</item>
         <item name="iconAdd">@drawable/icon_add_address</item>
         <item name="iconLogo">@drawable/ic_logo_corner</item>
