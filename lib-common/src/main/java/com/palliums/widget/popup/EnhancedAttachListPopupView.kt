@@ -2,7 +2,6 @@ package com.palliums.widget.popup
 
 import android.content.Context
 import com.lxj.xpopup.impl.AttachListPopupView
-import com.lxj.xpopup.interfaces.SimpleCallback
 
 /**
  * Created by elephant on 2019-08-12 13:12.
@@ -10,11 +9,11 @@ import com.lxj.xpopup.interfaces.SimpleCallback
  * <p>
  * desc: [AttachListPopupView] 加强版，支持在显示前和消失前回调
  */
-class AttachListPopupViewSupport(context: Context) : AttachListPopupView(context) {
+open class EnhancedAttachListPopupView(context: Context) : AttachListPopupView(context) {
 
     override fun doAfterShow() {
         popupInfo?.xPopupCallback?.run {
-            if (this is PopupCallbackSupport) {
+            if (this is EnhancedPopupCallback) {
                 onShowBefore()
             }
         }
@@ -24,22 +23,11 @@ class AttachListPopupViewSupport(context: Context) : AttachListPopupView(context
 
     override fun doAfterDismiss() {
         popupInfo?.xPopupCallback?.run {
-            if (this is PopupCallbackSupport) {
+            if (this is EnhancedPopupCallback) {
                 onDismissBefore()
             }
         }
 
         super.doAfterDismiss()
-    }
-
-    open class PopupCallbackSupport : SimpleCallback() {
-
-        open fun onShowBefore() {
-
-        }
-
-        open fun onDismissBefore() {
-
-        }
     }
 }

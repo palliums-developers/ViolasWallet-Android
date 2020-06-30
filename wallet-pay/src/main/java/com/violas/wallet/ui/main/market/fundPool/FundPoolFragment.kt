@@ -1,9 +1,12 @@
 package com.violas.wallet.ui.main.market.fundPool
 
+import android.animation.ObjectAnimator
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.enums.PopupAnimation
-import com.lxj.xpopup.impl.AttachListPopupView
 import com.palliums.base.BaseFragment
+import com.palliums.utils.getColor
+import com.palliums.utils.getColorByAttrId
+import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
 import com.violas.wallet.ui.main.market.MarketSwitchPopupView
 import kotlinx.android.synthetic.main.fragment_fund_pool.*
@@ -17,6 +20,15 @@ import kotlinx.android.synthetic.main.fragment_fund_pool.*
 class FundPoolFragment : BaseFragment() {
 
     private var lazyInitTag = false
+
+    private val operationModeArrowUpAnimator by lazy {
+        ObjectAnimator.ofFloat(ivOperationModeArrow, "rotation", 0F, 180F)
+            .setDuration(360)
+    }
+    private val operationModeArrowDownAnimator by lazy {
+        ObjectAnimator.ofFloat(ivOperationModeArrow, "rotation", 180F, 360F)
+            .setDuration(360)
+    }
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_fund_pool
@@ -35,7 +47,7 @@ class FundPoolFragment : BaseFragment() {
         tvMyFundPoolAmount.text = getString(R.string.my_fund_pool_amount_format, "- -")
 
         llSwitchOperationMode.setOnClickListener {
-            showSwitchTypePopup()
+            showSwitchOperationModePopup()
         }
 
         llFirstSelectToken.setOnClickListener {
@@ -51,11 +63,20 @@ class FundPoolFragment : BaseFragment() {
         }
     }
 
-    private fun showSwitchTypePopup() {
+    private fun showSwitchOperationModePopup() {
+        setOperationModeViewBgAndTextColor(true)
+        showOperationModeArrowAnimation(true)
         XPopup.Builder(requireContext())
             .hasShadowBg(false)
             .popupAnimation(PopupAnimation.ScrollAlphaFromTop)
             .atView(llSwitchOperationMode)
+            .setPopupCallback(
+                object : EnhancedPopupCallback() {
+                    override fun onDismissBefore() {
+                        setOperationModeViewBgAndTextColor(false)
+                        showOperationModeArrowAnimation(false)
+                    }
+                })
             .asCustom(
                 MarketSwitchPopupView(
                     requireContext(),
@@ -69,5 +90,34 @@ class FundPoolFragment : BaseFragment() {
                 }
             )
             .show()
+    }
+
+    private fun setOperationModeViewBgAndTextColor(pressed: Boolean) {
+        llSwitchOperationMode.setBackgroundResource(
+            if (pressed)
+                R.drawable.bg_market_switch_pressed
+            else
+                R.drawable.sel_bg_market_switch
+        )
+        ivOperationModeArrow.setBackgroundResource(
+            if (pressed)
+                R.drawable.shape_market_downward_pressed
+            else
+                R.drawable.sel_market_downward
+        )
+        tvOperationMode.setTextColor(
+            if (pressed)
+                getColorByAttrId(R.attr.colorOnPrimary, requireContext())
+            else
+                getColor(R.color.sel_color_market_switch, requireContext())
+        )
+    }
+
+    private fun showOperationModeArrowAnimation(arrowUp: Boolean) {
+        if (arrowUp) {
+            operationModeArrowUpAnimator.start()
+        } else {
+            operationModeArrowDownAnimator.start()
+        }
     }
 }

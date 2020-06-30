@@ -2,15 +2,14 @@ package com.violas.wallet.ui.main.market
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.lxj.xpopup.core.AttachPopupView
 import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
+import com.palliums.widget.popup.EnhancedAttachPopupView
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.item_market_switch.view.*
 import kotlinx.android.synthetic.main.popup_market_switch.view.*
@@ -26,7 +25,7 @@ class MarketSwitchPopupView(
     private val checkedPosition: Int,
     private val dataList: MutableList<String>,
     private val selectCallback: (Int) -> Unit
-) : AttachPopupView(context) {
+) : EnhancedAttachPopupView(context) {
 
     override fun getImplLayoutId(): Int {
         return R.layout.popup_market_switch
@@ -43,10 +42,13 @@ class MarketSwitchPopupView(
     override fun onCreate() {
         super.onCreate()
         recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = ViewAdapter(dataList, checkedPosition, selectCallback)
+        recyclerView.adapter = ViewAdapter(dataList, checkedPosition) {
+            dismiss()
+            selectCallback.invoke(it)
+        }
     }
 
-    inner class ViewAdapter(
+    class ViewAdapter(
         dataList: MutableList<String>,
         private val checkedPosition: Int,
         private val selectCallback: (Int) -> Unit
@@ -63,7 +65,7 @@ class MarketSwitchPopupView(
         }
     }
 
-    inner class ViewHolder(
+    class ViewHolder(
         view: View,
         private val checkedPosition: Int,
         private val selectCallback: (Int) -> Unit
@@ -87,7 +89,6 @@ class MarketSwitchPopupView(
 
         override fun onViewClick(view: View, itemPosition: Int, itemData: String?) {
             selectCallback.invoke(itemPosition)
-            dismiss()
         }
     }
 }
