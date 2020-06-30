@@ -10,8 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
@@ -22,6 +20,7 @@ import com.palliums.extensions.show
 import com.palliums.utils.CustomMainScope
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
+import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.palliums.widget.loading.LoadingDialog
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -188,49 +187,50 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
         val tokenId =
             if (mAssetsVo is AssetsTokenVo) (mAssetsVo as AssetsTokenVo).module else null
         val tokenDisplayName = mAssetsVo.getAssetsName()
-        val fragments = mutableListOf(
-            Pair(
-                getString(R.string.label_all),
-                TransactionRecordFragment.newInstance(
-                    walletAddress = mAccountDO.address,
-                    coinNumber = mCoinNumber,
-                    transactionType = TransactionType.ALL,
-                    tokenId = tokenId,
-                    tokenDisplayName = tokenDisplayName
-                )
+
+        val fragments: MutableList<Fragment> = mutableListOf(
+            TransactionRecordFragment.newInstance(
+                walletAddress = mAccountDO.address,
+                coinNumber = mCoinNumber,
+                transactionType = TransactionType.ALL,
+                tokenId = tokenId,
+                tokenDisplayName = tokenDisplayName
             )
         )
+        val titles = mutableListOf(getString(R.string.label_all))
+
         if (mCoinNumber == CoinTypes.Libra.coinType()
             || mCoinNumber == CoinTypes.Violas.coinType()
         ) {
             fragments.add(
-                Pair(
-                    getString(R.string.label_transfer_in),
-                    TransactionRecordFragment.newInstance(
-                        walletAddress = mAccountDO.address,
-                        coinNumber = mCoinNumber,
-                        transactionType = TransactionType.COLLECTION,
-                        tokenId = tokenId,
-                        tokenDisplayName = tokenDisplayName
-                    )
+                TransactionRecordFragment.newInstance(
+                    walletAddress = mAccountDO.address,
+                    coinNumber = mCoinNumber,
+                    transactionType = TransactionType.COLLECTION,
+                    tokenId = tokenId,
+                    tokenDisplayName = tokenDisplayName
                 )
             )
+            titles.add(getString(R.string.label_transfer_in))
+
             fragments.add(
-                Pair(
-                    getString(R.string.label_transfer_out),
-                    TransactionRecordFragment.newInstance(
-                        walletAddress = mAccountDO.address,
-                        coinNumber = mCoinNumber,
-                        transactionType = TransactionType.TRANSFER,
-                        tokenId = tokenId,
-                        tokenDisplayName = tokenDisplayName
-                    )
+                TransactionRecordFragment.newInstance(
+                    walletAddress = mAccountDO.address,
+                    coinNumber = mCoinNumber,
+                    transactionType = TransactionType.TRANSFER,
+                    tokenId = tokenId,
+                    tokenDisplayName = tokenDisplayName
                 )
             )
+            titles.add(getString(R.string.label_transfer_out))
         }
 
         viewPager.offscreenPageLimit = 2
-        viewPager.adapter = TransactionRecordFragmentAdapter(supportFragmentManager, fragments)
+        viewPager.adapter = FragmentPagerAdapterSupport(supportFragmentManager)
+            .apply {
+                setFragments(fragments)
+                setTitles(titles)
+            }
 
         tabLayout.setupWithViewPager(viewPager)
         tabLayout.getTabAt(0)?.select()
@@ -322,7 +322,7 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
 
         flExchange.setOnClickListener {
             // TODO 跳转到闪兑页面
-            Log.d("dddddddddd","click")
+            Log.d("dddddddddd", "click")
             showToast(R.string.hint_quotes_not_open)
         }
     }
@@ -361,24 +361,6 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
     override fun showToast(msg: String, duration: Int) {
         launch {
             Toast.makeText(this@TokenDetailsActivity, msg, duration).show()
-        }
-    }
-
-    inner class TransactionRecordFragmentAdapter(
-        fragmentManager: FragmentManager,
-        private val fragments: List<Pair<String, TransactionRecordFragment>>
-    ) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-
-        override fun getItem(position: Int): Fragment {
-            return fragments[position].second
-        }
-
-        override fun getCount(): Int {
-            return fragments.size
-        }
-
-        override fun getPageTitle(position: Int): CharSequence? {
-            return fragments[position].first
         }
     }
 }

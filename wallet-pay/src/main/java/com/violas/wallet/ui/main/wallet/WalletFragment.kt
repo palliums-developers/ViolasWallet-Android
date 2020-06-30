@@ -25,6 +25,7 @@ import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
+import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getResourceId
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -104,17 +105,17 @@ class WalletFragment : BaseFragment() {
         return R.layout.fragment_wallet
     }
 
-    override fun onLazyInitView(savedInstanceState: Bundle?) {
-        super.onLazyInitView(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         EventBus.getDefault().register(this)
 
         recyclerAssert.adapter = mAssertAdapter
 
-        mWalletAppViewModel?.mDataRefreshingLiveData?.observe(this, Observer {
+        mWalletAppViewModel?.mDataRefreshingLiveData?.observe(viewLifecycleOwner, Observer {
             swipeRefreshLayout.isRefreshing = it
         })
-        mWalletAppViewModel?.mAssetsListLiveData?.observe(this, Observer {
+        mWalletAppViewModel?.mAssetsListLiveData?.observe(viewLifecycleOwner, Observer {
             val filter =
                 it.filter { asset ->
                     if (asset !is AssetsCoinVo) {
@@ -126,7 +127,7 @@ class WalletFragment : BaseFragment() {
             mAssertAdapter.submitList(filter)
             mWalletViewModel.calculateFiat(filter)
         })
-        mWalletAppViewModel?.mExistsAccountLiveData?.observe(this, Observer {
+        mWalletAppViewModel?.mExistsAccountLiveData?.observe(viewLifecycleOwner, Observer {
             if (it) {
                 viewAssetsGroup.visibility = View.VISIBLE
                 viewAddAccount.visibility = View.GONE
@@ -137,10 +138,10 @@ class WalletFragment : BaseFragment() {
             handleBackupMnemonicWarn(it)
             handleDialogShow(it)
         })
-        mWalletViewModel.mTotalFiatBalanceStrLiveData.observe(this, Observer {
+        mWalletViewModel.mTotalFiatBalanceStrLiveData.observe(viewLifecycleOwner, Observer {
             tvAmount.text = it
         })
-        mWalletViewModel.mHiddenTotalFiatBalanceLiveData.observe(this, Observer {
+        mWalletViewModel.mHiddenTotalFiatBalanceLiveData.observe(viewLifecycleOwner, Observer {
             mAssertAdapter.assetsHidden(it)
             if (it) {
                 ivTotalHidden.setImageResource(
@@ -164,7 +165,7 @@ class WalletFragment : BaseFragment() {
         }
         ivTotalHidden.expandTouchArea(28)
 
-        mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(this, Observer { status ->
+        mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(viewLifecycleOwner, Observer { status ->
             when (status) {
                 WalletConnectStatus.None -> {
                     viewWalletConnect.visibility = View.GONE
@@ -338,6 +339,11 @@ class WalletFragment : BaseFragment() {
         EventBus.getDefault().unregister(this)
         cancel()
         super.onDestroy()
+    }
+
+    override fun onResume() {
+        StatusBarUtil.setLightStatusBarMode(requireActivity().window, false)
+        super.onResume()
     }
 }
 

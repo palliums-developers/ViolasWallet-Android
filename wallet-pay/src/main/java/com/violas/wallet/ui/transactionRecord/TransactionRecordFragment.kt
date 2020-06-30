@@ -27,8 +27,6 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     private var mTokenId: String? = null
     private var mTokenDisplayName: String? = null
 
-    private var lazyInitTag = false
-
     companion object {
         fun newInstance(
             walletAddress: String,
@@ -88,15 +86,8 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (!lazyInitTag) {
-            lazyInitTag = true
-            onLazy2InitView()
-        }
-    }
-
-    private fun onLazy2InitView() {
+    override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
+        super.onLazyInitViewByResume(savedInstanceState)
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             getString(R.string.tips_no_transaction_record)

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.fragment.app.FragmentPagerAdapter
 import com.palliums.utils.CustomMainScope
 import com.palliums.utils.isFastMultiClick
 import kotlinx.coroutines.CoroutineScope
@@ -20,12 +21,29 @@ import me.yokeyword.fragmentation.SupportFragment
 abstract class BaseFragment : SupportFragment(), View.OnClickListener, ViewController,
     CoroutineScope by CustomMainScope() {
 
+    private var lazyInitTag = false
+    private var savedInstanceState: Bundle? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        this.savedInstanceState = savedInstanceState
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(getLayoutResId(), container, false)
+    }
+
+    override fun onResume() {
+        if (!lazyInitTag) {
+            lazyInitTag = true
+            onLazyInitViewByResume(savedInstanceState)
+            savedInstanceState = null
+        }
+        super.onResume()
     }
 
     @LayoutRes
@@ -36,6 +54,13 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener, ViewContr
      * @param view
      */
     protected open fun onViewClick(view: View) {
+
+    }
+
+    /**
+     * 懒初始化，必须使用[FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT]才有效
+     */
+    protected open fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
 
     }
 

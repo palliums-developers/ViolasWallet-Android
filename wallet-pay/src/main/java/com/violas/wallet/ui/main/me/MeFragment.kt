@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.palliums.base.BaseFragment
+import com.palliums.utils.StatusBarUtil
 import com.violas.wallet.R
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.addressBook.AddressBookActivity
@@ -24,9 +25,8 @@ class MeFragment : BaseFragment() {
         return R.layout.fragment_me
     }
 
-    override fun onLazyInitView(savedInstanceState: Bundle?) {
-        super.onLazyInitView(savedInstanceState)
-
+    override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
+        super.onLazyInitViewByResume(savedInstanceState)
         mivWalletManagement.setOnClickListener(this)
         mivAddressBook.setOnClickListener(this)
         mivSettings.setOnClickListener(this)
@@ -37,7 +37,7 @@ class MeFragment : BaseFragment() {
             R.id.mivWalletManagement -> {
                 if (mWalletAppViewModel.isExistsAccount()) {
                     WalletManagerActivity.start(requireContext())
-                }else{
+                } else {
                     showToast(R.string.tips_create_or_import_wallet)
                 }
             }
@@ -50,5 +50,10 @@ class MeFragment : BaseFragment() {
                 startActivity(Intent(_mActivity, SettingActivity::class.java))
             }
         }
+    }
+
+    override fun onResume() {
+        StatusBarUtil.setLightStatusBarMode(requireActivity().window, false)
+        super.onResume()
     }
 }

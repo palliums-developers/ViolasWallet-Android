@@ -6,13 +6,11 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.palliums.base.BaseFragment
 import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.start
+import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.event.MarketPageType
 import com.violas.wallet.event.SwitchMarketPageEvent
@@ -32,8 +30,6 @@ import org.greenrobot.eventbus.ThreadMode
  */
 class MarketFragment : BaseFragment() {
 
-    private var lazyInitTag = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -43,43 +39,10 @@ class MarketFragment : BaseFragment() {
         return R.layout.fragment_market
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_market, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.market_my_fund_pool -> {
-                context?.let {
-                    Intent(it, MyFundPoolActivity::class.java).start(it)
-                }
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         EventBus.getDefault().register(this)
-    }
 
-    override fun onDestroyView() {
-        EventBus.getDefault().unregister(this)
-        super.onDestroyView()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        StatusBarUtil.setLightStatusBarMode(requireActivity().window, true)
-        if (!lazyInitTag) {
-            lazyInitTag = true
-            onLazy2InitView()
-        }
-    }
-
-    private fun onLazy2InitView() {
         val appCompatActivity = activity as? AppCompatActivity
         appCompatActivity?.setSupportActionBar(toolbar)
         appCompatActivity?.supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -106,13 +69,13 @@ class MarketFragment : BaseFragment() {
         })
 
         viewPager.offscreenPageLimit = 1
-        viewPager.adapter = MarketFragmentAdapter(
-            childFragmentManager,
-            mutableListOf(
-                Pair(getString(R.string.title_swap), SwapFragment()),
-                Pair(getString(R.string.title_fund_pool), FundPoolFragment())
-            )
-        )
+        viewPager.adapter = FragmentPagerAdapterSupport(childFragmentManager)
+            .apply {
+                addFragment(SwapFragment())
+                addFragment(FundPoolFragment())
+                addTitle(getString(R.string.title_swap))
+                addTitle(getString(R.string.title_fund_pool))
+            }
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
@@ -143,21 +106,30 @@ class MarketFragment : BaseFragment() {
         }
     }
 
-    class MarketFragmentAdapter(
-        fragmentManager: FragmentManager,
-        private val fragments: List<Pair<String, Fragment>>
-    ) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_market, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 
-        override fun getItem(position: Int): Fragment {
-            return fragments[position].second
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.market_my_fund_pool -> {
+                context?.let {
+                    Intent(it, MyFundPoolActivity::class.java).start(it)
+                }
+                return true
+            }
         }
+        return super.onOptionsItemSelected(item)
+    }
 
-        override fun getCount(): Int {
-            return fragments.size
-        }
+    override fun onDestroyView() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroyView()
+    }
 
-        override fun getPageTitle(position: Int): CharSequence? {
-            return fragments[position].first
-        }
+    override fun onResume() {
+        StatusBarUtil.setLightStatusBarMode(requireActivity().window, true)
+        super.onResume()
     }
 }

@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.main.market.fundPool
 
 import android.animation.ObjectAnimator
+import android.os.Bundle
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
@@ -19,8 +20,6 @@ import kotlinx.android.synthetic.main.fragment_fund_pool.*
  */
 class FundPoolFragment : BaseFragment() {
 
-    private var lazyInitTag = false
-
     private val operationModeArrowUpAnimator by lazy {
         ObjectAnimator.ofFloat(ivOperationModeArrow, "rotation", 0F, 180F)
             .setDuration(360)
@@ -34,15 +33,8 @@ class FundPoolFragment : BaseFragment() {
         return R.layout.fragment_fund_pool
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (!lazyInitTag) {
-            lazyInitTag = true
-            onLazy2InitView()
-        }
-    }
-
-    private fun onLazy2InitView() {
+    override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
+        super.onLazyInitViewByResume(savedInstanceState)
         tvExchangeRate.text = getString(R.string.exchange_rate_format, "- -")
         tvMyFundPoolAmount.text = getString(R.string.my_fund_pool_amount_format, "- -")
 
