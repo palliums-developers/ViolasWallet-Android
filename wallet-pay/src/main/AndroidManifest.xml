@@ -168,6 +168,9 @@
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.APP.DayNight.WalletConnect" />
+        <activity
+            android:name=".ui.main.market.fundPool.MyFundPoolActivity"
+            android:screenOrientation="portrait" />
 
         <!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data

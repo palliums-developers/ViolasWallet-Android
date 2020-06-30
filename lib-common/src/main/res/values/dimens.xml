@@ -14,6 +14,7 @@
     <dimen name="sp_20">20sp</dimen>
     <dimen name="sp_21">21sp</dimen>
     <dimen name="sp_22">22sp</dimen>
+    <dimen name="sp_24">24sp</dimen>
     <dimen name="sp_24.5" tools:ignore="MissingDefaultResource">24.5sp</dimen>
     <dimen name="sp_28">28sp</dimen>
     <dimen name="sp_30">30sp</dimen>
