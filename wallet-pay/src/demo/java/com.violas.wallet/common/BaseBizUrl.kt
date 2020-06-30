@@ -3,8 +3,8 @@ package com.violas.wallet.common
 object BaseBizUrl {
 
     // Violas base url
-    private const val VIOLAS_BASE_URL_MAIN_NET = "http://52.27.228.84:4000"
-    private const val VIOLAS_BASE_URL_TEST_NET = "http://52.27.228.84:4000"
+    private const val VIOLAS_BASE_URL_MAIN_NET = "https://api4.violas.io"
+    private const val VIOLAS_BASE_URL_TEST_NET = "https://api4.violas.io"
 
     // Violas dex base url
     private const val VIOLAS_DEX_BASE_URL_MAIN_NET = "https://dex.violas.com/"
