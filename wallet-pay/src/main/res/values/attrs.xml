@@ -123,6 +123,7 @@
     <attr name="marketMenuMyFundPoolIcon" format="reference" />
     <attr name="marketCoinConversionIcon" format="reference" />
     <attr name="marketSwapRecordIcon" format="reference" />
-    <attr name="marketSwitchTypeBgColor" format="color" />
+    <attr name="marketSwitchBgColor" format="color" />
+    <attr name="marketFundPoolIncomeIcon" format="reference" />
 
 </resources>

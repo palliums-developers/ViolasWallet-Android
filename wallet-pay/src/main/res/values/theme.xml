@@ -194,7 +194,8 @@
         <item name="marketMenuMyFundPoolIcon">@mipmap/ic_my_fund_pool</item>
         <item name="marketCoinConversionIcon">@mipmap/ic_coin_conversion</item>
         <item name="marketSwapRecordIcon">@mipmap/ic_swap_record</item>
-        <item name="marketSwitchTypeBgColor">@color/color_F1EEFB</item>
+        <item name="marketSwitchBgColor">@color/color_F1EEFB</item>
+        <item name="marketFundPoolIncomeIcon">@mipmap/ic_fund_pool_income</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">

@@ -364,4 +364,6 @@
     <string name="action_transfer_in_nbsp">转&#160;入</string>
     <string name="action_transfer_out_nbsp">转&#160;出</string>
     <string name="fund_pool_records">资金池记录</string>
+    <string name="select_token_pair">选择交易对</string>
+    <string name="fund_pool_income_desc">转入资金池可获取手续费收益</string>
 </resources>

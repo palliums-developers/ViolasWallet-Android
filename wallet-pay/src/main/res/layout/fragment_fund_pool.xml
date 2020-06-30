@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/llSwitchOperationMode"
+        android:id="@+id/llSwitchOpModeGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_35"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tvOperationMode"
+            android:id="@+id/tvSwitchOpModeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/transfer_in"
@@ -26,7 +26,7 @@
             android:textSize="@dimen/sp_12" />
 
         <ImageView
-            android:id="@+id/ivOperationModeArrow"
+            android:id="@+id/ivSwitchOpModeArrow"
             android:layout_width="@dimen/dp_10"
             android:layout_height="@dimen/dp_6"
             android:layout_gravity="center"
@@ -34,6 +34,23 @@
             android:background="@drawable/sel_market_downward" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvIncomeDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_41"
+        android:drawableStart="?attr/marketFundPoolIncomeIcon"
+        android:drawablePadding="@dimen/dp_4"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="@string/fund_pool_income_desc"
+        android:textColor="?android:textColorSecondary"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintBottom_toBottomOf="@id/llSwitchOpModeGroup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/llSwitchOpModeGroup" />
 
     <EditText
         android:id="@+id/etFirstAmount"
@@ -51,7 +68,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/llSwitchOperationMode"
+        app:layout_constraintTop_toBottomOf="@id/llSwitchOpModeGroup"
         tools:hint="0.00" />
 
     <TextView
@@ -66,7 +83,7 @@
         app:layout_constraintTop_toTopOf="@id/etFirstAmount" />
 
     <LinearLayout
-        android:id="@+id/llFirstSelectToken"
+        android:id="@+id/llFirstSelectGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_11"
@@ -78,7 +95,7 @@
         app:layout_constraintEnd_toEndOf="@id/etFirstAmount">
 
         <TextView
-            android:id="@+id/tvFirstToken"
+            android:id="@+id/tvFirstSelectText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/select_token"
@@ -138,7 +155,7 @@
         app:layout_constraintTop_toTopOf="@id/etSecondAmount" />
 
     <LinearLayout
-        android:id="@+id/llSecondSelectToken"
+        android:id="@+id/llSecondSelectGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_11"
@@ -150,7 +167,7 @@
         app:layout_constraintEnd_toEndOf="@id/etSecondAmount">
 
         <TextView
-            android:id="@+id/tvSecondToken"
+            android:id="@+id/tvSecondSelectText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/select_token"

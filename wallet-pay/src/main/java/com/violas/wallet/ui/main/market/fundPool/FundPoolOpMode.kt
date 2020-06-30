@@ -6,7 +6,7 @@ package com.violas.wallet.ui.main.market.fundPool
  * <p>
  * desc:
  */
-enum class FundPoolOperationMode {
+enum class FundPoolOpMode {
     TransferIn,
     TransferOut
 }

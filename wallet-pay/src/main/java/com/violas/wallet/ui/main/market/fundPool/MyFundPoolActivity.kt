@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.event.MarketPageType
+import com.violas.wallet.event.SwitchFundPoolOpModeEvent
 import com.violas.wallet.event.SwitchMarketPageEvent
 import kotlinx.android.synthetic.main.activity_my_fund_pool.*
 import org.greenrobot.eventbus.EventBus
@@ -27,11 +28,13 @@ class MyFundPoolActivity : BaseAppActivity() {
 
         btnTransferIn.setOnClickListener {
             EventBus.getDefault().post(SwitchMarketPageEvent(MarketPageType.FundPool))
+            EventBus.getDefault().postSticky(SwitchFundPoolOpModeEvent(FundPoolOpMode.TransferIn))
             close()
         }
 
         btnTransferOut.setOnClickListener {
             EventBus.getDefault().post(SwitchMarketPageEvent(MarketPageType.FundPool))
+            EventBus.getDefault().postSticky(SwitchFundPoolOpModeEvent(FundPoolOpMode.TransferOut))
             close()
         }
     }
