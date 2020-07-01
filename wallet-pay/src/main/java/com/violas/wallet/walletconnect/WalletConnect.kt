@@ -143,7 +143,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
             )
             val toJson = Gson().toJson(response)
             mWCClient.encryptAndSend(toJson).also {
-                restore()
+                if (!it) {
+                    restore()
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -160,7 +162,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
             )
             val toJson = Gson().toJson(response)
             mWCClient.encryptAndSend(toJson).also {
-                restore()
+                if (!it) {
+                    restore()
+                }
             }
         } catch (e: Exception) {
             Crashes.trackError(e)
@@ -172,7 +176,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     fun approveSession(accounts: List<String>, chainId: String): Boolean {
         return try {
             mWCClient.approveSession(accounts, chainId).also {
-                restore()
+                if (!it) {
+                    restore()
+                }
             }
         } catch (e: Exception) {
             Crashes.trackError(e)
@@ -184,7 +190,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     fun rejectSession(message: String = "Session rejected"): Boolean {
         return try {
             mWCClient.rejectSession(message).also {
-                restore()
+                if (!it) {
+                    restore()
+                }
             }
         } catch (e: Exception) {
             Crashes.trackError(e)
@@ -199,7 +207,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
 
     fun disconnect(): Boolean {
         return mWCClient.disconnect().also {
-            restore()
+            if (!it) {
+                restore()
+            }
         }
     }
 }
