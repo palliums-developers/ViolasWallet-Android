@@ -111,14 +111,6 @@ class TokenManager {
 
         accounts.forEach { account ->
 
-//            val logo = when (account.coinNumber) {
-//                CoinTypes.Violas.coinType() -> R.drawable.ic_violas_big
-//                CoinTypes.Libra.coinType() -> R.drawable.ic_libra_big
-//                CoinTypes.Bitcoin.coinType() -> R.drawable.ic_bitcoin_big
-//                CoinTypes.BitcoinTest.coinType() -> R.drawable.ic_bitcoin_big
-//                else -> R.drawable.ic_violas_big
-//            }
-
             if (account.accountType == AccountType.Normal) {
                 val coinTypes = CoinTypes.parseCoinType(account.coinNumber)
                 resultTokenList.add(
@@ -199,6 +191,7 @@ class TokenManager {
         return resultTokenList
     }
 
+    @Deprecated("")
     @WorkerThread
     fun loadEnableToken(account: AccountDO): List<AssertOriginateToken> {
         val enableToken = mTokenStorage
@@ -265,20 +258,6 @@ class TokenManager {
     @WorkerThread
     fun deleteAllToken() {
         mTokenStorage.deleteAll()
-    }
-
-    suspend fun getTokenBalance(
-        address: String,
-        tokenDo: TokenDo
-    ): Long {
-//        val amount = getTokenBalance(address, tokenDo.tokenIdx)
-//
-//        mExecutor.submit {
-//            tokenDo.amount = amount
-//            mTokenStorage.update(tokenDo)
-//        }
-//        return amount
-        return 1000
     }
 
     suspend fun getTokenBalance(

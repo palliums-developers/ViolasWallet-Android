@@ -603,6 +603,8 @@ class AccountManager {
                         it.logo
                     ).also { tokenVo ->
                         tokenVo.setAssetsName(it.assetsName)
+                        tokenVo.amountWithUnit.amount = "0.00";
+                        tokenVo.amountWithUnit.unit = it.assetsName;
                     }
                 )
             }
@@ -667,7 +669,7 @@ class AccountManager {
                                     CoinTypes.parseCoinType(assets.getCoinNumber())
                                 )
                                 amountWithUnit.amount = convertAmountToDisplayUnit.first
-                                amountWithUnit.unit = convertAmountToDisplayUnit.second
+                                amountWithUnit.unit = getAssetsName()
                             }
                         }
                     }
@@ -701,7 +703,7 @@ class AccountManager {
                                     CoinTypes.parseCoinType(assets.getCoinNumber())
                                 )
                                 amountWithUnit.amount = convertAmountToDisplayUnit.first
-                                amountWithUnit.unit = convertAmountToDisplayUnit.second
+                                amountWithUnit.unit = getAssetsName()
                             }
                         }
                     }
