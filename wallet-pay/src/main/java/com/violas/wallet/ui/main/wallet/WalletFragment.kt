@@ -1,16 +1,11 @@
 package com.violas.wallet.ui.main.wallet
 
-import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.DrawableRes
 import androidx.biometric.BiometricManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -18,9 +13,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.expandTouchArea
@@ -30,7 +22,6 @@ import com.palliums.utils.getResourceId
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
-import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.event.BackupIdentityMnemonicEvent
@@ -50,7 +41,6 @@ import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.loadTransform
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
@@ -58,14 +48,10 @@ import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.walletconnect.WalletConnectStatus
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
-import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import me.jessyan.autosize.utils.AutoSizeUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
