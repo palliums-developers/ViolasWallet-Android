@@ -132,7 +132,7 @@
     <string name="about_us_website_key">Official Website</string>
     <string name="about_us_website_value">https://violas.io</string>
     <string name="about_us_email_key">Email</string>
-    <string name="about_us_email_value">violas_blockchain@violas.io</string>
+    <string name="about_us_email_value">violas.team@violas.io</string>
     <string name="about_us_wechat_key">wechat</string>
     <string name="about_us_wechat_value">xxxxx</string>
     <string name="about_us_telegram_key">Telegram</string>

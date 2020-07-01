@@ -14,7 +14,7 @@ import com.violas.wallet.R
  * desc:
  */
 
-private const val FEEDBACK_EMAIL_ADDRESS = "violas_blockchain@violas.io"
+private const val FEEDBACK_EMAIL_ADDRESS = "violas.team@violas.io"
 
 fun feedbackByEmail(activity: Activity) {
     val stringBuilder = StringBuilder()
