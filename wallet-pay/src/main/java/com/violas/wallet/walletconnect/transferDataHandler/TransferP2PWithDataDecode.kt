@@ -2,7 +2,9 @@ package com.violas.wallet.walletconnect.transferDataHandler
 
 import com.palliums.content.ContextProvider
 import com.quincysx.crypto.utils.Base64
-import com.violas.wallet.walletconnect.WalletConnect
+import com.violas.wallet.walletconnect.walletConnectMessageHandler.ProcessedRuntimeException
+import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
+import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransferDataType
 import org.palliums.libracore.move.Move
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionPayload
@@ -18,25 +20,34 @@ class TransferP2PWithDataDecode(private val transaction: RawTransaction) : Trans
         )
     }
 
-    override fun getTransactionDataType(): WalletConnect.TransactionDataType {
-        return WalletConnect.TransactionDataType.Transfer
+    override fun getTransactionDataType(): TransactionDataType {
+        return TransactionDataType.Transfer
     }
 
-    override fun handle(): WalletConnect.TransferDataType {
+    override fun handle(): TransferDataType {
         val payload = transaction.payload?.payload as TransactionPayload.Script
-        val coinName = decodeCoinName(
-            0,
-            payload
-        )
+        return try {
+            val coinName = decodeCoinName(
+                0,
+                payload
+            )
 
-        val data = byteArrayOf()
+            val data = decodeWithData(2, payload)
 
-        return WalletConnect.TransferDataType(
-            transaction.sender.toHex(),
-            payload.args[0].decodeToValue() as String,
-            payload.args[1].decodeToValue() as Long,
-            coinName,
-            Base64.encode(data)
-        )
+            TransferDataType(
+                transaction.sender.toHex(),
+                payload.args[0].decodeToValue() as String,
+                payload.args[1].decodeToValue() as Long,
+                coinName,
+                Base64.encode(data)
+            )
+        } catch (e: ProcessedRuntimeException) {
+            throw ProcessedRuntimeException(
+                "peer_to_peer_with_metadata contract parameter list(payee: Address,\n" +
+                        "    amount: Number,\n" +
+                        "    metadata: Bytes,\n" +
+                        "    metadata_signature: Bytes)"
+            )
+        }
     }
 }

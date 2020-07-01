@@ -1,20 +1,22 @@
 package com.violas.wallet.walletconnect.transferDataHandler
 
 import com.google.gson.*
-import com.violas.wallet.walletconnect.WalletConnect
+import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.RawTransaction
 import java.lang.reflect.Type
 
 
-class TransferDecodeEngine(private val mRawTransaction: RawTransaction) {
+class TransferDecodeEngine(
+    private val mRawTransaction: RawTransaction
+) {
     private val mDecode: ArrayList<TransferDecode> =
         arrayListOf(
             TransferP2PWithDataDecode(mRawTransaction),
             TransferViolasAddCurrencyToAccountDecode(mRawTransaction)
         )
 
-    fun decode(): Pair<WalletConnect.TransactionDataType, String> {
+    fun decode(): Pair<TransactionDataType, String> {
         mDecode.forEach {
             if (it.isHandle()) {
                 return Pair(it.getTransactionDataType(), Gson().toJson(it.handle()))
@@ -25,7 +27,7 @@ class TransferDecodeEngine(private val mRawTransaction: RawTransaction) {
             ByteArrayToHexStringTypeAdapter()
         ).create()
         return Pair(
-            WalletConnect.TransactionDataType.None,
+            TransactionDataType.None,
             gson.toJson(mRawTransaction.payload?.payload)
         )
     }

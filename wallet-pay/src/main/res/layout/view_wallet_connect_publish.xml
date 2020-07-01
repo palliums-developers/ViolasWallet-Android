@@ -45,4 +45,42 @@
             app:layout_constraintTop_toTopOf="@+id/tvTitleSender"
             tools:text="1234.999999 violas" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="13dp"
+        android:background="@drawable/shape_bg_wallet_connect_show_info"
+        android:padding="20dp">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25" />
+
+        <TextView
+            android:id="@+id/tvTitleCoinName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/wallet_connect_transfer_registered_coinname"
+            android:textColor="?android:attr/textColorTertiary"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvDescribeCoinName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/tvTitleCoinName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toTopOf="@+id/tvTitleCoinName"
+            tools:text="USD" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>
