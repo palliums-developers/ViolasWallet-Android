@@ -2,6 +2,7 @@ package com.violas.wallet.biz.command
 
 import android.os.Handler
 import android.os.HandlerThread
+import java.util.*
 
 object CommandActuator {
     private val mHandlerThread by lazy {
@@ -11,7 +12,7 @@ object CommandActuator {
         mHandlerThread.start()
         Handler(mHandlerThread.looper)
     }
-    private val mCommandMap = HashMap<String, Runnable>()
+    private val mCommandMap = WeakHashMap<String, Runnable>()
 
     fun post(command: ICommand) {
         postDelay(command, 0)
@@ -23,6 +24,10 @@ object CommandActuator {
     fun postDelay(command: ICommand, delayMillis: Long) {
         val runnable = Runnable {
             command.exec()
+            if (command is ISingleCommand) {
+                val identity = command.getIdentity()
+                mCommandMap.remove(identity)
+            }
         }
         if (command is ISingleCommand) {
             val identity = command.getIdentity()
