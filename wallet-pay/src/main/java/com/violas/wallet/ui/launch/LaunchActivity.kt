@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.launch
 
 import android.os.Bundle
-import android.view.View
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.ui.main.MainActivity
@@ -14,13 +13,12 @@ class LaunchActivity : BaseAppActivity(), CoroutineScope by MainScope() {
     }
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_CUSTOM
+        return PAGE_STYLE_NOT_TITLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitleBarVisibility(View.GONE)
         launch(Dispatchers.IO) {
             delay(1000)
 //            if (AccountManager().existsWalletAccount()) {

@@ -76,8 +76,13 @@
 
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
 
+        <item name="actionBarSize">@dimen/dp_48</item>
+        <item name="android:actionBarSize">@dimen/dp_48</item>
+
         <!--App custom attrs-->
         <!--App通用资源属性-->
+        <item name="statusBarSize">@dimen/dp_24</item>
+
         <item name="colorSurfaceSecondary">@color/color_F7F7F9</item>
         <item name="colorItemPressedPrimary">@color/color_C2C2C2</item>
         <item name="colorItemPressedSecondary">@color/color_BABABA</item>

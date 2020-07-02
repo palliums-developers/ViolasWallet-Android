@@ -5,26 +5,22 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.palliums.content.App
-import com.palliums.content.ContextProvider
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
-import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.walletconnect.WalletConnect
-import com.violas.wallet.widget.dialog.PasswordInputDialog
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import com.violas.walletconnect.jsonrpc.JsonRpcError
@@ -101,11 +97,10 @@ class WalletConnectActivity : BaseAppActivity() {
         return R.layout.activity_wallet_connect
     }
 
-    override fun getTitleStyle() = PAGE_STYLE_CUSTOM
+    override fun getTitleStyle() = PAGE_STYLE_NOT_TITLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitleLeftViewVisibility(View.GONE)
 
         launch(Dispatchers.IO) {
             val mTransactionSwapVo =

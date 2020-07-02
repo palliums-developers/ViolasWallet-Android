@@ -3,7 +3,6 @@ package com.violas.wallet.ui.walletconnect
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.walletconnect.WalletConnect
@@ -21,11 +20,10 @@ class WalletConnectManagerActivity : BaseAppActivity() {
         }
     }
 
-    override fun getTitleStyle() = PAGE_STYLE_CUSTOM
+    override fun getTitleStyle() = PAGE_STYLE_NOT_TITLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitleLeftViewVisibility(View.GONE)
 
         btnLogout.setOnClickListener {
             if (WalletConnect.getInstance(this).disconnect()) {
