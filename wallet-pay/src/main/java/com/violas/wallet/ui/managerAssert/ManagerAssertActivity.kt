@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.microsoft.appcenter.crashes.Crashes
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.utils.openBrowser
@@ -23,8 +22,6 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.biz.bean.TokenMark
-import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.web.WebCommonActivity
@@ -37,7 +34,6 @@ import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.RuntimeException
 
 class ManagerAssertActivity : BaseAppActivity() {
     override fun getLayoutResId() = R.layout.activity_manager_assert
@@ -219,9 +215,10 @@ class ManagerAssertActivity : BaseAppActivity() {
 
     override fun onBackPressedSupport() {
         if (mChange) {
-            CommandActuator.post(RefreshAssetsAllListCommand())
+            setResult(Activity.RESULT_OK)
+        }else{
+            setResult(Activity.RESULT_CANCELED)
         }
-        setResult(Activity.RESULT_OK)
         super.onBackPressedSupport()
     }
 }

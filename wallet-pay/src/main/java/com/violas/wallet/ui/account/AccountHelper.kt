@@ -55,7 +55,7 @@ fun loadAccounts(
         if (differentiateIdentityIfNotAllAccountType) {
             val identityAccountLabel = getString(R.string.account_label_identity)
             val identityAccounts =
-                accountDao.findAllByWalletTypeAndCoinType(coinTypes.coinType())
+                accountDao.findAllByCoinType(coinTypes.coinType())
                     ?.map {
                         AccountVo(it).apply {
                             selected = it.id == currentAccount.id
@@ -68,7 +68,7 @@ fun loadAccounts(
 
             val otherAccountLabel = getString(R.string.account_label_other)
             val otherAccounts =
-                accountDao.findAllByWalletTypeAndCoinType(coinTypes.coinType())
+                accountDao.findAllByCoinType(coinTypes.coinType())
                     ?.map {
                         AccountVo(it).apply {
                             selected = it.id == currentAccount.id

@@ -1,13 +1,14 @@
 package com.violas.wallet.walletconnect.transferDataHandler
 
 import com.palliums.content.ContextProvider
-import com.quincysx.crypto.utils.Base64
-import com.violas.wallet.walletconnect.WalletConnect
+import com.violas.wallet.walletconnect.walletConnectMessageHandler.PublishDataType
+import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
 import org.palliums.libracore.move.Move
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionPayload
 
-class TransferViolasAddCurrencyToAccountDecode(private val transaction: RawTransaction) : TransferDecode {
+class TransferViolasAddCurrencyToAccountDecode(private val transaction: RawTransaction) :
+    TransferDecode {
 
     override fun isHandle(): Boolean {
         val payload = transaction.payload?.payload
@@ -18,13 +19,19 @@ class TransferViolasAddCurrencyToAccountDecode(private val transaction: RawTrans
         )
     }
 
-    override fun getTransactionDataType(): WalletConnect.TransactionDataType {
-        return WalletConnect.TransactionDataType.Transfer
+    override fun getTransactionDataType(): TransactionDataType {
+        return TransactionDataType.PUBLISH
     }
 
-    override fun handle(): WalletConnect.PublishDataType {
-        return WalletConnect.PublishDataType(
-            transaction.sender.toHex()
+    override fun handle(): PublishDataType {
+        val payload = transaction.payload?.payload as TransactionPayload.Script
+        val coinName = decodeCoinName(
+            0,
+            payload
+        )
+        return PublishDataType(
+            transaction.sender.toHex(),
+            coinName
         )
     }
 }

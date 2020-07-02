@@ -1,10 +1,10 @@
 package com.violas.wallet.biz
 
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
+import com.violas.wallet.repository.DataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -90,6 +90,18 @@ fun decodeScanQRCode(
                 )
             }
             else -> {
+                var name: String? = null
+                tranQRCode.tokenName?.let {
+                    val account =
+                        DataRepository.getAccountStorage().findAllByCoinType(coinType.coinType())
+                            ?.get(0)
+                    account?.let {
+                        val token = DataRepository.getTokenStorage()
+                            .findByModelName(account.id, tranQRCode.tokenName)
+                        name = token?.assetsName
+                    }
+                }
+
                 callback.invoke(
                     scanType,
                     ScanTranBean(
@@ -98,7 +110,7 @@ fun decodeScanQRCode(
                         tranQRCode.address,
                         tranQRCode.amount,
                         tranQRCode.label,
-                        tranQRCode.tokenName
+                        name
                     )
                 )
             }

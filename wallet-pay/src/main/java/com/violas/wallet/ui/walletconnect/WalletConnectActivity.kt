@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -21,12 +22,18 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.walletconnect.WalletConnect
+import com.violas.wallet.walletconnect.walletConnectMessageHandler.PublishDataType
+import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
+import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionSwapVo
+import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransferDataType
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import com.violas.walletconnect.jsonrpc.JsonRpcError
 import kotlinx.android.synthetic.main.activity_wallet_connect.*
 import kotlinx.android.synthetic.main.view_wallet_connect_none.view.*
+import kotlinx.android.synthetic.main.view_wallet_connect_publish.view.*
 import kotlinx.android.synthetic.main.view_wallet_connect_transfer.view.*
+import kotlinx.android.synthetic.main.view_wallet_connect_transfer.view.tvDescribeSender
 import kotlinx.coroutines.*
 import org.palliums.violascore.crypto.Ed25519PublicKey
 import org.palliums.violascore.crypto.KeyPair
@@ -65,7 +72,7 @@ class WalletConnectActivity : BaseAppActivity() {
 
         fun startActivity(
             context: Context,
-            mTransactionSwapVo: WalletConnect.TransactionSwapVo
+            mTransactionSwapVo: TransactionSwapVo
         ) {
             getContext(context) { newTaskTag, newContext ->
                 newContext.startActivity(
@@ -104,7 +111,7 @@ class WalletConnectActivity : BaseAppActivity() {
 
         launch(Dispatchers.IO) {
             val mTransactionSwapVo =
-                intent.getParcelableExtra<WalletConnect.TransactionSwapVo>(CONNECT_DATA)
+                intent.getParcelableExtra<TransactionSwapVo>(CONNECT_DATA)
             if (mTransactionSwapVo == null) {
                 finish()
             }
@@ -122,7 +129,7 @@ class WalletConnectActivity : BaseAppActivity() {
         }
     }
 
-    private fun cancelAuthorization(mTransactionSwapVo: WalletConnect.TransactionSwapVo) {
+    private fun cancelAuthorization(mTransactionSwapVo: TransactionSwapVo) {
         launch {
             try {
                 val success = mWalletConnect.sendErrorMessage(
@@ -144,7 +151,7 @@ class WalletConnectActivity : BaseAppActivity() {
         }
     }
 
-    private fun confirmAuthorization(transactionSwapVo: WalletConnect.TransactionSwapVo) =
+    private fun confirmAuthorization(transactionSwapVo: TransactionSwapVo) =
         launch(Dispatchers.IO) {
             var signedTx: String? = null
             try {
@@ -203,10 +210,10 @@ class WalletConnectActivity : BaseAppActivity() {
             }
         }
 
-    private suspend fun showDisplay(transactionSwapVo: WalletConnect.TransactionSwapVo) =
+    private suspend fun showDisplay(transactionSwapVo: TransactionSwapVo) =
         withContext(Dispatchers.IO) {
             when (transactionSwapVo.viewType) {
-                WalletConnect.TransactionDataType.None.value -> {
+                TransactionDataType.None.value -> {
                     val create = GsonBuilder().setPrettyPrinting().create()
                     val viewData = transactionSwapVo.viewData
 
@@ -220,28 +227,28 @@ class WalletConnectActivity : BaseAppActivity() {
                         viewGroupContent.addView(view)
                     }
                 }
-                WalletConnect.TransactionDataType.PUBLISH.value -> {
+                TransactionDataType.PUBLISH.value -> {
                     val viewData = transactionSwapVo.viewData
                     println("transfer data: $viewData")
                     val mPublishDataType = Gson().fromJson(
                         viewData,
-                        WalletConnect.PublishDataType::class.java
+                        PublishDataType::class.java
                     )
                     val view = LayoutInflater.from(this@WalletConnectActivity)
                         .inflate(R.layout.view_wallet_connect_publish, viewGroupContent, false)
                     withContext(Dispatchers.Main) {
                         view.tvDescribeSender.text = mPublishDataType.form
-
+                        view.tvDescribeCoinName.text = mPublishDataType.coinName
                         viewGroupContent.removeAllViews()
                         viewGroupContent.addView(view)
                     }
                 }
-                WalletConnect.TransactionDataType.Transfer.value -> {
+                TransactionDataType.Transfer.value -> {
                     val viewData = transactionSwapVo.viewData
                     println("transfer data: $viewData")
                     val mTransferDataType = Gson().fromJson(
                         viewData,
-                        WalletConnect.TransferDataType::class.java
+                        TransferDataType::class.java
                     )
 
                     val amount = BigDecimal(mTransferDataType.amount).divide(
@@ -266,7 +273,7 @@ class WalletConnectActivity : BaseAppActivity() {
     override fun onDestroy() {
         if (!mRequestHandle) {
             GlobalScope.launch {
-                intent.getParcelableExtra<WalletConnect.TransactionSwapVo>(CONNECT_DATA)?.let {
+                intent.getParcelableExtra<TransactionSwapVo>(CONNECT_DATA)?.let {
                     mWalletConnect.sendErrorMessage(it.requestID, JsonRpcError.userRefused())
                 }
             }

@@ -36,7 +36,7 @@ interface AccountDao : BaseDao<AccountDO> {
      * 查找所有指定钱包类型和币种编号的钱包，并按创建时间升序排序
      */
     @Query("SELECT * FROM account WHERE coin_number = :coinNumber ORDER BY modify_date ASC")
-    fun findAllByWalletTypeAndCoinType( coinNumber: Int): List<AccountDO>?
+    fun findAllByCoinType(coinNumber: Int): List<AccountDO>?
 
     /**
      * 根据 ID 查找账户
@@ -50,6 +50,9 @@ interface AccountDao : BaseDao<AccountDO> {
 
     @Query("SELECT * FROM account WHERE coin_number = :coinType AND address = :address LIMIT 1")
     fun findByCoinTypeAndCoinAddress(coinType: Int, address: String): AccountDO?
+
+    @Query("UPDATE account SET amount = :amount WHERE id = :id")
+    fun saveCoinBalance(id: Long, amount: Long)
 
     @Query("DELETE FROM account")
     fun deleteAll()

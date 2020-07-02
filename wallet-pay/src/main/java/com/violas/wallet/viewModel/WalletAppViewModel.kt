@@ -10,10 +10,16 @@ import com.palliums.utils.CustomMainScope
 import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.SaveAssetsAllBalanceCommand
+import com.violas.wallet.biz.command.SaveAssetsFiatBalanceCommand
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
     companion object {
@@ -49,8 +55,10 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
             }
             localAssets = mAccountManager.refreshAssetsAmount(localAssets)
             mAssetsListLiveData.postValue(localAssets) // todo 尝试效果再决定是否删除
+            CommandActuator.post(SaveAssetsAllBalanceCommand())
             localAssets = mAccountManager.refreshFiatAssetsAmount(localAssets)
             mAssetsListLiveData.postValue(localAssets)
+            CommandActuator.post(SaveAssetsFiatBalanceCommand())
         }
         mDataRefreshingLiveData.postValue(false)
         checkAccountActivate(localAssets)
