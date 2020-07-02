@@ -1,8 +1,10 @@
 package com.violas.wallet.biz.command
 
 import com.palliums.content.ContextProvider
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountType
+import com.violas.wallet.utils.convertDisplayUnitToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
@@ -20,10 +22,13 @@ class SaveAssetsAllBalanceCommand() : ISingleCommand {
             it.filter { assets ->
                 assets is AssetsCoinVo && assets.accountType == AccountType.Normal
             }.forEach { assets ->
+                val convertDisplayUnitToAmount = convertDisplayUnitToAmount(
+                    assets.amountWithUnit.amount,
+                    CoinTypes.parseCoinType(assets.getCoinNumber())
+                )
                 DataRepository.getAccountStorage().saveCoinBalance(
                     assets.getId(),
-                    BigDecimal(assets.amountWithUnit.amount).multiply(BigDecimal("1000000"))
-                        .toLong()
+                    convertDisplayUnitToAmount
                 )
             }
             it.filterIsInstance<AssetsTokenVo>().forEach { assets ->

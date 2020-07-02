@@ -12,6 +12,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.SaveAssetsAllBalanceCommand
+import com.violas.wallet.biz.command.SaveAssetsFiatBalanceCommand
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
@@ -53,10 +54,11 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
                 mAssetsListLiveData.postValue(localAssets)
             }
             localAssets = mAccountManager.refreshAssetsAmount(localAssets)
-            CommandActuator.post(SaveAssetsAllBalanceCommand())
             mAssetsListLiveData.postValue(localAssets) // todo 尝试效果再决定是否删除
+            CommandActuator.post(SaveAssetsAllBalanceCommand())
             localAssets = mAccountManager.refreshFiatAssetsAmount(localAssets)
             mAssetsListLiveData.postValue(localAssets)
+            CommandActuator.post(SaveAssetsFiatBalanceCommand())
         }
         mDataRefreshingLiveData.postValue(false)
         checkAccountActivate(localAssets)
