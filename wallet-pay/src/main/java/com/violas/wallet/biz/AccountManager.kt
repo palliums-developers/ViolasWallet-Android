@@ -20,24 +20,25 @@ import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.utils.convertAmountToDisplayUnit
-import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.*
+import com.violas.wallet.viewModel.bean.AssetsCoinVo
+import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
+import com.violas.wallet.viewModel.bean.AssetsTokenVo
+import com.violas.wallet.viewModel.bean.AssetsVo
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import org.palliums.libracore.crypto.KeyFactory
+import org.palliums.libracore.crypto.Seed
 import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount
 import org.palliums.libracore.wallet.Account
-import org.palliums.libracore.crypto.KeyFactory
-import org.palliums.libracore.crypto.Seed
 import org.palliums.violascore.serialization.toHex
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
 import java.util.concurrent.Executors
-import kotlin.collections.ArrayList
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -603,8 +604,8 @@ class AccountManager {
                         it.logo
                     ).also { tokenVo ->
                         tokenVo.setAssetsName(it.assetsName)
-                        tokenVo.amountWithUnit.amount = "0.00";
-                        tokenVo.amountWithUnit.unit = it.assetsName;
+                        tokenVo.amountWithUnit.amount = BigDecimal(it.amount).divide(BigDecimal("1000000"),6,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+                        tokenVo.amountWithUnit.unit = it.assetsName
                     }
                 )
             }

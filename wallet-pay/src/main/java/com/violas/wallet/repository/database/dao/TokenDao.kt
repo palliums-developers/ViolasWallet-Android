@@ -2,7 +2,6 @@ package com.violas.wallet.repository.database.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.database.entity.TokenDo
 
 @Dao
@@ -30,4 +29,7 @@ interface TokenDao : BaseDao<TokenDo> {
 
     @Query("SELECT * FROM token WHERE account_id=:accountId AND module = :moduleName COLLATE NOCASE LIMIT 1")
     fun findByModelName(accountId: Long, moduleName: String): TokenDo?
+
+    @Query("UPDATE token SET amount = :amount WHERE id = :id")
+    fun saveCoinBalance(id: Long, amount: Long)
 }
