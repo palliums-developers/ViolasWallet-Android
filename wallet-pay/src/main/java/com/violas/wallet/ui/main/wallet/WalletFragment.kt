@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.wallet
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -151,17 +152,19 @@ class WalletFragment : BaseFragment() {
         }
         ivTotalHidden.expandTouchArea(28)
 
-        mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(viewLifecycleOwner, Observer { status ->
-            when (status) {
-                WalletConnectStatus.None -> {
-                    viewWalletConnect.visibility = View.GONE
+        mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(
+            viewLifecycleOwner,
+            Observer { status ->
+                when (status) {
+                    WalletConnectStatus.None -> {
+                        viewWalletConnect.visibility = View.GONE
+                    }
+                    WalletConnectStatus.Login -> {
+                        tvWalletConnectStatus.text = getString(R.string.wallet_connect_have_landed)
+                        viewWalletConnect.visibility = View.VISIBLE
+                    }
                 }
-                WalletConnectStatus.Login -> {
-                    tvWalletConnectStatus.text = getString(R.string.wallet_connect_have_landed)
-                    viewWalletConnect.visibility = View.VISIBLE
-                }
-            }
-        })
+            })
         viewWalletConnect.setOnClickListener {
             activity?.let { it1 -> WalletConnectManagerActivity.startActivity(it1) }
         }
@@ -273,7 +276,9 @@ class WalletFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_ADD_ASSERT -> {
-                mWalletAppViewModel?.refreshAssetsList()
+                if (resultCode == Activity.RESULT_OK) {
+                    mWalletAppViewModel?.refreshAssetsList(true)
+                }
             }
 
             REQUEST_SCAN_QR_CODE -> {
