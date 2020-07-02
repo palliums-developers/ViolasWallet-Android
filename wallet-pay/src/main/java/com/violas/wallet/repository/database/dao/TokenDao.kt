@@ -2,6 +2,7 @@ package com.violas.wallet.repository.database.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.database.entity.TokenDo
 
 @Dao
@@ -22,8 +23,11 @@ interface TokenDao : BaseDao<TokenDo> {
     fun loadEnableAll(): List<TokenDo>
 
     @Query("SELECT * FROM token")
-    fun loadAll():List<TokenDo>
+    fun loadAll(): List<TokenDo>
 
     @Query("DELETE FROM token")
     fun deleteAll()
+
+    @Query("SELECT * FROM token WHERE account_id=:accountId AND module = :moduleName COLLATE NOCASE LIMIT 1")
+    fun findByModelName(accountId: Long, moduleName: String): TokenDo?
 }
