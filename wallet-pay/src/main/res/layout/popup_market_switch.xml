@@ -5,5 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_market_switch_popup"
     android:overScrollMode="never"
-    android:padding="@dimen/dp_5"
+    android:paddingVertical="@dimen/dp_5"
+    android:paddingStart="@dimen/dp_7"
+    android:paddingEnd="@dimen/dp_6"
     android:scrollbars="vertical" />

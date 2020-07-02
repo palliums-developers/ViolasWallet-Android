@@ -367,4 +367,5 @@
     <string name="select_token_pair">选择交易对</string>
     <string name="fund_pool_income_desc">转入资金池可获取手续费收益</string>
     <string name="wallet_connect_transfer_registered_coinname">注册币种</string>
+    <string name="tips_fund_pool_select_token_pair_empty">没有可选择的交易对</string>
 </resources>

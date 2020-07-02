@@ -30,7 +30,7 @@
             android:layout_width="@dimen/dp_10"
             android:layout_height="@dimen/dp_6"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/dp_3"
+            android:layout_marginStart="@dimen/dp_2"
             android:background="@drawable/sel_market_downward" />
 
     </LinearLayout>
@@ -53,7 +53,7 @@
         app:layout_constraintTop_toTopOf="@id/llSwitchOpModeGroup" />
 
     <EditText
-        android:id="@+id/etFirstAmount"
+        android:id="@+id/etFirstInputBox"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_30"
@@ -72,15 +72,15 @@
         tools:hint="0.00" />
 
     <TextView
-        android:id="@+id/tvFirstLabel"
+        android:id="@+id/tvFirstInputLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_15"
         android:layout_marginTop="@dimen/dp_16"
         android:text="@string/transfer_in"
         android:textSize="@dimen/sp_12"
-        app:layout_constraintStart_toStartOf="@id/etFirstAmount"
-        app:layout_constraintTop_toTopOf="@id/etFirstAmount" />
+        app:layout_constraintStart_toStartOf="@id/etFirstInputBox"
+        app:layout_constraintTop_toTopOf="@id/etFirstInputBox" />
 
     <LinearLayout
         android:id="@+id/llFirstSelectGroup"
@@ -91,8 +91,8 @@
         android:background="@drawable/sel_bg_market_select_token"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
-        app:layout_constraintBottom_toBottomOf="@id/etFirstAmount"
-        app:layout_constraintEnd_toEndOf="@id/etFirstAmount">
+        app:layout_constraintBottom_toBottomOf="@id/etFirstInputBox"
+        app:layout_constraintEnd_toEndOf="@id/etFirstInputBox">
 
         <TextView
             android:id="@+id/tvFirstSelectText"
@@ -103,10 +103,11 @@
             android:textSize="@dimen/sp_12" />
 
         <ImageView
+            android:id="@+id/ivFirstSelectArrow"
             android:layout_width="@dimen/dp_10"
             android:layout_height="@dimen/dp_6"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/dp_3"
+            android:layout_marginStart="@dimen/dp_2"
             android:background="?attr/iconArrow"
             android:backgroundTint="?attr/colorPrimary" />
 
@@ -121,11 +122,11 @@
         android:textColor="?android:attr/textColorTertiary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etFirstAmount"
+        app:layout_constraintTop_toBottomOf="@id/etFirstInputBox"
         tools:ignore="HardcodedText" />
 
     <EditText
-        android:id="@+id/etSecondAmount"
+        android:id="@+id/etSecondInputBox"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_30"
@@ -144,15 +145,15 @@
         tools:hint="0.00" />
 
     <TextView
-        android:id="@+id/tvSecondLabel"
+        android:id="@+id/tvSecondInputLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_15"
         android:layout_marginTop="@dimen/dp_16"
         android:text="@string/transfer_in"
         android:textSize="@dimen/sp_12"
-        app:layout_constraintStart_toStartOf="@id/etSecondAmount"
-        app:layout_constraintTop_toTopOf="@id/etSecondAmount" />
+        app:layout_constraintStart_toStartOf="@id/etSecondInputBox"
+        app:layout_constraintTop_toTopOf="@id/etSecondInputBox" />
 
     <LinearLayout
         android:id="@+id/llSecondSelectGroup"
@@ -163,8 +164,8 @@
         android:background="@drawable/sel_bg_market_select_token"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
-        app:layout_constraintBottom_toBottomOf="@id/etSecondAmount"
-        app:layout_constraintEnd_toEndOf="@id/etSecondAmount">
+        app:layout_constraintBottom_toBottomOf="@id/etSecondInputBox"
+        app:layout_constraintEnd_toEndOf="@id/etSecondInputBox">
 
         <TextView
             android:id="@+id/tvSecondSelectText"
@@ -175,10 +176,11 @@
             android:textSize="@dimen/sp_12" />
 
         <ImageView
+            android:id="@+id/ivSecondSelectArrow"
             android:layout_width="@dimen/dp_10"
             android:layout_height="@dimen/dp_6"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/dp_3"
+            android:layout_marginStart="@dimen/dp_2"
             android:background="?attr/iconArrow"
             android:backgroundTint="?attr/colorPrimary" />
 
@@ -194,11 +196,11 @@
         android:textSize="@dimen/sp_10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etSecondAmount"
+        app:layout_constraintTop_toBottomOf="@id/etSecondInputBox"
         tools:text="@string/exchange_rate_format" />
 
     <TextView
-        android:id="@+id/tvMyFundPoolAmount"
+        android:id="@+id/tvShareOfPool"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_45"
@@ -217,7 +219,7 @@
         android:text="@string/action_transfer_in_nbsp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvMyFundPoolAmount" />
+        app:layout_constraintTop_toBottomOf="@id/tvShareOfPool" />
 
     <TextView
         android:id="@+id/tvFundPoolRecords"

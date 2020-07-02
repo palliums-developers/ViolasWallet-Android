@@ -19,6 +19,9 @@ class SwapFragment : BaseFragment() {
 
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
+
+        etInputAmount.hint = "0.00"
+        etOutputAmount.hint = "0.00"
         tvFeeRate.text = getString(R.string.fee_rate_format, "- -")
         tvExchangeRate.text = getString(R.string.exchange_rate_format, "- -")
         tvGas.text = getString(R.string.gas_format, "- -")
