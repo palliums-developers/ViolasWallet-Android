@@ -104,11 +104,10 @@ class WalletConnectActivity : BaseAppActivity() {
         return R.layout.activity_wallet_connect
     }
 
-    override fun getTitleStyle() = PAGE_STYLE_CUSTOM
+    override fun getTitleStyle() = PAGE_STYLE_NOT_TITLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitleLeftViewVisibility(View.GONE)
 
         launch(Dispatchers.IO) {
             val mTransactionSwapVo =

@@ -24,7 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/dp_15"
-                android:layout_marginTop="?android:attr/actionBarSize"
+                android:layout_marginTop="?attr/actionBarSize"
                 android:layout_marginBottom="@dimen/dp_22"
                 android:background="?attr/tokenDetailsTokenInfoBg"
                 android:paddingEnd="@dimen/dp_14">
@@ -100,7 +100,7 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorSurface"
                 app:contentInsetEndWithActions="@dimen/dp_0"
                 app:contentInsetStartWithNavigation="@dimen/dp_0"

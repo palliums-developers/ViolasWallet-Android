@@ -60,11 +60,11 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
         intent.getStringExtra(CONNECT_MSG)
     }
 
-    override fun getTitleStyle() = PAGE_STYLE_CUSTOM
+    override fun getTitleStyle() = PAGE_STYLE_NOT_TITLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitleLeftViewVisibility(View.GONE)
+
         launch {
             tvPrivacyPolicy.movementMethod = LinkMovementMethod.getInstance()
             tvPrivacyPolicy.text = buildUseBehaviorSpan()
