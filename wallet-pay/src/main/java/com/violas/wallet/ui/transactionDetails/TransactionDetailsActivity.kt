@@ -6,16 +6,13 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Rect
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
-import android.view.ViewTreeObserver
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.palliums.base.ViewController
 import com.palliums.extensions.close
 import com.palliums.extensions.show
@@ -149,27 +146,6 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         toolbar.setNavigationOnClickListener {
             onBackPressedSupport()
         }
-        toolbar.viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                val rectangle = Rect()
-                val window = window
-                window.decorView.getWindowVisibleDisplayFrame(rectangle)
-                val statusBarHeight = rectangle.top
-
-                val toolbarLayoutParams =
-                    toolbar.layoutParams as ConstraintLayout.LayoutParams
-                toolbarLayoutParams.setMargins(
-                    toolbarLayoutParams.leftMargin,
-                    statusBarHeight,
-                    toolbarLayoutParams.rightMargin,
-                    toolbarLayoutParams.bottomMargin
-                )
-                toolbar.layoutParams = toolbarLayoutParams
-
-                toolbar.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
 
         when (transactionRecord.transactionState) {
             TransactionState.PENDING -> {

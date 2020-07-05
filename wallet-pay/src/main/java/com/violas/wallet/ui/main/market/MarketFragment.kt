@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.main.market
 
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -47,26 +46,17 @@ class MarketFragment : BaseFragment() {
         appCompatActivity?.setSupportActionBar(toolbar)
         appCompatActivity?.supportActionBar?.setDisplayShowTitleEnabled(false)
         appCompatActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        toolbar.viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                val rectangle = Rect()
-                requireActivity().window.decorView.getWindowVisibleDisplayFrame(rectangle)
-                val statusBarHeight = rectangle.top
 
-                val toolbarLayoutParams =
-                    toolbar.layoutParams as ConstraintLayout.LayoutParams
-                toolbarLayoutParams.setMargins(
-                    toolbarLayoutParams.leftMargin,
-                    statusBarHeight,
-                    toolbarLayoutParams.rightMargin,
-                    toolbarLayoutParams.bottomMargin
-                )
-                toolbar.layoutParams = toolbarLayoutParams
-
-                toolbar.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
+        val statusBarHeight = StatusBarUtil.getStatusBarHeight()
+        val toolbarLayoutParams =
+            toolbar.layoutParams as ConstraintLayout.LayoutParams
+        toolbarLayoutParams.setMargins(
+            toolbarLayoutParams.leftMargin,
+            statusBarHeight,
+            toolbarLayoutParams.rightMargin,
+            toolbarLayoutParams.bottomMargin
+        )
+        toolbar.layoutParams = toolbarLayoutParams
 
         viewPager.offscreenPageLimit = 1
         viewPager.adapter = FragmentPagerAdapterSupport(childFragmentManager)
