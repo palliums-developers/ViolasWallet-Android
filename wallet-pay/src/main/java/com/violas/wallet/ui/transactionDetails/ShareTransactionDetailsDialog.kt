@@ -65,20 +65,18 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
 
     override fun onStart() {
         dialog?.window?.let {
-            val attributes = it.attributes
-            attributes.width = WindowManager.LayoutParams.MATCH_PARENT
-            attributes.height = WindowManager.LayoutParams.MATCH_PARENT
-            it.attributes = attributes
+            it.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+            )
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                it.decorView.systemUiVisibility =
-                    (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
-                it.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                it.statusBarColor = Color.TRANSPARENT
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                it.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            }
-            StatusBarUtil.setLightStatusBarMode(it, true)
+            it.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+
+            it.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
 
             it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }

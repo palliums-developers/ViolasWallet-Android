@@ -13,6 +13,7 @@ import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.palliums.base.ViewController
 import com.palliums.extensions.close
 import com.palliums.extensions.show
@@ -145,6 +146,9 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.setNavigationOnClickListener {
             onBackPressedSupport()
+        }
+        toolbar.layoutParams = (toolbar.layoutParams as ConstraintLayout.LayoutParams).apply {
+            topMargin = StatusBarUtil.getStatusBarHeight()
         }
 
         when (transactionRecord.transactionState) {

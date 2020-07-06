@@ -2,7 +2,10 @@ package com.violas.wallet.ui.main.market
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.tabs.TabLayout
@@ -46,26 +49,17 @@ class MarketFragment : BaseFragment() {
         appCompatActivity?.setSupportActionBar(toolbar)
         appCompatActivity?.supportActionBar?.setDisplayShowTitleEnabled(false)
         appCompatActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
-
-        val statusBarHeight = StatusBarUtil.getStatusBarHeight()
-        val toolbarLayoutParams =
-            toolbar.layoutParams as ConstraintLayout.LayoutParams
-        toolbarLayoutParams.setMargins(
-            toolbarLayoutParams.leftMargin,
-            statusBarHeight,
-            toolbarLayoutParams.rightMargin,
-            toolbarLayoutParams.bottomMargin
-        )
-        toolbar.layoutParams = toolbarLayoutParams
+        toolbar.layoutParams = (toolbar.layoutParams as ConstraintLayout.LayoutParams).apply {
+            topMargin = StatusBarUtil.getStatusBarHeight()
+        }
 
         viewPager.offscreenPageLimit = 1
-        viewPager.adapter = FragmentPagerAdapterSupport(childFragmentManager)
-            .apply {
-                addFragment(SwapFragment())
-                addFragment(FundPoolFragment())
-                addTitle(getString(R.string.title_swap))
-                addTitle(getString(R.string.title_fund_pool))
-            }
+        viewPager.adapter = FragmentPagerAdapterSupport(childFragmentManager).apply {
+            addFragment(SwapFragment())
+            addFragment(FundPoolFragment())
+            addTitle(getString(R.string.title_swap))
+            addTitle(getString(R.string.title_fund_pool))
+        }
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {

@@ -213,9 +213,9 @@
         android:paddingHorizontal="@dimen/dp_15"
         app:layout_constraintBottom_toTopOf="@id/tvCancel"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_share_transaction_details"
         app:layout_constraintStart_toStartOf="parent"
-        tools:itemCount="1" />
+        tools:itemCount="1"
+        tools:listitem="@layout/item_share_transaction_details" />
 
     <TextView
         android:id="@+id/tvCancel"

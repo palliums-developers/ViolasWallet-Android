@@ -1,12 +1,15 @@
 package com.violas.wallet.ui.launch
 
 import android.os.Bundle
+import android.view.View
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.ui.main.MainActivity
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-class LaunchActivity : BaseAppActivity(), CoroutineScope by MainScope() {
+class LaunchActivity : BaseAppActivity(){
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_launch
@@ -17,21 +20,19 @@ class LaunchActivity : BaseAppActivity(), CoroutineScope by MainScope() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+
         super.onCreate(savedInstanceState)
 
-        launch(Dispatchers.IO) {
+        launch(Dispatchers.Main) {
             delay(1000)
-//            if (AccountManager().existsWalletAccount()) {
-                withContext(Dispatchers.Main) {
-                    MainActivity.start(this@LaunchActivity)
-                    finish()
-                }
-//            } else {
-//                withContext(Dispatchers.Main) {
-//                    IdentityActivity.start(this@LaunchActivity)
-//                    finish()
-//                }
-//            }
+            MainActivity.start(this@LaunchActivity)
+            finish()
         }
     }
 }

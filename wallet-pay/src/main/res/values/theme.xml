@@ -61,11 +61,13 @@
         <item name="android:textColorHighlight">@color/color_504ACB</item>
         <item name="android:textColorLink">@color/color_504ACB</item>
 
+        <item name="android:windowBackground">?android:colorBackground</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowBackground">?android:colorBackground</item>
+        <item name="android:navigationBarColor">@color/translucent</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
 
         <item name="android:screenOrientation">portrait</item>
         <item name="android:hyphenationFrequency" tools:ignore="NewApi">none</item>
