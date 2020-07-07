@@ -34,9 +34,6 @@
 -keep class types.*** {*;}
 -keep class types.***$*** {*;}
 
--dontwarn com.tencent.bugly.**
--keep public class com.tencent.bugly.**{*;}
-
 # ViewModel
 -keepnames class androidx.lifecycle.ViewModel
 -keepclassmembers public class * extends androidx.lifecycle.ViewModel { public <init>(...); }
@@ -53,3 +50,17 @@
 -keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
     <init>(java.lang.Throwable);
 }
+
+# wallet connect
+#-keep class com.violas.walletconnect.models.*{*;}
+#-keep class com.violas.walletconnect.models.*$Companion{*;}
+#-keepclassmembers class **.WC**{
+#    public ** component1();
+#    <fields>;}
+#-keepclassmembers class **.WC**$Companion{
+#    public ** component1();
+#    <fields>;}
+-keep class com.violas.walletconnect.***{*;}
+-keep class com.violas.walletconnect.***$Companion{*;}
+#-keep class com.violas.walletconnect.session.**{*;}
+#-keep class com.violas.walletconnect.session.**$Companion{*;}
