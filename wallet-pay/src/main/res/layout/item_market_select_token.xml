@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?attr/selectableItemBackground">
+
+    <View
+        android:id="@+id/vLogoGroup"
+        android:layout_width="@dimen/dp_44"
+        android:layout_height="@dimen/dp_44"
+        android:layout_marginStart="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_12"
+        android:background="@drawable/bg_market_select_token_logo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.palliums.widget.NiceImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="@dimen/dp_30"
+        android:layout_height="@dimen/dp_30"
+        app:is_circle="true"
+        app:layout_constraintBottom_toBottomOf="@id/vLogoGroup"
+        app:layout_constraintEnd_toEndOf="@id/vLogoGroup"
+        app:layout_constraintStart_toStartOf="@id/vLogoGroup"
+        app:layout_constraintTop_toTopOf="@id/vLogoGroup"
+        tools:background="@drawable/ic_label_btc" />
+
+    <TextView
+        android:id="@+id/tvTokenName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_1"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintStart_toEndOf="@id/vLogoGroup"
+        app:layout_constraintTop_toTopOf="@id/vLogoGroup"
+        tools:text="USD" />
+
+    <TextView
+        android:id="@+id/tvTokenBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintBottom_toBottomOf="@id/vLogoGroup"
+        app:layout_constraintStart_toStartOf="@id/tvTokenName"
+        tools:text="@string/market_select_token_balance_format" />
+
+    <TextView
+        android:id="@+id/tvSelected"
+        android:layout_width="@dimen/dp_17"
+        android:layout_height="@dimen/dp_14"
+        android:layout_marginEnd="@dimen/dp_15"
+        android:background="?attr/marketTokenSelectedIcon"
+        app:layout_constraintBottom_toBottomOf="@id/vLogoGroup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/vLogoGroup" />
+    <!--android:background="@drawable/sel_bg_market_select_token_check"-->
+    <!--android:background="?attr/marketTokenSelectedIcon"-->
+
+    <View
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0.5"
+        android:layout_marginTop="@dimen/dp_12"
+        android:layout_marginEnd="@dimen/dp_14"
+        android:background="?attr/colorDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/tvTokenName"
+        app:layout_constraintTop_toBottomOf="@id/tvTokenBalance" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

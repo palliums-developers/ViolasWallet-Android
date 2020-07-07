@@ -111,6 +111,7 @@
         <item name="iconForward">@drawable/ic_right_arrow_gray</item>
         <item name="iconArrow">@drawable/icon_down_arrow_white</item>
         <item name="iconCopy">@drawable/ic_token_info_copy</item>
+        <item name="iconSearch">@mipmap/ic_search</item>
         <item name="iconShowPrimary">@drawable/ic_total_balance_show</item>
         <item name="iconShowSecondary">@drawable/ic_password_text_show</item>
         <item name="iconHidePrimary">@drawable/ic_total_balance_hidden</item>
@@ -203,6 +204,7 @@
         <item name="marketSwapRecordIcon">@mipmap/ic_swap_record</item>
         <item name="marketSwitchBgColor">@color/color_F1EEFB</item>
         <item name="marketFundPoolIncomeIcon">@mipmap/ic_fund_pool_income</item>
+        <item name="marketTokenSelectedIcon">@mipmap/ic_market_token_selected</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">

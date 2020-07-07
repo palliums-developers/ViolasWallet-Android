@@ -12,6 +12,7 @@ import com.palliums.extensions.isNoNetwork
 
 data class LoadState private constructor(
     @Status val status: Int,
+    var action: Int = -1,
     private val errorText: String? = null,
     private val throwable: Throwable? = null
 ) {

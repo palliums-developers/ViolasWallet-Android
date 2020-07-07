@@ -64,14 +64,14 @@ abstract class BaseViewModel : ViewModel() {
                 }
 
                 val exception = RequestException.networkUnavailable()
-                loadState.postValueSupport(LoadState.failure(exception))
+                loadState.postValueSupport(LoadState.failure(exception).apply { this.action = action })
                 tipsMessage.postValueSupport(exception.getShowErrorMessage(isLoadAction(action)))
 
                 failureCallback?.invoke(exception)
                 return false
             }
 
-            loadState.postValueSupport(LoadState.RUNNING)
+            loadState.postValueSupport(LoadState.RUNNING.apply { this.action = action })
         }
 
         viewModelScope.launch(Dispatchers.Main) {
@@ -82,7 +82,7 @@ abstract class BaseViewModel : ViewModel() {
                 synchronized(lock) {
                     retry = null
 
-                    loadState.postValueSupport(LoadState.SUCCESS)
+                    loadState.postValueSupport(LoadState.SUCCESS.apply { this.action = action })
                 }
 
                 successCallback?.invoke()
@@ -101,7 +101,7 @@ abstract class BaseViewModel : ViewModel() {
                         )
                     }
 
-                    loadState.postValueSupport(LoadState.failure(e))
+                    loadState.postValueSupport(LoadState.failure(e).apply { this.action = action })
                     tipsMessage.postValueSupport(e.getShowErrorMessage(isLoadAction(action)))
                 }
 

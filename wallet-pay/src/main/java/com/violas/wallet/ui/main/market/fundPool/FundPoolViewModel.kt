@@ -4,7 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.palliums.base.BaseViewModel
+import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.ui.main.market.bean.ITokenVo
+import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import kotlinx.coroutines.delay
+import java.math.BigDecimal
 
 /**
  * Created by elephant on 2020/6/30 17:42.
@@ -16,23 +20,26 @@ class FundPoolViewModel : BaseViewModel() {
 
     companion object {
         const val ACTION_GET_TOKEN_PAIRS = 0x01
+        const val ACTION_GET_FIRST_TOKENS = 0x02
+        const val ACTION_GET_SECOND_TOKENS = 0x03
     }
 
     // 当前的操作模式，分转入和转出
     private val currOpModeLiveData = MutableLiveData<FundPoolOpMode>(FundPoolOpMode.TransferIn)
 
     // 转入模式下选择的通证
-    private val currFirstTokenLiveData = MediatorLiveData<String?>()
-    private val currSecondTokenLiveData = MediatorLiveData<String?>()
+    private val currFirstTokenLiveData = MediatorLiveData<StableTokenVo?>()
+    private val currSecondTokenLiveData = MediatorLiveData<StableTokenVo?>()
 
     // 转出模式下选择的交易对和可转出的交易对列表
-    private val currTokenPairLiveData = MediatorLiveData<Pair<String, String>?>()
-    private val tokenPairsLiveData = MutableLiveData<List<Pair<String, String>>>()
-    private val displayTokenPairsLiveData = MediatorLiveData<MutableList<String>>()
+    private val currTokenPairLiveData = MediatorLiveData<Pair<StableTokenVo, StableTokenVo>?>()
+    private val tokenPairsLiveData = MutableLiveData<List<Pair<StableTokenVo, StableTokenVo>>?>()
 
-    // 兑换率和池份额
-    private val exchangeRateLiveData = MediatorLiveData<String>()
-    private val shareOfPoolLiveData = MutableLiveData<String>()
+    // 兑换率
+    private val exchangeRateLiveData = MediatorLiveData<BigDecimal?>()
+
+    // 资金池通证及占比
+    private val poolTokenAndPoolShareLiveData = MediatorLiveData<Pair<String, String>?>()
 
     init {
         currFirstTokenLiveData.addSource(currOpModeLiveData) {
@@ -40,25 +47,52 @@ class FundPoolViewModel : BaseViewModel() {
                 currFirstTokenLiveData.postValue(null)
             }
         }
-
         currSecondTokenLiveData.addSource(currOpModeLiveData) {
             if (it == FundPoolOpMode.TransferIn) {
                 currSecondTokenLiveData.postValue(null)
             }
         }
-
         currTokenPairLiveData.addSource(currOpModeLiveData) {
             if (it == FundPoolOpMode.TransferOut) {
                 currTokenPairLiveData.postValue(null)
             }
         }
 
-        displayTokenPairsLiveData.addSource(tokenPairsLiveData) {
-            val disPlayList = mutableListOf<String>()
-            it.forEach { item ->
-                disPlayList.add("${item.first}/${item.second}")
+        val convertToExchangeRate: (StableTokenVo, StableTokenVo) -> BigDecimal? =
+            { firstToken, secondToken ->
+                val firstUsdValue = BigDecimal(firstToken.anchorValue.toString())
+                val secondUsdValue = BigDecimal(secondToken.anchorValue.toString())
+                val zero = BigDecimal("0.00")
+                if (firstUsdValue <= zero || secondUsdValue <= zero)
+                    null
+                else
+                    firstUsdValue / secondUsdValue
             }
-            displayTokenPairsLiveData.postValue(disPlayList)
+        exchangeRateLiveData.addSource(currFirstTokenLiveData) { firstToken ->
+            val secondToken = currSecondTokenLiveData.value
+            exchangeRateLiveData.postValue(
+                if (firstToken == null || secondToken == null)
+                    null
+                else
+                    convertToExchangeRate(firstToken, secondToken)
+            )
+        }
+        exchangeRateLiveData.addSource(currSecondTokenLiveData) { secondToken ->
+            val firstToken = currFirstTokenLiveData.value
+            exchangeRateLiveData.postValue(
+                if (firstToken == null || secondToken == null)
+                    null
+                else
+                    convertToExchangeRate(firstToken, secondToken)
+            )
+        }
+        exchangeRateLiveData.addSource(currTokenPairLiveData) {
+            exchangeRateLiveData.postValue(
+                if (it == null)
+                    null
+                else
+                    convertToExchangeRate(it.first, it.second)
+            )
         }
     }
 
@@ -82,33 +116,43 @@ class FundPoolViewModel : BaseViewModel() {
     }
 
     //*********************************** 转入模式下相关方法 ***********************************//
-    fun getCurrFirstTokenLiveData(): LiveData<String?> {
+    fun getCurrFirstTokenLiveData(): LiveData<StableTokenVo?> {
         return currFirstTokenLiveData
     }
 
-    fun getCurrSecondTokenLiveData(): LiveData<String?> {
+    fun getCurrSecondTokenLiveData(): LiveData<StableTokenVo?> {
         return currSecondTokenLiveData
     }
 
-    fun selectToken(selectFirst: Boolean, selected: String) {
+    fun selectToken(selectFirst: Boolean, selected: StableTokenVo) {
         if (selectFirst) {
-            if (selected != currFirstTokenLiveData.value) {
+            val currFirstToken = currFirstTokenLiveData.value
+            if (selected != currFirstToken) {
+                val currSecondToken = currSecondTokenLiveData.value
+                if (selected == currSecondToken) {
+                    currSecondTokenLiveData.postValue(currFirstToken)
+                }
                 currFirstTokenLiveData.postValue(selected)
             }
         } else {
-            if (selected != currSecondTokenLiveData.value) {
+            val currSecondToken = currSecondTokenLiveData.value
+            if (selected != currSecondToken) {
+                val currFirstToken = currFirstTokenLiveData.value
+                if (selected == currFirstToken) {
+                    currFirstTokenLiveData.postValue(currSecondToken)
+                }
                 currSecondTokenLiveData.postValue(selected)
             }
         }
     }
 
     //*********************************** 转出模式下相关方法 ***********************************//
-    fun getCurrTokenPairLiveData(): LiveData<Pair<String, String>?> {
+    fun getCurrTokenPairLiveData(): LiveData<Pair<StableTokenVo, StableTokenVo>?> {
         return currTokenPairLiveData
     }
 
-    fun getDisplayTokenPairsLiveData(): MutableLiveData<MutableList<String>> {
-        return displayTokenPairsLiveData
+    fun getTokenPairsLiveData(): MutableLiveData<List<Pair<StableTokenVo, StableTokenVo>>?> {
+        return tokenPairsLiveData
     }
 
     fun getCurrTokenPairPosition(): Int {
@@ -131,23 +175,141 @@ class FundPoolViewModel : BaseViewModel() {
     }
 
     //*********************************** 其它信息相关方法 ***********************************//
-    fun getExchangeRateLiveData(): LiveData<String> {
+    fun getExchangeRateLiveData(): LiveData<BigDecimal?> {
         return exchangeRateLiveData
     }
 
-    fun getShareOfPoolLiveData(): LiveData<String> {
-        return shareOfPoolLiveData
+    fun getPoolTokenAndPoolShareLiveData(): LiveData<Pair<String, String>?> {
+        return poolTokenAndPoolShareLiveData
     }
 
+    //*********************************** 耗时相关任务 ***********************************//
     override suspend fun realExecute(action: Int, vararg params: Any) {
+        // 获取可转出的交易对列表
         if (action == ACTION_GET_TOKEN_PAIRS) {
             // test code
             delay(500)
-            val list =
-                mutableListOf(Pair("LBR", "VLS"), Pair("BTC", "VLS"))
+            val list = mutableListOf(
+                Pair(vlsusd, vls),
+                Pair(vlsgbp, vls),
+                Pair(vlseur, vls),
+                Pair(vlssgd, vls)
+            )
             tokenPairsLiveData.postValue(list)
             return
         }
+
+        if (action == ACTION_GET_FIRST_TOKENS || action == ACTION_GET_SECOND_TOKENS) {
+            val list = mutableListOf(
+                vls, vlsusd, vlsgbp, vlseur, vlssgd
+            )
+            val currToken = if (action == ACTION_GET_FIRST_TOKENS)
+                currFirstTokenLiveData.value
+            else
+                currSecondTokenLiveData.value
+            list.forEach {
+                it.selected = it == currToken
+            }
+
+            tokensLiveData.postValue(list)
+            return
+        }
+
+        // 转入
+        if (isTransferInMode()) {
+            val firstToken = currFirstTokenLiveData.value!!
+            val secondToken = currSecondTokenLiveData.value!!
+            return
+        }
+
+        // 转出
+        val tokenPair = currTokenPairLiveData.value!!
     }
 
+    val tokensLiveData = MutableLiveData<List<ITokenVo>?>()
+
+    val vls = StableTokenVo(
+        accountDoId = 0,
+        coinNumber = CoinTypes.Violas.coinType(),
+        marketIndex = 0,
+        tokenDoId = 0,
+        address = "00000000000000000000000000000000",
+        module = "LBR",
+        name = "LBR",
+        displayName = "VLS",
+        logoUrl = "",
+        localEnable = true,
+        chainEnable = true,
+        amount = 100_000000,
+        anchorValue = 1.00,
+        selected = false
+    )
+
+    val vlsusd = StableTokenVo(
+        accountDoId = 0,
+        coinNumber = CoinTypes.Violas.coinType(),
+        marketIndex = 0,
+        tokenDoId = 0,
+        address = "00000000000000000000000000000000",
+        module = "VLSUSD",
+        name = "VLSUSD",
+        displayName = "VLSUSD",
+        logoUrl = "",
+        localEnable = true,
+        chainEnable = true,
+        amount = 200_000000,
+        anchorValue = 1.00,
+        selected = false
+    )
+
+    val vlsgbp = StableTokenVo(
+        accountDoId = 0,
+        coinNumber = CoinTypes.Violas.coinType(),
+        marketIndex = 0,
+        tokenDoId = 0,
+        address = "00000000000000000000000000000000",
+        module = "VLSGBP",
+        name = "VLSGBP",
+        displayName = "VLSGBP",
+        logoUrl = "",
+        localEnable = true,
+        chainEnable = true,
+        amount = 300_000000,
+        anchorValue = 1.2504,
+        selected = false
+    )
+
+    val vlseur = StableTokenVo(
+        accountDoId = 0,
+        coinNumber = CoinTypes.Violas.coinType(),
+        marketIndex = 0,
+        tokenDoId = 0,
+        address = "00000000000000000000000000000000",
+        module = "VLSEUR",
+        name = "VLSEUR",
+        displayName = "VLSEUR",
+        logoUrl = "",
+        localEnable = true,
+        chainEnable = true,
+        amount = 400_000000,
+        anchorValue = 1.1319,
+        selected = false
+    )
+
+    val vlssgd = StableTokenVo(
+        accountDoId = 0,
+        coinNumber = CoinTypes.Violas.coinType(),
+        marketIndex = 0,
+        tokenDoId = 0,
+        address = "00000000000000000000000000000000",
+        module = "VLSSGD",
+        name = "VLSSGD",
+        displayName = "VLSSGD",
+        logoUrl = "",
+        localEnable = true,
+        chainEnable = true,
+        amount = 500_000000,
+        anchorValue = 0.7189,
+        selected = false
+    )
 }

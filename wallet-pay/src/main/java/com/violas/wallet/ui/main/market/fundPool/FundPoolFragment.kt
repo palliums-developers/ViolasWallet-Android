@@ -7,11 +7,13 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
+import com.palliums.extensions.show
 import com.palliums.net.LoadState
 import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.getColorByAttrId
@@ -20,7 +22,13 @@ import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
 import com.violas.wallet.event.SwitchFundPoolOpModeEvent
 import com.violas.wallet.ui.main.market.MarketSwitchPopupView
+import com.violas.wallet.ui.main.market.bean.ITokenVo
+import com.violas.wallet.ui.main.market.bean.StableTokenVo
+import com.violas.wallet.ui.main.market.fundPool.FundPoolViewModel.Companion.ACTION_GET_FIRST_TOKENS
+import com.violas.wallet.ui.main.market.fundPool.FundPoolViewModel.Companion.ACTION_GET_SECOND_TOKENS
 import com.violas.wallet.ui.main.market.fundPool.FundPoolViewModel.Companion.ACTION_GET_TOKEN_PAIRS
+import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
+import com.violas.wallet.ui.main.market.selectToken.TokensBridge
 import kotlinx.android.synthetic.main.fragment_fund_pool.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -31,7 +39,7 @@ import org.greenrobot.eventbus.Subscribe
  * <p>
  * desc: 市场资金池视图
  */
-class FundPoolFragment : BaseFragment() {
+class FundPoolFragment : BaseFragment(), TokensBridge {
 
     private val fundPoolViewModel by lazy {
         ViewModelProvider(this).get(FundPoolViewModel::class.java)
@@ -53,7 +61,7 @@ class FundPoolFragment : BaseFragment() {
         EventBus.getDefault().register(this)
 
         tvExchangeRate.text = getString(R.string.exchange_rate_format, "- -")
-        tvShareOfPool.text = getString(R.string.my_fund_pool_amount_format, "- -")
+        tvPoolTokenAndPoolShare.text = getString(R.string.my_fund_pool_amount_format, "- -")
 
         llSwitchOpModeGroup.setOnClickListener {
             showSwitchOpModePopup()
@@ -82,22 +90,35 @@ class FundPoolFragment : BaseFragment() {
 
         fundPoolViewModel.getCurrOpModeLiveData()
             .observe(viewLifecycleOwner, currOpModeObserver)
-        fundPoolViewModel.getDisplayTokenPairsLiveData()
-            .observe(viewLifecycleOwner, displayTokenPairsObserver)
-
-        fundPoolViewModel.loadState.observe(this, Observer {
+        fundPoolViewModel.getExchangeRateLiveData().observe(viewLifecycleOwner, Observer {
+            tvExchangeRate.text = getString(
+                R.string.exchange_rate_format,
+                if (it != null) "1:${it.stripTrailingZeros().toPlainString()}" else "- -"
+            )
+        })
+        fundPoolViewModel.getPoolTokenAndPoolShareLiveData().observe(viewLifecycleOwner, Observer {
+            tvPoolTokenAndPoolShare.text = getString(R.string.my_fund_pool_amount_format, it?.first)
+        })
+        fundPoolViewModel.loadState.observe(viewLifecycleOwner, Observer {
             when (it.peekData().status) {
                 LoadState.Status.RUNNING -> {
-                    showProgress()
+                    if (it.peekData().action != ACTION_GET_FIRST_TOKENS
+                        || it.peekData().action != ACTION_GET_SECOND_TOKENS
+                    ) {
+                        showProgress()
+                    }
                 }
 
                 else -> {
-                    dismissProgress()
+                    if (it.peekData().action != ACTION_GET_FIRST_TOKENS
+                        || it.peekData().action != ACTION_GET_SECOND_TOKENS
+                    ) {
+                        dismissProgress()
+                    }
                 }
             }
         })
-
-        fundPoolViewModel.tipsMessage.observe(this, Observer {
+        fundPoolViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
             it.getDataIfNotHandled()?.let { msg ->
                 if (msg.isNotEmpty()) {
                     showToast(msg)
@@ -123,6 +144,8 @@ class FundPoolFragment : BaseFragment() {
                 .observe(viewLifecycleOwner, currSecondTokenObserver)
             fundPoolViewModel.getCurrTokenPairLiveData()
                 .removeObserver(currTokenPairObserver)
+            fundPoolViewModel.getTokenPairsLiveData()
+                .removeObserver(tokenPairsObserver)
         } else {
             tvSwitchOpModeText.setText(R.string.transfer_out)
             tvFirstInputLabel.setText(R.string.fund_pool_token)
@@ -137,6 +160,8 @@ class FundPoolFragment : BaseFragment() {
                 .removeObserver(currSecondTokenObserver)
             fundPoolViewModel.getCurrTokenPairLiveData()
                 .observe(viewLifecycleOwner, currTokenPairObserver)
+            fundPoolViewModel.getTokenPairsLiveData()
+                .observe(viewLifecycleOwner, tokenPairsObserver)
         }
     }
 
@@ -205,29 +230,33 @@ class FundPoolFragment : BaseFragment() {
     }
 
     //*********************************** 转出模式选择交易对逻辑 ***********************************//
-    private val currTokenPairObserver = Observer<Pair<String, String>?> {
+    private val currTokenPairObserver = Observer<Pair<StableTokenVo, StableTokenVo>?> {
         if (it == null) {
             tvSecondSelectText.text = getString(R.string.select_token_pair)
             etSecondInputBox.hint = "0.00\n0.00"
         } else {
-            tvSecondSelectText.text = "${it.first}/${it.second}"
-            etSecondInputBox.hint = "0.00${it.first}\n0.00${it.second}"
+            tvSecondSelectText.text = "${it.first.displayName}/${it.second.displayName}"
+            etSecondInputBox.hint = "0.00${it.first.displayName}\n0.00${it.second.displayName}"
         }
         etSecondInputBox.clearComposingText()
     }
 
-    private val displayTokenPairsObserver = Observer<MutableList<String>> {
-        if (it.isEmpty()) {
+    private val tokenPairsObserver = Observer<List<Pair<StableTokenVo, StableTokenVo>>?> {
+        if (it.isNullOrEmpty()) {
             showToast(R.string.tips_fund_pool_select_token_pair_empty)
-            return@Observer
+        } else {
+            val displayList = it.map { item ->
+                "${item.first.displayName}/${item.second.displayName}"
+            } as MutableList
+            showSelectTokenPairPopup(displayList)
         }
-        showSelectTokenPairPopup(it)
     }
 
     private val selectTokenPairArrowUpAnimator by lazy {
         ObjectAnimator.ofFloat(ivSecondSelectArrow, "rotation", 0F, 180F)
             .setDuration(360)
     }
+
     private val selectTokenPairArrowDownAnimator by lazy {
         ObjectAnimator.ofFloat(ivSecondSelectArrow, "rotation", 180F, 360F)
             .setDuration(360)
@@ -259,20 +288,31 @@ class FundPoolFragment : BaseFragment() {
     }
 
     //*********************************** 转入模式选择通证逻辑 ***********************************//
-    private val currFirstTokenObserver = Observer<String?> {
-        tvFirstSelectText.text = if (it.isNullOrBlank()) getString(R.string.select_token) else it
+    private val currFirstTokenObserver = Observer<StableTokenVo?> {
+        tvFirstSelectText.text = it?.displayName ?: getString(R.string.select_token)
         etFirstInputBox.hint = "0.00"
         etFirstInputBox.clearComposingText()
     }
 
-    private val currSecondTokenObserver = Observer<String?> {
-        tvSecondSelectText.text = if (it.isNullOrBlank()) getString(R.string.select_token) else it
+    private val currSecondTokenObserver = Observer<StableTokenVo?> {
+        tvSecondSelectText.text = it?.displayName ?: getString(R.string.select_token)
         etSecondInputBox.hint = "0.00"
         etSecondInputBox.clearComposingText()
     }
 
     private fun showSelectTokenDialog(selectFirst: Boolean) {
+        fundPoolViewModel.execute(
+            action = if (selectFirst) ACTION_GET_FIRST_TOKENS else ACTION_GET_SECOND_TOKENS
+        )
+        SelectTokenDialog()
+            .setCallback {
+                fundPoolViewModel.selectToken(selectFirst, it as StableTokenVo)
+            }
+            .show(childFragmentManager)
+    }
 
+    override fun getTokensLiveData(): LiveData<List<ITokenVo>?> {
+        return fundPoolViewModel.tokensLiveData
     }
 
     //*********************************** 输入框逻辑 ***********************************//

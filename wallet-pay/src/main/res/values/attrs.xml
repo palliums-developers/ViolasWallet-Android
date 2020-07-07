@@ -35,6 +35,7 @@
     <attr name="iconForward" format="reference" />
     <attr name="iconArrow" format="reference" />
     <attr name="iconCopy" format="reference" />
+    <attr name="iconSearch" format="reference" />
     <attr name="iconShowPrimary" format="reference" />
     <attr name="iconShowSecondary" format="reference" />
     <attr name="iconHidePrimary" format="reference" />
@@ -127,5 +128,6 @@
     <attr name="marketSwapRecordIcon" format="reference" />
     <attr name="marketSwitchBgColor" format="color" />
     <attr name="marketFundPoolIncomeIcon" format="reference" />
+    <attr name="marketTokenSelectedIcon" format="reference" />
 
 </resources>
