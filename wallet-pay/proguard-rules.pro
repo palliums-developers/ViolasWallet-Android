@@ -52,15 +52,15 @@
 }
 
 # wallet connect
-#-keep class com.violas.walletconnect.models.*{*;}
-#-keep class com.violas.walletconnect.models.*$Companion{*;}
-#-keepclassmembers class **.WC**{
-#    public ** component1();
-#    <fields>;}
-#-keepclassmembers class **.WC**$Companion{
-#    public ** component1();
-#    <fields>;}
--keep class com.violas.walletconnect.***{*;}
--keep class com.violas.walletconnect.***$Companion{*;}
+-keep class com.violas.walletconnect.jsonrpc.**{*;}
+-keep class com.violas.walletconnect.models.MessageType{*;}
+-keep class com.violas.walletconnect.models.WCMethod{*;}
+-keepclassmembers class **.WC**{
+    public ** component1();
+    <fields>;}
+
+-keep,includecode class org.palliums.violascore.transaction.***{*;}
+#-keep class com.violas.walletconnect.***{*;}
+#-keep class com.violas.walletconnect.***$Companion{*;}
 #-keep class com.violas.walletconnect.session.**{*;}
 #-keep class com.violas.walletconnect.session.**$Companion{*;}
