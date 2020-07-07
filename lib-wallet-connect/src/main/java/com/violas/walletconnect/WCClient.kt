@@ -12,11 +12,11 @@ import com.violas.walletconnect.jsonrpc.JsonRpcError
 import com.violas.walletconnect.jsonrpc.JsonRpcErrorResponse
 import com.violas.walletconnect.jsonrpc.JsonRpcRequest
 import com.violas.walletconnect.jsonrpc.JsonRpcResponse
+import com.violas.walletconnect.models.*
 import com.violas.walletconnect.models.session.WCApproveSessionResponse
 import com.violas.walletconnect.models.session.WCSession
 import com.violas.walletconnect.models.session.WCSessionRequest
 import com.violas.walletconnect.models.session.WCSessionUpdate
-import com.violas.walletconnect.models.*
 import com.violas.walletconnect.models.violas.WCViolasSendRawTransaction
 import com.violas.walletconnect.models.violas.WCViolasSendTransaction
 import com.violas.walletconnect.models.violas.WCViolasSignRawTransaction
