@@ -24,11 +24,12 @@ import com.violas.wallet.event.SwitchFundPoolOpModeEvent
 import com.violas.wallet.ui.main.market.MarketSwitchPopupView
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
-import com.violas.wallet.ui.main.market.fundPool.FundPoolViewModel.Companion.ACTION_GET_FIRST_TOKENS
-import com.violas.wallet.ui.main.market.fundPool.FundPoolViewModel.Companion.ACTION_GET_SECOND_TOKENS
 import com.violas.wallet.ui.main.market.fundPool.FundPoolViewModel.Companion.ACTION_GET_TOKEN_PAIRS
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
+import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_FIRST
+import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_SECOND
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
+import com.violas.wallet.viewModel.MarketTokensViewModel
 import kotlinx.android.synthetic.main.fragment_fund_pool.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -43,6 +44,9 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
 
     private val fundPoolViewModel by lazy {
         ViewModelProvider(this).get(FundPoolViewModel::class.java)
+    }
+    private val marketTokensViewModel by lazy {
+        ViewModelProvider(requireParentFragment()).get(MarketTokensViewModel::class.java)
     }
 
     override fun getLayoutResId(): Int {
@@ -88,8 +92,7 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
         etFirstInputBox.filters = arrayOf(AmountInputFilter(12, 2))
         etSecondInputBox.filters = arrayOf(AmountInputFilter(12, 2))
 
-        fundPoolViewModel.getCurrOpModeLiveData()
-            .observe(viewLifecycleOwner, currOpModeObserver)
+        fundPoolViewModel.getCurrOpModeLiveData().observe(viewLifecycleOwner, currOpModeObserver)
         fundPoolViewModel.getExchangeRateLiveData().observe(viewLifecycleOwner, Observer {
             tvExchangeRate.text = getString(
                 R.string.exchange_rate_format,
@@ -99,22 +102,15 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
         fundPoolViewModel.getPoolTokenAndPoolShareLiveData().observe(viewLifecycleOwner, Observer {
             tvPoolTokenAndPoolShare.text = getString(R.string.my_fund_pool_amount_format, it?.first)
         })
+
         fundPoolViewModel.loadState.observe(viewLifecycleOwner, Observer {
             when (it.peekData().status) {
                 LoadState.Status.RUNNING -> {
-                    if (it.peekData().action != ACTION_GET_FIRST_TOKENS
-                        || it.peekData().action != ACTION_GET_SECOND_TOKENS
-                    ) {
-                        showProgress()
-                    }
+                    showProgress()
                 }
 
                 else -> {
-                    if (it.peekData().action != ACTION_GET_FIRST_TOKENS
-                        || it.peekData().action != ACTION_GET_SECOND_TOKENS
-                    ) {
-                        dismissProgress()
-                    }
+                    dismissProgress()
                 }
             }
         })
@@ -125,6 +121,16 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
                 }
             }
         })
+
+        if (!marketTokensViewModel.tipsMessage.hasObservers()) {
+            marketTokensViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
+                it.getDataIfNotHandled()?.let { msg ->
+                    if (msg.isNotEmpty()) {
+                        showToast(msg)
+                    }
+                }
+            })
+        }
     }
 
     //*********************************** 切换转入转出模式逻辑 ***********************************//
@@ -301,18 +307,29 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
     }
 
     private fun showSelectTokenDialog(selectFirst: Boolean) {
-        fundPoolViewModel.execute(
-            action = if (selectFirst) ACTION_GET_FIRST_TOKENS else ACTION_GET_SECOND_TOKENS
-        )
-        SelectTokenDialog()
+        SelectTokenDialog
+            .newInstance(
+                if (selectFirst) ACTION_POOL_SELECT_FIRST else ACTION_POOL_SELECT_SECOND
+            )
             .setCallback {
                 fundPoolViewModel.selectToken(selectFirst, it as StableTokenVo)
             }
             .show(childFragmentManager)
     }
 
-    override fun getTokensLiveData(): LiveData<List<ITokenVo>?> {
-        return fundPoolViewModel.tokensLiveData
+    override fun getMarketSupportTokens() {
+        marketTokensViewModel.execute()
+    }
+
+    override fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?> {
+        return marketTokensViewModel.getMarketSupportTokensLiveData()
+    }
+
+    override fun getCurrToken(action: Int): ITokenVo? {
+        return if (action == ACTION_POOL_SELECT_FIRST)
+            fundPoolViewModel.getCurrFirstTokenLiveData().value
+        else
+            fundPoolViewModel.getCurrSecondTokenLiveData().value
     }
 
     //*********************************** 输入框逻辑 ***********************************//

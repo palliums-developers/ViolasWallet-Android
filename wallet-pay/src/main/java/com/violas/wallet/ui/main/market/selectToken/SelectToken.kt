@@ -1,6 +1,5 @@
 package com.violas.wallet.ui.main.market.selectToken
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -18,7 +17,10 @@ import com.palliums.utils.CustomMainScope
 import com.palliums.utils.getResourceId
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
+import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.ui.main.market.bean.ITokenVo
+import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
+import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.dialog_market_select_token.*
 import kotlinx.android.synthetic.main.item_market_select_token.view.*
@@ -29,68 +31,45 @@ import kotlinx.coroutines.*
  */
 class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() {
 
+    companion object {
+        const val ACTION_SWAP_SELECT_FROM = 0x01
+        const val ACTION_SWAP_SELECT_TO = 0x02
+        const val ACTION_POOL_SELECT_FIRST = 0x03
+        const val ACTION_POOL_SELECT_SECOND = 0x04
+
+        fun newInstance(action: Int): SelectTokenDialog {
+            return SelectTokenDialog().apply {
+                arguments = Bundle().apply {
+                    putInt(KEY_ONE, action)
+                }
+            }
+        }
+    }
+
+    private var action: Int = -1
     private var tokenCallback: ((ITokenVo) -> Unit)? = null
     private var tokensBridge: TokensBridge? = null
-    private var tokens: List<ITokenVo>? = null
-    private var searchJob: Job? = null
+    private var displayTokens: List<ITokenVo>? = null
+    private var job: Job? = null
 
-    private val adapter by lazy {
+    private val tokenAdapter by lazy {
         TokenAdapter()
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         tokensBridge = parentFragment as? TokensBridge
             ?: parentFragment?.parentFragment as? TokensBridge
                     ?: activity as? TokensBridge
         checkNotNull(tokensBridge) { "Parent fragment or activity does not implement TokenBridge" }
-    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.dialog_market_select_token, container)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        etSearchBox.isEnabled = false
-        etSearchBox.addTextChangedListener {
-            if (searchJob != null) {
-                searchJob!!.cancel()
-                searchJob = null
-            }
-
-            val inputText = it?.toString()?.trim()
-            if (inputText.isNullOrBlank()) {
-                adapter.submitList(tokens)
-            } else {
-                searchJob = launch {
-                    val searchResult = withContext(Dispatchers.IO) {
-                        tokens?.filter { item ->
-                            item.displayName.contains(inputText, true)
-                        }
-                    }
-                    adapter.submitList(searchResult)
-                    searchJob = null
-                }
-            }
+        if (savedInstanceState != null) {
+            action = savedInstanceState.getInt(KEY_ONE, action)
+        } else if (arguments != null) {
+            action = arguments!!.getInt(KEY_ONE, action)
         }
-        recyclerView.adapter = adapter
-
-        tokensBridge!!.getTokensLiveData().observe(viewLifecycleOwner, Observer {
-            if (it.isNullOrEmpty()) {
-                // 加载失败和空数据处理
-            } else {
-                etSearchBox.isEnabled = true
-                tokens = it
-                adapter.submitList(it)
-            }
-        })
+        require(action != -1) { "action is not the specified value" }
     }
 
     override fun onStart() {
@@ -117,10 +96,119 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
         recyclerView.requestFocus()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(KEY_ONE, action)
+    }
+
     override fun onDetach() {
         tokenCallback = null
         tokensBridge = null
         super.onDetach()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.dialog_market_select_token, container)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        etSearchBox.isEnabled = false
+        etSearchBox.addTextChangedListener {
+            cancelJob()
+
+            val inputText = it?.toString()?.trim()
+            if (inputText.isNullOrEmpty()) {
+                tokenAdapter.submitList(displayTokens)
+            } else {
+                searchToken(inputText)
+            }
+        }
+        recyclerView.adapter = tokenAdapter
+
+        tokensBridge!!.getMarketSupportTokensLiveData().observe(viewLifecycleOwner, Observer {
+            cancelJob()
+
+            if (it.isNullOrEmpty()) {
+                // TODO 加载失败和空数据处理
+            } else {
+                filterData(it)
+            }
+        })
+        tokensBridge!!.getMarketSupportTokens()
+    }
+
+    private fun cancelJob() {
+        if (job != null) {
+            job!!.cancel()
+            job = null
+        }
+    }
+
+    private fun filterData(marketSupportTokens: List<ITokenVo>) {
+        launch {
+            val list = withContext(Dispatchers.IO) {
+                val currToken = tokensBridge?.getCurrToken(action)
+                marketSupportTokens.filter {
+                    it.selected = it == currToken
+
+                    when (action) {
+                        ACTION_SWAP_SELECT_FROM -> {
+                            // 兑换选择输入币种，只展示用户已添加货币到账户且交易市场支持的币种
+                            if (it is StableTokenVo)
+                                it.chainEnable
+                            else
+                                true
+                        }
+
+                        ACTION_SWAP_SELECT_TO -> {
+                            // 对换选择输出币种，展示交易市场支持的所有币种
+                            true
+                        }
+
+                        else -> {
+                            // 资金池转入选择币种，只展示用户已添加货币到账户且交易市场支持的violas稳定币种
+                            if (it is StableTokenVo) {
+                                it.chainEnable && it.coinNumber == CoinTypes.Violas.coinType()
+                            } else {
+                                false
+                            }
+                        }
+                    }
+                }
+            }
+
+            etSearchBox.isEnabled = true
+            displayTokens = list
+
+            val inputText = etSearchBox.text.toString().trim()
+            if (inputText.isEmpty()) {
+                tokenAdapter.submitList(list)
+            } else {
+                searchToken(inputText)
+            }
+        }
+    }
+
+    private fun searchToken(inputText: String) {
+        job = launch {
+            val searchResult = withContext(Dispatchers.IO) {
+                displayTokens?.filter { item ->
+                    item.displayName.contains(inputText, true)
+                }
+            }
+            tokenAdapter.submitList(searchResult)
+            job = null
+
+            if (searchResult.isNullOrEmpty()) {
+                // TODO 没有找到币种
+            }
+        }
     }
 
     fun setCallback(
@@ -180,5 +268,9 @@ val tokenDiffCallback = object : DiffUtil.ItemCallback<ITokenVo>() {
 
 interface TokensBridge {
 
-    fun getTokensLiveData(): LiveData<List<ITokenVo>?>
+    fun getMarketSupportTokens()
+
+    fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?>
+
+    fun getCurrToken(action: Int): ITokenVo?
 }

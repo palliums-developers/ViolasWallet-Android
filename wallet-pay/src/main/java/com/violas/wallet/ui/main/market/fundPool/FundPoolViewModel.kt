@@ -5,7 +5,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.palliums.base.BaseViewModel
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
@@ -20,8 +19,6 @@ class FundPoolViewModel : BaseViewModel() {
 
     companion object {
         const val ACTION_GET_TOKEN_PAIRS = 0x01
-        const val ACTION_GET_FIRST_TOKENS = 0x02
-        const val ACTION_GET_SECOND_TOKENS = 0x03
     }
 
     // 当前的操作模式，分转入和转出
@@ -189,29 +186,79 @@ class FundPoolViewModel : BaseViewModel() {
         if (action == ACTION_GET_TOKEN_PAIRS) {
             // test code
             delay(500)
+            val vlsusd = StableTokenVo(
+                accountDoId = 0,
+                coinNumber = CoinTypes.Violas.coinType(),
+                marketIndex = 0,
+                tokenDoId = 0,
+                address = "00000000000000000000000000000000",
+                module = "VLSUSD",
+                name = "VLSUSD",
+                displayName = "VLSUSD",
+                logoUrl = "",
+                localEnable = true,
+                chainEnable = true,
+                amount = 200_000000,
+                anchorValue = 1.00,
+                selected = false
+            )
+
+            val vlsgbp = StableTokenVo(
+                accountDoId = 0,
+                coinNumber = CoinTypes.Violas.coinType(),
+                marketIndex = 0,
+                tokenDoId = 0,
+                address = "00000000000000000000000000000000",
+                module = "VLSGBP",
+                name = "VLSGBP",
+                displayName = "VLSGBP",
+                logoUrl = "",
+                localEnable = true,
+                chainEnable = true,
+                amount = 300_000000,
+                anchorValue = 1.2504,
+                selected = false
+            )
+
+            val vlseur = StableTokenVo(
+                accountDoId = 0,
+                coinNumber = CoinTypes.Violas.coinType(),
+                marketIndex = 0,
+                tokenDoId = 0,
+                address = "00000000000000000000000000000000",
+                module = "VLSEUR",
+                name = "VLSEUR",
+                displayName = "VLSEUR",
+                logoUrl = "",
+                localEnable = true,
+                chainEnable = true,
+                amount = 400_000000,
+                anchorValue = 1.1319,
+                selected = false
+            )
+
+            val vlssgd = StableTokenVo(
+                accountDoId = 0,
+                coinNumber = CoinTypes.Violas.coinType(),
+                marketIndex = 0,
+                tokenDoId = 0,
+                address = "00000000000000000000000000000000",
+                module = "VLSSGD",
+                name = "VLSSGD",
+                displayName = "VLSSGD",
+                logoUrl = "",
+                localEnable = true,
+                chainEnable = true,
+                amount = 500_000000,
+                anchorValue = 0.7189,
+                selected = false
+            )
             val list = mutableListOf(
-                Pair(vlsusd, vls),
-                Pair(vlsgbp, vls),
-                Pair(vlseur, vls),
-                Pair(vlssgd, vls)
+                Pair(vlsgbp, vlsusd),
+                Pair(vlseur, vlsusd),
+                Pair(vlssgd, vlsusd)
             )
             tokenPairsLiveData.postValue(list)
-            return
-        }
-
-        if (action == ACTION_GET_FIRST_TOKENS || action == ACTION_GET_SECOND_TOKENS) {
-            val list = mutableListOf(
-                vls, vlsusd, vlsgbp, vlseur, vlssgd
-            )
-            val currToken = if (action == ACTION_GET_FIRST_TOKENS)
-                currFirstTokenLiveData.value
-            else
-                currSecondTokenLiveData.value
-            list.forEach {
-                it.selected = it == currToken
-            }
-
-            tokensLiveData.postValue(list)
             return
         }
 
@@ -225,91 +272,4 @@ class FundPoolViewModel : BaseViewModel() {
         // 转出
         val tokenPair = currTokenPairLiveData.value!!
     }
-
-    val tokensLiveData = MutableLiveData<List<ITokenVo>?>()
-
-    val vls = StableTokenVo(
-        accountDoId = 0,
-        coinNumber = CoinTypes.Violas.coinType(),
-        marketIndex = 0,
-        tokenDoId = 0,
-        address = "00000000000000000000000000000000",
-        module = "LBR",
-        name = "LBR",
-        displayName = "VLS",
-        logoUrl = "",
-        localEnable = true,
-        chainEnable = true,
-        amount = 100_000000,
-        anchorValue = 1.00,
-        selected = false
-    )
-
-    val vlsusd = StableTokenVo(
-        accountDoId = 0,
-        coinNumber = CoinTypes.Violas.coinType(),
-        marketIndex = 0,
-        tokenDoId = 0,
-        address = "00000000000000000000000000000000",
-        module = "VLSUSD",
-        name = "VLSUSD",
-        displayName = "VLSUSD",
-        logoUrl = "",
-        localEnable = true,
-        chainEnable = true,
-        amount = 200_000000,
-        anchorValue = 1.00,
-        selected = false
-    )
-
-    val vlsgbp = StableTokenVo(
-        accountDoId = 0,
-        coinNumber = CoinTypes.Violas.coinType(),
-        marketIndex = 0,
-        tokenDoId = 0,
-        address = "00000000000000000000000000000000",
-        module = "VLSGBP",
-        name = "VLSGBP",
-        displayName = "VLSGBP",
-        logoUrl = "",
-        localEnable = true,
-        chainEnable = true,
-        amount = 300_000000,
-        anchorValue = 1.2504,
-        selected = false
-    )
-
-    val vlseur = StableTokenVo(
-        accountDoId = 0,
-        coinNumber = CoinTypes.Violas.coinType(),
-        marketIndex = 0,
-        tokenDoId = 0,
-        address = "00000000000000000000000000000000",
-        module = "VLSEUR",
-        name = "VLSEUR",
-        displayName = "VLSEUR",
-        logoUrl = "",
-        localEnable = true,
-        chainEnable = true,
-        amount = 400_000000,
-        anchorValue = 1.1319,
-        selected = false
-    )
-
-    val vlssgd = StableTokenVo(
-        accountDoId = 0,
-        coinNumber = CoinTypes.Violas.coinType(),
-        marketIndex = 0,
-        tokenDoId = 0,
-        address = "00000000000000000000000000000000",
-        module = "VLSSGD",
-        name = "VLSSGD",
-        displayName = "VLSSGD",
-        logoUrl = "",
-        localEnable = true,
-        chainEnable = true,
-        amount = 500_000000,
-        anchorValue = 0.7189,
-        selected = false
-    )
 }
