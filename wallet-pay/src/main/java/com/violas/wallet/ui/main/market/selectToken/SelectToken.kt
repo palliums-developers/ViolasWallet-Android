@@ -96,6 +96,8 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     override fun onStart() {
         dialog?.window?.let {
             it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            it.setWindowAnimations(R.style.AnimationDefaultBottomDialog)
+
             val attributes = it.attributes
             attributes.gravity = Gravity.BOTTOM
             it.attributes = attributes
@@ -104,6 +106,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT
             )
+
             it.setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or
                         WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
