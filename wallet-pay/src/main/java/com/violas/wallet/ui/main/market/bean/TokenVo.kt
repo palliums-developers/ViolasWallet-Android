@@ -55,11 +55,28 @@ class PlatformTokenVo(
             false
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as PlatformTokenVo
+        return accountDoId == other.accountDoId
+                && accountType == other.accountType
+                && accountAddress == other.accountAddress
+                && coinNumber == other.coinNumber
+    }
+
     override fun hashCode(): Int {
-        var result = accountDoId.hashCode()
+        var result = 17
+        result = result * 31 + accountDoId.hashCode()
         result = result * 31 + accountType.hashCode()
         result = result * 31 + accountAddress.hashCode()
         result = result * 31 + coinNumber.hashCode()
+        result = result * 31 + displayName.hashCode()
+        result = result * 31 + logoUrl.hashCode()
+        result = result * 31 + amount.hashCode()
+        result = result * 31 + anchorValue.hashCode()
+        result = result * 31 + selected.hashCode()
         return result
     }
 }
@@ -84,16 +101,6 @@ class StableTokenVo(
     selected: Boolean = false
 ) : ITokenVo(accountDoId, coinNumber, displayName, logoUrl, amount, anchorValue, selected) {
 
-    override fun hashCode(): Int {
-        var result = accountDoId.hashCode()
-        result = result * 31 + coinNumber.hashCode()
-        result = result * 31 + tokenDoId.hashCode()
-        result = result * 31 + address.hashCode()
-        result = result * 31 + module.hashCode()
-        result = result * 31 + name.hashCode()
-        return result
-    }
-
     override fun areContentsTheSame(another: ITokenVo): Boolean {
         return if (another is StableTokenVo)
             accountDoId == another.accountDoId
@@ -112,5 +119,37 @@ class StableTokenVo(
                     && selected == another.selected
         else
             false
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as StableTokenVo
+        return accountDoId == other.accountDoId
+                && coinNumber == other.coinNumber
+                && tokenDoId == other.tokenDoId
+                && address == other.address
+                && module == other.module
+                && name == other.name
+    }
+
+    override fun hashCode(): Int {
+        var result = 17
+        result = result * 31 + accountDoId.hashCode()
+        result = result * 31 + coinNumber.hashCode()
+        result = result * 31 + marketIndex.hashCode()
+        result = result * 31 + tokenDoId.hashCode()
+        result = result * 31 + address.hashCode()
+        result = result * 31 + module.hashCode()
+        result = result * 31 + name.hashCode()
+        result = result * 31 + displayName.hashCode()
+        result = result * 31 + logoUrl.hashCode()
+        result = result * 31 + localEnable.hashCode()
+        result = result * 31 + chainEnable.hashCode()
+        result = result * 31 + amount.hashCode()
+        result = result * 31 + anchorValue.hashCode()
+        result = result * 31 + selected.hashCode()
+        return result
     }
 }
