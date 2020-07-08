@@ -8,6 +8,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * Created by elephant on 2020/6/30 17:42.
@@ -24,7 +25,7 @@ class FundPoolViewModel : BaseViewModel() {
     // 当前的操作模式，分转入和转出
     private val currOpModeLiveData = MutableLiveData<FundPoolOpMode>(FundPoolOpMode.TransferIn)
 
-    // 转入模式下选择的通证
+    // 转入模式下选择的Token
     private val currFirstTokenLiveData = MediatorLiveData<StableTokenVo?>()
     private val currSecondTokenLiveData = MediatorLiveData<StableTokenVo?>()
 
@@ -57,13 +58,14 @@ class FundPoolViewModel : BaseViewModel() {
 
         val convertToExchangeRate: (StableTokenVo, StableTokenVo) -> BigDecimal? =
             { firstToken, secondToken ->
-                val firstUsdValue = BigDecimal(firstToken.anchorValue.toString())
-                val secondUsdValue = BigDecimal(secondToken.anchorValue.toString())
+                val firstAnchorValue = BigDecimal(firstToken.anchorValue.toString())
+                val secondAnchorValue = BigDecimal(secondToken.anchorValue.toString())
                 val zero = BigDecimal("0.00")
-                if (firstUsdValue <= zero || secondUsdValue <= zero)
+                if (firstAnchorValue <= zero || secondAnchorValue <= zero)
                     null
                 else
-                    firstUsdValue / secondUsdValue
+                    firstAnchorValue.divide(secondAnchorValue, 8, RoundingMode.DOWN)
+                        .stripTrailingZeros()
             }
         exchangeRateLiveData.addSource(currFirstTokenLiveData) { firstToken ->
             val secondToken = currSecondTokenLiveData.value
@@ -216,7 +218,7 @@ class FundPoolViewModel : BaseViewModel() {
                 localEnable = true,
                 chainEnable = true,
                 amount = 300_000000,
-                anchorValue = 1.2504,
+                anchorValue = 1.2526,
                 selected = false
             )
 
@@ -233,7 +235,7 @@ class FundPoolViewModel : BaseViewModel() {
                 localEnable = true,
                 chainEnable = true,
                 amount = 400_000000,
-                anchorValue = 1.1319,
+                anchorValue = 1.1272,
                 selected = false
             )
 
@@ -250,7 +252,7 @@ class FundPoolViewModel : BaseViewModel() {
                 localEnable = true,
                 chainEnable = true,
                 amount = 500_000000,
-                anchorValue = 0.7189,
+                anchorValue = 0.7167,
                 selected = false
             )
             val list = mutableListOf(

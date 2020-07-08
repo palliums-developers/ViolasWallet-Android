@@ -67,6 +67,11 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
         tvExchangeRate.text = getString(R.string.exchange_rate_format, "- -")
         tvPoolTokenAndPoolShare.text = getString(R.string.my_fund_pool_amount_format, "- -")
 
+        etFirstInputBox.addTextChangedListener(firstInputTextWatcher)
+        etSecondInputBox.addTextChangedListener(secondInputTextWatcher)
+        etFirstInputBox.filters = arrayOf(AmountInputFilter(12, 2))
+        etSecondInputBox.filters = arrayOf(AmountInputFilter(12, 2))
+
         llSwitchOpModeGroup.setOnClickListener {
             showSwitchOpModePopup()
         }
@@ -84,13 +89,8 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
         }
 
         btnPositive.setOnClickListener {
-
+            // TODO 转入转出逻辑
         }
-
-        etFirstInputBox.addTextChangedListener(firstInputTextWatcher)
-        etSecondInputBox.addTextChangedListener(secondInputTextWatcher)
-        etFirstInputBox.filters = arrayOf(AmountInputFilter(12, 2))
-        etSecondInputBox.filters = arrayOf(AmountInputFilter(12, 2))
 
         fundPoolViewModel.getCurrOpModeLiveData().observe(viewLifecycleOwner, currOpModeObserver)
         fundPoolViewModel.getExchangeRateLiveData().observe(viewLifecycleOwner, Observer {
@@ -100,7 +100,10 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             )
         })
         fundPoolViewModel.getPoolTokenAndPoolShareLiveData().observe(viewLifecycleOwner, Observer {
-            tvPoolTokenAndPoolShare.text = getString(R.string.my_fund_pool_amount_format, it?.first)
+            tvPoolTokenAndPoolShare.text = getString(
+                R.string.my_fund_pool_amount_format,
+                it?.first ?: "- -"
+            )
         })
 
         fundPoolViewModel.loadState.observe(viewLifecycleOwner, Observer {
@@ -293,7 +296,7 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             .show()
     }
 
-    //*********************************** 转入模式选择通证逻辑 ***********************************//
+    //*********************************** 转入模式选择Token逻辑 ***********************************//
     private val currFirstTokenObserver = Observer<StableTokenVo?> {
         tvFirstSelectText.text = it?.displayName ?: getString(R.string.select_token)
         etFirstInputBox.hint = "0.00"

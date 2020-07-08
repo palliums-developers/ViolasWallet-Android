@@ -348,9 +348,9 @@
     <string name="title_swap">兑换</string>
     <string name="title_fund_pool">资金池</string>
     <string name="title_my_fund_pool">我的资金池</string>
-    <string name="fee_rate_format">费率：%1$s</string>
+    <string name="handling_fee_rate_format">费率：%1$s</string>
     <string name="exchange_rate_format">兑换率：%1$s</string>
-    <string name="gas_format">矿工费用：%1$s</string>
+    <string name="gas_fee_format">矿工费用：%1$s</string>
     <string name="input">输入</string>
     <string name="output">输出</string>
     <string name="action_swap_nbsp">兑&#160;换</string>

@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tvFeeRate"
+        android:id="@+id/tvHandlingFeeRate"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_36"
@@ -17,10 +17,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/fee_rate_format" />
+        tools:text="@string/handling_fee_rate_format" />
 
     <EditText
-        android:id="@+id/etInputAmount"
+        android:id="@+id/etFromInputBox"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_30"
@@ -35,7 +35,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvFeeRate"
+        app:layout_constraintTop_toBottomOf="@id/tvHandlingFeeRate"
         tools:hint="0.00" />
 
     <TextView
@@ -45,11 +45,11 @@
         android:layout_marginTop="@dimen/dp_16"
         android:text="@string/input"
         android:textSize="@dimen/sp_12"
-        app:layout_constraintStart_toStartOf="@id/etInputAmount"
-        app:layout_constraintTop_toTopOf="@id/etInputAmount" />
+        app:layout_constraintStart_toStartOf="@id/etFromInputBox"
+        app:layout_constraintTop_toTopOf="@id/etFromInputBox" />
 
     <LinearLayout
-        android:id="@+id/llInputSelectToken"
+        android:id="@+id/llFromSelectGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_11"
@@ -57,11 +57,11 @@
         android:background="@drawable/sel_bg_market_select_token"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
-        app:layout_constraintBottom_toBottomOf="@id/etInputAmount"
-        app:layout_constraintEnd_toEndOf="@id/etInputAmount">
+        app:layout_constraintBottom_toBottomOf="@id/etFromInputBox"
+        app:layout_constraintEnd_toEndOf="@id/etFromInputBox">
 
         <TextView
-            android:id="@+id/tvInputToken"
+            android:id="@+id/tvFromSelectText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/select_token"
@@ -86,10 +86,10 @@
         android:background="?attr/marketCoinConversionIcon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etInputAmount" />
+        app:layout_constraintTop_toBottomOf="@id/etFromInputBox" />
 
     <EditText
-        android:id="@+id/etOutputAmount"
+        android:id="@+id/etToInputBox"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_30"
@@ -114,11 +114,11 @@
         android:layout_marginTop="@dimen/dp_16"
         android:text="@string/output"
         android:textSize="@dimen/sp_12"
-        app:layout_constraintStart_toStartOf="@id/etOutputAmount"
-        app:layout_constraintTop_toTopOf="@id/etOutputAmount" />
+        app:layout_constraintStart_toStartOf="@id/etToInputBox"
+        app:layout_constraintTop_toTopOf="@id/etToInputBox" />
 
     <LinearLayout
-        android:id="@+id/llOutputSelectToken"
+        android:id="@+id/llToSelectGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_11"
@@ -126,11 +126,11 @@
         android:background="@drawable/sel_bg_market_select_token"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
-        app:layout_constraintBottom_toBottomOf="@id/etOutputAmount"
-        app:layout_constraintEnd_toEndOf="@id/etOutputAmount">
+        app:layout_constraintBottom_toBottomOf="@id/etToInputBox"
+        app:layout_constraintEnd_toEndOf="@id/etToInputBox">
 
         <TextView
-            android:id="@+id/tvOutputToken"
+            android:id="@+id/tvToSelectText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/select_token"
@@ -157,11 +157,11 @@
         android:textSize="@dimen/sp_10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etOutputAmount"
+        app:layout_constraintTop_toBottomOf="@id/etToInputBox"
         tools:text="@string/exchange_rate_format" />
 
     <TextView
-        android:id="@+id/tvGas"
+        android:id="@+id/tvGasFee"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_45"
@@ -171,7 +171,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvExchangeRate"
-        tools:text="@string/gas_format" />
+        tools:text="@string/gas_fee_format" />
 
     <Button
         android:id="@+id/btnSwap"
@@ -180,7 +180,7 @@
         android:text="@string/action_swap_nbsp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvGas" />
+        app:layout_constraintTop_toBottomOf="@id/tvGasFee" />
 
     <TextView
         android:id="@+id/tvSwapRecords"
