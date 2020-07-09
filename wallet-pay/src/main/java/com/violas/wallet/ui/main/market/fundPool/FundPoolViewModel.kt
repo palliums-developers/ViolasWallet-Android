@@ -5,10 +5,10 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.palliums.base.BaseViewModel
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * Created by elephant on 2020/6/30 17:42.
@@ -20,14 +20,12 @@ class FundPoolViewModel : BaseViewModel() {
 
     companion object {
         const val ACTION_GET_TOKEN_PAIRS = 0x01
-        const val ACTION_GET_FIRST_TOKENS = 0x02
-        const val ACTION_GET_SECOND_TOKENS = 0x03
     }
 
     // 当前的操作模式，分转入和转出
     private val currOpModeLiveData = MutableLiveData<FundPoolOpMode>(FundPoolOpMode.TransferIn)
 
-    // 转入模式下选择的通证
+    // 转入模式下选择的Token
     private val currFirstTokenLiveData = MediatorLiveData<StableTokenVo?>()
     private val currSecondTokenLiveData = MediatorLiveData<StableTokenVo?>()
 
@@ -60,13 +58,14 @@ class FundPoolViewModel : BaseViewModel() {
 
         val convertToExchangeRate: (StableTokenVo, StableTokenVo) -> BigDecimal? =
             { firstToken, secondToken ->
-                val firstUsdValue = BigDecimal(firstToken.anchorValue.toString())
-                val secondUsdValue = BigDecimal(secondToken.anchorValue.toString())
+                val firstAnchorValue = BigDecimal(firstToken.anchorValue.toString())
+                val secondAnchorValue = BigDecimal(secondToken.anchorValue.toString())
                 val zero = BigDecimal("0.00")
-                if (firstUsdValue <= zero || secondUsdValue <= zero)
+                if (firstAnchorValue <= zero || secondAnchorValue <= zero)
                     null
                 else
-                    firstUsdValue / secondUsdValue
+                    firstAnchorValue.divide(secondAnchorValue, 8, RoundingMode.DOWN)
+                        .stripTrailingZeros()
             }
         exchangeRateLiveData.addSource(currFirstTokenLiveData) { firstToken ->
             val secondToken = currSecondTokenLiveData.value
@@ -189,29 +188,79 @@ class FundPoolViewModel : BaseViewModel() {
         if (action == ACTION_GET_TOKEN_PAIRS) {
             // test code
             delay(500)
+            val vlsusd = StableTokenVo(
+                accountDoId = 0,
+                coinNumber = CoinTypes.Violas.coinType(),
+                marketIndex = 0,
+                tokenDoId = 0,
+                address = "00000000000000000000000000000000",
+                module = "VLSUSD",
+                name = "VLSUSD",
+                displayName = "VLSUSD",
+                logoUrl = "",
+                localEnable = true,
+                chainEnable = true,
+                amount = 200_000000,
+                anchorValue = 1.00,
+                selected = false
+            )
+
+            val vlsgbp = StableTokenVo(
+                accountDoId = 0,
+                coinNumber = CoinTypes.Violas.coinType(),
+                marketIndex = 0,
+                tokenDoId = 0,
+                address = "00000000000000000000000000000000",
+                module = "VLSGBP",
+                name = "VLSGBP",
+                displayName = "VLSGBP",
+                logoUrl = "",
+                localEnable = true,
+                chainEnable = true,
+                amount = 300_000000,
+                anchorValue = 1.2526,
+                selected = false
+            )
+
+            val vlseur = StableTokenVo(
+                accountDoId = 0,
+                coinNumber = CoinTypes.Violas.coinType(),
+                marketIndex = 0,
+                tokenDoId = 0,
+                address = "00000000000000000000000000000000",
+                module = "VLSEUR",
+                name = "VLSEUR",
+                displayName = "VLSEUR",
+                logoUrl = "",
+                localEnable = true,
+                chainEnable = true,
+                amount = 400_000000,
+                anchorValue = 1.1272,
+                selected = false
+            )
+
+            val vlssgd = StableTokenVo(
+                accountDoId = 0,
+                coinNumber = CoinTypes.Violas.coinType(),
+                marketIndex = 0,
+                tokenDoId = 0,
+                address = "00000000000000000000000000000000",
+                module = "VLSSGD",
+                name = "VLSSGD",
+                displayName = "VLSSGD",
+                logoUrl = "",
+                localEnable = true,
+                chainEnable = true,
+                amount = 500_000000,
+                anchorValue = 0.7167,
+                selected = false
+            )
             val list = mutableListOf(
-                Pair(vlsusd, vls),
-                Pair(vlsgbp, vls),
-                Pair(vlseur, vls),
-                Pair(vlssgd, vls)
+                Pair(vlsgbp, vlsusd),
+                Pair(vlseur, vlsusd),
+                Pair(vlssgd, vlsusd)
             )
             tokenPairsLiveData.postValue(list)
-            return
-        }
-
-        if (action == ACTION_GET_FIRST_TOKENS || action == ACTION_GET_SECOND_TOKENS) {
-            val list = mutableListOf(
-                vls, vlsusd, vlsgbp, vlseur, vlssgd
-            )
-            val currToken = if (action == ACTION_GET_FIRST_TOKENS)
-                currFirstTokenLiveData.value
-            else
-                currSecondTokenLiveData.value
-            list.forEach {
-                it.selected = it == currToken
-            }
-
-            tokensLiveData.postValue(list)
             return
         }
 
@@ -225,91 +274,4 @@ class FundPoolViewModel : BaseViewModel() {
         // 转出
         val tokenPair = currTokenPairLiveData.value!!
     }
-
-    val tokensLiveData = MutableLiveData<List<ITokenVo>?>()
-
-    val vls = StableTokenVo(
-        accountDoId = 0,
-        coinNumber = CoinTypes.Violas.coinType(),
-        marketIndex = 0,
-        tokenDoId = 0,
-        address = "00000000000000000000000000000000",
-        module = "LBR",
-        name = "LBR",
-        displayName = "VLS",
-        logoUrl = "",
-        localEnable = true,
-        chainEnable = true,
-        amount = 100_000000,
-        anchorValue = 1.00,
-        selected = false
-    )
-
-    val vlsusd = StableTokenVo(
-        accountDoId = 0,
-        coinNumber = CoinTypes.Violas.coinType(),
-        marketIndex = 0,
-        tokenDoId = 0,
-        address = "00000000000000000000000000000000",
-        module = "VLSUSD",
-        name = "VLSUSD",
-        displayName = "VLSUSD",
-        logoUrl = "",
-        localEnable = true,
-        chainEnable = true,
-        amount = 200_000000,
-        anchorValue = 1.00,
-        selected = false
-    )
-
-    val vlsgbp = StableTokenVo(
-        accountDoId = 0,
-        coinNumber = CoinTypes.Violas.coinType(),
-        marketIndex = 0,
-        tokenDoId = 0,
-        address = "00000000000000000000000000000000",
-        module = "VLSGBP",
-        name = "VLSGBP",
-        displayName = "VLSGBP",
-        logoUrl = "",
-        localEnable = true,
-        chainEnable = true,
-        amount = 300_000000,
-        anchorValue = 1.2504,
-        selected = false
-    )
-
-    val vlseur = StableTokenVo(
-        accountDoId = 0,
-        coinNumber = CoinTypes.Violas.coinType(),
-        marketIndex = 0,
-        tokenDoId = 0,
-        address = "00000000000000000000000000000000",
-        module = "VLSEUR",
-        name = "VLSEUR",
-        displayName = "VLSEUR",
-        logoUrl = "",
-        localEnable = true,
-        chainEnable = true,
-        amount = 400_000000,
-        anchorValue = 1.1319,
-        selected = false
-    )
-
-    val vlssgd = StableTokenVo(
-        accountDoId = 0,
-        coinNumber = CoinTypes.Violas.coinType(),
-        marketIndex = 0,
-        tokenDoId = 0,
-        address = "00000000000000000000000000000000",
-        module = "VLSSGD",
-        name = "VLSSGD",
-        displayName = "VLSSGD",
-        logoUrl = "",
-        localEnable = true,
-        chainEnable = true,
-        amount = 500_000000,
-        anchorValue = 0.7189,
-        selected = false
-    )
 }
