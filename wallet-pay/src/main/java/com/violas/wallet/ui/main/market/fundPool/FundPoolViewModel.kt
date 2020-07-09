@@ -43,15 +43,8 @@ class FundPoolViewModel : BaseViewModel() {
         currFirstTokenLiveData.addSource(currOpModeLiveData) {
             if (it == FundPoolOpMode.TransferIn) {
                 currFirstTokenLiveData.postValue(null)
-            }
-        }
-        currSecondTokenLiveData.addSource(currOpModeLiveData) {
-            if (it == FundPoolOpMode.TransferIn) {
                 currSecondTokenLiveData.postValue(null)
-            }
-        }
-        currTokenPairLiveData.addSource(currOpModeLiveData) {
-            if (it == FundPoolOpMode.TransferOut) {
+            }else{
                 currTokenPairLiveData.postValue(null)
             }
         }

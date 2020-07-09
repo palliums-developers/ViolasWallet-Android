@@ -84,7 +84,12 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             if (fundPoolViewModel.isTransferInMode()) {
                 showSelectTokenDialog(false)
             } else {
-                fundPoolViewModel.execute(action = ACTION_GET_TOKEN_PAIRS)
+                fundPoolViewModel.getTokenPairsLiveData()
+                    .removeObserver(tokenPairsObserver)
+                fundPoolViewModel.execute(action = ACTION_GET_TOKEN_PAIRS) {
+                    fundPoolViewModel.getTokenPairsLiveData()
+                        .observe(viewLifecycleOwner, tokenPairsObserver)
+                }
             }
         }
 
@@ -169,8 +174,6 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
                 .removeObserver(currSecondTokenObserver)
             fundPoolViewModel.getCurrTokenPairLiveData()
                 .observe(viewLifecycleOwner, currTokenPairObserver)
-            fundPoolViewModel.getTokenPairsLiveData()
-                .observe(viewLifecycleOwner, tokenPairsObserver)
         }
     }
 
@@ -247,7 +250,6 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             tvSecondSelectText.text = "${it.first.displayName}/${it.second.displayName}"
             etSecondInputBox.hint = "0.00${it.first.displayName}\n0.00${it.second.displayName}"
         }
-        etSecondInputBox.clearComposingText()
     }
 
     private val tokenPairsObserver = Observer<List<Pair<StableTokenVo, StableTokenVo>>?> {
@@ -300,13 +302,11 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
     private val currFirstTokenObserver = Observer<StableTokenVo?> {
         tvFirstSelectText.text = it?.displayName ?: getString(R.string.select_token)
         etFirstInputBox.hint = "0.00"
-        etFirstInputBox.clearComposingText()
     }
 
     private val currSecondTokenObserver = Observer<StableTokenVo?> {
         tvSecondSelectText.text = it?.displayName ?: getString(R.string.select_token)
         etSecondInputBox.hint = "0.00"
-        etSecondInputBox.clearComposingText()
     }
 
     private fun showSelectTokenDialog(selectFirst: Boolean) {
