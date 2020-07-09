@@ -11,8 +11,8 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
+import com.violas.wallet.ui.main.market.MarketFragment
 import com.violas.wallet.ui.main.me.MeFragment
-import com.violas.wallet.ui.main.quotes.QuotesFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
@@ -75,7 +75,7 @@ class MainActivity : BaseAppActivity() {
 
         viewPagerAdapter = FragmentPagerAdapterSupport(supportFragmentManager)
         viewPagerAdapter.addFragment(WalletFragment())
-        viewPagerAdapter.addFragment(QuotesFragment())
+        viewPagerAdapter.addFragment(MarketFragment())
         viewPagerAdapter.addFragment(MeFragment())
 
         view_pager.adapter = viewPagerAdapter
