@@ -35,7 +35,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         }
     }
 
-    private val mTipsArr by lazy { SparseArray<String>(3) }
+    private val mTipsArr by lazy { SparseArray<CharSequence>(3) }
     private val mImageArr by lazy { SparseArray<Drawable>(3) }
 
     constructor(context: Context) : super(context) {
@@ -61,6 +61,9 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         View.inflate(context, R.layout.widget_status_layout, this)
 
         vStatusReload.setOnClickListener(this)
+        vStatusTips.setOnClickListener(this)
+        vStatusTipsNoImage.setOnClickListener(this)
+        clStatusRoot.setOnClickListener(this)
 
         var status = IStatusLayout.Status.STATUS_NONE
         var emptyTips = getString(R.string.common_status_empty, context = context)
@@ -139,8 +142,16 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
     override fun onClick(view: View) {
         if (!isFastMultiClick(view)) {
             when (view.id) {
-                R.id.vStatusReload -> {
-                    mReloadCallback?.invoke()
+                R.id.vStatusReload, R.id.vStatusTips, R.id.vStatusTipsNoImage -> {
+                    // do not process
+                }
+
+                R.id.clStatusRoot -> {
+                    if (mLastStatus == IStatusLayout.Status.STATUS_FAILURE
+                        || mLastStatus == IStatusLayout.Status.STATUS_NO_NETWORK
+                    ) {
+                        mReloadCallback?.invoke()
+                    }
                 }
             }
         }
@@ -163,12 +174,12 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         return this
     }
 
-    override fun setTipsWithStatus(@IStatusLayout.Status status: Int, tips: String): IStatusLayout {
+    override fun setTipsWithStatus(@IStatusLayout.Status status: Int, tips: CharSequence): IStatusLayout {
         mTipsArr.put(status, tips)
         return this
     }
 
-    override fun showStatus(@IStatusLayout.Status status: Int, errorMsg: String?) {
+    override fun showStatus(@IStatusLayout.Status status: Int, errorMsg: CharSequence?) {
         when (status) {
             IStatusLayout.Status.STATUS_NONE -> {
                 visibility = GONE
@@ -190,7 +201,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
                 hideLoading()
                 vStatusReload.visibility = GONE
 
-                val tips: String? = mTipsArr[IStatusLayout.Status.STATUS_EMPTY]
+                val tips: CharSequence? = mTipsArr[IStatusLayout.Status.STATUS_EMPTY]
                 val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_EMPTY]
                 setStatusData(tips, image)
             }
@@ -199,7 +210,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
                 visibility = View.VISIBLE
                 hideLoading()
 
-                val tips: String? = mTipsArr[IStatusLayout.Status.STATUS_FAILURE]
+                val tips: CharSequence? = mTipsArr[IStatusLayout.Status.STATUS_FAILURE]
                 val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_FAILURE]
                     ?: mImageArr[IStatusLayout.Status.STATUS_EMPTY]
                 setStatusData(tips, image)
@@ -213,7 +224,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
                 visibility = View.VISIBLE
                 hideLoading()
 
-                val tips: String? = mTipsArr[IStatusLayout.Status.STATUS_NO_NETWORK]
+                val tips: CharSequence? = mTipsArr[IStatusLayout.Status.STATUS_NO_NETWORK]
                 val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_NO_NETWORK]
                     ?: mImageArr[IStatusLayout.Status.STATUS_EMPTY]
                 setStatusData(tips, image)
@@ -273,7 +284,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         return this
     }
 
-    private fun setStatusData(tips: String?, image: Drawable?) {
+    private fun setStatusData(tips: CharSequence?, image: Drawable?) {
         if (image == null) {
             vStatusIcon.visibility = GONE
             vStatusTips.visibility = GONE
