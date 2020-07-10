@@ -3,6 +3,9 @@ package com.violas.wallet.ui.main.market.selectToken
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.view.*
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
@@ -12,14 +15,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
 import com.palliums.extensions.close
-import com.palliums.utils.CommonViewHolder
-import com.palliums.utils.CustomMainScope
-import com.palliums.utils.getResourceId
+import com.palliums.utils.*
+import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.ui.main.market.bean.ITokenVo
-import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.dialog_market_select_token.*
@@ -124,23 +125,37 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
 
             val inputText = it?.toString()?.trim()
             if (inputText.isNullOrEmpty()) {
-                tokenAdapter.submitList(displayTokens)
+                handleData(displayTokens!!)
             } else {
                 searchToken(inputText)
             }
         }
-        recyclerView.adapter = tokenAdapter
 
+        recyclerView.adapter = tokenAdapter
+        recyclerView.visibility = View.GONE
+
+        statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
+        statusLayout.setReloadCallback {
+            statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
+            tokensBridge!!.getMarketSupportTokens(false)
+        }
+
+        tokensBridge!!.getMarketSupportTokens(true)
         tokensBridge!!.getMarketSupportTokensLiveData().observe(viewLifecycleOwner, Observer {
             cancelJob()
 
-            if (it.isNullOrEmpty()) {
-                // TODO 加载失败和空数据处理
-            } else {
-                filterData(it)
+            when {
+                it == null -> {
+                    handleLoadFailure()
+                }
+                it.isEmpty() -> {
+                    handleEmptyData(null)
+                }
+                else -> {
+                    filterData(it)
+                }
             }
         })
-        tokensBridge!!.getMarketSupportTokens()
     }
 
     private fun cancelJob() {
@@ -185,30 +200,80 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
 
             etSearchBox.isEnabled = true
             displayTokens = list
+            if (list.isEmpty()) {
+                handleEmptyData(null)
+                return@launch
+            }
 
-            val inputText = etSearchBox.text.toString().trim()
-            if (inputText.isEmpty()) {
-                tokenAdapter.submitList(list)
+            val searchText = etSearchBox.text.toString().trim()
+            if (searchText.isEmpty()) {
+                handleData(list)
             } else {
-                searchToken(inputText)
+                searchToken(searchText)
             }
         }
     }
 
-    private fun searchToken(inputText: String) {
+    private fun searchToken(searchText: String) {
         job = launch {
             val searchResult = withContext(Dispatchers.IO) {
                 displayTokens?.filter { item ->
-                    item.displayName.contains(inputText, true)
+                    item.displayName.contains(searchText, true)
                 }
             }
-            tokenAdapter.submitList(searchResult)
+
             job = null
 
             if (searchResult.isNullOrEmpty()) {
-                // TODO 没有找到币种
+                handleEmptyData(searchText)
+            } else {
+                handleData(searchResult)
             }
         }
+    }
+
+    private fun handleLoadFailure() {
+        tokenAdapter.submitList(null)
+        recyclerView.visibility = View.GONE
+        statusLayout.showStatus(
+            if (isNetworkConnected())
+                IStatusLayout.Status.STATUS_FAILURE
+            else
+                IStatusLayout.Status.STATUS_NO_NETWORK
+        )
+    }
+
+    private fun handleEmptyData(searchText: String?) {
+        tokenAdapter.submitList(null)
+        recyclerView.visibility = View.GONE
+        statusLayout.setTipsWithStatus(
+            IStatusLayout.Status.STATUS_EMPTY,
+            if (searchText.isNullOrEmpty())
+                getString(R.string.tips_select_token_list_is_empty)
+            else
+                getSearchEmptyTips(searchText)
+        )
+        statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
+    }
+
+    private fun getSearchEmptyTips(searchText: String) = run {
+        val text = getString(R.string.tips_select_token_search_is_empty, searchText)
+        val spannableStringBuilder = SpannableStringBuilder(text)
+        text.indexOf(searchText).let {
+            spannableStringBuilder.setSpan(
+                ForegroundColorSpan(getColorByAttrId(R.attr.colorPrimary, requireContext())),
+                it,
+                it + searchText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        spannableStringBuilder
+    }
+
+    private fun handleData(list: List<ITokenVo>) {
+        statusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
+        recyclerView.visibility = View.VISIBLE
+        tokenAdapter.submitList(list)
     }
 
     fun setCallback(
@@ -268,7 +333,7 @@ val tokenDiffCallback = object : DiffUtil.ItemCallback<ITokenVo>() {
 
 interface TokensBridge {
 
-    fun getMarketSupportTokens()
+    fun getMarketSupportTokens(recreateLiveData: Boolean)
 
     fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?>
 

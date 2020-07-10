@@ -18,7 +18,7 @@ import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_SWAP_SELECT_FROM
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_SWAP_SELECT_TO
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
-import com.violas.wallet.viewModel.MarketTokensViewModel
+import com.violas.wallet.ui.main.market.MarketViewModel
 import kotlinx.android.synthetic.main.fragment_swap.*
 
 /**
@@ -32,8 +32,8 @@ class SwapFragment : BaseFragment(), TokensBridge {
     private val swapViewModel by lazy {
         ViewModelProvider(this).get(SwapViewModel::class.java)
     }
-    private val marketTokensViewModel by lazy {
-        ViewModelProvider(requireParentFragment()).get(MarketTokensViewModel::class.java)
+    private val marketViewModel by lazy {
+        ViewModelProvider(requireParentFragment()).get(MarketViewModel::class.java)
     }
 
 
@@ -111,8 +111,8 @@ class SwapFragment : BaseFragment(), TokensBridge {
             }
         })
 
-        if (!marketTokensViewModel.tipsMessage.hasObservers()) {
-            marketTokensViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
+        if (!marketViewModel.tipsMessage.hasObservers()) {
+            marketViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
                 it.getDataIfNotHandled()?.let { msg ->
                     if (msg.isNotEmpty()) {
                         showToast(msg)
@@ -134,12 +134,12 @@ class SwapFragment : BaseFragment(), TokensBridge {
             .show(childFragmentManager)
     }
 
-    override fun getMarketSupportTokens() {
-        marketTokensViewModel.execute()
+    override fun getMarketSupportTokens(recreateLiveData: Boolean) {
+        marketViewModel.execute(recreateLiveData)
     }
 
     override fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?> {
-        return marketTokensViewModel.getMarketSupportTokensLiveData()
+        return marketViewModel.getMarketSupportTokensLiveData()
     }
 
     override fun getCurrToken(action: Int): ITokenVo? {

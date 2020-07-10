@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palliums.exceptions.RequestException
 import com.palliums.extensions.getShowErrorMessage
+import com.palliums.extensions.isNoNetwork
 import com.palliums.net.LoadState
 import com.palliums.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -38,11 +40,11 @@ abstract class BaseViewModel : ViewModel() {
      * @return 返回true才会调用[realExecute]去真正执行
      */
     @MainThread
-    fun execute(
+    open fun execute(
         vararg params: Any,
         action: Int = -1,
         checkParamBeforeExecute: Boolean = true,
-        checkNetworkBeforeExecute: Boolean = true,
+        checkNetworkBeforeExecute: Boolean = false,
         failureCallback: ((error: Throwable) -> Unit)? = null,
         successCallback: (() -> Unit)? = null
     ): Boolean {
@@ -64,7 +66,8 @@ abstract class BaseViewModel : ViewModel() {
                 }
 
                 val exception = RequestException.networkUnavailable()
-                loadState.postValueSupport(LoadState.failure(exception).apply { this.action = action })
+                loadState.postValueSupport(
+                    LoadState.failure(exception).apply { this.action = action })
                 tipsMessage.postValueSupport(exception.getShowErrorMessage(isLoadAction(action)))
 
                 failureCallback?.invoke(exception)
@@ -88,6 +91,11 @@ abstract class BaseViewModel : ViewModel() {
                 successCallback?.invoke()
             } catch (e: Exception) {
                 e.printStackTrace()
+
+                if (e.isNoNetwork()) {
+                    // 没有网络时返回很快，加载视图一闪而过效果不好
+                    delay(200)
+                }
 
                 synchronized(lock) {
                     retry = {

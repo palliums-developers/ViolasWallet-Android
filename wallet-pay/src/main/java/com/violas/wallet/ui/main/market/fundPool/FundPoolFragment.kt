@@ -22,6 +22,7 @@ import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
 import com.violas.wallet.event.SwitchFundPoolOpModeEvent
 import com.violas.wallet.ui.main.market.MarketSwitchPopupView
+import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.ui.main.market.fundPool.FundPoolViewModel.Companion.ACTION_GET_TOKEN_PAIRS
@@ -29,7 +30,6 @@ import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_FIRST
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_SECOND
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
-import com.violas.wallet.viewModel.MarketTokensViewModel
 import kotlinx.android.synthetic.main.fragment_fund_pool.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -45,8 +45,8 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
     private val fundPoolViewModel by lazy {
         ViewModelProvider(this).get(FundPoolViewModel::class.java)
     }
-    private val marketTokensViewModel by lazy {
-        ViewModelProvider(requireParentFragment()).get(MarketTokensViewModel::class.java)
+    private val marketViewModel by lazy {
+        ViewModelProvider(requireParentFragment()).get(MarketViewModel::class.java)
     }
 
     override fun getLayoutResId(): Int {
@@ -84,7 +84,12 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             if (fundPoolViewModel.isTransferInMode()) {
                 showSelectTokenDialog(false)
             } else {
-                fundPoolViewModel.execute(action = ACTION_GET_TOKEN_PAIRS)
+                fundPoolViewModel.getTokenPairsLiveData()
+                    .removeObserver(tokenPairsObserver)
+                fundPoolViewModel.execute(action = ACTION_GET_TOKEN_PAIRS) {
+                    fundPoolViewModel.getTokenPairsLiveData()
+                        .observe(viewLifecycleOwner, tokenPairsObserver)
+                }
             }
         }
 
@@ -125,8 +130,8 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             }
         })
 
-        if (!marketTokensViewModel.tipsMessage.hasObservers()) {
-            marketTokensViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
+        if (!marketViewModel.tipsMessage.hasObservers()) {
+            marketViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
                 it.getDataIfNotHandled()?.let { msg ->
                     if (msg.isNotEmpty()) {
                         showToast(msg)
@@ -169,8 +174,6 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
                 .removeObserver(currSecondTokenObserver)
             fundPoolViewModel.getCurrTokenPairLiveData()
                 .observe(viewLifecycleOwner, currTokenPairObserver)
-            fundPoolViewModel.getTokenPairsLiveData()
-                .observe(viewLifecycleOwner, tokenPairsObserver)
         }
     }
 
@@ -247,7 +250,6 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             tvSecondSelectText.text = "${it.first.displayName}/${it.second.displayName}"
             etSecondInputBox.hint = "0.00${it.first.displayName}\n0.00${it.second.displayName}"
         }
-        etSecondInputBox.clearComposingText()
     }
 
     private val tokenPairsObserver = Observer<List<Pair<StableTokenVo, StableTokenVo>>?> {
@@ -300,13 +302,11 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
     private val currFirstTokenObserver = Observer<StableTokenVo?> {
         tvFirstSelectText.text = it?.displayName ?: getString(R.string.select_token)
         etFirstInputBox.hint = "0.00"
-        etFirstInputBox.clearComposingText()
     }
 
     private val currSecondTokenObserver = Observer<StableTokenVo?> {
         tvSecondSelectText.text = it?.displayName ?: getString(R.string.select_token)
         etSecondInputBox.hint = "0.00"
-        etSecondInputBox.clearComposingText()
     }
 
     private fun showSelectTokenDialog(selectFirst: Boolean) {
@@ -320,12 +320,12 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             .show(childFragmentManager)
     }
 
-    override fun getMarketSupportTokens() {
-        marketTokensViewModel.execute()
+    override fun getMarketSupportTokens(recreateLiveData: Boolean) {
+        marketViewModel.execute(recreateLiveData)
     }
 
     override fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?> {
-        return marketTokensViewModel.getMarketSupportTokensLiveData()
+        return marketViewModel.getMarketSupportTokensLiveData()
     }
 
     override fun getCurrToken(action: Int): ITokenVo? {

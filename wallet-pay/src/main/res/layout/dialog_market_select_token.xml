@@ -16,20 +16,36 @@
         android:background="@drawable/bg_market_search_box"
         android:drawableStart="?attr/iconSearch"
         android:drawablePadding="@dimen/dp_6"
+        android:ellipsize="end"
         android:gravity="start|center_vertical"
         android:hint="@string/hint_market_select_token_search_box"
         android:paddingHorizontal="@dimen/dp_7"
         android:paddingVertical="@dimen/dp_8"
+        android:singleLine="true"
         android:textColorHint="?android:attr/textColorTertiary"
         android:textSize="@dimen/sp_14" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_298"
-        android:paddingVertical="@dimen/dp_10"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:itemCount="10"
-        tools:listitem="@layout/item_market_select_token" />
+        android:layout_height="@dimen/dp_298">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="@dimen/dp_10"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="10"
+            tools:listitem="@layout/item_market_select_token" />
+
+        <com.palliums.widget.status.DefaultStatusLayout
+            android:id="@+id/statusLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:slShowReloadOnFailed="true"
+            tools:lsStatus="loading" />
+
+    </FrameLayout>
 
 </LinearLayout>

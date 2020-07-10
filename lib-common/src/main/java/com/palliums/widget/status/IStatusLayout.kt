@@ -57,13 +57,13 @@ interface IStatusLayout {
      * @param status
      * @param tips
      */
-    fun setTipsWithStatus(@Status status: Int, tips: String): IStatusLayout
+    fun setTipsWithStatus(@Status status: Int, tips: CharSequence): IStatusLayout
 
     /**
      * 显示状态
      * @param status
      */
-    fun showStatus(@Status status: Int, errorMsg: String? = null)
+    fun showStatus(@Status status: Int, errorMsg: CharSequence? = null)
 
     /**
      * 设置提示文本的字体大小

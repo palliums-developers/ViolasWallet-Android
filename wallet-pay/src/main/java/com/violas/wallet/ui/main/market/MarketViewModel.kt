@@ -1,4 +1,4 @@
-package com.violas.wallet.viewModel
+package com.violas.wallet.ui.main.market
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,18 +8,56 @@ import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
+import kotlinx.coroutines.delay
 
 /**
  * Created by elephant on 2020/7/8 13:00.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 交易市场支持的Token列表
+ * desc: 交易市场的ViewModel
  */
-class MarketTokensViewModel : BaseViewModel() {
+class MarketViewModel : BaseViewModel() {
 
-    private val marketTokensLiveData = MutableLiveData<List<ITokenVo>?>()
+    private var marketTokensLiveData = MutableLiveData<List<ITokenVo>?>()
+
+    override fun execute(
+        vararg params: Any,
+        action: Int,
+        checkParamBeforeExecute: Boolean,
+        checkNetworkBeforeExecute: Boolean,
+        failureCallback: ((error: Throwable) -> Unit)?,
+        successCallback: (() -> Unit)?
+    ): Boolean {
+        if (params.isNotEmpty() && params[0] as Boolean? == true) {
+            synchronized(lock) {
+                marketTokensLiveData = MutableLiveData()
+            }
+        }
+
+        return super.execute(
+            params = *params,
+            action = action,
+            checkParamBeforeExecute = checkParamBeforeExecute,
+            checkNetworkBeforeExecute = checkNetworkBeforeExecute,
+            failureCallback = failureCallback,
+            successCallback = successCallback
+        )
+    }
+
+    private var mockData = 0
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
+        // test code
+        if (mockData == 0) {
+            //加载失败
+            mockData = 1
+            delay(200)
+            marketTokensLiveData.postValue(null)
+            return
+        }
+
+        mockData = 0
+        delay(2000)
         val vls = PlatformTokenVo(
             accountDoId = 0,
             accountType = AccountType.Normal,
@@ -148,6 +186,8 @@ class MarketTokensViewModel : BaseViewModel() {
     }
 
     fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?> {
-        return marketTokensLiveData
+        synchronized(lock) {
+            return marketTokensLiveData
+        }
     }
 }
