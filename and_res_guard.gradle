@@ -5,6 +5,7 @@ andResGuard {
     use7zip = true
     useSign = true
     keepRoot = false
+    fixedResName = "vls"
     mergeDuplicatedRes = true
     compressFilePattern = [
             "*.png",
