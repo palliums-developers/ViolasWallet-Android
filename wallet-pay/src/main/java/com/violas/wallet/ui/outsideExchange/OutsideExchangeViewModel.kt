@@ -1,6 +1,5 @@
 package com.violas.wallet.ui.outsideExchange
 
-import androidx.annotation.Keep
 import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +13,7 @@ import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.exchangeMapping.ExchangeAssert
 import com.violas.wallet.biz.exchangeMapping.ExchangeMappingManager
 import com.violas.wallet.biz.exchangeMapping.ExchangePair
-import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
+import com.violas.wallet.biz.exchangeMapping.ViolasMappingToken
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -245,13 +244,13 @@ class OutsideExchangeViewModel(private val initException: OutsideExchangeInitExc
                         exchangePair.getReceiveLastAddress()
                     }
                 )
-                if (receiveAccount is ViolasMappingAccount) {
-                    mTokenManager.insert(
-                        true,
-                        receivingAccount.id,
-                        receiveAccount.getTokenName(),
-                        receiveAccount.getTokenIdx()
-                    )
+                if (receiveAccount is ViolasMappingToken) {
+//                    mTokenManager.insert(
+//                        true,
+//                        receivingAccount.id,
+//                        receiveAccount.getTokenName(),
+//                        receiveAccount.getTokenIdx()
+//                    )
                 }
                 EventBus.getDefault().post(RefreshBalanceEvent())
                 success.invoke()

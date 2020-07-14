@@ -8,14 +8,16 @@ interface BTCAccount {
     fun getPublicKey(): ByteArray
 }
 
-interface LibraAccount {
-    fun getAddress(): ByteArray
-}
-
-interface ViolasAccount {
+interface LibraToken {
     fun getAddress(): ByteArray
     fun getTokenName(): String
-    fun getTokenIdx(): Long
+    fun getTokenMark(): LibraTokenMark
+}
+
+interface ViolasToken {
+    fun getAddress(): ByteArray
+    fun getTokenName(): String
+    fun getTokenMark(): LibraTokenMark
 }
 
 abstract class MappingAccount(private val sendPrivateKey: ByteArray? = null) {
@@ -35,24 +37,27 @@ class BTCMappingAccount(
     override fun getPublicKey() = publicKey
 }
 
-class LibraMappingAccount(
-    private val address: String,
-    privateKey: ByteArray? = null
-
-) : MappingAccount(privateKey),
-    LibraAccount {
-    override fun getAddress() = address.hexToBytes()
-}
-
-class ViolasMappingAccount(
+class LibraMappingToken(
     private val address: String,
     private val tokenName: String,
-    private val tokenIdx: Long,
+    private val tokenMark: LibraTokenMark,
     privateKey: ByteArray? = null
 ) : MappingAccount(privateKey),
-    ViolasAccount {
+    LibraToken {
+    override fun getAddress() = address.hexToBytes()
+    override fun getTokenName() = tokenName
+    override fun getTokenMark() = tokenMark
+}
+
+class ViolasMappingToken(
+    private val address: String,
+    private val tokenName: String,
+    private val tokenMark: LibraTokenMark,
+    privateKey: ByteArray? = null
+) : MappingAccount(privateKey),
+    ViolasToken {
     override fun getAddress() = address.hexToBytes()
     override fun getTokenName() = tokenName
 
-    override fun getTokenIdx() = tokenIdx
+    override fun getTokenMark() = tokenMark
 }

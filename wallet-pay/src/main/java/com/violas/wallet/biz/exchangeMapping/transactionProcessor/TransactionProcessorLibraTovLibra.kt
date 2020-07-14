@@ -6,9 +6,9 @@ import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.TokenManager
-import com.violas.wallet.biz.exchangeMapping.LibraMappingAccount
+import com.violas.wallet.biz.exchangeMapping.LibraMappingToken
 import com.violas.wallet.biz.exchangeMapping.MappingAccount
-import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
+import com.violas.wallet.biz.exchangeMapping.ViolasMappingToken
 import com.violas.wallet.repository.DataRepository
 import org.json.JSONObject
 import org.palliums.libracore.crypto.KeyPair
@@ -26,9 +26,9 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
     }
 
     override fun dispense(sendAccount: MappingAccount, receiveAccount: MappingAccount): Boolean {
-        return sendAccount is LibraMappingAccount
+        return sendAccount is LibraMappingToken
                 && sendAccount.isSendAccount()
-                && receiveAccount is ViolasMappingAccount
+                && receiveAccount is ViolasMappingToken
                 && receiveAccount.isSendAccount()
     }
 
@@ -40,8 +40,8 @@ class TransactionProcessorLibraTovLibra() : TransactionProcessor {
         sendAmount: BigDecimal,
         receiveAddress: String
     ): String {
-        val sendAccount = sendAccount as LibraMappingAccount
-        val receiveAccount = receiveAccount as ViolasMappingAccount
+        val sendAccount = sendAccount as LibraMappingToken
+        val receiveAccount = receiveAccount as ViolasMappingToken
 
         var balance = mLibraService.getBalance(
             sendAccount.getAddress().toHex()

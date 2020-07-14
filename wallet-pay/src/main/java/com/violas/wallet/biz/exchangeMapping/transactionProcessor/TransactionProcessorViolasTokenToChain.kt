@@ -3,14 +3,12 @@ package com.violas.wallet.biz.exchangeMapping.transactionProcessor
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.exchangeMapping.BTCMappingAccount
-import com.violas.wallet.biz.exchangeMapping.LibraMappingAccount
+import com.violas.wallet.biz.exchangeMapping.LibraMappingToken
 import com.violas.wallet.biz.exchangeMapping.MappingAccount
-import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
+import com.violas.wallet.biz.exchangeMapping.ViolasMappingToken
 import com.violas.wallet.repository.DataRepository
 import org.json.JSONObject
 import org.palliums.violascore.serialization.toHex
-import org.palliums.violascore.transaction.RawTransaction
-import org.palliums.violascore.transaction.optionTransaction
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
@@ -27,9 +25,9 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
     }
 
     override fun dispense(sendAccount: MappingAccount, receiveAccount: MappingAccount): Boolean {
-        return sendAccount is ViolasMappingAccount
+        return sendAccount is ViolasMappingToken
                 && sendAccount.isSendAccount()
-                && ((receiveAccount is BTCMappingAccount) or (receiveAccount is LibraMappingAccount))
+                && ((receiveAccount is BTCMappingAccount) or (receiveAccount is LibraMappingToken))
     }
 
     override suspend fun handle(
@@ -41,7 +39,7 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
 
         val subExchangeDate = JSONObject()
         subExchangeDate.put("flag", "violas")
-        if (receiveAccount is LibraMappingAccount) {
+        if (receiveAccount is LibraMappingToken) {
             val authKeyPrefix = byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             subExchangeDate.put("type", "v2l")
             subExchangeDate.put("to_address", (authKeyPrefix + receiveAccount.getAddress()).toHex())
@@ -51,28 +49,28 @@ class TransactionProcessorViolasTokenToChain : TransactionProcessor {
         }
         subExchangeDate.put("state", "start")
 
-        val sendAccount = sendAccount as ViolasMappingAccount
+        val sendAccount = sendAccount as ViolasMappingToken
 
-        val balance = mTokenManager.getTokenBalance(
-            sendAccount.getAddress().toHex(),
-            sendAccount.getTokenIdx()
-        ).let { BigDecimal(it) }
-
-        if (sendAmount.multiply(BigDecimal("1000000")) > balance) {
-            throw LackOfBalanceException()
-        }
-
-        val transactionPayload = mTokenManager.transferTokenPayload(
-            sendAccount.getTokenIdx(),
-            receiveAddress,
-            sendAmount.multiply(BigDecimal("1000000")).toLong(),
-            subExchangeDate.toString().toByteArray()
-        )
-
-        mViolasService.sendTransaction(
-            transactionPayload,
-            Account(KeyPair.fromSecretKey(sendAccount.getPrivateKey()!!))
-        )
+//        val balance = mTokenManager.getTokenBalance(
+//            sendAccount.getAddress().toHex(),
+//            sendAccount.getTokenIdx()
+//        ).let { BigDecimal(it) }
+//
+//        if (sendAmount.multiply(BigDecimal("1000000")) > balance) {
+//            throw LackOfBalanceException()
+//        }
+//
+//        val transactionPayload = mTokenManager.transferTokenPayload(
+//            sendAccount.getTokenIdx(),
+//            receiveAddress,
+//            sendAmount.multiply(BigDecimal("1000000")).toLong(),
+//            subExchangeDate.toString().toByteArray()
+//        )
+//
+//        mViolasService.sendTransaction(
+//            transactionPayload,
+//            Account(KeyPair.fromSecretKey(sendAccount.getPrivateKey()!!))
+//        )
         return ""
     }
 }

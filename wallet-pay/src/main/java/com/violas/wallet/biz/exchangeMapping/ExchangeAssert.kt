@@ -14,17 +14,23 @@ interface ExchangeCoin : ExchangeAssert {
 
 }
 
-interface ExchangeToken : ExchangeAssert {
-    fun getTokenIdx(): Long
+data class LibraTokenMark(
+    val address: String,
+    val module: String,
+    val name: String
+)
+
+interface ExchangeLibraToken : ExchangeAssert {
+    fun getTokenMark(): LibraTokenMark
 }
 
-class ExchangeTokenImpl(
+class ExchangeLibraTokenImpl(
     private val coinTypes: CoinTypes,
     private val tokenName: String,
-    private val tokenIdx: Long
+    private val tokenIdx: LibraTokenMark
 ) :
-    ExchangeToken {
-    override fun getTokenIdx(): Long {
+    ExchangeLibraToken {
+    override fun getTokenMark(): LibraTokenMark {
         return tokenIdx
     }
 

@@ -12,7 +12,6 @@ import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.mappingExchange.MappingType
 import kotlinx.coroutines.*
 import org.palliums.libracore.serialization.hexToBytes
-import java.lang.Exception
 import java.math.BigDecimal
 
 class ExchangeMappingManager {
@@ -57,16 +56,18 @@ class ExchangeMappingManager {
         }
         return when (exchangeAssert.getCoinType()) {
             CoinTypes.Violas -> {
-                ViolasMappingAccount(
+                ViolasMappingToken(
                     account.address,
-                    (exchangePair.getLast() as ExchangeToken).getName(),
-                    (exchangePair.getLast() as ExchangeToken).getTokenIdx(),
+                    (exchangePair.getLast() as ExchangeLibraToken).getName(),
+                    (exchangePair.getLast() as ExchangeLibraToken).getTokenMark(),
                     privateKey
                 )
             }
             CoinTypes.Libra -> {
-                LibraMappingAccount(
+                LibraMappingToken(
                     account.address,
+                    (exchangePair.getLast() as ExchangeLibraToken).getName(),
+                    (exchangePair.getLast() as ExchangeLibraToken).getTokenMark(),
                     privateKey
                 )
             }
@@ -116,108 +117,107 @@ class ExchangeMappingManager {
         val exchangePairManager = ExchangePairManager()
 
         return coroutineScope {
-            val btc2vbtc = exceptionAsync { loadBTC2vBTC() }
-            val libra2vLibra = exceptionAsync { loadLibra2vLibra() }
-
-            btc2vbtc.await()?.let {
-                exchangePairManager.addExchangePair(it)
-            }
-            libra2vLibra.await()?.let {
-                exchangePairManager.addExchangePair(it)
-            }
-
+//            val btc2vbtc = exceptionAsync { loadBTC2vBTC() }
+//            val libra2vLibra = exceptionAsync { loadLibra2vLibra() }
+//
+//            btc2vbtc.await()?.let {
+//                exchangePairManager.addExchangePair(it)
+//            }
+//            libra2vLibra.await()?.let {
+//                exchangePairManager.addExchangePair(it)
+//            }
             exchangePairManager
         }
     }
 
-    private suspend fun loadLibra2vLibra(): ExchangePair? {
-        val libraToVLibraInfoDeferred =
-            GlobalScope.exceptionAsync { mMappingExchangeService.getMappingInfo(MappingType.LibraToVlibra) }
-        val vLibraToLibraInfoDeferred =
-            GlobalScope.exceptionAsync { mMappingExchangeService.getMappingInfo(MappingType.VlibraToLibra) }
-
-        val libraToVLibraInfo = libraToVLibraInfoDeferred.await().data
-        val vLibraToLibraInfo = vLibraToLibraInfoDeferred.await().data
-
-        if (libraToVLibraInfo == null || vLibraToLibraInfo == null) {
-            return null
-        }
-
-        return object :
-            ExchangePair {
-            override fun getFirst() = ExchangeCoinImpl(CoinTypes.Libra)
-
-            override fun getLast() = ExchangeTokenImpl(
-                CoinTypes.Violas,
-//                "vLibra",
-                libraToVLibraInfo.name,
-                libraToVLibraInfo.tokenIdx
-//            3
-            )
-
-            override fun getRate(): BigDecimal {
-                return BigDecimal(1)
-            }
-
-            override fun getReceiveFirstAddress(): String {
-//                return "0a82179351b8ecb6c5e68ab7b08622de"
-                return libraToVLibraInfo.receiveAddress
-            }
-
-            override fun getReceiveLastAddress(): String {
-//                return "ee1e24e8fc664894709c947b74823b2f"
-                return vLibraToLibraInfo.receiveAddress
-            }
-        }
-    }
-
-    private suspend fun loadBTC2vBTC(): ExchangePair? {
-        val BTCToVbtcInfoDeferred =
-            GlobalScope.exceptionAsync { mMappingExchangeService.getMappingInfo(MappingType.BTCToVbtc) }
-        val VbtcToBTCInfoDeferred =
-            GlobalScope.exceptionAsync { mMappingExchangeService.getMappingInfo(MappingType.VbtcToBTC) }
-
-        val BTCToVbtcInfo = BTCToVbtcInfoDeferred.await().data
-        val VbtcToBTCInfo = VbtcToBTCInfoDeferred.await().data
-
-        if (BTCToVbtcInfo == null || VbtcToBTCInfo == null) {
-            return null
-        }
-
-        return object :
-            ExchangePair {
-            override fun getFirst() = ExchangeCoinImpl(
-                if (Vm.TestNet) {
-                    CoinTypes.BitcoinTest
-                } else {
-                    CoinTypes.Bitcoin
-                }
-            )
-
-            override fun getLast() = ExchangeTokenImpl(
-                CoinTypes.Violas,
-//                "vBTC",
-                BTCToVbtcInfo.name,
-                BTCToVbtcInfo.tokenIdx
-//                2
-            )
-
-            override fun getRate(): BigDecimal {
+//    private suspend fun loadLibra2vLibra(): ExchangePair? {
+//        val libraToVLibraInfoDeferred =
+//            GlobalScope.exceptionAsync { mMappingExchangeService.getMappingInfo(MappingType.LibraToVlibra) }
+//        val vLibraToLibraInfoDeferred =
+//            GlobalScope.exceptionAsync { mMappingExchangeService.getMappingInfo(MappingType.VlibraToLibra) }
+//
+//        val libraToVLibraInfo = libraToVLibraInfoDeferred.await().data
+//        val vLibraToLibraInfo = vLibraToLibraInfoDeferred.await().data
+//
+//        if (libraToVLibraInfo == null || vLibraToLibraInfo == null) {
+//            return null
+//        }
+//
+//        return object :
+//            ExchangePair {
+//            override fun getFirst() = ExchangeCoinImpl(CoinTypes.Libra)
+//
+//            override fun getLast() = ExchangeLibraTokenImpl(
+//                CoinTypes.Violas,
+////                "vLibra",
+//                libraToVLibraInfo.name,
+//                libraToVLibraInfo.tokenIdx
+////            3
+//            )
+//
+//            override fun getRate(): BigDecimal {
 //                return BigDecimal(1)
-                return BigDecimal(BTCToVbtcInfo.exchangeRate.toString())
-            }
+//            }
+//
+//            override fun getReceiveFirstAddress(): String {
+////                return "0a82179351b8ecb6c5e68ab7b08622de"
+//                return libraToVLibraInfo.receiveAddress
+//            }
+//
+//            override fun getReceiveLastAddress(): String {
+////                return "ee1e24e8fc664894709c947b74823b2f"
+//                return vLibraToLibraInfo.receiveAddress
+//            }
+//        }
+//    }
 
-            override fun getReceiveFirstAddress(): String {
-//                return "2N2YasTUdLbXsafHHmyoKUYcRRicRPgUyNB"
-                return BTCToVbtcInfo.receiveAddress
-            }
-
-            override fun getReceiveLastAddress(): String {
-//                return "cae5f8464c564aabb684ecbcc19153e9"
-                return VbtcToBTCInfo.receiveAddress
-            }
-        }
-
-    }
+//    private suspend fun loadBTC2vBTC(): ExchangePair? {
+//        val BTCToVbtcInfoDeferred =
+//            GlobalScope.exceptionAsync { mMappingExchangeService.getMappingInfo(MappingType.BTCToVbtc) }
+//        val VbtcToBTCInfoDeferred =
+//            GlobalScope.exceptionAsync { mMappingExchangeService.getMappingInfo(MappingType.VbtcToBTC) }
+//
+//        val BTCToVbtcInfo = BTCToVbtcInfoDeferred.await().data
+//        val VbtcToBTCInfo = VbtcToBTCInfoDeferred.await().data
+//
+//        if (BTCToVbtcInfo == null || VbtcToBTCInfo == null) {
+//            return null
+//        }
+//
+//        return object :
+//            ExchangePair {
+//            override fun getFirst() = ExchangeCoinImpl(
+//                if (Vm.TestNet) {
+//                    CoinTypes.BitcoinTest
+//                } else {
+//                    CoinTypes.Bitcoin
+//                }
+//            )
+//
+//            override fun getLast() = ExchangeLibraTokenImpl(
+//                CoinTypes.Violas,
+////                "vBTC",
+//                BTCToVbtcInfo.name,
+//                BTCToVbtcInfo.tokenIdx
+////                2
+//            )
+//
+//            override fun getRate(): BigDecimal {
+////                return BigDecimal(1)
+//                return BigDecimal(BTCToVbtcInfo.exchangeRate.toString())
+//            }
+//
+//            override fun getReceiveFirstAddress(): String {
+////                return "2N2YasTUdLbXsafHHmyoKUYcRRicRPgUyNB"
+//                return BTCToVbtcInfo.receiveAddress
+//            }
+//
+//            override fun getReceiveLastAddress(): String {
+////                return "cae5f8464c564aabb684ecbcc19153e9"
+//                return VbtcToBTCInfo.receiveAddress
+//            }
+//        }
+//
+//    }
 }
 
