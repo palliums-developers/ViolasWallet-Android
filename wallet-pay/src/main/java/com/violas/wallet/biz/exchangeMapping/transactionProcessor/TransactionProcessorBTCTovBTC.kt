@@ -9,7 +9,7 @@ import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.btc.outputScript.ViolasOutputScript
 import com.violas.wallet.biz.exchangeMapping.BTCMappingAccount
 import com.violas.wallet.biz.exchangeMapping.MappingAccount
-import com.violas.wallet.biz.exchangeMapping.ViolasMappingAccount
+import com.violas.wallet.biz.exchangeMapping.ViolasMappingToken
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.palliums.libracore.serialization.hexToBytes
@@ -29,7 +29,7 @@ class TransactionProcessorBTCTovBTC :
     override fun dispense(sendAccount: MappingAccount, receiveAccount: MappingAccount): Boolean {
         return sendAccount is BTCMappingAccount
                 && sendAccount.isSendAccount()
-                && receiveAccount is ViolasMappingAccount
+                && receiveAccount is ViolasMappingToken
                 && receiveAccount.isSendAccount()
     }
 
@@ -41,7 +41,7 @@ class TransactionProcessorBTCTovBTC :
         receiveAddress: String
     ): String {
         val sendAccount = sendAccount as BTCMappingAccount
-        val receiveAccount = receiveAccount as ViolasMappingAccount
+        val receiveAccount = receiveAccount as ViolasMappingToken
 
         val checkTokenRegister = mTokenManager.isPublish(receiveAccount.getAddress().toHex())
 

@@ -206,7 +206,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     }
 
     fun disconnect(): Boolean {
-        return mWCClient.disconnect().also {
+        return mWCClient.killSession().also {
             if (!it) {
                 restore()
             }

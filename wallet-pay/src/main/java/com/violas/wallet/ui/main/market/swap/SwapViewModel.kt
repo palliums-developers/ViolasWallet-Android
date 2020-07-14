@@ -1,9 +1,11 @@
 package com.violas.wallet.ui.main.market.swap
 
+import MutBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.palliums.base.BaseViewModel
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.biz.bean.TokenMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -28,6 +30,9 @@ class SwapViewModel : BaseViewModel() {
 
     // Gas费
     private val gasFeeLiveData = MediatorLiveData<Long?>()
+
+    // 映射兑换支持的币种
+    private val mMappingSupportSwapPairMap = HashMap<ITokenVo, MutBitmap>()
 
     init {
         val convertToExchangeRate: (ITokenVo, ITokenVo) -> BigDecimal? =
