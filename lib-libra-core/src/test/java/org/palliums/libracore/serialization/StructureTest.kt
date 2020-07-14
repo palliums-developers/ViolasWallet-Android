@@ -33,75 +33,75 @@ class StructureTest {
         assertEquals(toByteArray.toHex(), "0200000004cafed00d".toLowerCase())
     }
 
-    @Test
-    fun test_program() {
-        val str1 = TransactionArgument.newByteArray("CAFE D00D".toByteArray())
-        val str2 = TransactionArgument.newByteArray("cafe d00d".toByteArray())
-        val toByteArray = TransactionPayload.Program(
-            "move".toByteArray(),
-            arrayListOf(str1, str2),
-            arrayListOf("ca".hexToBytes(), "FED0".hexToBytes(), "0D".hexToBytes())
-        ).toByteArray()
+//    @Test
+//    fun test_program() {
+//        val str1 = TransactionArgument.newByteArray("CAFE D00D".toByteArray())
+//        val str2 = TransactionArgument.newByteArray("cafe d00d".toByteArray())
+//        val toByteArray = TransactionPayload.Program(
+//            "move".toByteArray(),
+//            arrayListOf(str1, str2),
+//            arrayListOf("ca".hexToBytes(), "FED0".hexToBytes(), "0D".hexToBytes())
+//        ).toByteArray()
+//
+//
+//
+//        assertEquals(
+//            toByteArray.toHex(),
+//            "046d6f766502020000000943414645204430304402000000096361666520643030640301ca02fed0010d".toLowerCase()
+//        )
+//    }
 
+//    @Test
+//    fun test_program_transfer() {
+//        val argumentAddress =
+//            TransactionArgument.newAddress("4fddcee027aa66e4e144d44dd218a345fb5af505284cb03368b7739e92dd6b3c")
+//        val argumentAmount = TransactionArgument.newU64(1)
+//        val programByteArray =
+//            TransactionPayload.Program(
+//                "movemovemove".toByteArray(),
+//                arrayListOf(argumentAddress, argumentAmount),
+//                arrayListOf()
+//            ).toByteArray()
+//        assertEquals(
+//            programByteArray.toHex(),
+//            "0c6d6f76656d6f76656d6f766502010000004fddcee027aa66e4e144d44dd218a345fb5af505284cb03368b7739e92dd6b3c00000000010000000000000000".toLowerCase()
+//        )
+//    }
 
+//    @Test
+//    fun test_transactionPayload_program() {
+//        val str1 = TransactionArgument.newByteArray("CAFE D00D".toByteArray())
+//        val str2 = TransactionArgument.newByteArray("cafe d00d".toByteArray())
+//        val toByteArray = TransactionPayload(
+//            TransactionPayload.Program(
+//                "move".toByteArray(),
+//                arrayListOf(str1, str2),
+//                arrayListOf("ca".hexToBytes(), "FED0".hexToBytes(), "0D".hexToBytes())
+//            )
+//        ).toByteArray()
+//        assertEquals(
+//            toByteArray.toHex(),
+//            "00000000046d6f766502020000000943414645204430304402000000096361666520643030640301ca02fed0010d".toLowerCase()
+//        )
+//    }
 
-        assertEquals(
-            toByteArray.toHex(),
-            "046d6f766502020000000943414645204430304402000000096361666520643030640301ca02fed0010d".toLowerCase()
-        )
-    }
-
-    @Test
-    fun test_program_transfer() {
-        val argumentAddress =
-            TransactionArgument.newAddress("4fddcee027aa66e4e144d44dd218a345fb5af505284cb03368b7739e92dd6b3c")
-        val argumentAmount = TransactionArgument.newU64(1)
-        val programByteArray =
-            TransactionPayload.Program(
-                "movemovemove".toByteArray(),
-                arrayListOf(argumentAddress, argumentAmount),
-                arrayListOf()
-            ).toByteArray()
-        assertEquals(
-            programByteArray.toHex(),
-            "0c6d6f76656d6f76656d6f766502010000004fddcee027aa66e4e144d44dd218a345fb5af505284cb03368b7739e92dd6b3c00000000010000000000000000".toLowerCase()
-        )
-    }
-
-    @Test
-    fun test_transactionPayload_program() {
-        val str1 = TransactionArgument.newByteArray("CAFE D00D".toByteArray())
-        val str2 = TransactionArgument.newByteArray("cafe d00d".toByteArray())
-        val toByteArray = TransactionPayload(
-            TransactionPayload.Program(
-                "move".toByteArray(),
-                arrayListOf(str1, str2),
-                arrayListOf("ca".hexToBytes(), "FED0".hexToBytes(), "0D".hexToBytes())
-            )
-        ).toByteArray()
-        assertEquals(
-            toByteArray.toHex(),
-            "00000000046d6f766502020000000943414645204430304402000000096361666520643030640301ca02fed0010d".toLowerCase()
-        )
-    }
-
-    @Test
-    fun test_transactionPayload_program_transfer() {
-        val str1 =
-            TransactionArgument.newAddress("4fddcee027aa66e4e144d44dd218a345fb5af505284cb03368b7739e92dd6b3c")
-        val str2 = TransactionArgument.newU64(1)
-        val toByteArray = TransactionPayload(
-            TransactionPayload.Program(
-                "move".toByteArray(),
-                arrayListOf(str1, str2),
-                arrayListOf()
-            )
-        ).toByteArray()
-        assertEquals(
-            toByteArray.toHex(),
-            "00000000046d6f766502010000004fddcee027aa66e4e144d44dd218a345fb5af505284cb03368b7739e92dd6b3c00000000010000000000000000".toLowerCase()
-        )
-    }
+//    @Test
+//    fun test_transactionPayload_program_transfer() {
+//        val str1 =
+//            TransactionArgument.newAddress("4fddcee027aa66e4e144d44dd218a345fb5af505284cb03368b7739e92dd6b3c")
+//        val str2 = TransactionArgument.newU64(1)
+//        val toByteArray = TransactionPayload(
+//            TransactionPayload.Program(
+//                "move".toByteArray(),
+//                arrayListOf(str1, str2),
+//                arrayListOf()
+//            )
+//        ).toByteArray()
+//        assertEquals(
+//            toByteArray.toHex(),
+//            "00000000046d6f766502010000004fddcee027aa66e4e144d44dd218a345fb5af505284cb03368b7739e92dd6b3c00000000010000000000000000".toLowerCase()
+//        )
+//    }
 
     @Test
     fun test_accessPath() {
@@ -161,35 +161,6 @@ class StructureTest {
         assertEquals(
             writeSet.toByteArray().toHex(),
             "010000000220a71d76faa2d2d5c3224ec3d41deb293973564a791e55c6782ba76c2bf0495f9a2101217da6c6b3e19f1825cfb2676daecce3bf3de03cf26647c78df00b371b25cc970000000020c4c63f80c74b11263e421ebf8486a4e398d0dbc09fa7d4f62ccdb309f3aea81f0901217da6c6b3e19f180100000004cafed00d".toLowerCase()
-        )
-    }
-
-    @Test
-    fun test_rawTransaction_program() {
-        val str1 = TransactionArgument.newByteArray("CAFE D00D".toByteArray())
-        val str2 = TransactionArgument.newByteArray("cafe d00d".toByteArray())
-        val transactionPayload = TransactionPayload(
-            TransactionPayload.Program(
-                "move".toByteArray(),
-                arrayListOf(str1, str2),
-                arrayListOf("ca".hexToBytes(), "FED0".hexToBytes(), "0D".hexToBytes())
-            )
-        )
-
-        val rawTransaction = RawTransaction(
-            AccountAddress("31fec9a9be66f50fd352a2638a49b9ee".hexToBytes()),
-            32,
-            transactionPayload,
-            10000,
-            20000,
-            "LBR",
-            86400
-        )
-
-
-        assertEquals(
-            rawTransaction.toByteArray().toHex(),
-            "31fec9a9be66f50fd352a2638a49b9ee200000000000000000000000046d6f766502020000000943414645204430304402000000096361666520643030640301ca02fed0010d1027000000000000204e0000000000000600000000000000000000000000000000000000034c42520154000000008051010000000000".toLowerCase()
         )
     }
 }

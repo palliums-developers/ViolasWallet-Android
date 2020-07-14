@@ -1,16 +1,16 @@
-import org.palliums.libracore.crypto.Bitmap
+package com.violas.wallet.ui.main.market.bean
 
 /**
  * 可变的 Bitmap 可以记录状态
  */
-class MutBitmap() : Iterable<Boolean> {
+class MutBitmap : Iterable<Boolean> {
     companion object {
         private const val BITMAP_NUM_OF_BYTES = 4
         private const val DATA_TYPE_LENGTH = 8
         private const val BITMAP_MARK = 128
     }
 
-    private var bitmap: ByteArray = ByteArray(Bitmap.BITMAP_NUM_OF_BYTES) { 0.toByte() }
+    private var bitmap: ByteArray = ByteArray(BITMAP_NUM_OF_BYTES) { 0.toByte() }
 
     /**
      * 对 Bitmap 数组进行扩容

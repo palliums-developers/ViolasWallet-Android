@@ -1,12 +1,11 @@
 package com.violas.wallet.ui.main.market.swap
 
-import MutBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.palliums.base.BaseViewModel
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.biz.bean.TokenMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
+import com.violas.wallet.ui.main.market.bean.MutBitmap
 import java.math.BigDecimal
 import java.math.RoundingMode
 

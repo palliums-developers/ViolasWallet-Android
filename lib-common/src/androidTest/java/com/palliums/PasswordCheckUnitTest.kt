@@ -1,10 +1,23 @@
 package com.palliums
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.palliums.content.ContextProvider
 import com.palliums.utils.*
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class PasswordCheckUnitTest {
+
+    @Before
+    fun sss(){
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        ContextProvider.init(appContext)
+    }
+
     @Test(expected = PasswordValidationFailsException::class)
     fun testNumber() {
         val check = PasswordCheckUtil.check("12345678")
