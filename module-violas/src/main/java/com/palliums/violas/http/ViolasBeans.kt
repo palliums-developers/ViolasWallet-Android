@@ -168,3 +168,21 @@ data class MarketSwapRecordDTO(
     val date: Long,
     val status: Int
 )
+
+@Keep
+data class MarketPoolRecordDTO(
+    @SerializedName(value = "coina")
+    val coinA: String,
+    @SerializedName(value = "amounta")
+    val amountA: String,
+    @SerializedName(value = "coinb")
+    val coinB: String,
+    @SerializedName(value = "amountb")
+    val amountB: String,
+    val token: String,
+    @SerializedName(value = "transaction_type")
+    val type: String,
+    val version: Long,
+    val date: Long,
+    val status: Int
+)

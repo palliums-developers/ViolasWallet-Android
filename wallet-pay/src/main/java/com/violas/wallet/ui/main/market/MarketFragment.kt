@@ -19,6 +19,7 @@ import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.ui.main.market.fundPool.FundPoolFragment
 import com.violas.wallet.ui.main.market.fundPool.MyFundPoolActivity
 import com.violas.wallet.ui.main.market.swap.SwapFragment
+import com.violas.wallet.ui.market.PoolRecordActivity
 import com.violas.wallet.ui.market.SwapRecordActivity
 import kotlinx.android.synthetic.main.fragment_market.*
 import org.greenrobot.eventbus.EventBus
@@ -112,8 +113,7 @@ class MarketFragment : BaseFragment() {
                     if (isSwapTab()) {
                         Intent(it, SwapRecordActivity::class.java).start(it)
                     } else {
-                        // TODO 进入资金池记录页面
-                        showToast(R.string.fund_pool_records)
+                        Intent(it, PoolRecordActivity::class.java).start(it)
                     }
                 }
                 return true

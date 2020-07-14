@@ -250,4 +250,11 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         offset: Int
     ) =
         mViolasRepository.getMarketSwapRecords(address, pageSize, offset).data
+
+    suspend fun getMarketPoolRecords(
+        address: String,
+        pageSize: Int,
+        offset: Int
+    ) =
+        mViolasRepository.getMarketPoolRecords(address, pageSize, offset).data
 }

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingHorizontal="@dimen/dp_15">
+
+    <ImageView
+        android:id="@+id/ivIcon"
+        android:layout_width="@dimen/dp_24"
+        android:layout_height="@dimen/dp_24"
+        android:layout_marginTop="@dimen/dp_15"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="?attr/iconRecordOutput" />
+
+    <TextView
+        android:id="@+id/tvState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginTop="@dimen/dp_10"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintStart_toEndOf="@id/ivIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/market_swap_state_succeeded"
+        tools:textColor="?attr/textColorSuccess" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="01.18 15:42" />
+
+    <TextView
+        android:id="@+id/tvAToken"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:textColor="?colorOnSurface"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintStart_toStartOf="@id/tvState"
+        app:layout_constraintTop_toBottomOf="@id/tvState"
+        tools:text="999ETH" />
+
+    <TextView
+        android:id="@+id/tvAnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_8"
+        android:text="&amp;"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintBottom_toBottomOf="@id/tvAToken"
+        app:layout_constraintStart_toEndOf="@id/tvAToken"
+        app:layout_constraintTop_toTopOf="@id/tvAToken"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/tvBToken"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_8"
+        android:textColor="?colorOnSurface"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvAToken"
+        app:layout_constraintStart_toEndOf="@id/tvAnd"
+        tools:text="99900VLS" />
+
+    <TextView
+        android:id="@+id/tvLiquidityToken"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:text="@string/market_liquidity_token_record_format"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintStart_toStartOf="@id/tvState"
+        app:layout_constraintTop_toBottomOf="@id/tvAToken" />
+
+    <View
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0.5"
+        android:layout_marginTop="@dimen/dp_9"
+        android:background="?attr/colorDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLiquidityToken" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

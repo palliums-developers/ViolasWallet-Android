@@ -381,4 +381,10 @@
     <string name="market_swap_state_failed">兑换失败</string>
     <string name="market_swap_state_cancelled">已取消</string>
     <string name="action_retry">重试</string>
+    <string name="market_liquidity_token_record_format">通证：%1$s</string>
+    <string name="market_pool_state_processing">打包中</string>
+    <string name="market_pool_add_state_succeeded">转入成功</string>
+    <string name="market_pool_add_state_failed">转入失败</string>
+    <string name="market_pool_remove_state_succeeded">转出成功</string>
+    <string name="market_pool_remove_state_failed">转出失败</string>
 </resources>
