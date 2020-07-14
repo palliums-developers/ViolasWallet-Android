@@ -76,6 +76,6 @@ interface ViolasApi {
     /**
      * 获取交易市场支持的币种
      */
-    @GET("/1.0/market/currency")
+    @GET("/1.0/market/exchange/currency")
     suspend fun getMarketSupportCurrencies(): Response<MarketCurrenciesDTO>
 }
