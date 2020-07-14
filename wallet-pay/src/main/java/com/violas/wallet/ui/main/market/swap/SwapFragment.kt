@@ -15,12 +15,14 @@ import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
+import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_SWAP_SELECT_FROM
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_SWAP_SELECT_TO
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
+import com.violas.wallet.ui.main.market.selectToken.TokensSwapFilterBridge
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.fragment_swap.*
 
@@ -30,7 +32,7 @@ import kotlinx.android.synthetic.main.fragment_swap.*
  * <p>
  * desc: 市场兑换视图
  */
-class SwapFragment : BaseFragment(), TokensBridge {
+class SwapFragment : BaseFragment(), TokensBridge, TokensSwapFilterBridge {
 
     private val swapViewModel by lazy {
         ViewModelProvider(this).get(SwapViewModel::class.java)
@@ -185,6 +187,13 @@ class SwapFragment : BaseFragment(), TokensBridge {
             swapViewModel.getCurrFromTokenLiveData().value
         else
             swapViewModel.getCurrToTokenLiveData().value
+    }
+
+    override fun filter(currToken: ITokenVo?, it: ITokenVo): Boolean {
+        if (currToken == null) {
+            return false
+        }
+        return swapViewModel.filter(currToken, it)
     }
 
     //*********************************** 输入框逻辑 ***********************************//

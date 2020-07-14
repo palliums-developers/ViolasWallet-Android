@@ -3,7 +3,7 @@ package com.violas.wallet.ui.main.market.bean
 /**
  * 可变的 Bitmap 可以记录状态
  */
-class MutBitmap : Iterable<Boolean> {
+class MutBitmap : Iterable<Int> {
     companion object {
         private const val BITMAP_NUM_OF_BYTES = 4
         private const val DATA_TYPE_LENGTH = 8
@@ -22,9 +22,12 @@ class MutBitmap : Iterable<Boolean> {
         }
     }
 
+    /**
+     * 对 Bitmap 进行扩容
+     */
     private fun capacity() {
         val newBitmap = ByteArray(bitmap.size * 2)
-        System.arraycopy(bitmap, bitmap.size, newBitmap, 0, newBitmap.size)
+        System.arraycopy(bitmap, 0, newBitmap, 0, bitmap.size)
         bitmap = newBitmap
     }
 
@@ -32,21 +35,31 @@ class MutBitmap : Iterable<Boolean> {
      * 检查要访问的 index 是否超出
      */
     private fun indexOutOfBounds(index: Int): Boolean {
-        return index > size()
+        return index > size() - 1
+    }
+
+    fun clearBit(index: Int) {
+        if (indexOutOfBounds(index)) {
+            return
+        }
+        val bucketIndex = index / DATA_TYPE_LENGTH
+        val innerIndex = index % DATA_TYPE_LENGTH
+        bitmap[bucketIndex] =
+            (BITMAP_MARK.ushr(innerIndex).inv() and bitmap[bucketIndex].toInt()).toByte()
     }
 
     fun setBit(index: Int) {
+        capacity(index)
         val bucketIndex = index / DATA_TYPE_LENGTH
-        capacity(bucketIndex)
         val innerIndex = index % DATA_TYPE_LENGTH
         bitmap[bucketIndex] = (BITMAP_MARK.ushr(innerIndex) or bitmap[bucketIndex].toInt()).toByte()
     }
 
     fun getBit(index: Int): Boolean {
-        val bucketIndex = index / DATA_TYPE_LENGTH
-        if (indexOutOfBounds(bucketIndex)) {
+        if (indexOutOfBounds(index)) {
             return false
         }
+        val bucketIndex = index / DATA_TYPE_LENGTH
         val innerIndex = index % DATA_TYPE_LENGTH
         return (BITMAP_MARK.ushr(innerIndex) and bitmap[bucketIndex].toInt()) != 0
     }
@@ -55,7 +68,7 @@ class MutBitmap : Iterable<Boolean> {
 
     fun countOnes(): Int {
         var count = 0
-        for (i in BITMAP_NUM_OF_BYTES - 1 downTo 0) {
+        for (i in bitmap.size - 1 downTo 0) {
             for (j in 0 until DATA_TYPE_LENGTH) {
                 if (bitmap[i].toInt().ushr(j) and 0b1 == 1) {
                     count++
@@ -69,19 +82,23 @@ class MutBitmap : Iterable<Boolean> {
         return bitmap.clone()
     }
 
-    override fun iterator(): Iterator<Boolean> {
-        return object : Iterator<Boolean> {
+    override fun iterator(): Iterator<Int> {
+        return object : Iterator<Int> {
             var cursor = 0
-            val countMax = size()
 
             override fun hasNext(): Boolean {
-                return cursor < countMax
+                while (!indexOutOfBounds(cursor)) {
+                    if (getBit(cursor)) {
+                        return true
+                    } else {
+                        cursor++
+                    }
+                }
+                return false
             }
 
-            override fun next(): Boolean {
-                val tmp = getBit(cursor)
-                cursor++
-                return tmp
+            override fun next(): Int {
+                return cursor++
             }
         }
     }

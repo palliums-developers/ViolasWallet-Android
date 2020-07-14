@@ -2,10 +2,17 @@ package com.violas.wallet.ui.main.market.swap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
+import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.biz.ExchangeManager
+import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.MutBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -30,10 +37,28 @@ class SwapViewModel : BaseViewModel() {
     // Gas费
     private val gasFeeLiveData = MediatorLiveData<Long?>()
 
-    // 映射兑换支持的币种
-    private val mMappingSupportSwapPairMap = HashMap<ITokenVo, MutBitmap>()
+    private val mExchangeManager by lazy {
+        ExchangeManager()
+    }
+
+    /**
+     * 稳定币交易所，uniswap 交易所支持的所有币种
+     */
+    private var mSupportTokens: List<ITokenVo>? = null
+
+    /**
+     * 映射兑换支持的币种
+     */
+    private var mMappingSupportSwapPairMap: HashMap<String, MutBitmap>? = null
 
     init {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
+            mSupportTokens = mExchangeManager.getMarketSupportTokens()
+            mSupportTokens?.let {
+                mMappingSupportSwapPairMap =
+                    mExchangeManager.getMappingMarketSupportTokens(it)
+            }
+        }
         val convertToExchangeRate: (ITokenVo, ITokenVo) -> BigDecimal? =
             { fromToken, toToken ->
                 val fromAnchorValue = BigDecimal(fromToken.anchorValue.toString())
@@ -101,6 +126,23 @@ class SwapViewModel : BaseViewModel() {
                 currToTokenLiveData.postValue(selected)
             }
         }
+    }
+
+    @Deprecated("delete")
+    fun filter(currToken: ITokenVo, iTokenVo: ITokenVo): Boolean {
+        val targetToken = IAssetsMark.convert(iTokenVo)
+        mMappingSupportSwapPairMap?.get(IAssetsMark.convert(currToken).mark())?.forEach {
+            try {
+                mSupportTokens?.get(it)?.let { token ->
+                    if (IAssetsMark.convert(token) == targetToken) {
+                        return true
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return false
     }
 
     //*********************************** 其它信息相关方法 ***********************************//
