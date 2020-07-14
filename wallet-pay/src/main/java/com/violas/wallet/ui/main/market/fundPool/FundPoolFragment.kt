@@ -80,12 +80,8 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
         }
 
         llFirstSelectGroup.setOnClickListener {
-            showSelectTokenDialog(true)
-        }
-
-        llSecondSelectGroup.setOnClickListener {
             if (fundPoolViewModel.isTransferInMode()) {
-                showSelectTokenDialog(false)
+                showSelectTokenDialog(true)
             } else {
                 fundPoolViewModel.getTokenPairsLiveData()
                     .removeObserver(tokenPairsObserver)
@@ -94,6 +90,10 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
                         .observe(viewLifecycleOwner, tokenPairsObserver)
                 }
             }
+        }
+
+        llSecondSelectGroup.setOnClickListener {
+            showSelectTokenDialog(false)
         }
 
         btnPositive.setOnClickListener {
@@ -161,6 +161,7 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             btnPositive.setText(R.string.action_transfer_in_nbsp)
             etSecondInputBox.isEnabled = true
             etSecondInputBox.requestLayout()
+            tvSecondBalance.visibility = View.VISIBLE
             llSecondSelectGroup.visibility = View.VISIBLE
 
             fundPoolViewModel.getCurrFirstTokenLiveData()
@@ -177,6 +178,7 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             tvSecondInputLabel.setText(R.string.transfer_out)
             btnPositive.setText(R.string.action_transfer_out_nbsp)
             etSecondInputBox.isEnabled = false
+            tvSecondBalance.visibility = View.GONE
             llSecondSelectGroup.visibility = View.GONE
 
             fundPoolViewModel.getCurrFirstTokenLiveData()
@@ -295,7 +297,7 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
         XPopup.Builder(requireContext())
             .hasShadowBg(false)
             .popupAnimation(PopupAnimation.ScrollAlphaFromTop)
-            .atView(llSecondSelectGroup)
+            .atView(llFirstSelectGroup)
             .setPopupCallback(
                 object : EnhancedPopupCallback() {
                     override fun onDismissBefore() {
