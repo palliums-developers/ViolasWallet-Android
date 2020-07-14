@@ -32,10 +32,11 @@ interface ViolasApi {
 
     /**
      * 获取指定地址的交易记录，分页查询
-     * @param address 地址
-     * @param pageSize 分页大小
-     * @param offset 偏移量，从0开始
-     * @param offset 稳定币地址，不为空时查询该稳定币的交易记录，为空时查询平台币的交易记录
+     * @param address           地址
+     * @param tokenId           稳定币地址，无：全部；有：相应币种记录
+     * @param pageSize          分页大小
+     * @param offset            偏移量，从0开始
+     * @param transactionType   交易类型，不填：全部；0：转出；1：转入
      */
     @GET("/1.0/violas/transaction")
     suspend fun getTransactionRecords(
@@ -78,4 +79,17 @@ interface ViolasApi {
      */
     @GET("/1.0/market/exchange/currency")
     suspend fun getMarketSupportCurrencies(): Response<MarketCurrenciesDTO>
+
+    /**
+     * 获取指定地址的交易市场兑换记录，分页查询
+     * @param address       地址
+     * @param pageSize      分页大小
+     * @param offset        偏移量，从0开始
+     */
+    @GET("/1.0/market/exchange/transaction")
+    suspend fun getMarketSwapRecords(
+        @Query("address") address: String,
+        @Query("limit") pageSize: Int,
+        @Query("offset") offset: Int
+    ): ListResponse<MarketSwapRecordDTO>
 }

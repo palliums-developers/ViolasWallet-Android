@@ -153,3 +153,18 @@ data class MarketCurrencyDTO(
     @SerializedName(value = "index")
     val marketIndex: Int
 )
+
+@Keep
+data class MarketSwapRecordDTO(
+    @SerializedName(value = "input_name")
+    val fromName: String,
+    @SerializedName(value = "input_amount")
+    val fromAmount: String,
+    @SerializedName(value = "output_name")
+    val toName: String,
+    @SerializedName(value = "output_amount")
+    val toAmount: String,
+    val version: Long,
+    val date: Long,
+    val status: Int
+)

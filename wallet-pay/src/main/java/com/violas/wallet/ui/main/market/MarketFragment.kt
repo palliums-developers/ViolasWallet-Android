@@ -19,6 +19,7 @@ import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.ui.main.market.fundPool.FundPoolFragment
 import com.violas.wallet.ui.main.market.fundPool.MyFundPoolActivity
 import com.violas.wallet.ui.main.market.swap.SwapFragment
+import com.violas.wallet.ui.market.SwapRecordActivity
 import kotlinx.android.synthetic.main.fragment_market.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -48,7 +49,7 @@ class MarketFragment : BaseFragment() {
         val appCompatActivity = activity as? AppCompatActivity
         appCompatActivity?.setSupportActionBar(toolbar)
         appCompatActivity?.supportActionBar?.setDisplayShowTitleEnabled(false)
-//        appCompatActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        //appCompatActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
         toolbar.layoutParams = (toolbar.layoutParams as ConstraintLayout.LayoutParams).apply {
             topMargin = StatusBarUtil.getStatusBarHeight()
         }
@@ -109,8 +110,7 @@ class MarketFragment : BaseFragment() {
             R.id.market_record -> {
                 context?.let {
                     if (isSwapTab()) {
-                        // TODO 进入兑换记录页面
-                        showToast(R.string.swap_records)
+                        Intent(it, SwapRecordActivity::class.java).start(it)
                     } else {
                         // TODO 进入资金池记录页面
                         showToast(R.string.fund_pool_records)
