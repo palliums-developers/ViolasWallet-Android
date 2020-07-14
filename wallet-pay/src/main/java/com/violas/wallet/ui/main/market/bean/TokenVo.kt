@@ -17,7 +17,7 @@ abstract class ITokenVo(
     val accountDoId: Long,          // 本地账户id
     val coinNumber: Int,            // 币种类型值
     val displayName: String,        // 币的显示名称
-    val logoUrl: String,            // 币的logo url
+    val logo: String,               // 币的logo
     var amount: Long,               // 币的金额
     var anchorValue: Double,        // 币的锚定价值
     var selected: Boolean           // 币是否选中
@@ -34,11 +34,11 @@ class PlatformTokenVo(
     val accountAddress: String,     // 账户地址，即钱包地址
     coinNumber: Int,
     displayName: String,
-    logoUrl: String,
+    logo: String,
     amount: Long = 0,
     anchorValue: Double = 0.00,
     selected: Boolean = false
-) : ITokenVo(accountDoId, coinNumber, displayName, logoUrl, amount, anchorValue, selected) {
+) : ITokenVo(accountDoId, coinNumber, displayName, logo, amount, anchorValue, selected) {
 
     override fun areContentsTheSame(another: ITokenVo): Boolean {
         return if (another is PlatformTokenVo)
@@ -47,7 +47,7 @@ class PlatformTokenVo(
                     && accountAddress == another.accountAddress
                     && coinNumber == another.coinNumber
                     && displayName == another.displayName
-                    && logoUrl == another.logoUrl
+                    && logo == another.logo
                     && amount == another.amount
                     && anchorValue == another.anchorValue
                     && selected == another.selected
@@ -73,7 +73,7 @@ class PlatformTokenVo(
         result = result * 31 + accountAddress.hashCode()
         result = result * 31 + coinNumber.hashCode()
         result = result * 31 + displayName.hashCode()
-        result = result * 31 + logoUrl.hashCode()
+        result = result * 31 + logo.hashCode()
         result = result * 31 + amount.hashCode()
         result = result * 31 + anchorValue.hashCode()
         result = result * 31 + selected.hashCode()
@@ -93,13 +93,13 @@ class StableTokenVo(
     val module: String,             // 稳定币的module名
     val name: String,               // 稳定币的名称
     displayName: String,
-    logoUrl: String,
+    logo: String,
     val localEnable: Boolean,       // 本地启用（本地是否显示）
     val chainEnable: Boolean,       // 链上启用（是否已添加到账户）
     amount: Long = 0,
     anchorValue: Double = 0.00,
     selected: Boolean = false
-) : ITokenVo(accountDoId, coinNumber, displayName, logoUrl, amount, anchorValue, selected) {
+) : ITokenVo(accountDoId, coinNumber, displayName, logo, amount, anchorValue, selected) {
 
     override fun areContentsTheSame(another: ITokenVo): Boolean {
         return if (another is StableTokenVo)
@@ -111,7 +111,7 @@ class StableTokenVo(
                     && module == another.module
                     && name == another.name
                     && displayName == another.displayName
-                    && logoUrl == another.logoUrl
+                    && logo == another.logo
                     && localEnable == another.localEnable
                     && chainEnable == another.chainEnable
                     && amount == another.amount
@@ -144,7 +144,7 @@ class StableTokenVo(
         result = result * 31 + module.hashCode()
         result = result * 31 + name.hashCode()
         result = result * 31 + displayName.hashCode()
-        result = result * 31 + logoUrl.hashCode()
+        result = result * 31 + logo.hashCode()
         result = result * 31 + localEnable.hashCode()
         result = result * 31 + chainEnable.hashCode()
         result = result * 31 + amount.hashCode()

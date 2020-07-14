@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.palliums.base.BaseViewModel
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
@@ -18,6 +19,7 @@ import kotlinx.coroutines.delay
  */
 class MarketViewModel : BaseViewModel() {
 
+    private val exchangeManager by lazy { ExchangeManager() }
     private var marketTokensLiveData = MutableLiveData<List<ITokenVo>?>()
 
     override fun execute(
@@ -44,9 +46,24 @@ class MarketViewModel : BaseViewModel() {
         )
     }
 
-    private var mockData = 0
-
     override suspend fun realExecute(action: Int, vararg params: Any) {
+        try {
+            val supportTokens = exchangeManager.getMarketSupportTokens()
+            marketTokensLiveData.postValue(supportTokens)
+        } catch (e: Exception) {
+            marketTokensLiveData.postValue(null)
+            throw e
+        }
+    }
+
+    fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?> {
+        synchronized(lock) {
+            return marketTokensLiveData
+        }
+    }
+
+    private var mockData = 0
+    private suspend fun mockGetSupportTokens() {
         // test code
         if (mockData == 0) {
             //加载失败
@@ -64,7 +81,7 @@ class MarketViewModel : BaseViewModel() {
             accountAddress = "00000000000000000000000000000000",
             coinNumber = CoinTypes.Violas.coinType(),
             displayName = "VLS",
-            logoUrl = "",
+            logo = "",
             amount = 100_000000,
             anchorValue = 1.00,
             selected = false
@@ -79,7 +96,7 @@ class MarketViewModel : BaseViewModel() {
             module = "VLSUSD",
             name = "VLSUSD",
             displayName = "VLSUSD",
-            logoUrl = "",
+            logo = "",
             localEnable = true,
             chainEnable = true,
             amount = 200_000000,
@@ -96,7 +113,7 @@ class MarketViewModel : BaseViewModel() {
             module = "VLSGBP",
             name = "VLSGBP",
             displayName = "VLSGBP",
-            logoUrl = "",
+            logo = "",
             localEnable = true,
             chainEnable = true,
             amount = 300_000000,
@@ -113,7 +130,7 @@ class MarketViewModel : BaseViewModel() {
             module = "VLSEUR",
             name = "VLSEUR",
             displayName = "VLSEUR",
-            logoUrl = "",
+            logo = "",
             localEnable = true,
             chainEnable = true,
             amount = 400_000000,
@@ -130,7 +147,7 @@ class MarketViewModel : BaseViewModel() {
             module = "VLSSGD",
             name = "VLSSGD",
             displayName = "VLSSGD",
-            logoUrl = "",
+            logo = "",
             localEnable = true,
             chainEnable = true,
             amount = 500_000000,
@@ -147,7 +164,7 @@ class MarketViewModel : BaseViewModel() {
             module = "VLSJPY",
             name = "VLSJPY",
             displayName = "VLSJPY",
-            logoUrl = "",
+            logo = "",
             localEnable = true,
             chainEnable = false,
             amount = 500_000000,
@@ -161,7 +178,7 @@ class MarketViewModel : BaseViewModel() {
             accountAddress = "00000000000000000000000000000000",
             coinNumber = CoinTypes.Libra.coinType(),
             displayName = "LBR",
-            logoUrl = "",
+            logo = "",
             amount = 100_000000,
             anchorValue = 1.00,
             selected = false
@@ -173,7 +190,7 @@ class MarketViewModel : BaseViewModel() {
             accountAddress = "00000000000000000000000000000000",
             coinNumber = CoinTypes.BitcoinTest.coinType(),
             displayName = "BTC",
-            logoUrl = "",
+            logo = "",
             amount = 100_000000,
             anchorValue = 9000.00,
             selected = false
@@ -183,11 +200,5 @@ class MarketViewModel : BaseViewModel() {
             vls, vlsusd, vlsgbp, vlseur, vlssgd, vlsjpy, lbr, btc
         )
         marketTokensLiveData.postValue(list)
-    }
-
-    fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?> {
-        synchronized(lock) {
-            return marketTokensLiveData
-        }
     }
 }

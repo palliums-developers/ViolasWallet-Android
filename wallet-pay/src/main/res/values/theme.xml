@@ -200,11 +200,13 @@
 
         <!--市场相关页面资源属性-->
         <item name="marketMenuMyFundPoolIcon">@mipmap/ic_my_fund_pool</item>
+        <item name="marketMenuRecordIcon">@mipmap/ic_market_record</item>
         <item name="marketCoinConversionIcon">@mipmap/ic_coin_conversion</item>
         <item name="marketSwapRecordIcon">@mipmap/ic_swap_record</item>
         <item name="marketSwitchBgColor">@color/color_F1EEFB</item>
         <item name="marketFundPoolIncomeIcon">@mipmap/ic_fund_pool_income</item>
         <item name="marketTokenSelectedIcon">@mipmap/ic_market_token_selected</item>
+        <item name="marketTokenAmountIcon">@mipmap/ic_market_token_amount</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">

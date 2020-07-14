@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/market_my_fund_pool"
-        android:icon="?attr/marketMenuMyFundPoolIcon"
-        android:title="@string/title_my_fund_pool"
+        android:id="@+id/market_record"
+        android:icon="?attr/marketMenuRecordIcon"
+        android:title="@string/market_transaction_records"
         app:showAsAction="always" />
 
 </menu>

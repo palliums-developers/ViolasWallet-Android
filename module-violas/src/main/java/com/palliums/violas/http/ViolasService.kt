@@ -240,4 +240,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
 
     suspend fun getViolasChainFiatBalance(address: String) =
         mViolasRepository.getViolasChainFiatBalance(address).data
+
+    suspend fun getMarketSupportCurrencies() =
+        mViolasRepository.getMarketSupportCurrencies().data
 }

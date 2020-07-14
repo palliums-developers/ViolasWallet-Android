@@ -89,6 +89,10 @@ class TokenManager {
     fun findTokenById(tokenId: Long) = mTokenStorage.findById(tokenId)
 
     @WorkerThread
+    fun loadTokensByAccountId(accountId: Long): List<TokenDo> =
+        mTokenStorage.findByAccountId(accountId)
+
+    @WorkerThread
     fun findTokenByName(accountId: Long, tokenName: String) =
         mTokenStorage.findByName(accountId, tokenName)
 
