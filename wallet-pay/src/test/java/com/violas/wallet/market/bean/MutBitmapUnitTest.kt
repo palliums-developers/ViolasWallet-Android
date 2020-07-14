@@ -1,6 +1,7 @@
 package com.violas.wallet.market.bean
 
-import MutBitmap
+import android.util.Log
+import com.violas.wallet.ui.main.market.bean.MutBitmap
 import org.junit.Assert
 import org.junit.Test
 
@@ -31,5 +32,14 @@ class MutBitmapUnitTest {
         Assert.assertEquals(bitmap.getBit(30), true)
 
         Assert.assertEquals(bitmap.countOnes(), 9)
+
+        bitmap.clearBit(30)
+        Assert.assertEquals(bitmap.getBit(30), false)
+
+        Assert.assertEquals(bitmap.countOnes(), 8)
+
+        bitmap.forEach {
+            println("bitmap index:$it")
+        }
     }
 }

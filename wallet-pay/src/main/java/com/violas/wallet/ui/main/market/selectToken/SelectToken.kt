@@ -50,6 +50,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     private var action: Int = -1
     private var tokenCallback: ((ITokenVo) -> Unit)? = null
     private var tokensBridge: TokensBridge? = null
+    private var tokensSwapFilterBridge: TokensSwapFilterBridge? = null
     private var displayTokens: List<ITokenVo>? = null
     private var job: Job? = null
 
@@ -59,7 +60,9 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        tokensSwapFilterBridge = parentFragment as? TokensSwapFilterBridge
+            ?: parentFragment?.parentFragment as? TokensSwapFilterBridge
+                    ?: activity as? TokensSwapFilterBridge
         tokensBridge = parentFragment as? TokensBridge
             ?: parentFragment?.parentFragment as? TokensBridge
                     ?: activity as? TokensBridge
@@ -173,10 +176,18 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                     it.selected = it == currToken
 
                     when (action) {
-                        ACTION_SWAP_SELECT_FROM,
-                        ACTION_SWAP_SELECT_TO -> {
-                            // 兑换选择输入输出币种，展示交易市场支持的所有币种
+                        ACTION_SWAP_SELECT_FROM -> {
+                            // 兑换选择输出币种，展示交易市场支持的所有币种
                             true
+                        }
+                        ACTION_SWAP_SELECT_TO -> {
+                            // 兑换选择输出币种，展示交易市场支持的所有币种
+                            val from = tokensBridge?.getCurrToken(ACTION_SWAP_SELECT_FROM)
+                            if (from?.coinNumber == it.coinNumber) {
+                                true
+                            } else {
+                                tokensSwapFilterBridge?.filter(from, it) ?: false
+                            }
                         }
 
                         else -> {
@@ -322,6 +333,13 @@ val tokenDiffCallback = object : DiffUtil.ItemCallback<ITokenVo>() {
     override fun areItemsTheSame(oldItem: ITokenVo, newItem: ITokenVo): Boolean {
         return oldItem == newItem
     }
+}
+
+interface TokensSwapFilterBridge {
+    fun filter(
+        currToken: ITokenVo?,
+        it: ITokenVo
+    ): Boolean
 }
 
 interface TokensBridge {
