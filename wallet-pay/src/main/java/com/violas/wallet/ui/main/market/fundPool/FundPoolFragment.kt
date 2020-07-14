@@ -6,6 +6,7 @@ import android.text.AmountInputFilter
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -19,6 +20,7 @@ import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.stripTrailingZeros
 import com.palliums.widget.popup.EnhancedPopupCallback
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.event.SwitchFundPoolOpModeEvent
 import com.violas.wallet.ui.main.market.MarketSwitchPopupView
@@ -30,6 +32,7 @@ import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_FIRST
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_SECOND
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
+import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.fragment_fund_pool.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -64,8 +67,8 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
         super.onLazyInitViewByResume(savedInstanceState)
         EventBus.getDefault().register(this)
 
-        tvExchangeRate.text = getString(R.string.exchange_rate_format, "- -")
-        tvPoolTokenAndPoolShare.text = getString(R.string.my_fund_pool_amount_format, "- -")
+        handleValueNull(tvExchangeRate, R.string.exchange_rate_format)
+        handleValueNull(tvPoolTokenAndPoolShare, R.string.my_fund_pool_amount_format)
 
         etFirstInputBox.addTextChangedListener(firstInputTextWatcher)
         etSecondInputBox.addTextChangedListener(secondInputTextWatcher)
@@ -99,16 +102,24 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
 
         fundPoolViewModel.getCurrOpModeLiveData().observe(viewLifecycleOwner, currOpModeObserver)
         fundPoolViewModel.getExchangeRateLiveData().observe(viewLifecycleOwner, Observer {
-            tvExchangeRate.text = getString(
-                R.string.exchange_rate_format,
-                if (it != null) "1:${it.stripTrailingZeros().toPlainString()}" else "- -"
-            )
+            if (it == null) {
+                handleValueNull(tvExchangeRate, R.string.exchange_rate_format)
+            } else {
+                tvExchangeRate.text = getString(
+                    R.string.exchange_rate_format,
+                    "1:${it.stripTrailingZeros().toPlainString()}"
+                )
+            }
         })
         fundPoolViewModel.getPoolTokenAndPoolShareLiveData().observe(viewLifecycleOwner, Observer {
-            tvPoolTokenAndPoolShare.text = getString(
-                R.string.my_fund_pool_amount_format,
-                it?.first ?: "- -"
-            )
+            if (it == null) {
+                handleValueNull(tvPoolTokenAndPoolShare, R.string.my_fund_pool_amount_format)
+            } else {
+                tvPoolTokenAndPoolShare.text = getString(
+                    R.string.my_fund_pool_amount_format,
+                    it.first
+                )
+            }
         })
 
         fundPoolViewModel.loadState.observe(viewLifecycleOwner, Observer {
@@ -150,7 +161,7 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             btnPositive.setText(R.string.action_transfer_in_nbsp)
             etSecondInputBox.isEnabled = true
             etSecondInputBox.requestLayout()
-            llFirstSelectGroup.visibility = View.VISIBLE
+            llSecondSelectGroup.visibility = View.VISIBLE
 
             fundPoolViewModel.getCurrFirstTokenLiveData()
                 .observe(viewLifecycleOwner, currFirstTokenObserver)
@@ -166,7 +177,7 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
             tvSecondInputLabel.setText(R.string.transfer_out)
             btnPositive.setText(R.string.action_transfer_out_nbsp)
             etSecondInputBox.isEnabled = false
-            llFirstSelectGroup.visibility = View.GONE
+            llSecondSelectGroup.visibility = View.GONE
 
             fundPoolViewModel.getCurrFirstTokenLiveData()
                 .removeObserver(currFirstTokenObserver)
@@ -244,11 +255,16 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
     //*********************************** 转出模式选择交易对逻辑 ***********************************//
     private val currTokenPairObserver = Observer<Pair<StableTokenVo, StableTokenVo>?> {
         if (it == null) {
-            tvSecondSelectText.text = getString(R.string.select_token_pair)
+            tvFirstSelectText.text = getString(R.string.select_token_pair)
             etSecondInputBox.hint = "0.00\n0.00"
+            handleValueNull(tvFirstBalance, R.string.market_liquidity_token_balance_format)
         } else {
-            tvSecondSelectText.text = "${it.first.displayName}/${it.second.displayName}"
+            tvFirstSelectText.text = "${it.first.displayName}/${it.second.displayName}"
             etSecondInputBox.hint = "0.00${it.first.displayName}\n0.00${it.second.displayName}"
+            tvFirstBalance.text = getString(
+                R.string.market_liquidity_token_balance_format,
+                "10"
+            )
         }
     }
 
@@ -300,13 +316,35 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
 
     //*********************************** 转入模式选择Token逻辑 ***********************************//
     private val currFirstTokenObserver = Observer<StableTokenVo?> {
-        tvFirstSelectText.text = it?.displayName ?: getString(R.string.select_token)
         etFirstInputBox.hint = "0.00"
+        if (it == null) {
+            tvFirstSelectText.text = getString(R.string.select_token)
+            handleValueNull(tvFirstBalance, R.string.market_token_balance_format)
+        } else {
+            tvFirstSelectText.text = it.displayName
+            val amountWithUnit =
+                convertAmountToDisplayUnit(it.amount, CoinTypes.parseCoinType(it.coinNumber))
+            tvFirstBalance.text = getString(
+                R.string.market_token_balance_format,
+                "${amountWithUnit.first} ${it.displayName}"
+            )
+        }
     }
 
     private val currSecondTokenObserver = Observer<StableTokenVo?> {
-        tvSecondSelectText.text = it?.displayName ?: getString(R.string.select_token)
         etSecondInputBox.hint = "0.00"
+        if (it == null) {
+            tvSecondSelectText.text = getString(R.string.select_token)
+            handleValueNull(tvSecondBalance, R.string.market_token_balance_format)
+        } else {
+            tvSecondSelectText.text = it.displayName
+            val amountWithUnit =
+                convertAmountToDisplayUnit(it.amount, CoinTypes.parseCoinType(it.coinNumber))
+            tvSecondBalance.text = getString(
+                R.string.market_token_balance_format,
+                "${amountWithUnit.first} ${it.displayName}"
+            )
+        }
     }
 
     private fun showSelectTokenDialog(selectFirst: Boolean) {
@@ -383,4 +421,9 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
 
             inputBox.addTextChangedListener(textWatcher)
         }
+
+    //*********************************** 其它逻辑 ***********************************//
+    private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
+        textView.text = getString(formatResId, getString(R.string.market_value_null))
+    }
 }

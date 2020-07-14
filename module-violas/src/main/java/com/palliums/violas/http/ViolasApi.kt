@@ -73,4 +73,9 @@ interface ViolasApi {
     @GET("/1.0/violas/value/violas")
     suspend fun getViolasChainFiatBalance(@Query("address") walletAddress: String): ListResponse<FiatBalanceDTO>
 
+    /**
+     * 获取交易市场支持的币种
+     */
+    @GET("/1.0/market/currency")
+    suspend fun getMarketSupportCurrencies(): Response<MarketCurrenciesDTO>
 }

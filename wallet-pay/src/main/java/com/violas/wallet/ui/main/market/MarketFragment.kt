@@ -48,9 +48,14 @@ class MarketFragment : BaseFragment() {
         val appCompatActivity = activity as? AppCompatActivity
         appCompatActivity?.setSupportActionBar(toolbar)
         appCompatActivity?.supportActionBar?.setDisplayShowTitleEnabled(false)
-        appCompatActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+//        appCompatActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
         toolbar.layoutParams = (toolbar.layoutParams as ConstraintLayout.LayoutParams).apply {
             topMargin = StatusBarUtil.getStatusBarHeight()
+        }
+        toolbar.setNavigationOnClickListener {
+            context?.let {
+                Intent(it, MyFundPoolActivity::class.java).start(it)
+            }
         }
 
         viewPager.offscreenPageLimit = 1
@@ -90,6 +95,10 @@ class MarketFragment : BaseFragment() {
         }
     }
 
+    private fun isSwapTab(): Boolean {
+        return viewPager.currentItem == 0
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_market, menu)
         super.onCreateOptionsMenu(menu, inflater)
@@ -97,9 +106,15 @@ class MarketFragment : BaseFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.market_my_fund_pool -> {
+            R.id.market_record -> {
                 context?.let {
-                    Intent(it, MyFundPoolActivity::class.java).start(it)
+                    if (isSwapTab()) {
+                        // TODO 进入兑换记录页面
+                        showToast(R.string.swap_records)
+                    } else {
+                        // TODO 进入资金池记录页面
+                        showToast(R.string.fund_pool_records)
+                    }
                 }
                 return true
             }

@@ -104,4 +104,9 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
     suspend fun getViolasChainFiatBalance(address: String) = checkResponse {
         mViolasApi.getViolasChainFiatBalance(address)
     }
+
+    suspend fun getMarketSupportCurrencies() =
+        checkResponse {
+            mViolasApi.getMarketSupportCurrencies()
+        }
 }

@@ -130,3 +130,26 @@ data class FiatBalanceDTO(
     val name: String,
     val rate: Double
 )
+
+@Keep
+data class MarketCurrenciesDTO(
+    @SerializedName(value = "btc")
+    val bitcoinCurrencies: List<MarketCurrencyDTO>,
+    @SerializedName(value = "libra")
+    val libraCurrencies: List<MarketCurrencyDTO>,
+    @SerializedName(value = "violas")
+    val violasCurrencies: List<MarketCurrencyDTO>
+)
+
+@Keep
+data class MarketCurrencyDTO(
+    val address: String,
+    val module: String,
+    val name: String,
+    @SerializedName(value = "show_name")
+    val displayName: String,
+    @SerializedName(value = "icon")
+    val logo: String,
+    @SerializedName(value = "index")
+    val marketIndex: Int
+)

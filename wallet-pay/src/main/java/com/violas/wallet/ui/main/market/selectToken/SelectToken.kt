@@ -173,23 +173,16 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                     it.selected = it == currToken
 
                     when (action) {
-                        ACTION_SWAP_SELECT_FROM -> {
-                            // 兑换选择输入币种，只展示用户已添加货币到账户且交易市场支持的币种
-                            if (it is StableTokenVo)
-                                it.chainEnable
-                            else
-                                true
-                        }
-
+                        ACTION_SWAP_SELECT_FROM,
                         ACTION_SWAP_SELECT_TO -> {
-                            // 对换选择输出币种，展示交易市场支持的所有币种
+                            // 兑换选择输入输出币种，展示交易市场支持的所有币种
                             true
                         }
 
                         else -> {
-                            // 资金池转入选择币种，只展示用户已添加货币到账户且交易市场支持的violas稳定币种
+                            // 资金池转入选择币种，只展示交易市场支持的violas稳定币种
                             if (it is StableTokenVo) {
-                                it.chainEnable && it.coinNumber == CoinTypes.Violas.coinType()
+                                it.coinNumber == CoinTypes.Violas.coinType()
                             } else {
                                 false
                             }
@@ -300,7 +293,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                 getResourceId(R.attr.walletHomeDefTokenLogo, holder.itemView.context)
             val item = getItem(position)
             Glide.with(holder.itemView)
-                .load(item.logoUrl)
+                .load(item.logo)
                 .error(defLogoResId)
                 .placeholder(defLogoResId)
                 .into(holder.itemView.ivLogo)

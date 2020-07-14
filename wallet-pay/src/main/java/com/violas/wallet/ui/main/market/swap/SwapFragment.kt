@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.AmountInputFilter
 import android.text.TextWatcher
 import android.widget.EditText
+import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -12,13 +13,15 @@ import com.palliums.extensions.show
 import com.palliums.net.LoadState
 import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
+import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_SWAP_SELECT_FROM
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_SWAP_SELECT_TO
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
-import com.violas.wallet.ui.main.market.MarketViewModel
+import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.fragment_swap.*
 
 /**
@@ -36,7 +39,6 @@ class SwapFragment : BaseFragment(), TokensBridge {
         ViewModelProvider(requireParentFragment()).get(MarketViewModel::class.java)
     }
 
-
     override fun getLayoutResId(): Int {
         return R.layout.fragment_swap
     }
@@ -46,9 +48,11 @@ class SwapFragment : BaseFragment(), TokensBridge {
 
         etFromInputBox.hint = "0.00"
         etToInputBox.hint = "0.00"
-        tvHandlingFeeRate.text = getString(R.string.handling_fee_rate_format, "- -")
-        tvExchangeRate.text = getString(R.string.exchange_rate_format, "- -")
-        tvGasFee.text = getString(R.string.gas_fee_format, "- -")
+        handleValueNull(tvFromBalance, R.string.market_token_balance_format)
+        handleValueNull(tvToBalance, R.string.market_token_balance_format)
+        handleValueNull(tvHandlingFeeRate, R.string.handling_fee_rate_format)
+        handleValueNull(tvExchangeRate, R.string.exchange_rate_format)
+        handleValueNull(tvGasFee, R.string.gas_fee_format)
 
         etFromInputBox.addTextChangedListener(fromInputTextWatcher)
         etToInputBox.addTextChangedListener(toInputTextWatcher)
@@ -68,28 +72,62 @@ class SwapFragment : BaseFragment(), TokensBridge {
         }
 
         swapViewModel.getCurrFromTokenLiveData().observe(viewLifecycleOwner, Observer {
-            tvFromSelectText.text = it?.displayName ?: getString(R.string.select_token)
+            if (it == null) {
+                tvFromSelectText.text = getString(R.string.select_token)
+                handleValueNull(tvFromBalance, R.string.market_token_balance_format)
+            } else {
+                tvFromSelectText.text = it.displayName
+                val amountWithUnit =
+                    convertAmountToDisplayUnit(it.amount, CoinTypes.parseCoinType(it.coinNumber))
+                tvFromBalance.text = getString(
+                    R.string.market_token_balance_format,
+                    "${amountWithUnit.first} ${it.displayName}"
+                )
+            }
         })
         swapViewModel.getCurrToTokenLiveData().observe(viewLifecycleOwner, Observer {
-            tvToSelectText.text = it?.displayName ?: getString(R.string.select_token)
+            if (it == null) {
+                tvToSelectText.text = getString(R.string.select_token)
+                handleValueNull(tvToBalance, R.string.market_token_balance_format)
+            } else {
+                tvToSelectText.text = it.displayName
+                val amountWithUnit =
+                    convertAmountToDisplayUnit(it.amount, CoinTypes.parseCoinType(it.coinNumber))
+                tvToBalance.text = getString(
+                    R.string.market_token_balance_format,
+                    "${amountWithUnit.first} ${it.displayName}"
+                )
+            }
         })
         swapViewModel.getHandlingFeeRateLiveDataLiveData().observe(viewLifecycleOwner, Observer {
-            tvHandlingFeeRate.text = getString(
-                R.string.handling_fee_rate_format,
-                if (it != null) "${it.toPlainString()}%" else "- -"
-            )
+            if (it == null) {
+                handleValueNull(tvHandlingFeeRate, R.string.handling_fee_rate_format)
+            } else {
+                tvHandlingFeeRate.text = getString(
+                    R.string.handling_fee_rate_format,
+                    "${it.toPlainString()}%"
+                )
+            }
         })
         swapViewModel.getExchangeRateLiveData().observe(viewLifecycleOwner, Observer {
-            tvExchangeRate.text = getString(
-                R.string.exchange_rate_format,
-                if (it != null) "1:${it.toPlainString()}" else "- -"
-            )
+            if (it == null) {
+                handleValueNull(tvExchangeRate, R.string.exchange_rate_format)
+            } else {
+                tvExchangeRate.text = getString(
+                    R.string.exchange_rate_format,
+                    "1:${it.toPlainString()}"
+                )
+            }
         })
         swapViewModel.getGasFeeLiveData().observe(viewLifecycleOwner, Observer {
-            tvGasFee.text = getString(
-                R.string.gas_fee_format,
-                it?.toString() ?: "- -"
-            )
+            if (it == null) {
+                handleValueNull(tvGasFee, R.string.gas_fee_format)
+            } else {
+                tvGasFee.text = getString(
+                    R.string.gas_fee_format,
+                    it.toString()
+                )
+            }
         })
 
         swapViewModel.loadState.observe(viewLifecycleOwner, Observer {
@@ -197,4 +235,9 @@ class SwapFragment : BaseFragment(), TokensBridge {
 
             inputBox.addTextChangedListener(textWatcher)
         }
+
+    //*********************************** 其它逻辑 ***********************************//
+    private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
+        textView.text = getString(formatResId, getString(R.string.market_value_null))
+    }
 }

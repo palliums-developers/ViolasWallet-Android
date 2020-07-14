@@ -1,27 +1,156 @@
 package com.violas.wallet.biz
 
 import android.content.Context
-import com.palliums.utils.exceptionAsync
+import com.palliums.utils.toMap
+import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexRepository
+import com.violas.wallet.ui.main.market.bean.ITokenVo
+import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
+import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.ui.main.quotes.bean.IToken
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.json.JSONObject
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 
 class ExchangeManager {
+
+    private val mAccountStorage by lazy {
+        DataRepository.getAccountStorage()
+    }
     private val mViolasService by lazy {
         DataRepository.getViolasService()
     }
+    private val mViolasRpcService by lazy {
+        DataRepository.getViolasChainRpcService()
+    }
+    private val mLibraRpcService by lazy {
+        DataRepository.getLibraService()
+    }
 
+    private val mAccountManager by lazy {
+        AccountManager()
+    }
     private val mTokenManager by lazy {
         TokenManager()
     }
 
     private val receiveAddress = "c71caa520e123d122c310177c08fa0d2"
+
+    /**
+     * 获取交易市场支持的币种列表
+     */
+    suspend fun getMarketSupportTokens(): List<ITokenVo> {
+        return coroutineScope {
+            // 交易市场支持的币种
+            val marketCurrenciesDeferred = async {
+                mViolasService.getMarketSupportCurrencies()
+            }
+
+            // 用户bitcoin链上币种信息
+            val bitcoinNumber =
+                if (Vm.TestNet) CoinTypes.BitcoinTest.coinType() else CoinTypes.Bitcoin.coinType()
+            val bitcoinAccount = mAccountStorage.findByCoinTypeByIdentity(bitcoinNumber)
+            val bitcoinBalanceDeferred = bitcoinAccount?.let {
+                async { mAccountManager.getBalance(it) }
+            }
+
+            // 用户libra链上币种信息
+            val libraAccount = mAccountStorage.findByCoinTypeByIdentity(
+                CoinTypes.Libra.coinType()
+            )
+            val libraAccountStateDeferred = libraAccount?.let {
+                async { mLibraRpcService.getAccountState(it.address) }
+            }
+
+            // 用户violas链上币种信息
+            val violasAccount = mAccountStorage.findByCoinTypeByIdentity(
+                CoinTypes.Violas.coinType()
+            )
+            val violasAccountStateDeferred = violasAccount?.let {
+                async { mViolasRpcService.getAccountState(it.address) }
+            }
+
+            val marketCurrencies = marketCurrenciesDeferred.await()
+            val bitcoinBalance = bitcoinBalanceDeferred?.await()
+            val libraRemoteTokens =
+                libraAccountStateDeferred?.await()?.balances?.associate {
+                    it.currency to it.amount
+                }
+            val violasRemoteTokens =
+                violasAccountStateDeferred?.await()?.balances?.associate {
+                    it.currency to it.amount
+                }
+
+            // 用户libra本地币种信息
+            val libraLocalTokens = libraAccount?.let {
+                mTokenManager.loadTokensByAccountId(it.id).toMap { item -> item.module }
+            }
+            // 用户violas本地币种信息
+            val violasLocalTokens = violasAccount?.let {
+                mTokenManager.loadTokensByAccountId(it.id).toMap { item -> item.module }
+            }
+
+            val marketTokens = mutableListOf<ITokenVo>()
+            marketCurrencies?.bitcoinCurrencies?.forEach {
+                marketTokens.add(
+                    PlatformTokenVo(
+                        accountDoId = bitcoinAccount?.id ?: -1,
+                        accountType = bitcoinAccount?.accountType ?: AccountType.Normal,
+                        accountAddress = bitcoinAccount?.address ?: "",
+                        coinNumber = bitcoinAccount?.coinNumber ?: bitcoinNumber,
+                        displayName = it.displayName,
+                        logo = it.logo,
+                        amount = bitcoinBalance ?: 0
+                    )
+                )
+            }
+            marketCurrencies?.libraCurrencies?.forEach {
+                marketTokens.add(
+                    StableTokenVo(
+                        accountDoId = libraAccount?.id ?: -1,
+                        coinNumber = CoinTypes.Libra.coinType(),
+                        marketIndex = it.marketIndex,
+                        tokenDoId = libraLocalTokens?.get(it.module)?.id ?: -1,
+                        address = it.address,
+                        module = it.module,
+                        name = it.name,
+                        displayName = it.displayName,
+                        logo = it.logo,
+                        localEnable = libraLocalTokens?.get(it.module)?.enable ?: false,
+                        chainEnable = libraRemoteTokens?.containsKey(it.module) ?: false,
+                        amount = libraRemoteTokens?.get(it.module) ?: 0
+                    )
+                )
+            }
+            marketCurrencies?.violasCurrencies?.forEach {
+                marketTokens.add(
+                    StableTokenVo(
+                        accountDoId = violasAccount?.id ?: -1,
+                        coinNumber = CoinTypes.Violas.coinType(),
+                        marketIndex = it.marketIndex,
+                        tokenDoId = violasLocalTokens?.get(it.module)?.id ?: -1,
+                        address = it.address,
+                        module = it.module,
+                        name = it.name,
+                        displayName = it.displayName,
+                        logo = it.logo,
+                        localEnable = violasLocalTokens?.get(it.module)?.enable ?: false,
+                        chainEnable = violasRemoteTokens?.containsKey(it.module) ?: false,
+                        amount = violasRemoteTokens?.get(it.module) ?: 0
+                    )
+                )
+            }
+
+            return@coroutineScope marketTokens
+        }
+    }
 
     @Throws(Exception::class)
     suspend fun revokeOrder(
