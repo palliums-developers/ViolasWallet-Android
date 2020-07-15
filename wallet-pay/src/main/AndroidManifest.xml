@@ -169,7 +169,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.APP.DayNight.WalletConnect" />
         <activity
-            android:name=".ui.main.market.fundPool.MyFundPoolActivity"
+            android:name=".ui.market.MyPoolActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.market.SwapRecordActivity"

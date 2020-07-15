@@ -348,7 +348,7 @@
 
     <string name="title_swap">Exchange</string>
     <string name="title_fund_pool">Pool</string>
-    <string name="title_my_fund_pool">My Pool</string>
+    <string name="title_my_pool">My Pool</string>
     <string name="handling_fee_rate_format">费率：%1$s</string>
     <string name="exchange_rate_format">兑换率：%1$s</string>
     <string name="gas_fee_format">矿工费用：%1$s</string>
@@ -359,7 +359,7 @@
     <string name="swap_records">兑换记录</string>
     <string name="transfer_in">转入</string>
     <string name="transfer_out">转出</string>
-    <string name="fund_pool_token">资金池通证</string>
+    <string name="pool_liquidity_token">资金池通证</string>
     <string name="my_fund_pool_amount_format">你的资金池共有：%1$s</string>
     <string name="action_transfer_in_nbsp">转&#160;入</string>
     <string name="action_transfer_out_nbsp">转&#160;出</string>
@@ -381,7 +381,7 @@
     <string name="market_swap_state_failed">兑换失败</string>
     <string name="market_swap_state_cancelled">已取消</string>
     <string name="action_retry">重试</string>
-    <string name="market_liquidity_token_record_format">通证：%1$s</string>
+    <string name="market_liquidity_token_amount_format">通证：%1$s</string>
     <string name="market_pool_state_processing">打包中</string>
     <string name="market_pool_add_state_succeeded">转入成功</string>
     <string name="market_pool_add_state_failed">转入失败</string>

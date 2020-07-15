@@ -86,7 +86,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/tvTotalAmount"
+        android:id="@+id/tvTotalLiquidityAmount"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:ellipsize="middle"

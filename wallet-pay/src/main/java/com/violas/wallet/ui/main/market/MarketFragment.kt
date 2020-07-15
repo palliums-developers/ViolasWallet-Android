@@ -17,8 +17,8 @@ import com.violas.wallet.R
 import com.violas.wallet.event.MarketPageType
 import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.ui.main.market.fundPool.FundPoolFragment
-import com.violas.wallet.ui.main.market.fundPool.MyFundPoolActivity
 import com.violas.wallet.ui.main.market.swap.SwapFragment
+import com.violas.wallet.ui.market.MyPoolActivity
 import com.violas.wallet.ui.market.PoolRecordActivity
 import com.violas.wallet.ui.market.SwapRecordActivity
 import kotlinx.android.synthetic.main.fragment_market.*
@@ -56,7 +56,7 @@ class MarketFragment : BaseFragment() {
         }
         toolbar.setNavigationOnClickListener {
             context?.let {
-                Intent(it, MyFundPoolActivity::class.java).start(it)
+                Intent(it, MyPoolActivity::class.java).start(it)
             }
         }
 

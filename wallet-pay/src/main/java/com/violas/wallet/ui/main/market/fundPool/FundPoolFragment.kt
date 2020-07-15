@@ -174,7 +174,7 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
                 .removeObserver(tokenPairsObserver)
         } else {
             tvSwitchOpModeText.setText(R.string.transfer_out)
-            tvFirstInputLabel.setText(R.string.fund_pool_token)
+            tvFirstInputLabel.setText(R.string.pool_liquidity_token)
             tvSecondInputLabel.setText(R.string.transfer_out)
             btnPositive.setText(R.string.action_transfer_out_nbsp)
             etSecondInputBox.isEnabled = false

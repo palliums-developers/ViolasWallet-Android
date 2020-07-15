@@ -176,15 +176,15 @@ data class MarketSwapRecordDTO(
 @Parcelize
 data class MarketPoolRecordDTO(
     @SerializedName(value = "coina")
-    val coinA: String,
+    val coinAName: String,
     @SerializedName(value = "amounta")
-    val amountA: String,
+    val coinAAmount: String,
     @SerializedName(value = "coinb")
-    val coinB: String,
+    val coinBName: String,
     @SerializedName(value = "amountb")
-    val amountB: String,
+    val coinBAmount: String,
     @SerializedName(value = "token")
-    val liquidityToken: String,
+    val liquidityAmount: String,
     @SerializedName(value = "transaction_type")
     val type: String,
     val version: Long,
@@ -200,3 +200,29 @@ data class MarketPoolRecordDTO(
         return type.equals(TYPE_ADD_LIQUIDITY, true)
     }
 }
+
+@Keep
+data class UserPoolInfoDTO(
+    @SerializedName(value = "total_token")
+    val totalLiquidityAmount: String,
+    @SerializedName(value = "balance")
+    val liquidityTokens: List<LiquidityTokenDTO>?
+)
+
+@Keep
+data class LiquidityTokenDTO(
+    @SerializedName(value = "coin_a_index")
+    val coinAIndex: Int,
+    @SerializedName(value = "coin_a_name")
+    val coinAName: String,
+    @SerializedName(value = "coin_a_value")
+    val coinAAmount: String,
+    @SerializedName(value = "coin_b_index")
+    val coinBIndex: Int,
+    @SerializedName(value = "coin_b_name")
+    val coinBName: String,
+    @SerializedName(value = "coin_b_value")
+    val coinBAmount: String,
+    @SerializedName(value = "token")
+    val amount: String
+)

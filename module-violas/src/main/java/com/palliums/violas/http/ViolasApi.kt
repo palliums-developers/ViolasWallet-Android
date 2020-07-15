@@ -105,4 +105,13 @@ interface ViolasApi {
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
     ): ListResponse<MarketPoolRecordDTO>
+
+    /**
+     * 获取指定地址的交易市场资金池信息
+     * @param address       地址
+     */
+    @GET("/1.0/market/pool/info")
+    suspend fun getUserPoolInfo(
+        @Query("address") address: String
+    ): Response<UserPoolInfoDTO>
 }
