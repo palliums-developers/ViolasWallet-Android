@@ -391,4 +391,6 @@
     <string name="label_transaction_details_order_time">下单时间：</string>
     <string name="label_transaction_details_deal_time">成交时间：</string>
     <string name="market_transaction_state_submitted">已提交</string>
+    <string name="pool_details">详情</string>
+    <string name="label_transaction_details_liquidity_token">通证：</string>
 </resources>

@@ -137,7 +137,7 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
                 fromAmount = "100000",
                 toName = "VLSEUR",
                 toAmount = "87770",
-                version = 1,
+                version = 2,
                 date = System.currentTimeMillis(),
                 status = 4002
             )

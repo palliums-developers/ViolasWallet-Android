@@ -80,7 +80,7 @@
 
     <View
         android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_0.5"
+        android:layout_height="@dimen/dp_0.86"
         android:layout_marginTop="@dimen/dp_11"
         android:background="?attr/colorDivider"
         app:layout_constraintBottom_toBottomOf="parent"

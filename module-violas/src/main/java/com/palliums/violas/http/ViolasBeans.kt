@@ -183,10 +183,20 @@ data class MarketPoolRecordDTO(
     val coinB: String,
     @SerializedName(value = "amountb")
     val amountB: String,
-    val token: String,
+    @SerializedName(value = "token")
+    val liquidityToken: String,
     @SerializedName(value = "transaction_type")
     val type: String,
     val version: Long,
     val date: Long,
     val status: Int
-) : Parcelable
+) : Parcelable {
+    companion object {
+        const val TYPE_ADD_LIQUIDITY = "ADD_LIQUIDITY"
+        const val TYPE_REMOVE_LIQUIDITY = "REMOVE_LIQUIDITY"
+    }
+
+    fun isAddLiquidity(): Boolean {
+        return type.equals(TYPE_ADD_LIQUIDITY, true)
+    }
+}

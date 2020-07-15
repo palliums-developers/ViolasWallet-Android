@@ -15,15 +15,19 @@ import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.utils.getString
 import com.palliums.violas.http.MarketPoolRecordDTO
+import com.palliums.violas.http.MarketPoolRecordDTO.Companion.TYPE_ADD_LIQUIDITY
+import com.palliums.violas.http.MarketPoolRecordDTO.Companion.TYPE_REMOVE_LIQUIDITY
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
+import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_pool_record.view.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -44,7 +48,7 @@ class PoolRecordActivity : BasePagingActivity<MarketPoolRecordDTO>() {
         PoolRecordViewAdapter(
             retryCallback = { viewModel.retry() },
             clickItemCallback = {
-                // TODO 进入资金池详情页面
+                PoolDetailsActivity.start(this, it)
             }
         )
     }
@@ -114,6 +118,57 @@ class PoolRecordViewModel : PagingViewModel<MarketPoolRecordDTO>() {
                 address, pageSize, (pageNumber - 1) * pageSize
             )
         onSuccess.invoke(swapRecords ?: emptyList(), null)
+        //onSuccess.invoke(mockData(), null)
+    }
+
+    private suspend fun mockData(): List<MarketPoolRecordDTO> {
+        delay(2000)
+        return mutableListOf(
+            MarketPoolRecordDTO(
+                coinA = "VLSUSD",
+                amountA = "10000000",
+                coinB = "VLSSGD",
+                amountB = "13909000",
+                liquidityToken = "1.001",
+                type = TYPE_ADD_LIQUIDITY,
+                version = 1,
+                date = System.currentTimeMillis(),
+                status = 4001
+            ),
+            MarketPoolRecordDTO(
+                coinA = "VLSUSD",
+                amountA = "100000",
+                coinB = "VLSEUR",
+                amountB = "87770",
+                liquidityToken = "0.781",
+                type = TYPE_ADD_LIQUIDITY,
+                version = 2,
+                date = System.currentTimeMillis(),
+                status = 4002
+            ),
+            MarketPoolRecordDTO(
+                coinA = "VLSUSD",
+                amountA = "10000000",
+                coinB = "VLSSGD",
+                amountB = "13909000",
+                liquidityToken = "1.001",
+                type = TYPE_REMOVE_LIQUIDITY,
+                version = 3,
+                date = System.currentTimeMillis(),
+                status = 4001
+            ),
+            MarketPoolRecordDTO(
+                coinA = "VLSUSD",
+                amountA = "100000",
+                coinB = "VLSEUR",
+                amountB = "87770",
+                liquidityToken = "0.781",
+                type = TYPE_REMOVE_LIQUIDITY,
+                version = 4,
+                date = System.currentTimeMillis(),
+                status = 4002
+            )
+        )
     }
 }
 
@@ -146,11 +201,6 @@ class PoolRecordViewHolder(
     private val clickItemCallback: ((MarketPoolRecordDTO) -> Unit)? = null
 ) : BaseViewHolder<MarketPoolRecordDTO>(view) {
 
-    companion object {
-        private const val TYPE_ADD_LIQUIDITY = "ADD_LIQUIDITY"
-        private const val TYPE_REMOVE_LIQUIDITY = "REMOVE_LIQUIDITY"
-    }
-
     init {
         itemView.setOnClickListener(this)
     }
@@ -158,11 +208,11 @@ class PoolRecordViewHolder(
     override fun onViewBind(itemPosition: Int, itemData: MarketPoolRecordDTO?) {
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
-            itemView.tvAToken.text = "${it.amountA} ${it.coinA}"
-            itemView.tvBToken.text = "${it.amountB} ${it.coinB}"
-            itemView.ivIcon.setBackgroundColor(
+            itemView.tvAToken.text = "${convertViolasTokenUnit(it.amountA)} ${it.coinA}"
+            itemView.tvBToken.text = "${convertViolasTokenUnit(it.amountB)} ${it.coinB}"
+            itemView.ivIcon.setBackgroundResource(
                 getResourceId(
-                    if (it.type.equals(TYPE_ADD_LIQUIDITY, true))
+                    if (it.isAddLiquidity())
                         R.attr.iconRecordTypeInput
                     else
                         R.attr.iconRecordTypeOutput,
@@ -171,15 +221,12 @@ class PoolRecordViewHolder(
             )
             itemView.tvLiquidityToken.text = getString(
                 R.string.market_liquidity_token_record_format,
-                if (it.type.equals(TYPE_ADD_LIQUIDITY, true))
-                    "+${it.token}"
-                else
-                    "-${it.token}"
+                "${if (it.isAddLiquidity()) "+" else "-"} ${it.liquidityToken}"
             )
 
             if (it.status == 4001) {
                 itemView.tvState.setText(
-                    if (it.type.equals(TYPE_ADD_LIQUIDITY, true))
+                    if (it.isAddLiquidity())
                         R.string.market_pool_add_state_succeeded
                     else
                         R.string.market_pool_remove_state_succeeded
@@ -189,7 +236,7 @@ class PoolRecordViewHolder(
                 )
             } else {
                 itemView.tvState.setText(
-                    if (it.type.equals(TYPE_ADD_LIQUIDITY, true))
+                    if (it.isAddLiquidity())
                         R.string.market_pool_add_state_failed
                     else
                         R.string.market_pool_remove_state_failed
