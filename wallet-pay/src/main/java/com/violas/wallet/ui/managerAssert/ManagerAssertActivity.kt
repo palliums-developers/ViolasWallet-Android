@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.utils.openBrowser
+import com.palliums.violas.bean.TokenMark
 import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.quincysx.crypto.CoinTypes
 import com.smallraw.support.switchcompat.SwitchButton
@@ -21,7 +22,6 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
-import com.violas.wallet.biz.bean.TokenMark
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.web.WebCommonActivity

@@ -1,14 +1,11 @@
 package com.violas.wallet.biz
 
-import android.util.Log
 import androidx.annotation.WorkerThread
-import androidx.collection.ArrayMap
+import com.palliums.violas.bean.TokenMark
 import com.palliums.violas.http.ViolasMultiTokenRepository
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.R
 import com.violas.wallet.biz.bean.AssertOriginateToken
-import com.violas.wallet.biz.bean.TokenMark
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -17,7 +14,6 @@ import com.violas.wallet.repository.database.entity.TokenDo
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.wallet.Account
-import java.util.concurrent.Executors
 
 class TokenManager {
 

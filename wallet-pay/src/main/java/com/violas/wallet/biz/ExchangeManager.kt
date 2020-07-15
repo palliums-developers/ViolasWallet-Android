@@ -1,17 +1,14 @@
 package com.violas.wallet.biz
 
 import android.content.Context
-import android.util.ArrayMap
 import com.palliums.utils.toMap
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.biz.bean.TokenMark
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexRepository
 import com.violas.wallet.ui.main.market.bean.*
-import com.violas.wallet.ui.main.quotes.bean.IToken
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.json.JSONObject
@@ -198,31 +195,31 @@ class ExchangeManager {
     suspend fun exchangeToken(
         context: Context,
         account: Account,
-        fromCoin: IToken,
+        fromCoin: ITokenVo,
         fromCoinAmount: BigDecimal,
-        toCoin: IToken,
+        toCoin: ITokenVo,
         toCoinAmount: BigDecimal
     ): Boolean {
-        val optionExchangePayloadWithData = optionExchangePayloadWithData(
-            toCoin.tokenIdx(),
-            toCoinAmount.multiply(BigDecimal("1000000")).toLong()
-        )
-        val optionExchangePayload = mTokenManager.transferTokenPayload(
-            fromCoin.tokenIdx(),
-            receiveAddress,
-            fromCoinAmount.multiply(BigDecimal("1000000")).toLong(),
-            optionExchangePayloadWithData
-        )
-
-        try {
-            mViolasService.sendTransaction(
-                optionExchangePayload,
-                account
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
-        }
+//        val optionExchangePayloadWithData = optionExchangePayloadWithData(
+//            toCoin.tokenIdx(),
+//            toCoinAmount.multiply(BigDecimal("1000000")).toLong()
+//        )
+//        val optionExchangePayload = mTokenManager.transferTokenPayload(
+//            fromCoin.tokenIdx(),
+//            receiveAddress,
+//            fromCoinAmount.multiply(BigDecimal("1000000")).toLong(),
+//            optionExchangePayloadWithData
+//        )
+//
+//        try {
+//            mViolasService.sendTransaction(
+//                optionExchangePayload,
+//                account
+//            )
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            return false
+//        }
         return true
     }
 
