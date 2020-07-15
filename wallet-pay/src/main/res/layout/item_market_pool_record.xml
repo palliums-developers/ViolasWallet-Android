@@ -14,7 +14,7 @@
         android:layout_marginTop="@dimen/dp_15"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:background="?attr/iconRecordOutput" />
+        tools:background="?attr/iconRecordTypeOutput" />
 
     <TextView
         android:id="@+id/tvState"

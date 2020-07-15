@@ -154,7 +154,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         when (transactionRecord.transactionState) {
             TransactionState.PENDING -> {
                 ivState.setImageResource(
-                    getResourceId(R.attr.transDetailsProcessingIcon, this)
+                    getResourceId(R.attr.iconRecordStateProcessing, this)
                 )
                 tvDesc.setTextColor(
                     getColorByAttrId(R.attr.textColorProcessing, this)
@@ -164,7 +164,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
 
             TransactionState.FAILURE -> {
                 ivState.setImageResource(
-                    getResourceId(R.attr.transDetailsFailureIcon, this)
+                    getResourceId(R.attr.iconRecordStateFailed, this)
                 )
                 tvDesc.setTextColor(
                     getColorByAttrId(R.attr.textColorFailure, this)
@@ -192,7 +192,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
 
             else -> {
                 ivState.setImageResource(
-                    getResourceId(R.attr.transDetailsSuccessIcon, this)
+                    getResourceId(R.attr.iconRecordStateSucceeded, this)
                 )
                 tvDesc.setTextColor(
                     getColorByAttrId(R.attr.textColorSuccess, this)

@@ -42,9 +42,13 @@
     <attr name="iconHideSecondary" format="reference" />
     <attr name="iconScanPrimary" format="reference" />
     <attr name="iconScanSecondary" format="reference" />
-    <attr name="iconRecordAddCurrency" format="reference" />
-    <attr name="iconRecordInput" format="reference" />
-    <attr name="iconRecordOutput" format="reference" />
+    <attr name="iconRecordTypeAddCurrency" format="reference" />
+    <attr name="iconRecordTypeInput" format="reference" />
+    <attr name="iconRecordTypeOutput" format="reference" />
+    <attr name="iconRecordStateProcessing" format="reference" />
+    <attr name="iconRecordStateSucceeded" format="reference" />
+    <attr name="iconRecordStateFailed" format="reference" />
+    <attr name="iconRecordStateCancelled" format="reference" />
 
     <!--首页资源属性-->
     <attr name="homeBottomTabSelectedTextColor" format="color" />
@@ -87,9 +91,6 @@
     <attr name="transDetailsTopBg" format="color|reference" />
     <attr name="transDetailsBottomBg" format="color|reference" />
     <attr name="transDetailsTransInfoBg" format="color|reference" />
-    <attr name="transDetailsProcessingIcon" format="reference" />
-    <attr name="transDetailsSuccessIcon" format="reference" />
-    <attr name="transDetailsFailureIcon" format="reference" />
     <attr name="transDetailsSaveIcon" format="reference" />
 
     <!--多语言页面资源属性-->
@@ -131,5 +132,9 @@
     <attr name="marketFundPoolIncomeIcon" format="reference" />
     <attr name="marketTokenSelectedIcon" format="reference" />
     <attr name="marketTokenAmountIcon" format="reference" />
+    <attr name="marketSwapDetailsIcon" format="reference" />
+    <attr name="marketDetailsCompletedStateTextColor" format="color" />
+    <attr name="marketDetailsCompletedLineBgColor" format="color" />
+    <attr name="marketDetailsUncompletedLineBgColor" format="color" />
 
 </resources>

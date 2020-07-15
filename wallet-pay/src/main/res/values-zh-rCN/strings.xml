@@ -385,4 +385,10 @@
     <string name="market_pool_add_state_failed">转入失败</string>
     <string name="market_pool_remove_state_succeeded">转出成功</string>
     <string name="market_pool_remove_state_failed">转出失败</string>
+    <string name="swap_details">兑换详情</string>
+    <string name="label_transaction_details_exchange_rate">汇率：</string>
+    <string name="label_transaction_details_handling_fee">手续费：</string>
+    <string name="label_transaction_details_order_time">下单时间：</string>
+    <string name="label_transaction_details_deal_time">成交时间：</string>
+    <string name="market_transaction_state_submitted">已提交</string>
 </resources>

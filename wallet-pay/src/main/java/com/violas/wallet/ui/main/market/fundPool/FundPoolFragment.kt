@@ -426,6 +426,6 @@ class FundPoolFragment : BaseFragment(), TokensBridge {
 
     //*********************************** 其它逻辑 ***********************************//
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
-        textView.text = getString(formatResId, getString(R.string.market_value_null))
+        textView.text = getString(formatResId, getString(R.string.value_null))
     }
 }

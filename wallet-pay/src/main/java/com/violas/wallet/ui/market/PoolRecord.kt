@@ -163,9 +163,9 @@ class PoolRecordViewHolder(
             itemView.ivIcon.setBackgroundColor(
                 getResourceId(
                     if (it.type.equals(TYPE_ADD_LIQUIDITY, true))
-                        R.attr.iconRecordInput
+                        R.attr.iconRecordTypeInput
                     else
-                        R.attr.iconRecordOutput,
+                        R.attr.iconRecordTypeOutput,
                     itemView.context
                 )
             )

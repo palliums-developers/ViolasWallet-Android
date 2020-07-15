@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
@@ -19,9 +19,11 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
+import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_swap_record.view.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -42,7 +44,7 @@ class SwapRecordActivity : BasePagingActivity<MarketSwapRecordDTO>() {
         SwapRecordViewAdapter(
             retryCallback = { viewModel.retry() },
             clickItemCallback = {
-                // TODO 进入兑换详情页面
+                SwapDetailsActivity.start(this, it)
             },
             clickRetryCallback = { swapRecord, position ->
                 // TODO 重试
@@ -115,6 +117,31 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
                 address, pageSize, (pageNumber - 1) * pageSize
             )
         onSuccess.invoke(swapRecords ?: emptyList(), null)
+        //onSuccess.invoke(mockData(), null)
+    }
+
+    private suspend fun mockData(): List<MarketSwapRecordDTO> {
+        delay(2000)
+        return mutableListOf(
+            MarketSwapRecordDTO(
+                fromName = "VLSUSD",
+                fromAmount = "10000000",
+                toName = "VLSSGD",
+                toAmount = "13909000",
+                version = 1,
+                date = System.currentTimeMillis(),
+                status = 4001
+            ),
+            MarketSwapRecordDTO(
+                fromName = "VLSUSD",
+                fromAmount = "100000",
+                toName = "VLSEUR",
+                toAmount = "87770",
+                version = 1,
+                date = System.currentTimeMillis(),
+                status = 4002
+            )
+        )
     }
 }
 
@@ -158,8 +185,8 @@ class SwapRecordViewHolder(
     override fun onViewBind(itemPosition: Int, itemData: MarketSwapRecordDTO?) {
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
-            itemView.tvFromToken.text = "${it.fromAmount} ${it.fromName}"
-            itemView.tvToToken.text = "${it.toAmount} ${it.toName}"
+            itemView.tvFromToken.text = "${convertViolasTokenUnit(it.fromAmount)} ${it.fromName}"
+            itemView.tvToToken.text = "${convertViolasTokenUnit(it.toAmount)} ${it.toName}"
             if (it.status == 4001) {
                 itemView.tvRetry.visibility = View.GONE
                 itemView.tvState.setText(R.string.market_swap_state_succeeded)

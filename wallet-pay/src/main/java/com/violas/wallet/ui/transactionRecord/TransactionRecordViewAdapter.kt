@@ -65,13 +65,13 @@ class TransactionRecordViewHolder(
                 getResourceId(
                     when (it.transactionType) {
                         TransactionType.COLLECTION ->
-                            R.attr.iconRecordInput
+                            R.attr.iconRecordTypeInput
 
                         TransactionType.ADD_CURRENCY ->
-                            R.attr.iconRecordAddCurrency
+                            R.attr.iconRecordTypeAddCurrency
 
                         else ->
-                            R.attr.iconRecordOutput
+                            R.attr.iconRecordTypeOutput
                     },
                     itemView.context
                 )

@@ -1,8 +1,10 @@
 package com.palliums.violas.http
 
+import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by elephant on 2019-11-11 15:41.
@@ -155,6 +157,7 @@ data class MarketCurrencyDTO(
 )
 
 @Keep
+@Parcelize
 data class MarketSwapRecordDTO(
     @SerializedName(value = "input_name")
     val fromName: String,
@@ -167,9 +170,10 @@ data class MarketSwapRecordDTO(
     val version: Long,
     val date: Long,
     val status: Int
-)
+) : Parcelable
 
 @Keep
+@Parcelize
 data class MarketPoolRecordDTO(
     @SerializedName(value = "coina")
     val coinA: String,
@@ -185,4 +189,4 @@ data class MarketPoolRecordDTO(
     val version: Long,
     val date: Long,
     val status: Int
-)
+) : Parcelable
