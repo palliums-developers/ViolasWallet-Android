@@ -1,24 +1,7 @@
 package com.violas.wallet.biz.bean
 
+import com.palliums.violas.bean.TokenMark
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.R
-
-data class TokenMark(
-    val module: String,
-    val address: String,
-    val name: String
-) {
-    override fun hashCode(): Int {
-        var result = module.hashCode()
-        result = result * 31 + address.hashCode()
-        result = result * 31 + name.hashCode()
-        return result
-    }
-
-    override fun toString(): String {
-        return module + "   " + address + "     " + name
-    }
-}
 
 data class AssertOriginateToken(
     var tokenMark: TokenMark? = null,
