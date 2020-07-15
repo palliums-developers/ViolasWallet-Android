@@ -2,7 +2,6 @@ package com.violas.wallet.ui.transactionDetails
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -144,7 +143,7 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
         when (transactionRecord.transactionState) {
             TransactionState.PENDING -> {
                 ivState.setImageResource(
-                    getResourceId(R.attr.transDetailsProcessingIcon, requireContext())
+                    getResourceId(R.attr.iconRecordStateProcessing, requireContext())
                 )
                 tvDesc.setTextColor(
                     getColorByAttrId(R.attr.textColorProcessing, requireContext())
@@ -154,7 +153,7 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
 
             TransactionState.FAILURE -> {
                 ivState.setImageResource(
-                    getResourceId(R.attr.transDetailsFailureIcon, requireContext())
+                    getResourceId(R.attr.iconRecordStateFailed, requireContext())
                 )
                 tvDesc.setTextColor(
                     getColorByAttrId(R.attr.textColorFailure, requireContext())
@@ -182,7 +181,7 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
 
             else -> {
                 ivState.setImageResource(
-                    getResourceId(R.attr.transDetailsSuccessIcon, requireContext())
+                    getResourceId(R.attr.iconRecordStateSucceeded, requireContext())
                 )
                 tvDesc.setTextColor(
                     getColorByAttrId(R.attr.textColorSuccess, requireContext())

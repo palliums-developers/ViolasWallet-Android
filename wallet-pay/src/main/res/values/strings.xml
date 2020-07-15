@@ -374,6 +374,25 @@
     <string name="tips_select_token_search_is_empty">未找到%1$s相关的Token</string>
     <string name="market_token_balance_format">当前资产：%1$s</string>
     <string name="market_liquidity_token_balance_format">当前通证：%1$s</string>
-    <string name="market_value_null" tools:ignore="MissingTranslation">-&#160;-</string>
+    <string name="value_null" tools:ignore="MissingTranslation">-&#160;-</string>
     <string name="market_transaction_records">市场交易记录</string>
+    <string name="market_swap_state_processing">兑换中</string>
+    <string name="market_swap_state_succeeded">兑换成功</string>
+    <string name="market_swap_state_failed">兑换失败</string>
+    <string name="market_swap_state_cancelled">已取消</string>
+    <string name="action_retry">重试</string>
+    <string name="market_liquidity_token_record_format">通证：%1$s</string>
+    <string name="market_pool_state_processing">打包中</string>
+    <string name="market_pool_add_state_succeeded">转入成功</string>
+    <string name="market_pool_add_state_failed">转入失败</string>
+    <string name="market_pool_remove_state_succeeded">转出成功</string>
+    <string name="market_pool_remove_state_failed">转出失败</string>
+    <string name="swap_details">兑换详情</string>
+    <string name="label_transaction_details_exchange_rate">汇率：</string>
+    <string name="label_transaction_details_handling_fee">手续费：</string>
+    <string name="label_transaction_details_order_time">下单时间：</string>
+    <string name="label_transaction_details_deal_time">成交时间：</string>
+    <string name="market_transaction_state_submitted">已提交</string>
+    <string name="pool_details">详情</string>
+    <string name="label_transaction_details_liquidity_token">通证：</string>
 </resources>

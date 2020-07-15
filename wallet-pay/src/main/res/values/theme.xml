@@ -118,9 +118,13 @@
         <item name="iconHideSecondary">@drawable/ic_password_text_hidden</item>
         <item name="iconScanPrimary">@drawable/icon_scan_purple</item>
         <item name="iconScanSecondary">@drawable/icon_scan_white</item>
-        <item name="iconRecordAddCurrency">@drawable/ic_record_type_add_currency</item>
-        <item name="iconRecordInput">@drawable/ic_record_type_input</item>
-        <item name="iconRecordOutput">@drawable/ic_record_type_output</item>
+        <item name="iconRecordTypeAddCurrency">@drawable/ic_record_type_add_currency</item>
+        <item name="iconRecordTypeInput">@drawable/ic_record_type_input</item>
+        <item name="iconRecordTypeOutput">@drawable/ic_record_type_output</item>
+        <item name="iconRecordStateProcessing">@drawable/ic_record_state_processing</item>
+        <item name="iconRecordStateSucceeded">@drawable/ic_record_state_succeeded</item>
+        <item name="iconRecordStateFailed">@drawable/ic_record_state_failed</item>
+        <item name="iconRecordStateCancelled">@drawable/ic_record_state_cancelled</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
@@ -163,9 +167,6 @@
         <item name="transDetailsTopBg">@mipmap/bg_transaction_details_header</item>
         <item name="transDetailsBottomBg">@mipmap/bg_transaction_details_footer</item>
         <item name="transDetailsTransInfoBg">@mipmap/bg_transaction_details_content</item>
-        <item name="transDetailsProcessingIcon">@drawable/ic_transaction_state_pending</item>
-        <item name="transDetailsSuccessIcon">@drawable/ic_transaction_state_success</item>
-        <item name="transDetailsFailureIcon">@drawable/ic_transaction_state_failure</item>
         <item name="transDetailsSaveIcon">@drawable/ic_share_type_download</item>
 
         <!--多语言页面资源属性-->
@@ -207,6 +208,10 @@
         <item name="marketFundPoolIncomeIcon">@mipmap/ic_fund_pool_income</item>
         <item name="marketTokenSelectedIcon">@mipmap/ic_market_token_selected</item>
         <item name="marketTokenAmountIcon">@mipmap/ic_market_token_amount</item>
+        <item name="marketSwapDetailsIcon">@mipmap/ic_market_swap_details</item>
+        <item name="marketDetailsCompletedStateTextColor">@color/color_82808A</item>
+        <item name="marketDetailsCompletedLineBgColor">@color/color_999999</item>
+        <item name="marketDetailsUncompletedLineBgColor">@color/color_C2C2C2</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">

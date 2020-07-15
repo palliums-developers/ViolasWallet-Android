@@ -22,7 +22,7 @@ class ExchangeManager {
     private val mAccountStorage by lazy {
         DataRepository.getAccountStorage()
     }
-    private val mViolasService by lazy {
+    val mViolasService by lazy {
         DataRepository.getViolasService()
     }
     private val mViolasRpcService by lazy {

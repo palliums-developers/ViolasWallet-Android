@@ -15,7 +15,6 @@ import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
@@ -247,6 +246,6 @@ class SwapFragment : BaseFragment(), TokensBridge, TokensSwapFilterBridge {
 
     //*********************************** 其它逻辑 ***********************************//
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
-        textView.text = getString(formatResId, getString(R.string.market_value_null))
+        textView.text = getString(formatResId, getString(R.string.value_null))
     }
 }

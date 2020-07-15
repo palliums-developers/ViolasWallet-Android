@@ -1,8 +1,10 @@
 package com.palliums.violas.http
 
+import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by elephant on 2019-11-11 15:41.
@@ -153,3 +155,48 @@ data class MarketCurrencyDTO(
     @SerializedName(value = "index")
     val marketIndex: Int
 )
+
+@Keep
+@Parcelize
+data class MarketSwapRecordDTO(
+    @SerializedName(value = "input_name")
+    val fromName: String,
+    @SerializedName(value = "input_amount")
+    val fromAmount: String,
+    @SerializedName(value = "output_name")
+    val toName: String,
+    @SerializedName(value = "output_amount")
+    val toAmount: String,
+    val version: Long,
+    val date: Long,
+    val status: Int
+) : Parcelable
+
+@Keep
+@Parcelize
+data class MarketPoolRecordDTO(
+    @SerializedName(value = "coina")
+    val coinA: String,
+    @SerializedName(value = "amounta")
+    val amountA: String,
+    @SerializedName(value = "coinb")
+    val coinB: String,
+    @SerializedName(value = "amountb")
+    val amountB: String,
+    @SerializedName(value = "token")
+    val liquidityToken: String,
+    @SerializedName(value = "transaction_type")
+    val type: String,
+    val version: Long,
+    val date: Long,
+    val status: Int
+) : Parcelable {
+    companion object {
+        const val TYPE_ADD_LIQUIDITY = "ADD_LIQUIDITY"
+        const val TYPE_REMOVE_LIQUIDITY = "REMOVE_LIQUIDITY"
+    }
+
+    fun isAddLiquidity(): Boolean {
+        return type.equals(TYPE_ADD_LIQUIDITY, true)
+    }
+}

@@ -23,6 +23,7 @@ class PagingHandler<VO>(
      * 更新数据标志，刷新中会置为false，刷新完成后再置为true
      */
     private var updateDataFlag: Boolean = true
+
     /**
      * [updateDataFlag]为false期间缓存的刷新数据
      */
@@ -50,6 +51,7 @@ class PagingHandler<VO>(
                 LoadState.Status.SUCCESS,
                 LoadState.Status.SUCCESS_NO_MORE -> {
                     handleRefreshDataUpdate(true)
+                    mPagingController.getRefreshLayout()?.setEnableRefresh(true)
                     mPagingController.getRefreshLayout()?.finishRefresh(true)
                     mPagingController.getStatusLayout()?.showStatus(
                         IStatusLayout.Status.STATUS_NONE
@@ -58,8 +60,8 @@ class PagingHandler<VO>(
 
                 LoadState.Status.SUCCESS_EMPTY -> {
                     handleRefreshDataUpdate(true)
+                    mPagingController.getRefreshLayout()?.setEnableRefresh(true)
                     mPagingController.getRefreshLayout()?.finishRefresh(true)
-                    //mPagingController.getRefreshLayout()?.setEnableRefresh(false)
                     mPagingController.getStatusLayout()?.showStatus(
                         IStatusLayout.Status.STATUS_EMPTY
                     )
@@ -67,10 +69,10 @@ class PagingHandler<VO>(
 
                 LoadState.Status.FAILURE -> {
                     handleRefreshDataUpdate(false)
+                    mPagingController.getRefreshLayout()?.setEnableRefresh(true)
                     mPagingController.getRefreshLayout()?.finishRefresh(
                         300, false, false
                     )
-                    //mPagingController.getRefreshLayout()?.setEnableRefresh(false)
                     when {
                         mPagingController.getViewAdapter().itemCount > 0 ->
                             mPagingController.getStatusLayout()?.showStatus(
@@ -123,13 +125,9 @@ class PagingHandler<VO>(
             }
         }
 
-        mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_NONE)
-        /*mPagingController.getStatusLayout()?.onReloadListener = object : DefaultStatusLayout.OnReloadListener {
-            override fun onReload() {
-                mPagingController.getRefreshLayout()?.setEnableRefresh(true)
-                mPagingController.getRefreshLayout()?.autoRefreshAnimationOnly()
-                mPagingController.getViewModel().retry()
-            }
+        /*mPagingController.getStatusLayout()?.setReloadCallback {
+            mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
+            mPagingController.getViewModel().retry()
         }*/
 
         mPagingController.getRecyclerView().adapter = mPagingController.getViewAdapter()
@@ -151,8 +149,13 @@ class PagingHandler<VO>(
 
     fun start(pageSize: Int = PagingViewModel.PAGE_SIZE) {
         this.pageSize = pageSize
-        autoRefresh = true
-        mPagingController.getRefreshLayout()?.autoRefresh()
+        autoRefresh = false
+        //mPagingController.getRefreshLayout()?.autoRefresh()
+        mPagingController.getRefreshLayout()?.setEnableRefresh(false)
+        mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
+        if (!mPagingController.getViewModel().start(pageSize)) {
+            mPagingController.getViewModel().refresh()
+        }
 
         // 使用下面的方式初始化刷新加载，SmartRefreshLayout第一次下滑会出现onRefresh刷新回调
         /*mPagingController.getRefreshLayout()?.autoRefreshAnimationOnly()

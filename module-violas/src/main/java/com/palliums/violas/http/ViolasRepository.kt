@@ -105,8 +105,29 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         mViolasApi.getViolasChainFiatBalance(address)
     }
 
+    @Throws(RequestException::class)
     suspend fun getMarketSupportCurrencies() =
         checkResponse {
             mViolasApi.getMarketSupportCurrencies()
+        }
+
+    @Throws(RequestException::class)
+    suspend fun getMarketSwapRecords(
+        address: String,
+        pageSize: Int,
+        offset: Int
+    ) =
+        checkResponse {
+            mViolasApi.getMarketSwapRecords(address, pageSize, offset)
+        }
+
+    @Throws(RequestException::class)
+    suspend fun getMarketPoolRecords(
+        address: String,
+        pageSize: Int,
+        offset: Int
+    ) =
+        checkResponse {
+            mViolasApi.getMarketPoolRecords(address, pageSize, offset)
         }
 }

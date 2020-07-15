@@ -101,7 +101,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_11"
         android:layout_marginBottom="@dimen/dp_11"
-        android:background="@drawable/sel_bg_market_select_token"
+        android:background="@drawable/sel_bg_market_btn_primary"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
         app:layout_constraintBottom_toBottomOf="@id/etFirstInputBox"
@@ -112,7 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/select_token"
-            android:textColor="@color/sel_color_market_select_token"
+            android:textColor="@color/sel_color_market_btn_primary"
             android:textSize="@dimen/sp_12" />
 
         <ImageView
@@ -187,7 +187,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_11"
         android:layout_marginBottom="@dimen/dp_11"
-        android:background="@drawable/sel_bg_market_select_token"
+        android:background="@drawable/sel_bg_market_btn_primary"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
         app:layout_constraintBottom_toBottomOf="@id/etSecondInputBox"
@@ -198,7 +198,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/select_token"
-            android:textColor="@color/sel_color_market_select_token"
+            android:textColor="@color/sel_color_market_btn_primary"
             android:textSize="@dimen/sp_12" />
 
         <ImageView
