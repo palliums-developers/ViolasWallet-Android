@@ -1,6 +1,6 @@
 package com.violas.wallet.event
 
-import com.violas.wallet.ui.main.market.fundPool.FundPoolOpMode
+import com.violas.wallet.ui.main.market.pool.MarketPoolOpMode
 
 /**
  * Created by elephant on 2020/6/30 18:17.
@@ -8,4 +8,4 @@ import com.violas.wallet.ui.main.market.fundPool.FundPoolOpMode
  * <p>
  * desc:
  */
-class SwitchFundPoolOpModeEvent(val opMode: FundPoolOpMode)
+class SwitchMarketPoolOpModeEvent(val opMode: MarketPoolOpMode)

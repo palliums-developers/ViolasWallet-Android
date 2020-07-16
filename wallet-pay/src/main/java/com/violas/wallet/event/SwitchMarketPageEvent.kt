@@ -9,5 +9,5 @@ package com.violas.wallet.event
 class SwitchMarketPageEvent(val marketPageType: MarketPageType)
 
 enum class MarketPageType {
-    Swap, FundPool
+    Swap, Pool
 }

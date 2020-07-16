@@ -183,7 +183,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
 
         // 若拿A换B，价格、数量、已成交数量均为B的数据
         tvPrice.text = convertViolasTokenPrice(it.tokenGetPrice.toString())
-        tvTotalAmount.text = convertViolasTokenUnit(it.amountGet)
+        tvTotalLiquidityAmount.text = convertViolasTokenUnit(it.amountGet)
         tvTradeAmount.text = convertViolasTokenUnit(it.amountFilled)
 
         tvFee.text = "0 ${CoinTypes.Violas.coinUnit()}"

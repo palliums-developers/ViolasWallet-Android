@@ -64,7 +64,7 @@ class PoolRecordActivity : BasePagingActivity<MarketPoolRecordDTO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.fund_pool_records)
+        setTitle(R.string.title_market_pool_records)
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
@@ -125,44 +125,44 @@ class PoolRecordViewModel : PagingViewModel<MarketPoolRecordDTO>() {
         delay(2000)
         return mutableListOf(
             MarketPoolRecordDTO(
-                coinA = "VLSUSD",
-                amountA = "10000000",
-                coinB = "VLSSGD",
-                amountB = "13909000",
-                liquidityToken = "1.001",
+                coinAName = "VLSUSD",
+                coinAAmount = "10000000",
+                coinBName = "VLSSGD",
+                coinBAmount = "13909000",
+                liquidityAmount = "1.001",
                 type = TYPE_ADD_LIQUIDITY,
                 version = 1,
                 date = System.currentTimeMillis(),
                 status = 4001
             ),
             MarketPoolRecordDTO(
-                coinA = "VLSUSD",
-                amountA = "100000",
-                coinB = "VLSEUR",
-                amountB = "87770",
-                liquidityToken = "0.781",
+                coinAName = "VLSUSD",
+                coinAAmount = "100000",
+                coinBName = "VLSEUR",
+                coinBAmount = "87770",
+                liquidityAmount = "0.781",
                 type = TYPE_ADD_LIQUIDITY,
                 version = 2,
                 date = System.currentTimeMillis(),
                 status = 4002
             ),
             MarketPoolRecordDTO(
-                coinA = "VLSUSD",
-                amountA = "10000000",
-                coinB = "VLSSGD",
-                amountB = "13909000",
-                liquidityToken = "1.001",
+                coinAName = "VLSUSD",
+                coinAAmount = "10000000",
+                coinBName = "VLSSGD",
+                coinBAmount = "13909000",
+                liquidityAmount = "1.001",
                 type = TYPE_REMOVE_LIQUIDITY,
                 version = 3,
                 date = System.currentTimeMillis(),
                 status = 4001
             ),
             MarketPoolRecordDTO(
-                coinA = "VLSUSD",
-                amountA = "100000",
-                coinB = "VLSEUR",
-                amountB = "87770",
-                liquidityToken = "0.781",
+                coinAName = "VLSUSD",
+                coinAAmount = "100000",
+                coinBName = "VLSEUR",
+                coinBAmount = "87770",
+                liquidityAmount = "0.781",
                 type = TYPE_REMOVE_LIQUIDITY,
                 version = 4,
                 date = System.currentTimeMillis(),
@@ -208,8 +208,8 @@ class PoolRecordViewHolder(
     override fun onViewBind(itemPosition: Int, itemData: MarketPoolRecordDTO?) {
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
-            itemView.tvAToken.text = "${convertViolasTokenUnit(it.amountA)} ${it.coinA}"
-            itemView.tvBToken.text = "${convertViolasTokenUnit(it.amountB)} ${it.coinB}"
+            itemView.tvAToken.text = "${convertViolasTokenUnit(it.coinAAmount)} ${it.coinAName}"
+            itemView.tvBToken.text = "${convertViolasTokenUnit(it.coinBAmount)} ${it.coinBName}"
             itemView.ivIcon.setBackgroundResource(
                 getResourceId(
                     if (it.isAddLiquidity())
@@ -220,8 +220,8 @@ class PoolRecordViewHolder(
                 )
             )
             itemView.tvLiquidityToken.text = getString(
-                R.string.market_liquidity_token_record_format,
-                "${if (it.isAddLiquidity()) "+" else "-"} ${it.liquidityToken}"
+                R.string.market_liquidity_token_amount_format,
+                "${if (it.isAddLiquidity()) "+" else "-"} ${it.liquidityAmount}"
             )
 
             if (it.status == 4001) {

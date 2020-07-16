@@ -29,7 +29,7 @@ class DexOrderTradeViewHolder(
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
             itemView.tvPrice.text = convertViolasTokenPrice(it.price.toString())
-            itemView.tvTotalAmount.text = convertViolasTokenUnit(it.amount)
+            itemView.tvTotalLiquidityAmount.text = convertViolasTokenUnit(it.amount)
         }
     }
 

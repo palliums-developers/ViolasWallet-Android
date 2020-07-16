@@ -72,13 +72,13 @@ class PoolDetailsActivity : BaseAppActivity() {
     }
 
     private fun initView(poolRecord: MarketPoolRecordDTO) {
-        tvTokenA.text = "${convertViolasTokenUnit(poolRecord.amountA)} ${poolRecord.coinA}"
-        tvTokenB.text = "${convertViolasTokenUnit(poolRecord.amountB)} ${poolRecord.coinB}"
+        tvTokenA.text = "${convertViolasTokenUnit(poolRecord.coinAAmount)} ${poolRecord.coinAName}"
+        tvTokenB.text = "${convertViolasTokenUnit(poolRecord.coinBAmount)} ${poolRecord.coinBName}"
         tvLiquidityToken.text =
-            "${if (poolRecord.isAddLiquidity()) "+" else "-"} ${poolRecord.liquidityToken}"
+            "${if (poolRecord.isAddLiquidity()) "+" else "-"} ${poolRecord.liquidityAmount}"
         tvExchangeRate.text = run {
-            val rate = BigDecimal(poolRecord.amountB).divide(
-                BigDecimal(poolRecord.amountA),
+            val rate = BigDecimal(poolRecord.coinBAmount).divide(
+                BigDecimal(poolRecord.coinAAmount),
                 8,
                 RoundingMode.DOWN
             ).stripTrailingZeros().toPlainString()

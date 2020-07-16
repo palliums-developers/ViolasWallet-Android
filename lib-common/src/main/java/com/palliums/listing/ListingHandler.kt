@@ -30,7 +30,7 @@ class ListingHandler<VO>(
                     if (mListingController.loadingUseDialog()) {
                         mViewController.showProgress()
                     } else {
-                        mListingController.getRefreshLayout()?.autoRefreshAnimationOnly()
+                        //mListingController.getRefreshLayout()?.autoRefreshAnimationOnly()
                     }
                 }
 

@@ -37,7 +37,7 @@ class DexOrderDetailsHeaderViewHolder(
 
             // 若拿A换B，价格、数量、已成交数量均为B的数据
             itemView.tvPrice.text = convertViolasTokenPrice(it.tokenGetPrice.toString())
-            itemView.tvTotalAmount.text = convertViolasTokenUnit(it.amountGet)
+            itemView.tvTotalLiquidityAmount.text = convertViolasTokenUnit(it.amountGet)
             itemView.tvTradeAmount.text = convertViolasTokenUnit(it.amountFilled)
 
             itemView.tvFee.text = "0 ${CoinTypes.Violas.coinUnit()}"

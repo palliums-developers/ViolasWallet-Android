@@ -63,7 +63,7 @@ class SwapRecordActivity : BasePagingActivity<MarketSwapRecordDTO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.swap_records)
+        setTitle(R.string.title_market_swap_records)
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {

@@ -124,12 +124,12 @@
     <attr name="addCurrencyTextColor" format="color" />
 
     <!--市场相关页面资源属性-->
-    <attr name="marketMenuMyFundPoolIcon" format="reference" />
+    <attr name="marketMenuMyPoolIcon" format="reference" />
     <attr name="marketMenuRecordIcon" format="reference" />
     <attr name="marketCoinConversionIcon" format="reference" />
     <attr name="marketSwapRecordIcon" format="reference" />
     <attr name="marketSwitchBgColor" format="color" />
-    <attr name="marketFundPoolIncomeIcon" format="reference" />
+    <attr name="marketPoolIncomeIcon" format="reference" />
     <attr name="marketTokenSelectedIcon" format="reference" />
     <attr name="marketTokenAmountIcon" format="reference" />
     <attr name="marketSwapDetailsIcon" format="reference" />

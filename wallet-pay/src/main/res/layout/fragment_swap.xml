@@ -214,7 +214,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_14"
         android:layout_marginTop="@dimen/dp_47"
-        android:text="@string/swap_records"
+        android:text="@string/title_market_swap_records"
         android:textSize="@dimen/sp_14"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
