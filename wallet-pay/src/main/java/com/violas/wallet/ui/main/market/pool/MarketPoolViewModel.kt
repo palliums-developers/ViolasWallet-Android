@@ -12,10 +12,7 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -48,18 +45,19 @@ class MarketPoolViewModel : BaseViewModel() {
     // 资金池通证及占比
     private val poolTokenAndPoolShareLiveData = MediatorLiveData<Pair<String, String>?>()
 
-    private val exchangeManager by lazy { ExchangeManager() }
+    // 输入框文本变化
+    private val firstInputTextLiveData = MutableLiveData<String>()
+    private val secondInputTextLiveData = MutableLiveData<String>()
 
+    private val exchangeManager by lazy { ExchangeManager() }
     private var address: String? = null
+    private var calculateAmountJob: Job? = null
 
     init {
         currFirstTokenLiveData.addSource(currOpModeLiveData) {
-            if (it == MarketPoolOpMode.TransferIn) {
-                currFirstTokenLiveData.postValue(null)
-                currSecondTokenLiveData.postValue(null)
-            } else {
-                currLiquidityTokenLiveData.postValue(null)
-            }
+            currFirstTokenLiveData.postValue(null)
+            currSecondTokenLiveData.postValue(null)
+            currLiquidityTokenLiveData.postValue(null)
         }
 
         val convertToExchangeRate: (String, String) -> BigDecimal? =
@@ -70,7 +68,7 @@ class MarketPoolViewModel : BaseViewModel() {
                 if (amountA <= zero || amountB <= zero)
                     null
                 else
-                    amountA.divide(amountB, 8, RoundingMode.DOWN)
+                    amountB.divide(amountA, 8, RoundingMode.DOWN)
                         .stripTrailingZeros()
             }
         exchangeRateLiveData.addSource(currFirstTokenLiveData) { firstToken ->
@@ -119,6 +117,10 @@ class MarketPoolViewModel : BaseViewModel() {
     fun switchOpModel(target: MarketPoolOpMode) {
         if (target != currOpModeLiveData.value) {
             currOpModeLiveData.postValue(target)
+
+            // 切换操作模式时，清除second input box的文本
+            cancelCalculateAmountJob()
+            secondInputTextLiveData.postValue("")
         }
     }
 
@@ -197,6 +199,87 @@ class MarketPoolViewModel : BaseViewModel() {
         return poolTokenAndPoolShareLiveData
     }
 
+    //*********************************** 输入金额联动方法 ***********************************//
+    fun getFirstInputTextLiveData(): LiveData<String> {
+        return firstInputTextLiveData
+    }
+
+    fun getSecondInputTextLiveData(): LiveData<String> {
+        return secondInputTextLiveData
+    }
+
+    fun changeFirstTokenTransferIntoAmount(secondInputAmount: String?) {
+        val firstToken = currFirstTokenLiveData.value ?: return
+        val secondToken = currSecondTokenLiveData.value ?: return
+        cancelCalculateAmountJob()
+        calculateAmountJob = viewModelScope.launch {
+            delay(100)
+            withContext(Dispatchers.IO) {
+                // TODO
+                if (secondInputAmount.isNullOrBlank()) {
+                    secondInputTextLiveData.postValue("0.00")
+                    return@withContext
+                }
+            }
+
+            calculateAmountJob = null
+        }
+    }
+
+    fun changeSecondTokenTransferIntoAmount(firstInputAmount: String?) {
+        val firstToken = currFirstTokenLiveData.value ?: return
+        val secondToken = currSecondTokenLiveData.value ?: return
+        cancelCalculateAmountJob()
+        calculateAmountJob = viewModelScope.launch {
+            delay(100)
+            withContext(Dispatchers.IO) {
+                // TODO
+                if (firstInputAmount.isNullOrBlank()) {
+                    secondInputTextLiveData.postValue("0.00")
+                    return@withContext
+                }
+            }
+
+            calculateAmountJob = null
+        }
+    }
+
+    fun changeTokensTransferOutAmount(inputLiquidityAmount: String?) {
+        val liquidityToken = currLiquidityTokenLiveData.value ?: return
+        cancelCalculateAmountJob()
+        calculateAmountJob = viewModelScope.launch {
+            delay(100)
+            withContext(Dispatchers.IO) {
+                if (inputLiquidityAmount.isNullOrBlank()) {
+                    secondInputTextLiveData.postValue("")
+                    return@withContext
+                }
+
+                val liquidityAmount = BigDecimal(inputLiquidityAmount)
+                val tokenATransferOutAmount = liquidityAmount
+                    .multiply(BigDecimal(liquidityToken.coinAAmount))
+                    .divide(BigDecimal(liquidityToken.amount), 6, RoundingMode.DOWN)
+                    .stripTrailingZeros().toPlainString() + liquidityToken.coinAName
+                val tokenBTransferOutAmount = liquidityAmount
+                    .multiply(BigDecimal(liquidityToken.coinBAmount))
+                    .divide(BigDecimal(liquidityToken.amount), 6, RoundingMode.DOWN)
+                    .stripTrailingZeros().toPlainString() + liquidityToken.coinBName
+                secondInputTextLiveData.postValue(
+                    "$tokenATransferOutAmount\n$tokenBTransferOutAmount"
+                )
+            }
+
+            calculateAmountJob = null
+        }
+    }
+
+    private fun cancelCalculateAmountJob() {
+        calculateAmountJob?.let {
+            it.cancel()
+            calculateAmountJob = null
+        }
+    }
+
     //*********************************** 耗时相关任务 ***********************************//
     fun setAddress(existsAccount: Boolean): Job {
         return viewModelScope.launch {
@@ -209,6 +292,7 @@ class MarketPoolViewModel : BaseViewModel() {
                 AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
             } ?: return@launch
             address = violasAccount.address
+            address = "fa279f2615270daed6061313a48360f7"
         }
     }
 
