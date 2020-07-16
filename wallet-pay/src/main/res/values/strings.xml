@@ -346,9 +346,9 @@
     <string name="agreement_read_and_agree">I have read and agree to The Service Agreement and Privacy Policy.</string>
     <string name="hint_wallet_agree_terms">Please read and agree to the Service Agreement and privacy policy</string>
 
-    <string name="title_swap">Exchange</string>
-    <string name="title_fund_pool">Pool</string>
-    <string name="title_my_pool">My Pool</string>
+    <string name="title_market_swap">Exchange</string>
+    <string name="title_market_pool">Pool</string>
+    <string name="title_market_my_pool">My Pool</string>
     <string name="handling_fee_rate_format">费率：%1$s</string>
     <string name="exchange_rate_format">兑换率：%1$s</string>
     <string name="gas_fee_format">矿工费用：%1$s</string>
@@ -356,18 +356,18 @@
     <string name="output">输出</string>
     <string name="action_swap_nbsp">兑&#160;换</string>
     <string name="select_token">选择通证</string>
-    <string name="swap_records">兑换记录</string>
+    <string name="title_market_swap_records">兑换记录</string>
     <string name="transfer_in">转入</string>
     <string name="transfer_out">转出</string>
     <string name="pool_liquidity_token">资金池通证</string>
-    <string name="my_fund_pool_amount_format">你的资金池共有：%1$s</string>
+    <string name="market_my_pool_amount_format">你的资金池共有：%1$s</string>
     <string name="action_transfer_in_nbsp">转&#160;入</string>
     <string name="action_transfer_out_nbsp">转&#160;出</string>
-    <string name="fund_pool_records">资金池记录</string>
+    <string name="title_market_pool_records">资金池记录</string>
     <string name="select_token_pair">选择交易对</string>
-    <string name="fund_pool_income_desc">转入资金池可获取手续费收益</string>
+    <string name="market_pool_income_desc">转入资金池可获取手续费收益</string>
     <string name="wallet_connect_transfer_registered_coinname">注册币种</string>
-    <string name="tips_fund_pool_select_token_pair_empty">没有可选择的交易对</string>
+    <string name="tips_market_pool_select_token_pair_empty">没有可选择的交易对</string>
     <string name="hint_market_select_token_search_box">搜索token</string>
     <string name="market_select_token_balance_format">余额：%1$s %2$s</string>
     <string name="tips_select_token_list_is_empty">暂无可以选择的Token</string>

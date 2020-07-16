@@ -20,10 +20,10 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseListingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.event.MarketPageType
-import com.violas.wallet.event.SwitchFundPoolOpModeEvent
 import com.violas.wallet.event.SwitchMarketPageEvent
+import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.ui.main.market.fundPool.FundPoolOpMode
+import com.violas.wallet.ui.main.market.pool.MarketPoolOpMode
 import com.violas.wallet.utils.convertViolasTokenUnit
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_my_pool.*
@@ -79,17 +79,19 @@ class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.title_my_pool)
+        setTitle(R.string.title_market_my_pool)
 
         btnTransferIn.setOnClickListener {
-            EventBus.getDefault().post(SwitchMarketPageEvent(MarketPageType.FundPool))
-            EventBus.getDefault().postSticky(SwitchFundPoolOpModeEvent(FundPoolOpMode.TransferIn))
+            EventBus.getDefault().post(SwitchMarketPageEvent(MarketPageType.Pool))
+            EventBus.getDefault()
+                .postSticky(SwitchMarketPoolOpModeEvent(MarketPoolOpMode.TransferIn))
             close()
         }
 
         btnTransferOut.setOnClickListener {
-            EventBus.getDefault().post(SwitchMarketPageEvent(MarketPageType.FundPool))
-            EventBus.getDefault().postSticky(SwitchFundPoolOpModeEvent(FundPoolOpMode.TransferOut))
+            EventBus.getDefault().post(SwitchMarketPageEvent(MarketPageType.Pool))
+            EventBus.getDefault()
+                .postSticky(SwitchMarketPoolOpModeEvent(MarketPoolOpMode.TransferOut))
             close()
         }
 
@@ -116,7 +118,7 @@ class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
     private fun initNotLoginView() {
         refreshLayout.setEnableRefresh(false)
         refreshLayout.setEnableLoadMore(false)
-        statusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
+        statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
     }
 
     private fun initView() {
@@ -147,8 +149,6 @@ class MyPoolViewModel : ListingViewModel<LiquidityTokenDTO>() {
                 ?: return@withContext false
 
         address = violasAccount.address
-        // TODO test code
-        address = "fa279f2615270daed6061313a48360f7"
         return@withContext true
     }
 

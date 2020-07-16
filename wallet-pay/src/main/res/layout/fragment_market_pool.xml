@@ -41,11 +41,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_20"
         android:layout_marginEnd="@dimen/dp_41"
-        android:drawableStart="?attr/marketFundPoolIncomeIcon"
+        android:drawableStart="?attr/marketPoolIncomeIcon"
         android:drawablePadding="@dimen/dp_4"
         android:ellipsize="end"
         android:singleLine="true"
-        android:text="@string/fund_pool_income_desc"
+        android:text="@string/market_pool_income_desc"
         android:textColor="?android:textColorSecondary"
         android:textSize="@dimen/sp_12"
         app:layout_constraintBottom_toBottomOf="@id/llSwitchOpModeGroup"
@@ -238,7 +238,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvExchangeRate"
         app:layout_goneMarginTop="@dimen/dp_10"
-        tools:text="@string/my_fund_pool_amount_format" />
+        tools:text="@string/market_my_pool_amount_format" />
 
     <Button
         android:id="@+id/btnPositive"
@@ -249,27 +249,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvPoolTokenAndPoolShare"
         app:layout_goneMarginTop="@dimen/dp_40" />
-
-    <TextView
-        android:id="@+id/tvFundPoolRecords"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_14"
-        android:layout_marginTop="@dimen/dp_47"
-        android:text="@string/fund_pool_records"
-        android:textSize="@dimen/sp_14"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnPositive" />
-
-    <View
-        android:id="@+id/vTabIndicator"
-        android:layout_width="@dimen/dp_12"
-        android:layout_height="@dimen/dp_2"
-        android:layout_marginTop="@dimen/dp_6"
-        android:background="@drawable/shape_market_record_tab_indicator"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@id/tvFundPoolRecords"
-        app:layout_constraintTop_toBottomOf="@id/tvFundPoolRecords" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

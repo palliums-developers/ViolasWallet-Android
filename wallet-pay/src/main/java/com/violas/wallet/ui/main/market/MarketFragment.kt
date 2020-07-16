@@ -16,7 +16,7 @@ import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.event.MarketPageType
 import com.violas.wallet.event.SwitchMarketPageEvent
-import com.violas.wallet.ui.main.market.fundPool.FundPoolFragment
+import com.violas.wallet.ui.main.market.pool.MarketPoolFragment
 import com.violas.wallet.ui.main.market.swap.SwapFragment
 import com.violas.wallet.ui.market.MyPoolActivity
 import com.violas.wallet.ui.market.PoolRecordActivity
@@ -63,9 +63,9 @@ class MarketFragment : BaseFragment() {
         viewPager.offscreenPageLimit = 1
         viewPager.adapter = FragmentPagerAdapterSupport(childFragmentManager).apply {
             addFragment(SwapFragment())
-            addFragment(FundPoolFragment())
-            addTitle(getString(R.string.title_swap))
-            addTitle(getString(R.string.title_fund_pool))
+            addFragment(MarketPoolFragment())
+            addTitle(getString(R.string.title_market_swap))
+            addTitle(getString(R.string.title_market_pool))
         }
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -91,7 +91,7 @@ class MarketFragment : BaseFragment() {
                 tabLayout.getTabAt(0)?.select()
             }
 
-            MarketPageType.FundPool -> {
+            MarketPageType.Pool -> {
                 tabLayout.getTabAt(1)?.select()
             }
         }

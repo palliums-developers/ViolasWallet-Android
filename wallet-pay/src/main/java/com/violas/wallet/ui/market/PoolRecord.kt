@@ -64,7 +64,7 @@ class PoolRecordActivity : BasePagingActivity<MarketPoolRecordDTO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.fund_pool_records)
+        setTitle(R.string.title_market_pool_records)
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
