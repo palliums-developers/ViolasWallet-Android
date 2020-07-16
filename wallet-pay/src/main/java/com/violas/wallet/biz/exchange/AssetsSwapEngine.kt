@@ -1,7 +1,9 @@
 package com.violas.wallet.biz.exchange
 
-import com.violas.wallet.biz.exchange.processor.*
+import com.violas.wallet.biz.exchange.processor.IProcessor
 import com.violas.wallet.ui.main.market.bean.ITokenVo
+import org.palliums.libracore.http.LibraException
+import org.palliums.violascore.http.ViolasException
 import java.lang.RuntimeException
 import java.util.*
 
@@ -14,13 +16,22 @@ class AccountPayeeTokenNotActiveException : RuntimeException()
 internal class AssetsSwapEngine {
     private val processors = LinkedList<IProcessor>()
 
-    init {
-        processors.add(ViolasTokenToViolasTokenProcessor())
-        processors.add(ViolasToAssetsMappingProcessor())
-        processors.add(LibraToMappingAssetsProcessor())
-        processors.add(BTCToMappingAssetsProcessor())
+    fun clearProcessor() {
+        processors.clear()
     }
 
+    fun addProcessor(processor: IProcessor) {
+        if (!processors.contains(processor)) {
+            processors.add(processor)
+        }
+    }
+
+    @Throws(
+        LibraException::class,
+        ViolasException::class,
+        AccountPayeeNotFindException::class,
+        AccountPayeeTokenNotActiveException::class
+    )
     suspend fun swap(
         privateKey: ByteArray,
         tokenFrom: ITokenVo,

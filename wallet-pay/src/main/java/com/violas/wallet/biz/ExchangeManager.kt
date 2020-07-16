@@ -15,7 +15,6 @@ import org.json.JSONObject
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
-import java.util.HashMap
 
 class ExchangeManager {
 
@@ -243,107 +242,5 @@ class ExchangeManager {
         subExchangeDate.put("type", "wd_ex")
         subExchangeDate.put("ver", version)
         return subExchangeDate.toString().toByteArray()
-    }
-
-    private fun mapping(): HashMap<IAssetsMark, List<IAssetsMark>> {
-        val map = HashMap<IAssetsMark, List<IAssetsMark>>()
-
-        map[LibraTokenAssetsMark(
-            CoinTypes.Libra,
-            "USD",
-            "0000000000000000000000000a550c18",
-            "USD"
-        )] =
-            arrayListOf(
-                LibraTokenAssetsMark(
-                    CoinTypes.Violas,
-                    "VLSUSD",
-                    "0000000000000000000000000a550c18",
-                    "VLSUSD"
-                ),
-                LibraTokenAssetsMark(
-                    CoinTypes.Violas,
-                    "VLSEUR",
-                    "0000000000000000000000000a550c18",
-                    "VLSEUR"
-                )
-            )
-
-        map[LibraTokenAssetsMark(
-            CoinTypes.Violas,
-            "VLS",
-            "0000000000000000000000000a550c18",
-            "VLS"
-        )] =
-            arrayListOf(
-                LibraTokenAssetsMark(
-                    CoinTypes.Libra,
-                    "USD",
-                    "0000000000000000000000000a550c18",
-                    "USD"
-                ),
-                LibraTokenAssetsMark(
-                    CoinTypes.Libra,
-                    "EUR",
-                    "0000000000000000000000000a550c18",
-                    "EUR"
-                ),
-                CoinAssetsMark(
-                    if (Vm.TestNet) {
-                        CoinTypes.Bitcoin
-                    } else {
-                        CoinTypes.BitcoinTest
-                    }
-                )
-            )
-
-        return map
-    }
-
-    private fun findIndexListByTokenList(
-        mark: IAssetsMark,
-        tokens: List<ITokenVo>
-    ): ArrayList<Int> {
-        val indexList = ArrayList<Int>()
-        tokens.forEachIndexed { index, iTokenVo ->
-            if (mark is LibraTokenAssetsMark
-                && iTokenVo is StableTokenVo
-                && mark.coinTypes.coinType() == iTokenVo.coinNumber
-                && (mark.name != iTokenVo.name && mark.address != iTokenVo.address && mark.module != iTokenVo.module)
-            ) {
-                indexList.add(index)
-            }
-        }
-        return indexList
-    }
-
-    /**
-     * 获取映射兑换交易 和 币币 交易支持的币种 bitmap
-     */
-    fun getMappingMarketSupportTokens(supportTokens: List<ITokenVo>): HashMap<String, MutBitmap> {
-        val supportTokenMap = HashMap<String, Int>(supportTokens.size)
-        supportTokens.forEachIndexed { index, iTokenVo ->
-            supportTokenMap[IAssetsMark.convert(iTokenVo).mark()] = index
-        }
-
-        val result = HashMap<String, MutBitmap>()
-        val mappingMarketSupportTokens = mapping()
-
-        mappingMarketSupportTokens.keys.forEach { key ->
-            val bitmap = MutBitmap()
-            mappingMarketSupportTokens[key]?.forEach {
-                supportTokenMap[it.mark()]?.let { index ->
-                    bitmap.setBit(index)
-                }
-            }
-
-            findIndexListByTokenList(key,supportTokens).forEach {
-                bitmap.setBit(it)
-            }
-
-            result[key.mark()] = bitmap
-        }
-
-        return result
     }
 }

@@ -9,9 +9,6 @@ import android.text.style.ForegroundColorSpan
 import android.view.*
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
 import com.palliums.extensions.close
@@ -21,7 +18,6 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.ui.main.market.bean.ITokenVo
-import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.dialog_market_select_token.*
 import kotlinx.android.synthetic.main.item_market_select_token.view.*
@@ -30,16 +26,14 @@ import kotlinx.coroutines.*
 /**
  * 选择Token对话框
  */
-class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() {
+class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() {
 
     companion object {
         const val ACTION_SWAP_SELECT_FROM = 0x01
         const val ACTION_SWAP_SELECT_TO = 0x02
-        const val ACTION_POOL_SELECT_FIRST = 0x03
-        const val ACTION_POOL_SELECT_SECOND = 0x04
 
-        fun newInstance(action: Int): SelectTokenDialog {
-            return SelectTokenDialog().apply {
+        fun newInstance(action: Int): SwapSelectTokenDialog {
+            return SwapSelectTokenDialog().apply {
                 arguments = Bundle().apply {
                     putInt(KEY_ONE, action)
                 }
@@ -48,8 +42,8 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     private var action: Int = -1
-    private var tokenCallback: ((ITokenVo) -> Unit)? = null
-    private var tokensBridge: TokensBridge? = null
+    private var tokenCallback: ((Int, ITokenVo) -> Unit)? = null
+    private var swapTokensDataResourcesBridge: SwapTokensDataResourcesBridge? = null
     private var displayTokens: List<ITokenVo>? = null
     private var job: Job? = null
 
@@ -59,17 +53,15 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        tokensBridge = parentFragment as? TokensBridge
-            ?: parentFragment?.parentFragment as? TokensBridge
-                    ?: activity as? TokensBridge
-        checkNotNull(tokensBridge) { "Parent fragment or activity does not implement TokenBridge" }
-
+        swapTokensDataResourcesBridge = parentFragment as? SwapTokensDataResourcesBridge
+            ?: parentFragment?.parentFragment as? SwapTokensDataResourcesBridge
+                    ?: activity as? SwapTokensDataResourcesBridge
         if (savedInstanceState != null) {
             action = savedInstanceState.getInt(KEY_ONE, action)
         } else if (arguments != null) {
             action = arguments!!.getInt(KEY_ONE, action)
         }
-        require(action != -1) { "action is not the specified value" }
+        checkNotNull(swapTokensDataResourcesBridge) { "Parent fragment or activity does not implement TokenBridge" }
     }
 
     override fun onStart() {
@@ -103,7 +95,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
 
     override fun onDetach() {
         tokenCallback = null
-        tokensBridge = null
+        swapTokensDataResourcesBridge = null
         super.onDetach()
     }
 
@@ -136,13 +128,17 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
         statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         statusLayout.setReloadCallback {
             statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
-            tokensBridge!!.getMarketSupportTokens(false)
+            launch(Dispatchers.IO) {
+                delay(500)
+                loadSwapTokens()
+            }
         }
+        loadSwapTokens()
+    }
 
-        tokensBridge!!.getMarketSupportTokens(true)
-        tokensBridge!!.getMarketSupportTokensLiveData().observe(viewLifecycleOwner, Observer {
+    private fun loadSwapTokens() {
+        swapTokensDataResourcesBridge?.getMarketSupportTokens(action).let {
             cancelJob()
-
             when {
                 it == null -> {
                     handleLoadFailure()
@@ -154,7 +150,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                     filterData(it)
                 }
             }
-        })
+        }
     }
 
     private fun cancelJob() {
@@ -166,37 +162,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
 
     private fun filterData(marketSupportTokens: List<ITokenVo>) {
         launch {
-            val list = withContext(Dispatchers.IO) {
-                val currToken = tokensBridge?.getCurrToken(action)
-                marketSupportTokens.filter {
-                    it.selected = it == currToken
-
-                    when (action) {
-                        ACTION_SWAP_SELECT_FROM -> {
-                            // 兑换选择输出币种，展示交易市场支持的所有币种
-                            true
-                        }
-                        ACTION_SWAP_SELECT_TO -> {
-                            // 兑换选择输出币种，展示交易市场支持的所有币种
-                            val from = tokensBridge?.getCurrToken(ACTION_SWAP_SELECT_FROM)
-                            if (from?.coinNumber == it.coinNumber) {
-                                true
-                            } else {
-                                false
-                            }
-                        }
-
-                        else -> {
-                            // 资金池转入选择币种，只展示交易市场支持的violas稳定币种
-                            if (it is StableTokenVo) {
-                                it.coinNumber == CoinTypes.Violas.coinType()
-                            } else {
-                                false
-                            }
-                        }
-                    }
-                }
-            }
+            val list = marketSupportTokens
 
             etSearchBox.isEnabled = true
             displayTokens = list
@@ -277,8 +243,8 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     fun setCallback(
-        tokenCallback: ((ITokenVo) -> Unit)? = null
-    ): SelectTokenDialog {
+        tokenCallback: ((Int, ITokenVo) -> Unit)? = null
+    ): SwapSelectTokenDialog {
         this.tokenCallback = tokenCallback
         return this
     }
@@ -315,27 +281,14 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
             holder.itemView.tvSelected.visibility = if (item.selected) View.VISIBLE else View.GONE
             holder.itemView.setOnClickListener {
                 close()
-                tokenCallback?.invoke(getItem(position))
+                tokenCallback?.invoke(action, getItem(position))
             }
         }
     }
 }
 
-val tokenDiffCallback = object : DiffUtil.ItemCallback<ITokenVo>() {
-    override fun areContentsTheSame(oldItem: ITokenVo, newItem: ITokenVo): Boolean {
-        return oldItem.areContentsTheSame(newItem)
-    }
-
-    override fun areItemsTheSame(oldItem: ITokenVo, newItem: ITokenVo): Boolean {
-        return oldItem == newItem
-    }
-}
-
-interface TokensBridge {
-
-    fun getMarketSupportTokens(recreateLiveData: Boolean)
-
-    fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?>
-
-    fun getCurrToken(action: Int): ITokenVo?
+interface SwapTokensDataResourcesBridge {
+    fun getMarketSupportTokens(
+        action: Int
+    ): List<ITokenVo>?
 }

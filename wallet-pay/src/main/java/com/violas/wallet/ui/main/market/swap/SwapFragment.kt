@@ -15,15 +15,23 @@ import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
+import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
+import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.ITokenVo
-import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
-import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_SWAP_SELECT_FROM
-import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_SWAP_SELECT_TO
+import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Companion.ACTION_SWAP_SELECT_FROM
+import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Companion.ACTION_SWAP_SELECT_TO
+import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
-import com.violas.wallet.ui.main.market.selectToken.TokensSwapFilterBridge
+import com.violas.wallet.ui.main.market.selectToken.SwapTokensDataResourcesBridge
+import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.fragment_swap.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.palliums.libracore.http.LibraException
+import org.palliums.violascore.http.ViolasException
 
 /**
  * Created by elephant on 2020/6/23 17:18.
@@ -31,13 +39,16 @@ import kotlinx.android.synthetic.main.fragment_swap.*
  * <p>
  * desc: 市场兑换视图
  */
-class SwapFragment : BaseFragment(), TokensBridge, TokensSwapFilterBridge {
+class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge {
 
     private val swapViewModel by lazy {
         ViewModelProvider(this).get(SwapViewModel::class.java)
     }
     private val marketViewModel by lazy {
         ViewModelProvider(requireParentFragment()).get(MarketViewModel::class.java)
+    }
+    private val mAccountManager by lazy {
+        AccountManager()
     }
 
     override fun getLayoutResId(): Int {
@@ -69,7 +80,27 @@ class SwapFragment : BaseFragment(), TokensBridge, TokensSwapFilterBridge {
         }
 
         btnSwap.setOnClickListener {
-            // TODO 兑换逻辑
+            showProgress()
+            launch(Dispatchers.IO) {
+                val defaultAccount = mAccountManager.getDefaultAccount()
+                dismissProgress()
+                authenticateAccount(defaultAccount, mAccountManager) {
+                    try {
+                        swapViewModel.swap(it)
+                    } catch (e: ViolasException) {
+
+                    } catch (e: LibraException) {
+
+                    } catch (e: AccountPayeeNotFindException) {
+
+                    } catch (e: AccountPayeeTokenNotActiveException) {
+
+                    } catch (e: Exception) {
+
+                    }
+
+                }
+            }
         }
 
         swapViewModel.getCurrFromTokenLiveData().observe(viewLifecycleOwner, Observer {
@@ -163,12 +194,12 @@ class SwapFragment : BaseFragment(), TokensBridge, TokensSwapFilterBridge {
 
     //*********************************** 选择Token逻辑 ***********************************//
     private fun showSelectTokenDialog(selectFrom: Boolean) {
-        SelectTokenDialog
+        SwapSelectTokenDialog
             .newInstance(
                 if (selectFrom) ACTION_SWAP_SELECT_FROM else ACTION_SWAP_SELECT_TO
             )
-            .setCallback {
-                swapViewModel.selectToken(selectFrom, it)
+            .setCallback { action, iToken ->
+                swapViewModel.selectToken(ACTION_SWAP_SELECT_FROM == action, iToken)
             }
             .show(childFragmentManager)
     }
@@ -188,11 +219,12 @@ class SwapFragment : BaseFragment(), TokensBridge, TokensSwapFilterBridge {
             swapViewModel.getCurrToTokenLiveData().value
     }
 
-    override fun filter(currToken: ITokenVo?, it: ITokenVo): Boolean {
-        if (currToken == null) {
-            return false
+    override fun getMarketSupportTokens(action: Int): List<ITokenVo>? {
+        return if (action == ACTION_SWAP_SELECT_FROM) {
+            swapViewModel.getSupportTokensLiveData().value
+        } else {
+            swapViewModel.getSwapToTokenList()
         }
-        return swapViewModel.filter(currToken, it)
     }
 
     //*********************************** 输入框逻辑 ***********************************//

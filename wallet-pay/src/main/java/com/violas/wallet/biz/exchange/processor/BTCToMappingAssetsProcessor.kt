@@ -1,10 +1,21 @@
 package com.violas.wallet.biz.exchange.processor
 
-import com.violas.wallet.ui.main.market.bean.ITokenVo
+import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.biz.exchange.MappingInfo
+import com.violas.wallet.common.Vm
+import com.violas.wallet.ui.main.market.bean.*
 
-class BTCToMappingAssetsProcessor : IProcessor {
+class BTCToMappingAssetsProcessor(
+    private val supportMappingPair: HashMap<String, MappingInfo>
+) : IProcessor {
     override fun hasHandle(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
-        return false
+        return tokenFrom is PlatformTokenVo
+                && tokenFrom.coinNumber == if (Vm.TestNet) {
+            CoinTypes.BitcoinTest
+        } else {
+            CoinTypes.Bitcoin
+        }.coinType()
+                && supportMappingPair.containsKey(IAssetsMark.convert(tokenTo).mark())
     }
 
     override suspend fun handle(
@@ -17,6 +28,6 @@ class BTCToMappingAssetsProcessor : IProcessor {
         path: ByteArray,
         data: ByteArray
     ) {
-        TODO("Not yet implemented")
+
     }
 }
