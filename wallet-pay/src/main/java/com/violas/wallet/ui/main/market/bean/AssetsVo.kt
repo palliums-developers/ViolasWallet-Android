@@ -26,7 +26,7 @@ interface IAssetsMark {
 
 class CoinAssetsMark(val coinTypes: CoinTypes) : IAssetsMark {
     override fun mark(): String {
-        return "c${coinTypes}"
+        return "c${coinTypes.coinType()}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -41,7 +41,7 @@ class LibraTokenAssetsMark(
     val name: String
 ) : IAssetsMark {
     override fun mark(): String {
-        return "lt${coinTypes}${module}${address}${name}"
+        return "lt${coinTypes.coinType()}${module}${address}${name}"
     }
 
     override fun equals(other: Any?): Boolean {
