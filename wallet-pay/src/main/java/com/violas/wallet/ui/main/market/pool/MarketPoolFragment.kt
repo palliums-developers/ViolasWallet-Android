@@ -3,8 +3,10 @@ package com.violas.wallet.ui.main.market.pool
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.text.AmountInputFilter
+import android.text.InputType
 import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -16,6 +18,7 @@ import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
 import com.palliums.extensions.show
 import com.palliums.net.LoadState
+import com.palliums.utils.DensityUtility
 import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.stripTrailingZeros
@@ -74,8 +77,7 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
 
         etFirstInputBox.addTextChangedListener(firstInputTextWatcher)
         etSecondInputBox.addTextChangedListener(secondInputTextWatcher)
-        etFirstInputBox.filters = arrayOf(AmountInputFilter(12, 2))
-        etSecondInputBox.filters = arrayOf(AmountInputFilter(12, 2))
+        etFirstInputBox.filters = arrayOf(AmountInputFilter(12, 6))
 
         llSwitchOpModeGroup.setOnClickListener {
             showSwitchOpModePopup()
@@ -129,6 +131,12 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
                     )
                 }
             })
+        marketPoolViewModel.getFirstInputTextLiveData().observe(viewLifecycleOwner, Observer {
+            etFirstInputBox.setText(it)
+        })
+        marketPoolViewModel.getSecondInputTextLiveData().observe(viewLifecycleOwner, Observer {
+            etSecondInputBox.setText(it)
+        })
 
         marketPoolViewModel.loadState.observe(viewLifecycleOwner, Observer {
             when (it.peekData().status) {
@@ -167,6 +175,8 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             tvFirstInputLabel.setText(R.string.transfer_in)
             tvSecondInputLabel.setText(R.string.transfer_in)
             btnPositive.setText(R.string.action_transfer_in_nbsp)
+            etSecondInputBox.filters = arrayOf(AmountInputFilter(12, 6))
+            etSecondInputBox.inputType = InputType.TYPE_CLASS_NUMBER
             etSecondInputBox.isEnabled = true
             etSecondInputBox.requestLayout()
             tvSecondBalance.visibility = View.VISIBLE
@@ -185,9 +195,13 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             tvFirstInputLabel.setText(R.string.pool_liquidity_token)
             tvSecondInputLabel.setText(R.string.transfer_out)
             btnPositive.setText(R.string.action_transfer_out_nbsp)
+            etSecondInputBox.filters = arrayOf()
+            etSecondInputBox.inputType =
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
             etSecondInputBox.isEnabled = false
             tvSecondBalance.visibility = View.GONE
             llSecondSelectGroup.visibility = View.GONE
+            adjustSecondInputBoxPaddingEnd()
 
             marketPoolViewModel.getCurrFirstTokenLiveData()
                 .removeObserver(currFirstTokenObserver)
@@ -276,6 +290,13 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
                 it.amount
             )
         }
+
+        val firstInputAmount = etFirstInputBox.text.toString()
+        if (firstInputAmount.isNotBlank()) {
+            marketPoolViewModel.changeTokensTransferOutAmount(firstInputAmount)
+        }
+
+        adjustFirstInputBoxPaddingEnd()
     }
 
     private val liquidityTokensObserver = Observer<List<LiquidityTokenDTO>?> {
@@ -339,6 +360,14 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
                 "${amountWithUnit.first} ${it.displayName}"
             )
         }
+
+
+        val firstInputAmount = etFirstInputBox.text.toString()
+        if (firstInputAmount.isNotBlank()) {
+            marketPoolViewModel.changeSecondTokenTransferIntoAmount(firstInputAmount)
+        }
+
+        adjustFirstInputBoxPaddingEnd()
     }
 
     private val currSecondTokenObserver = Observer<StableTokenVo?> {
@@ -355,6 +384,13 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
                 "${amountWithUnit.first} ${it.displayName}"
             )
         }
+
+        val secondInputAmount = etSecondInputBox.text.toString()
+        if (secondInputAmount.isNotBlank()) {
+            marketPoolViewModel.changeFirstTokenTransferIntoAmount(secondInputAmount)
+        }
+
+        adjustSecondInputBoxPaddingEnd()
     }
 
     private fun showSelectTokenDialog(selectFirst: Boolean) {
@@ -393,6 +429,12 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             if (inputText != amountStr) {
                 handleInputTextWatcher(amountStr, etFirstInputBox, this)
             }
+
+            if (marketPoolViewModel.isTransferInMode()) {
+                marketPoolViewModel.changeSecondTokenTransferIntoAmount(amountStr)
+            } else {
+                marketPoolViewModel.changeTokensTransferOutAmount(amountStr)
+            }
         }
     }
 
@@ -404,6 +446,10 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             val amountStr = handleInputText(inputText)
             if (inputText != amountStr) {
                 handleInputTextWatcher(amountStr, etSecondInputBox, this)
+            }
+
+            if (marketPoolViewModel.isTransferInMode()) {
+                marketPoolViewModel.changeFirstTokenTransferIntoAmount(amountStr)
             }
         }
     }
@@ -435,5 +481,37 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
     //*********************************** 其它逻辑 ***********************************//
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
         textView.text = getString(formatResId, getString(R.string.value_null))
+    }
+
+    private fun adjustFirstInputBoxPaddingEnd() {
+        etFirstInputBox.post {
+            val paddingRight = if (llFirstSelectGroup.visibility != View.VISIBLE) {
+                DensityUtility.dp2px(requireContext(), 11)
+            } else {
+                llFirstSelectGroup.width + DensityUtility.dp2px(requireContext(), 11) * 2
+            }
+            etFirstInputBox.setPadding(
+                etFirstInputBox.paddingLeft,
+                etFirstInputBox.paddingTop,
+                paddingRight,
+                etFirstInputBox.paddingBottom
+            )
+        }
+    }
+
+    private fun adjustSecondInputBoxPaddingEnd() {
+        etSecondInputBox.post {
+            val paddingRight = if (llSecondSelectGroup.visibility != View.VISIBLE) {
+                DensityUtility.dp2px(requireContext(), 11)
+            } else {
+                llSecondSelectGroup.width + DensityUtility.dp2px(requireContext(), 11) * 2
+            }
+            etSecondInputBox.setPadding(
+                etSecondInputBox.paddingLeft,
+                etSecondInputBox.paddingTop,
+                paddingRight,
+                etSecondInputBox.paddingBottom
+            )
+        }
     }
 }
