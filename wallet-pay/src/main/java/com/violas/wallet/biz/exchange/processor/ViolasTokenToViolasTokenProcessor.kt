@@ -2,10 +2,13 @@ package com.violas.wallet.biz.exchange.processor
 
 import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.exchange.AccountNotFindAddressException
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.walletconnect.extensions.hexStringToByteArray
@@ -20,6 +23,10 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
 
     private val mViolasRpcService by lazy {
         DataRepository.getViolasChainRpcService()
+    }
+
+    private val mAccountManager by lazy {
+        AccountManager()
     }
 
     private val mViolasExchangeContract by lazy {
@@ -42,7 +49,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         privateKey: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
-        payee: String,
+        payee: String?,
         amountIn: Long,
         amountOutMin: Long,
         path: ByteArray,
@@ -51,9 +58,13 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         tokenFrom as StableTokenVo
         tokenTo as StableTokenVo
 
+        val payeeAddress =
+            payee ?: mAccountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())?.address
+            ?: throw AccountNotFindAddressException()
+
         // 收款地址状态
         val accountState =
-            mViolasRpcService.getAccountState(payee) ?: throw AccountPayeeNotFindException()
+            mViolasRpcService.getAccountState(payeeAddress) ?: throw AccountPayeeNotFindException()
 
         var isPublishToken = false
         accountState.balances?.forEach {
@@ -62,7 +73,11 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
             }
         }
         if (!isPublishToken) {
-            throw AccountPayeeTokenNotActiveException()
+            throw AccountPayeeTokenNotActiveException(
+                CoinTypes.Violas,
+                payeeAddress,
+                IAssetsMark.convert(tokenTo)
+            )
         }
 
         val account = Account(KeyPair.fromSecretKey(privateKey))
@@ -88,7 +103,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
             mViolasExchangeContract.optionTokenSwapTransactionPayload(
                 typeTagFrom,
                 typeTagTo,
-                payee,
+                payeeAddress,
                 amountIn,
                 amountOutMin,
                 path,

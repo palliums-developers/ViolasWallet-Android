@@ -27,7 +27,7 @@ abstract class AbsViolasExchangeContract {
 
     private fun replaceContractAddress(contract: String): ByteArray {
         return Move.violasReplaceAddress(
-            mAddLiquidityContract.hexToBytes(),
+            contract.hexToBytes(),
             getContractAddress().hexToBytes(),
             getContractDefaultAddress()
         )

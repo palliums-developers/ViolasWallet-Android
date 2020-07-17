@@ -134,6 +134,18 @@ data class FiatBalanceDTO(
 )
 
 @Keep
+data class SwapTrialSTO(
+    @SerializedName("amount")
+    val amount: Long,
+    @SerializedName("fee")
+    val fee: Long,
+    @SerializedName("path")
+    val path: List<Int>,
+    @SerializedName("rate")
+    val rate: Double
+)
+
+@Keep
 data class MarketCurrenciesDTO(
     @SerializedName(value = "btc")
     val bitcoinCurrencies: List<MarketCurrencyDTO>,

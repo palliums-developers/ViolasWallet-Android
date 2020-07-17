@@ -81,6 +81,16 @@ interface ViolasApi {
     suspend fun getMarketSupportCurrencies(): Response<MarketCurrenciesDTO>
 
     /**
+     * 尝试计算兑换价值
+     */
+    @GET("/1.0/market/exchange/trial")
+    suspend fun exchangeSwapTrial(
+        @Query("amount") amount: Long,
+        @Query("currencyIn") currencyIn: String,
+        @Query("currencyOut") currencyOut: String
+    ): Response<SwapTrialSTO>
+
+    /**
      * 获取指定地址的交易市场兑换记录，分页查询
      * @param address       地址
      * @param pageSize      分页大小

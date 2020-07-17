@@ -141,7 +141,9 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
             cancelJob()
             when {
                 it == null -> {
-                    handleLoadFailure()
+                    launch(Dispatchers.Main) {
+                        handleLoadFailure()
+                    }
                 }
                 it.isEmpty() -> {
                     handleEmptyData(null)
