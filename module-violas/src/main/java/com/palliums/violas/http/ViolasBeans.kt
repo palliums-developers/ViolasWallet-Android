@@ -259,3 +259,21 @@ data class RemovePoolLiquidityEstimateResultDTO(
     @SerializedName(value = "coin_b_value")
     val tokenBAmount: BigDecimal
 )
+
+@Keep
+data class MarketPairReserveInfoDTO(
+    @SerializedName(value = "liquidity_total_supply")
+    val liquidityTotalAmount: BigDecimal,
+    @SerializedName(value = "coina")
+    val coinA: CoinDTO,
+    @SerializedName(value = "coinb")
+    val coinB: CoinDTO
+) {
+    @Keep
+    data class CoinDTO(
+        val index: Int,
+        val name: String,
+        @SerializedName(value = "value")
+        val amount: BigDecimal
+    )
+}

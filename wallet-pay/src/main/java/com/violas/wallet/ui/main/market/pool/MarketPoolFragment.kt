@@ -415,19 +415,19 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
     private val firstInputOnFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
         if (hasFocus) return@OnFocusChangeListener
 
-        if (marketPoolViewModel.isTransferInMode()) {
+        /*if (marketPoolViewModel.isTransferInMode()) {
             addLiquidityTrialCalculation(true, etFirstInputBox.text.toString().trim())
         } else {
             removeLiquidityTrialCalculation(etFirstInputBox.text.toString().trim())
-        }
+        }*/
     }
 
     private val secondInputOnFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
         if (hasFocus) return@OnFocusChangeListener
 
-        if (marketPoolViewModel.isTransferInMode()) {
+        /*if (marketPoolViewModel.isTransferInMode()) {
             addLiquidityTrialCalculation(false, etSecondInputBox.text.toString().trim())
-        }
+        }*/
     }
 
     private val firstInputTextWatcher = object : TextWatcherSimple() {
@@ -438,6 +438,12 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             val amountStr = handleInputText(inputText)
             if (inputText != amountStr) {
                 handleInputTextWatcher(amountStr, etFirstInputBox, this)
+            }
+
+            if (marketPoolViewModel.isTransferInMode()) {
+                marketPoolViewModel.estimateSecondCoinTransferIntoAmount(amountStr)
+            } else {
+                marketPoolViewModel.estimateCoinsTransferOutAmount(amountStr)
             }
         }
     }
@@ -450,6 +456,10 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             val amountStr = handleInputText(inputText)
             if (inputText != amountStr) {
                 handleInputTextWatcher(amountStr, etSecondInputBox, this)
+            }
+
+            if (marketPoolViewModel.isTransferInMode()) {
+                marketPoolViewModel.estimateFirstCoinTransferIntoAmount(amountStr)
             }
         }
     }
