@@ -14,9 +14,9 @@ import com.palliums.widget.status.IStatusLayout
  * desc: PagingHandler
  */
 class PagingHandler<VO>(
-    mLifecycleOwner: LifecycleOwner,
-    val mViewController: ViewController,
-    val mPagingController: PagingController<VO>
+    private val mLifecycleOwner: LifecycleOwner,
+    private val mViewController: ViewController,
+    private val mPagingController: PagingController<VO>
 ) {
 
     /**
@@ -32,7 +32,7 @@ class PagingHandler<VO>(
     private var autoRefresh = false
     private var pageSize = PagingViewModel.PAGE_SIZE
 
-    init {
+    fun init() {
 
         mPagingController.getViewModel().pagedList.observe(mLifecycleOwner, Observer {
             if (updateDataFlag) {
@@ -51,8 +51,8 @@ class PagingHandler<VO>(
                 LoadState.Status.SUCCESS,
                 LoadState.Status.SUCCESS_NO_MORE -> {
                     handleRefreshDataUpdate(true)
-                    mPagingController.getRefreshLayout()?.setEnableRefresh(true)
                     mPagingController.getRefreshLayout()?.finishRefresh(true)
+                    mPagingController.getRefreshLayout()?.setEnableRefresh(true)
                     mPagingController.getStatusLayout()?.showStatus(
                         IStatusLayout.Status.STATUS_NONE
                     )
@@ -60,8 +60,8 @@ class PagingHandler<VO>(
 
                 LoadState.Status.SUCCESS_EMPTY -> {
                     handleRefreshDataUpdate(true)
-                    mPagingController.getRefreshLayout()?.setEnableRefresh(true)
                     mPagingController.getRefreshLayout()?.finishRefresh(true)
+                    mPagingController.getRefreshLayout()?.setEnableRefresh(true)
                     mPagingController.getStatusLayout()?.showStatus(
                         IStatusLayout.Status.STATUS_EMPTY
                     )
@@ -69,10 +69,10 @@ class PagingHandler<VO>(
 
                 LoadState.Status.FAILURE -> {
                     handleRefreshDataUpdate(false)
-                    mPagingController.getRefreshLayout()?.setEnableRefresh(true)
                     mPagingController.getRefreshLayout()?.finishRefresh(
                         300, false, false
                     )
+                    mPagingController.getRefreshLayout()?.setEnableRefresh(true)
                     when {
                         mPagingController.getViewAdapter().itemCount > 0 ->
                             mPagingController.getStatusLayout()?.showStatus(
@@ -106,6 +106,7 @@ class PagingHandler<VO>(
         })
 
         mPagingController.getRefreshLayout()?.let {
+            it.setEnableRefresh(false)          // 首次加载使用[IStatusLayout]的加载效果，要禁用下拉刷新
             it.setEnableLoadMore(false)         // 禁用上拉加载更多功能
             it.setEnableOverScrollBounce(true)  // 启用越界回弹
             it.setEnableOverScrollDrag(true)    // 启用越界拖动
@@ -129,6 +130,7 @@ class PagingHandler<VO>(
             mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
             mPagingController.getViewModel().retry()
         }*/
+        mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
 
         mPagingController.getRecyclerView().adapter = mPagingController.getViewAdapter()
     }
@@ -151,8 +153,6 @@ class PagingHandler<VO>(
         this.pageSize = pageSize
         autoRefresh = false
         //mPagingController.getRefreshLayout()?.autoRefresh()
-        mPagingController.getRefreshLayout()?.setEnableRefresh(false)
-        mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
         if (!mPagingController.getViewModel().start(pageSize)) {
             mPagingController.getViewModel().refresh()
         }

@@ -69,6 +69,7 @@ class AddWalletActivity : BaseListingActivity<AddWalletVo>() {
             )
         )
 
+        mListingHandler.init()
         mViewModel.execute()
     }
 

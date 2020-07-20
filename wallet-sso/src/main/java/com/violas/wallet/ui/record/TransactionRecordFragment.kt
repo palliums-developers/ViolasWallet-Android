@@ -80,6 +80,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         super.onLazyInitView(savedInstanceState)
 
         if (initData()) {
+            mPagingHandler.init()
             getStatusLayout()?.setTipsWithStatus(
                 IStatusLayout.Status.STATUS_EMPTY,
                 getString(R.string.tips_no_transaction_record)

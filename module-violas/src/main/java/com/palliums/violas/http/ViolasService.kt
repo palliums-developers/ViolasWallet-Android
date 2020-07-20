@@ -269,4 +269,28 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         address: String
     ) =
         mViolasRepository.getUserPoolInfo(address).data
+
+    suspend fun removePoolLiquidityEstimate(
+        address: String,
+        tokenAName: String,
+        tokenBName: String,
+        liquidityAmount: String
+    ) =
+        mViolasRepository.removePoolLiquidityEstimate(
+            address,
+            tokenAName,
+            tokenBName,
+            liquidityAmount
+        ).data!!
+
+    suspend fun addPoolLiquidityEstimate(
+        tokenAName: String,
+        tokenBName: String,
+        tokenAAmount: String
+    ) =
+        mViolasRepository.addPoolLiquidityEstimate(
+            tokenAName,
+            tokenBName,
+            tokenAAmount
+        ).data!!
 }

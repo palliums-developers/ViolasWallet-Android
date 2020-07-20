@@ -13,12 +13,12 @@ import com.palliums.widget.status.IStatusLayout
  * desc:
  */
 class ListingHandler<VO>(
-    mLifecycleOwner: LifecycleOwner,
-    val mViewController: ViewController,
-    val mListingController: ListingController<VO>
+    private val mLifecycleOwner: LifecycleOwner,
+    private val mViewController: ViewController,
+    private val mListingController: ListingController<VO>
 ) {
 
-    init {
+    fun init() {
 
         mListingController.getViewModel().listData.observe(mLifecycleOwner, Observer {
             mListingController.getViewAdapter().setDataList(it)
@@ -40,6 +40,8 @@ class ListingHandler<VO>(
                         mViewController.dismissProgress()
                     } else {
                         mListingController.getRefreshLayout()?.finishRefresh(true)
+                        if (mListingController.enableRefresh())
+                            mListingController.getRefreshLayout()?.setEnableRefresh(true)
                     }
 
                     mListingController.getStatusLayout()?.showStatus(
@@ -52,6 +54,8 @@ class ListingHandler<VO>(
                         mViewController.dismissProgress()
                     } else {
                         mListingController.getRefreshLayout()?.finishRefresh(true)
+                        if (mListingController.enableRefresh())
+                            mListingController.getRefreshLayout()?.setEnableRefresh(true)
                     }
 
                     mListingController.getStatusLayout()?.showStatus(
@@ -64,6 +68,8 @@ class ListingHandler<VO>(
                         mViewController.dismissProgress()
                     } else {
                         mListingController.getRefreshLayout()?.finishRefresh(false)
+                        if (mListingController.enableRefresh())
+                            mListingController.getRefreshLayout()?.setEnableRefresh(true)
                     }
 
                     when {
@@ -98,19 +104,17 @@ class ListingHandler<VO>(
         })
 
         mListingController.getRefreshLayout()?.let {
+            it.setEnableRefresh(false)
             it.setEnableLoadMore(false)
             it.setEnableOverScrollBounce(true)
             it.setEnableOverScrollDrag(true)
-            if (mListingController.loadingUseDialog()) {
-                it.setEnableRefresh(false)
-            } else {
-                it.setOnRefreshListener {
-
-                }
-            }
         }
 
-        mListingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_NONE)
+        if (mListingController.loadingUseDialog()) {
+            mListingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_NONE)
+        } else {
+            mListingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
+        }
 
         mListingController.getRecyclerView().adapter = mListingController.getViewAdapter()
     }

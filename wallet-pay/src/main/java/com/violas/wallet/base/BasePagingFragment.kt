@@ -1,7 +1,5 @@
 package com.violas.wallet.base
 
-import android.os.Bundle
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
 import com.palliums.paging.PagingController
@@ -21,12 +19,6 @@ abstract class BasePagingFragment<VO> : BaseFragment(), PagingController<VO> {
 
     protected val mPagingHandler by lazy {
         PagingHandler(this, this, this)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        mPagingHandler
     }
 
     /**

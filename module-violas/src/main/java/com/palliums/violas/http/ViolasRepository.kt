@@ -147,4 +147,34 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         checkResponse {
             mViolasApi.getUserPoolInfo(address)
         }
+
+    @Throws(RequestException::class)
+    suspend fun removePoolLiquidityEstimate(
+        address: String,
+        tokenAName: String,
+        tokenBName: String,
+        liquidityAmount: String
+    ) =
+        checkResponse(dataNullableOnSuccess = false) {
+            mViolasApi.removePoolLiquidityEstimate(
+                address,
+                tokenAName,
+                tokenBName,
+                liquidityAmount
+            )
+        }
+
+    @Throws(RequestException::class)
+    suspend fun addPoolLiquidityEstimate(
+        tokenAName: String,
+        tokenBName: String,
+        tokenAAmount: String
+    ) =
+        checkResponse(dataNullableOnSuccess = false) {
+            mViolasApi.addPoolLiquidityEstimate(
+                tokenAName,
+                tokenBName,
+                tokenAAmount
+            )
+        }
 }

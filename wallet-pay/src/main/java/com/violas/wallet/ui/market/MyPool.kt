@@ -24,7 +24,7 @@ import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.pool.MarketPoolOpMode
-import com.violas.wallet.utils.convertViolasTokenUnit
+import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_my_pool.*
 import kotlinx.android.synthetic.main.item_my_pool_liquidity_token.view.*
@@ -52,8 +52,8 @@ class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
         return R.layout.activity_my_pool
     }
 
-    override fun loadingUseDialog(): Boolean {
-        return false
+    override fun enableRefresh(): Boolean {
+        return true
     }
 
     override fun getRecyclerView(): RecyclerView {
@@ -95,6 +95,7 @@ class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
             close()
         }
 
+        mListingHandler.init()
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
@@ -127,10 +128,9 @@ class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
         }
 
         viewModel.totalLiquidityAmount.observe(this, Observer {
-            tvTotalLiquidityAmount.text = it
+            tvTotalLiquidityAmount.text = convertAmountToDisplayAmount(it)
         })
 
-        statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         viewModel.execute()
     }
 }
@@ -185,10 +185,13 @@ class MyPoolViewHolder(
     override fun onViewBind(itemPosition: Int, itemData: LiquidityTokenDTO?) {
         itemData?.let {
             itemView.tvLiquidityAmount.text = getString(
-                R.string.market_liquidity_token_amount_format, it.amount
+                R.string.market_liquidity_token_amount_format,
+                convertAmountToDisplayAmount(it.amount)
             )
-            itemView.tvTokenA.text = "${convertViolasTokenUnit(it.coinAAmount)} ${it.coinAName}"
-            itemView.tvTokenB.text = "${convertViolasTokenUnit(it.coinBAmount)} ${it.coinBName}"
+            itemView.tvTokenA.text =
+                "${convertAmountToDisplayAmount(it.coinAAmount)} ${it.coinAName}"
+            itemView.tvTokenB.text =
+                "${convertAmountToDisplayAmount(it.coinBAmount)} ${it.coinBName}"
         }
     }
 }

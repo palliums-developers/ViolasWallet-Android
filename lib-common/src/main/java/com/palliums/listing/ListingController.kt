@@ -13,9 +13,14 @@ import com.palliums.widget.status.IStatusLayout
 interface ListingController<VO> {
 
     /**
-     * 加载使用对话框，返回false则使用RefreshLayout的加载View
+     * 加载使用对话框，返回false，首次加载使用[IStatusLayout]的加载效果，后续使用[IRefreshLayout]的下拉刷新效果
      */
-    fun loadingUseDialog() = true
+    fun loadingUseDialog() = false
+
+    /**
+     * 启用下拉刷新，[loadingUseDialog] 为false时有效
+     */
+    fun enableRefresh() = false
 
     /**
      * 获取RecyclerView

@@ -65,12 +65,12 @@ class PoolRecordActivity : BasePagingActivity<MarketPoolRecordDTO>() {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.title_market_pool_records)
+        mPagingHandler.init()
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
                     initNotLoginView()
                     return@Observer
-
                 }
 
                 launch {
