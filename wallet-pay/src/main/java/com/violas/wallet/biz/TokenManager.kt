@@ -229,13 +229,8 @@ class TokenManager {
         return amount
     }
 
-    @Deprecated("删除")
-    suspend fun publishToken(account: Account) {
-        val publishTokenPayload = mViolasMultiTokenService.publishTokenPayload()
-        mViolasService.sendTransaction(publishTokenPayload, account)
-    }
-
     @Throws(RuntimeException::class)
+    @WorkerThread
     suspend fun publishToken(
         coinTypes: CoinTypes,
         privateKey: ByteArray,
@@ -264,7 +259,7 @@ class TokenManager {
             }
             CoinTypes.Libra.coinType() -> {
                 val libraService = DataRepository.getLibraService()
-                val addCurrency =libraService
+                val addCurrency = libraService
                     .addCurrency(
                         org.palliums.libracore.wallet.Account(
                             org.palliums.libracore.crypto.KeyPair.fromSecretKey(
@@ -289,6 +284,7 @@ class TokenManager {
     }
 
     @Throws(RuntimeException::class)
+    @WorkerThread
     suspend fun publishToken(accountId: Long, account: ByteArray, tokenMark: TokenMark): Boolean {
         mAccountStorage.findById(accountId)?.let {
             return publishToken(CoinTypes.parseCoinType(it.coinNumber), account, tokenMark)
