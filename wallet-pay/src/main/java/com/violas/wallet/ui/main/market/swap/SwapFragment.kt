@@ -29,6 +29,7 @@ import com.violas.wallet.ui.main.market.selectToken.TokensBridge
 import com.violas.wallet.ui.main.market.selectToken.SwapTokensDataResourcesBridge
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.coroutines.Dispatchers
@@ -130,6 +131,7 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                     R.string.market_token_balance_format,
                     "${amountWithUnit.first} ${it.displayName}"
                 )
+                refreshBalances()
             }
         })
         swapViewModel.getCurrToTokenLiveData().observe(viewLifecycleOwner, Observer {
@@ -144,6 +146,7 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                     R.string.market_token_balance_format,
                     "${amountWithUnit.first} ${it.displayName}"
                 )
+                refreshBalances()
             }
         })
         swapViewModel.getHandlingFeeRateLiveDataLiveData().observe(viewLifecycleOwner, Observer {
@@ -205,6 +208,18 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                 }
             })
         }
+
+        // 资产变化
+        WalletAppViewModel.getViewModelInstance().mAssetsListLiveData.observe(this, Observer {
+            refreshBalances()
+        })
+    }
+
+    /**
+     * 刷新余额
+     */
+    private fun refreshBalances() {
+
     }
 
     private fun swap(key: ByteArray) {
