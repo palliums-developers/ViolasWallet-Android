@@ -12,9 +12,11 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
+import com.violas.wallet.utils.convertAmountToDisplayAmount
+import com.violas.wallet.utils.convertAmountToExchangeRate
+import com.violas.wallet.utils.convertDisplayAmountToAmount
 import kotlinx.coroutines.*
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 /**
  * Created by elephant on 2020/6/30 17:42.
@@ -25,7 +27,30 @@ import java.math.RoundingMode
 class MarketPoolViewModel : BaseViewModel() {
 
     companion object {
-        const val ACTION_GET_TOKEN_PAIRS = 0x01
+        /**
+         * 获取用户可转出的流动性token列表
+         */
+        const val ACTION_GET_USER_LIQUIDITY_TOKENS = 0x01
+
+        /**
+         * 添加流动性估算
+         */
+        const val ACTION_ADD_LIQUIDITY_ESTIMATE = 0x02
+
+        /**
+         * 移除流动性估算
+         */
+        const val ACTION_REMOVE_LIQUIDITY_ESTIMATE = 0x03
+
+        /**
+         * 添加流动性
+         */
+        const val ACTION_ADD_LIQUIDITY = 0x04
+
+        /**
+         * 移除流动性
+         */
+        const val ACTION_REMOVE_LIQUIDITY = 0x05
     }
 
     // 当前的操作模式，分转入和转出
@@ -58,50 +83,11 @@ class MarketPoolViewModel : BaseViewModel() {
             currFirstTokenLiveData.postValue(null)
             currSecondTokenLiveData.postValue(null)
             currLiquidityTokenLiveData.postValue(null)
-        }
 
-        val convertToExchangeRate: (String, String) -> BigDecimal? =
-            { amountAStr, amountBStr ->
-                val amountA = BigDecimal(amountAStr)
-                val amountB = BigDecimal(amountBStr)
-                val zero = BigDecimal("0.00")
-                if (amountA <= zero || amountB <= zero)
-                    null
-                else
-                    amountB.divide(amountA, 8, RoundingMode.DOWN)
-                        .stripTrailingZeros()
-            }
-        exchangeRateLiveData.addSource(currFirstTokenLiveData) { firstToken ->
-            val secondToken = currSecondTokenLiveData.value
-            exchangeRateLiveData.postValue(
-                if (firstToken == null || secondToken == null)
-                    null
-                else
-                    convertToExchangeRate(
-                        firstToken.anchorValue.toString(),
-                        secondToken.anchorValue.toString()
-                    )
-            )
-        }
-        exchangeRateLiveData.addSource(currSecondTokenLiveData) { secondToken ->
-            val firstToken = currFirstTokenLiveData.value
-            exchangeRateLiveData.postValue(
-                if (firstToken == null || secondToken == null)
-                    null
-                else
-                    convertToExchangeRate(
-                        firstToken.anchorValue.toString(),
-                        secondToken.anchorValue.toString()
-                    )
-            )
-        }
-        exchangeRateLiveData.addSource(currLiquidityTokenLiveData) {
-            exchangeRateLiveData.postValue(
-                if (it == null)
-                    null
-                else
-                    convertToExchangeRate(it.coinAAmount, it.coinBAmount)
-            )
+            exchangeRateLiveData.postValue(null)
+
+            firstInputTextLiveData.postValue("")
+            secondInputTextLiveData.postValue("")
         }
     }
 
@@ -200,11 +186,11 @@ class MarketPoolViewModel : BaseViewModel() {
     }
 
     //*********************************** 输入金额联动方法 ***********************************//
-    fun getFirstInputTextLiveData(): LiveData<String> {
+    fun getFirstInputTextLiveData(): MutableLiveData<String> {
         return firstInputTextLiveData
     }
 
-    fun getSecondInputTextLiveData(): LiveData<String> {
+    fun getSecondInputTextLiveData(): MutableLiveData<String> {
         return secondInputTextLiveData
     }
 
@@ -255,7 +241,7 @@ class MarketPoolViewModel : BaseViewModel() {
                     return@withContext
                 }
 
-                val liquidityAmount = BigDecimal(inputLiquidityAmount)
+                /*val liquidityAmount = BigDecimal(inputLiquidityAmount)
                 val tokenATransferOutAmount = liquidityAmount
                     .multiply(BigDecimal(liquidityToken.coinAAmount))
                     .divide(BigDecimal(liquidityToken.amount), 6, RoundingMode.DOWN)
@@ -266,7 +252,7 @@ class MarketPoolViewModel : BaseViewModel() {
                     .stripTrailingZeros().toPlainString() + liquidityToken.coinBName
                 secondInputTextLiveData.postValue(
                     "$tokenATransferOutAmount\n$tokenBTransferOutAmount"
-                )
+                )*/
             }
 
             calculateAmountJob = null
@@ -297,27 +283,83 @@ class MarketPoolViewModel : BaseViewModel() {
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        // 获取可转出的流动性token列表
-        if (action == ACTION_GET_TOKEN_PAIRS) {
-            val userPoolInfo =
-                exchangeManager.mViolasService.getUserPoolInfo(address!!)
-            liquidityTokensLiveData.postValue(userPoolInfo?.liquidityTokens)
-            return
-        }
+        when (action) {
+            ACTION_GET_USER_LIQUIDITY_TOKENS -> {
+                val userPoolInfo =
+                    exchangeManager.mViolasService.getUserPoolInfo(address!!)
+                liquidityTokensLiveData.postValue(userPoolInfo?.liquidityTokens)
+            }
 
-        // 转入
-        if (isTransferInMode()) {
-            val firstToken = currFirstTokenLiveData.value!!
-            val secondToken = currSecondTokenLiveData.value!!
-            return
-        }
+            ACTION_ADD_LIQUIDITY_ESTIMATE -> {
+                val inputAmount = params[0] as String
+                val tokenAName = params[1] as String
+                val tokenBName = params[2] as String
 
-        // 转出
-        val liquidityToken = currLiquidityTokenLiveData.value!!
+                val tokenAAmount = convertDisplayAmountToAmount(inputAmount)
+                val result =
+                    exchangeManager.mViolasService.addPoolLiquidityEstimate(
+                        tokenAName = tokenAName,
+                        tokenBName = tokenBName,
+                        tokenAAmount = tokenAAmount.toPlainString()
+                    )
+
+                if (currFirstTokenLiveData.value!!.module == tokenAName) {
+                    secondInputTextLiveData.postValue(
+                        convertAmountToDisplayAmount(result.tokenBAmount)
+                    )
+                    exchangeRateLiveData.postValue(
+                        convertAmountToExchangeRate(tokenAAmount, result.tokenBAmount)
+                    )
+                } else {
+                    firstInputTextLiveData.postValue(
+                        convertAmountToDisplayAmount(result.tokenBAmount)
+                    )
+                    exchangeRateLiveData.postValue(
+                        convertAmountToExchangeRate(result.tokenBAmount, tokenAAmount)
+                    )
+                }
+            }
+
+            ACTION_REMOVE_LIQUIDITY_ESTIMATE -> {
+                val inputAmount = params[0] as String
+                val tokenAName = params[1] as String
+                val tokenBName = params[2] as String
+
+                val result =
+                    exchangeManager.mViolasService.removePoolLiquidityEstimate(
+                        address = address!!,
+                        tokenAName = tokenAName,
+                        tokenBName = tokenBName,
+                        liquidityAmount = convertDisplayAmountToAmount(inputAmount).toPlainString()
+                    )
+
+                val displayAmountA =
+                    convertAmountToDisplayAmount(result.tokenAAmount) + result.tokenAName
+                val displayAmountB =
+                    convertAmountToDisplayAmount(result.tokenBAmount) + result.tokenBName
+                secondInputTextLiveData.postValue("$displayAmountA\n$displayAmountB")
+
+                exchangeRateLiveData.postValue(
+                    convertAmountToExchangeRate(result.tokenAAmount, result.tokenBAmount)
+                )
+            }
+
+            ACTION_ADD_LIQUIDITY -> {
+
+            }
+
+            ACTION_REMOVE_LIQUIDITY -> {
+
+            }
+
+            else -> {
+                error("Unsupported action: $action")
+            }
+        }
     }
 
     override fun checkParams(action: Int, vararg params: Any): Boolean {
-        if (action == ACTION_GET_TOKEN_PAIRS && address.isNullOrBlank()) {
+        if (action == ACTION_GET_USER_LIQUIDITY_TOKENS && address.isNullOrBlank()) {
             tipsMessage.postValueSupport(getString(R.string.tips_create_or_import_wallet))
             return false
         }

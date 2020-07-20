@@ -85,3 +85,72 @@ fun convertAmountToDisplayUnit(amount: String, coinTypes: CoinTypes): Pair<Strin
     }
     return Pair(amountStr, coinTypes.coinUnit())
 }
+
+fun convertDisplayAmountToAmount(
+    amountStr: String,
+    coinTypes: CoinTypes = CoinTypes.Violas
+): BigDecimal {
+    return convertDisplayAmountToAmount(BigDecimal(amountStr), coinTypes)
+}
+
+fun convertDisplayAmountToAmount(
+    amountBigDecimal: BigDecimal,
+    coinTypes: CoinTypes = CoinTypes.Violas
+): BigDecimal {
+    return amountBigDecimal
+        .multiply(BigDecimal(getCoinDecimal(coinTypes.coinType())))
+        .stripTrailingZeros()
+}
+
+fun convertAmountToDisplayAmount(
+    amountStr: String,
+    coinTypes: CoinTypes = CoinTypes.Violas
+): String {
+    return convertAmountToDisplayAmount(BigDecimal(amountStr), coinTypes)
+}
+
+fun convertAmountToDisplayAmount(
+    amountBigDecimal: BigDecimal,
+    coinTypes: CoinTypes = CoinTypes.Violas
+): String {
+    val scale: Int
+    val unitBigDecimal = when (coinTypes) {
+        CoinTypes.Violas,
+        CoinTypes.Libra -> {
+            scale = 6
+            BigDecimal("1000000")
+        }
+        CoinTypes.Bitcoin,
+        CoinTypes.BitcoinTest -> {
+            scale = 8
+            BigDecimal("100000000")
+        }
+        else -> {
+            scale = 8
+            BigDecimal("100000000")
+        }
+    }
+    return if (amountBigDecimal > BigDecimal("0"))
+        amountBigDecimal
+            .divide(unitBigDecimal, scale, RoundingMode.HALF_UP)
+            .stripTrailingZeros()
+            .toPlainString()
+    else
+        "0"
+}
+
+fun convertAmountToRate(
+    amountAStr: String,
+    amountBStr: String
+): BigDecimal {
+    return convertAmountToExchangeRate(BigDecimal(amountAStr), BigDecimal(amountBStr))
+}
+
+fun convertAmountToExchangeRate(
+    amountABigDecimal: BigDecimal,
+    amountBBigDecimal: BigDecimal
+): BigDecimal {
+    return amountBBigDecimal
+        .divide(amountABigDecimal, 20, RoundingMode.DOWN)
+        .stripTrailingZeros()
+}

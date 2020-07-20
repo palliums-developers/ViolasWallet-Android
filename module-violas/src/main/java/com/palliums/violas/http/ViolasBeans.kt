@@ -5,6 +5,7 @@ import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
 import kotlinx.android.parcel.Parcelize
+import java.math.BigDecimal
 
 /**
  * Created by elephant on 2019-11-11 15:41.
@@ -224,5 +225,25 @@ data class LiquidityTokenDTO(
     @SerializedName(value = "coin_b_value")
     val coinBAmount: String,
     @SerializedName(value = "token")
-    val amount: String
+    val amount: BigDecimal
+)
+
+@Keep
+data class AddPoolLiquidityEstimateResultDTO(
+    @SerializedName(value = "amount")
+    val tokenBAmount: BigDecimal,
+    @SerializedName(value = "rate")
+    val exchangeRate: BigDecimal
+)
+
+@Keep
+data class RemovePoolLiquidityEstimateResultDTO(
+    @SerializedName(value = "coin_a_name")
+    val tokenAName: String,
+    @SerializedName(value = "coin_a_value")
+    val tokenAAmount: BigDecimal,
+    @SerializedName(value = "coin_b_name")
+    val tokenBName: String,
+    @SerializedName(value = "coin_b_value")
+    val tokenBAmount: BigDecimal
 )

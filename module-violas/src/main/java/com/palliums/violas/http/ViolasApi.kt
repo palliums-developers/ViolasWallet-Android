@@ -114,4 +114,32 @@ interface ViolasApi {
     suspend fun getUserPoolInfo(
         @Query("address") address: String
     ): Response<UserPoolInfoDTO>
+
+    /**
+     * 资金池转出试算
+     * @param address           地址
+     * @param tokenAName        token a名称
+     * @param tokenBName        token b名称
+     * @param liquidityAmount   流动性token数量
+     */
+    @GET("/1.0/market/pool/withdrawal/trial")
+    suspend fun removePoolLiquidityEstimate(
+        @Query("address") address: String,
+        @Query("coin_a") tokenAName: String,
+        @Query("coin_b") tokenBName: String,
+        @Query("amount") liquidityAmount: String
+    ): Response<RemovePoolLiquidityEstimateResultDTO>
+
+    /**
+     * 资金池转入估算
+     * @param tokenAName        token a名称
+     * @param tokenBName        token b名称
+     * @param tokenAAmount      token a数量
+     */
+    @GET("/1.0/market/pool/deposit/trial")
+    suspend fun addPoolLiquidityEstimate(
+        @Query("coin_a") tokenAName: String,
+        @Query("coin_b") tokenBName: String,
+        @Query("amount") tokenAAmount: String
+    ): Response<AddPoolLiquidityEstimateResultDTO>
 }
