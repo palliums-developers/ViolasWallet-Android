@@ -171,12 +171,25 @@ class ManagerAssertActivity : BaseAppActivity() {
             launch(Dispatchers.IO) {
                 try {
                     mChange = true
-                    mTokenManager.publishToken(
+                    val hasSuccess = mTokenManager.publishToken(
                         assertOriginateToken.account_id,
                         it,
                         assertOriginateToken.tokenMark!!
                     )
-                    mTokenManager.insert(checked, assertOriginateToken)
+                    if (hasSuccess) {
+                        mTokenManager.insert(checked, assertOriginateToken)
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            checkbox.setCheckedNoEvent(false)
+                            showToast(
+                                getString(
+                                    R.string.hint_not_none_coin_or_net_error,
+                                    CoinTypes.Violas.coinName()
+                                ),
+                                Toast.LENGTH_LONG
+                            )
+                        }
+                    }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
                         checkbox.setCheckedNoEvent(false)
