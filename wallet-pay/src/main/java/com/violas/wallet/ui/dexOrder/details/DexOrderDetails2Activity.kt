@@ -164,6 +164,7 @@ class DexOrderDetails2Activity : BasePagingActivity<DexOrderTradeDTO>() {
             })
         }
 
+        mPagingHandler.init()
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             getString(R.string.tips_no_order_trades)

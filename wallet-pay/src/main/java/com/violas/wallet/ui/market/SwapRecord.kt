@@ -64,6 +64,7 @@ class SwapRecordActivity : BasePagingActivity<MarketSwapRecordDTO>() {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.title_market_swap_records)
+        mPagingHandler.init()
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {

@@ -110,6 +110,7 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
         mCoinType = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
         mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)
 
+        mListingHandler.init()
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             getString(R.string.tips_no_address)

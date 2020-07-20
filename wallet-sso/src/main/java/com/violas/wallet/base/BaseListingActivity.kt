@@ -1,6 +1,5 @@
 package com.violas.wallet.base
 
-import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.listing.ListingController
 import com.palliums.listing.ListingHandler
@@ -19,12 +18,6 @@ abstract class BaseListingActivity<VO> : BaseAppActivity(), ListingController<VO
 
     protected val mListingHandler by lazy {
         ListingHandler(this, this, this)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        mListingHandler
     }
 
     /**

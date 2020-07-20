@@ -132,6 +132,7 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
             })
         }
 
+        mPagingHandler.init()
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             getString(

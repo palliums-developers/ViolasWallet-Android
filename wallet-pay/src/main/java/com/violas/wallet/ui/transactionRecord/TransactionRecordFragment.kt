@@ -22,6 +22,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
     private var mWalletAddress: String? = null
     private var mCoinNumber: Int = CoinTypes.Violas.coinType()
+
     @TransactionType
     private var mTransactionType: Int = TransactionType.ALL
     private var mTokenId: String? = null
@@ -88,6 +89,8 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
+
+        mPagingHandler.init()
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             getString(R.string.tips_no_transaction_record)

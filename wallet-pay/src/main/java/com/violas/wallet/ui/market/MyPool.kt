@@ -52,8 +52,8 @@ class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
         return R.layout.activity_my_pool
     }
 
-    override fun loadingUseDialog(): Boolean {
-        return false
+    override fun enableRefresh(): Boolean {
+        return true
     }
 
     override fun getRecyclerView(): RecyclerView {
@@ -95,6 +95,7 @@ class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
             close()
         }
 
+        mListingHandler.init()
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
@@ -130,7 +131,6 @@ class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
             tvTotalLiquidityAmount.text = it
         })
 
-        statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         viewModel.execute()
     }
 }
