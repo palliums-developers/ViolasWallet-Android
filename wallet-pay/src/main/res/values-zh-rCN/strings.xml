@@ -393,4 +393,6 @@
     <string name="market_transaction_state_submitted">已提交</string>
     <string name="pool_details">详情</string>
     <string name="label_transaction_details_liquidity_token">通证：</string>
+    <string name="hint_swap_input_assets_not_select">请选择输入币种</string>
+    <string name="hint_swap_input_assets_amount_input">请输入兑换数量</string>
 </resources>

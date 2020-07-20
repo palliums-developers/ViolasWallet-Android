@@ -24,7 +24,7 @@ fun <T> CoroutineScope.exceptionAsync(
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> T
 ): Deferred<T> {
-    return this.async(SupervisorJob() + context, start, block)
+    return this.async(SupervisorJob() + context + coroutineExceptionHandler(), start, block)
 }
 
 fun coroutineExceptionHandler() = CoroutineExceptionHandler { _, exception ->

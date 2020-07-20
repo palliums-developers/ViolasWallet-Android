@@ -1,6 +1,9 @@
 package com.violas.wallet.biz.exchange
 
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.exchange.processor.IProcessor
+import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
+import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import org.palliums.libracore.http.LibraException
 import org.palliums.violascore.http.ViolasException
@@ -11,7 +14,10 @@ import java.util.*
 class AccountPayeeNotFindException : RuntimeException()
 
 // 收款地址 Token 未激活
-class AccountPayeeTokenNotActiveException : RuntimeException()
+class AccountPayeeTokenNotActiveException(val coinTypes: CoinTypes,val address:String, val assetsMark: IAssetsMark) :
+    RuntimeException()
+
+class AccountNotFindAddressException : RuntimeException()
 
 internal class AssetsSwapEngine {
     private val processors = LinkedList<IProcessor>()
@@ -36,7 +42,7 @@ internal class AssetsSwapEngine {
         privateKey: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
-        payee: String,
+        payee: String?,
         amountIn: Long,
         amountOutMin: Long,
         path: ByteArray,

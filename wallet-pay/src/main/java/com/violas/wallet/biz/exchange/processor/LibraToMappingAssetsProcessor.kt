@@ -2,6 +2,8 @@ package com.violas.wallet.biz.exchange.processor
 
 import com.palliums.content.ContextProvider
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.exchange.AccountNotFindAddressException
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.MappingInfo
@@ -27,6 +29,10 @@ class LibraToMappingAssetsProcessor(
         DataRepository.getLibraService()
     }
 
+    private val mAccountManager by lazy {
+        AccountManager()
+    }
+
     override fun hasHandle(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         return tokenFrom is StableTokenVo
                 && tokenFrom.coinNumber == CoinTypes.Libra.coinType()
@@ -37,7 +43,7 @@ class LibraToMappingAssetsProcessor(
         privateKey: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
-        payee: String,
+        payee: String?,
         amountIn: Long,
         amountOutMin: Long,
         path: ByteArray,
@@ -46,9 +52,13 @@ class LibraToMappingAssetsProcessor(
         tokenFrom as StableTokenVo
         tokenTo as StableTokenVo
 
+        val payeeAddress =
+            payee ?: mAccountManager.getIdentityByCoinType(tokenTo.coinNumber)?.address
+            ?: throw AccountNotFindAddressException()
+
         // 检查收款地址激活状态
         val accountState =
-            mLibraRpcService.getAccountState(payee) ?: throw AccountPayeeNotFindException()
+            mLibraRpcService.getAccountState(payeeAddress) ?: throw AccountPayeeNotFindException()
 
         // 检查收款地址 Token 注册状态
         var isPublishToken = false
@@ -58,7 +68,11 @@ class LibraToMappingAssetsProcessor(
             }
         }
         if (!isPublishToken) {
-            throw AccountPayeeTokenNotActiveException()
+            throw AccountPayeeTokenNotActiveException(
+                CoinTypes.Libra,
+                payeeAddress,
+                IAssetsMark.convert(tokenTo)
+            )
         }
 
         // 开始交易
@@ -80,7 +94,7 @@ class LibraToMappingAssetsProcessor(
             supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.label
         )
         val authKeyPrefix = "00000000000000000000000000000000"
-        subExchangeDate.put("to_address", authKeyPrefix + payee)
+        subExchangeDate.put("to_address", authKeyPrefix + payeeAddress)
         subExchangeDate.put("state", "start")
         subExchangeDate.put("out_amount", amountOutMin)
         subExchangeDate.put("times", 0)

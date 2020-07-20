@@ -112,6 +112,15 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         }
 
     @Throws(RequestException::class)
+    suspend fun exchangeSwapTrial(
+        amount: Long,
+        currencyIn: String,
+        currencyOut: String
+    ) = checkResponse {
+        mViolasApi.exchangeSwapTrial(amount, currencyIn, currencyOut)
+    }
+
+    @Throws(RequestException::class)
     suspend fun getMarketSwapRecords(
         address: String,
         pageSize: Int,

@@ -1,8 +1,12 @@
 package com.violas.wallet.ui.main.market.swap
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.text.AmountInputFilter
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.LiveData
@@ -80,25 +84,37 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         }
 
         btnSwap.setOnClickListener {
+            if (swapViewModel.getCurrFromTokenLiveData().value == null) {
+                // 输入币种没有选择
+                showToast(getString(R.string.hint_swap_input_assets_not_select))
+                return@setOnClickListener
+            }
+            if (swapViewModel.getCurrToTokenLiveData().value == null) {
+                // 输出币种没有选择
+                showToast(getString(R.string.hint_swap_output_assets_not_select))
+                return@setOnClickListener
+            }
+            if (etFromInputBox.text.isEmpty()) {
+                // 填写输入金额
+                showToast(getString(R.string.hint_swap_input_assets_amount_input))
+                return@setOnClickListener
+            }
+            if (etToInputBox.text.isEmpty()) {
+                // 请稍后正在估算输出金额
+                showToast(getString(R.string.hint_swap_output_assets_amount_input))
+                estimateOutputTokenNumber()
+                return@setOnClickListener
+            }
             showProgress()
             launch(Dispatchers.IO) {
-                val defaultAccount = mAccountManager.getDefaultAccount()
-                dismissProgress()
-                authenticateAccount(defaultAccount, mAccountManager) {
-                    try {
-                        swapViewModel.swap(it)
-                    } catch (e: ViolasException) {
-
-                    } catch (e: LibraException) {
-
-                    } catch (e: AccountPayeeNotFindException) {
-
-                    } catch (e: AccountPayeeTokenNotActiveException) {
-
-                    } catch (e: Exception) {
-
+                try {
+                    val defaultAccount = mAccountManager.getDefaultAccount()
+                    dismissProgress()
+                    authenticateAccount(defaultAccount, mAccountManager) {
+                        swap(it)
                     }
-
+                } catch (e: Exception) {
+                    dismissProgress()
                 }
             }
         }
@@ -192,6 +208,57 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         }
     }
 
+    private fun swap(key: ByteArray) {
+        launch(Dispatchers.IO) {
+            try {
+                swapViewModel.swap(
+                    key,
+                    etFromInputBox.text.toString(),
+                    etToInputBox.text.toString()
+                )
+            } catch (e: ViolasException) {
+
+            } catch (e: LibraException) {
+
+            } catch (e: AccountPayeeNotFindException) {
+
+            } catch (e: AccountPayeeTokenNotActiveException) {
+                showToast("${e.address} ${e.assetsMark.mark()} 未激活")
+            } catch (e: Exception) {
+
+            }
+            dismissProgress()
+        }
+    }
+
+    /**
+     * 估算输出金额
+     */
+    private fun estimateOutputTokenNumber() {
+        swapViewModel.exchangeSwapTrial(etFromInputBox.text.toString()) { amount, fee ->
+            handleValue(tvExchangeRate, R.string.exchange_rate_format, fee)
+            etToInputBox.setText(amount)
+        }
+    }
+
+    private val handler = Handler(Looper.getMainLooper(), Handler.Callback {
+        when (it.what) {
+            ExchangeSwapTrialWhat -> {
+                estimateOutputTokenNumber()
+            }
+        }
+        true
+    })
+    private val ExchangeSwapTrialWhat = 1
+
+    /**
+     * 延迟估算
+     */
+    private fun delayEstimateOutputTokenNumber() {
+        handler.removeMessages(ExchangeSwapTrialWhat)
+        handler.sendEmptyMessageAtTime(ExchangeSwapTrialWhat, 800)
+    }
+
     //*********************************** 选择Token逻辑 ***********************************//
     private fun showSelectTokenDialog(selectFrom: Boolean) {
         SwapSelectTokenDialog
@@ -200,6 +267,8 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
             )
             .setCallback { action, iToken ->
                 swapViewModel.selectToken(ACTION_SWAP_SELECT_FROM == action, iToken)
+                // todo 可能会有问题，选择刷洗问题，因为 livedata 使用 postValue
+                estimateOutputTokenNumber()
             }
             .show(childFragmentManager)
     }
@@ -237,6 +306,7 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
             if (inputText != amountStr) {
                 handleInputTextWatcher(amountStr, etFromInputBox, this)
             }
+            delayEstimateOutputTokenNumber()
         }
     }
 
@@ -279,5 +349,9 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
     //*********************************** 其它逻辑 ***********************************//
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
         textView.text = getString(formatResId, getString(R.string.value_null))
+    }
+
+    private val handleValue: (TextView, Int, String) -> Unit = { textView, formatResId, value ->
+        textView.text = getString(formatResId, value)
     }
 }

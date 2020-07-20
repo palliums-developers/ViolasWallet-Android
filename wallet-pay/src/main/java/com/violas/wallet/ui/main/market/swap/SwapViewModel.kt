@@ -10,9 +10,16 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.exchange.AssetsSwapManager
 import com.violas.wallet.biz.exchange.NetWorkSupportTokensLoader
 import com.violas.wallet.biz.exchange.SupportMappingSwapPairManager
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.ITokenVo
+import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
+import com.violas.wallet.ui.main.market.bean.StableTokenVo
+import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.utils.convertDisplayUnitToAmount
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -23,10 +30,17 @@ import java.math.RoundingMode
  * desc:
  */
 class SwapViewModel : BaseViewModel() {
+    companion object {
+        // 最低价格浮动汇率
+        private const val MINIMUM_PRICE_FLUCTUATION = 1 / 100
+    }
 
     // 输入输出选择的Token
     private val currFromTokenLiveData = MediatorLiveData<ITokenVo?>()
     private val currToTokenLiveData = MediatorLiveData<ITokenVo?>()
+
+    //兑换路径
+    private val swapPath = arrayListOf<Int>()
 
     // 手续费率
     private val handlingFeeRateLiveData = MediatorLiveData<BigDecimal?>()
@@ -37,9 +51,15 @@ class SwapViewModel : BaseViewModel() {
     // Gas费
     private val gasFeeLiveData = MediatorLiveData<Long?>()
 
+    private val mViolasService by lazy {
+        DataRepository.getViolasService()
+    }
+
     private val mAssetsSwapManager by lazy {
         AssetsSwapManager(NetWorkSupportTokensLoader(), SupportMappingSwapPairManager())
     }
+
+    private var exchangeSwapTrialJob: Job? = null
 
     init {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
@@ -140,13 +160,92 @@ class SwapViewModel : BaseViewModel() {
     }
 
     //*********************************** 其它信息相关方法 ***********************************//
-    fun swap(key: ByteArray) {
-//        mAssetsSwapManager.swap(key,
-//            currFromTokenLiveData.value,
-//            currToTokenLiveData.value,
-//
-//        )
+    /**
+     * 兑换手续费用预估
+     */
+    fun exchangeSwapTrial(inputAmountStr: String, callback: (String, String) -> Unit) {
+        val inputToken = currFromTokenLiveData.value
+        val outputToken = currToTokenLiveData.value
+
+        swapPath.clear()
+
+        if (inputToken == null || outputToken == null) {
+            return
+        }
+
+        val inputAmount = convertDisplayUnitToAmount(
+            inputAmountStr,
+            CoinTypes.parseCoinType(inputToken.coinNumber)
+        )
+
+        if (inputAmount == 0L) {
+            return
+        }
+
+        exchangeSwapTrialJob?.cancel()
+        exchangeSwapTrialJob = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
+
+            mViolasService.exchangeSwapTrial(
+                inputAmount,
+                getCoinName(inputToken),
+                getCoinName(outputToken)
+            )?.let { exchangeSwapTrial ->
+                swapPath.addAll(exchangeSwapTrial.path)
+                val outputAmount = convertAmountToDisplayUnit(
+                    exchangeSwapTrial.amount,
+                    CoinTypes.parseCoinType(outputToken.coinNumber)
+                )
+                val outputFee = convertAmountToDisplayUnit(
+                    exchangeSwapTrial.fee,
+                    CoinTypes.parseCoinType(outputToken.coinNumber)
+                )
+                withContext(Dispatchers.Main) {
+                    callback(outputAmount.first, outputFee.first)
+                }
+            }
+        }
     }
+
+    private fun getCoinName(iTokenVo: ITokenVo): String {
+        return when (iTokenVo) {
+            is PlatformTokenVo -> CoinTypes.parseCoinType(iTokenVo.coinNumber).coinName()
+            is StableTokenVo -> iTokenVo.module
+            else -> ""
+        }
+    }
+
+    suspend fun swap(key: ByteArray, inputAmountStr: String, outputAmountStr: String) =
+        withContext(Dispatchers.IO) {
+            val inputToken = currFromTokenLiveData.value!!
+            val outputToken = currToTokenLiveData.value!!
+
+            val inputAmount =
+                convertDisplayUnitToAmount(
+                    inputAmountStr,
+                    CoinTypes.parseCoinType(inputToken.coinNumber)
+                )
+            val outputAmount =
+                convertDisplayUnitToAmount(
+                    outputAmountStr,
+                    CoinTypes.parseCoinType(outputToken.coinNumber)
+                )
+
+            val outputMiniAmount = outputAmount - outputAmount * MINIMUM_PRICE_FLUCTUATION
+
+            val swapPathByteArray = swapPath.map {
+                it.and(0xFF).toByte()
+            }.toByteArray()
+
+            mAssetsSwapManager.swap(
+                key,
+                inputToken,
+                outputToken,
+                inputAmount,
+                outputMiniAmount,
+                swapPathByteArray,
+                byteArrayOf()
+            )
+        }
 
     //*********************************** 耗时相关任务 ***********************************//
     override suspend fun realExecute(action: Int, vararg params: Any) {

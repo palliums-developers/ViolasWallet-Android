@@ -244,6 +244,13 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     suspend fun getMarketSupportCurrencies() =
         mViolasRepository.getMarketSupportCurrencies().data
 
+
+    suspend fun exchangeSwapTrial(
+        amount: Long,
+        currencyIn: String,
+        currencyOut: String
+    ) = mViolasRepository.exchangeSwapTrial(amount, currencyIn, currencyOut).data
+
     suspend fun getMarketSwapRecords(
         address: String,
         pageSize: Int,

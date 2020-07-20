@@ -11,7 +11,7 @@ interface IProcessor {
         privateKey: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
-        payee: String,
+        payee: String?,
         amountIn: Long,
         amountOutMin: Long,
         path: ByteArray,
