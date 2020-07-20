@@ -17,6 +17,7 @@ class ViolasRpcRepository(private val mViolasRpcApi: ViolasRpcApi) {
     annotation class Method {
         companion object {
             const val SUBMIT = "submit"
+            const val GET_ACCOUNT_TRANSACTION = "get_account_transaction"
             const val GET_ACCOUNT_STATE = "get_account_state"
             const val GET_CURRENCIES = "get_currencies"
         }
@@ -34,10 +35,24 @@ class ViolasRpcRepository(private val mViolasRpcApi: ViolasRpcApi) {
     suspend fun getAccountState(
         address: String
     ) = checkResponse {
-            mViolasRpcApi.getAccountState(
+        mViolasRpcApi.getAccountState(
+            RequestDTO(
+                method = Method.GET_ACCOUNT_STATE,
+                params = listOf(address)
+            )
+        )
+    }
+
+    suspend fun getTransaction(
+        address: String,
+        sequenceNumber: Long,
+        bool: Boolean = true
+    ) =
+        checkResponse {
+            mViolasRpcApi.getTransaction(
                 RequestDTO(
-                    method = Method.GET_ACCOUNT_STATE,
-                    params = listOf(address)
+                    method = Method.GET_ACCOUNT_TRANSACTION,
+                    params = listOf(address, sequenceNumber, bool)
                 )
             )
         }

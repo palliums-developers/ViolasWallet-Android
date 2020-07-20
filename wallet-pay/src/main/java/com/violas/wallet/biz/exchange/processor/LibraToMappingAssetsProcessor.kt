@@ -71,7 +71,7 @@ class LibraToMappingAssetsProcessor(
             throw AccountPayeeTokenNotActiveException(
                 CoinTypes.Libra,
                 payeeAddress,
-                IAssetsMark.convert(tokenTo)
+                tokenTo
             )
         }
 

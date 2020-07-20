@@ -17,6 +17,7 @@ class LibraRepository(private val mLibraApi: LibraApi) {
     annotation class Method {
         companion object {
             const val SUBMIT = "submit"
+            const val GET_ACCOUNT_TRANSACTION = "get_account_transaction"
             const val GET_ACCOUNT_STATE = "get_account_state"
             const val GET_CURRENCIES = "get_currencies"
         }
@@ -30,6 +31,20 @@ class LibraRepository(private val mLibraApi: LibraApi) {
             )
         )
     }
+
+    suspend fun getTransaction(
+        address: String,
+        sequenceNumber: Long,
+        bool: Boolean = true
+    ) =
+        checkResponse {
+            mLibraApi.getTransaction(
+                RequestDTO(
+                    method = Method.GET_ACCOUNT_TRANSACTION,
+                    params = listOf(address, sequenceNumber, bool)
+                )
+            )
+        }
 
     suspend fun getAccountState(
         address: String

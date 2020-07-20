@@ -22,5 +22,9 @@ interface ViolasRpcApi {
 
     @Headers(value = ["urlname: violas", "Content-Type: application/json"])
     @POST("/")
+    suspend fun getTransaction(@Body body: RequestDTO): Response<GetTransactionDTO>
+
+    @Headers(value = ["urlname: violas", "Content-Type: application/json"])
+    @POST("/")
     suspend fun submitTransaction(@Body body: RequestDTO): Response<Any>
 }

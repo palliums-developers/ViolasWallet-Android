@@ -6,20 +6,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.coroutineExceptionHandler
+import com.palliums.violas.bean.TokenMark
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.biz.exchange.AssetsSwapManager
 import com.violas.wallet.biz.exchange.NetWorkSupportTokensLoader
 import com.violas.wallet.biz.exchange.SupportMappingSwapPairManager
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.ui.main.market.bean.ITokenVo
-import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
-import com.violas.wallet.ui.main.market.bean.StableTokenVo
+import com.violas.wallet.ui.main.market.bean.*
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertDisplayUnitToAmount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.RuntimeException
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -250,5 +253,41 @@ class SwapViewModel : BaseViewModel() {
     //*********************************** 耗时相关任务 ***********************************//
     override suspend fun realExecute(action: Int, vararg params: Any) {
         // TODO 兑换逻辑
+    }
+
+    /**
+     * publish Token 操作
+     */
+    @Throws(RuntimeException::class)
+    suspend fun publishToken(
+        privateKey: ByteArray,
+        coinTypes: CoinTypes,
+        assetsMark: ITokenVo
+    ): Boolean {
+        val identityByCoinType =
+            AccountManager().getIdentityByCoinType(coinTypes.coinType()) ?: throw RuntimeException()
+
+        assetsMark as StableTokenVo
+        val tokenManager = TokenManager()
+
+        val tokenMark = TokenMark(assetsMark.module, assetsMark.address, assetsMark.name)
+        val hasSucceed= tokenManager.publishToken(
+            coinTypes,
+            privateKey,
+            tokenMark
+        )
+        if(hasSucceed){
+            tokenManager.insert(
+                true, AssertOriginateToken(
+                    tokenMark,
+                    account_id = identityByCoinType.id,
+                    name = assetsMark.displayName,
+                    fullName = assetsMark.displayName,
+                    isToken = true,
+                    logo = assetsMark.logo
+                )
+            )
+        }
+        return hasSucceed
     }
 }

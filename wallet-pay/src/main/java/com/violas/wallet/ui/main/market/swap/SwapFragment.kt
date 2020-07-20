@@ -3,10 +3,8 @@ package com.violas.wallet.ui.main.market.swap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.Message
 import android.text.AmountInputFilter
 import android.text.TextWatcher
-import android.util.Log
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.LiveData
@@ -31,6 +29,7 @@ import com.violas.wallet.ui.main.market.selectToken.TokensBridge
 import com.violas.wallet.ui.main.market.selectToken.SwapTokensDataResourcesBridge
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -209,6 +208,7 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
     }
 
     private fun swap(key: ByteArray) {
+        showProgress()
         launch(Dispatchers.IO) {
             try {
                 swapViewModel.swap(
@@ -217,18 +217,40 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                     etToInputBox.text.toString()
                 )
             } catch (e: ViolasException) {
-
+                e.printStackTrace()
             } catch (e: LibraException) {
-
+                e.printStackTrace()
             } catch (e: AccountPayeeNotFindException) {
-
+                showToast(getString(R.string.hint_payee_account_not_active))
             } catch (e: AccountPayeeTokenNotActiveException) {
-                showToast("${e.address} ${e.assetsMark.mark()} 未激活")
+                showPublishTokenDialog(key, e)
             } catch (e: Exception) {
-
+                showToast(getString(R.string.hint_unknown_error))
             }
             dismissProgress()
         }
+    }
+
+    private fun showPublishTokenDialog(
+        key: ByteArray,
+        e: AccountPayeeTokenNotActiveException
+    ) {
+        PublishTokenDialog().setConfirmListener {
+            it.dismiss()
+            launch(Dispatchers.IO) {
+                showProgress()
+                try {
+                    if (swapViewModel.publishToken(key, e.coinTypes, e.assetsMark)) {
+                        swap(key)
+                    } else {
+                        showToast(R.string.desc_transaction_state_add_currency_failure)
+                    }
+                } catch (e: Exception) {
+                    showToast(R.string.desc_transaction_state_add_currency_failure)
+                    e.printStackTrace()
+                }
+            }
+        }.show(parentFragmentManager)
     }
 
     /**

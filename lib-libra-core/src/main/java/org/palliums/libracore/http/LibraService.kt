@@ -166,7 +166,14 @@ class LibraService(private val mLibraRepository: LibraRepository) {
     ) =
         mLibraRepository.getAccountState(address).data
 
-    suspend fun addCurrency(account: Account, address: String, module: String, name: String) {
+    suspend fun getTransaction(
+        address: String,
+        sequenceNumber: Long,
+        bool: Boolean = true
+    ) = mLibraRepository.getTransaction(address, sequenceNumber, bool)
+
+
+    suspend fun addCurrency(account: Account, address: String, module: String, name: String): TransactionResult {
         val transactionPayload =
             TransactionPayload.optionAddCurrencyPayload(
                 ContextProvider.getContext(),
@@ -178,6 +185,6 @@ class LibraService(private val mLibraRepository: LibraRepository) {
                     )
                 )
             )
-        sendTransaction(transactionPayload, account, gasCurrencyCode = lbrStructTagType())
+        return sendTransaction(transactionPayload, account, gasCurrencyCode = lbrStructTagType())
     }
 }

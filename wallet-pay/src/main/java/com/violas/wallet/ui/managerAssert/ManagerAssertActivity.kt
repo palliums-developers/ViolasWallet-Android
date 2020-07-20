@@ -216,7 +216,7 @@ class ManagerAssertActivity : BaseAppActivity() {
     override fun onBackPressedSupport() {
         if (mChange) {
             setResult(Activity.RESULT_OK)
-        }else{
+        } else {
             setResult(Activity.RESULT_CANCELED)
         }
         super.onBackPressedSupport()

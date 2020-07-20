@@ -8,9 +8,9 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.database.entity.TokenDo
+import kotlinx.coroutines.delay
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.wallet.Account
@@ -191,54 +191,6 @@ class TokenManager {
         return resultTokenList
     }
 
-    @Deprecated("")
-    @WorkerThread
-    fun loadEnableToken(account: AccountDO): List<AssertOriginateToken> {
-        val enableToken = mTokenStorage
-            .findEnableTokenByAccountId(account.id)
-            .map {
-//                AssertToken(
-//                    id = it.id!!,
-//                    account_id = it.account_id,
-//                    coinType = account.coinNumber,
-//                    enable = it.enable,
-//                    isToken = true,
-//                    tokenIdx = it.tokenIdx,
-//                    name = it.name,
-//                    fullName = "",
-//                    amount = it.amount
-//                )
-            }.toList()
-
-        val mutableList = mutableListOf<AssertOriginateToken>()
-        mutableList.add(
-            0, AssertOriginateToken(
-                id = 0,
-                account_id = account.id,
-                coinType = account.coinNumber,
-                enable = true,
-                isToken = false,
-                name = CoinTypes.parseCoinType(account.coinNumber).coinName(),
-                fullName = "",
-                amount = account.amount
-            )
-        )
-//        mutableList.addAll(enableToken)
-        return mutableList
-    }
-
-    @Deprecated("")
-    @WorkerThread
-    fun insert(checked: Boolean, accountId: Long, tokenName: String, tokenIdx: Long) {
-        mTokenStorage.insert(
-//            TokenDo(
-//                enable = checked,
-//                account_id = accountId,
-//                name = tokenName,
-//                tokenIdx = tokenIdx
-//            )
-        )
-    }
 
     @WorkerThread
     fun insert(checked: Boolean, assertOriginateToken: AssertOriginateToken) {
@@ -283,31 +235,65 @@ class TokenManager {
         mViolasService.sendTransaction(publishTokenPayload, account)
     }
 
-    suspend fun publishToken(accountId: Long, account: ByteArray, tokenMark: TokenMark) {
-        mAccountStorage.findById(accountId)?.let {
-            when (it.coinNumber) {
-                CoinTypes.Violas.coinType() -> {
-                    DataRepository.getViolasChainRpcService()
-                        .addCurrency(
-                            Account(KeyPair.fromSecretKey(account)),
-                            tokenMark.address,
-                            tokenMark.module,
-                            tokenMark.name
-                        )
+    @Throws(RuntimeException::class)
+    suspend fun publishToken(
+        coinTypes: CoinTypes,
+        privateKey: ByteArray,
+        tokenMark: TokenMark
+    ): Boolean {
+        when (coinTypes.coinType()) {
+            CoinTypes.Violas.coinType() -> {
+                val violasChainRpcService = DataRepository.getViolasChainRpcService()
+                val addCurrency = violasChainRpcService
+                    .addCurrency(
+                        Account(KeyPair.fromSecretKey(privateKey)),
+                        tokenMark.address,
+                        tokenMark.module,
+                        tokenMark.name
+                    )
+                for (item in 1 until 4) {
+                    delay(item * 1000L)
+                    val transaction = violasChainRpcService.getTransaction(
+                        addCurrency.sender,
+                        addCurrency.sequenceNumber
+                    )
+                    if (transaction.data?.vmStatus == 4001) {
+                        return true
+                    }
                 }
-                CoinTypes.Libra.coinType() -> {
-                    DataRepository.getLibraService()
-                        .addCurrency(
-                            org.palliums.libracore.wallet.Account(
-                                org.palliums.libracore.crypto.KeyPair.fromSecretKey(
-                                    account
-                                )
-                            ), tokenMark.address, tokenMark.module, tokenMark.name
-                        )
-                }
-                else -> RuntimeException("error")
             }
+            CoinTypes.Libra.coinType() -> {
+                val libraService = DataRepository.getLibraService()
+                val addCurrency =libraService
+                    .addCurrency(
+                        org.palliums.libracore.wallet.Account(
+                            org.palliums.libracore.crypto.KeyPair.fromSecretKey(
+                                privateKey
+                            )
+                        ), tokenMark.address, tokenMark.module, tokenMark.name
+                    )
+                for (item in 1 until 4) {
+                    delay(item * 1000L)
+                    val transaction = libraService.getTransaction(
+                        addCurrency.sender,
+                        addCurrency.sequenceNumber
+                    )
+                    if (transaction.data?.vmStatus == 4001) {
+                        return true
+                    }
+                }
+            }
+            else -> throw RuntimeException("error")
         }
+        return false
+    }
+
+    @Throws(RuntimeException::class)
+    suspend fun publishToken(accountId: Long, account: ByteArray, tokenMark: TokenMark): Boolean {
+        mAccountStorage.findById(accountId)?.let {
+            return publishToken(CoinTypes.parseCoinType(it.coinNumber), account, tokenMark)
+        }
+        return false
     }
 
     @Deprecated("删除")

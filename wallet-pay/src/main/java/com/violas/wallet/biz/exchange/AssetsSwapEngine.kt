@@ -14,7 +14,7 @@ import java.util.*
 class AccountPayeeNotFindException : RuntimeException()
 
 // 收款地址 Token 未激活
-class AccountPayeeTokenNotActiveException(val coinTypes: CoinTypes,val address:String, val assetsMark: IAssetsMark) :
+class AccountPayeeTokenNotActiveException(val coinTypes: CoinTypes,val address:String, val assetsMark: ITokenVo) :
     RuntimeException()
 
 class AccountNotFindAddressException : RuntimeException()

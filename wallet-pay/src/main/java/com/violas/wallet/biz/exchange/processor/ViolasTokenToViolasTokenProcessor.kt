@@ -76,7 +76,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
             throw AccountPayeeTokenNotActiveException(
                 CoinTypes.Violas,
                 payeeAddress,
-                IAssetsMark.convert(tokenTo)
+                tokenTo
             )
         }
 

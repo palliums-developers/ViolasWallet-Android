@@ -55,7 +55,7 @@ data class ResponseError(
 @Keep
 data class RequestDTO(
     val method: String,
-    val params: List<String>,
+    val params: List<Any>,
     @SerializedName("jsonrpc")
     val jsonRPC: String = "2.0",
     val id: String = Random(10000).nextInt().toString()
@@ -93,4 +93,88 @@ data class AccountStateDTO(
 data class AccountBalance(
     val amount: Long,
     val currency: String
+)
+
+@Keep
+data class GetTransactionDTO(
+    @SerializedName("events")
+    val events: List<Event>,
+    @SerializedName("gas_used")
+    val gasUsed: Int,
+    @SerializedName("hash")
+    val hash: String,
+    @SerializedName("transaction")
+    val transaction: Transaction,
+    @SerializedName("version")
+    val version: Int,
+    @SerializedName("vm_status")
+    val vmStatus: Int
+)
+
+@Keep
+data class Event(
+    @SerializedName("data")
+    val `data`: Data,
+    @SerializedName("key")
+    val key: String,
+    @SerializedName("sequence_number")
+    val sequenceNumber: Int,
+    @SerializedName("transaction_version")
+    val transactionVersion: Int
+)
+
+@Keep
+data class Transaction(
+    @SerializedName("expiration_time")
+    val expirationTime: Int,
+    @SerializedName("gas_currency")
+    val gasCurrency: String,
+    @SerializedName("gas_unit_price")
+    val gasUnitPrice: Int,
+    @SerializedName("max_gas_amount")
+    val maxGasAmount: Int,
+    @SerializedName("public_key")
+    val publicKey: String,
+    @SerializedName("script")
+    val script: Script,
+    @SerializedName("script_hash")
+    val scriptHash: String,
+    @SerializedName("sender")
+    val sender: String,
+    @SerializedName("sequence_number")
+    val sequenceNumber: Int,
+    @SerializedName("signature")
+    val signature: String,
+    @SerializedName("signature_scheme")
+    val signatureScheme: String,
+    @SerializedName("type")
+    val type: String
+)
+
+@Keep
+data class Data(
+    @SerializedName("amount")
+    val amount: Amount,
+    @SerializedName("metadata")
+    val metadata: String,
+    @SerializedName("receiver")
+    val `receiver`: String,
+    @SerializedName("sender")
+    val sender: String,
+    @SerializedName("type")
+    val type: String
+)
+
+@Keep
+data class Amount(
+    @SerializedName("amount")
+    val amount: Int,
+    @SerializedName("currency")
+    val currency: String
+)
+
+@Keep
+data class Script(
+    @SerializedName("type")
+    val type: String
 )

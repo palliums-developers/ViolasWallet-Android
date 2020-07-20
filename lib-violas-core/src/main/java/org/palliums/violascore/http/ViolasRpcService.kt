@@ -160,13 +160,24 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
 
     suspend fun getCurrencies() = mViolasRpcRepository.getCurrencies().data
 
+    suspend fun getTransaction(
+        address: String,
+        sequenceNumber: Long,
+        bool: Boolean = true
+    ) = mViolasRpcRepository.getTransaction(address, sequenceNumber, bool)
+
     suspend fun submitTransaction(hex: String) = mViolasRpcRepository.submitTransaction(hex)
 
     suspend fun getAccountState(
         address: String
     ) = mViolasRpcRepository.getAccountState(address).data
 
-    suspend fun addCurrency(account: Account, address: String, module: String, name: String) {
+    suspend fun addCurrency(
+        account: Account,
+        address: String,
+        module: String,
+        name: String
+    ): TransactionResult {
         val transactionPayload =
             TransactionPayload.optionAddCurrencyPayload(
                 ContextProvider.getContext(),
@@ -178,6 +189,6 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
                     )
                 )
             )
-        sendTransaction(transactionPayload, account, gasCurrencyCode = lbrStructTagType())
+        return sendTransaction(transactionPayload, account, gasCurrencyCode = lbrStructTagType())
     }
 }

@@ -399,4 +399,5 @@
     <string name="hint_swap_output_assets_not_select">请选择输入币种</string>
     <string name="hint_swap_input_assets_amount_input">请输入兑换数量</string>
     <string name="hint_swap_output_assets_amount_input">正在估算兑换金额</string>
+    <string name="hint_payee_account_not_active">收款账户没有激活</string>
 </resources>

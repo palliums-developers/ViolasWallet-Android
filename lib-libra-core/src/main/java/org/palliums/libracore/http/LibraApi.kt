@@ -22,5 +22,9 @@ interface LibraApi {
 
     @Headers(value = ["urlname: libra", "Content-Type: application/json"])
     @POST("/")
+    suspend fun getTransaction(@Body body: RequestDTO): Response<GetTransactionDTO>
+
+    @Headers(value = ["urlname: libra", "Content-Type: application/json"])
+    @POST("/")
     suspend fun submitTransaction(@Body body: RequestDTO): Response<Any>
 }
