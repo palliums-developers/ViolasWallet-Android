@@ -151,6 +151,6 @@ fun convertAmountToExchangeRate(
     amountBBigDecimal: BigDecimal
 ): BigDecimal {
     return amountBBigDecimal
-        .divide(amountABigDecimal, 20, RoundingMode.DOWN)
+        .divide(amountABigDecimal, 8, RoundingMode.DOWN)
         .stripTrailingZeros()
 }

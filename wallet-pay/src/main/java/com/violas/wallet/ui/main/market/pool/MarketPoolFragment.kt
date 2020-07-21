@@ -297,7 +297,7 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             handleValueNull(tvFirstBalance, R.string.market_liquidity_token_balance_format)
         } else {
             tvFirstSelectText.text = "${it.coinAName}/${it.coinBName}"
-            etSecondInputBox.hint = "0.00${it.coinAName}\n0.00${it.coinBName}"
+            etSecondInputBox.hint = "0.00 ${it.coinAName}\n0.00 ${it.coinBName}"
             tvFirstBalance.text = getString(
                 R.string.market_liquidity_token_balance_format,
                 convertAmountToDisplayAmount(it.amount)

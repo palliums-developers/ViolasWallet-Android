@@ -132,18 +132,23 @@ class MarketPoolViewModel : BaseViewModel() {
     }
 
     fun selectToken(selectFirst: Boolean, selected: StableTokenVo) {
-        // 选择第一Coin
+        // 选择First Coin
         if (selectFirst) {
             val currFirstToken = currFirstTokenLiveData.value
             if (selected == currFirstToken) return
 
-            // 更新选择的第一Coin
+            // 更新选择的First Coin
             currFirstTokenLiveData.postValue(selected)
 
             val currSecondToken = currSecondTokenLiveData.value
             if (selected == currSecondToken) {
-                // 交换第二Coin位置
+                // 交换Second Coin位置
                 currSecondTokenLiveData.postValue(currFirstToken)
+
+                // 交换位置重新计算兑换率
+                if (currFirstToken != null) {
+                    calculateExchangeRate(selected.module)
+                }
                 return
             }
 
@@ -154,17 +159,22 @@ class MarketPoolViewModel : BaseViewModel() {
             return
         }
 
-        // 选择第二Coin
+        // 选择Second Coin
         val currSecondToken = currSecondTokenLiveData.value
         if (selected == currSecondToken) return
 
-        // 更新选择的第二Coin
+        // 更新选择的Second Coin
         currSecondTokenLiveData.postValue(selected)
 
         val currFirstToken = currFirstTokenLiveData.value
         if (selected == currFirstToken) {
-            // 交换第一Coin位置
+            // 交换First Coin位置
             currFirstTokenLiveData.postValue(currSecondToken)
+
+            // 交换位置重新计算兑换率
+            if (currSecondToken != null) {
+                calculateExchangeRate(currSecondToken.module)
+            }
             return
         }
 
@@ -218,6 +228,18 @@ class MarketPoolViewModel : BaseViewModel() {
             coinBName,
             action = ACTION_GET_PAIR_RESERVE_INFO
         )
+    }
+
+    private fun calculateExchangeRate(coinAName: String) {
+        pairReserveInfo?.let {
+            val coinAInFront = coinAName == it.coinA.name
+            exchangeRateLiveData.postValue(
+                convertAmountToExchangeRate(
+                    if (coinAInFront) it.coinA.amount else it.coinB.amount,
+                    if (coinAInFront) it.coinB.amount else it.coinA.amount
+                )
+            )
+        }
     }
 
     fun getExchangeRateLiveData(): LiveData<BigDecimal?> {
@@ -311,12 +333,12 @@ class MarketPoolViewModel : BaseViewModel() {
                 val coinATransferOutAmount = liquidityAmount
                     .multiply(pairReserveInfo!!.coinA.amount)
                     .divide(pairReserveInfo!!.liquidityTotalAmount, 6, RoundingMode.DOWN)
-                    .stripTrailingZeros().toPlainString() + liquidityToken.coinAName
+                    .stripTrailingZeros().toPlainString()
                 val coinBTransferOutAmount = liquidityAmount
                     .multiply(pairReserveInfo!!.coinB.amount)
                     .divide(pairReserveInfo!!.liquidityTotalAmount, 6, RoundingMode.DOWN)
-                    .stripTrailingZeros().toPlainString() + liquidityToken.coinBName
-                return@withContext "$coinATransferOutAmount\n$coinBTransferOutAmount"
+                    .stripTrailingZeros().toPlainString()
+                return@withContext "$coinATransferOutAmount ${liquidityToken.coinAName}\n$coinBTransferOutAmount ${liquidityToken.coinBName}"
             }
             secondInputTextLiveData.postValue(result)
 
@@ -365,6 +387,13 @@ class MarketPoolViewModel : BaseViewModel() {
                         coinBName = params[1] as String
                     )
                 this.pairReserveInfo = pairReserveInfo
+
+                val liquidityToken = currLiquidityTokenLiveData.value
+                if (liquidityToken !== null) {
+                    calculateExchangeRate(liquidityToken.coinAName)
+                } else {
+                    calculateExchangeRate(currFirstTokenLiveData.value!!.module)
+                }
             }
 
             ACTION_ADD_LIQUIDITY_ESTIMATE -> {
