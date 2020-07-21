@@ -163,4 +163,16 @@ interface ViolasApi {
         @Query("coin_a") coinAName: String,
         @Query("coin_b") coinBName: String
     ): Response<MarketPairReserveInfoDTO>
+
+    /**
+     * 获取支持的映射币交易对详情
+     */
+    @GET("/1.0/market/exchange/crosschain/address/info")
+    suspend fun getMarketMappingPairInfo(): Response<List<MappingPairInfoDTO>>
+
+    /**
+     * 获取其他链对应的 violas 映射币
+     */
+    @GET("/1.0/market/exchange/crosschain/map/relation")
+    suspend fun getMarketPairRelation(): Response<List<MapRelationDTO>>
 }

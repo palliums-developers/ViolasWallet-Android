@@ -40,6 +40,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.palliums.libracore.http.LibraException
 import org.palliums.violascore.http.ViolasException
+import java.math.BigDecimal
 
 /**
  * Created by elephant on 2020/6/23 17:18.
@@ -58,6 +59,7 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
     private val mAccountManager by lazy {
         AccountManager()
     }
+    private var mCurrFromAssetsAmount = BigDecimal("0")
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_swap
@@ -71,6 +73,7 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
     private val fromAssertsAmountSubscriber = object : BalanceSubscriber(null) {
         override fun onNotice(assets: AssetsVo) {
             launch {
+                mCurrFromAssetsAmount = BigDecimal(assets.amountWithUnit.amount)
                 tvFromBalance.text = getString(
                     R.string.market_token_balance_format,
                     "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
@@ -132,6 +135,10 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                 showToast(getString(R.string.hint_swap_input_assets_amount_input))
                 return@setOnClickListener
             }
+            if (mCurrFromAssetsAmount < BigDecimal(etFromInputBox.text.trim().toString())) {
+                showToast(R.string.market_swap_amount_insufficient)
+                return@setOnClickListener
+            }
             if (etToInputBox.text.isEmpty()) {
                 // 请稍后正在估算输出金额
                 showToast(getString(R.string.hint_swap_output_assets_amount_input))
@@ -153,6 +160,7 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         }
 
         swapViewModel.getCurrFromTokenLiveData().observe(viewLifecycleOwner, Observer {
+            mCurrFromAssetsAmount = BigDecimal("0")
             if (it == null) {
                 tvFromSelectText.text = getString(R.string.select_token)
                 handleValueNull(tvFromBalance, R.string.market_token_balance_format)
@@ -234,18 +242,6 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
 
         BalanceSubscribeHub.observe(this, fromAssertsAmountSubscriber)
         BalanceSubscribeHub.observe(this, toAssertsAmountSubscriber)
-
-        // 资产变化
-        WalletAppViewModel.getViewModelInstance().mAssetsListLiveData.observe(this, Observer {
-            refreshBalances()
-        })
-    }
-
-    /**
-     * 刷新余额
-     */
-    private fun refreshBalances() {
-
     }
 
     private fun swap(key: ByteArray) {

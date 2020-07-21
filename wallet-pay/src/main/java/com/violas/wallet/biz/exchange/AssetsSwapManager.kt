@@ -10,7 +10,6 @@ import com.violas.wallet.biz.exchange.processor.ViolasTokenToViolasTokenProcesso
 import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.main.market.bean.*
 import org.palliums.violascore.http.ViolasException
-import org.palliums.violascore.transaction.AccountAddress
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -183,9 +182,9 @@ class AssetsSwapManager(
                 } else {
                     LibraTokenAssetsMark(
                         CoinTypes.parseCoinType(coinType),
-                        mappingPair.toCoin.assets.module,
-                        mappingPair.toCoin.assets.address,
-                        mappingPair.toCoin.assets.name
+                        mappingPair.toCoin.assets?.module?:"",
+                        mappingPair.toCoin.assets?.address?:"",
+                        mappingPair.toCoin.assets?.name?:""
                     )
                 }
             }

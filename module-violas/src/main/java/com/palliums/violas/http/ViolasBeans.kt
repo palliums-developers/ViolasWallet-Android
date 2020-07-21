@@ -277,3 +277,46 @@ data class MarketPairReserveInfoDTO(
         val amount: BigDecimal
     )
 }
+
+@Keep
+data class MapRelationDTO(
+    @SerializedName("chain")
+    val chain: String,
+    @SerializedName("index")
+    val index: Int,
+    @SerializedName("map_name")
+    val mapName: String,
+    @SerializedName("module")
+    val module: String,
+    @SerializedName("module_address")
+    val moduleAddress: String,
+    @SerializedName("name")
+    val name: String
+)
+
+data class MappingPairInfoDTO(
+    @SerializedName("input_coin_type")
+    val inputCoinType: String,
+    @SerializedName("lable")
+    val lable: String,
+    @SerializedName("receiver_address")
+    val receiverAddress: String,
+    @SerializedName("to_coin")
+    val toCoin: ToCoin
+)
+
+data class ToCoin(
+    @SerializedName("assets")
+    val assets: Assets?,
+    @SerializedName("coin_type")
+    val coinType: String
+)
+
+data class Assets(
+    @SerializedName("address")
+    val address: String,
+    @SerializedName("module")
+    val module: String,
+    @SerializedName("name")
+    val name: String
+)

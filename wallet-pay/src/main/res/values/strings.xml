@@ -379,6 +379,7 @@
     <string name="market_swap_state_processing">兑换中</string>
     <string name="market_swap_state_succeeded">兑换成功</string>
     <string name="market_swap_state_failed">兑换失败</string>
+    <string name="market_swap_amount_insufficient">余额不足无法兑换</string>
     <string name="market_swap_state_cancelled">已取消</string>
     <string name="action_retry">重试</string>
     <string name="market_liquidity_token_amount_format">通证：%1$s</string>
