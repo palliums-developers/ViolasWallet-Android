@@ -126,13 +126,15 @@ class AssetsSwapManager(
         supportTokens.forEach { assets ->
             val bitmap = MutBitmap()
 
-            // 将相同链的币种放入集合
-            supportTokenCoinMap[assets.coinNumber]?.forEach { iTokenVo ->
-                val assetsMark = IAssetsMark.convert(iTokenVo)
-                val hasNotOneAssets = assetsMark.mark() != IAssetsMark.convert(assets).mark()
-                if (hasNotOneAssets) {
-                    supportTokenMap[assetsMark.mark()]?.let { index ->
-                        bitmap.setBit(index)
+            if (assets.coinNumber == CoinTypes.Violas.coinType()) {
+                // 将相同链的币种放入集合
+                supportTokenCoinMap[assets.coinNumber]?.forEach { iTokenVo ->
+                    val assetsMark = IAssetsMark.convert(iTokenVo)
+                    val hasNotOneAssets = assetsMark.mark() != IAssetsMark.convert(assets).mark()
+                    if (hasNotOneAssets) {
+                        supportTokenMap[assetsMark.mark()]?.let { index ->
+                            bitmap.setBit(index)
+                        }
                     }
                 }
             }
@@ -186,9 +188,9 @@ class AssetsSwapManager(
                 } else {
                     LibraTokenAssetsMark(
                         CoinTypes.parseCoinType(coinType),
-                        mappingPair.toCoin.assets?.module?:"",
-                        mappingPair.toCoin.assets?.address?:"",
-                        mappingPair.toCoin.assets?.name?:""
+                        mappingPair.toCoin.assets?.module ?: "",
+                        mappingPair.toCoin.assets?.address ?: "",
+                        mappingPair.toCoin.assets?.name ?: ""
                     )
                 }
             }
