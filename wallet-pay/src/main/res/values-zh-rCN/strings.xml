@@ -394,6 +394,17 @@
     <string name="pool_details">详情</string>
     <string name="label_transaction_details_liquidity_token">通证：</string>
     <string name="hint_swap_input_assets_not_select">请选择输入币种</string>
+    <string name="hint_swap_output_assets_not_select">请选择输入币种</string>
     <string name="hint_swap_input_assets_amount_input">请输入兑换数量</string>
+    <string name="hint_swap_output_assets_amount_input">正在估算兑换金额</string>
     <string name="hint_payee_account_not_active">收款账户没有激活</string>
+    <string name="tips_market_add_liquidity_coin_not_selected">请选择通证</string>
+    <string name="tips_market_add_liquidity_amount_not_input">请输入转入数量</string>
+    <string name="tips_market_remove_liquidity_pair_not_selected">请选择交易对</string>
+    <string name="tips_market_remove_liquidity_amount_not_input">请输入转出数量</string>
+    <string name="tips_market_insufficient_balance_format">%1$s可用余额不足</string>
+    <string name="tips_market_add_liquidity_success">资金池转入成功</string>
+    <string name="tips_market_add_liquidity_failure">资金池转入失败</string>
+    <string name="tips_market_remove_liquidity_success">资金池转出成功</string>
+    <string name="tips_market_remove_liquidity_failure">资金池转出失败</string>
 </resources>

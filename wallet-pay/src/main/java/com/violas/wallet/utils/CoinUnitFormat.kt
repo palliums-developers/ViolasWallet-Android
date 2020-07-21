@@ -139,7 +139,7 @@ fun convertAmountToDisplayAmount(
         "0"
 }
 
-fun convertAmountToRate(
+fun convertAmountToExchangeRate(
     amountAStr: String,
     amountBStr: String
 ): BigDecimal {

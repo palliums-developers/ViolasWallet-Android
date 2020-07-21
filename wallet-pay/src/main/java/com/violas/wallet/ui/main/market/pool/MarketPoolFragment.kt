@@ -30,17 +30,22 @@ import com.violas.wallet.ui.main.market.MarketSwitchPopupView
 import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
+import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_ADD_LIQUIDITY
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_GET_USER_LIQUIDITY_TOKENS
+import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_REMOVE_LIQUIDITY
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_FIRST
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_SECOND
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
+import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.fragment_market_pool.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.math.BigDecimal
 
 /**
  * Created by elephant on 2020/6/23 17:18.
@@ -97,6 +102,8 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             if (marketPoolViewModel.isTransferInMode()) {
                 showSelectTokenDialog(true)
             } else {
+                if (accountInvalid()) return@setOnClickListener
+
                 marketPoolViewModel.getLiquidityTokensLiveData()
                     .removeObserver(liquidityTokensObserver)
                 marketPoolViewModel.execute(action = ACTION_GET_USER_LIQUIDITY_TOKENS) {
@@ -113,13 +120,21 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
 
         btnPositive.setOnClickListener {
             clearInputBoxFocusAndHideSoftInput()
-            // TODO 转入转出逻辑
+            if (accountInvalid()) return@setOnClickListener
+
+            if (marketPoolViewModel.isTransferInMode()) {
+                if (transferInPreconditionsInvalid()) return@setOnClickListener
+                authenticateAccount(true)
+            } else {
+                if (transferOutPreconditionsInvalid()) return@setOnClickListener
+                authenticateAccount(false)
+            }
         }
 
         // 数据观察
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(viewLifecycleOwner, Observer {
-                marketPoolViewModel.setAddress(it)
+                marketPoolViewModel.setupViolasAccount(it)
             })
 
         marketPoolViewModel.getCurrOpModeLiveData().observe(viewLifecycleOwner, currOpModeObserver)
@@ -131,6 +146,24 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
                     R.string.exchange_rate_format,
                     "1:${it.toPlainString()}"
                 )
+
+                // 兑换率获取后，尝试估算已输入的金额
+                val firstInputAmount = etFirstInputBox.text.toString().trim()
+                if (firstInputAmount.isNotEmpty()) {
+                    if (marketPoolViewModel.isTransferInMode()) {
+                        marketPoolViewModel.estimateSecondTokenTransferIntoAmount(firstInputAmount)
+                    } else {
+                        marketPoolViewModel.estimateTokensTransferOutAmount(firstInputAmount)
+                    }
+                    return@Observer
+                }
+
+                val secondInputAmount = etSecondInputBox.text.toString().trim()
+                if (firstInputAmount.isNotEmpty()) {
+                    if (marketPoolViewModel.isTransferInMode()) {
+                        marketPoolViewModel.estimateFirstTokenTransferIntoAmount(secondInputAmount)
+                    }
+                }
             }
         })
         marketPoolViewModel.getPoolTokenAndPoolShareLiveData()
@@ -428,9 +461,9 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             }
 
             if (marketPoolViewModel.isTransferInMode()) {
-                marketPoolViewModel.estimateSecondCoinTransferIntoAmount(amountStr)
+                marketPoolViewModel.estimateSecondTokenTransferIntoAmount(amountStr)
             } else {
-                marketPoolViewModel.estimateCoinsTransferOutAmount(amountStr)
+                marketPoolViewModel.estimateTokensTransferOutAmount(amountStr)
             }
         }
     }
@@ -446,7 +479,7 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             }
 
             if (marketPoolViewModel.isTransferInMode()) {
-                marketPoolViewModel.estimateFirstCoinTransferIntoAmount(amountStr)
+                marketPoolViewModel.estimateFirstTokenTransferIntoAmount(amountStr)
             }
         }
     }
@@ -492,9 +525,100 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
         }
     }
 
+    //*********************************** 转入转出逻辑 ***********************************//
+    private fun transferInPreconditionsInvalid(): Boolean {
+        val firstCoin = marketPoolViewModel.getCurrFirstTokenLiveData().value
+        val secondCoin = marketPoolViewModel.getCurrSecondTokenLiveData().value
+        if (firstCoin == null || secondCoin == null) {
+            showToast(R.string.tips_market_add_liquidity_coin_not_selected)
+            return true
+        }
+
+        val firstAmount = etFirstInputBox.text.toString().trim()
+        val secondAmount = etSecondInputBox.text.toString().trim()
+        if (firstAmount.isEmpty() && secondAmount.isEmpty()) {
+            showToast(R.string.tips_market_add_liquidity_amount_not_input)
+            return true
+        }
+
+        if (convertDisplayAmountToAmount(firstAmount) > BigDecimal(firstCoin.amount)) {
+            val prefix =
+                if (convertDisplayAmountToAmount(secondAmount) > BigDecimal(secondCoin.amount)) {
+                    "${firstCoin.module}/${secondCoin.module}"
+                } else {
+                    firstCoin.module
+                }
+            showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
+            return true
+        } else if (convertDisplayAmountToAmount(secondAmount) > BigDecimal(secondCoin.amount)) {
+            val prefix = firstCoin.module
+            showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
+            return true
+        }
+
+        return false
+    }
+
+    private fun transferOutPreconditionsInvalid(): Boolean {
+        val liquidityToken =
+            marketPoolViewModel.getCurrLiquidityTokenLiveData().value
+        if (liquidityToken == null) {
+            showToast(R.string.tips_market_remove_liquidity_pair_not_selected)
+            return true
+        }
+
+        val liquidityAmount = etFirstInputBox.text.toString().trim()
+        if (liquidityAmount.isEmpty()) {
+            showToast(R.string.tips_market_remove_liquidity_amount_not_input)
+            return true
+        }
+
+        if (convertDisplayAmountToAmount(liquidityAmount) > liquidityToken.amount) {
+            showToast(getString(R.string.tips_market_insufficient_balance_format, ""))
+            return true
+        }
+
+        return false
+    }
+
+    private fun authenticateAccount(transferIn: Boolean) {
+        authenticateAccount(
+            marketPoolViewModel.getViolasAccount()!!,
+            marketPoolViewModel.getAccountManager()
+        ) { privateKey ->
+            if (transferIn) {
+                marketPoolViewModel.execute(
+                    privateKey,
+                    etFirstInputBox.text.toString().trim(),
+                    etSecondInputBox.text.toString().trim(),
+                    action = ACTION_ADD_LIQUIDITY
+                ) {
+                    showToast(R.string.tips_market_add_liquidity_success)
+                }
+            } else {
+                marketPoolViewModel.execute(
+                    privateKey,
+                    etFirstInputBox.text.toString().trim(),
+                    action = ACTION_REMOVE_LIQUIDITY
+                ) {
+                    showToast(R.string.tips_market_remove_liquidity_success)
+                }
+            }
+        }
+    }
+
     //*********************************** 其它逻辑 ***********************************//
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
         textView.text = getString(formatResId, getString(R.string.value_null))
+    }
+
+    private fun accountInvalid(): Boolean {
+        return if (marketPoolViewModel.getViolasAccount() == null) {
+            showToast(R.string.tips_create_or_import_wallet)
+            true
+        } else {
+            false
+        }
     }
 
     private fun adjustFirstInputBoxPaddingEnd() {

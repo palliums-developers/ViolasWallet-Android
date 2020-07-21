@@ -2,6 +2,7 @@ package com.violas.wallet.biz
 
 import android.content.Context
 import com.palliums.utils.toMap
+import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
@@ -9,14 +10,23 @@ import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexRepository
 import com.violas.wallet.ui.main.market.bean.*
+import com.violas.walletconnect.extensions.hexStringToByteArray
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.json.JSONObject
 import org.palliums.violascore.crypto.KeyPair
+import org.palliums.violascore.transaction.AccountAddress
+import org.palliums.violascore.transaction.storage.StructTag
+import org.palliums.violascore.transaction.storage.TypeTagStructTag
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 
 class ExchangeManager {
+
+    companion object {
+        // 最低价格浮动汇率
+        private const val MINIMUM_PRICE_FLUCTUATION = 5 / 1000
+    }
 
     private val mAccountStorage by lazy {
         DataRepository.getAccountStorage()
@@ -31,11 +41,14 @@ class ExchangeManager {
         DataRepository.getLibraService()
     }
 
-    private val mAccountManager by lazy {
+    val mAccountManager by lazy {
         AccountManager()
     }
     private val mTokenManager by lazy {
         TokenManager()
+    }
+    private val mViolasExchangeContract by lazy {
+        ViolasExchangeContract(Vm.TestNet)
     }
 
     private val receiveAddress = "c71caa520e123d122c310177c08fa0d2"
@@ -147,6 +160,95 @@ class ExchangeManager {
 
             return@coroutineScope marketTokens
         }
+    }
+
+    suspend fun addLiquidity(
+        privateKey: ByteArray,
+        coinA: StableTokenVo,
+        coinB: StableTokenVo,
+        amountADesired: Long,
+        amountBDesired: Long
+    ) {
+        val typeTagA = TypeTagStructTag(
+            StructTag(
+                AccountAddress(coinA.address.hexStringToByteArray()),
+                coinA.module,
+                coinA.name,
+                arrayListOf()
+            )
+        )
+        val typeTagB = TypeTagStructTag(
+            StructTag(
+                AccountAddress(coinB.address.hexStringToByteArray()),
+                coinB.module,
+                coinB.name,
+                arrayListOf()
+            )
+        )
+        val amountAMin = amountADesired - amountADesired * MINIMUM_PRICE_FLUCTUATION
+        val amountBMin = amountBDesired - amountBDesired * MINIMUM_PRICE_FLUCTUATION
+
+        val swapPosition = coinA.marketIndex > coinB.marketIndex
+        val addLiquidityTransactionPayload =
+            mViolasExchangeContract.optionAddLiquidityTransactionPayload(
+                if (swapPosition) typeTagB else typeTagA,
+                if (swapPosition) typeTagA else typeTagB,
+                if (swapPosition) amountBDesired else amountADesired,
+                if (swapPosition) amountADesired else amountBDesired,
+                if (swapPosition) amountBMin else amountAMin,
+                if (swapPosition) amountAMin else amountBMin
+            )
+
+        mViolasRpcService.sendTransaction(
+            addLiquidityTransactionPayload,
+            Account(KeyPair.fromSecretKey(privateKey)),
+            gasCurrencyCode = coinA.module
+        )
+    }
+
+    suspend fun removeLiquidity(
+        privateKey: ByteArray,
+        coinA: StableTokenVo,
+        coinB: StableTokenVo,
+        amountADesired: Long,
+        amountBDesired: Long,
+        liquidityAmount: Long
+    ) {
+        val typeTagA = TypeTagStructTag(
+            StructTag(
+                AccountAddress(coinA.address.hexStringToByteArray()),
+                coinA.module,
+                coinA.name,
+                arrayListOf()
+            )
+        )
+        val typeTagB = TypeTagStructTag(
+            StructTag(
+                AccountAddress(coinB.address.hexStringToByteArray()),
+                coinB.module,
+                coinB.name,
+                arrayListOf()
+            )
+        )
+
+        val amountAMin = amountADesired - amountADesired * MINIMUM_PRICE_FLUCTUATION
+        val amountBMin = amountBDesired - amountBDesired * MINIMUM_PRICE_FLUCTUATION
+
+        val swapPosition = coinA.marketIndex > coinB.marketIndex
+        val addLiquidityTransactionPayload =
+            mViolasExchangeContract.optionRemoveLiquidityTransactionPayload(
+                if (swapPosition) typeTagB else typeTagA,
+                if (swapPosition) typeTagA else typeTagB,
+                liquidityAmount,
+                if (swapPosition) amountBMin else amountAMin,
+                if (swapPosition) amountAMin else amountBMin
+            )
+
+        mViolasRpcService.sendTransaction(
+            addLiquidityTransactionPayload,
+            Account(KeyPair.fromSecretKey(privateKey)),
+            gasCurrencyCode = coinA.module
+        )
     }
 
     @Throws(Exception::class)
