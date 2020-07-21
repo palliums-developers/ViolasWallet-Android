@@ -20,7 +20,10 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
+import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
+import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.MarketViewModel
+import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Companion.ACTION_SWAP_SELECT_FROM
 import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Companion.ACTION_SWAP_SELECT_TO
@@ -30,6 +33,7 @@ import com.violas.wallet.ui.main.market.selectToken.SwapTokensDataResourcesBridg
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.coroutines.Dispatchers
@@ -62,6 +66,27 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
     override fun onPause() {
         super.onPause()
         clearInputBoxFocusAndHideSoftInput()
+    }
+
+    private val fromAssertsAmountSubscriber = object : BalanceSubscriber(null) {
+        override fun onNotice(assets: AssetsVo) {
+            launch {
+                tvFromBalance.text = getString(
+                    R.string.market_token_balance_format,
+                    "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
+                )
+            }
+        }
+    }
+    private val toAssertsAmountSubscriber = object : BalanceSubscriber(null) {
+        override fun onNotice(assets: AssetsVo) {
+            launch {
+                tvToBalance.text = getString(
+                    R.string.market_token_balance_format,
+                    "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
+                )
+            }
+        }
     }
 
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
@@ -131,30 +156,20 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
             if (it == null) {
                 tvFromSelectText.text = getString(R.string.select_token)
                 handleValueNull(tvFromBalance, R.string.market_token_balance_format)
+                fromAssertsAmountSubscriber.changeSubscriber(null)
             } else {
                 tvFromSelectText.text = it.displayName
-                val amountWithUnit =
-                    convertAmountToDisplayUnit(it.amount, CoinTypes.parseCoinType(it.coinNumber))
-                tvFromBalance.text = getString(
-                    R.string.market_token_balance_format,
-                    "${amountWithUnit.first} ${it.displayName}"
-                )
-                refreshBalances()
+                fromAssertsAmountSubscriber.changeSubscriber(IAssetsMark.convert(it))
             }
         })
         swapViewModel.getCurrToTokenLiveData().observe(viewLifecycleOwner, Observer {
             if (it == null) {
                 tvToSelectText.text = getString(R.string.select_token)
                 handleValueNull(tvToBalance, R.string.market_token_balance_format)
+                toAssertsAmountSubscriber.changeSubscriber(null)
             } else {
                 tvToSelectText.text = it.displayName
-                val amountWithUnit =
-                    convertAmountToDisplayUnit(it.amount, CoinTypes.parseCoinType(it.coinNumber))
-                tvToBalance.text = getString(
-                    R.string.market_token_balance_format,
-                    "${amountWithUnit.first} ${it.displayName}"
-                )
-                refreshBalances()
+                toAssertsAmountSubscriber.changeSubscriber(IAssetsMark.convert(it))
             }
         })
         swapViewModel.getHandlingFeeRateLiveDataLiveData().observe(viewLifecycleOwner, Observer {
@@ -216,6 +231,9 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                 }
             })
         }
+
+        BalanceSubscribeHub.observe(this, fromAssertsAmountSubscriber)
+        BalanceSubscribeHub.observe(this, toAssertsAmountSubscriber)
 
         // 资产变化
         WalletAppViewModel.getViewModelInstance().mAssetsListLiveData.observe(this, Observer {
@@ -391,18 +409,18 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
             inputBox.addTextChangedListener(textWatcher)
         }
 
-    private fun clearInputBoxFocusAndHideSoftInput(){
+    private fun clearInputBoxFocusAndHideSoftInput() {
         var focused = false
-        if(etFromInputBox.isFocused){
+        if (etFromInputBox.isFocused) {
             focused = true
             etFromInputBox.clearFocus()
         }
-        if(etToInputBox.isFocused){
+        if (etToInputBox.isFocused) {
             focused = true
             etToInputBox.clearFocus()
         }
 
-        if(focused){
+        if (focused) {
             btnSwap.requestFocus()
             hideSoftInput()
         }

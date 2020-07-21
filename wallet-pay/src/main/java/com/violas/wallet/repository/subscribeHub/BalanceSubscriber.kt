@@ -4,14 +4,14 @@ import androidx.annotation.WorkerThread
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.viewModel.bean.AssetsVo
 
-abstract class BalanceSubscriber(private var assetsMark: IAssetsMark) {
+abstract class BalanceSubscriber(private var assetsMark: IAssetsMark?) {
 
     private var callBack: NoticeSubscriberCallBack? = null
 
-    fun getAssetsMark() = assetsMark.mark()
+    fun getAssetsMark() = assetsMark?.mark() ?: ""
 
     @WorkerThread
-    fun changeSubscriber(assetsMark: IAssetsMark) {
+    fun changeSubscriber(assetsMark: IAssetsMark?) {
         this.assetsMark = assetsMark
         callBack?.notice(this)
     }
