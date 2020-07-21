@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.getString
 import com.palliums.violas.http.LiquidityTokenDTO
+import com.palliums.violas.http.MarketPairReserveInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
@@ -17,6 +18,7 @@ import com.violas.wallet.utils.convertAmountToExchangeRate
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import kotlinx.coroutines.*
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * Created by elephant on 2020/6/30 17:42.
@@ -33,9 +35,14 @@ class MarketPoolViewModel : BaseViewModel() {
         const val ACTION_GET_USER_LIQUIDITY_TOKENS = 0x01
 
         /**
+         * 获取币种对储备信息
+         */
+        const val ACTION_GET_PAIR_RESERVE_INFO = 0x02
+
+        /**
          * 添加流动性估算
          */
-        const val ACTION_ADD_LIQUIDITY_ESTIMATE = 0x02
+        const val ACTION_ADD_LIQUIDITY_ESTIMATE = 0x06
 
         /**
          * 移除流动性估算
@@ -77,6 +84,7 @@ class MarketPoolViewModel : BaseViewModel() {
     private val exchangeManager by lazy { ExchangeManager() }
     private var address: String? = null
     private var calculateAmountJob: Job? = null
+    private var pairReserveInfo: MarketPairReserveInfoDTO? = null
 
     init {
         currFirstTokenLiveData.addSource(currOpModeLiveData) {
@@ -124,24 +132,45 @@ class MarketPoolViewModel : BaseViewModel() {
     }
 
     fun selectToken(selectFirst: Boolean, selected: StableTokenVo) {
+        // 选择第一Coin
         if (selectFirst) {
             val currFirstToken = currFirstTokenLiveData.value
-            if (selected != currFirstToken) {
-                val currSecondToken = currSecondTokenLiveData.value
-                if (selected == currSecondToken) {
-                    currSecondTokenLiveData.postValue(currFirstToken)
-                }
-                currFirstTokenLiveData.postValue(selected)
-            }
-        } else {
+            if (selected == currFirstToken) return
+
+            // 更新选择的第一Coin
+            currFirstTokenLiveData.postValue(selected)
+
             val currSecondToken = currSecondTokenLiveData.value
-            if (selected != currSecondToken) {
-                val currFirstToken = currFirstTokenLiveData.value
-                if (selected == currFirstToken) {
-                    currFirstTokenLiveData.postValue(currSecondToken)
-                }
-                currSecondTokenLiveData.postValue(selected)
+            if (selected == currSecondToken) {
+                // 交换第二Coin位置
+                currSecondTokenLiveData.postValue(currFirstToken)
+                return
             }
+
+            // 转入模式下选择了新的交易对，获取交易对储备信息
+            if (currSecondToken != null) {
+                getPairReserveInfo(selected.module, currSecondToken.module)
+            }
+            return
+        }
+
+        // 选择第二Coin
+        val currSecondToken = currSecondTokenLiveData.value
+        if (selected == currSecondToken) return
+
+        // 更新选择的第二Coin
+        currSecondTokenLiveData.postValue(selected)
+
+        val currFirstToken = currFirstTokenLiveData.value
+        if (selected == currFirstToken) {
+            // 交换第一Coin位置
+            currFirstTokenLiveData.postValue(currSecondToken)
+            return
+        }
+
+        // 转入模式下选择了新的交易对，获取交易对储备信息
+        if (currFirstToken != null) {
+            getPairReserveInfo(currFirstToken.module, selected.module)
         }
     }
 
@@ -172,11 +201,25 @@ class MarketPoolViewModel : BaseViewModel() {
         if (selectedPosition != currPosition) {
             val list = liquidityTokensLiveData.value ?: return
             if (selectedPosition < 0 || selectedPosition >= list.size) return
-            currLiquidityTokenLiveData.postValue(list[selectedPosition])
+
+            val liquidityToken = list[selectedPosition]
+            currLiquidityTokenLiveData.postValue(liquidityToken)
+
+            // 转出模式下选择了新的交易对，获取交易对储备信息
+            getPairReserveInfo(liquidityToken.coinAName, liquidityToken.coinBName)
         }
     }
 
     //*********************************** 其它信息相关方法 ***********************************//
+    private fun getPairReserveInfo(coinAName: String, coinBName: String) {
+        pairReserveInfo = null
+        execute(
+            coinAName,
+            coinBName,
+            action = ACTION_GET_PAIR_RESERVE_INFO
+        )
+    }
+
     fun getExchangeRateLiveData(): LiveData<BigDecimal?> {
         return exchangeRateLiveData
     }
@@ -194,66 +237,88 @@ class MarketPoolViewModel : BaseViewModel() {
         return secondInputTextLiveData
     }
 
-    fun changeFirstTokenTransferIntoAmount(secondInputAmount: String?) {
+    fun estimateFirstCoinTransferIntoAmount(secondInputAmount: String?) {
         val firstToken = currFirstTokenLiveData.value ?: return
         val secondToken = currSecondTokenLiveData.value ?: return
+
         cancelCalculateAmountJob()
         calculateAmountJob = viewModelScope.launch {
             delay(100)
-            withContext(Dispatchers.IO) {
-                // TODO
-                if (secondInputAmount.isNullOrBlank()) {
-                    secondInputTextLiveData.postValue("0.00")
-                    return@withContext
-                }
+
+            val result = withContext(Dispatchers.IO) {
+                return@withContext if (secondInputAmount.isNullOrBlank())
+                    ""
+                else
+                    estimateTransferIntoAmount(secondToken.module, secondInputAmount)
             }
+            secondInputTextLiveData.postValue(result)
 
             calculateAmountJob = null
         }
     }
 
-    fun changeSecondTokenTransferIntoAmount(firstInputAmount: String?) {
+    fun estimateSecondCoinTransferIntoAmount(firstInputAmount: String?) {
         val firstToken = currFirstTokenLiveData.value ?: return
         val secondToken = currSecondTokenLiveData.value ?: return
+
         cancelCalculateAmountJob()
         calculateAmountJob = viewModelScope.launch {
             delay(100)
-            withContext(Dispatchers.IO) {
-                // TODO
-                if (firstInputAmount.isNullOrBlank()) {
-                    secondInputTextLiveData.postValue("0.00")
-                    return@withContext
-                }
+
+            val result = withContext(Dispatchers.IO) {
+                return@withContext if (firstInputAmount.isNullOrBlank())
+                    ""
+                else
+                    estimateTransferIntoAmount(firstToken.module, firstInputAmount)
             }
+            secondInputTextLiveData.postValue(result)
 
             calculateAmountJob = null
         }
     }
 
-    fun changeTokensTransferOutAmount(inputLiquidityAmount: String?) {
+    private fun estimateTransferIntoAmount(inputCoinName: String, inputAmount: String): String {
+        return BigDecimal(inputAmount)
+            .multiply(
+                if (inputCoinName == pairReserveInfo!!.coinA.name)
+                    pairReserveInfo!!.coinB.amount
+                else
+                    pairReserveInfo!!.coinA.amount
+            )
+            .divide(
+                if (inputCoinName == pairReserveInfo!!.coinA.name)
+                    pairReserveInfo!!.coinA.amount
+                else
+                    pairReserveInfo!!.coinB.amount,
+                6,
+                RoundingMode.DOWN
+            )
+            .stripTrailingZeros().toPlainString()
+    }
+
+    fun estimateCoinsTransferOutAmount(inputLiquidityAmount: String?) {
         val liquidityToken = currLiquidityTokenLiveData.value ?: return
         cancelCalculateAmountJob()
         calculateAmountJob = viewModelScope.launch {
             delay(100)
-            withContext(Dispatchers.IO) {
+
+            val result = withContext(Dispatchers.IO) {
                 if (inputLiquidityAmount.isNullOrBlank()) {
-                    secondInputTextLiveData.postValue("")
-                    return@withContext
+                    return@withContext ""
                 }
 
-                /*val liquidityAmount = BigDecimal(inputLiquidityAmount)
-                val tokenATransferOutAmount = liquidityAmount
-                    .multiply(BigDecimal(liquidityToken.coinAAmount))
-                    .divide(BigDecimal(liquidityToken.amount), 6, RoundingMode.DOWN)
+                val liquidityAmount = BigDecimal(inputLiquidityAmount)
+                val coinATransferOutAmount = liquidityAmount
+                    .multiply(pairReserveInfo!!.coinA.amount)
+                    .divide(pairReserveInfo!!.liquidityTotalAmount, 6, RoundingMode.DOWN)
                     .stripTrailingZeros().toPlainString() + liquidityToken.coinAName
-                val tokenBTransferOutAmount = liquidityAmount
-                    .multiply(BigDecimal(liquidityToken.coinBAmount))
-                    .divide(BigDecimal(liquidityToken.amount), 6, RoundingMode.DOWN)
+                val coinBTransferOutAmount = liquidityAmount
+                    .multiply(pairReserveInfo!!.coinB.amount)
+                    .divide(pairReserveInfo!!.liquidityTotalAmount, 6, RoundingMode.DOWN)
                     .stripTrailingZeros().toPlainString() + liquidityToken.coinBName
-                secondInputTextLiveData.postValue(
-                    "$tokenATransferOutAmount\n$tokenBTransferOutAmount"
-                )*/
+                return@withContext "$coinATransferOutAmount\n$coinBTransferOutAmount"
             }
+            secondInputTextLiveData.postValue(result)
 
             calculateAmountJob = null
         }
@@ -261,7 +326,10 @@ class MarketPoolViewModel : BaseViewModel() {
 
     private fun cancelCalculateAmountJob() {
         calculateAmountJob?.let {
-            it.cancel()
+            try {
+                it.cancel()
+            } catch (ignore: Exception) {
+            }
             calculateAmountJob = null
         }
     }
@@ -288,6 +356,15 @@ class MarketPoolViewModel : BaseViewModel() {
                 val userPoolInfo =
                     exchangeManager.mViolasService.getUserPoolInfo(address!!)
                 liquidityTokensLiveData.postValue(userPoolInfo?.liquidityTokens)
+            }
+
+            ACTION_GET_PAIR_RESERVE_INFO -> {
+                val pairReserveInfo =
+                    exchangeManager.mViolasService.getMarketPairReserveInfo(
+                        coinAName = params[0] as String,
+                        coinBName = params[1] as String
+                    )
+                this.pairReserveInfo = pairReserveInfo
             }
 
             ACTION_ADD_LIQUIDITY_ESTIMATE -> {

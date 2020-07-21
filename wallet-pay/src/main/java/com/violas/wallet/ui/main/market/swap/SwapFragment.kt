@@ -59,6 +59,11 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         return R.layout.fragment_swap
     }
 
+    override fun onPause() {
+        super.onPause()
+        clearInputBoxFocusAndHideSoftInput()
+    }
+
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
 
@@ -76,14 +81,17 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         etToInputBox.filters = arrayOf(AmountInputFilter(12, 2))
 
         llFromSelectGroup.setOnClickListener {
+            clearInputBoxFocusAndHideSoftInput()
             showSelectTokenDialog(true)
         }
 
         llToSelectGroup.setOnClickListener {
+            clearInputBoxFocusAndHideSoftInput()
             showSelectTokenDialog(false)
         }
 
         btnSwap.setOnClickListener {
+            clearInputBoxFocusAndHideSoftInput()
             if (swapViewModel.getCurrFromTokenLiveData().value == null) {
                 // 输入币种没有选择
                 showToast(getString(R.string.hint_swap_input_assets_not_select))
@@ -382,6 +390,23 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
 
             inputBox.addTextChangedListener(textWatcher)
         }
+
+    private fun clearInputBoxFocusAndHideSoftInput(){
+        var focused = false
+        if(etFromInputBox.isFocused){
+            focused = true
+            etFromInputBox.clearFocus()
+        }
+        if(etToInputBox.isFocused){
+            focused = true
+            etToInputBox.clearFocus()
+        }
+
+        if(focused){
+            btnSwap.requestFocus()
+            hideSoftInput()
+        }
+    }
 
     //*********************************** 其它逻辑 ***********************************//
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->

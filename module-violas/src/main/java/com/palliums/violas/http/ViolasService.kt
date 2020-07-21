@@ -293,4 +293,10 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             tokenBName,
             tokenAAmount
         ).data!!
+
+    suspend fun getMarketPairReserveInfo(
+        coinAName: String,
+        coinBName: String
+    ) =
+        mViolasRepository.getMarketPairReserveInfo(coinAName, coinBName).data
 }

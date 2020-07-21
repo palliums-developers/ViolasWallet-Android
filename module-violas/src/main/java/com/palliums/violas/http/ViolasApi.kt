@@ -152,4 +152,15 @@ interface ViolasApi {
         @Query("coin_b") tokenBName: String,
         @Query("amount") tokenAAmount: String
     ): Response<AddPoolLiquidityEstimateResultDTO>
+
+    /**
+     * 获取币种对储备信息
+     * @param coinAName        Coin A 名称
+     * @param coinBName        Coin B 名称
+     */
+    @GET("/1.0/market/pool/reserve/info")
+    suspend fun getMarketPairReserveInfo(
+        @Query("coin_a") coinAName: String,
+        @Query("coin_b") coinBName: String
+    ): Response<MarketPairReserveInfoDTO>
 }

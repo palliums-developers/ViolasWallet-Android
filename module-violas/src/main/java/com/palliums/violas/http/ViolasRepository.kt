@@ -177,4 +177,16 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
                 tokenAAmount
             )
         }
+
+    @Throws(RequestException::class)
+    suspend fun getMarketPairReserveInfo(
+        coinAName: String,
+        coinBName: String
+    ) =
+        checkResponse(4000) {
+            mViolasApi.getMarketPairReserveInfo(
+                coinAName,
+                coinBName
+            )
+        }
 }
