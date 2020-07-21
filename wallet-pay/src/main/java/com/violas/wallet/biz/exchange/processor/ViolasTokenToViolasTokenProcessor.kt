@@ -8,7 +8,6 @@ import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.walletconnect.extensions.hexStringToByteArray
@@ -54,7 +53,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         amountOutMin: Long,
         path: ByteArray,
         data: ByteArray
-    ) {
+    ): String {
         tokenFrom as StableTokenVo
         tokenTo as StableTokenVo
 
@@ -62,6 +61,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
             payee ?: mAccountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())?.address
             ?: throw AccountNotFindAddressException()
 
+        // 开始检查 Violas 账户的基本信息
         // 收款地址状态
         val accountState =
             mViolasRpcService.getAccountState(payeeAddress) ?: throw AccountPayeeNotFindException()
@@ -80,6 +80,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
             )
         }
 
+        // 开始发起 Violas 交易
         val account = Account(KeyPair.fromSecretKey(privateKey))
 
         val typeTagFrom = TypeTagStructTag(
@@ -110,10 +111,10 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
                 data
             )
 
-        mViolasRpcService.sendTransaction(
+        return mViolasRpcService.sendTransaction(
             optionTokenSwapTransactionPayload,
             account,
             gasCurrencyCode = typeTagFrom.value.module
-        )
+        ).sequenceNumber.toString()
     }
 }

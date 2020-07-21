@@ -293,49 +293,6 @@ class ExchangeManager {
         }
     }
 
-    suspend fun exchangeToken(
-        context: Context,
-        account: Account,
-        fromCoin: ITokenVo,
-        fromCoinAmount: BigDecimal,
-        toCoin: ITokenVo,
-        toCoinAmount: BigDecimal
-    ): Boolean {
-//        val optionExchangePayloadWithData = optionExchangePayloadWithData(
-//            toCoin.tokenIdx(),
-//            toCoinAmount.multiply(BigDecimal("1000000")).toLong()
-//        )
-//        val optionExchangePayload = mTokenManager.transferTokenPayload(
-//            fromCoin.tokenIdx(),
-//            receiveAddress,
-//            fromCoinAmount.multiply(BigDecimal("1000000")).toLong(),
-//            optionExchangePayloadWithData
-//        )
-//
-//        try {
-//            mViolasService.sendTransaction(
-//                optionExchangePayload,
-//                account
-//            )
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            return false
-//        }
-        return true
-    }
-
-    private fun optionExchangePayloadWithData(
-        exchangeTokenIdx: Long,
-        exchangeReceiveAmount: Long
-    ): ByteArray {
-        val subExchangeDate = JSONObject()
-        subExchangeDate.put("type", "sub_ex")
-        subExchangeDate.put("tokenid", exchangeTokenIdx)
-        subExchangeDate.put("amount", exchangeReceiveAmount)
-        subExchangeDate.put("fee", 0)
-        subExchangeDate.put("exp", 1000)
-        return subExchangeDate.toString().toByteArray()
-    }
 
     private fun optionUndoExchangePayloadWithData(
         version: Long

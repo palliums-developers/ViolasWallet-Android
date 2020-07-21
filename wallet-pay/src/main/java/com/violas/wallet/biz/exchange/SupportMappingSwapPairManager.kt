@@ -1,28 +1,46 @@
 package com.violas.wallet.biz.exchange
 
-import com.google.gson.annotations.SerializedName
+import com.palliums.violas.http.MappingPairInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.util.*
+import java.util.concurrent.CountDownLatch
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
 class SupportMappingSwapPairManager {
 
-    private val mMappingSwapPair = ArrayList<MockMappingInterface>()
+    private val mMappingSwapPair = ArrayList<MappingPairInfoDTO>()
+    val mViolasService by lazy {
+        DataRepository.getViolasService()
+    }
 
     /**
      * 获取
      */
-    fun getMappingSwapPair(force: Boolean = false): List<MockMappingInterface> {
+    fun getMappingSwapPair(force: Boolean = false): List<MappingPairInfoDTO> {
         if (force || mMappingSwapPair.isEmpty()) {
             synchronized(this) {
                 if (mMappingSwapPair.isEmpty()) {
                     mMappingSwapPair.clear()
-                    mMappingSwapPair.addAll(mockNetworkData())
+                    val countDownLatch = CountDownLatch(1)
+                    GlobalScope.launch {
+                        try {
+                            mViolasService.getMarketMappingPairInfo().data?.let {
+                                mMappingSwapPair.addAll(it)
+                            }
+                        } catch (e: Exception) {
+                        }
+                        countDownLatch.countDown()
+                    }
+                    countDownLatch.await()
                     return mMappingSwapPair
                 }
             }
@@ -42,9 +60,9 @@ class SupportMappingSwapPairManager {
                 } else {
                     LibraTokenAssetsMark(
                         coinTypes,
-                        mappingPair.toCoin.assets.module,
-                        mappingPair.toCoin.assets.address,
-                        mappingPair.toCoin.assets.name
+                        mappingPair.toCoin.assets?.module ?: "",
+                        mappingPair.toCoin.assets?.address ?: "",
+                        mappingPair.toCoin.assets?.name ?: ""
                     )
                 }
                 result[assetsMark.mark()] =
@@ -71,109 +89,6 @@ class SupportMappingSwapPairManager {
             else -> null
         }
     }
-
-    private fun mockNetworkData(): List<MockMappingInterface> {
-        val list = mutableListOf<MockMappingInterface>()
-        list.add(
-            MockMappingInterface(
-                "libra",
-                "l2vusd",
-                "00000000000000000000000000000001",
-                ToCoin(
-                    Assets(
-                        "0000000000000000000000000a550c18",
-                        "VLSUSD",
-                        "VLSUSD"
-                    ),
-                    "violas"
-                )
-            )
-        )
-        list.add(
-            MockMappingInterface(
-                "libra",
-                "l2vgbp",
-                "00000000000000000000000000000001",
-                ToCoin(
-                    Assets(
-                        "0000000000000000000000000a550c18",
-                        "VLSGBP",
-                        "VLSGBP"
-                    ),
-                    "violas"
-                )
-            )
-        )
-        list.add(
-            MockMappingInterface(
-                "violas",
-                "v2lusd",
-                "00000000000000000000000000000001",
-                ToCoin(
-                    Assets(
-                        "0000000000000000000000000a550c18",
-                        "Coin1",
-                        "Coin1"
-                    ),
-                    "libra"
-                )
-            )
-        )
-        list.add(
-            MockMappingInterface(
-                "violas",
-                "v2lgbp",
-                "00000000000000000000000000000001",
-                ToCoin(
-                    Assets(
-                        "0000000000000000000000000a550c18",
-                        "Coin2",
-                        "Coin2"
-                    ),
-                    "libra"
-                )
-            )
-        )
-        list.add(
-            MockMappingInterface(
-                "violas",
-                "v2b",
-                "00000000000000000000000000000001",
-                ToCoin(
-                    null,
-                    "btc"
-                )
-            )
-        )
-        return list
-    }
-
-    data class MockMappingInterface(
-        @SerializedName("input_coin_type")
-        val inputCoinType: String,
-        @SerializedName("lable")
-        val lable: String,
-        @SerializedName("receiver_address")
-        val receiverAddress: String,
-        @SerializedName("to_coin")
-        val toCoin: ToCoin
-    )
-
-    data class ToCoin(
-        @SerializedName("assets")
-        val assets: Assets?,
-        @SerializedName("coin_type")
-        val coinType: String
-    )
-
-    data class Assets(
-        @SerializedName("address")
-        val address: String,
-        @SerializedName("module")
-        val module: String,
-        @SerializedName("name")
-        val name: String
-    )
 }
 
 data class MappingInfo(

@@ -2,6 +2,8 @@ package com.palliums.violas.http
 
 import android.content.Context
 import android.util.Log
+import com.palliums.exceptions.RequestException
+import com.palliums.net.checkResponse
 import com.palliums.violas.error.ViolasException
 import org.palliums.violascore.BuildConfig
 import org.palliums.violascore.crypto.*
@@ -9,6 +11,7 @@ import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
 import org.palliums.violascore.transaction.storage.TypeTag
 import org.palliums.violascore.wallet.Account
+import retrofit2.http.GET
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -299,4 +302,10 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         coinBName: String
     ) =
         mViolasRepository.getMarketPairReserveInfo(coinAName, coinBName).data
+
+    suspend fun getMarketMappingPairInfo() =
+        mViolasRepository.getMarketMappingPairInfo()
+
+    suspend fun getMarketPairRelation() =
+        mViolasRepository.getMarketPairRelation()
 }

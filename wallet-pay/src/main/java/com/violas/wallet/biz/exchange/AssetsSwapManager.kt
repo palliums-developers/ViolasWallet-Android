@@ -2,6 +2,7 @@ package com.violas.wallet.biz.exchange
 
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
+import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.exchange.processor.BTCToMappingAssetsProcessor
 import com.violas.wallet.biz.exchange.processor.LibraToMappingAssetsProcessor
@@ -10,7 +11,6 @@ import com.violas.wallet.biz.exchange.processor.ViolasTokenToViolasTokenProcesso
 import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.main.market.bean.*
 import org.palliums.violascore.http.ViolasException
-import org.palliums.violascore.transaction.AccountAddress
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -31,6 +31,8 @@ class AssetsSwapManager(
         MutableLiveData()
 
     private val mAssetsSwapEngine = AssetsSwapEngine()
+
+    val contract = ViolasMultiTokenContract(Vm.TestNet)
 
     @WorkerThread
     fun init() {
@@ -55,6 +57,7 @@ class AssetsSwapManager(
             )
             mAssetsSwapEngine.addProcessor(
                 BTCToMappingAssetsProcessor(
+                    contract.getContractAddress(),
                     supportMappingSwapPairManager.getMappingTokensInfo(
                         if (Vm.TestNet) {
                             CoinTypes.BitcoinTest
@@ -123,13 +126,15 @@ class AssetsSwapManager(
         supportTokens.forEach { assets ->
             val bitmap = MutBitmap()
 
-            // 将相同链的币种放入集合
-            supportTokenCoinMap[assets.coinNumber]?.forEach { iTokenVo ->
-                val assetsMark = IAssetsMark.convert(iTokenVo)
-                val hasNotOneAssets = assetsMark.mark() != IAssetsMark.convert(assets).mark()
-                if (hasNotOneAssets) {
-                    supportTokenMap[assetsMark.mark()]?.let { index ->
-                        bitmap.setBit(index)
+            if (assets.coinNumber == CoinTypes.Violas.coinType()) {
+                // 将相同链的币种放入集合
+                supportTokenCoinMap[assets.coinNumber]?.forEach { iTokenVo ->
+                    val assetsMark = IAssetsMark.convert(iTokenVo)
+                    val hasNotOneAssets = assetsMark.mark() != IAssetsMark.convert(assets).mark()
+                    if (hasNotOneAssets) {
+                        supportTokenMap[assetsMark.mark()]?.let { index ->
+                            bitmap.setBit(index)
+                        }
                     }
                 }
             }
@@ -183,9 +188,9 @@ class AssetsSwapManager(
                 } else {
                     LibraTokenAssetsMark(
                         CoinTypes.parseCoinType(coinType),
-                        mappingPair.toCoin.assets.module,
-                        mappingPair.toCoin.assets.address,
-                        mappingPair.toCoin.assets.name
+                        mappingPair.toCoin.assets?.module ?: "",
+                        mappingPair.toCoin.assets?.address ?: "",
+                        mappingPair.toCoin.assets?.name ?: ""
                     )
                 }
             }

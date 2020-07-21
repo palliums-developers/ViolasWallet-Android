@@ -16,5 +16,5 @@ interface IProcessor {
         amountOutMin: Long,
         path: ByteArray,
         data: ByteArray
-    )
+    ): String
 }

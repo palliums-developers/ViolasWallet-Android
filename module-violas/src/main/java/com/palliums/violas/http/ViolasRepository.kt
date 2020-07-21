@@ -6,6 +6,7 @@ import com.palliums.net.checkResponse
 import com.palliums.violas.error.ViolasException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.http.GET
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -189,4 +190,14 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
                 coinBName
             )
         }
+
+    @Throws(RequestException::class)
+    suspend fun getMarketMappingPairInfo() = checkResponse {
+        mViolasApi.getMarketMappingPairInfo()
+    }
+
+    @Throws(RequestException::class)
+    suspend fun getMarketPairRelation() = checkResponse {
+        mViolasApi.getMarketPairRelation()
+    }
 }

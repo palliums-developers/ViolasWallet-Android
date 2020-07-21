@@ -10,13 +10,13 @@ import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import org.json.JSONObject
-import org.palliums.libracore.crypto.KeyPair
-import org.palliums.libracore.transaction.AccountAddress
-import org.palliums.libracore.transaction.TransactionPayload
-import org.palliums.libracore.transaction.optionTransactionPayload
-import org.palliums.libracore.transaction.storage.StructTag
-import org.palliums.libracore.transaction.storage.TypeTagStructTag
-import org.palliums.libracore.wallet.Account
+import org.palliums.violascore.crypto.KeyPair
+import org.palliums.violascore.transaction.AccountAddress
+import org.palliums.violascore.transaction.TransactionPayload
+import org.palliums.violascore.transaction.optionTransactionPayload
+import org.palliums.violascore.transaction.storage.StructTag
+import org.palliums.violascore.transaction.storage.TypeTagStructTag
+import org.palliums.violascore.wallet.Account
 
 class ViolasToAssetsMappingProcessor(
     private val supportMappingPair: HashMap<String, MappingInfo>
@@ -27,6 +27,10 @@ class ViolasToAssetsMappingProcessor(
     }
 
     private val mViolasRpcService by lazy {
+        DataRepository.getViolasChainRpcService()
+    }
+
+    private val mLibraRpcService by lazy {
         DataRepository.getLibraService()
     }
 
@@ -45,34 +49,39 @@ class ViolasToAssetsMappingProcessor(
         amountOutMin: Long,
         path: ByteArray,
         data: ByteArray
-    ) {
+    ): String {
         tokenFrom as StableTokenVo
-        tokenTo as StableTokenVo
 
         val payeeAddress =
             payee ?: mAccountManager.getIdentityByCoinType(tokenTo.coinNumber)?.address
             ?: throw AccountNotFindAddressException()
 
-        // 检查收款地址激活状态
-        val accountState =
-            mViolasRpcService.getAccountState(payeeAddress) ?: throw AccountPayeeNotFindException()
+        // 检查 Libra 的稳定币有没有 Publish
+        if (tokenTo.coinNumber == CoinTypes.Libra.coinType()) {
+            tokenTo as StableTokenVo
 
-        // 检查收款地址 Token 注册状态
-        var isPublishToken = false
-        accountState.balances?.forEach {
-            if (it.currency.equals(tokenTo.module, true)) {
-                isPublishToken = true
+            // 检查收款地址激活状态
+            val accountState =
+                mLibraRpcService.getAccountState(payeeAddress)
+                    ?: throw AccountPayeeNotFindException()
+
+            // 检查收款地址 Token 注册状态
+            var isPublishToken = false
+            accountState.balances?.forEach {
+                if (it.currency.equals(tokenTo.module, true)) {
+                    isPublishToken = true
+                }
+            }
+            if (!isPublishToken) {
+                throw AccountPayeeTokenNotActiveException(
+                    CoinTypes.Libra,
+                    payeeAddress,
+                    tokenTo
+                )
             }
         }
-        if (!isPublishToken) {
-            throw AccountPayeeTokenNotActiveException(
-                CoinTypes.Libra,
-                payeeAddress,
-                tokenTo
-            )
-        }
 
-        // 开始交易
+        // 开始发起 Violas 交易
         val account = Account(KeyPair.fromSecretKey(privateKey))
 
         val typeTagFrom = TypeTagStructTag(
@@ -105,10 +114,10 @@ class ViolasToAssetsMappingProcessor(
                 typeTag = typeTagFrom
             )
 
-        mViolasRpcService.sendTransaction(
+        return mViolasRpcService.sendTransaction(
             optionTokenSwapTransactionPayload,
             account,
             gasCurrencyCode = typeTagFrom.value.module
-        )
+        ).sequenceNumber.toString()
     }
 }
