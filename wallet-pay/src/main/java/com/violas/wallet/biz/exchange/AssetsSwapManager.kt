@@ -2,6 +2,7 @@ package com.violas.wallet.biz.exchange
 
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
+import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.exchange.processor.BTCToMappingAssetsProcessor
 import com.violas.wallet.biz.exchange.processor.LibraToMappingAssetsProcessor
@@ -31,6 +32,8 @@ class AssetsSwapManager(
 
     private val mAssetsSwapEngine = AssetsSwapEngine()
 
+    val contract = ViolasMultiTokenContract(Vm.TestNet)
+
     @WorkerThread
     fun init() {
         synchronized(this) {
@@ -54,6 +57,7 @@ class AssetsSwapManager(
             )
             mAssetsSwapEngine.addProcessor(
                 BTCToMappingAssetsProcessor(
+                    contract.getContractAddress(),
                     supportMappingSwapPairManager.getMappingTokensInfo(
                         if (Vm.TestNet) {
                             CoinTypes.BitcoinTest

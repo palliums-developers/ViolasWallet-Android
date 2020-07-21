@@ -29,6 +29,10 @@ class LibraToMappingAssetsProcessor(
         DataRepository.getLibraService()
     }
 
+    private val mViolasRpcService by lazy {
+        DataRepository.getViolasChainRpcService()
+    }
+
     private val mAccountManager by lazy {
         AccountManager()
     }
@@ -36,6 +40,7 @@ class LibraToMappingAssetsProcessor(
     override fun hasHandle(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         return tokenFrom is StableTokenVo
                 && tokenFrom.coinNumber == CoinTypes.Libra.coinType()
+                && tokenTo.coinNumber == CoinTypes.Violas.coinType()
                 && supportMappingPair.containsKey(IAssetsMark.convert(tokenTo).mark())
     }
 
@@ -48,17 +53,18 @@ class LibraToMappingAssetsProcessor(
         amountOutMin: Long,
         path: ByteArray,
         data: ByteArray
-    ) {
+    ): String {
         tokenFrom as StableTokenVo
         tokenTo as StableTokenVo
 
+        // 开始检查 Violas 账户的基本信息
         val payeeAddress =
             payee ?: mAccountManager.getIdentityByCoinType(tokenTo.coinNumber)?.address
             ?: throw AccountNotFindAddressException()
 
         // 检查收款地址激活状态
         val accountState =
-            mLibraRpcService.getAccountState(payeeAddress) ?: throw AccountPayeeNotFindException()
+            mViolasRpcService.getAccountState(payeeAddress) ?: throw AccountPayeeNotFindException()
 
         // 检查收款地址 Token 注册状态
         var isPublishToken = false
@@ -75,7 +81,7 @@ class LibraToMappingAssetsProcessor(
             )
         }
 
-        // 开始交易
+        // 开始发起 Libra 交易
         val account = Account(KeyPair.fromSecretKey(privateKey))
 
         val typeTagFrom = TypeTagStructTag(
@@ -108,10 +114,10 @@ class LibraToMappingAssetsProcessor(
                 typeTag = typeTagFrom
             )
 
-        mLibraRpcService.sendTransaction(
+        return mLibraRpcService.sendTransaction(
             optionTokenSwapTransactionPayload,
             account,
             gasCurrencyCode = typeTagFrom.value.module
-        )
+        ).sequenceNumber.toString()
     }
 }

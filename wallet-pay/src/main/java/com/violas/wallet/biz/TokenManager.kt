@@ -27,7 +27,6 @@ class TokenManager {
     private val mViolasMultiTokenService by lazy {
         ViolasMultiTokenRepository(
             DataRepository.getMultiTokenContractService(),
-            // todo 不同环境合约地址可能会不同
             ViolasMultiTokenContract(Vm.TestNet)
         )
     }
