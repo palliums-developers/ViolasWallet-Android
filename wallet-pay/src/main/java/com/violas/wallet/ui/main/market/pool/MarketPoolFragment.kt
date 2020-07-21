@@ -30,9 +30,7 @@ import com.violas.wallet.ui.main.market.MarketSwitchPopupView
 import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
-import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_ADD_LIQUIDITY_ESTIMATE
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_GET_USER_LIQUIDITY_TOKENS
-import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_REMOVE_LIQUIDITY_ESTIMATE
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_FIRST
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_SECOND
@@ -70,6 +68,11 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
         super.onDestroyView()
     }
 
+    override fun onPause() {
+        super.onPause()
+        clearInputBoxFocusAndHideSoftInput()
+    }
+
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
         EventBus.getDefault().register(this)
@@ -81,16 +84,16 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
         // 输入框设置
         etFirstInputBox.addTextChangedListener(firstInputTextWatcher)
         etSecondInputBox.addTextChangedListener(secondInputTextWatcher)
-        etFirstInputBox.onFocusChangeListener = firstInputOnFocusChangeListener
-        etSecondInputBox.onFocusChangeListener = secondInputOnFocusChangeListener
         etFirstInputBox.filters = arrayOf(AmountInputFilter(12, 6))
 
         // 按钮点击事件
         llSwitchOpModeGroup.setOnClickListener {
+            clearInputBoxFocusAndHideSoftInput()
             showSwitchOpModePopup()
         }
 
         llFirstSelectGroup.setOnClickListener {
+            clearInputBoxFocusAndHideSoftInput()
             if (marketPoolViewModel.isTransferInMode()) {
                 showSelectTokenDialog(true)
             } else {
@@ -104,10 +107,12 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
         }
 
         llSecondSelectGroup.setOnClickListener {
+            clearInputBoxFocusAndHideSoftInput()
             showSelectTokenDialog(false)
         }
 
         btnPositive.setOnClickListener {
+            clearInputBoxFocusAndHideSoftInput()
             // TODO 转入转出逻辑
         }
 
@@ -412,24 +417,6 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
     }
 
     //*********************************** 输入框逻辑 ***********************************//
-    private val firstInputOnFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-        if (hasFocus) return@OnFocusChangeListener
-
-        /*if (marketPoolViewModel.isTransferInMode()) {
-            addLiquidityTrialCalculation(true, etFirstInputBox.text.toString().trim())
-        } else {
-            removeLiquidityTrialCalculation(etFirstInputBox.text.toString().trim())
-        }*/
-    }
-
-    private val secondInputOnFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-        if (hasFocus) return@OnFocusChangeListener
-
-        /*if (marketPoolViewModel.isTransferInMode()) {
-            addLiquidityTrialCalculation(false, etSecondInputBox.text.toString().trim())
-        }*/
-    }
-
     private val firstInputTextWatcher = object : TextWatcherSimple() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if (!etFirstInputBox.isFocused) return
@@ -488,44 +475,21 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             inputBox.addTextChangedListener(textWatcher)
         }
 
-    //*********************************** 试算逻辑 ***********************************//
-    private fun addLiquidityTrialCalculation(firstInput: Boolean, inputAmount: String) {
-        val firstToken =
-            marketPoolViewModel.getCurrFirstTokenLiveData().value ?: return
-        val secondToken =
-            marketPoolViewModel.getCurrSecondTokenLiveData().value ?: return
-
-        if (inputAmount.isBlank()) {
-            if (firstInput)
-                marketPoolViewModel.getSecondInputTextLiveData().postValue("")
-            else
-                marketPoolViewModel.getFirstInputTextLiveData().postValue("")
-            return
+    private fun clearInputBoxFocusAndHideSoftInput() {
+        var focused = false
+        if (etFirstInputBox.isFocused) {
+            focused = true
+            etFirstInputBox.clearFocus()
+        }
+        if (etSecondInputBox.isFocused) {
+            focused = true
+            etSecondInputBox.clearFocus()
         }
 
-        marketPoolViewModel.execute(
-            inputAmount,
-            if (firstInput) firstToken.module else secondToken.module,
-            if (firstInput) secondToken.module else firstToken.module,
-            action = ACTION_ADD_LIQUIDITY_ESTIMATE
-        )
-    }
-
-    private fun removeLiquidityTrialCalculation(inputAmount: String) {
-        val liquidityToken =
-            marketPoolViewModel.getCurrLiquidityTokenLiveData().value ?: return
-
-        if (inputAmount.isBlank()) {
-            marketPoolViewModel.getSecondInputTextLiveData().postValue("")
-            return
+        if (focused) {
+            btnPositive.requestFocus()
+            hideSoftInput()
         }
-
-        marketPoolViewModel.execute(
-            inputAmount,
-            liquidityToken.coinAName,
-            liquidityToken.coinBName,
-            action = ACTION_REMOVE_LIQUIDITY_ESTIMATE
-        )
     }
 
     //*********************************** 其它逻辑 ***********************************//
