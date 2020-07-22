@@ -23,7 +23,6 @@ import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.stripTrailingZeros
 import com.palliums.violas.http.LiquidityTokenDTO
 import com.palliums.widget.popup.EnhancedPopupCallback
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.ui.main.market.MarketSwitchPopupView
@@ -39,7 +38,7 @@ import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayAmount
-import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.fragment_market_pool.*
@@ -333,7 +332,7 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             etSecondInputBox.hint = "0.00 ${it.coinAName}\n0.00 ${it.coinBName}"
             tvFirstBalance.text = getString(
                 R.string.market_liquidity_token_balance_format,
-                convertAmountToDisplayAmount(it.amount)
+                convertAmountToDisplayAmountStr(it.amount)
             )
         }
 
@@ -394,11 +393,9 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             handleValueNull(tvFirstBalance, R.string.market_token_balance_format)
         } else {
             tvFirstSelectText.text = it.displayName
-            val amountWithUnit =
-                convertAmountToDisplayUnit(it.amount, CoinTypes.parseCoinType(it.coinNumber))
             tvFirstBalance.text = getString(
                 R.string.market_token_balance_format,
-                "${amountWithUnit.first} ${it.displayName}"
+                "${it.displayAmount.toPlainString()} ${it.displayName}"
             )
         }
 
@@ -412,11 +409,9 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             handleValueNull(tvSecondBalance, R.string.market_token_balance_format)
         } else {
             tvSecondSelectText.text = it.displayName
-            val amountWithUnit =
-                convertAmountToDisplayUnit(it.amount, CoinTypes.parseCoinType(it.coinNumber))
             tvSecondBalance.text = getString(
                 R.string.market_token_balance_format,
-                "${amountWithUnit.first} ${it.displayName}"
+                "${it.displayAmount.toPlainString()} ${it.displayName}"
             )
         }
 
@@ -541,16 +536,16 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             return true
         }
 
-        if (convertDisplayAmountToAmount(firstAmount) > BigDecimal(firstCoin.amount)) {
+        if (BigDecimal(firstAmount) > firstCoin.displayAmount) {
             val prefix =
-                if (convertDisplayAmountToAmount(secondAmount) > BigDecimal(secondCoin.amount)) {
+                if (BigDecimal(secondAmount) > secondCoin.displayAmount) {
                     "${firstCoin.module}/${secondCoin.module}"
                 } else {
                     firstCoin.module
                 }
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
             return true
-        } else if (convertDisplayAmountToAmount(secondAmount) > BigDecimal(secondCoin.amount)) {
+        } else if (BigDecimal(secondAmount) > secondCoin.displayAmount) {
             val prefix = firstCoin.module
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
             return true

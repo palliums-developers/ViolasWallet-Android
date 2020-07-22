@@ -24,7 +24,7 @@ import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.pool.MarketPoolOpMode
-import com.violas.wallet.utils.convertAmountToDisplayAmount
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_my_pool.*
 import kotlinx.android.synthetic.main.item_my_pool_liquidity_token.view.*
@@ -128,7 +128,7 @@ class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
         }
 
         viewModel.totalLiquidityAmount.observe(this, Observer {
-            tvTotalLiquidityAmount.text = convertAmountToDisplayAmount(it)
+            tvTotalLiquidityAmount.text = convertAmountToDisplayAmountStr(it)
         })
 
         viewModel.execute()
@@ -186,12 +186,12 @@ class MyPoolViewHolder(
         itemData?.let {
             itemView.tvLiquidityAmount.text = getString(
                 R.string.market_liquidity_token_amount_format,
-                convertAmountToDisplayAmount(it.amount)
+                convertAmountToDisplayAmountStr(it.amount)
             )
             itemView.tvTokenA.text =
-                "${convertAmountToDisplayAmount(it.coinAAmount)} ${it.coinAName}"
+                "${convertAmountToDisplayAmountStr(it.coinAAmount)} ${it.coinAName}"
             itemView.tvTokenB.text =
-                "${convertAmountToDisplayAmount(it.coinBAmount)} ${it.coinBName}"
+                "${convertAmountToDisplayAmountStr(it.coinBAmount)} ${it.coinBName}"
         }
     }
 }

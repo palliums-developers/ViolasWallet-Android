@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.main.market.bean
 
 import com.violas.wallet.repository.database.entity.AccountType
+import java.math.BigDecimal
 
 
 /**
@@ -18,7 +19,7 @@ abstract class ITokenVo(
     val coinNumber: Int,            // 币种类型值
     val displayName: String,        // 币的显示名称
     val logo: String,               // 币的logo
-    var amount: Long,               // 币的金额
+    var displayAmount: BigDecimal,  // 币的金额
     var anchorValue: Double,        // 币的锚定价值
     var selected: Boolean           // 币是否选中
 ) {
@@ -35,10 +36,10 @@ class PlatformTokenVo(
     coinNumber: Int,
     displayName: String,
     logo: String,
-    amount: Long = 0,
+    displayAmount: BigDecimal = BigDecimal(0),
     anchorValue: Double = 0.00,
     selected: Boolean = false
-) : ITokenVo(accountDoId, coinNumber, displayName, logo, amount, anchorValue, selected) {
+) : ITokenVo(accountDoId, coinNumber, displayName, logo, displayAmount, anchorValue, selected) {
 
     override fun areContentsTheSame(another: ITokenVo): Boolean {
         return if (another is PlatformTokenVo)
@@ -48,7 +49,7 @@ class PlatformTokenVo(
                     && coinNumber == another.coinNumber
                     && displayName == another.displayName
                     && logo == another.logo
-                    && amount == another.amount
+                    && displayAmount == another.displayAmount
                     && anchorValue == another.anchorValue
                     && selected == another.selected
         else
@@ -74,7 +75,7 @@ class PlatformTokenVo(
         result = result * 31 + coinNumber.hashCode()
         result = result * 31 + displayName.hashCode()
         result = result * 31 + logo.hashCode()
-        result = result * 31 + amount.hashCode()
+        result = result * 31 + displayAmount.hashCode()
         result = result * 31 + anchorValue.hashCode()
         result = result * 31 + selected.hashCode()
         return result
@@ -96,10 +97,10 @@ class StableTokenVo(
     logo: String,
     val localEnable: Boolean,       // 本地启用（本地是否显示）
     val chainEnable: Boolean,       // 链上启用（是否已添加到账户）
-    amount: Long = 0,
+    displayAmount: BigDecimal = BigDecimal(0),
     anchorValue: Double = 0.00,
     selected: Boolean = false
-) : ITokenVo(accountDoId, coinNumber, displayName, logo, amount, anchorValue, selected) {
+) : ITokenVo(accountDoId, coinNumber, displayName, logo, displayAmount, anchorValue, selected) {
 
     override fun areContentsTheSame(another: ITokenVo): Boolean {
         return if (another is StableTokenVo)
@@ -114,7 +115,7 @@ class StableTokenVo(
                     && logo == another.logo
                     && localEnable == another.localEnable
                     && chainEnable == another.chainEnable
-                    && amount == another.amount
+                    && displayAmount == another.displayAmount
                     && anchorValue == another.anchorValue
                     && selected == another.selected
         else
@@ -147,7 +148,7 @@ class StableTokenVo(
         result = result * 31 + logo.hashCode()
         result = result * 31 + localEnable.hashCode()
         result = result * 31 + chainEnable.hashCode()
-        result = result * 31 + amount.hashCode()
+        result = result * 31 + displayAmount.hashCode()
         result = result * 31 + anchorValue.hashCode()
         result = result * 31 + selected.hashCode()
         return result

@@ -12,7 +12,10 @@ import com.palliums.violas.http.MarketSwapRecordDTO
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.utils.convertViolasTokenUnit
+import com.violas.wallet.utils.convertAmountToDisplayAmount
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
+import com.violas.wallet.utils.convertAmountToExchangeRate
+import com.violas.wallet.utils.convertAmountToExchangeRateStr
 import kotlinx.android.synthetic.main.activity_swap_details.*
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -72,17 +75,12 @@ class SwapDetailsActivity : BaseAppActivity() {
     }
 
     private fun initView(swapRecord: MarketSwapRecordDTO) {
-        tvFromToken.text = "${convertViolasTokenUnit(swapRecord.fromAmount)} ${swapRecord.fromName}"
-        tvToToken.text = "${convertViolasTokenUnit(swapRecord.toAmount)} ${swapRecord.toName}"
-        tvExchangeRate.text = run {
-            val rate = BigDecimal(swapRecord.toAmount).divide(
-                BigDecimal(swapRecord.fromAmount),
-                8,
-                RoundingMode.DOWN
-            ).stripTrailingZeros().toPlainString()
-
-            "1:$rate"
-        }
+        tvFromToken.text =
+            "${convertAmountToDisplayAmountStr(swapRecord.fromAmount)} ${swapRecord.fromName}"
+        tvToToken.text =
+            "${convertAmountToDisplayAmountStr(swapRecord.toAmount)} ${swapRecord.toName}"
+        tvExchangeRate.text =
+            "1:${convertAmountToExchangeRateStr(swapRecord.fromAmount, swapRecord.toAmount)}"
         tvHandlingFee.text = getString(R.string.value_null)
         tvGasFee.text = getString(R.string.value_null)
         tvOrderTime.text = formatDate(swapRecord.date, pattern = "yyyy-MM-dd HH:mm:ss")

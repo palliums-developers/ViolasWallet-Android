@@ -1,6 +1,5 @@
 package com.violas.wallet.biz
 
-import android.content.Context
 import com.palliums.utils.toMap
 import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.CoinTypes
@@ -10,6 +9,7 @@ import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexRepository
 import com.violas.wallet.ui.main.market.bean.*
+import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -19,7 +19,6 @@ import org.palliums.violascore.transaction.AccountAddress
 import org.palliums.violascore.transaction.storage.StructTag
 import org.palliums.violascore.transaction.storage.TypeTagStructTag
 import org.palliums.violascore.wallet.Account
-import java.math.BigDecimal
 
 class ExchangeManager {
 
@@ -117,7 +116,9 @@ class ExchangeManager {
                         coinNumber = bitcoinAccount?.coinNumber ?: bitcoinNumber,
                         displayName = it.displayName,
                         logo = it.logo,
-                        amount = bitcoinBalance ?: 0
+                        displayAmount = convertAmountToDisplayAmount(
+                            bitcoinBalance ?: 0
+                        )
                     )
                 )
             }
@@ -135,7 +136,9 @@ class ExchangeManager {
                         logo = it.logo,
                         localEnable = libraLocalTokens?.get(it.module)?.enable ?: false,
                         chainEnable = libraRemoteTokens?.containsKey(it.module) ?: false,
-                        amount = libraRemoteTokens?.get(it.module) ?: 0
+                        displayAmount = convertAmountToDisplayAmount(
+                            libraRemoteTokens?.get(it.module) ?: 0
+                        )
                     )
                 )
             }
@@ -153,7 +156,9 @@ class ExchangeManager {
                         logo = it.logo,
                         localEnable = violasLocalTokens?.get(it.module)?.enable ?: false,
                         chainEnable = violasRemoteTokens?.containsKey(it.module) ?: false,
-                        amount = violasRemoteTokens?.get(it.module) ?: 0
+                        displayAmount = convertAmountToDisplayAmount(
+                            violasRemoteTokens?.get(it.module) ?: 0
+                        )
                     )
                 )
             }

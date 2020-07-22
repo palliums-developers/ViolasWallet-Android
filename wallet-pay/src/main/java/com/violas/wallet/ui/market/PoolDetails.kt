@@ -12,10 +12,9 @@ import com.palliums.violas.http.MarketPoolRecordDTO
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.utils.convertViolasTokenUnit
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
+import com.violas.wallet.utils.convertAmountToExchangeRateStr
 import kotlinx.android.synthetic.main.activity_pool_details.*
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 /**
  * Created by elephant on 2020/7/15 14:32.
@@ -72,19 +71,17 @@ class PoolDetailsActivity : BaseAppActivity() {
     }
 
     private fun initView(poolRecord: MarketPoolRecordDTO) {
-        tvTokenA.text = "${convertViolasTokenUnit(poolRecord.coinAAmount)} ${poolRecord.coinAName}"
-        tvTokenB.text = "${convertViolasTokenUnit(poolRecord.coinBAmount)} ${poolRecord.coinBName}"
+        tvTokenA.text =
+            "${convertAmountToDisplayAmountStr(poolRecord.coinAAmount)} ${poolRecord.coinAName}"
+        tvTokenB.text =
+            "${convertAmountToDisplayAmountStr(poolRecord.coinBAmount)} ${poolRecord.coinBName}"
         tvLiquidityToken.text =
-            "${if (poolRecord.isAddLiquidity()) "+" else "-"} ${poolRecord.liquidityAmount}"
-        tvExchangeRate.text = run {
-            val rate = BigDecimal(poolRecord.coinBAmount).divide(
-                BigDecimal(poolRecord.coinAAmount),
-                8,
-                RoundingMode.DOWN
-            ).stripTrailingZeros().toPlainString()
-
-            "1:$rate"
-        }
+            if (poolRecord.isAddLiquidity())
+                "+ ${convertAmountToDisplayAmountStr(poolRecord.liquidityAmount)}"
+            else
+                "- ${convertAmountToDisplayAmountStr(poolRecord.liquidityAmount)}"
+        tvExchangeRate.text =
+            "1:${convertAmountToExchangeRateStr(poolRecord.coinAAmount, poolRecord.coinBAmount)}"
         tvGasFee.text = getString(R.string.value_null)
         tvOrderTime.text = formatDate(poolRecord.date, pattern = "yyyy-MM-dd HH:mm:ss")
         tvDealTime.text = getString(R.string.value_null)
@@ -121,7 +118,8 @@ class PoolDetailsActivity : BaseAppActivity() {
             if (poolRecord.isAddLiquidity())
                 R.string.market_pool_add_state_failed
             else
-                R.string.market_pool_remove_state_failed)
+                R.string.market_pool_remove_state_failed
+        )
         tvResultDesc.setTextColor(
             getColorByAttrId(R.attr.textColorFailure, this)
         )
