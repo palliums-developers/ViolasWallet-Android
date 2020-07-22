@@ -86,7 +86,7 @@ class AssetsSwapManager(
 
     @Throws(ViolasException::class)
     suspend fun swap(
-        privateKey: ByteArray,
+        pwd: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
         amountIn: Long,
@@ -95,7 +95,7 @@ class AssetsSwapManager(
         data: ByteArray
     ): String {
         return mAssetsSwapEngine.swap(
-            privateKey,
+            pwd,
             tokenFrom,
             tokenTo,
             null,

@@ -2,8 +2,6 @@ package com.violas.wallet.biz.exchange
 
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.exchange.processor.IProcessor
-import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import org.palliums.libracore.http.LibraException
 import org.palliums.violascore.http.ViolasException
@@ -47,7 +45,7 @@ internal class AssetsSwapEngine {
         UnsupportedTradingPairsException::class
     )
     suspend fun swap(
-        privateKey: ByteArray,
+        pwd: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
         payee: String?,
@@ -59,7 +57,7 @@ internal class AssetsSwapEngine {
         processors.forEach {
             if (it.hasHandle(tokenFrom, tokenTo)) {
                 return it.handle(
-                    privateKey,
+                    pwd,
                     tokenFrom,
                     tokenTo,
                     payee,

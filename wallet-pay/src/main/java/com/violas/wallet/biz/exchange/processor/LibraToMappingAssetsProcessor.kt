@@ -7,6 +7,7 @@ import com.violas.wallet.biz.exchange.AccountNotFindAddressException
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.MappingInfo
+import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -20,6 +21,7 @@ import org.palliums.libracore.transaction.optionTransactionPayload
 import org.palliums.libracore.transaction.storage.StructTag
 import org.palliums.libracore.transaction.storage.TypeTagStructTag
 import org.palliums.libracore.wallet.Account
+import java.lang.RuntimeException
 
 class LibraToMappingAssetsProcessor(
     private val supportMappingPair: HashMap<String, MappingInfo>
@@ -45,7 +47,7 @@ class LibraToMappingAssetsProcessor(
     }
 
     override suspend fun handle(
-        privateKey: ByteArray,
+        pwd: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
         payee: String?,
@@ -82,6 +84,13 @@ class LibraToMappingAssetsProcessor(
         }
 
         // 开始发起 Libra 交易
+        val simpleSecurity =
+            SimpleSecurity.instance(ContextProvider.getContext())
+
+        val fromAccount = mAccountManager.getIdentityByCoinType(tokenFrom.coinNumber)
+            ?: throw AccountNotFindAddressException()
+        val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
+            ?: throw RuntimeException("password error")
         val account = Account(KeyPair.fromSecretKey(privateKey))
 
         val typeTagFrom = TypeTagStructTag(

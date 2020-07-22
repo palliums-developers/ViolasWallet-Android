@@ -4,6 +4,7 @@ import com.palliums.content.ContextProvider
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.exchange.*
+import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -17,6 +18,7 @@ import org.palliums.violascore.transaction.optionTransactionPayload
 import org.palliums.violascore.transaction.storage.StructTag
 import org.palliums.violascore.transaction.storage.TypeTagStructTag
 import org.palliums.violascore.wallet.Account
+import java.lang.RuntimeException
 
 class ViolasToAssetsMappingProcessor(
     private val supportMappingPair: HashMap<String, MappingInfo>
@@ -41,7 +43,7 @@ class ViolasToAssetsMappingProcessor(
     }
 
     override suspend fun handle(
-        privateKey: ByteArray,
+        pwd: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
         payee: String?,
@@ -81,6 +83,13 @@ class ViolasToAssetsMappingProcessor(
             }
         }
 
+        val simpleSecurity =
+            SimpleSecurity.instance(ContextProvider.getContext())
+
+        val fromAccount = mAccountManager.getIdentityByCoinType(tokenFrom.coinNumber)
+            ?: throw AccountNotFindAddressException()
+        val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
+            ?: throw RuntimeException("password error")
         // 开始发起 Violas 交易
         val account = Account(KeyPair.fromSecretKey(privateKey))
 

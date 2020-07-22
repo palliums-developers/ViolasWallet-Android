@@ -56,18 +56,29 @@ class SupportMappingSwapPairManager : CoroutineScope by CustomIOScope() {
                 str2CoinType(it.inputCoinType) == coinTypes.coinType()
             }
             .map { mappingPair ->
-                val assetsMark = if (mappingPair.toCoin.assets == null) {
-                    CoinAssetsMark(coinTypes)
-                } else {
-                    LibraTokenAssetsMark(
-                        coinTypes,
-                        mappingPair.toCoin.assets?.module ?: "",
-                        mappingPair.toCoin.assets?.address ?: "",
-                        mappingPair.toCoin.assets?.name ?: ""
-                    )
+                val assetsMark =
+                    when (val toMappingCoinTypes = str2CoinType(mappingPair.toCoin.coinType)) {
+                        CoinTypes.BitcoinTest.coinType(),
+                        CoinTypes.Bitcoin.coinType() -> {
+                            CoinAssetsMark(CoinTypes.parseCoinType(toMappingCoinTypes))
+                        }
+                        CoinTypes.Libra.coinType(),
+                        CoinTypes.Violas.coinType() -> {
+                            LibraTokenAssetsMark(
+                                CoinTypes.parseCoinType(toMappingCoinTypes),
+                                mappingPair.toCoin.assets?.module ?: "",
+                                mappingPair.toCoin.assets?.address ?: "",
+                                mappingPair.toCoin.assets?.name ?: ""
+                            )
+                        }
+                        else -> {
+                            null
+                        }
+                    }
+                assetsMark?.let {
+                    result[assetsMark.mark()] =
+                        MappingInfo(mappingPair.lable, mappingPair.receiverAddress)
                 }
-                result[assetsMark.mark()] =
-                    MappingInfo(mappingPair.lable, mappingPair.receiverAddress)
             }
         return result
     }
