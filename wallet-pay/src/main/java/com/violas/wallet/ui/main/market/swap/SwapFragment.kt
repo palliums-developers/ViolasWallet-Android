@@ -20,8 +20,11 @@ import com.palliums.utils.stripTrailingZeros
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
+import com.violas.wallet.biz.exchange.UnsupportedTradingPairsException
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.MarketViewModel
@@ -94,13 +97,18 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         }
     }
 
-    private fun loadSwapData(){
+    private fun loadSwapData() {
         launch {
-            layoutFailureTip.visibility = View.GONE
-            showProgress()
-            val success = swapViewModel.initSwapData()
-            dismissProgress()
-            if (!success) {
+            try {
+                layoutFailureTip.visibility = View.GONE
+                showProgress()
+                val success = swapViewModel.initSwapData()
+                dismissProgress()
+                if (!success) {
+                    layoutFailureTip.visibility = View.VISIBLE
+                }
+            } catch (e: Exception) {
+                dismissProgress()
                 layoutFailureTip.visibility = View.VISIBLE
             }
         }
@@ -272,8 +280,12 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                     etFromInputBox.text.toString(),
                     etToInputBox.text.toString()
                 )
+                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                showToast(getString(R.string.hint_swap_exchange_transaction_broadcast_success))
             } catch (e: ViolasException) {
                 e.printStackTrace()
+            } catch (e: UnsupportedTradingPairsException) {
+                showToast(getString(R.string.hint_unsupported_trading_pair))
             } catch (e: LibraException) {
                 e.printStackTrace()
             } catch (e: AccountPayeeNotFindException) {

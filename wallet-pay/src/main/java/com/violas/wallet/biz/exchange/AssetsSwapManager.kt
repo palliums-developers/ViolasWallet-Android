@@ -38,6 +38,9 @@ class AssetsSwapManager(
     fun init(): Boolean {
         try {
             val supportTokens = supportTokensLoader.load()
+            if (supportTokens.isEmpty()) {
+                return false
+            }
             val supportTokensPair = getMappingMarketSupportTokens(supportTokens)
 
             mSupportTokensLiveData.postValue(supportTokens)
@@ -90,8 +93,8 @@ class AssetsSwapManager(
         amountOutMin: Long,
         path: ByteArray,
         data: ByteArray
-    ) {
-        mAssetsSwapEngine.swap(
+    ): String {
+        return mAssetsSwapEngine.swap(
             privateKey,
             tokenFrom,
             tokenTo,
@@ -190,15 +193,23 @@ class AssetsSwapManager(
                 }
 
             val assetsMark = str2CoinType(mappingPair.toCoin.coinType)?.let { coinType ->
-                if (mappingPair.toCoin.assets == null) {
-                    CoinAssetsMark(CoinTypes.parseCoinType(coinType))
-                } else {
-                    LibraTokenAssetsMark(
-                        CoinTypes.parseCoinType(coinType),
-                        mappingPair.toCoin.assets?.module ?: "",
-                        mappingPair.toCoin.assets?.address ?: "",
-                        mappingPair.toCoin.assets?.name ?: ""
-                    )
+                when (coinType) {
+                    CoinTypes.BitcoinTest.coinType(),
+                    CoinTypes.Bitcoin.coinType() -> {
+                        CoinAssetsMark(CoinTypes.parseCoinType(coinType))
+                    }
+                    CoinTypes.Libra.coinType(),
+                    CoinTypes.Violas.coinType() -> {
+                        LibraTokenAssetsMark(
+                            CoinTypes.parseCoinType(coinType),
+                            mappingPair.toCoin.assets?.module ?: "",
+                            mappingPair.toCoin.assets?.address ?: "",
+                            mappingPair.toCoin.assets?.name ?: ""
+                        )
+                    }
+                    else -> {
+                        null
+                    }
                 }
             }
             if (assetsMark != null) {
