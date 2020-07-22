@@ -35,8 +35,8 @@ class AssetsSwapManager(
     val contract = ViolasMultiTokenContract(Vm.TestNet)
 
     @WorkerThread
-    fun init() {
-        synchronized(this) {
+    fun init(): Boolean {
+        try {
             val supportTokens = supportTokensLoader.load()
             val supportTokensPair = getMappingMarketSupportTokens(supportTokens)
 
@@ -67,7 +67,11 @@ class AssetsSwapManager(
                     )
                 )
             )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
         }
+        return true
     }
 
     /**
@@ -102,6 +106,7 @@ class AssetsSwapManager(
     /**
      * 获取映射兑换交易 和 币币 交易支持的币种 bitmap
      */
+    @Throws(Exception::class)
     private fun getMappingMarketSupportTokens(supportTokens: List<ITokenVo>): HashMap<String, MutBitmap> {
         val result = HashMap<String, MutBitmap>()
 
@@ -167,7 +172,9 @@ class AssetsSwapManager(
 
     /**
      * 获取并解析处理映射币交易对
+     * @exception Exception 网络请求失败会报错
      */
+    @Throws(Exception::class)
     private fun getMappingCoinTokenPair(): java.util.HashMap<Int, List<IAssetsMark>> {
         val resultMap = java.util.HashMap<Int, List<IAssetsMark>>()
         supportMappingSwapPairManager.getMappingSwapPair().forEach { mappingPair ->

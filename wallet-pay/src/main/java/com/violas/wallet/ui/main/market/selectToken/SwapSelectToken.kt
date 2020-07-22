@@ -133,7 +133,9 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
                 loadSwapTokens()
             }
         }
-        loadSwapTokens()
+        launch(Dispatchers.IO) {
+            loadSwapTokens()
+        }
     }
 
     private fun loadSwapTokens() {
@@ -146,7 +148,9 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
                     }
                 }
                 it.isEmpty() -> {
-                    handleEmptyData(null)
+                    launch(Dispatchers.Main) {
+                        handleEmptyData(null)
+                    }
                 }
                 else -> {
                     filterData(it)

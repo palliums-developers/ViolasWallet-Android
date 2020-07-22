@@ -5,6 +5,8 @@ import android.os.Handler
 import android.os.Looper
 import android.text.AmountInputFilter
 import android.text.TextWatcher
+import android.util.Log
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.LiveData
@@ -92,8 +94,25 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         }
     }
 
+    private fun loadSwapData(){
+        launch {
+            layoutFailureTip.visibility = View.GONE
+            showProgress()
+            val success = swapViewModel.initSwapData()
+            dismissProgress()
+            if (!success) {
+                layoutFailureTip.visibility = View.VISIBLE
+            }
+        }
+    }
+
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
+
+        loadSwapData()
+        tvRetryBtn.setOnClickListener {
+            loadSwapData()
+        }
 
         etFromInputBox.hint = "0.00"
         etToInputBox.hint = "0.00"

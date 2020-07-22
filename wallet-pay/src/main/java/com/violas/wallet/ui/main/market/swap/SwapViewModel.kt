@@ -65,9 +65,6 @@ class SwapViewModel : BaseViewModel() {
     private var exchangeSwapTrialJob: Job? = null
 
     init {
-        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
-            mAssetsSwapManager.init()
-        }
         val convertToExchangeRate: (ITokenVo, ITokenVo) -> BigDecimal? =
             { fromToken, toToken ->
                 val fromAnchorValue = BigDecimal(fromToken.anchorValue.toString())
@@ -103,6 +100,12 @@ class SwapViewModel : BaseViewModel() {
         }
         exchangeRateLiveData.addSource(currToTokenLiveData) { toToken ->
             handleCurrTokenChange(currFromTokenLiveData.value, toToken)
+        }
+    }
+
+    suspend fun initSwapData(): Boolean {
+        return withContext(Dispatchers.IO) {
+            mAssetsSwapManager.init()
         }
     }
 
@@ -271,12 +274,12 @@ class SwapViewModel : BaseViewModel() {
         val tokenManager = TokenManager()
 
         val tokenMark = TokenMark(assetsMark.module, assetsMark.address, assetsMark.name)
-        val hasSucceed= tokenManager.publishToken(
+        val hasSucceed = tokenManager.publishToken(
             coinTypes,
             privateKey,
             tokenMark
         )
-        if(hasSucceed){
+        if (hasSucceed) {
             tokenManager.insert(
                 true, AssertOriginateToken(
                     tokenMark,
