@@ -221,7 +221,7 @@ class PoolRecordViewHolder(
                     itemView.context
                 )
             )
-            itemView.tvLiquidityToken.text = getString(
+            itemView.tvLiquidity.text = getString(
                 R.string.market_liquidity_token_amount_format,
                 if (it.isAddLiquidity())
                     "+ ${convertAmountToDisplayAmountStr(it.liquidityAmount)}"

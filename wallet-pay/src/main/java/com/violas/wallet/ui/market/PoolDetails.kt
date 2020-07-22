@@ -75,7 +75,7 @@ class PoolDetailsActivity : BaseAppActivity() {
             "${convertAmountToDisplayAmountStr(poolRecord.coinAAmount)} ${poolRecord.coinAName}"
         tvTokenB.text =
             "${convertAmountToDisplayAmountStr(poolRecord.coinBAmount)} ${poolRecord.coinBName}"
-        tvLiquidityToken.text =
+        tvLiquidity.text =
             if (poolRecord.isAddLiquidity())
                 "+ ${convertAmountToDisplayAmountStr(poolRecord.liquidityAmount)}"
             else

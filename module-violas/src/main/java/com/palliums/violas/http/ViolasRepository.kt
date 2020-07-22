@@ -6,7 +6,6 @@ import com.palliums.net.checkResponse
 import com.palliums.violas.error.ViolasException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.http.GET
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -180,14 +179,14 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         }
 
     @Throws(RequestException::class)
-    suspend fun getMarketPairReserveInfo(
-        coinAName: String,
-        coinBName: String
+    suspend fun getPoolLiquidityReserveInfo(
+        coinAModule: String,
+        coinBModule: String
     ) =
         checkResponse(4000) {
-            mViolasApi.getMarketPairReserveInfo(
-                coinAName,
-                coinBName
+            mViolasApi.getPoolLiquidityReserveInfo(
+                coinAModule,
+                coinBModule
             )
         }
 

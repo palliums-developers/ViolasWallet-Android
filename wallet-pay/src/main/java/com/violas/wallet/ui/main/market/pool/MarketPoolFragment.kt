@@ -21,7 +21,7 @@ import com.palliums.utils.DensityUtility
 import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.stripTrailingZeros
-import com.palliums.violas.http.LiquidityTokenDTO
+import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
@@ -30,14 +30,13 @@ import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_ADD_LIQUIDITY
-import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_GET_USER_LIQUIDITY_TOKENS
+import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_GET_USER_LIQUIDITY_LIST
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_REMOVE_LIQUIDITY
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_FIRST
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_SECOND
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
@@ -103,11 +102,11 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             } else {
                 if (accountInvalid()) return@setOnClickListener
 
-                marketPoolViewModel.getLiquidityTokensLiveData()
-                    .removeObserver(liquidityTokensObserver)
-                marketPoolViewModel.execute(action = ACTION_GET_USER_LIQUIDITY_TOKENS) {
-                    marketPoolViewModel.getLiquidityTokensLiveData()
-                        .observe(viewLifecycleOwner, liquidityTokensObserver)
+                marketPoolViewModel.getLiquidityListLiveData()
+                    .removeObserver(liquidityListObserver)
+                marketPoolViewModel.execute(action = ACTION_GET_USER_LIQUIDITY_LIST) {
+                    marketPoolViewModel.getLiquidityListLiveData()
+                        .observe(viewLifecycleOwner, liquidityListObserver)
                 }
             }
         }
@@ -227,14 +226,14 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             tvSecondBalance.visibility = View.VISIBLE
             llSecondSelectGroup.visibility = View.VISIBLE
 
-            marketPoolViewModel.getCurrFirstTokenLiveData()
+            marketPoolViewModel.getCurrCoinALiveData()
                 .observe(viewLifecycleOwner, currFirstTokenObserver)
-            marketPoolViewModel.getCurrSecondTokenLiveData()
+            marketPoolViewModel.getCurrCoinBLiveData()
                 .observe(viewLifecycleOwner, currSecondTokenObserver)
-            marketPoolViewModel.getCurrLiquidityTokenLiveData()
-                .removeObserver(currLiquidityTokenObserver)
-            marketPoolViewModel.getLiquidityTokensLiveData()
-                .removeObserver(liquidityTokensObserver)
+            marketPoolViewModel.getCurrLiquidityLiveData()
+                .removeObserver(currLiquidityObserver)
+            marketPoolViewModel.getLiquidityListLiveData()
+                .removeObserver(liquidityListObserver)
         } else {
             tvSwitchOpModeText.setText(R.string.transfer_out)
             tvFirstInputLabel.setText(R.string.pool_liquidity_token)
@@ -248,12 +247,12 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             llSecondSelectGroup.visibility = View.GONE
             adjustSecondInputBoxPaddingEnd()
 
-            marketPoolViewModel.getCurrFirstTokenLiveData()
+            marketPoolViewModel.getCurrCoinALiveData()
                 .removeObserver(currFirstTokenObserver)
-            marketPoolViewModel.getCurrSecondTokenLiveData()
+            marketPoolViewModel.getCurrCoinBLiveData()
                 .removeObserver(currSecondTokenObserver)
-            marketPoolViewModel.getCurrLiquidityTokenLiveData()
-                .observe(viewLifecycleOwner, currLiquidityTokenObserver)
+            marketPoolViewModel.getCurrLiquidityLiveData()
+                .observe(viewLifecycleOwner, currLiquidityObserver)
         }
     }
 
@@ -322,14 +321,14 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
     }
 
     //*********************************** 转出模式选择交易对逻辑 ***********************************//
-    private val currLiquidityTokenObserver = Observer<LiquidityTokenDTO?> {
+    private val currLiquidityObserver = Observer<PoolLiquidityDTO?> {
         if (it == null) {
             tvFirstSelectText.text = getString(R.string.select_token_pair)
             etSecondInputBox.hint = "0.00\n0.00"
             handleValueNull(tvFirstBalance, R.string.market_liquidity_token_balance_format)
         } else {
-            tvFirstSelectText.text = "${it.coinAName}/${it.coinBName}"
-            etSecondInputBox.hint = "0.00 ${it.coinAName}\n0.00 ${it.coinBName}"
+            tvFirstSelectText.text = "${it.coinA.displayName}/${it.coinB.displayName}"
+            etSecondInputBox.hint = "0.00 ${it.coinA.displayName}\n0.00 ${it.coinB.displayName}"
             tvFirstBalance.text = getString(
                 R.string.market_liquidity_token_balance_format,
                 convertAmountToDisplayAmountStr(it.amount)
@@ -339,30 +338,30 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
         adjustFirstInputBoxPaddingEnd()
     }
 
-    private val liquidityTokensObserver = Observer<List<LiquidityTokenDTO>?> {
+    private val liquidityListObserver = Observer<List<PoolLiquidityDTO>?> {
         if (it.isNullOrEmpty()) {
             showToast(R.string.tips_market_pool_select_token_pair_empty)
         } else {
             val displayList = it.map { item ->
-                "${item.coinAName}/${item.coinBName}"
+                "${item.coinA.displayName}/${item.coinB.displayName}"
             } as MutableList
-            showSelectLiquidityTokenPopup(displayList)
+            showSelectLiquidityPopup(displayList)
         }
     }
 
-    private val selectLiquidityTokenArrowUpAnimator by lazy {
+    private val selectLiquidityArrowUpAnimator by lazy {
         ObjectAnimator.ofFloat(ivSecondSelectArrow, "rotation", 0F, 180F)
             .setDuration(360)
     }
 
-    private val selectLiquidityTokenArrowDownAnimator by lazy {
+    private val selectLiquidityArrowDownAnimator by lazy {
         ObjectAnimator.ofFloat(ivSecondSelectArrow, "rotation", 180F, 360F)
             .setDuration(360)
     }
 
-    private fun showSelectLiquidityTokenPopup(displayTokenPairs: MutableList<String>) {
-        val currPosition = marketPoolViewModel.getCurrLiquidityTokenPosition()
-        selectLiquidityTokenArrowUpAnimator.start()
+    private fun showSelectLiquidityPopup(displayTokenPairs: MutableList<String>) {
+        val currPosition = marketPoolViewModel.getCurrLiquidityPosition()
+        selectLiquidityArrowUpAnimator.start()
         XPopup.Builder(requireContext())
             .hasShadowBg(false)
             .popupAnimation(PopupAnimation.ScrollAlphaFromTop)
@@ -370,7 +369,7 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             .setPopupCallback(
                 object : EnhancedPopupCallback() {
                     override fun onDismissBefore() {
-                        selectLiquidityTokenArrowDownAnimator.start()
+                        selectLiquidityArrowDownAnimator.start()
                     }
                 })
             .asCustom(
@@ -379,7 +378,7 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
                     currPosition,
                     displayTokenPairs
                 ) {
-                    marketPoolViewModel.selectLiquidityToken(it, currPosition)
+                    marketPoolViewModel.selectLiquidity(it, currPosition)
                 }
             )
             .show()
@@ -424,7 +423,7 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
                 if (selectFirst) ACTION_POOL_SELECT_FIRST else ACTION_POOL_SELECT_SECOND
             )
             .setCallback {
-                marketPoolViewModel.selectToken(selectFirst, it as StableTokenVo)
+                marketPoolViewModel.selectCoin(selectFirst, it as StableTokenVo)
             }
             .show(childFragmentManager)
     }
@@ -439,9 +438,9 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
 
     override fun getCurrToken(action: Int): ITokenVo? {
         return if (action == ACTION_POOL_SELECT_FIRST)
-            marketPoolViewModel.getCurrFirstTokenLiveData().value
+            marketPoolViewModel.getCurrCoinALiveData().value
         else
-            marketPoolViewModel.getCurrSecondTokenLiveData().value
+            marketPoolViewModel.getCurrCoinBLiveData().value
     }
 
     //*********************************** 输入框逻辑 ***********************************//
@@ -522,30 +521,30 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
 
     //*********************************** 转入转出逻辑 ***********************************//
     private fun transferInPreconditionsInvalid(): Boolean {
-        val firstCoin = marketPoolViewModel.getCurrFirstTokenLiveData().value
-        val secondCoin = marketPoolViewModel.getCurrSecondTokenLiveData().value
+        val firstCoin = marketPoolViewModel.getCurrCoinALiveData().value
+        val secondCoin = marketPoolViewModel.getCurrCoinBLiveData().value
         if (firstCoin == null || secondCoin == null) {
             showToast(R.string.tips_market_add_liquidity_coin_not_selected)
             return true
         }
 
-        val firstAmount = etFirstInputBox.text.toString().trim()
-        val secondAmount = etSecondInputBox.text.toString().trim()
-        if (firstAmount.isEmpty() && secondAmount.isEmpty()) {
+        val firstAmountStr = etFirstInputBox.text.toString().trim()
+        val secondAmountStr = etSecondInputBox.text.toString().trim()
+        if (firstAmountStr.isEmpty() && secondAmountStr.isEmpty()) {
             showToast(R.string.tips_market_add_liquidity_amount_not_input)
             return true
         }
 
-        if (BigDecimal(firstAmount) > firstCoin.displayAmount) {
+        if (BigDecimal(firstAmountStr) > firstCoin.displayAmount) {
             val prefix =
-                if (BigDecimal(secondAmount) > secondCoin.displayAmount) {
+                if (BigDecimal(secondAmountStr) > secondCoin.displayAmount) {
                     "${firstCoin.module}/${secondCoin.module}"
                 } else {
                     firstCoin.module
                 }
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
             return true
-        } else if (BigDecimal(secondAmount) > secondCoin.displayAmount) {
+        } else if (BigDecimal(secondAmountStr) > secondCoin.displayAmount) {
             val prefix = firstCoin.module
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
             return true
@@ -555,20 +554,19 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
     }
 
     private fun transferOutPreconditionsInvalid(): Boolean {
-        val liquidityToken =
-            marketPoolViewModel.getCurrLiquidityTokenLiveData().value
-        if (liquidityToken == null) {
+        val liquidity = marketPoolViewModel.getCurrLiquidityLiveData().value
+        if (liquidity == null) {
             showToast(R.string.tips_market_remove_liquidity_pair_not_selected)
             return true
         }
 
-        val liquidityAmount = etFirstInputBox.text.toString().trim()
-        if (liquidityAmount.isEmpty()) {
+        val liquidityAmountStr = etFirstInputBox.text.toString().trim()
+        if (liquidityAmountStr.isEmpty()) {
             showToast(R.string.tips_market_remove_liquidity_amount_not_input)
             return true
         }
 
-        if (convertDisplayAmountToAmount(liquidityAmount) > liquidityToken.amount) {
+        if (convertDisplayAmountToAmount(liquidityAmountStr) > liquidity.amount) {
             showToast(getString(R.string.tips_market_insufficient_balance_format, ""))
             return true
         }

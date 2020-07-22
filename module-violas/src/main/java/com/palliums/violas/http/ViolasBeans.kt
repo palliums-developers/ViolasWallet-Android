@@ -158,9 +158,9 @@ data class MarketCurrenciesDTO(
 
 @Keep
 data class MarketCurrencyDTO(
-    val address: String,
-    val module: String,
     val name: String,
+    val module: String,
+    val address: String,
     @SerializedName(value = "show_name")
     val displayName: String,
     @SerializedName(value = "icon")
@@ -217,28 +217,34 @@ data class MarketPoolRecordDTO(
 @Keep
 data class UserPoolInfoDTO(
     @SerializedName(value = "total_token")
-    val totalLiquidityAmount: String,
+    val liquidityTotalAmount: String,
     @SerializedName(value = "balance")
-    val liquidityTokens: List<LiquidityTokenDTO>?
+    val liquidityList: List<PoolLiquidityDTO>?
 )
 
 @Keep
-data class LiquidityTokenDTO(
-    @SerializedName(value = "coin_a_index")
-    val coinAIndex: Int,
-    @SerializedName(value = "coin_a_name")
-    val coinAName: String,
-    @SerializedName(value = "coin_a_value")
-    val coinAAmount: String,
-    @SerializedName(value = "coin_b_index")
-    val coinBIndex: Int,
-    @SerializedName(value = "coin_b_name")
-    val coinBName: String,
-    @SerializedName(value = "coin_b_value")
-    val coinBAmount: String,
+data class PoolLiquidityDTO(
+    @SerializedName(value = "coin_a")
+    val coinA: CoinDTO,
+    @SerializedName(value = "coin_b")
+    val coinB: CoinDTO,
     @SerializedName(value = "token")
     val amount: BigDecimal
-)
+) {
+    @Keep
+    data class CoinDTO(
+        val name: String,
+        val module: String,
+        @SerializedName(value = "module_address")
+        val address: String,
+        @SerializedName(value = "index")
+        val marketIndex: Int,
+        @SerializedName(value = "show_name")
+        val displayName: String,
+        @SerializedName(value = "value")
+        val amount: BigDecimal
+    )
+}
 
 @Keep
 data class AddPoolLiquidityEstimateResultDTO(
@@ -261,7 +267,7 @@ data class RemovePoolLiquidityEstimateResultDTO(
 )
 
 @Keep
-data class MarketPairReserveInfoDTO(
+data class PoolLiquidityReserveInfoDTO(
     @SerializedName(value = "liquidity_total_supply")
     val liquidityTotalAmount: BigDecimal,
     @SerializedName(value = "coina")
@@ -271,8 +277,10 @@ data class MarketPairReserveInfoDTO(
 ) {
     @Keep
     data class CoinDTO(
-        val index: Int,
-        val name: String,
+        @SerializedName(value = "name")
+        val module: String,
+        @SerializedName(value = "index")
+        val marketIndex: Int,
         @SerializedName(value = "value")
         val amount: BigDecimal
     )

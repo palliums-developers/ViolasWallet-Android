@@ -1,6 +1,7 @@
 package com.violas.wallet.biz
 
 import com.palliums.utils.toMap
+import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
@@ -8,7 +9,9 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexRepository
-import com.violas.wallet.ui.main.market.bean.*
+import com.violas.wallet.ui.main.market.bean.ITokenVo
+import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
+import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import kotlinx.coroutines.async
@@ -213,8 +216,8 @@ class ExchangeManager {
 
     suspend fun removeLiquidity(
         privateKey: ByteArray,
-        coinA: StableTokenVo,
-        coinB: StableTokenVo,
+        coinA: PoolLiquidityDTO.CoinDTO,
+        coinB: PoolLiquidityDTO.CoinDTO,
         amountADesired: Long,
         amountBDesired: Long,
         liquidityAmount: Long
