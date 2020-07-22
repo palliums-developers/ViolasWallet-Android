@@ -35,9 +35,12 @@ class AssetsSwapManager(
     val contract = ViolasMultiTokenContract(Vm.TestNet)
 
     @WorkerThread
-    fun init() {
-        synchronized(this) {
+    fun init(): Boolean {
+        try {
             val supportTokens = supportTokensLoader.load()
+            if (supportTokens.isEmpty()) {
+                return false
+            }
             val supportTokensPair = getMappingMarketSupportTokens(supportTokens)
 
             mSupportTokensLiveData.postValue(supportTokens)
@@ -67,7 +70,11 @@ class AssetsSwapManager(
                     )
                 )
             )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
         }
+        return true
     }
 
     /**
@@ -79,16 +86,16 @@ class AssetsSwapManager(
 
     @Throws(ViolasException::class)
     suspend fun swap(
-        privateKey: ByteArray,
+        pwd: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
         amountIn: Long,
         amountOutMin: Long,
         path: ByteArray,
         data: ByteArray
-    ) {
-        mAssetsSwapEngine.swap(
-            privateKey,
+    ): String {
+        return mAssetsSwapEngine.swap(
+            pwd,
             tokenFrom,
             tokenTo,
             null,
@@ -102,6 +109,7 @@ class AssetsSwapManager(
     /**
      * 获取映射兑换交易 和 币币 交易支持的币种 bitmap
      */
+    @Throws(Exception::class)
     private fun getMappingMarketSupportTokens(supportTokens: List<ITokenVo>): HashMap<String, MutBitmap> {
         val result = HashMap<String, MutBitmap>()
 
@@ -167,7 +175,9 @@ class AssetsSwapManager(
 
     /**
      * 获取并解析处理映射币交易对
+     * @exception Exception 网络请求失败会报错
      */
+    @Throws(Exception::class)
     private fun getMappingCoinTokenPair(): java.util.HashMap<Int, List<IAssetsMark>> {
         val resultMap = java.util.HashMap<Int, List<IAssetsMark>>()
         supportMappingSwapPairManager.getMappingSwapPair().forEach { mappingPair ->
@@ -183,15 +193,23 @@ class AssetsSwapManager(
                 }
 
             val assetsMark = str2CoinType(mappingPair.toCoin.coinType)?.let { coinType ->
-                if (mappingPair.toCoin.assets == null) {
-                    CoinAssetsMark(CoinTypes.parseCoinType(coinType))
-                } else {
-                    LibraTokenAssetsMark(
-                        CoinTypes.parseCoinType(coinType),
-                        mappingPair.toCoin.assets?.module ?: "",
-                        mappingPair.toCoin.assets?.address ?: "",
-                        mappingPair.toCoin.assets?.name ?: ""
-                    )
+                when (coinType) {
+                    CoinTypes.BitcoinTest.coinType(),
+                    CoinTypes.Bitcoin.coinType() -> {
+                        CoinAssetsMark(CoinTypes.parseCoinType(coinType))
+                    }
+                    CoinTypes.Libra.coinType(),
+                    CoinTypes.Violas.coinType() -> {
+                        LibraTokenAssetsMark(
+                            CoinTypes.parseCoinType(coinType),
+                            mappingPair.toCoin.assets?.module ?: "",
+                            mappingPair.toCoin.assets?.address ?: "",
+                            mappingPair.toCoin.assets?.name ?: ""
+                        )
+                    }
+                    else -> {
+                        null
+                    }
                 }
             }
             if (assetsMark != null) {

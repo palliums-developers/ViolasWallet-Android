@@ -8,7 +8,7 @@ interface IProcessor {
 
     @WorkerThread
     suspend fun handle(
-        privateKey: ByteArray,
+        pwd: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
         payee: String?,

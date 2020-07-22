@@ -3,6 +3,7 @@ package com.violas.wallet.biz.exchange
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.util.concurrent.CountDownLatch
 
@@ -12,11 +13,15 @@ class NetWorkSupportTokensLoader : ISupportTokensLoader {
     }
 
     override fun load(): List<ITokenVo> {
-        var result = ArrayList<ITokenVo>()
+        val result = ArrayList<ITokenVo>()
         val countDownLatch = CountDownLatch(1)
-        GlobalScope.launch {
-            result.addAll(mExchangeManager.getMarketSupportTokens())
-            countDownLatch.countDown()
+        GlobalScope.launch(SupervisorJob()) {
+            try {
+                result.addAll(mExchangeManager.getMarketSupportTokens())
+                countDownLatch.countDown()
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
         }
         countDownLatch.await()
         return result

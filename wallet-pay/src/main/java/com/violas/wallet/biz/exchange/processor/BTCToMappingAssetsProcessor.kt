@@ -1,5 +1,6 @@
 package com.violas.wallet.biz.exchange.processor
 
+import com.palliums.content.ContextProvider
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bitcoin.BitcoinOutputStream
 import com.quincysx.crypto.bitcoin.script.Script
@@ -11,6 +12,7 @@ import com.violas.wallet.biz.exchange.AccountNotFindAddressException
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.MappingInfo
+import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
@@ -18,6 +20,7 @@ import com.violas.wallet.ui.main.market.bean.*
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.lang.RuntimeException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.coroutines.resume
@@ -47,7 +50,7 @@ class BTCToMappingAssetsProcessor(
     }
 
     override suspend fun handle(
-        privateKey: ByteArray,
+        pwd: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
         payee: String?,
@@ -84,6 +87,14 @@ class BTCToMappingAssetsProcessor(
                 tokenTo
             )
         }
+
+        val simpleSecurity =
+            SimpleSecurity.instance(ContextProvider.getContext())
+
+        val fromAccount = mAccountManager.getIdentityByCoinType(tokenFrom.coinNumber)
+            ?: throw AccountNotFindAddressException()
+        val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
+            ?: throw RuntimeException("password error")
 
         val mTransactionManager: TransactionManager =
             TransactionManager(arrayListOf(sendAccount.address))

@@ -72,8 +72,8 @@ ext {
             libphonenumber                         : '8.11.0',
 
             /************************* Network *************************/
-            okhttp3                                : '4.2.1',
-            retrofit2                              : '2.6.2',
+            okhttp3                                : '4.8.0',
+            retrofit2                              : '2.9.0',
             grpc                                   : '1.23.0',
             socketio                               : '1.0.0',
 

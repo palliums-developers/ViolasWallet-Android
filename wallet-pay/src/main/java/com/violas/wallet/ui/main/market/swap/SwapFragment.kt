@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.AmountInputFilter
 import android.text.TextWatcher
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.LiveData
@@ -15,11 +16,13 @@ import com.palliums.extensions.show
 import com.palliums.net.LoadState
 import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
+import com.violas.wallet.biz.exchange.UnsupportedTradingPairsException
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.MarketViewModel
@@ -31,8 +34,6 @@ import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
 import com.violas.wallet.ui.main.market.selectToken.SwapTokensDataResourcesBridge
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.convertAmountToDisplayUnit
-import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.fragment_swap.*
@@ -92,8 +93,30 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         }
     }
 
+    private fun loadSwapData() {
+        launch {
+            try {
+                layoutFailureTip.visibility = View.GONE
+                showProgress()
+                val success = swapViewModel.initSwapData()
+                dismissProgress()
+                if (!success) {
+                    layoutFailureTip.visibility = View.VISIBLE
+                }
+            } catch (e: Exception) {
+                dismissProgress()
+                layoutFailureTip.visibility = View.VISIBLE
+            }
+        }
+    }
+
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
+
+        loadSwapData()
+        tvRetryBtn.setOnClickListener {
+            loadSwapData()
+        }
 
         etFromInputBox.hint = "0.00"
         etToInputBox.hint = "0.00"
@@ -150,9 +173,9 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                 try {
                     val defaultAccount = mAccountManager.getDefaultAccount()
                     dismissProgress()
-                    authenticateAccount(defaultAccount, mAccountManager) {
-                        swap(it)
-                    }
+                    authenticateAccount(defaultAccount, mAccountManager, passwordCallback = {
+                        swap(it.toByteArray())
+                    })
                 } catch (e: Exception) {
                     dismissProgress()
                 }
@@ -244,24 +267,29 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         BalanceSubscribeHub.observe(this, toAssertsAmountSubscriber)
     }
 
-    private fun swap(key: ByteArray) {
+    private fun swap(pwd: ByteArray) {
         showProgress()
         launch(Dispatchers.IO) {
             try {
                 swapViewModel.swap(
-                    key,
+                    pwd,
                     etFromInputBox.text.toString(),
                     etToInputBox.text.toString()
                 )
+                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                showToast(getString(R.string.hint_swap_exchange_transaction_broadcast_success))
             } catch (e: ViolasException) {
                 e.printStackTrace()
+            } catch (e: UnsupportedTradingPairsException) {
+                showToast(getString(R.string.hint_unsupported_trading_pair))
             } catch (e: LibraException) {
                 e.printStackTrace()
             } catch (e: AccountPayeeNotFindException) {
                 showToast(getString(R.string.hint_payee_account_not_active))
             } catch (e: AccountPayeeTokenNotActiveException) {
-                showPublishTokenDialog(key, e)
+                showPublishTokenDialog(pwd, e)
             } catch (e: Exception) {
+                e.printStackTrace()
                 showToast(getString(R.string.hint_unknown_error))
             }
             dismissProgress()
@@ -269,7 +297,7 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
     }
 
     private fun showPublishTokenDialog(
-        key: ByteArray,
+        pwd: ByteArray,
         e: AccountPayeeTokenNotActiveException
     ) {
         PublishTokenDialog().setConfirmListener {
@@ -277,8 +305,8 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
             launch(Dispatchers.IO) {
                 showProgress()
                 try {
-                    if (swapViewModel.publishToken(key, e.coinTypes, e.assetsMark)) {
-                        swap(key)
+                    if (swapViewModel.publishToken(pwd, e.coinTypes, e.assetsMark)) {
+                        swap(pwd)
                     } else {
                         showToast(R.string.desc_transaction_state_add_currency_failure)
                     }

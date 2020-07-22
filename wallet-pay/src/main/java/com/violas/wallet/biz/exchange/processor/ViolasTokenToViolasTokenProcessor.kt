@@ -1,11 +1,13 @@
 package com.violas.wallet.biz.exchange.processor
 
+import com.palliums.content.ContextProvider
 import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.exchange.AccountNotFindAddressException
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
+import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -17,6 +19,7 @@ import org.palliums.violascore.transaction.AccountAddress
 import org.palliums.violascore.transaction.storage.StructTag
 import org.palliums.violascore.transaction.storage.TypeTagStructTag
 import org.palliums.violascore.wallet.Account
+import java.lang.RuntimeException
 
 class ViolasTokenToViolasTokenProcessor : IProcessor {
 
@@ -45,7 +48,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         AccountPayeeTokenNotActiveException::class
     )
     override suspend fun handle(
-        privateKey: ByteArray,
+        pwd: ByteArray,
         tokenFrom: ITokenVo,
         tokenTo: ITokenVo,
         payee: String?,
@@ -57,9 +60,10 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         tokenFrom as StableTokenVo
         tokenTo as StableTokenVo
 
-        val payeeAddress =
-            payee ?: mAccountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())?.address
+        val accountDo = mAccountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
             ?: throw AccountNotFindAddressException()
+
+        val payeeAddress = payee ?: accountDo.address
 
         // 开始检查 Violas 账户的基本信息
         // 收款地址状态
@@ -80,6 +84,11 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
             )
         }
 
+        val simpleSecurity =
+            SimpleSecurity.instance(ContextProvider.getContext())
+
+        val privateKey = simpleSecurity.decrypt(pwd, accountDo.privateKey)
+            ?: throw RuntimeException("password error")
         // 开始发起 Violas 交易
         val account = Account(KeyPair.fromSecretKey(privateKey))
 

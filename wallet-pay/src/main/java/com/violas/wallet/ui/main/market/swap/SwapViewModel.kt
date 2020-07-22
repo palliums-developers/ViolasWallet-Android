@@ -5,6 +5,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
+import com.palliums.content.ContextProvider
 import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.violas.bean.TokenMark
 import com.quincysx.crypto.CoinTypes
@@ -14,6 +15,7 @@ import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.biz.exchange.AssetsSwapManager
 import com.violas.wallet.biz.exchange.NetWorkSupportTokensLoader
 import com.violas.wallet.biz.exchange.SupportMappingSwapPairManager
+import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.*
 import com.violas.wallet.utils.convertAmountToDisplayUnit
@@ -65,9 +67,6 @@ class SwapViewModel : BaseViewModel() {
     private var exchangeSwapTrialJob: Job? = null
 
     init {
-        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
-            mAssetsSwapManager.init()
-        }
         val convertToExchangeRate: (ITokenVo, ITokenVo) -> BigDecimal? =
             { fromToken, toToken ->
                 val fromAnchorValue = BigDecimal(fromToken.anchorValue.toString())
@@ -103,6 +102,12 @@ class SwapViewModel : BaseViewModel() {
         }
         exchangeRateLiveData.addSource(currToTokenLiveData) { toToken ->
             handleCurrTokenChange(currFromTokenLiveData.value, toToken)
+        }
+    }
+
+    suspend fun initSwapData(): Boolean {
+        return withContext(Dispatchers.IO) {
+            mAssetsSwapManager.init()
         }
     }
 
@@ -217,7 +222,7 @@ class SwapViewModel : BaseViewModel() {
         }
     }
 
-    suspend fun swap(key: ByteArray, inputAmountStr: String, outputAmountStr: String) =
+    suspend fun swap(pwd: ByteArray, inputAmountStr: String, outputAmountStr: String) =
         withContext(Dispatchers.IO) {
             val inputToken = currFromTokenLiveData.value!!
             val outputToken = currToTokenLiveData.value!!
@@ -240,7 +245,7 @@ class SwapViewModel : BaseViewModel() {
             }.toByteArray()
 
             mAssetsSwapManager.swap(
-                key,
+                pwd,
                 inputToken,
                 outputToken,
                 inputAmount,
@@ -260,7 +265,7 @@ class SwapViewModel : BaseViewModel() {
      */
     @Throws(RuntimeException::class)
     suspend fun publishToken(
-        privateKey: ByteArray,
+        pwd: ByteArray,
         coinTypes: CoinTypes,
         assetsMark: ITokenVo
     ): Boolean {
@@ -270,13 +275,19 @@ class SwapViewModel : BaseViewModel() {
         assetsMark as StableTokenVo
         val tokenManager = TokenManager()
 
+        val simpleSecurity =
+            SimpleSecurity.instance(ContextProvider.getContext())
+
+        val privateKey = simpleSecurity.decrypt(pwd, identityByCoinType.privateKey)
+            ?: throw RuntimeException("password error")
+
         val tokenMark = TokenMark(assetsMark.module, assetsMark.address, assetsMark.name)
-        val hasSucceed= tokenManager.publishToken(
+        val hasSucceed = tokenManager.publishToken(
             coinTypes,
             privateKey,
             tokenMark
         )
-        if(hasSucceed){
+        if (hasSucceed) {
             tokenManager.insert(
                 true, AssertOriginateToken(
                     tokenMark,
