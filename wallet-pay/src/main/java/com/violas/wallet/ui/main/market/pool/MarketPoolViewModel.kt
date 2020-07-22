@@ -65,9 +65,9 @@ class MarketPoolViewModel : BaseViewModel() {
     // 资金池通证及占比
     private val poolTokenAndPoolShareLiveData = MediatorLiveData<Pair<String, String>?>()
 
-    // 输入框文本变化
-    private val firstInputTextLiveData = MutableLiveData<String>()
-    private val secondInputTextLiveData = MutableLiveData<String>()
+    // 输入框文本
+    private val inputTextALiveData = MutableLiveData<String>()
+    private val inputTextBLiveData = MutableLiveData<String>()
 
     private val exchangeManager by lazy { ExchangeManager() }
     private var violasAccountDO: AccountDO? = null
@@ -82,8 +82,8 @@ class MarketPoolViewModel : BaseViewModel() {
 
             exchangeRateLiveData.postValue(null)
 
-            firstInputTextLiveData.postValue("")
-            secondInputTextLiveData.postValue("")
+            inputTextALiveData.postValue("")
+            inputTextBLiveData.postValue("")
         }
     }
 
@@ -102,7 +102,7 @@ class MarketPoolViewModel : BaseViewModel() {
 
             // 切换操作模式时，清除second input box的文本
             cancelEstimateAmountJob()
-            secondInputTextLiveData.postValue("")
+            inputTextBLiveData.postValue("")
         }
     }
 
@@ -120,17 +120,17 @@ class MarketPoolViewModel : BaseViewModel() {
     }
 
     fun selectCoin(selectCoinA: Boolean, selected: StableTokenVo) {
-        // 选择Coin A
+        // 选择 Coin A
         if (selectCoinA) {
             val currCoinA = currCoinALiveData.value
             if (selected == currCoinA) return
 
-            // 更新选择的First Token
+            // 更新选择的 Coin A
             currCoinALiveData.postValue(selected)
 
             val currCoinB = currCoinBLiveData.value
             if (selected == currCoinB) {
-                // 交换Second Token位置
+                // 交换 Coin B 位置
                 currCoinBLiveData.postValue(currCoinA)
 
                 // 交换位置重新计算兑换率
@@ -147,28 +147,28 @@ class MarketPoolViewModel : BaseViewModel() {
             return
         }
 
-        // 选择Second Token
-        val currSecondToken = currCoinBLiveData.value
-        if (selected == currSecondToken) return
+        // 选择 Coin B
+        val currCoinB = currCoinBLiveData.value
+        if (selected == currCoinB) return
 
-        // 更新选择的Second Token
+        // 更新选择的 Coin B
         currCoinBLiveData.postValue(selected)
 
-        val currFirstToken = currCoinALiveData.value
-        if (selected == currFirstToken) {
-            // 交换First Token位置
-            currCoinALiveData.postValue(currSecondToken)
+        val currCoinA = currCoinALiveData.value
+        if (selected == currCoinA) {
+            // 交换 Coin A 位置
+            currCoinALiveData.postValue(currCoinB)
 
             // 交换位置重新计算兑换率
-            if (currSecondToken != null) {
-                calculateExchangeRate(currSecondToken.module)
+            if (currCoinB != null) {
+                calculateExchangeRate(currCoinB.module)
             }
             return
         }
 
         // 转入模式下选择了新的交易对，获取交易对储备信息
-        if (currFirstToken != null) {
-            getLiquidityReserveInfo(currFirstToken.module, selected.module)
+        if (currCoinA != null) {
+            getLiquidityReserveInfo(currCoinA.module, selected.module)
         }
     }
 
@@ -265,58 +265,61 @@ class MarketPoolViewModel : BaseViewModel() {
     }
 
     //*********************************** 输入金额联动方法 ***********************************//
-    fun getFirstInputTextLiveData(): MutableLiveData<String> {
-        return firstInputTextLiveData
+    fun getInputTextALiveData(): MutableLiveData<String> {
+        return inputTextALiveData
     }
 
-    fun getSecondInputTextLiveData(): MutableLiveData<String> {
-        return secondInputTextLiveData
+    fun getInputTextBLiveData(): MutableLiveData<String> {
+        return inputTextBLiveData
     }
 
-    fun estimateFirstTokenTransferIntoAmount(secondInputAmount: String?) {
+    fun estimateCoinATransferIntoAmount(secondInputAmountStr: String?) {
         liquidityReserveInfo ?: return
         currCoinALiveData.value ?: return
-        val secondToken = currCoinBLiveData.value ?: return
+        val coinB = currCoinBLiveData.value ?: return
 
         cancelEstimateAmountJob()
         estimateAmountJob = viewModelScope.launch {
             delay(100)
 
             val result = withContext(Dispatchers.IO) {
-                return@withContext if (secondInputAmount.isNullOrBlank())
+                return@withContext if (secondInputAmountStr.isNullOrBlank())
                     ""
                 else
-                    calculateTransferIntoAmount(secondToken.module, secondInputAmount)
+                    calculateTransferIntoAmount(coinB.module, secondInputAmountStr)
             }
-            secondInputTextLiveData.postValue(result)
+            inputTextBLiveData.postValue(result)
 
             estimateAmountJob = null
         }
     }
 
-    fun estimateSecondTokenTransferIntoAmount(firstInputAmount: String?) {
+    fun estimateCoinBTransferIntoAmount(firstInputAmountStr: String?) {
         liquidityReserveInfo ?: return
         currCoinBLiveData.value ?: return
-        val firstToken = currCoinALiveData.value ?: return
+        val coinA = currCoinALiveData.value ?: return
 
         cancelEstimateAmountJob()
         estimateAmountJob = viewModelScope.launch {
             delay(100)
 
             val result = withContext(Dispatchers.IO) {
-                return@withContext if (firstInputAmount.isNullOrBlank())
+                return@withContext if (firstInputAmountStr.isNullOrBlank())
                     ""
                 else
-                    calculateTransferIntoAmount(firstToken.module, firstInputAmount)
+                    calculateTransferIntoAmount(coinA.module, firstInputAmountStr)
             }
-            secondInputTextLiveData.postValue(result)
+            inputTextBLiveData.postValue(result)
 
             estimateAmountJob = null
         }
     }
 
-    private fun calculateTransferIntoAmount(inputCoinModule: String, inputAmount: String): String {
-        return BigDecimal(inputAmount)
+    private fun calculateTransferIntoAmount(
+        inputCoinModule: String,
+        inputAmountStr: String
+    ): String {
+        return BigDecimal(inputAmountStr)
             .multiply(
                 if (inputCoinModule == liquidityReserveInfo!!.coinA.module)
                     liquidityReserveInfo!!.coinB.amount
@@ -334,7 +337,7 @@ class MarketPoolViewModel : BaseViewModel() {
             .stripTrailingZeros().toPlainString()
     }
 
-    fun estimateTokensTransferOutAmount(inputLiquidityAmount: String?) {
+    fun estimateCoinsTransferOutAmount(inputAmountStr: String?) {
         liquidityReserveInfo ?: return
         val liquidity = currLiquidityLiveData.value ?: return
 
@@ -343,17 +346,17 @@ class MarketPoolViewModel : BaseViewModel() {
             delay(100)
 
             val result = withContext(Dispatchers.IO) {
-                return@withContext if (inputLiquidityAmount.isNullOrBlank()) {
+                return@withContext if (inputAmountStr.isNullOrBlank()) {
                     ""
                 } else {
                     val amounts = calculateTransferOutAmounts(
                         liquidity.coinA.module,
-                        BigDecimal(inputLiquidityAmount)
+                        BigDecimal(inputAmountStr)
                     )
-                    "${amounts.first} ${liquidity.coinA.displayName}\n${amounts.second} ${liquidity.coinB.displayName}"
+                    "${amounts.first.toPlainString()} ${liquidity.coinA.displayName}\n${amounts.second.toPlainString()} ${liquidity.coinB.displayName}"
                 }
             }
-            secondInputTextLiveData.postValue(result)
+            inputTextBLiveData.postValue(result)
 
             estimateAmountJob = null
         }
@@ -427,8 +430,12 @@ class MarketPoolViewModel : BaseViewModel() {
                     amountBDesired = convertDisplayAmountToAmount(params[2] as String).toLong()
                 )
 
-                firstInputTextLiveData.postValue("")
-                secondInputTextLiveData.postValue("")
+                liquidityReserveInfo = null
+                inputTextALiveData.postValue("")
+                inputTextBLiveData.postValue("")
+                currCoinALiveData.postValue(null)
+                currCoinBLiveData.postValue(null)
+                exchangeRateLiveData.postValue(null)
             }
 
             ACTION_REMOVE_LIQUIDITY -> {
@@ -445,8 +452,11 @@ class MarketPoolViewModel : BaseViewModel() {
                     liquidityAmount = liquidityAmount.toLong()
                 )
 
-                firstInputTextLiveData.postValue("")
-                secondInputTextLiveData.postValue("")
+                liquidityReserveInfo = null
+                inputTextALiveData.postValue("")
+                inputTextBLiveData.postValue("")
+                currLiquidityLiveData.postValue(null)
+                exchangeRateLiveData.postValue(null)
             }
 
             else -> {
