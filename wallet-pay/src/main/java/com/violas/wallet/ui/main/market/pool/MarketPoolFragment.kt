@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -17,10 +18,7 @@ import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
 import com.palliums.extensions.show
 import com.palliums.net.LoadState
-import com.palliums.utils.DensityUtility
-import com.palliums.utils.TextWatcherSimple
-import com.palliums.utils.getColorByAttrId
-import com.palliums.utils.stripTrailingZeros
+import com.palliums.utils.*
 import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
@@ -219,13 +217,19 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             tvInputLabelA.setText(R.string.transfer_in)
             tvInputLabelB.setText(R.string.transfer_in)
             btnPositive.setText(R.string.action_transfer_in_nbsp)
+
             etInputBoxB.filters = arrayOf(AmountInputFilter(12, 6))
             etInputBoxB.inputType =
                 InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
             etInputBoxB.isEnabled = true
             etInputBoxB.requestLayout()
+
             tvBalanceB.visibility = View.VISIBLE
             llSelectGroupB.visibility = View.VISIBLE
+
+            ivModeIcon.setImageResource(
+                getResourceId(R.attr.marketPoolAndIcon, requireContext())
+            )
 
             marketPoolViewModel.getCurrCoinALiveData()
                 .observe(viewLifecycleOwner, currCoinAObserver)
@@ -240,13 +244,19 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             tvInputLabelA.setText(R.string.pool_liquidity_token)
             tvInputLabelB.setText(R.string.transfer_out)
             btnPositive.setText(R.string.action_transfer_out_nbsp)
+
             etInputBoxB.filters = arrayOf()
             etInputBoxB.inputType =
                 InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
             etInputBoxB.isEnabled = false
+            adjustInputBoxBPaddingEnd()
+
             tvBalanceB.visibility = View.GONE
             llSelectGroupB.visibility = View.GONE
-            adjustInputBoxBPaddingEnd()
+
+            ivModeIcon.setImageResource(
+                getResourceId(R.attr.marketPoolOutIcon, requireContext())
+            )
 
             marketPoolViewModel.getCurrCoinALiveData()
                 .removeObserver(currCoinAObserver)

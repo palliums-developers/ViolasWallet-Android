@@ -28,18 +28,15 @@
         app:layout_constraintTop_toBottomOf="@id/tvLiquidityAmount"
         tools:text="999 VLSUSD" />
 
-    <TextView
-        android:id="@+id/tvAnd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/iivAndIcon"
+        android:layout_width="@dimen/dp_9"
+        android:layout_height="@dimen/dp_12"
         android:layout_marginStart="@dimen/dp_6"
-        android:text="&amp;"
-        android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_12"
+        android:background="?attr/marketPoolAndIcon"
         app:layout_constraintBottom_toBottomOf="@id/tvTokenA"
         app:layout_constraintStart_toEndOf="@id/tvTokenA"
-        app:layout_constraintTop_toTopOf="@id/tvTokenA"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintTop_toTopOf="@id/tvTokenA" />
 
     <TextView
         android:id="@+id/tvTokenB"
@@ -49,7 +46,7 @@
         android:textColor="?colorOnSecondary"
         android:textSize="@dimen/sp_14"
         app:layout_constraintBaseline_toBaselineOf="@id/tvTokenA"
-        app:layout_constraintStart_toEndOf="@id/tvAnd"
+        app:layout_constraintStart_toEndOf="@id/iivAndIcon"
         tools:text="999 VLSEUR" />
 
     <View

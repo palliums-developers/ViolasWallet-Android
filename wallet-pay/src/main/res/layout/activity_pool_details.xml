@@ -22,18 +22,15 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="30 VLS" />
 
-        <TextView
-            android:id="@+id/tvAndIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/iivAndIcon"
+            android:layout_width="@dimen/dp_9"
+            android:layout_height="@dimen/dp_12"
             android:layout_marginTop="@dimen/dp_12"
-            android:text="&amp;"
-            android:textColor="?android:attr/textColorTertiary"
-            android:textSize="@dimen/sp_14"
+            android:background="?attr/marketPoolAndIcon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTokenA"
-            tools:ignore="HardcodedText" />
+            app:layout_constraintTop_toBottomOf="@id/tvTokenA" />
 
         <TextView
             android:id="@+id/tvTokenB"
@@ -44,7 +41,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvAndIcon"
+            app:layout_constraintTop_toBottomOf="@id/iivAndIcon"
             tools:text="2333 ETH" />
 
         <View
@@ -81,7 +78,7 @@
             app:layout_constraintEnd_toStartOf="@id/tvLiquidity"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvLiquidity" />
-        
+
         <TextView
             android:id="@+id/tvExchangeRate"
             android:layout_width="@dimen/dp_0"

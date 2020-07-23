@@ -126,17 +126,15 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvAnd"
+    <ImageView
+        android:id="@+id/ivModeIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_9"
-        android:text="&amp;"
-        android:textColor="?android:attr/textColorTertiary"
+        android:layout_marginTop="@dimen/dp_8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etInputBoxA"
-        tools:ignore="HardcodedText" />
+        tools:src="?attr/marketPoolAndIcon" />
 
     <EditText
         android:id="@+id/etInputBoxB"
@@ -154,7 +152,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvAnd"
+        app:layout_constraintTop_toBottomOf="@id/ivModeIcon"
         tools:hint="0.00" />
 
     <TextView

@@ -206,6 +206,8 @@
         <item name="marketSwapRecordIcon">@mipmap/ic_swap_record</item>
         <item name="marketSwitchBgColor">@color/color_F1EEFB</item>
         <item name="marketPoolIncomeIcon">@mipmap/ic_market_pool_income</item>
+        <item name="marketPoolAndIcon">@mipmap/ic_market_pool_and</item>
+        <item name="marketPoolOutIcon">@mipmap/ic_market_pool_out</item>
         <item name="marketTokenSelectedIcon">@mipmap/ic_market_token_selected</item>
         <item name="marketTokenAmountIcon">@mipmap/ic_market_token_amount</item>
         <item name="marketSwapDetailsIcon">@mipmap/ic_market_swap_details</item>
