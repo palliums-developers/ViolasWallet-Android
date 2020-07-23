@@ -1,5 +1,6 @@
 package com.violas.wallet.biz
 
+import com.palliums.extensions.lazyLogError
 import com.palliums.utils.toMap
 import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.violas.smartcontract.ViolasExchangeContract
@@ -27,7 +28,7 @@ class ExchangeManager {
 
     companion object {
         // 最低价格浮动汇率
-        private const val MINIMUM_PRICE_FLUCTUATION = 5 / 1000
+        private const val MINIMUM_PRICE_FLUCTUATION = 5 / 1000F
     }
 
     private val mAccountStorage by lazy {
@@ -193,8 +194,17 @@ class ExchangeManager {
                 arrayListOf()
             )
         )
-        val amountAMin = amountADesired - amountADesired * MINIMUM_PRICE_FLUCTUATION
-        val amountBMin = amountBDesired - amountBDesired * MINIMUM_PRICE_FLUCTUATION
+        val amountAMin =
+            amountADesired - (amountADesired * MINIMUM_PRICE_FLUCTUATION).toLong()
+        val amountBMin =
+            amountBDesired - (amountBDesired * MINIMUM_PRICE_FLUCTUATION).toLong()
+
+        lazyLogError { "addLiquidity. coin   a info   : module=${coinA.module}, index=${coinA.marketIndex}" }
+        lazyLogError { "addLiquidity. coin   b info   : module=${coinB.module}, index=${coinB.marketIndex}" }
+        lazyLogError { "addLiquidity. amount a desired: $amountADesired" }
+        lazyLogError { "addLiquidity. amount b desired: $amountBDesired" }
+        lazyLogError { "addLiquidity. amount a min    : $amountAMin" }
+        lazyLogError { "addLiquidity. amount b min    : $amountBMin" }
 
         val swapPosition = coinA.marketIndex > coinB.marketIndex
         val addLiquidityTransactionPayload =
@@ -239,8 +249,18 @@ class ExchangeManager {
             )
         )
 
-        val amountAMin = amountADesired - amountADesired * MINIMUM_PRICE_FLUCTUATION
-        val amountBMin = amountBDesired - amountBDesired * MINIMUM_PRICE_FLUCTUATION
+        val amountAMin =
+            amountADesired - (amountADesired * MINIMUM_PRICE_FLUCTUATION).toLong()
+        val amountBMin =
+            amountBDesired - (amountBDesired * MINIMUM_PRICE_FLUCTUATION).toLong()
+
+        lazyLogError { "removeLiquidity. coin   a info   : module=${coinA.module}, index=${coinA.marketIndex}" }
+        lazyLogError { "removeLiquidity. coin   b info   : module=${coinB.module}, index=${coinB.marketIndex}" }
+        lazyLogError { "removeLiquidity. amount a desired: $amountADesired" }
+        lazyLogError { "removeLiquidity. amount b desired: $amountBDesired" }
+        lazyLogError { "removeLiquidity. amount a min    : $amountAMin" }
+        lazyLogError { "removeLiquidity. amount b min    : $amountBMin" }
+        lazyLogError { "removeLiquidity. liquidity amount: $liquidityAmount" }
 
         val swapPosition = coinA.marketIndex > coinB.marketIndex
         val addLiquidityTransactionPayload =

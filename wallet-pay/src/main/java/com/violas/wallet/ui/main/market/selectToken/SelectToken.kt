@@ -34,8 +34,8 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     companion object {
         const val ACTION_SWAP_SELECT_FROM = 0x01
         const val ACTION_SWAP_SELECT_TO = 0x02
-        const val ACTION_POOL_SELECT_FIRST = 0x03
-        const val ACTION_POOL_SELECT_SECOND = 0x04
+        const val ACTION_POOL_SELECT_A = 0x03
+        const val ACTION_POOL_SELECT_B = 0x04
 
         fun newInstance(action: Int): SelectTokenDialog {
             return SelectTokenDialog().apply {

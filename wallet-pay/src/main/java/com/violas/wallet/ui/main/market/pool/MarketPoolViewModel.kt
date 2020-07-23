@@ -12,6 +12,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertAmountToExchangeRate
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import kotlinx.coroutines.*
@@ -102,7 +103,7 @@ class MarketPoolViewModel : BaseViewModel() {
 
             // 切换操作模式时，清除second input box的文本
             cancelEstimateAmountJob()
-            inputTextBLiveData.postValue("")
+            //inputTextBLiveData.postValue("")
         }
     }
 
@@ -273,7 +274,7 @@ class MarketPoolViewModel : BaseViewModel() {
         return inputTextBLiveData
     }
 
-    fun estimateCoinATransferIntoAmount(secondInputAmountStr: String?) {
+    fun estimateCoinATransferIntoAmount(inputAmountStrB: String?) {
         liquidityReserveInfo ?: return
         currCoinALiveData.value ?: return
         val coinB = currCoinBLiveData.value ?: return
@@ -283,18 +284,18 @@ class MarketPoolViewModel : BaseViewModel() {
             delay(100)
 
             val result = withContext(Dispatchers.IO) {
-                return@withContext if (secondInputAmountStr.isNullOrBlank())
+                return@withContext if (inputAmountStrB.isNullOrBlank())
                     ""
                 else
-                    calculateTransferIntoAmount(coinB.module, secondInputAmountStr)
+                    calculateTransferIntoAmount(coinB.module, inputAmountStrB)
             }
-            inputTextBLiveData.postValue(result)
+            inputTextALiveData.postValue(result)
 
             estimateAmountJob = null
         }
     }
 
-    fun estimateCoinBTransferIntoAmount(firstInputAmountStr: String?) {
+    fun estimateCoinBTransferIntoAmount(inputAmountStrA: String?) {
         liquidityReserveInfo ?: return
         currCoinBLiveData.value ?: return
         val coinA = currCoinALiveData.value ?: return
@@ -304,10 +305,10 @@ class MarketPoolViewModel : BaseViewModel() {
             delay(100)
 
             val result = withContext(Dispatchers.IO) {
-                return@withContext if (firstInputAmountStr.isNullOrBlank())
+                return@withContext if (inputAmountStrA.isNullOrBlank())
                     ""
                 else
-                    calculateTransferIntoAmount(coinA.module, firstInputAmountStr)
+                    calculateTransferIntoAmount(coinA.module, inputAmountStrA)
             }
             inputTextBLiveData.postValue(result)
 
@@ -319,22 +320,20 @@ class MarketPoolViewModel : BaseViewModel() {
         inputCoinModule: String,
         inputAmountStr: String
     ): String {
-        return BigDecimal(inputAmountStr)
-            .multiply(
-                if (inputCoinModule == liquidityReserveInfo!!.coinA.module)
-                    liquidityReserveInfo!!.coinB.amount
-                else
-                    liquidityReserveInfo!!.coinA.amount
-            )
-            .divide(
-                if (inputCoinModule == liquidityReserveInfo!!.coinA.module)
-                    liquidityReserveInfo!!.coinA.amount
-                else
-                    liquidityReserveInfo!!.coinB.amount,
-                6,
-                RoundingMode.DOWN
-            )
-            .stripTrailingZeros().toPlainString()
+        val amountA = convertDisplayAmountToAmount(inputAmountStr)
+        val reserveA = if (inputCoinModule == liquidityReserveInfo!!.coinA.module)
+            liquidityReserveInfo!!.coinA.amount
+        else
+            liquidityReserveInfo!!.coinB.amount
+        val reserveB = if (inputCoinModule == liquidityReserveInfo!!.coinA.module)
+            liquidityReserveInfo!!.coinB.amount
+        else
+            liquidityReserveInfo!!.coinA.amount
+        val exchangeRate = convertAmountToExchangeRate(reserveA, reserveB)
+        val amountB = amountA.multiply(exchangeRate)
+            .setScale(0, RoundingMode.DOWN)
+            .toPlainString()
+        return convertAmountToDisplayAmountStr(amountB)
     }
 
     fun estimateCoinsTransferOutAmount(inputAmountStr: String?) {
@@ -366,7 +365,7 @@ class MarketPoolViewModel : BaseViewModel() {
         coinAModule: String,
         liquidityAmount: BigDecimal
     ): Pair<BigDecimal, BigDecimal> {
-        val currencyAAmount = liquidityAmount
+        val coinAAmount = liquidityAmount
             .multiply(
                 if (coinAModule == liquidityReserveInfo!!.coinA.module)
                     liquidityReserveInfo!!.coinA.amount
@@ -375,7 +374,7 @@ class MarketPoolViewModel : BaseViewModel() {
             )
             .divide(liquidityReserveInfo!!.liquidityTotalAmount, 6, RoundingMode.DOWN)
             .stripTrailingZeros()
-        val currencyBAmount = liquidityAmount
+        val coinBAmount = liquidityAmount
             .multiply(
                 if (coinAModule == liquidityReserveInfo!!.coinA.module)
                     liquidityReserveInfo!!.coinB.amount
@@ -384,7 +383,7 @@ class MarketPoolViewModel : BaseViewModel() {
             )
             .divide(liquidityReserveInfo!!.liquidityTotalAmount, 6, RoundingMode.DOWN)
             .stripTrailingZeros()
-        return Pair(currencyAAmount, currencyBAmount)
+        return Pair(coinAAmount, coinBAmount)
     }
 
     private fun cancelEstimateAmountJob() {
@@ -417,7 +416,7 @@ class MarketPoolViewModel : BaseViewModel() {
                 if (isTransferInMode()) {
                     calculateExchangeRate(currCoinALiveData.value!!.module)
                 } else {
-                    calculateExchangeRate(currLiquidityLiveData.value!!.coinA.displayName)
+                    calculateExchangeRate(currLiquidityLiveData.value!!.coinA.module)
                 }
             }
 
@@ -442,7 +441,7 @@ class MarketPoolViewModel : BaseViewModel() {
                 val liquidityAmount = convertDisplayAmountToAmount(params[1] as String)
                 val liquidity = currLiquidityLiveData.value!!
                 val amounts =
-                    calculateTransferOutAmounts(liquidity.coinA.displayName, liquidityAmount)
+                    calculateTransferOutAmounts(liquidity.coinA.module, liquidityAmount)
                 exchangeManager.removeLiquidity(
                     privateKey = params[0] as ByteArray,
                     coinA = liquidity.coinA,
