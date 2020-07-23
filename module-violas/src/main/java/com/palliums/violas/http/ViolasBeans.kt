@@ -173,13 +173,13 @@ data class MarketCurrencyDTO(
 @Parcelize
 data class MarketSwapRecordDTO(
     @SerializedName(value = "input_name")
-    val fromName: String,
+    val fromName: String?,
     @SerializedName(value = "input_amount")
-    val fromAmount: String,
+    val fromAmount: String?,
     @SerializedName(value = "output_name")
-    val toName: String,
+    val toName: String?,
     @SerializedName(value = "output_amount")
-    val toAmount: String,
+    val toAmount: String?,
     val version: Long,
     val date: Long,
     val status: Int
@@ -189,15 +189,15 @@ data class MarketSwapRecordDTO(
 @Parcelize
 data class MarketPoolRecordDTO(
     @SerializedName(value = "coina")
-    val coinAName: String,
+    val coinAName: String?,
     @SerializedName(value = "amounta")
-    val coinAAmount: String,
+    val coinAAmount: String?,
     @SerializedName(value = "coinb")
-    val coinBName: String,
+    val coinBName: String?,
     @SerializedName(value = "amountb")
-    val coinBAmount: String,
+    val coinBAmount: String?,
     @SerializedName(value = "token")
-    val liquidityAmount: String,
+    val liquidityAmount: String?,
     @SerializedName(value = "transaction_type")
     val type: String,
     val version: Long,

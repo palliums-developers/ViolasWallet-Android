@@ -12,6 +12,7 @@ import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.formatDate
 import com.palliums.utils.getColorByAttrId
+import com.palliums.utils.getString
 import com.palliums.violas.http.MarketSwapRecordDTO
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
@@ -187,9 +188,17 @@ class SwapRecordViewHolder(
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
             itemView.tvFromToken.text =
-                "${convertAmountToDisplayAmountStr(it.fromAmount)} ${it.fromName}"
+                if (it.fromName.isNullOrBlank() || it.fromAmount.isNullOrBlank()) {
+                    getString(R.string.value_null)
+                } else {
+                    "${convertAmountToDisplayAmountStr(it.fromAmount!!)} ${it.fromName}"
+                }
             itemView.tvToToken.text =
-                "${convertAmountToDisplayAmountStr(it.toAmount)} ${it.toName}"
+                if (it.toName.isNullOrBlank() || it.toAmount.isNullOrBlank()) {
+                    getString(R.string.value_null)
+                } else {
+                    "${convertAmountToDisplayAmountStr(it.toAmount!!)} ${it.toName}"
+                }
             if (it.status == 4001) {
                 itemView.tvRetry.visibility = View.GONE
                 itemView.tvState.setText(R.string.market_swap_state_succeeded)

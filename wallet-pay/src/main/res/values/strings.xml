@@ -406,9 +406,9 @@
     <string name="tips_market_remove_liquidity_pair_not_selected">请选择交易对</string>
     <string name="tips_market_remove_liquidity_amount_not_input">请输入转出数量</string>
     <string name="tips_market_insufficient_balance_format">%1$s可用余额不足</string>
-    <string name="tips_market_add_liquidity_success">资金池转入成功</string>
-    <string name="tips_market_add_liquidity_failure">资金池转入失败</string>
-    <string name="tips_market_remove_liquidity_success">资金池转出成功</string>
-    <string name="tips_market_remove_liquidity_failure">资金池转出失败</string>
+    <string name="tips_market_add_liquidity_success">转入交易广播成功</string>
+    <string name="tips_market_add_liquidity_failure">转入失败</string>
+    <string name="tips_market_remove_liquidity_success">转出交易广播成功</string>
+    <string name="tips_market_remove_liquidity_failure">转出失败</string>
     <string name="hint_swap_exchange_transaction_broadcast_success">兑换交易广播成功</string>
 </resources>

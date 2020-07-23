@@ -209,9 +209,17 @@ class PoolRecordViewHolder(
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
             itemView.tvAToken.text =
-                "${convertAmountToDisplayAmountStr(it.coinAAmount)} ${it.coinAName}"
+                if (it.coinAName.isNullOrBlank() || it.coinAAmount.isNullOrBlank()) {
+                    getString(R.string.value_null)
+                } else {
+                    "${convertAmountToDisplayAmountStr(it.coinAAmount!!)} ${it.coinAName}"
+                }
             itemView.tvBToken.text =
-                "${convertAmountToDisplayAmountStr(it.coinBAmount)} ${it.coinBName}"
+                if (it.coinBName.isNullOrBlank() || it.coinBAmount.isNullOrBlank()) {
+                    getString(R.string.value_null)
+                } else {
+                    "${convertAmountToDisplayAmountStr(it.coinBAmount!!)} ${it.coinBName}"
+                }
             itemView.ivIcon.setBackgroundResource(
                 getResourceId(
                     if (it.isAddLiquidity())
@@ -221,13 +229,18 @@ class PoolRecordViewHolder(
                     itemView.context
                 )
             )
-            itemView.tvLiquidity.text = getString(
-                R.string.market_liquidity_token_amount_format,
-                if (it.isAddLiquidity())
-                    "+ ${convertAmountToDisplayAmountStr(it.liquidityAmount)}"
-                else
-                    "- ${convertAmountToDisplayAmountStr(it.liquidityAmount)}"
-            )
+            itemView.tvLiquidity.text =
+                if (it.liquidityAmount.isNullOrBlank()) {
+                    getString(R.string.value_null)
+                } else {
+                    getString(
+                        R.string.market_liquidity_token_amount_format,
+                        if (it.isAddLiquidity())
+                            "+ ${convertAmountToDisplayAmountStr(it.liquidityAmount!!)}"
+                        else
+                            "- ${convertAmountToDisplayAmountStr(it.liquidityAmount!!)}"
+                    )
+                }
 
             if (it.status == 4001) {
                 itemView.tvState.setText(
