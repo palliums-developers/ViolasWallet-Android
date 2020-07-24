@@ -57,7 +57,7 @@ fun convertViolasTokenPrice(price: String): String {
 }
 
 fun convertDisplayUnitToAmount(amount: String, coinTypes: CoinTypes): Long {
-    return convertDisplayUnitToAmount(amount.toDouble(), coinTypes)
+    return convertDisplayUnitToAmount(amount.toDoubleOrNull() ?: 0.0, coinTypes)
 }
 
 fun convertDisplayUnitToAmount(amount: Double, coinTypes: CoinTypes): Long {

@@ -72,7 +72,7 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
     private val mReserveManager by lazy {
         ReserveManager()
     }
-    private var isInputFrom = false
+    private var isInputFrom = true
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_swap
@@ -218,7 +218,7 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
             }
         })
         mReserveManager.mChangeLiveData.observe(this, Observer {
-
+            estimateOutputTokenNumber()
         })
         swapViewModel.getHandlingFeeRateLiveDataLiveData().observe(viewLifecycleOwner, Observer {
             if (it == null) {
@@ -361,15 +361,35 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                 }
 
                 if (inputAmount == 0L) {
+                    withContext(Dispatchers.Main) {
+                        val outputEdit = if (isInputFrom) {
+                            etToInputBox
+                        } else {
+                            etFromInputBox
+                        }
+                        withContext(Dispatchers.Main) {
+                            outputEdit.setText("")
+                            btnSwap.setText(R.string.action_swap_unable_change)
+                            btnSwap.isEnabled = false
+                        }
+                    }
                     return@launch
                 }
 
                 val tradeExact =
                     mReserveManager.tradeExact(fromToken, toToken, inputAmount, isInputFrom)
                 if (tradeExact == null) {
-
+                    val outputEdit = if (isInputFrom) {
+                        etToInputBox
+                    } else {
+                        etFromInputBox
+                    }
+                    withContext(Dispatchers.Main) {
+                        outputEdit.setText("")
+                        btnSwap.setText(R.string.action_swap_unable_change)
+                        btnSwap.isEnabled = false
+                    }
                 } else {
-                    Log.e("======", tradeExact.toString())
                     val outputEdit = if (isInputFrom) {
                         etToInputBox
                     } else {
@@ -389,6 +409,9 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                         CoinTypes.parseCoinType(outputCoin.coinNumber)
                     ).first
                     withContext(Dispatchers.Main) {
+                        btnSwap.setText(R.string.action_swap_nbsp)
+                        btnSwap.isEnabled = true
+
                         outputEdit.setText(outputAmount)
                         swapViewModel.getGasFeeLiveData().value =
                             BigDecimal(outputFeeAmount).toLong()

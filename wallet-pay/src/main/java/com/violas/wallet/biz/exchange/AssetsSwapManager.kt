@@ -12,7 +12,6 @@ import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.main.market.bean.*
 import com.violas.wallet.utils.str2CoinType
 import org.palliums.violascore.http.ViolasException
-import java.util.*
 import kotlin.collections.HashMap
 
 class AssetsSwapManager(

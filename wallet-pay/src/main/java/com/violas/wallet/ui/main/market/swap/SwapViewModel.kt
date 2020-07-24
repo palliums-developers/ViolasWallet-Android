@@ -126,7 +126,7 @@ class SwapViewModel : BaseViewModel() {
             if (selected != currFromToken) {
                 val currToToken = currToTokenLiveData.value
                 if (selected == currToToken) {
-                    currToTokenLiveData.value = currFromToken
+                    currToTokenLiveData.value = null
                 }
                 currFromTokenLiveData.value = selected
             }
