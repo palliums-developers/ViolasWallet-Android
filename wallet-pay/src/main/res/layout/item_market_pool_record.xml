@@ -50,18 +50,15 @@
         app:layout_constraintTop_toBottomOf="@id/tvState"
         tools:text="999ETH" />
 
-    <TextView
-        android:id="@+id/tvAnd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/iivAndIcon"
+        android:layout_width="@dimen/dp_9"
+        android:layout_height="@dimen/dp_12"
         android:layout_marginStart="@dimen/dp_8"
-        android:text="&amp;"
-        android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_12"
+        android:background="?attr/marketPoolAndIcon"
         app:layout_constraintBottom_toBottomOf="@id/tvAToken"
         app:layout_constraintStart_toEndOf="@id/tvAToken"
-        app:layout_constraintTop_toTopOf="@id/tvAToken"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintTop_toTopOf="@id/tvAToken" />
 
     <TextView
         android:id="@+id/tvBToken"
@@ -71,11 +68,11 @@
         android:textColor="?colorOnSurface"
         android:textSize="@dimen/sp_14"
         app:layout_constraintBaseline_toBaselineOf="@id/tvAToken"
-        app:layout_constraintStart_toEndOf="@id/tvAnd"
+        app:layout_constraintStart_toEndOf="@id/iivAndIcon"
         tools:text="99900VLS" />
 
     <TextView
-        android:id="@+id/tvLiquidityToken"
+        android:id="@+id/tvLiquidity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
@@ -93,6 +90,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvLiquidityToken" />
+        app:layout_constraintTop_toBottomOf="@id/tvLiquidity" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

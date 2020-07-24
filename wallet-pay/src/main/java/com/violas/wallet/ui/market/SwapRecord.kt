@@ -12,6 +12,7 @@ import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.formatDate
 import com.palliums.utils.getColorByAttrId
+import com.palliums.utils.getString
 import com.palliums.violas.http.MarketSwapRecordDTO
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
@@ -19,7 +20,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
-import com.violas.wallet.utils.convertViolasTokenUnit
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_swap_record.view.*
 import kotlinx.coroutines.Dispatchers
@@ -186,8 +187,18 @@ class SwapRecordViewHolder(
     override fun onViewBind(itemPosition: Int, itemData: MarketSwapRecordDTO?) {
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
-            itemView.tvFromToken.text = "${convertViolasTokenUnit(it.fromAmount)} ${it.fromName}"
-            itemView.tvToToken.text = "${convertViolasTokenUnit(it.toAmount)} ${it.toName}"
+            itemView.tvFromToken.text =
+                if (it.fromName.isNullOrBlank() || it.fromAmount.isNullOrBlank()) {
+                    getString(R.string.value_null)
+                } else {
+                    "${convertAmountToDisplayAmountStr(it.fromAmount!!)} ${it.fromName}"
+                }
+            itemView.tvToToken.text =
+                if (it.toName.isNullOrBlank() || it.toAmount.isNullOrBlank()) {
+                    getString(R.string.value_null)
+                } else {
+                    "${convertAmountToDisplayAmountStr(it.toAmount!!)} ${it.toName}"
+                }
             if (it.status == 4001) {
                 itemView.tvRetry.visibility = View.GONE
                 itemView.tvState.setText(R.string.market_swap_state_succeeded)

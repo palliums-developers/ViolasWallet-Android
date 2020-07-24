@@ -12,10 +12,9 @@ import com.palliums.violas.http.MarketPoolRecordDTO
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.utils.convertViolasTokenUnit
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
+import com.violas.wallet.utils.convertAmountToExchangeRateStr
 import kotlinx.android.synthetic.main.activity_pool_details.*
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 /**
  * Created by elephant on 2020/7/15 14:32.
@@ -71,22 +70,39 @@ class PoolDetailsActivity : BaseAppActivity() {
         }
     }
 
-    private fun initView(poolRecord: MarketPoolRecordDTO) {
-        tvTokenA.text = "${convertViolasTokenUnit(poolRecord.coinAAmount)} ${poolRecord.coinAName}"
-        tvTokenB.text = "${convertViolasTokenUnit(poolRecord.coinBAmount)} ${poolRecord.coinBName}"
-        tvLiquidityToken.text =
-            "${if (poolRecord.isAddLiquidity()) "+" else "-"} ${poolRecord.liquidityAmount}"
-        tvExchangeRate.text = run {
-            val rate = BigDecimal(poolRecord.coinBAmount).divide(
-                BigDecimal(poolRecord.coinAAmount),
-                8,
-                RoundingMode.DOWN
-            ).stripTrailingZeros().toPlainString()
-
-            "1:$rate"
-        }
+    private fun initView(record: MarketPoolRecordDTO) {
+        tvTokenA.text =
+            if (record.coinAName.isNullOrBlank() || record.coinAAmount.isNullOrBlank()) {
+                getString(R.string.value_null)
+            } else {
+                "${convertAmountToDisplayAmountStr(record.coinAAmount!!)} ${record.coinAName}"
+            }
+        tvTokenB.text =
+            if (record.coinBName.isNullOrBlank() || record.coinBAmount.isNullOrBlank()) {
+                getString(R.string.value_null)
+            } else {
+                "${convertAmountToDisplayAmountStr(record.coinBAmount!!)} ${record.coinBName}"
+            }
+        tvLiquidity.text =
+            if (record.liquidityAmount.isNullOrBlank()) {
+                getString(R.string.value_null)
+            } else {
+                getString(
+                    R.string.market_liquidity_token_amount_format,
+                    if (record.isAddLiquidity())
+                        "+ ${convertAmountToDisplayAmountStr(record.liquidityAmount!!)}"
+                    else
+                        "- ${convertAmountToDisplayAmountStr(record.liquidityAmount!!)}"
+                )
+            }
+        tvExchangeRate.text =
+            if (record.coinAAmount.isNullOrBlank() || record.coinBAmount.isNullOrBlank()) {
+                getString(R.string.value_null)
+            } else {
+                "1:${convertAmountToExchangeRateStr(record.coinAAmount!!, record.coinBAmount!!)}"
+            }
         tvGasFee.text = getString(R.string.value_null)
-        tvOrderTime.text = formatDate(poolRecord.date, pattern = "yyyy-MM-dd HH:mm:ss")
+        tvOrderTime.text = formatDate(record.date, pattern = "yyyy-MM-dd HH:mm:ss")
         tvDealTime.text = getString(R.string.value_null)
 
         tvProcessingDesc.setTextColor(
@@ -100,9 +116,9 @@ class PoolDetailsActivity : BaseAppActivity() {
         tvResultDesc.visibility = View.VISIBLE
 
         // 转入转出成功
-        if (poolRecord.status == 4001) {
+        if (record.status == 4001) {
             tvResultDesc.setText(
-                if (poolRecord.isAddLiquidity())
+                if (record.isAddLiquidity())
                     R.string.market_pool_add_state_succeeded
                 else
                     R.string.market_pool_remove_state_succeeded
@@ -118,10 +134,11 @@ class PoolDetailsActivity : BaseAppActivity() {
 
         // 转入转出失败
         tvResultDesc.setText(
-            if (poolRecord.isAddLiquidity())
+            if (record.isAddLiquidity())
                 R.string.market_pool_add_state_failed
             else
-                R.string.market_pool_remove_state_failed)
+                R.string.market_pool_remove_state_failed
+        )
         tvResultDesc.setTextColor(
             getColorByAttrId(R.attr.textColorFailure, this)
         )

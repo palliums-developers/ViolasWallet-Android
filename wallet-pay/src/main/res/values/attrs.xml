@@ -130,6 +130,8 @@
     <attr name="marketSwapRecordIcon" format="reference" />
     <attr name="marketSwitchBgColor" format="color" />
     <attr name="marketPoolIncomeIcon" format="reference" />
+    <attr name="marketPoolAndIcon" format="reference" />
+    <attr name="marketPoolOutIcon" format="reference" />
     <attr name="marketTokenSelectedIcon" format="reference" />
     <attr name="marketTokenAmountIcon" format="reference" />
     <attr name="marketSwapDetailsIcon" format="reference" />

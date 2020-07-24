@@ -8,7 +8,7 @@ import androidx.lifecycle.*
 import com.palliums.utils.CustomIOScope
 import com.palliums.utils.exceptionAsync
 import com.palliums.violas.http.MapRelationDTO
-import com.palliums.violas.http.MarketPairReserveInfoDTO
+import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.repository.DataRepository
@@ -36,7 +36,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
 
     private val mRefreshInterval = 10 * 1000L
 
-    private val mReserveList = mutableListOf<MarketPairReserveInfoDTO>()
+    private val mReserveList = mutableListOf<PoolLiquidityReserveInfoDTO>()
     private val mMappingRealMap = hashMapOf<String, MapRelationDTO>()
     private var isRun = false
 
@@ -63,14 +63,14 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     )
 
     private fun getReserve(
-        reservePair: List<MarketPairReserveInfoDTO>,
+        reservePair: List<PoolLiquidityReserveInfoDTO>,
         indexA: Int,
         indexB: Int
     ): ReservesAmount {
         val minIndex = min(indexA, indexB)
         val maxIndex = max(indexA, indexB)
         reservePair.forEach {
-            if (it.coinA.index == minIndex && it.coinB.index == maxIndex) {
+            if (it.coinA.marketIndex == minIndex && it.coinB.marketIndex == maxIndex) {
                 return if (indexA > indexB) {
                     ReservesAmount(it.coinB.amount.toLong(), it.coinA.amount.toLong())
                 } else {
@@ -267,7 +267,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
      * 根据输出金额算输入金额
      */
     private fun bestTradeExactOut(
-        reservePair: List<MarketPairReserveInfoDTO>,
+        reservePair: List<PoolLiquidityReserveInfoDTO>,
         inIndex: Int,
         outIndex: Int,
         amountOut: Long,
@@ -290,10 +290,10 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
         val startPath = ArrayList(path)
         for (i in reservePair.indices) {
             val pair = reservePair[i]
-            val tmpIn = if (outIndex == pair.coinA.index) {
-                pair.coinB.index
-            } else if (outIndex == pair.coinB.index) {
-                pair.coinA.index
+            val tmpIn = if (outIndex == pair.coinA.marketIndex) {
+                pair.coinB.marketIndex
+            } else if (outIndex == pair.coinB.marketIndex) {
+                pair.coinA.marketIndex
             } else {
                 continue
             }
@@ -311,7 +311,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
                 continue
             }
 
-            if (inIndex == pair.coinA.index || inIndex == pair.coinB.index) {
+            if (inIndex == pair.coinA.marketIndex || inIndex == pair.coinB.marketIndex) {
                 path.add(0, inIndex)
                 bestTrades.add(Trade(ArrayList(path), amountIn))
                 path.clear()
@@ -339,7 +339,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
      * 根据输入金额算输出金额
      */
     private fun bestTradeExactIn(
-        reservePair: List<MarketPairReserveInfoDTO>,
+        reservePair: List<PoolLiquidityReserveInfoDTO>,
         inIndex: Int,
         outIndex: Int,
         amountIn: Long,
@@ -362,10 +362,10 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
         val startPath = ArrayList(path)
         for (i in reservePair.indices) {
             val pair = reservePair[i]
-            val tmpOut = if (inIndex == pair.coinA.index) {
-                pair.coinB.index
-            } else if (inIndex == pair.coinB.index) {
-                pair.coinA.index
+            val tmpOut = if (inIndex == pair.coinA.marketIndex) {
+                pair.coinB.marketIndex
+            } else if (inIndex == pair.coinB.marketIndex) {
+                pair.coinA.marketIndex
             } else {
                 continue
             }
@@ -382,7 +382,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
                 continue
             }
 
-            if (outIndex == pair.coinA.index || outIndex == pair.coinB.index) {
+            if (outIndex == pair.coinA.marketIndex || outIndex == pair.coinB.marketIndex) {
                 path.add(outIndex)
                 bestTrades.add(Trade(ArrayList(path), amountOut))
                 path.clear()

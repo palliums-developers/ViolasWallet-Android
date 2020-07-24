@@ -22,7 +22,6 @@ import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
-import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.dialog_market_select_token.*
 import kotlinx.android.synthetic.main.item_market_select_token.view.*
 import kotlinx.coroutines.*
@@ -35,8 +34,8 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     companion object {
         const val ACTION_SWAP_SELECT_FROM = 0x01
         const val ACTION_SWAP_SELECT_TO = 0x02
-        const val ACTION_POOL_SELECT_FIRST = 0x03
-        const val ACTION_POOL_SELECT_SECOND = 0x04
+        const val ACTION_POOL_SELECT_A = 0x03
+        const val ACTION_POOL_SELECT_B = 0x04
 
         fun newInstance(action: Int): SelectTokenDialog {
             return SelectTokenDialog().apply {
@@ -305,11 +304,9 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                 .placeholder(defLogoResId)
                 .into(holder.itemView.ivLogo)
             holder.itemView.tvTokenName.text = item.displayName
-            val amountWithUnit =
-                convertAmountToDisplayUnit(item.amount, CoinTypes.parseCoinType(item.coinNumber))
             holder.itemView.tvTokenBalance.text = getString(
                 R.string.market_select_token_balance_format,
-                amountWithUnit.first,
+                item.displayAmount.toPlainString(),
                 item.displayName
             )
             holder.itemView.tvSelected.visibility = if (item.selected) View.VISIBLE else View.GONE

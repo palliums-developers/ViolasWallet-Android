@@ -10,6 +10,7 @@ import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import kotlinx.coroutines.delay
+import java.math.BigDecimal
 
 /**
  * Created by elephant on 2020/7/8 13:00.
@@ -82,7 +83,7 @@ class MarketViewModel : BaseViewModel() {
             coinNumber = CoinTypes.Violas.coinType(),
             displayName = "VLS",
             logo = "",
-            amount = 100_000000,
+            displayAmount = BigDecimal(100_000000),
             anchorValue = 1.00,
             selected = false
         )
@@ -99,7 +100,7 @@ class MarketViewModel : BaseViewModel() {
             logo = "",
             localEnable = true,
             chainEnable = true,
-            amount = 200_000000,
+            displayAmount = BigDecimal(200_000000),
             anchorValue = 1.00,
             selected = false
         )
@@ -116,7 +117,7 @@ class MarketViewModel : BaseViewModel() {
             logo = "",
             localEnable = true,
             chainEnable = true,
-            amount = 300_000000,
+            displayAmount = BigDecimal(300_000000),
             anchorValue = 1.2526,
             selected = false
         )
@@ -133,7 +134,7 @@ class MarketViewModel : BaseViewModel() {
             logo = "",
             localEnable = true,
             chainEnable = true,
-            amount = 400_000000,
+            displayAmount = BigDecimal(400_000000),
             anchorValue = 1.1272,
             selected = false
         )
@@ -150,7 +151,7 @@ class MarketViewModel : BaseViewModel() {
             logo = "",
             localEnable = true,
             chainEnable = true,
-            amount = 500_000000,
+            displayAmount = BigDecimal(500_000000),
             anchorValue = 0.7167,
             selected = false
         )
@@ -167,7 +168,7 @@ class MarketViewModel : BaseViewModel() {
             logo = "",
             localEnable = true,
             chainEnable = false,
-            amount = 500_000000,
+            displayAmount = BigDecimal(500_000000),
             anchorValue = 0.0093,
             selected = false
         )
@@ -179,7 +180,7 @@ class MarketViewModel : BaseViewModel() {
             coinNumber = CoinTypes.Libra.coinType(),
             displayName = "LBR",
             logo = "",
-            amount = 100_000000,
+            displayAmount = BigDecimal(100_000000),
             anchorValue = 1.00,
             selected = false
         )
@@ -191,7 +192,7 @@ class MarketViewModel : BaseViewModel() {
             coinNumber = CoinTypes.BitcoinTest.coinType(),
             displayName = "BTC",
             logo = "",
-            amount = 100_000000,
+            displayAmount = BigDecimal(100_000000),
             anchorValue = 9000.00,
             selected = false
         )

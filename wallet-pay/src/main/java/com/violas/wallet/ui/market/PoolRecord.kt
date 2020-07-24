@@ -23,7 +23,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
-import com.violas.wallet.utils.convertViolasTokenUnit
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_pool_record.view.*
 import kotlinx.coroutines.Dispatchers
@@ -208,8 +208,18 @@ class PoolRecordViewHolder(
     override fun onViewBind(itemPosition: Int, itemData: MarketPoolRecordDTO?) {
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
-            itemView.tvAToken.text = "${convertViolasTokenUnit(it.coinAAmount)} ${it.coinAName}"
-            itemView.tvBToken.text = "${convertViolasTokenUnit(it.coinBAmount)} ${it.coinBName}"
+            itemView.tvAToken.text =
+                if (it.coinAName.isNullOrBlank() || it.coinAAmount.isNullOrBlank()) {
+                    getString(R.string.value_null)
+                } else {
+                    "${convertAmountToDisplayAmountStr(it.coinAAmount!!)} ${it.coinAName}"
+                }
+            itemView.tvBToken.text =
+                if (it.coinBName.isNullOrBlank() || it.coinBAmount.isNullOrBlank()) {
+                    getString(R.string.value_null)
+                } else {
+                    "${convertAmountToDisplayAmountStr(it.coinBAmount!!)} ${it.coinBName}"
+                }
             itemView.ivIcon.setBackgroundResource(
                 getResourceId(
                     if (it.isAddLiquidity())
@@ -219,10 +229,18 @@ class PoolRecordViewHolder(
                     itemView.context
                 )
             )
-            itemView.tvLiquidityToken.text = getString(
-                R.string.market_liquidity_token_amount_format,
-                "${if (it.isAddLiquidity()) "+" else "-"} ${it.liquidityAmount}"
-            )
+            itemView.tvLiquidity.text =
+                if (it.liquidityAmount.isNullOrBlank()) {
+                    getString(R.string.value_null)
+                } else {
+                    getString(
+                        R.string.market_liquidity_token_amount_format,
+                        if (it.isAddLiquidity())
+                            "+ ${convertAmountToDisplayAmountStr(it.liquidityAmount!!)}"
+                        else
+                            "- ${convertAmountToDisplayAmountStr(it.liquidityAmount!!)}"
+                    )
+                }
 
             if (it.status == 4001) {
                 itemView.tvState.setText(

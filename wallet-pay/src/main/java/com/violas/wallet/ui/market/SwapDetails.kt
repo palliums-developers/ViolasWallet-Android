@@ -12,10 +12,9 @@ import com.palliums.violas.http.MarketSwapRecordDTO
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.utils.convertViolasTokenUnit
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
+import com.violas.wallet.utils.convertAmountToExchangeRateStr
 import kotlinx.android.synthetic.main.activity_swap_details.*
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 /**
  * Created by elephant on 2020/7/15 09:42.
@@ -71,21 +70,28 @@ class SwapDetailsActivity : BaseAppActivity() {
         }
     }
 
-    private fun initView(swapRecord: MarketSwapRecordDTO) {
-        tvFromToken.text = "${convertViolasTokenUnit(swapRecord.fromAmount)} ${swapRecord.fromName}"
-        tvToToken.text = "${convertViolasTokenUnit(swapRecord.toAmount)} ${swapRecord.toName}"
-        tvExchangeRate.text = run {
-            val rate = BigDecimal(swapRecord.toAmount).divide(
-                BigDecimal(swapRecord.fromAmount),
-                8,
-                RoundingMode.DOWN
-            ).stripTrailingZeros().toPlainString()
-
-            "1:$rate"
-        }
+    private fun initView(record: MarketSwapRecordDTO) {
+        tvFromToken.text =
+            if (record.fromName.isNullOrBlank() || record.fromAmount.isNullOrBlank()) {
+                getString(R.string.value_null)
+            } else {
+                "${convertAmountToDisplayAmountStr(record.fromAmount!!)} ${record.fromName}"
+            }
+        tvToToken.text =
+            if (record.toName.isNullOrBlank() || record.toAmount.isNullOrBlank()) {
+                getString(R.string.value_null)
+            } else {
+                "${convertAmountToDisplayAmountStr(record.toAmount!!)} ${record.toName}"
+            }
+        tvExchangeRate.text =
+            if (record.fromAmount.isNullOrBlank() || record.toAmount.isNullOrBlank()) {
+                getString(R.string.value_null)
+            } else {
+                "1:${convertAmountToExchangeRateStr(record.fromAmount!!, record.toAmount!!)}"
+            }
         tvHandlingFee.text = getString(R.string.value_null)
         tvGasFee.text = getString(R.string.value_null)
-        tvOrderTime.text = formatDate(swapRecord.date, pattern = "yyyy-MM-dd HH:mm:ss")
+        tvOrderTime.text = formatDate(record.date, pattern = "yyyy-MM-dd HH:mm:ss")
         tvDealTime.text = getString(R.string.value_null)
 
         tvProcessingDesc.setTextColor(
@@ -99,7 +105,7 @@ class SwapDetailsActivity : BaseAppActivity() {
         tvResultDesc.visibility = View.VISIBLE
 
         // 兑换成功
-        if (swapRecord.status == 4001) {
+        if (record.status == 4001) {
             tvResultDesc.setText(R.string.market_swap_state_succeeded)
             tvResultDesc.setTextColor(
                 getColorByAttrId(R.attr.textColorSuccess, this)

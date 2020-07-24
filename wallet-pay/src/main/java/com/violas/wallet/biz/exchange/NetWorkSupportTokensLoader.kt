@@ -18,11 +18,11 @@ class NetWorkSupportTokensLoader : ISupportTokensLoader {
         GlobalScope.launch {
             try {
                 result.addAll(mExchangeManager.getMarketSupportTokens())
-                countDownLatch.countDown()
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 countDownLatch.countDown()
             }
+            countDownLatch.countDown()
         }
         countDownLatch.await()
         return result

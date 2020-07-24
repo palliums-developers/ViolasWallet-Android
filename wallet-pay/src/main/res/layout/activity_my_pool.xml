@@ -29,7 +29,7 @@
             android:textSize="@dimen/sp_12" />
 
         <TextView
-            android:id="@+id/tvTotalLiquidityAmount"
+            android:id="@+id/tvLiquidityTotalAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_14"

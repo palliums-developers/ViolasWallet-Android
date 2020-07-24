@@ -22,18 +22,15 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="30 VLS" />
 
-        <TextView
-            android:id="@+id/tvAndIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/iivAndIcon"
+            android:layout_width="@dimen/dp_9"
+            android:layout_height="@dimen/dp_12"
             android:layout_marginTop="@dimen/dp_12"
-            android:text="&amp;"
-            android:textColor="?android:attr/textColorTertiary"
-            android:textSize="@dimen/sp_14"
+            android:background="?attr/marketPoolAndIcon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTokenA"
-            tools:ignore="HardcodedText" />
+            app:layout_constraintTop_toBottomOf="@id/tvTokenA" />
 
         <TextView
             android:id="@+id/tvTokenB"
@@ -44,7 +41,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvAndIcon"
+            app:layout_constraintTop_toBottomOf="@id/iivAndIcon"
             tools:text="2333 ETH" />
 
         <View
@@ -58,7 +55,7 @@
             app:layout_constraintTop_toBottomOf="@id/tvTokenB" />
 
         <TextView
-            android:id="@+id/tvLiquidityToken"
+            android:id="@+id/tvLiquidity"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_94"
@@ -78,10 +75,10 @@
             android:text="@string/label_transaction_details_liquidity_token"
             android:textColor="?android:textColorTertiary"
             android:textSize="@dimen/sp_14"
-            app:layout_constraintEnd_toStartOf="@id/tvLiquidityToken"
+            app:layout_constraintEnd_toStartOf="@id/tvLiquidity"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvLiquidityToken" />
-        
+            app:layout_constraintTop_toTopOf="@id/tvLiquidity" />
+
         <TextView
             android:id="@+id/tvExchangeRate"
             android:layout_width="@dimen/dp_0"
@@ -89,8 +86,8 @@
             android:paddingVertical="@dimen/dp_5"
             android:textSize="@dimen/sp_14"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tvLiquidityToken"
-            app:layout_constraintTop_toBottomOf="@id/tvLiquidityToken"
+            app:layout_constraintStart_toStartOf="@id/tvLiquidity"
+            app:layout_constraintTop_toBottomOf="@id/tvLiquidity"
             tools:text="1:100" />
 
         <TextView
@@ -112,7 +109,7 @@
             android:paddingVertical="@dimen/dp_5"
             android:textSize="@dimen/sp_14"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tvLiquidityToken"
+            app:layout_constraintStart_toStartOf="@id/tvLiquidity"
             app:layout_constraintTop_toBottomOf="@id/tvExchangeRate"
             tools:text="0.0012 VLS" />
 
@@ -135,7 +132,7 @@
             android:paddingVertical="@dimen/dp_5"
             android:textSize="@dimen/sp_14"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tvLiquidityToken"
+            app:layout_constraintStart_toStartOf="@id/tvLiquidity"
             app:layout_constraintTop_toBottomOf="@id/tvGasFee"
             tools:text="2018-11-06 16:30:44" />
 
@@ -158,7 +155,7 @@
             android:paddingVertical="@dimen/dp_5"
             android:textSize="@dimen/sp_14"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tvLiquidityToken"
+            app:layout_constraintStart_toStartOf="@id/tvLiquidity"
             app:layout_constraintTop_toBottomOf="@id/tvOrderTime"
             tools:text="@string/value_null" />
 

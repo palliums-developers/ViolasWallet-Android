@@ -155,14 +155,14 @@ interface ViolasApi {
 
     /**
      * 获取币种对储备信息
-     * @param coinAName        Coin A 名称
-     * @param coinBName        Coin B 名称
+     * @param coinAModule        Coin A module
+     * @param coinBModule        Coin B module
      */
     @GET("/1.0/market/pool/reserve/info")
-    suspend fun getMarketPairReserveInfo(
-        @Query("coin_a") coinAName: String,
-        @Query("coin_b") coinBName: String
-    ): Response<MarketPairReserveInfoDTO>
+    suspend fun getPoolLiquidityReserveInfo(
+        @Query("coin_a") coinAModule: String,
+        @Query("coin_b") coinBModule: String
+    ): Response<PoolLiquidityReserveInfoDTO>
 
     /**
      * 获取支持的映射币交易对详情
@@ -180,5 +180,5 @@ interface ViolasApi {
      * 获取全部币种对储备信息
      */
     @GET("/1.0/market/pool/reserve/infos")
-    suspend fun getMarketAllReservePair(): Response<List<MarketPairReserveInfoDTO>>
+    suspend fun getMarketAllReservePair(): Response<List<PoolLiquidityReserveInfoDTO>>
 }

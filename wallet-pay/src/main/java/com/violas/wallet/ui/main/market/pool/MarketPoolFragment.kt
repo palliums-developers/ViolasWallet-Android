@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -17,13 +18,9 @@ import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
 import com.palliums.extensions.show
 import com.palliums.net.LoadState
-import com.palliums.utils.DensityUtility
-import com.palliums.utils.TextWatcherSimple
-import com.palliums.utils.getColorByAttrId
-import com.palliums.utils.stripTrailingZeros
-import com.palliums.violas.http.LiquidityTokenDTO
+import com.palliums.utils.*
+import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.widget.popup.EnhancedPopupCallback
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.ui.main.market.MarketSwitchPopupView
@@ -31,15 +28,14 @@ import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_ADD_LIQUIDITY
-import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_GET_USER_LIQUIDITY_TOKENS
+import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_GET_USER_LIQUIDITY_LIST
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_REMOVE_LIQUIDITY
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
-import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_FIRST
-import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_SECOND
+import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_A
+import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_B
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.convertAmountToDisplayAmount
-import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.fragment_market_pool.*
@@ -87,9 +83,9 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
         handleValueNull(tvPoolTokenAndPoolShare, R.string.market_my_pool_amount_format)
 
         // 输入框设置
-        etFirstInputBox.addTextChangedListener(firstInputTextWatcher)
-        etSecondInputBox.addTextChangedListener(secondInputTextWatcher)
-        etFirstInputBox.filters = arrayOf(AmountInputFilter(12, 6))
+        etInputBoxA.addTextChangedListener(inputTextWatcherA)
+        etInputBoxB.addTextChangedListener(inputTextWatcherB)
+        etInputBoxA.filters = arrayOf(AmountInputFilter(12, 6))
 
         // 按钮点击事件
         llSwitchOpModeGroup.setOnClickListener {
@@ -97,25 +93,25 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             showSwitchOpModePopup()
         }
 
-        llFirstSelectGroup.setOnClickListener {
+        llSelectGroupA.setOnClickListener {
             clearInputBoxFocusAndHideSoftInput()
             if (marketPoolViewModel.isTransferInMode()) {
-                showSelectTokenDialog(true)
+                showSelectCoinDialog(true)
             } else {
                 if (accountInvalid()) return@setOnClickListener
 
-                marketPoolViewModel.getLiquidityTokensLiveData()
-                    .removeObserver(liquidityTokensObserver)
-                marketPoolViewModel.execute(action = ACTION_GET_USER_LIQUIDITY_TOKENS) {
-                    marketPoolViewModel.getLiquidityTokensLiveData()
-                        .observe(viewLifecycleOwner, liquidityTokensObserver)
+                marketPoolViewModel.getLiquidityListLiveData()
+                    .removeObserver(liquidityListObserver)
+                marketPoolViewModel.execute(action = ACTION_GET_USER_LIQUIDITY_LIST) {
+                    marketPoolViewModel.getLiquidityListLiveData()
+                        .observe(viewLifecycleOwner, liquidityListObserver)
                 }
             }
         }
 
-        llSecondSelectGroup.setOnClickListener {
+        llSelectGroupB.setOnClickListener {
             clearInputBoxFocusAndHideSoftInput()
-            showSelectTokenDialog(false)
+            showSelectCoinDialog(false)
         }
 
         btnPositive.setOnClickListener {
@@ -148,20 +144,20 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
                 )
 
                 // 兑换率获取后，尝试估算已输入的金额
-                val firstInputAmount = etFirstInputBox.text.toString().trim()
-                if (firstInputAmount.isNotEmpty()) {
+                val inputAmountStrA = etInputBoxA.text.toString().trim()
+                if (inputAmountStrA.isNotEmpty()) {
                     if (marketPoolViewModel.isTransferInMode()) {
-                        marketPoolViewModel.estimateSecondTokenTransferIntoAmount(firstInputAmount)
+                        marketPoolViewModel.estimateCoinBTransferIntoAmount(inputAmountStrA)
                     } else {
-                        marketPoolViewModel.estimateTokensTransferOutAmount(firstInputAmount)
+                        marketPoolViewModel.estimateCoinsTransferOutAmount(inputAmountStrA)
                     }
                     return@Observer
                 }
 
-                val secondInputAmount = etSecondInputBox.text.toString().trim()
-                if (firstInputAmount.isNotEmpty()) {
+                val inputAmountStrB = etInputBoxB.text.toString().trim()
+                if (inputAmountStrB.isNotEmpty()) {
                     if (marketPoolViewModel.isTransferInMode()) {
-                        marketPoolViewModel.estimateFirstTokenTransferIntoAmount(secondInputAmount)
+                        marketPoolViewModel.estimateCoinATransferIntoAmount(inputAmountStrB)
                     }
                 }
             }
@@ -177,11 +173,11 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
                     )
                 }
             })
-        marketPoolViewModel.getFirstInputTextLiveData().observe(viewLifecycleOwner, Observer {
-            etFirstInputBox.setText(it)
+        marketPoolViewModel.getInputTextALiveData().observe(viewLifecycleOwner, Observer {
+            etInputBoxA.setText(it)
         })
-        marketPoolViewModel.getSecondInputTextLiveData().observe(viewLifecycleOwner, Observer {
-            etSecondInputBox.setText(it)
+        marketPoolViewModel.getInputTextBLiveData().observe(viewLifecycleOwner, Observer {
+            etInputBoxB.setText(it)
         })
 
         marketPoolViewModel.loadState.observe(viewLifecycleOwner, Observer {
@@ -218,43 +214,56 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
     private val currOpModeObserver = Observer<MarketPoolOpMode> {
         if (it == MarketPoolOpMode.TransferIn) {
             tvSwitchOpModeText.setText(R.string.transfer_in)
-            tvFirstInputLabel.setText(R.string.transfer_in)
-            tvSecondInputLabel.setText(R.string.transfer_in)
+            tvInputLabelA.setText(R.string.transfer_in)
+            tvInputLabelB.setText(R.string.transfer_in)
             btnPositive.setText(R.string.action_transfer_in_nbsp)
-            etSecondInputBox.filters = arrayOf(AmountInputFilter(12, 6))
-            etSecondInputBox.inputType = InputType.TYPE_CLASS_NUMBER
-            etSecondInputBox.isEnabled = true
-            etSecondInputBox.requestLayout()
-            tvSecondBalance.visibility = View.VISIBLE
-            llSecondSelectGroup.visibility = View.VISIBLE
 
-            marketPoolViewModel.getCurrFirstTokenLiveData()
-                .observe(viewLifecycleOwner, currFirstTokenObserver)
-            marketPoolViewModel.getCurrSecondTokenLiveData()
-                .observe(viewLifecycleOwner, currSecondTokenObserver)
-            marketPoolViewModel.getCurrLiquidityTokenLiveData()
-                .removeObserver(currLiquidityTokenObserver)
-            marketPoolViewModel.getLiquidityTokensLiveData()
-                .removeObserver(liquidityTokensObserver)
+            etInputBoxB.filters = arrayOf(AmountInputFilter(12, 6))
+            etInputBoxB.inputType =
+                InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+            etInputBoxB.isEnabled = true
+            etInputBoxB.requestLayout()
+
+            tvBalanceB.visibility = View.VISIBLE
+            llSelectGroupB.visibility = View.VISIBLE
+
+            ivModeIcon.setImageResource(
+                getResourceId(R.attr.marketPoolAndIcon, requireContext())
+            )
+
+            marketPoolViewModel.getCurrCoinALiveData()
+                .observe(viewLifecycleOwner, currCoinAObserver)
+            marketPoolViewModel.getCurrCoinBLiveData()
+                .observe(viewLifecycleOwner, currCoinBObserver)
+            marketPoolViewModel.getCurrLiquidityLiveData()
+                .removeObserver(currLiquidityObserver)
+            marketPoolViewModel.getLiquidityListLiveData()
+                .removeObserver(liquidityListObserver)
         } else {
             tvSwitchOpModeText.setText(R.string.transfer_out)
-            tvFirstInputLabel.setText(R.string.pool_liquidity_token)
-            tvSecondInputLabel.setText(R.string.transfer_out)
+            tvInputLabelA.setText(R.string.pool_liquidity_token)
+            tvInputLabelB.setText(R.string.transfer_out)
             btnPositive.setText(R.string.action_transfer_out_nbsp)
-            etSecondInputBox.filters = arrayOf()
-            etSecondInputBox.inputType =
-                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
-            etSecondInputBox.isEnabled = false
-            tvSecondBalance.visibility = View.GONE
-            llSecondSelectGroup.visibility = View.GONE
-            adjustSecondInputBoxPaddingEnd()
 
-            marketPoolViewModel.getCurrFirstTokenLiveData()
-                .removeObserver(currFirstTokenObserver)
-            marketPoolViewModel.getCurrSecondTokenLiveData()
-                .removeObserver(currSecondTokenObserver)
-            marketPoolViewModel.getCurrLiquidityTokenLiveData()
-                .observe(viewLifecycleOwner, currLiquidityTokenObserver)
+            etInputBoxB.filters = arrayOf()
+            etInputBoxB.inputType =
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+            etInputBoxB.isEnabled = false
+            adjustInputBoxBPaddingEnd()
+
+            tvBalanceB.visibility = View.GONE
+            llSelectGroupB.visibility = View.GONE
+
+            ivModeIcon.setImageResource(
+                getResourceId(R.attr.marketPoolOutIcon, requireContext())
+            )
+
+            marketPoolViewModel.getCurrCoinALiveData()
+                .removeObserver(currCoinAObserver)
+            marketPoolViewModel.getCurrCoinBLiveData()
+                .removeObserver(currCoinBObserver)
+            marketPoolViewModel.getCurrLiquidityLiveData()
+                .observe(viewLifecycleOwner, currLiquidityObserver)
         }
     }
 
@@ -323,55 +332,55 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
     }
 
     //*********************************** 转出模式选择交易对逻辑 ***********************************//
-    private val currLiquidityTokenObserver = Observer<LiquidityTokenDTO?> {
+    private val currLiquidityObserver = Observer<PoolLiquidityDTO?> {
         if (it == null) {
-            tvFirstSelectText.text = getString(R.string.select_token_pair)
-            etSecondInputBox.hint = "0.00\n0.00"
-            handleValueNull(tvFirstBalance, R.string.market_liquidity_token_balance_format)
+            tvSelectTextA.text = getString(R.string.select_token_pair)
+            etInputBoxB.hint = "0.00\n0.00"
+            handleValueNull(tvBalanceA, R.string.market_liquidity_token_balance_format)
         } else {
-            tvFirstSelectText.text = "${it.coinAName}/${it.coinBName}"
-            etSecondInputBox.hint = "0.00 ${it.coinAName}\n0.00 ${it.coinBName}"
-            tvFirstBalance.text = getString(
+            tvSelectTextA.text = "${it.coinA.displayName}/${it.coinB.displayName}"
+            etInputBoxB.hint = "0.00 ${it.coinA.displayName}\n0.00 ${it.coinB.displayName}"
+            tvBalanceA.text = getString(
                 R.string.market_liquidity_token_balance_format,
-                convertAmountToDisplayAmount(it.amount)
+                convertAmountToDisplayAmountStr(it.amount)
             )
         }
 
-        adjustFirstInputBoxPaddingEnd()
+        adjustInputBoxAPaddingEnd()
     }
 
-    private val liquidityTokensObserver = Observer<List<LiquidityTokenDTO>?> {
+    private val liquidityListObserver = Observer<List<PoolLiquidityDTO>?> {
         if (it.isNullOrEmpty()) {
             showToast(R.string.tips_market_pool_select_token_pair_empty)
         } else {
             val displayList = it.map { item ->
-                "${item.coinAName}/${item.coinBName}"
+                "${item.coinA.displayName}/${item.coinB.displayName}"
             } as MutableList
-            showSelectLiquidityTokenPopup(displayList)
+            showSelectLiquidityPopup(displayList)
         }
     }
 
-    private val selectLiquidityTokenArrowUpAnimator by lazy {
-        ObjectAnimator.ofFloat(ivSecondSelectArrow, "rotation", 0F, 180F)
+    private val selectLiquidityArrowUpAnimator by lazy {
+        ObjectAnimator.ofFloat(ivSelectArrowB, "rotation", 0F, 180F)
             .setDuration(360)
     }
 
-    private val selectLiquidityTokenArrowDownAnimator by lazy {
-        ObjectAnimator.ofFloat(ivSecondSelectArrow, "rotation", 180F, 360F)
+    private val selectLiquidityArrowDownAnimator by lazy {
+        ObjectAnimator.ofFloat(ivSelectArrowB, "rotation", 180F, 360F)
             .setDuration(360)
     }
 
-    private fun showSelectLiquidityTokenPopup(displayTokenPairs: MutableList<String>) {
-        val currPosition = marketPoolViewModel.getCurrLiquidityTokenPosition()
-        selectLiquidityTokenArrowUpAnimator.start()
+    private fun showSelectLiquidityPopup(displayTokenPairs: MutableList<String>) {
+        val currPosition = marketPoolViewModel.getCurrLiquidityPosition()
+        selectLiquidityArrowUpAnimator.start()
         XPopup.Builder(requireContext())
             .hasShadowBg(false)
             .popupAnimation(PopupAnimation.ScrollAlphaFromTop)
-            .atView(llFirstSelectGroup)
+            .atView(llSelectGroupA)
             .setPopupCallback(
                 object : EnhancedPopupCallback() {
                     override fun onDismissBefore() {
-                        selectLiquidityTokenArrowDownAnimator.start()
+                        selectLiquidityArrowDownAnimator.start()
                     }
                 })
             .asCustom(
@@ -380,56 +389,52 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
                     currPosition,
                     displayTokenPairs
                 ) {
-                    marketPoolViewModel.selectLiquidityToken(it, currPosition)
+                    marketPoolViewModel.selectLiquidity(it, currPosition)
                 }
             )
             .show()
     }
 
     //*********************************** 转入模式选择Token逻辑 ***********************************//
-    private val currFirstTokenObserver = Observer<StableTokenVo?> {
-        etFirstInputBox.hint = "0.00"
+    private val currCoinAObserver = Observer<StableTokenVo?> {
+        etInputBoxA.hint = "0.00"
         if (it == null) {
-            tvFirstSelectText.text = getString(R.string.select_token)
-            handleValueNull(tvFirstBalance, R.string.market_token_balance_format)
+            tvSelectTextA.text = getString(R.string.select_token)
+            handleValueNull(tvBalanceA, R.string.market_token_balance_format)
         } else {
-            tvFirstSelectText.text = it.displayName
-            val amountWithUnit =
-                convertAmountToDisplayUnit(it.amount, CoinTypes.parseCoinType(it.coinNumber))
-            tvFirstBalance.text = getString(
+            tvSelectTextA.text = it.displayName
+            tvBalanceA.text = getString(
                 R.string.market_token_balance_format,
-                "${amountWithUnit.first} ${it.displayName}"
+                "${it.displayAmount.toPlainString()} ${it.displayName}"
             )
         }
 
-        adjustFirstInputBoxPaddingEnd()
+        adjustInputBoxAPaddingEnd()
     }
 
-    private val currSecondTokenObserver = Observer<StableTokenVo?> {
-        etSecondInputBox.hint = "0.00"
+    private val currCoinBObserver = Observer<StableTokenVo?> {
+        etInputBoxB.hint = "0.00"
         if (it == null) {
-            tvSecondSelectText.text = getString(R.string.select_token)
-            handleValueNull(tvSecondBalance, R.string.market_token_balance_format)
+            tvSelectTextB.text = getString(R.string.select_token)
+            handleValueNull(tvBalanceB, R.string.market_token_balance_format)
         } else {
-            tvSecondSelectText.text = it.displayName
-            val amountWithUnit =
-                convertAmountToDisplayUnit(it.amount, CoinTypes.parseCoinType(it.coinNumber))
-            tvSecondBalance.text = getString(
+            tvSelectTextB.text = it.displayName
+            tvBalanceB.text = getString(
                 R.string.market_token_balance_format,
-                "${amountWithUnit.first} ${it.displayName}"
+                "${it.displayAmount.toPlainString()} ${it.displayName}"
             )
         }
 
-        adjustSecondInputBoxPaddingEnd()
+        adjustInputBoxBPaddingEnd()
     }
 
-    private fun showSelectTokenDialog(selectFirst: Boolean) {
+    private fun showSelectCoinDialog(selectCoinA: Boolean) {
         SelectTokenDialog
             .newInstance(
-                if (selectFirst) ACTION_POOL_SELECT_FIRST else ACTION_POOL_SELECT_SECOND
+                if (selectCoinA) ACTION_POOL_SELECT_A else ACTION_POOL_SELECT_B
             )
             .setCallback {
-                marketPoolViewModel.selectToken(selectFirst, it as StableTokenVo)
+                marketPoolViewModel.selectCoin(selectCoinA, it as StableTokenVo)
             }
             .show(childFragmentManager)
     }
@@ -443,43 +448,43 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
     }
 
     override fun getCurrToken(action: Int): ITokenVo? {
-        return if (action == ACTION_POOL_SELECT_FIRST)
-            marketPoolViewModel.getCurrFirstTokenLiveData().value
+        return if (action == ACTION_POOL_SELECT_A)
+            marketPoolViewModel.getCurrCoinALiveData().value
         else
-            marketPoolViewModel.getCurrSecondTokenLiveData().value
+            marketPoolViewModel.getCurrCoinBLiveData().value
     }
 
     //*********************************** 输入框逻辑 ***********************************//
-    private val firstInputTextWatcher = object : TextWatcherSimple() {
+    private val inputTextWatcherA = object : TextWatcherSimple() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            if (!etFirstInputBox.isFocused) return
+            if (!etInputBoxA.isFocused) return
 
             val inputText = s?.toString() ?: ""
             val amountStr = handleInputText(inputText)
             if (inputText != amountStr) {
-                handleInputTextWatcher(amountStr, etFirstInputBox, this)
+                handleInputTextWatcher(amountStr, etInputBoxA, this)
             }
 
             if (marketPoolViewModel.isTransferInMode()) {
-                marketPoolViewModel.estimateSecondTokenTransferIntoAmount(amountStr)
+                marketPoolViewModel.estimateCoinBTransferIntoAmount(amountStr)
             } else {
-                marketPoolViewModel.estimateTokensTransferOutAmount(amountStr)
+                marketPoolViewModel.estimateCoinsTransferOutAmount(amountStr)
             }
         }
     }
 
-    private val secondInputTextWatcher = object : TextWatcherSimple() {
+    private val inputTextWatcherB = object : TextWatcherSimple() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            if (!etSecondInputBox.isFocused) return
+            if (!etInputBoxB.isFocused) return
 
             val inputText = s?.toString() ?: ""
             val amountStr = handleInputText(inputText)
             if (inputText != amountStr) {
-                handleInputTextWatcher(amountStr, etSecondInputBox, this)
+                handleInputTextWatcher(amountStr, etInputBoxB, this)
             }
 
             if (marketPoolViewModel.isTransferInMode()) {
-                marketPoolViewModel.estimateFirstTokenTransferIntoAmount(amountStr)
+                marketPoolViewModel.estimateCoinATransferIntoAmount(amountStr)
             }
         }
     }
@@ -510,13 +515,13 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
 
     private fun clearInputBoxFocusAndHideSoftInput() {
         var focused = false
-        if (etFirstInputBox.isFocused) {
+        if (etInputBoxA.isFocused) {
             focused = true
-            etFirstInputBox.clearFocus()
+            etInputBoxA.clearFocus()
         }
-        if (etSecondInputBox.isFocused) {
+        if (etInputBoxB.isFocused) {
             focused = true
-            etSecondInputBox.clearFocus()
+            etInputBoxB.clearFocus()
         }
 
         if (focused) {
@@ -527,31 +532,31 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
 
     //*********************************** 转入转出逻辑 ***********************************//
     private fun transferInPreconditionsInvalid(): Boolean {
-        val firstCoin = marketPoolViewModel.getCurrFirstTokenLiveData().value
-        val secondCoin = marketPoolViewModel.getCurrSecondTokenLiveData().value
-        if (firstCoin == null || secondCoin == null) {
+        val coinA = marketPoolViewModel.getCurrCoinALiveData().value
+        val coinB = marketPoolViewModel.getCurrCoinBLiveData().value
+        if (coinA == null || coinB == null) {
             showToast(R.string.tips_market_add_liquidity_coin_not_selected)
             return true
         }
 
-        val firstAmount = etFirstInputBox.text.toString().trim()
-        val secondAmount = etSecondInputBox.text.toString().trim()
-        if (firstAmount.isEmpty() && secondAmount.isEmpty()) {
+        val inputAmountStrA = etInputBoxA.text.toString().trim()
+        val inputAmountStrB = etInputBoxB.text.toString().trim()
+        if (inputAmountStrA.isEmpty() && inputAmountStrB.isEmpty()) {
             showToast(R.string.tips_market_add_liquidity_amount_not_input)
             return true
         }
 
-        if (convertDisplayAmountToAmount(firstAmount) > BigDecimal(firstCoin.amount)) {
+        if (BigDecimal(inputAmountStrA) > coinA.displayAmount) {
             val prefix =
-                if (convertDisplayAmountToAmount(secondAmount) > BigDecimal(secondCoin.amount)) {
-                    "${firstCoin.module}/${secondCoin.module}"
+                if (BigDecimal(inputAmountStrB) > coinB.displayAmount) {
+                    "${coinA.module}/${coinB.module}"
                 } else {
-                    firstCoin.module
+                    coinA.module
                 }
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
             return true
-        } else if (convertDisplayAmountToAmount(secondAmount) > BigDecimal(secondCoin.amount)) {
-            val prefix = firstCoin.module
+        } else if (BigDecimal(inputAmountStrB) > coinB.displayAmount) {
+            val prefix = coinA.module
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
             return true
         }
@@ -560,20 +565,19 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
     }
 
     private fun transferOutPreconditionsInvalid(): Boolean {
-        val liquidityToken =
-            marketPoolViewModel.getCurrLiquidityTokenLiveData().value
-        if (liquidityToken == null) {
+        val liquidity = marketPoolViewModel.getCurrLiquidityLiveData().value
+        if (liquidity == null) {
             showToast(R.string.tips_market_remove_liquidity_pair_not_selected)
             return true
         }
 
-        val liquidityAmount = etFirstInputBox.text.toString().trim()
-        if (liquidityAmount.isEmpty()) {
+        val inputAmountStr = etInputBoxA.text.toString().trim()
+        if (inputAmountStr.isEmpty()) {
             showToast(R.string.tips_market_remove_liquidity_amount_not_input)
             return true
         }
 
-        if (convertDisplayAmountToAmount(liquidityAmount) > liquidityToken.amount) {
+        if (convertDisplayAmountToAmount(inputAmountStr) > liquidity.amount) {
             showToast(getString(R.string.tips_market_insufficient_balance_format, ""))
             return true
         }
@@ -589,8 +593,8 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             if (transferIn) {
                 marketPoolViewModel.execute(
                     privateKey,
-                    etFirstInputBox.text.toString().trim(),
-                    etSecondInputBox.text.toString().trim(),
+                    etInputBoxA.text.toString().trim(),
+                    etInputBoxB.text.toString().trim(),
                     action = ACTION_ADD_LIQUIDITY
                 ) {
                     showToast(R.string.tips_market_add_liquidity_success)
@@ -598,7 +602,7 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
             } else {
                 marketPoolViewModel.execute(
                     privateKey,
-                    etFirstInputBox.text.toString().trim(),
+                    etInputBoxA.text.toString().trim(),
                     action = ACTION_REMOVE_LIQUIDITY
                 ) {
                     showToast(R.string.tips_market_remove_liquidity_success)
@@ -621,34 +625,34 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
         }
     }
 
-    private fun adjustFirstInputBoxPaddingEnd() {
-        etFirstInputBox.post {
-            val paddingRight = if (llFirstSelectGroup.visibility != View.VISIBLE) {
+    private fun adjustInputBoxAPaddingEnd() {
+        etInputBoxA.post {
+            val paddingRight = if (llSelectGroupA.visibility != View.VISIBLE) {
                 DensityUtility.dp2px(requireContext(), 11)
             } else {
-                llFirstSelectGroup.width + DensityUtility.dp2px(requireContext(), 11) * 2
+                llSelectGroupA.width + DensityUtility.dp2px(requireContext(), 11) * 2
             }
-            etFirstInputBox.setPadding(
-                etFirstInputBox.paddingLeft,
-                etFirstInputBox.paddingTop,
+            etInputBoxA.setPadding(
+                etInputBoxA.paddingLeft,
+                etInputBoxA.paddingTop,
                 paddingRight,
-                etFirstInputBox.paddingBottom
+                etInputBoxA.paddingBottom
             )
         }
     }
 
-    private fun adjustSecondInputBoxPaddingEnd() {
-        etSecondInputBox.post {
-            val paddingRight = if (llSecondSelectGroup.visibility != View.VISIBLE) {
+    private fun adjustInputBoxBPaddingEnd() {
+        etInputBoxB.post {
+            val paddingRight = if (llSelectGroupB.visibility != View.VISIBLE) {
                 DensityUtility.dp2px(requireContext(), 11)
             } else {
-                llSecondSelectGroup.width + DensityUtility.dp2px(requireContext(), 11) * 2
+                llSelectGroupB.width + DensityUtility.dp2px(requireContext(), 11) * 2
             }
-            etSecondInputBox.setPadding(
-                etSecondInputBox.paddingLeft,
-                etSecondInputBox.paddingTop,
+            etInputBoxB.setPadding(
+                etInputBoxB.paddingLeft,
+                etInputBoxB.paddingTop,
                 paddingRight,
-                etSecondInputBox.paddingBottom
+                etInputBoxB.paddingBottom
             )
         }
     }

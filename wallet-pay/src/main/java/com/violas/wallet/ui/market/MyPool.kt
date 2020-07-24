@@ -12,7 +12,7 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.listing.ListingViewModel
 import com.palliums.utils.getString
-import com.palliums.violas.http.LiquidityTokenDTO
+import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
@@ -24,7 +24,7 @@ import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.pool.MarketPoolOpMode
-import com.violas.wallet.utils.convertAmountToDisplayAmount
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_my_pool.*
 import kotlinx.android.synthetic.main.item_my_pool_liquidity_token.view.*
@@ -39,7 +39,7 @@ import org.greenrobot.eventbus.EventBus
  * <p>
  * desc: 我的资金池页面
  */
-class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
+class MyPoolActivity : BaseListingActivity<PoolLiquidityDTO>() {
 
     private val viewModel by lazy {
         ViewModelProvider(this).get(MyPoolViewModel::class.java)
@@ -68,11 +68,11 @@ class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
         return statusLayout
     }
 
-    override fun getViewModel(): ListingViewModel<LiquidityTokenDTO> {
+    override fun getViewModel(): ListingViewModel<PoolLiquidityDTO> {
         return viewModel
     }
 
-    override fun getViewAdapter(): ListingViewAdapter<LiquidityTokenDTO> {
+    override fun getViewAdapter(): ListingViewAdapter<PoolLiquidityDTO> {
         return viewAdapter
     }
 
@@ -127,17 +127,17 @@ class MyPoolActivity : BaseListingActivity<LiquidityTokenDTO>() {
             viewModel.execute()
         }
 
-        viewModel.totalLiquidityAmount.observe(this, Observer {
-            tvTotalLiquidityAmount.text = convertAmountToDisplayAmount(it)
+        viewModel.liquidityTotalAmount.observe(this, Observer {
+            tvLiquidityTotalAmount.text = convertAmountToDisplayAmountStr(it)
         })
 
         viewModel.execute()
     }
 }
 
-class MyPoolViewModel : ListingViewModel<LiquidityTokenDTO>() {
+class MyPoolViewModel : ListingViewModel<PoolLiquidityDTO>() {
 
-    val totalLiquidityAmount = MutableLiveData<String>()
+    val liquidityTotalAmount = MutableLiveData<String>()
 
     private lateinit var address: String
 
@@ -152,22 +152,22 @@ class MyPoolViewModel : ListingViewModel<LiquidityTokenDTO>() {
         return@withContext true
     }
 
-    override suspend fun loadData(vararg params: Any): List<LiquidityTokenDTO> {
+    override suspend fun loadData(vararg params: Any): List<PoolLiquidityDTO> {
         val userPoolInfo = violasService.getUserPoolInfo(address)
 
-        totalLiquidityAmount.postValue(userPoolInfo?.totalLiquidityAmount ?: "0")
+        liquidityTotalAmount.postValue(userPoolInfo?.liquidityTotalAmount ?: "0")
 
-        return userPoolInfo?.liquidityTokens ?: emptyList()
+        return userPoolInfo?.liquidityList ?: emptyList()
     }
 
 }
 
-class MyPoolViewAdapter : ListingViewAdapter<LiquidityTokenDTO>() {
+class MyPoolViewAdapter : ListingViewAdapter<PoolLiquidityDTO>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BaseViewHolder<LiquidityTokenDTO> {
+    ): BaseViewHolder<PoolLiquidityDTO> {
         return MyPoolViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.item_my_pool_liquidity_token,
@@ -180,18 +180,18 @@ class MyPoolViewAdapter : ListingViewAdapter<LiquidityTokenDTO>() {
 
 class MyPoolViewHolder(
     view: View
-) : BaseViewHolder<LiquidityTokenDTO>(view) {
+) : BaseViewHolder<PoolLiquidityDTO>(view) {
 
-    override fun onViewBind(itemPosition: Int, itemData: LiquidityTokenDTO?) {
+    override fun onViewBind(itemPosition: Int, itemData: PoolLiquidityDTO?) {
         itemData?.let {
             itemView.tvLiquidityAmount.text = getString(
                 R.string.market_liquidity_token_amount_format,
-                convertAmountToDisplayAmount(it.amount)
+                convertAmountToDisplayAmountStr(it.amount)
             )
             itemView.tvTokenA.text =
-                "${convertAmountToDisplayAmount(it.coinAAmount)} ${it.coinAName}"
+                "${convertAmountToDisplayAmountStr(it.coinA.amount)} ${it.coinA.displayName}"
             itemView.tvTokenB.text =
-                "${convertAmountToDisplayAmount(it.coinBAmount)} ${it.coinBName}"
+                "${convertAmountToDisplayAmountStr(it.coinB.amount)} ${it.coinB.displayName}"
         }
     }
 }
