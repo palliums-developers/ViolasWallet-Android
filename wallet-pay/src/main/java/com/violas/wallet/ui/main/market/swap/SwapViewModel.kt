@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.market.swap
 
+import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -64,8 +65,6 @@ class SwapViewModel : BaseViewModel() {
         AssetsSwapManager(NetWorkSupportTokensLoader(), SupportMappingSwapPairManager())
     }
 
-    private var exchangeSwapTrialJob: Job? = null
-
     init {
         val convertToExchangeRate: (ITokenVo, ITokenVo) -> BigDecimal? =
             { fromToken, toToken ->
@@ -120,24 +119,25 @@ class SwapViewModel : BaseViewModel() {
         return currToTokenLiveData
     }
 
+    @MainThread
     fun selectToken(selectFrom: Boolean, selected: ITokenVo) {
         if (selectFrom) {
             val currFromToken = currFromTokenLiveData.value
             if (selected != currFromToken) {
                 val currToToken = currToTokenLiveData.value
                 if (selected == currToToken) {
-                    currToTokenLiveData.postValue(currFromToken)
+                    currToTokenLiveData.value = currFromToken
                 }
-                currFromTokenLiveData.postValue(selected)
+                currFromTokenLiveData.value = selected
             }
         } else {
             val currToToken = currToTokenLiveData.value
             if (selected != currToToken) {
                 val currFromToken = currFromTokenLiveData.value
                 if (selected == currFromToken) {
-                    currFromTokenLiveData.postValue(currToToken)
+                    currFromTokenLiveData.value = currToToken
                 }
-                currToTokenLiveData.postValue(selected)
+                currToTokenLiveData.value = selected
             }
         }
     }
@@ -159,7 +159,7 @@ class SwapViewModel : BaseViewModel() {
         return exchangeRateLiveData
     }
 
-    fun getGasFeeLiveData(): LiveData<Long?> {
+    fun getGasFeeLiveData(): MutableLiveData<Long?> {
         return gasFeeLiveData
     }
 
@@ -168,60 +168,6 @@ class SwapViewModel : BaseViewModel() {
     }
 
     //*********************************** 其它信息相关方法 ***********************************//
-    /**
-     * 兑换手续费用预估
-     */
-    fun exchangeSwapTrial(inputAmountStr: String, callback: (String, String) -> Unit) {
-        val inputToken = currFromTokenLiveData.value
-        val outputToken = currToTokenLiveData.value
-
-        swapPath.clear()
-
-        if (inputToken == null || outputToken == null) {
-            return
-        }
-
-        val inputAmount = convertDisplayUnitToAmount(
-            inputAmountStr,
-            CoinTypes.parseCoinType(inputToken.coinNumber)
-        )
-
-        if (inputAmount == 0L) {
-            return
-        }
-
-        exchangeSwapTrialJob?.cancel()
-        exchangeSwapTrialJob = viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
-
-            mViolasService.exchangeSwapTrial(
-                inputAmount,
-                getCoinName(inputToken),
-                getCoinName(outputToken)
-            )?.let { exchangeSwapTrial ->
-                swapPath.addAll(exchangeSwapTrial.path)
-                val outputAmount = convertAmountToDisplayUnit(
-                    exchangeSwapTrial.amount,
-                    CoinTypes.parseCoinType(outputToken.coinNumber)
-                )
-                val outputFee = convertAmountToDisplayUnit(
-                    exchangeSwapTrial.fee,
-                    CoinTypes.parseCoinType(outputToken.coinNumber)
-                )
-                withContext(Dispatchers.Main) {
-                    callback(outputAmount.first, outputFee.first)
-                }
-            }
-        }
-    }
-
-    private fun getCoinName(iTokenVo: ITokenVo): String {
-        return when (iTokenVo) {
-            is PlatformTokenVo -> CoinTypes.parseCoinType(iTokenVo.coinNumber).coinName()
-            is StableTokenVo -> iTokenVo.module
-            else -> ""
-        }
-    }
-
     suspend fun swap(pwd: ByteArray, inputAmountStr: String, outputAmountStr: String) =
         withContext(Dispatchers.IO) {
             val inputToken = currFromTokenLiveData.value!!

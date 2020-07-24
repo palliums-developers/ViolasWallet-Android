@@ -175,4 +175,10 @@ interface ViolasApi {
      */
     @GET("/1.0/market/exchange/crosschain/map/relation")
     suspend fun getMarketPairRelation(): Response<List<MapRelationDTO>>
+
+    /**
+     * 获取全部币种对储备信息
+     */
+    @GET("/1.0/market/pool/reserve/infos")
+    suspend fun getMarketAllReservePair(): Response<List<MarketPairReserveInfoDTO>>
 }

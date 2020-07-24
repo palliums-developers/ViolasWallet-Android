@@ -7,6 +7,7 @@ import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
+import com.violas.wallet.utils.str2CoinType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,7 +37,7 @@ class SupportMappingSwapPairManager : CoroutineScope by CustomIOScope() {
                     mMappingSwapPair.clear()
                     val countDownLatch = CountDownLatch(1)
                     launch {
-                        mViolasService.getMarketMappingPairInfo().data?.let {
+                        mViolasService.getMarketMappingPairInfo()?.let {
                             mMappingSwapPair.addAll(it)
                         }
                         countDownLatch.countDown()
@@ -81,25 +82,6 @@ class SupportMappingSwapPairManager : CoroutineScope by CustomIOScope() {
                 }
             }
         return result
-    }
-
-    private fun str2CoinType(str: String): Int? {
-        return when (str.toLowerCase(Locale.ROOT)) {
-            "btc" -> {
-                if (Vm.TestNet) {
-                    CoinTypes.BitcoinTest.coinType()
-                } else {
-                    CoinTypes.Bitcoin.coinType()
-                }
-            }
-            "libra" -> {
-                CoinTypes.Libra.coinType()
-            }
-            "violas" -> {
-                CoinTypes.Violas.coinType()
-            }
-            else -> null
-        }
     }
 }
 

@@ -15,12 +15,13 @@ class NetWorkSupportTokensLoader : ISupportTokensLoader {
     override fun load(): List<ITokenVo> {
         val result = ArrayList<ITokenVo>()
         val countDownLatch = CountDownLatch(1)
-        GlobalScope.launch(SupervisorJob()) {
+        GlobalScope.launch {
             try {
                 result.addAll(mExchangeManager.getMarketSupportTokens())
                 countDownLatch.countDown()
             }catch (e:Exception){
                 e.printStackTrace()
+                countDownLatch.countDown()
             }
         }
         countDownLatch.await()

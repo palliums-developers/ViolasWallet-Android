@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.AmountInputFilter
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -16,12 +17,14 @@ import com.palliums.extensions.show
 import com.palliums.net.LoadState
 import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
+import com.violas.wallet.biz.exchange.ReserveManager
 import com.violas.wallet.biz.exchange.UnsupportedTradingPairsException
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
@@ -34,11 +37,16 @@ import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.TokensBridge
 import com.violas.wallet.ui.main.market.selectToken.SwapTokensDataResourcesBridge
 import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.utils.convertAmountToDisplayAmount
+import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.utils.convertDisplayUnitToAmount
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.palliums.libracore.http.LibraException
 import org.palliums.violascore.http.ViolasException
 import java.math.BigDecimal
@@ -61,6 +69,10 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         AccountManager()
     }
     private var mCurrFromAssetsAmount = BigDecimal("0")
+    private val mReserveManager by lazy {
+        ReserveManager()
+    }
+    private var isInputFrom = false
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_swap
@@ -125,6 +137,8 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         handleValueNull(tvHandlingFeeRate, R.string.handling_fee_rate_format)
         handleValueNull(tvExchangeRate, R.string.exchange_rate_format)
         handleValueNull(tvGasFee, R.string.gas_fee_format)
+
+        mReserveManager.init(this)
 
         etFromInputBox.addTextChangedListener(fromInputTextWatcher)
         etToInputBox.addTextChangedListener(toInputTextWatcher)
@@ -202,6 +216,9 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                 tvToSelectText.text = it.displayName
                 toAssertsAmountSubscriber.changeSubscriber(IAssetsMark.convert(it))
             }
+        })
+        mReserveManager.mChangeLiveData.observe(this, Observer {
+
         })
         swapViewModel.getHandlingFeeRateLiveDataLiveData().observe(viewLifecycleOwner, Observer {
             if (it == null) {
@@ -318,32 +335,69 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         }.show(parentFragmentManager)
     }
 
-    /**
-     * 估算输出金额
-     */
     private fun estimateOutputTokenNumber() {
-        swapViewModel.exchangeSwapTrial(etFromInputBox.text.toString()) { amount, fee ->
-            handleValue(tvExchangeRate, R.string.exchange_rate_format, fee)
-            etToInputBox.setText(amount)
-        }
-    }
+        launch(Dispatchers.IO) {
+            try {
+                val fromToken = swapViewModel.getCurrFromTokenLiveData().value
+                val toToken = swapViewModel.getCurrToTokenLiveData().value
 
-    private val handler = Handler(Looper.getMainLooper(), Handler.Callback {
-        when (it.what) {
-            ExchangeSwapTrialWhat -> {
-                estimateOutputTokenNumber()
+                val inputAmountStr = etFromInputBox.text.toString()
+                val outputAmountStr = etToInputBox.text.toString()
+
+                if (fromToken == null || toToken == null) {
+                    return@launch
+                }
+
+                val inputAmount = if (isInputFrom) {
+                    convertDisplayUnitToAmount(
+                        inputAmountStr,
+                        CoinTypes.parseCoinType(fromToken.coinNumber)
+                    )
+                } else {
+                    convertDisplayUnitToAmount(
+                        outputAmountStr,
+                        CoinTypes.parseCoinType(toToken.coinNumber)
+                    )
+                }
+
+                if (inputAmount == 0L) {
+                    return@launch
+                }
+
+                val tradeExact =
+                    mReserveManager.tradeExact(fromToken, toToken, inputAmount, isInputFrom)
+                if (tradeExact == null) {
+
+                } else {
+                    Log.e("======", tradeExact.toString())
+                    val outputEdit = if (isInputFrom) {
+                        etToInputBox
+                    } else {
+                        etFromInputBox
+                    }
+                    val outputCoin = if (isInputFrom) {
+                        toToken
+                    } else {
+                        fromToken
+                    }
+                    val outputAmount = convertAmountToDisplayUnit(
+                        tradeExact.amount,
+                        CoinTypes.parseCoinType(outputCoin.coinNumber)
+                    ).first
+                    val outputFeeAmount = convertAmountToDisplayUnit(
+                        tradeExact.fee,
+                        CoinTypes.parseCoinType(outputCoin.coinNumber)
+                    ).first
+                    withContext(Dispatchers.Main) {
+                        outputEdit.setText(outputAmount)
+                        swapViewModel.getGasFeeLiveData().value =
+                            BigDecimal(outputFeeAmount).toLong()
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
         }
-        true
-    })
-    private val ExchangeSwapTrialWhat = 1
-
-    /**
-     * 延迟估算
-     */
-    private fun delayEstimateOutputTokenNumber() {
-        handler.removeMessages(ExchangeSwapTrialWhat)
-        handler.sendEmptyMessageAtTime(ExchangeSwapTrialWhat, 800)
     }
 
     //*********************************** 选择Token逻辑 ***********************************//
@@ -353,9 +407,10 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
                 if (selectFrom) ACTION_SWAP_SELECT_FROM else ACTION_SWAP_SELECT_TO
             )
             .setCallback { action, iToken ->
-                swapViewModel.selectToken(ACTION_SWAP_SELECT_FROM == action, iToken)
-                // todo 可能会有问题，选择刷洗问题，因为 livedata 使用 postValue
-                estimateOutputTokenNumber()
+                launch {
+                    swapViewModel.selectToken(ACTION_SWAP_SELECT_FROM == action, iToken)
+                    estimateOutputTokenNumber()
+                }
             }
             .show(childFragmentManager)
     }
@@ -388,12 +443,13 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if (!etFromInputBox.isFocused) return
 
+            isInputFrom = true
             val inputText = s?.toString() ?: ""
             val amountStr = handleInputText(inputText)
             if (inputText != amountStr) {
                 handleInputTextWatcher(amountStr, etFromInputBox, this)
             }
-            delayEstimateOutputTokenNumber()
+            estimateOutputTokenNumber()
         }
     }
 
@@ -401,11 +457,13 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if (!etToInputBox.isFocused) return
 
+            isInputFrom = false
             val inputText = s?.toString() ?: ""
             val amountStr = handleInputText(inputText)
             if (inputText != amountStr) {
                 handleInputTextWatcher(amountStr, etToInputBox, this)
             }
+            estimateOutputTokenNumber()
         }
     }
 
@@ -455,7 +513,21 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
         textView.text = getString(formatResId, getString(R.string.value_null))
     }
 
-    private val handleValue: (TextView, Int, String) -> Unit = { textView, formatResId, value ->
-        textView.text = getString(formatResId, value)
+    override fun showProgress(msg: String?) {
+        launch {
+            if (msg != null && msg.isNotEmpty()) {
+                tvProgressContent.text = msg
+                tvProgressContent.visibility = View.VISIBLE
+            } else {
+                tvProgressContent.visibility = View.GONE
+            }
+            layoutLoad.visibility = View.VISIBLE
+        }
+    }
+
+    override fun dismissProgress() {
+        launch {
+            layoutLoad.visibility = View.GONE
+        }
     }
 }

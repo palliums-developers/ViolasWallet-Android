@@ -80,7 +80,7 @@ android {
 //            zipAlignEnabled true
 //            pseudoLocalesEnabled true
 //            proguardFiles '../proguard-android-optimize-wallet.txt', 'proguard-rules.pro'
-            ext.alwaysUpdateBuildId = false
+//            ext.alwaysUpdateBuildId = false
             multiDexKeepProguard file('../multidexKeep.pro')
             signingConfig signingConfigs.debug
             buildConfigField "boolean", "SHUFFLE_MNEMONIC", "false"

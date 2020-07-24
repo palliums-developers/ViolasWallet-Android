@@ -200,4 +200,9 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
     suspend fun getMarketPairRelation() = checkResponse {
         mViolasApi.getMarketPairRelation()
     }
+
+    @Throws(RequestException::class)
+    suspend fun getMarketAllReservePair() = checkResponse {
+        mViolasApi.getMarketAllReservePair()
+    }
 }

@@ -10,6 +10,7 @@ import com.violas.wallet.biz.exchange.processor.ViolasToAssetsMappingProcessor
 import com.violas.wallet.biz.exchange.processor.ViolasTokenToViolasTokenProcessor
 import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.main.market.bean.*
+import com.violas.wallet.utils.str2CoinType
 import org.palliums.violascore.http.ViolasException
 import java.util.*
 import kotlin.collections.HashMap
@@ -217,24 +218,5 @@ class AssetsSwapManager(
             }
         }
         return resultMap
-    }
-
-    private fun str2CoinType(str: String): Int? {
-        return when (str.toLowerCase(Locale.ROOT)) {
-            "btc" -> {
-                if (Vm.TestNet) {
-                    CoinTypes.BitcoinTest.coinType()
-                } else {
-                    CoinTypes.Bitcoin.coinType()
-                }
-            }
-            "libra" -> {
-                CoinTypes.Libra.coinType()
-            }
-            "violas" -> {
-                CoinTypes.Violas.coinType()
-            }
-            else -> null
-        }
     }
 }
