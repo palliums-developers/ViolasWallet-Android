@@ -46,7 +46,8 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         gasCurrencyCode: String = lbrStructTagType(),
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
-        delayed: Long = 1000
+        delayed: Long = 1000,
+        chainId: Int
     ): TransactionResult {
         var sequenceNumber = sequenceNumber
         val keyPair = account.keyPair
@@ -68,7 +69,8 @@ class LibraService(private val mLibraRepository: LibraRepository) {
             gasCurrencyCode,
             maxGasAmount,
             gasUnitPrice,
-            delayed
+            delayed,
+            chainId
         )
         sendTransaction(
             rawTransaction.toByteArray().toHex(),
@@ -126,13 +128,19 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         address: String,
         amount: Long,
         typeTag: TypeTag = lbrStructTag(),
-        gasCurrencyCode: String = lbrStructTagType()
+        gasCurrencyCode: String = lbrStructTagType(),
+        chainId: Int
     ) {
         val transactionPayload =
             TransactionPayload.optionTransactionPayload(
                 context, address, amount, typeTag = typeTag
             )
-        sendTransaction(transactionPayload, account, gasCurrencyCode = gasCurrencyCode)
+        sendTransaction(
+            transactionPayload,
+            account,
+            gasCurrencyCode = gasCurrencyCode,
+            chainId = chainId
+        )
     }
 
     suspend fun getBalance(address: String): String {
@@ -160,7 +168,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
     }
 
     suspend fun getCurrencies() = mLibraRepository.getCurrencies().data
-    
+
     suspend fun getAccountState(
         address: String
     ) =
@@ -173,7 +181,13 @@ class LibraService(private val mLibraRepository: LibraRepository) {
     ) = mLibraRepository.getTransaction(address, sequenceNumber, bool)
 
 
-    suspend fun addCurrency(account: Account, address: String, module: String, name: String): TransactionResult {
+    suspend fun addCurrency(
+        account: Account,
+        address: String,
+        module: String,
+        name: String,
+        chainId: Int
+    ): TransactionResult {
         val transactionPayload =
             TransactionPayload.optionAddCurrencyPayload(
                 ContextProvider.getContext(),
@@ -185,6 +199,6 @@ class LibraService(private val mLibraRepository: LibraRepository) {
                     )
                 )
             )
-        return sendTransaction(transactionPayload, account, gasCurrencyCode = lbrStructTagType())
+        return sendTransaction(transactionPayload, account, gasCurrencyCode = lbrStructTagType(),chainId = chainId)
     }
 }

@@ -29,7 +29,8 @@ class TransferUnitTest {
         val rawTransaction = RawTransaction.optionTransaction(
             account.getAddress().toHex(),
             publishTokenPayload,
-            0
+            0,
+            chainId = 2
         )
         Log.e("===", account.keyPair.getPrivateKey().toHex())
 

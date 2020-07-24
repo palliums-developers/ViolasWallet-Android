@@ -8,6 +8,7 @@ import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.MappingInfo
 import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -126,7 +127,8 @@ class LibraToMappingAssetsProcessor(
         return mLibraRpcService.sendTransaction(
             optionTokenSwapTransactionPayload,
             account,
-            gasCurrencyCode = typeTagFrom.value.module
+            gasCurrencyCode = typeTagFrom.value.module,
+            chainId = Vm.LibraChainId
         ).sequenceNumber.toString()
     }
 }

@@ -18,7 +18,8 @@ fun RawTransaction.Companion.optionTransaction(
     gasCurrencyCode: String = lbrStructTagType(),
     maxGasAmount: Long = 400_000,
     gasUnitPrice: Long = 0,
-    delayed: Long = 1000
+    delayed: Long = 1000,
+    chainId: Int
 ): RawTransaction {
     val rawTransaction = RawTransaction(
         AccountAddress(HexUtils.fromHex(senderAddress)),
@@ -27,7 +28,8 @@ fun RawTransaction.Companion.optionTransaction(
         maxGasAmount,
         gasUnitPrice,
         gasCurrencyCode,
-        (Date().time / 1000) + delayed
+        (Date().time / 1000) + delayed,
+        chainId
     )
     println("rawTransaction ${HexUtils.toHex(rawTransaction.toByteArray())}")
     return rawTransaction
@@ -44,35 +46,9 @@ fun TransactionPayload.Companion.optionTransactionPayload(
     metadataSignature: ByteArray = byteArrayOf(),
     typeTag: TypeTag = lbrStructTag()
 ): TransactionPayload {
-    val convert = AccountAddress.convert(address)
-    return optionTransactionPayload(
-        context,
-        convert.address,
-        convert.authenticationKeyPrefix,
-        amount,
-        metaData,
-        metadataSignature,
-        typeTag
-    )
-}
-
-/**
- * 创建 Token 转账 payload
- */
-fun TransactionPayload.Companion.optionTransactionPayload(
-    context: Context,
-    address: String,
-    authenticationKeyPrefix: String,
-    amount: Long,
-    metaData: ByteArray = byteArrayOf(),
-    metadataSignature: ByteArray = byteArrayOf(),
-    typeTag: TypeTag = lbrStructTag()
-): TransactionPayload {
     val moveEncode = Move.decode(context.assets.open("move/libra_peer_to_peer_with_metadata.mv"))
 
     val addressArgument = TransactionArgument.newAddress(address)
-//    val authenticationKeyPrefixArgument =
-//        TransactionArgument.newByteArray(authenticationKeyPrefix.hexToBytes())
     val amountArgument = TransactionArgument.newU64(amount)
     val metadataArgument = TransactionArgument.newByteArray(metaData)
     val metadataSignatureArgument = TransactionArgument.newByteArray(metadataSignature)
@@ -83,7 +59,6 @@ fun TransactionPayload.Companion.optionTransactionPayload(
             arrayListOf(typeTag),
             arrayListOf(
                 addressArgument,
-//                authenticationKeyPrefixArgument,
                 amountArgument,
                 metadataArgument,
                 metadataSignatureArgument

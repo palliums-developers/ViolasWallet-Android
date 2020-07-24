@@ -7,6 +7,7 @@ import com.palliums.violas.error.ViolasException
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.validationBTCAddress
@@ -178,7 +179,8 @@ class TransferManager {
                     org.palliums.libracore.crypto.Ed25519KeyPair(decryptPrivateKey)
                 ),
                 address,
-                (amount * 1000000L).toLong()
+                (amount * 1000000L).toLong(),
+                chainId = 2
             )
             success.invoke("")
         } catch (e: Exception) {

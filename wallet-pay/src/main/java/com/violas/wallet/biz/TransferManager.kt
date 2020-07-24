@@ -7,6 +7,7 @@ import com.palliums.violas.error.ViolasException
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
+import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
@@ -239,7 +240,8 @@ class TransferManager {
                         arrayListOf()
                     )
                 ),
-                token.module
+                token.module,
+                chainId = Vm.LibraChainId
             )
             success.invoke("")
         } catch (e: Exception) {

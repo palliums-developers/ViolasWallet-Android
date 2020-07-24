@@ -264,7 +264,7 @@ class TokenManager {
                             org.palliums.libracore.crypto.KeyPair.fromSecretKey(
                                 privateKey
                             )
-                        ), tokenMark.address, tokenMark.module, tokenMark.name
+                        ), tokenMark.address, tokenMark.module, tokenMark.name, Vm.LibraChainId
                     )
                 for (item in 1 until 4) {
                     delay(item * 1000L)
