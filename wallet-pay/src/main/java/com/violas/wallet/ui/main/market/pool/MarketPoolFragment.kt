@@ -8,7 +8,6 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -30,10 +29,10 @@ import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_ADD_LIQUIDITY
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_GET_USER_LIQUIDITY_LIST
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_REMOVE_LIQUIDITY
+import com.violas.wallet.ui.main.market.selectToken.CoinsBridge
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_A
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_B
-import com.violas.wallet.ui.main.market.selectToken.TokensBridge
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayAmountToAmount
@@ -49,7 +48,7 @@ import java.math.BigDecimal
  * <p>
  * desc: 市场资金池视图
  */
-class MarketPoolFragment : BaseFragment(), TokensBridge {
+class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
     private val marketPoolViewModel by lazy {
         ViewModelProvider(this).get(MarketPoolViewModel::class.java)
@@ -429,25 +428,27 @@ class MarketPoolFragment : BaseFragment(), TokensBridge {
     }
 
     private fun showSelectCoinDialog(selectCoinA: Boolean) {
-        SelectTokenDialog
-            .newInstance(
-                if (selectCoinA) ACTION_POOL_SELECT_A else ACTION_POOL_SELECT_B
-            )
-            .setCallback {
-                marketPoolViewModel.selectCoin(selectCoinA, it as StableTokenVo)
-            }
-            .show(childFragmentManager)
+        SelectTokenDialog.newInstance(
+            if (selectCoinA) ACTION_POOL_SELECT_A else ACTION_POOL_SELECT_B
+        ).show(childFragmentManager)
     }
 
-    override fun getMarketSupportTokens(recreateLiveData: Boolean) {
-        marketViewModel.execute(recreateLiveData)
+    override fun onSelectCoin(action: Int, coin: ITokenVo) {
+        marketPoolViewModel.selectCoin(
+            action == ACTION_POOL_SELECT_A,
+            coin as StableTokenVo
+        )
     }
 
-    override fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?> {
-        return marketViewModel.getMarketSupportTokensLiveData()
+    override fun getMarketSupportCoins(onlyNeedViolasCoins: Boolean) {
+        marketViewModel.execute(onlyNeedViolasCoins)
     }
 
-    override fun getCurrToken(action: Int): ITokenVo? {
+    override fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>?> {
+        return marketViewModel.getMarketSupportCoinsLiveData()
+    }
+
+    override fun getCurrCoin(action: Int): ITokenVo? {
         return if (action == ACTION_POOL_SELECT_A)
             marketPoolViewModel.getCurrCoinALiveData().value
         else

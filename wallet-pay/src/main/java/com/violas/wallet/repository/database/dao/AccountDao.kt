@@ -46,7 +46,7 @@ interface AccountDao : BaseDao<AccountDO> {
     fun findById(id: Long): AccountDO?
 
     @Query("SELECT * FROM account WHERE coin_number = :coinType LIMIT 1")
-    fun findByCoinTypeByIdentity(coinType: Int): AccountDO?
+    fun findByCoinType(coinType: Int): AccountDO?
 
     @Query("SELECT * FROM account WHERE coin_number = :coinType AND address = :address LIMIT 1")
     fun findByCoinTypeAndCoinAddress(coinType: Int, address: String): AccountDO?

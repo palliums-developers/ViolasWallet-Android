@@ -1,11 +1,8 @@
 package com.violas.wallet.ui.main.market.swap
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.AmountInputFilter
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -34,17 +31,15 @@ import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Companion.ACTION_SWAP_SELECT_FROM
 import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Companion.ACTION_SWAP_SELECT_TO
 import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog
-import com.violas.wallet.ui.main.market.selectToken.TokensBridge
+import com.violas.wallet.ui.main.market.selectToken.CoinsBridge
 import com.violas.wallet.ui.main.market.selectToken.SwapTokensDataResourcesBridge
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertDisplayUnitToAmount
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.palliums.libracore.http.LibraException
@@ -57,7 +52,7 @@ import java.math.BigDecimal
  * <p>
  * desc: 市场兑换视图
  */
-class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge {
+class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge {
 
     private val swapViewModel by lazy {
         ViewModelProvider(this).get(SwapViewModel::class.java)
@@ -438,15 +433,19 @@ class SwapFragment : BaseFragment(), TokensBridge, SwapTokensDataResourcesBridge
             .show(childFragmentManager)
     }
 
-    override fun getMarketSupportTokens(recreateLiveData: Boolean) {
-        marketViewModel.execute(recreateLiveData)
+    override fun onSelectCoin(action: Int, coin: ITokenVo) {
+        TODO("Not yet implemented")
     }
 
-    override fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?> {
-        return marketViewModel.getMarketSupportTokensLiveData()
+    override fun getMarketSupportCoins(onlyNeedViolasCoins: Boolean) {
+        marketViewModel.execute(onlyNeedViolasCoins)
     }
 
-    override fun getCurrToken(action: Int): ITokenVo? {
+    override fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>?> {
+        return marketViewModel.getMarketSupportCoinsLiveData()
+    }
+
+    override fun getCurrCoin(action: Int): ITokenVo? {
         return if (action == ACTION_SWAP_SELECT_FROM)
             swapViewModel.getCurrFromTokenLiveData().value
         else

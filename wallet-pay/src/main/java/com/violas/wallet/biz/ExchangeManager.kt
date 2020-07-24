@@ -69,13 +69,13 @@ class ExchangeManager {
             // 用户bitcoin链上币种信息
             val bitcoinNumber =
                 if (Vm.TestNet) CoinTypes.BitcoinTest.coinType() else CoinTypes.Bitcoin.coinType()
-            val bitcoinAccount = mAccountStorage.findByCoinTypeByIdentity(bitcoinNumber)
+            val bitcoinAccount = mAccountStorage.findByCoinType(bitcoinNumber)
             val bitcoinBalanceDeferred = bitcoinAccount?.let {
                 async { mAccountManager.getBalance(it) }
             }
 
             // 用户libra链上币种信息
-            val libraAccount = mAccountStorage.findByCoinTypeByIdentity(
+            val libraAccount = mAccountStorage.findByCoinType(
                 CoinTypes.Libra.coinType()
             )
             val libraAccountStateDeferred = libraAccount?.let {
@@ -83,7 +83,7 @@ class ExchangeManager {
             }
 
             // 用户violas链上币种信息
-            val violasAccount = mAccountStorage.findByCoinTypeByIdentity(
+            val violasAccount = mAccountStorage.findByCoinType(
                 CoinTypes.Violas.coinType()
             )
             val violasAccountStateDeferred = violasAccount?.let {

@@ -147,7 +147,7 @@ class AccountManager {
     }
 
     fun getIdentityByCoinType(coinType: Int): AccountDO? {
-        return mAccountStorage.findByCoinTypeByIdentity(coinType)
+        return mAccountStorage.findByCoinType(coinType)
     }
 
     fun getIdentityAccount(): AccountDO {

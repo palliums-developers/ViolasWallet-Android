@@ -47,21 +47,18 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     private var action: Int = -1
-    private var tokenCallback: ((ITokenVo) -> Unit)? = null
-    private var tokensBridge: TokensBridge? = null
-    private var displayTokens: List<ITokenVo>? = null
+    private var coinsBridge: CoinsBridge? = null
+    private var displayCoins: List<ITokenVo>? = null
     private var job: Job? = null
 
-    private val tokenAdapter by lazy {
-        TokenAdapter()
-    }
+    private val coinAdapter by lazy { CoinAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        tokensBridge = parentFragment as? TokensBridge
-            ?: parentFragment?.parentFragment as? TokensBridge
-                    ?: activity as? TokensBridge
-        checkNotNull(tokensBridge) { "Parent fragment or activity does not implement TokenBridge" }
+        coinsBridge = parentFragment as? CoinsBridge
+            ?: parentFragment?.parentFragment as? CoinsBridge
+                    ?: activity as? CoinsBridge
+        checkNotNull(coinsBridge) { "Parent fragment or activity does not implement TokenBridge" }
 
         if (savedInstanceState != null) {
             action = savedInstanceState.getInt(KEY_ONE, action)
@@ -101,8 +98,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     override fun onDetach() {
-        tokenCallback = null
-        tokensBridge = null
+        coinsBridge = null
         super.onDetach()
     }
 
@@ -123,23 +119,22 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
 
             val inputText = it?.toString()?.trim()
             if (inputText.isNullOrEmpty()) {
-                handleData(displayTokens!!)
+                handleData(displayCoins!!)
             } else {
                 searchToken(inputText)
             }
         }
 
-        recyclerView.adapter = tokenAdapter
+        recyclerView.adapter = coinAdapter
         recyclerView.visibility = View.GONE
 
         statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         statusLayout.setReloadCallback {
             statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
-            tokensBridge!!.getMarketSupportTokens(false)
+            coinsBridge!!.getMarketSupportCoins(onlyNeedViolasCoins())
         }
 
-        tokensBridge!!.getMarketSupportTokens(true)
-        tokensBridge!!.getMarketSupportTokensLiveData().observe(viewLifecycleOwner, Observer {
+        coinsBridge!!.getMarketSupportCoinsLiveData().observe(viewLifecycleOwner, Observer {
             cancelJob()
 
             when {
@@ -154,6 +149,11 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                 }
             }
         })
+        coinsBridge!!.getMarketSupportCoins(onlyNeedViolasCoins())
+    }
+
+    private fun onlyNeedViolasCoins(): Boolean {
+        return action == ACTION_POOL_SELECT_A || action == ACTION_POOL_SELECT_B
     }
 
     private fun cancelJob() {
@@ -166,7 +166,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     private fun filterData(marketSupportTokens: List<ITokenVo>) {
         launch {
             val list = withContext(Dispatchers.IO) {
-                val currToken = tokensBridge?.getCurrToken(action)
+                val currToken = coinsBridge?.getCurrCoin(action)
                 marketSupportTokens.filter {
                     it.selected = it == currToken
 
@@ -177,7 +177,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                         }
                         ACTION_SWAP_SELECT_TO -> {
                             // 兑换选择输出币种，展示交易市场支持的所有币种
-                            val from = tokensBridge?.getCurrToken(ACTION_SWAP_SELECT_FROM)
+                            val from = coinsBridge?.getCurrCoin(ACTION_SWAP_SELECT_FROM)
                             if (from?.coinNumber == it.coinNumber) {
                                 true
                             } else {
@@ -198,7 +198,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
             }
 
             etSearchBox.isEnabled = true
-            displayTokens = list
+            displayCoins = list
             if (list.isEmpty()) {
                 handleEmptyData(null)
                 return@launch
@@ -216,7 +216,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     private fun searchToken(searchText: String) {
         job = launch {
             val searchResult = withContext(Dispatchers.IO) {
-                displayTokens?.filter { item ->
+                displayCoins?.filter { item ->
                     item.displayName.contains(searchText, true)
                 }
             }
@@ -232,7 +232,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     private fun handleLoadFailure() {
-        tokenAdapter.submitList(null)
+        coinAdapter.submitList(null)
         recyclerView.visibility = View.GONE
         statusLayout.showStatus(
             if (isNetworkConnected())
@@ -243,7 +243,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     private fun handleEmptyData(searchText: String?) {
-        tokenAdapter.submitList(null)
+        coinAdapter.submitList(null)
         recyclerView.visibility = View.GONE
         statusLayout.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
@@ -272,17 +272,10 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     private fun handleData(list: List<ITokenVo>) {
         statusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
         recyclerView.visibility = View.VISIBLE
-        tokenAdapter.submitList(list)
+        coinAdapter.submitList(list)
     }
 
-    fun setCallback(
-        tokenCallback: ((ITokenVo) -> Unit)? = null
-    ): SelectTokenDialog {
-        this.tokenCallback = tokenCallback
-        return this
-    }
-
-    inner class TokenAdapter : ListAdapter<ITokenVo, CommonViewHolder>(tokenDiffCallback) {
+    inner class CoinAdapter : ListAdapter<ITokenVo, CommonViewHolder>(tokenDiffCallback) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommonViewHolder {
             return CommonViewHolder(
@@ -312,7 +305,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
             holder.itemView.tvSelected.visibility = if (item.selected) View.VISIBLE else View.GONE
             holder.itemView.setOnClickListener {
                 close()
-                tokenCallback?.invoke(getItem(position))
+                coinsBridge?.onSelectCoin(action, getItem(position))
             }
         }
     }
@@ -328,11 +321,13 @@ val tokenDiffCallback = object : DiffUtil.ItemCallback<ITokenVo>() {
     }
 }
 
-interface TokensBridge {
+interface CoinsBridge {
 
-    fun getMarketSupportTokens(recreateLiveData: Boolean)
+    fun onSelectCoin(action: Int, coin: ITokenVo)
 
-    fun getMarketSupportTokensLiveData(): LiveData<List<ITokenVo>?>
+    fun getMarketSupportCoins(onlyNeedViolasCoins: Boolean)
 
-    fun getCurrToken(action: Int): ITokenVo?
+    fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>?>
+
+    fun getCurrCoin(action: Int): ITokenVo?
 }

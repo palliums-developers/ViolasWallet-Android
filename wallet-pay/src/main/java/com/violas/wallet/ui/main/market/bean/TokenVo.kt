@@ -15,7 +15,7 @@ import java.math.BigDecimal
  * 市场支持的币
  */
 abstract class ITokenVo(
-    val accountDoId: Long,          // 本地账户id
+    var accountDoId: Long,          // 本地账户id
     val coinNumber: Int,            // 币种类型值
     val displayName: String,        // 币的显示名称
     val logo: String,               // 币的logo
@@ -32,7 +32,7 @@ abstract class ITokenVo(
 class PlatformTokenVo(
     accountDoId: Long,
     val accountType: AccountType,   // 账户类型
-    val accountAddress: String,     // 账户地址，即钱包地址
+    var accountAddress: String,     // 账户地址，即钱包地址
     coinNumber: Int,
     displayName: String,
     logo: String,
@@ -89,14 +89,14 @@ class StableTokenVo(
     accountDoId: Long,
     coinNumber: Int,
     val marketIndex: Int,           // 市场支持的币种的索引
-    val tokenDoId: Long,            // 本地token的id
+    var tokenDoId: Long,            // 本地token的id
     val address: String,            // 稳定币的地址
     val module: String,             // 稳定币的module名
     val name: String,               // 稳定币的名称
     displayName: String,
     logo: String,
-    val localEnable: Boolean,       // 本地启用（本地是否显示）
-    val chainEnable: Boolean,       // 链上启用（是否已添加到账户）
+    var localEnable: Boolean,       // 本地启用（本地是否显示）
+    var chainEnable: Boolean,       // 链上启用（是否已添加到账户）
     displayAmount: BigDecimal = BigDecimal(0),
     anchorValue: Double = 0.00,
     selected: Boolean = false
