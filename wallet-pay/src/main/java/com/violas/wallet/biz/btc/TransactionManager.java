@@ -150,7 +150,6 @@ public class TransactionManager {
         mToAddress = toAddress;
 
         List<Pair<String, Long>> toAddressList = new ArrayList<>();
-        toAddressList.add(new Pair<>(mToAddress, new BigDecimal(mAmount + "").multiply(new BigDecimal("100000000")).longValue()));
 
         return Observable.create(new ObservableOnSubscribe<Transaction>() {
             @Override
@@ -164,6 +163,8 @@ public class TransactionManager {
 
                 toAddressList.add(new Pair<>(changeAddress, subtract.multiply(new BigDecimal("100000000")).longValue()));
 
+                toAddressList.add(new Pair<>(mToAddress, new BigDecimal(mAmount + "").multiply(new BigDecimal("100000000")).longValue()));
+                
                 Log.e("====", "到没到目标金额 " + charge + "   总计余额：" + mUTXOListManager.getUseAmount().doubleValue());
 
                 if (!charge) {
