@@ -83,18 +83,40 @@ class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWa
                             throw ProcessedRuntimeException()
                         }
                     }
-                    "number" -> {
+                    "u8" -> {
+                        try {
+                            TransactionArgument.newU8(it.value.toInt())
+                        } catch (e: Exception) {
+                            sendInvalidParameterErrorMessage(
+                                requestID,
+                                "Payload args U8 parameter type error in transaction. is positive integer."
+                            )
+                            throw ProcessedRuntimeException()
+                        }
+                    }
+                    "u64" -> {
                         try {
                             TransactionArgument.newU64(it.value.toLong())
                         } catch (e: Exception) {
                             sendInvalidParameterErrorMessage(
                                 requestID,
-                                "Payload args Number parameter type error in transaction. is positive integer."
+                                "Payload args U64 parameter type error in transaction. is positive integer."
                             )
                             throw ProcessedRuntimeException()
                         }
                     }
-                    "bytes" -> {
+                    "u128" -> {
+                        try {
+                            TransactionArgument.newU128(it.value.toBigInteger())
+                        } catch (e: Exception) {
+                            sendInvalidParameterErrorMessage(
+                                requestID,
+                                "Payload args U128 parameter type error in transaction. is positive integer."
+                            )
+                            throw ProcessedRuntimeException()
+                        }
+                    }
+                    "vector" -> {
                         try {
                             TransactionArgument.newByteArray(it.value.hexToBytes())
                         } catch (e: Exception) {

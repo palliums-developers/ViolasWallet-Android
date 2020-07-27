@@ -6,6 +6,7 @@ import org.palliums.violascore.serialization.LCSOutputStream
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.storage.TypeTag
 import org.palliums.violascore.utils.HexUtils
+import java.math.BigInteger
 
 data class TransactionPayload(val payload: Payload) {
     abstract class Payload(val type: Int) {
@@ -213,10 +214,26 @@ data class TransactionArgument(
 
     companion object {
         @JvmStatic
+        fun newU8(value: Int): TransactionArgument {
+            return TransactionArgument(
+                ArgType.U8,
+                LCS.encodeU8(value)
+            )
+        }
+
+        @JvmStatic
         fun newU64(value: Long): TransactionArgument {
             return TransactionArgument(
                 ArgType.U64,
                 LCS.encodeLong(value)
+            )
+        }
+
+        @JvmStatic
+        fun newU128(value: BigInteger): TransactionArgument {
+            return TransactionArgument(
+                ArgType.U128,
+                LCS.encodeLong(value.toLong())
             )
         }
 
@@ -252,8 +269,15 @@ data class TransactionArgument(
         fun decode(input: LCSInputStream): TransactionArgument {
             val readInt = input.readIntAsLEB128()
             return when (readInt) {
+                ArgType.U8.number -> {
+                    newU8(input.readU8())
+                }
                 ArgType.U64.number -> {
                     newU64(input.readLong())
+                }
+                // todo 读取 128
+                ArgType.U128.number -> {
+                    newU128(input.readLong().toBigInteger())
                 }
                 ArgType.ADDRESS.number -> {
                     val value = ByteArray(32)
