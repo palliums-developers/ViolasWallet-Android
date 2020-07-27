@@ -11,6 +11,7 @@ import com.violas.walletconnect.jsonrpc.JsonRpcError
 import com.violas.walletconnect.models.violas.WCViolasSendRawTransaction
 import com.violas.walletconnect.models.violas.WCViolasSendTransaction
 import com.violas.walletconnect.models.violas.WCViolasSignRawTransaction
+import com.violas.walletconnect.models.violasprivate.WCBitcoinSendTransaction
 import com.violas.walletconnect.models.violasprivate.WCLibraSendTransaction
 import com.violas.walletconnect.models.violasprivate.WCViolasAccount
 import kotlinx.coroutines.runBlocking
@@ -43,6 +44,10 @@ class WalletConnectMessageHandler(
             Pair(
                 WCLibraSendTransaction::class.java,
                 LibraSendTransactionMessageHandler(iWalletConnectMessage)
+            ),
+            Pair(
+                WCBitcoinSendTransaction::class.java,
+                BitcoinSendTransactionMessageHandler(iWalletConnectMessage)
             )
         )
     }
