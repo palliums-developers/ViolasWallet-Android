@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.transferDataHandler
+package com.violas.wallet.walletconnect.violasTransferDataHandler
 
 import com.google.gson.*
 import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
@@ -7,7 +7,7 @@ import org.palliums.violascore.transaction.RawTransaction
 import java.lang.reflect.Type
 
 
-class TransferDecodeEngine(
+class ViolasTransferDecodeEngine(
     private val mRawTransaction: RawTransaction
 ) {
     private val mDecode: ArrayList<TransferDecode> =

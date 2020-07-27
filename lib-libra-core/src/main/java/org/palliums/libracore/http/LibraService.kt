@@ -201,4 +201,41 @@ class LibraService(private val mLibraRepository: LibraRepository) {
             )
         return sendTransaction(transactionPayload, account, gasCurrencyCode = lbrStructTagType(),chainId = chainId)
     }
+
+    suspend fun submitTransaction(hex: String) = mLibraRepository.submitTransaction(hex)
+
+    suspend fun generateRawTransaction(
+        payload: TransactionPayload,
+        senderAddress: String,
+        sequenceNumber: Long = -1L,
+        gasCurrencyCode: String = lbrStructTagType(),
+        maxGasAmount: Long = 1_000_000,
+        gasUnitPrice: Long = 0,
+        delayed: Long = 1000,
+        chainId: Int
+    ): RawTransaction {
+        var sequenceNumber = sequenceNumber
+
+//        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
+//            throw ViolasException.AccountNoControl()
+//        }
+
+        if (sequenceNumber == -1L) {
+            val accountState = getAccountState(senderAddress)
+                ?: throw LibraException.AccountNoActivation()
+
+            sequenceNumber = accountState.sequenceNumber
+        }
+
+        return RawTransaction.optionTransaction(
+            senderAddress,
+            payload,
+            sequenceNumber,
+            gasCurrencyCode,
+            maxGasAmount,
+            gasUnitPrice,
+            delayed,
+            chainId
+        )
+    }
 }

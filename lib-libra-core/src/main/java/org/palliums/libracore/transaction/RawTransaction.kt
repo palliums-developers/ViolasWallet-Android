@@ -39,7 +39,7 @@ data class RawTransaction(
     }
 
     fun toHashByteArray(): ByteArray {
-        return SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()) + toByteArray()
+        return hashByteArray(toByteArray())
     }
 
     companion object {
@@ -54,6 +54,10 @@ data class RawTransaction(
                 input.readLong(),
                 input.readU8()
             )
+        }
+
+        fun hashByteArray(txBytes: ByteArray): ByteArray {
+            return SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()) + txBytes
         }
     }
 }

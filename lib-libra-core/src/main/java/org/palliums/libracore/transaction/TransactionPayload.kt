@@ -3,8 +3,10 @@ package org.palliums.libracore.transaction
 import org.palliums.libracore.serialization.LCS
 import org.palliums.libracore.serialization.LCSInputStream
 import org.palliums.libracore.serialization.LCSOutputStream
+import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.storage.TypeTag
 import org.palliums.libracore.utils.HexUtils
+import java.math.BigInteger
 
 data class TransactionPayload(val payload: Payload) {
     abstract class Payload(val type: Int) {
@@ -194,12 +196,44 @@ data class TransactionArgument(
         return stream.toByteArray()
     }
 
+    fun decodeToValue(): Any {
+        return when (argType) {
+            ArgType.U8 -> LCS.decodeByte(data)
+            ArgType.U64 -> LCS.decodeLong(data)
+            ArgType.U128 -> LCS.decodeLong(data)
+            ArgType.ADDRESS -> {
+                data.toHex()
+            }
+            ArgType.BYTEARRAY -> {
+                val lcsInputStream = LCSInputStream(data)
+                lcsInputStream.readBytes()
+            }
+            ArgType.BOOL -> LCS.decodeBool(data)
+        }
+    }
+
     companion object {
+        @JvmStatic
+        fun newU8(value: Int): TransactionArgument {
+            return TransactionArgument(
+                ArgType.U8,
+                LCS.encodeU8(value)
+            )
+        }
+
         @JvmStatic
         fun newU64(value: Long): TransactionArgument {
             return TransactionArgument(
                 ArgType.U64,
                 LCS.encodeLong(value)
+            )
+        }
+
+        @JvmStatic
+        fun newU128(value: BigInteger): TransactionArgument {
+            return TransactionArgument(
+                ArgType.U128,
+                LCS.encodeLong(value.toLong())
             )
         }
 
@@ -235,8 +269,15 @@ data class TransactionArgument(
         fun decode(input: LCSInputStream): TransactionArgument {
             val readInt = input.readIntAsLEB128()
             return when (readInt) {
+                ArgType.U8.number -> {
+                    newU8(input.readU8())
+                }
                 ArgType.U64.number -> {
                     newU64(input.readLong())
+                }
+                // todo 读取 128
+                ArgType.U128.number -> {
+                    newU128(input.readLong().toBigInteger())
                 }
                 ArgType.ADDRESS.number -> {
                     val value = ByteArray(32)

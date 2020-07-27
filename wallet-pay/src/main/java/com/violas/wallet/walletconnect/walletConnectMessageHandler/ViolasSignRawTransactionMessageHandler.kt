@@ -2,7 +2,7 @@ package com.violas.wallet.walletconnect.walletConnectMessageHandler
 
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.walletconnect.transferDataHandler.TransferDecodeEngine
+import com.violas.wallet.walletconnect.violasTransferDataHandler.ViolasTransferDecodeEngine
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.jsonrpc.JsonRpcError
 import com.violas.walletconnect.models.violas.WCViolasSignRawTransaction
@@ -33,7 +33,7 @@ class ViolasSignRawTransactionMessageHandler(private val iWalletConnectMessage: 
             RawTransaction.decode(LCSInputStream(tx.message.hexStringToByteArray()))
 
         val decode = try {
-            TransferDecodeEngine(rawTransaction).decode()
+            ViolasTransferDecodeEngine(rawTransaction).decode()
         } catch (e: ProcessedRuntimeException) {
             iWalletConnectMessage.sendErrorMessage(
                 requestID,
@@ -47,6 +47,7 @@ class ViolasSignRawTransactionMessageHandler(private val iWalletConnectMessage: 
             rawTransaction.toByteArray().toHex(),
             false,
             account.id,
+            CoinTypes.Libra,
             decode.first.value,
             decode.second
         )

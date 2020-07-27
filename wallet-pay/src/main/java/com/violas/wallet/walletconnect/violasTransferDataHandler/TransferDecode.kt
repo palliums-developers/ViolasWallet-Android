@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.transferDataHandler
+package com.violas.wallet.walletconnect.violasTransferDataHandler
 
 import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
 

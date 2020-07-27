@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.transferDataHandler
+package com.violas.wallet.walletconnect.violasTransferDataHandler
 
 import com.palliums.content.ContextProvider
 import com.violas.wallet.walletconnect.walletConnectMessageHandler.PublishDataType

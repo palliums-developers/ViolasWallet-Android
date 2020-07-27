@@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.palliums.content.App
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
@@ -157,21 +158,50 @@ class WalletConnectActivity : BaseAppActivity() {
             try {
                 if (!transactionSwapVo.isSigned) {
                     val account = mAccountStorage.findById(transactionSwapVo.accountId)
-                    if (account != null) {
-                        val rawTransactionHex = transactionSwapVo.hexTx
-                        val hashByteArray =
-                            RawTransaction.hashByteArray(rawTransactionHex.hexStringToByteArray())
-                        val signature = showPasswordSignTx(account, hashByteArray) ?: return@launch
+                    when (account?.coinNumber) {
+                        CoinTypes.Libra.coinType() -> {
+                            // <editor-fold defaultstate="collapsed" desc="处理 Libra 交易">
+                            val rawTransactionHex = transactionSwapVo.hexTx
+                            val hashByteArray =
+                                org.palliums.libracore.transaction.RawTransaction.hashByteArray(
+                                    rawTransactionHex.hexStringToByteArray()
+                                )
+                            val privateKey = showPasswordSignTx(account) ?: return@launch
 
-                        signedTx = SignedTransactionHex(
-                            rawTransactionHex,
-                            TransactionSignAuthenticator(
-                                Ed25519PublicKey(account.publicKey.hexStringToByteArray()),
-                                signature
-                            )
-                        ).toByteArray().toHex()
-                    } else {
-                        showToast("账户异常")
+                            val keyPair = org.palliums.libracore.crypto.KeyPair.fromSecretKey(privateKey)
+                            val signature = keyPair.signMessage(hashByteArray)
+
+                            signedTx = org.palliums.libracore.transaction.SignedTransactionHex(
+                                rawTransactionHex,
+                                org.palliums.libracore.transaction.TransactionSignAuthenticator(
+                                    org.palliums.libracore.crypto.Ed25519PublicKey(account.publicKey.hexStringToByteArray()),
+                                    signature
+                                )
+                            ).toByteArray().toHex()
+                            // </editor-fold>
+                        }
+                        CoinTypes.Violas.coinType() -> {
+                            // <editor-fold defaultstate="collapsed" desc="处理 Violas 交易">
+                            val rawTransactionHex = transactionSwapVo.hexTx
+                            val hashByteArray =
+                                RawTransaction.hashByteArray(rawTransactionHex.hexStringToByteArray())
+                            val privateKey = showPasswordSignTx(account) ?: return@launch
+
+                            val keyPair = KeyPair.fromSecretKey(privateKey)
+                            val signature = keyPair.signMessage(hashByteArray)
+
+                            signedTx = SignedTransactionHex(
+                                rawTransactionHex,
+                                TransactionSignAuthenticator(
+                                    Ed25519PublicKey(account.publicKey.hexStringToByteArray()),
+                                    signature
+                                )
+                            ).toByteArray().toHex()
+                            // </editor-fold>
+                        }
+                        else -> {
+                            showToast("账户异常")
+                        }
                     }
                 } else {
                     signedTx = transactionSwapVo.hexTx
@@ -180,7 +210,15 @@ class WalletConnectActivity : BaseAppActivity() {
                     return@launch
                 }
 
-                DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
+                when (transactionSwapVo.coinType) {
+                    CoinTypes.Violas -> {
+                        DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
+                    }
+                    CoinTypes.Libra -> {
+                        DataRepository.getLibraService().submitTransaction(signedTx)
+                    }
+                }
+
                 mWalletConnect.sendSuccessMessage(transactionSwapVo.requestID, "success")
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 mRequestHandle = true
@@ -193,8 +231,8 @@ class WalletConnectActivity : BaseAppActivity() {
             }
         }
 
-    private suspend fun showPasswordSignTx(account: AccountDO, hashByteArray: ByteArray) =
-        suspendCancellableCoroutine<Signature?> { cont ->
+    private suspend fun showPasswordSignTx(account: AccountDO) =
+        suspendCancellableCoroutine<ByteArray?> { cont ->
             authenticateAccount(account, mAccountManager) {
                 showProgress()
                 launch(Dispatchers.IO) {
@@ -203,9 +241,7 @@ class WalletConnectActivity : BaseAppActivity() {
                         cont.resumeWithException(WrongPasswordException())
                         return@launch
                     }
-                    val keyPair = KeyPair.fromSecretKey(decryptPrivateKey)
-                    val signMessage = keyPair.signMessage(hashByteArray)
-                    cont.resume(signMessage)
+                    cont.resume(decryptPrivateKey)
                 }
             }
         }
