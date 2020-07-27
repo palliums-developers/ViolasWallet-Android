@@ -29,6 +29,7 @@ import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_ADD_LIQUIDITY
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_GET_USER_LIQUIDITY_LIST
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_REMOVE_LIQUIDITY
+import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_SYNC_LIQUIDITY_RESERVE_INFO
 import com.violas.wallet.ui.main.market.selectToken.CoinsBridge
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_POOL_SELECT_A
@@ -56,6 +57,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     private val marketViewModel by lazy {
         ViewModelProvider(requireParentFragment()).get(MarketViewModel::class.java)
     }
+    private var isInputA = true
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_market_pool
@@ -68,8 +70,14 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         super.onDestroyView()
     }
 
+    override fun onResume() {
+        super.onResume()
+        marketPoolViewModel.startSyncLiquidityReserveInfoWork()
+    }
+
     override fun onPause() {
         super.onPause()
+        marketPoolViewModel.stopSyncLiquidityReserveInfoWork()
         clearInputBoxFocusAndHideSoftInput()
     }
 
@@ -141,26 +149,26 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     R.string.exchange_rate_format,
                     "1:${it.toPlainString()}"
                 )
-
-                // 兑换率获取后，尝试估算已输入的金额
-                val inputAmountStrA = etInputBoxA.text.toString().trim()
-                if (inputAmountStrA.isNotEmpty()) {
-                    if (marketPoolViewModel.isTransferInMode()) {
-                        marketPoolViewModel.estimateCoinBTransferIntoAmount(inputAmountStrA)
-                    } else {
-                        marketPoolViewModel.estimateCoinsTransferOutAmount(inputAmountStrA)
-                    }
-                    return@Observer
-                }
-
-                val inputAmountStrB = etInputBoxB.text.toString().trim()
-                if (inputAmountStrB.isNotEmpty()) {
-                    if (marketPoolViewModel.isTransferInMode()) {
-                        marketPoolViewModel.estimateCoinATransferIntoAmount(inputAmountStrB)
-                    }
-                }
             }
         })
+        marketPoolViewModel.getLiquidityReserveInfoLiveData()
+            .observe(viewLifecycleOwner, Observer {
+                it ?: return@Observer
+
+                if (marketPoolViewModel.isTransferInMode()) {
+                    marketPoolViewModel.calculateTransferIntoAmount(
+                        isInputA,
+                        if (isInputA)
+                            etInputBoxA.text.toString().trim()
+                        else
+                            etInputBoxB.text.toString().trim()
+                    )
+                } else {
+                    marketPoolViewModel.calculateTransferOutAmount(
+                        etInputBoxA.text.toString().trim()
+                    )
+                }
+            })
         marketPoolViewModel.getPoolTokenAndPoolShareLiveData()
             .observe(viewLifecycleOwner, Observer {
                 if (it == null) {
@@ -182,7 +190,17 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         marketPoolViewModel.loadState.observe(viewLifecycleOwner, Observer {
             when (it.peekData().status) {
                 LoadState.Status.RUNNING -> {
-                    showProgress()
+                    showProgress(
+                        if (it.peekData().action == ACTION_SYNC_LIQUIDITY_RESERVE_INFO)
+                            getString(
+                                if (marketPoolViewModel.isTransferInMode())
+                                    R.string.tips_market_add_liquidity_estimate_amount
+                                else
+                                    R.string.tips_market_remove_liquidity_estimate_amount
+                            )
+                        else
+                            null
+                    )
                 }
 
                 else -> {
@@ -460,6 +478,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if (!etInputBoxA.isFocused) return
 
+            isInputA = true
             val inputText = s?.toString() ?: ""
             val amountStr = handleInputText(inputText)
             if (inputText != amountStr) {
@@ -467,9 +486,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             }
 
             if (marketPoolViewModel.isTransferInMode()) {
-                marketPoolViewModel.estimateCoinBTransferIntoAmount(amountStr)
+                marketPoolViewModel.calculateTransferIntoAmount(isInputA, amountStr)
             } else {
-                marketPoolViewModel.estimateCoinsTransferOutAmount(amountStr)
+                marketPoolViewModel.calculateTransferOutAmount(amountStr)
             }
         }
     }
@@ -478,6 +497,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if (!etInputBoxB.isFocused) return
 
+            isInputA = false
             val inputText = s?.toString() ?: ""
             val amountStr = handleInputText(inputText)
             if (inputText != amountStr) {
@@ -485,7 +505,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             }
 
             if (marketPoolViewModel.isTransferInMode()) {
-                marketPoolViewModel.estimateCoinATransferIntoAmount(amountStr)
+                marketPoolViewModel.calculateTransferIntoAmount(isInputA, amountStr)
             }
         }
     }
@@ -547,18 +567,28 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             return true
         }
 
-        if (BigDecimal(inputAmountStrA) > coinA.displayAmount) {
-            val prefix =
-                if (BigDecimal(inputAmountStrB) > coinB.displayAmount) {
-                    "${coinA.module}/${coinB.module}"
-                } else {
-                    coinA.module
-                }
+        if (inputAmountStrA.isNotEmpty()
+            && BigDecimal(inputAmountStrA) > coinA.displayAmount
+        ) {
+            val prefix = if (inputAmountStrB.isNotEmpty()
+                && BigDecimal(inputAmountStrB) > coinB.displayAmount
+            ) {
+                "${coinA.displayName}/${coinB.displayName}"
+            } else {
+                coinA.displayName
+            }
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
             return true
-        } else if (BigDecimal(inputAmountStrB) > coinB.displayAmount) {
-            val prefix = coinA.module
+        } else if (inputAmountStrB.isNotEmpty()
+            && BigDecimal(inputAmountStrB) > coinB.displayAmount
+        ) {
+            val prefix = coinB.displayName
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
+            return true
+        }
+
+        if (inputAmountStrA.isEmpty() || inputAmountStrB.isEmpty()) {
+            marketPoolViewModel.startSyncLiquidityReserveInfoWork(showLoadingAndTips = true)
             return true
         }
 
@@ -580,6 +610,11 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
         if (convertDisplayAmountToAmount(inputAmountStr) > liquidity.amount) {
             showToast(getString(R.string.tips_market_insufficient_balance_format, ""))
+            return true
+        }
+
+        if (etInputBoxB.text.toString().isEmpty()) {
+            marketPoolViewModel.startSyncLiquidityReserveInfoWork(showLoadingAndTips = true)
             return true
         }
 

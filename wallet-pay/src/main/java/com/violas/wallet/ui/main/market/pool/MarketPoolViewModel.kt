@@ -1,15 +1,25 @@
 package com.violas.wallet.ui.main.market.pool
 
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
+import com.palliums.extensions.getShowErrorMessage
+import com.palliums.extensions.isNoNetwork
+import com.palliums.extensions.lazyLogError
+import com.palliums.net.LoadState
 import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
+import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
@@ -18,6 +28,7 @@ import com.violas.wallet.utils.convertDisplayAmountToAmount
 import kotlinx.coroutines.*
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Created by elephant on 2020/6/30 17:42.
@@ -25,7 +36,7 @@ import java.math.RoundingMode
  * <p>
  * desc:
  */
-class MarketPoolViewModel : BaseViewModel() {
+class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
 
     companion object {
         /**
@@ -36,7 +47,7 @@ class MarketPoolViewModel : BaseViewModel() {
         /**
          * 获取流动资产储备信息
          */
-        const val ACTION_GET_LIQUIDITY_RESERVE_INFO = 0x02
+        const val ACTION_SYNC_LIQUIDITY_RESERVE_INFO = 0x02
 
         /**
          * 添加流动资产
@@ -47,6 +58,8 @@ class MarketPoolViewModel : BaseViewModel() {
          * 移除流动资产
          */
         const val ACTION_REMOVE_LIQUIDITY = 0x04
+
+        const val DELAY_SYNC_LIQUIDITY_RESERVE_INFO = 10 * 1000L
     }
 
     // 当前的操作模式，分转入和转出
@@ -54,11 +67,15 @@ class MarketPoolViewModel : BaseViewModel() {
 
     // 转入模式下选择的Coin
     private val currCoinALiveData = MediatorLiveData<StableTokenVo?>()
-    private val currCoinBLiveData = MediatorLiveData<StableTokenVo?>()
+    private val currCoinBLiveData = MutableLiveData<StableTokenVo?>()
 
     // 转出模式下选择的交易对和可转出的交易对列表
-    private val currLiquidityLiveData = MediatorLiveData<PoolLiquidityDTO?>()
+    private val currLiquidityLiveData = MutableLiveData<PoolLiquidityDTO?>()
     private val liquidityListLiveData = MutableLiveData<List<PoolLiquidityDTO>?>()
+
+    // 流动资产的储备信息
+    private val liquidityReserveInfoLiveData = MutableLiveData<PoolLiquidityReserveInfoDTO?>()
+    private var syncLiquidityReserveInfoFlag = AtomicBoolean(false)
 
     // 兑换率
     private val exchangeRateLiveData = MediatorLiveData<BigDecimal?>()
@@ -71,20 +88,31 @@ class MarketPoolViewModel : BaseViewModel() {
     private val inputTextBLiveData = MutableLiveData<String>()
 
     private val exchangeManager by lazy { ExchangeManager() }
+    private val handle by lazy { Handler(Looper.getMainLooper(), this) }
     private var violasAccountDO: AccountDO? = null
     private var estimateAmountJob: Job? = null
-    private var liquidityReserveInfo: PoolLiquidityReserveInfoDTO? = null
 
     init {
         currCoinALiveData.addSource(currOpModeLiveData) {
             currCoinALiveData.postValue(null)
             currCoinBLiveData.postValue(null)
             currLiquidityLiveData.postValue(null)
-
-            exchangeRateLiveData.postValue(null)
+            liquidityReserveInfoLiveData.postValue(null)
 
             inputTextALiveData.postValue("")
             inputTextBLiveData.postValue("")
+        }
+
+        exchangeRateLiveData.addSource(liquidityReserveInfoLiveData) {
+            if (it == null) {
+                exchangeRateLiveData.postValue(null)
+            } else {
+                if (isTransferInMode()) {
+                    calculateExchangeRate(currCoinALiveData.value!!.module, it)
+                } else {
+                    calculateExchangeRate(currLiquidityLiveData.value!!.coinA.module, it)
+                }
+            }
         }
     }
 
@@ -141,9 +169,9 @@ class MarketPoolViewModel : BaseViewModel() {
                 return
             }
 
-            // 转入模式下选择了新的交易对，获取交易对储备信息
+            // 转入模式下选择了新的交易对，开始同步流动资产的储备信息
             if (currCoinB != null) {
-                getLiquidityReserveInfo(selected.module, currCoinB.module)
+                startSyncLiquidityReserveInfoWork(selected.module, currCoinB.module)
             }
             return
         }
@@ -167,9 +195,9 @@ class MarketPoolViewModel : BaseViewModel() {
             return
         }
 
-        // 转入模式下选择了新的交易对，获取交易对储备信息
+        // 转入模式下选择了新的交易对，开始同步流动资产的储备信息
         if (currCoinA != null) {
-            getLiquidityReserveInfo(currCoinA.module, selected.module)
+            startSyncLiquidityReserveInfoWork(currCoinA.module, selected.module)
         }
     }
 
@@ -206,29 +234,21 @@ class MarketPoolViewModel : BaseViewModel() {
             val liquidity = list[selectedPosition]
             currLiquidityLiveData.postValue(liquidity)
 
-            // 转出模式下选择了新的交易对，获取交易对储备信息
-            getLiquidityReserveInfo(liquidity.coinA.module, liquidity.coinB.module)
+            // 转出模式下选择了新的交易对，开始同步流动资产的储备信息
+            startSyncLiquidityReserveInfoWork(liquidity.coinA.module, liquidity.coinB.module)
         }
     }
 
     //*********************************** 其它信息相关方法 ***********************************//
-    private fun getLiquidityReserveInfo(coinAModule: String, coinBModule: String) {
-        liquidityReserveInfo = null
-        exchangeRateLiveData.postValue(null)
-        execute(
-            coinAModule,
-            coinBModule,
-            action = ACTION_GET_LIQUIDITY_RESERVE_INFO
-        )
-    }
-
-    private fun calculateExchangeRate(coinAModule: String) {
+    private fun calculateExchangeRate(
+        coinAModule: String,
+        liquidityReserveInfo: PoolLiquidityReserveInfoDTO? = liquidityReserveInfoLiveData.value
+    ) {
         liquidityReserveInfo?.let {
-            val tokenAInFront = coinAModule == it.coinA.module
             exchangeRateLiveData.postValue(
                 convertAmountToExchangeRate(
-                    if (tokenAInFront) it.coinA.amount else it.coinB.amount,
-                    if (tokenAInFront) it.coinB.amount else it.coinA.amount
+                    if (coinAModule == it.coinA.module) it.coinA.amount else it.coinB.amount,
+                    if (coinAModule == it.coinA.module) it.coinB.amount else it.coinA.amount
                 )
             )
         }
@@ -274,61 +294,50 @@ class MarketPoolViewModel : BaseViewModel() {
         return inputTextBLiveData
     }
 
-    fun estimateCoinATransferIntoAmount(inputAmountStrB: String?) {
-        liquidityReserveInfo ?: return
-        currCoinALiveData.value ?: return
-        val coinB = currCoinBLiveData.value ?: return
-
-        cancelEstimateAmountJob()
-        estimateAmountJob = viewModelScope.launch {
-            delay(100)
-
-            val result = withContext(Dispatchers.IO) {
-                return@withContext if (inputAmountStrB.isNullOrBlank())
-                    ""
-                else
-                    calculateTransferIntoAmount(coinB.module, inputAmountStrB)
-            }
-            inputTextALiveData.postValue(result)
-
-            estimateAmountJob = null
-        }
-    }
-
-    fun estimateCoinBTransferIntoAmount(inputAmountStrA: String?) {
-        liquidityReserveInfo ?: return
-        currCoinBLiveData.value ?: return
+    fun calculateTransferIntoAmount(isInputA: Boolean, inputAmountStr: String?) {
         val coinA = currCoinALiveData.value ?: return
+        val coinB = currCoinBLiveData.value ?: return
+        val liquidityReserveInfo =
+            liquidityReserveInfoLiveData.value ?: return
 
         cancelEstimateAmountJob()
         estimateAmountJob = viewModelScope.launch {
             delay(100)
 
             val result = withContext(Dispatchers.IO) {
-                return@withContext if (inputAmountStrA.isNullOrBlank())
+                return@withContext if (inputAmountStr.isNullOrBlank())
                     ""
                 else
-                    calculateTransferIntoAmount(coinA.module, inputAmountStrA)
+                    estimateTransferIntoAmount(
+                        if (isInputA) coinB.module else coinA.module,
+                        inputAmountStr,
+                        liquidityReserveInfo
+                    )
             }
-            inputTextBLiveData.postValue(result)
+
+            if (isInputA)
+                inputTextBLiveData.postValue(result)
+            else
+                inputTextALiveData.postValue(result)
 
             estimateAmountJob = null
         }
     }
 
-    private fun calculateTransferIntoAmount(
+    private fun estimateTransferIntoAmount(
         inputCoinModule: String,
-        inputAmountStr: String
+        inputAmountStr: String,
+        liquidityReserveInfo: PoolLiquidityReserveInfoDTO
     ): String {
         val amountA = convertDisplayAmountToAmount(inputAmountStr)
-        val reserveA = if (inputCoinModule == liquidityReserveInfo!!.coinA.module)
-            liquidityReserveInfo!!.coinA.amount
+        val reserveA = if (inputCoinModule == liquidityReserveInfo.coinA.module)
+            liquidityReserveInfo.coinA.amount
         else
-            liquidityReserveInfo!!.coinB.amount
-        val reserveB = if (inputCoinModule == liquidityReserveInfo!!.coinA.module)
-            liquidityReserveInfo!!.coinB.amount
+            liquidityReserveInfo.coinB.amount
+        val reserveB = if (inputCoinModule == liquidityReserveInfo.coinA.module)
+            liquidityReserveInfo.coinB.amount
         else
-            liquidityReserveInfo!!.coinA.amount
+            liquidityReserveInfo.coinA.amount
         val exchangeRate = convertAmountToExchangeRate(reserveA, reserveB)
         val amountB = amountA.multiply(exchangeRate)
             .setScale(0, RoundingMode.DOWN)
@@ -336,9 +345,10 @@ class MarketPoolViewModel : BaseViewModel() {
         return convertAmountToDisplayAmountStr(amountB)
     }
 
-    fun estimateCoinsTransferOutAmount(inputAmountStr: String?) {
-        liquidityReserveInfo ?: return
+    fun calculateTransferOutAmount(inputAmountStr: String?) {
         val liquidity = currLiquidityLiveData.value ?: return
+        val liquidityReserveInfo =
+            liquidityReserveInfoLiveData.value ?: return
 
         cancelEstimateAmountJob()
         estimateAmountJob = viewModelScope.launch {
@@ -348,9 +358,10 @@ class MarketPoolViewModel : BaseViewModel() {
                 return@withContext if (inputAmountStr.isNullOrBlank()) {
                     ""
                 } else {
-                    val amounts = calculateTransferOutAmounts(
+                    val amounts = estimateTransferOutAmounts(
                         liquidity.coinA.module,
-                        BigDecimal(inputAmountStr)
+                        BigDecimal(inputAmountStr),
+                        liquidityReserveInfo
                     )
                     "${amounts.first.toPlainString()} ${liquidity.coinA.displayName}\n${amounts.second.toPlainString()} ${liquidity.coinB.displayName}"
                 }
@@ -361,27 +372,28 @@ class MarketPoolViewModel : BaseViewModel() {
         }
     }
 
-    private fun calculateTransferOutAmounts(
+    private fun estimateTransferOutAmounts(
         coinAModule: String,
-        liquidityAmount: BigDecimal
+        liquidityAmount: BigDecimal,
+        liquidityReserveInfo: PoolLiquidityReserveInfoDTO
     ): Pair<BigDecimal, BigDecimal> {
         val coinAAmount = liquidityAmount
             .multiply(
-                if (coinAModule == liquidityReserveInfo!!.coinA.module)
-                    liquidityReserveInfo!!.coinA.amount
+                if (coinAModule == liquidityReserveInfo.coinA.module)
+                    liquidityReserveInfo.coinA.amount
                 else
-                    liquidityReserveInfo!!.coinB.amount
+                    liquidityReserveInfo.coinB.amount
             )
-            .divide(liquidityReserveInfo!!.liquidityTotalAmount, 6, RoundingMode.DOWN)
+            .divide(liquidityReserveInfo.liquidityTotalAmount, 6, RoundingMode.DOWN)
             .stripTrailingZeros()
         val coinBAmount = liquidityAmount
             .multiply(
-                if (coinAModule == liquidityReserveInfo!!.coinA.module)
-                    liquidityReserveInfo!!.coinB.amount
+                if (coinAModule == liquidityReserveInfo.coinA.module)
+                    liquidityReserveInfo.coinB.amount
                 else
-                    liquidityReserveInfo!!.coinA.amount
+                    liquidityReserveInfo.coinA.amount
             )
-            .divide(liquidityReserveInfo!!.liquidityTotalAmount, 6, RoundingMode.DOWN)
+            .divide(liquidityReserveInfo.liquidityTotalAmount, 6, RoundingMode.DOWN)
             .stripTrailingZeros()
         return Pair(coinAAmount, coinBAmount)
     }
@@ -396,6 +408,135 @@ class MarketPoolViewModel : BaseViewModel() {
         }
     }
 
+    //*********************************** 同步流动资金的储备信息 ***********************************//
+    fun getLiquidityReserveInfoLiveData(): LiveData<PoolLiquidityReserveInfoDTO?> {
+        return liquidityReserveInfoLiveData
+    }
+
+    fun startSyncLiquidityReserveInfoWork(
+        coinAModuleSpecified: String? = null,
+        coinBModuleSpecified: String? = null,
+        showLoadingAndTips: Boolean = false
+    ) {
+        val coinAModule: String
+        val coinBModule: String
+        if (coinAModuleSpecified != null && coinBModuleSpecified != null) {
+            coinAModule = coinAModuleSpecified
+            coinBModule = coinBModuleSpecified
+            liquidityReserveInfoLiveData.postValue(null)
+        } else {
+            if (isTransferInMode()) {
+                coinAModule = currCoinALiveData.value?.module ?: return
+                coinBModule = currCoinBLiveData.value?.module ?: return
+            } else {
+                coinAModule = currLiquidityLiveData.value?.coinA?.module ?: return
+                coinBModule = currLiquidityLiveData.value?.coinB?.module ?: return
+            }
+        }
+
+        lazyLogError {
+            "startSyncLiquidityReserveInfoWork. coinAModule = $coinAModule, coinBModule = $coinBModule"
+        }
+        syncLiquidityReserveInfoFlag.set(true)
+        handle.removeMessages(ACTION_SYNC_LIQUIDITY_RESERVE_INFO)
+        handle.sendMessage(handle.obtainMessage(ACTION_SYNC_LIQUIDITY_RESERVE_INFO).apply {
+            data = Bundle().apply {
+                putString(KEY_ONE, coinAModule)
+                putString(KEY_TWO, coinBModule)
+            }
+            arg1 = if (showLoadingAndTips) 1 else 0
+        })
+    }
+
+    fun stopSyncLiquidityReserveInfoWork() {
+        lazyLogError { "stopSyncLiquidityReserveInfoWork" }
+        syncLiquidityReserveInfoFlag.set(false)
+        handle.removeMessages(ACTION_SYNC_LIQUIDITY_RESERVE_INFO)
+    }
+
+    override fun handleMessage(msg: Message): Boolean {
+        lazyLogError { "handleMessage. msg => $msg" }
+        lazyLogError { "handleMessage. msg.data => ${msg.data}" }
+        when (msg.what) {
+            ACTION_SYNC_LIQUIDITY_RESERVE_INFO -> {
+                if (!syncLiquidityReserveInfoFlag.get()) return true
+
+                val coinAModule = msg.data.getString(KEY_ONE)
+                val coinBModule = msg.data.getString(KEY_TWO)
+                if (coinAModule.isNullOrBlank() || coinBModule.isNullOrBlank()) return true
+
+                syncLiquidityReserveInfo(coinAModule, coinBModule, msg.arg1 == 1)
+
+                handle.sendMessageDelayed(
+                    handle.obtainMessage(ACTION_SYNC_LIQUIDITY_RESERVE_INFO).apply {
+                        data = msg.data
+                    },
+                    DELAY_SYNC_LIQUIDITY_RESERVE_INFO
+                )
+            }
+        }
+        return true
+    }
+
+    private fun syncLiquidityReserveInfo(
+        coinAModule: String,
+        coinBModule: String,
+        showLoadingAndTips: Boolean
+    ) {
+        viewModelScope.launch {
+            if (showLoadingAndTips) {
+                loadState.postValueSupport(LoadState.RUNNING.apply {
+                    this.action = ACTION_SYNC_LIQUIDITY_RESERVE_INFO
+                })
+            }
+
+            try {
+                val liquidityReserveInfo = withContext(Dispatchers.IO) {
+                    exchangeManager.mViolasService.getPoolLiquidityReserveInfo(
+                        coinAModule, coinBModule
+                    )
+                }
+
+                if (coinPairUnchanged(coinAModule, coinBModule)) {
+                    liquidityReserveInfoLiveData.postValue(liquidityReserveInfo)
+                }
+
+                if (showLoadingAndTips) {
+                    loadState.postValueSupport(LoadState.SUCCESS.apply {
+                        this.action = ACTION_SYNC_LIQUIDITY_RESERVE_INFO
+                    })
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                if (showLoadingAndTips) {
+                    if (e.isNoNetwork()) {
+                        // 没有网络时返回很快，加载视图一闪而过效果不好
+                        delay(500)
+                    }
+
+                    loadState.postValueSupport(LoadState.failure(e).apply {
+                        this.action = ACTION_SYNC_LIQUIDITY_RESERVE_INFO
+                    })
+                    tipsMessage.postValueSupport(e.getShowErrorMessage(true))
+                }
+            }
+        }
+    }
+
+    private fun coinPairUnchanged(coinAModule: String, coinBModule: String): Boolean {
+        if (isTransferInMode()) {
+            val coinA = currCoinALiveData.value ?: return false
+            val coinB = currCoinBLiveData.value ?: return false
+            return coinA.module == coinAModule && coinB.module == coinBModule
+                    || coinA.module == coinBModule && coinB.module == coinAModule
+        }
+
+        val liquidity = currLiquidityLiveData.value ?: return false
+        return liquidity.coinA.module == coinAModule && liquidity.coinB.module == coinBModule
+                || liquidity.coinA.module == coinBModule && liquidity.coinB.module == coinAModule
+    }
+
     //*********************************** 耗时相关任务 ***********************************//
     override suspend fun realExecute(action: Int, vararg params: Any) {
         when (action) {
@@ -403,21 +544,6 @@ class MarketPoolViewModel : BaseViewModel() {
                 val userPoolInfo =
                     exchangeManager.mViolasService.getUserPoolInfo(violasAccountDO!!.address)
                 liquidityListLiveData.postValue(userPoolInfo?.liquidityList)
-            }
-
-            ACTION_GET_LIQUIDITY_RESERVE_INFO -> {
-                val liquidityReserveInfo =
-                    exchangeManager.mViolasService.getPoolLiquidityReserveInfo(
-                        coinAModule = params[0] as String,
-                        coinBModule = params[1] as String
-                    )
-                this.liquidityReserveInfo = liquidityReserveInfo
-
-                if (isTransferInMode()) {
-                    calculateExchangeRate(currCoinALiveData.value!!.module)
-                } else {
-                    calculateExchangeRate(currLiquidityLiveData.value!!.coinA.module)
-                }
             }
 
             ACTION_ADD_LIQUIDITY -> {
@@ -429,19 +555,21 @@ class MarketPoolViewModel : BaseViewModel() {
                     amountBDesired = convertDisplayAmountToAmount(params[2] as String).toLong()
                 )
 
-                liquidityReserveInfo = null
                 inputTextALiveData.postValue("")
                 inputTextBLiveData.postValue("")
                 currCoinALiveData.postValue(null)
                 currCoinBLiveData.postValue(null)
-                exchangeRateLiveData.postValue(null)
+                liquidityReserveInfoLiveData.postValue(null)
             }
 
             ACTION_REMOVE_LIQUIDITY -> {
                 val liquidityAmount = convertDisplayAmountToAmount(params[1] as String)
                 val liquidity = currLiquidityLiveData.value!!
-                val amounts =
-                    calculateTransferOutAmounts(liquidity.coinA.module, liquidityAmount)
+                val amounts = estimateTransferOutAmounts(
+                    liquidity.coinA.module,
+                    liquidityAmount,
+                    liquidityReserveInfoLiveData.value!!
+                )
                 exchangeManager.removeLiquidity(
                     privateKey = params[0] as ByteArray,
                     coinA = liquidity.coinA,
@@ -451,11 +579,10 @@ class MarketPoolViewModel : BaseViewModel() {
                     liquidityAmount = liquidityAmount.toLong()
                 )
 
-                liquidityReserveInfo = null
                 inputTextALiveData.postValue("")
                 inputTextBLiveData.postValue("")
                 currLiquidityLiveData.postValue(null)
-                exchangeRateLiveData.postValue(null)
+                liquidityReserveInfoLiveData.postValue(null)
             }
 
             else -> {
@@ -466,6 +593,5 @@ class MarketPoolViewModel : BaseViewModel() {
 
     override fun isLoadAction(action: Int): Boolean {
         return action == ACTION_GET_USER_LIQUIDITY_LIST
-                || action == ACTION_GET_LIQUIDITY_RESERVE_INFO
     }
 }
