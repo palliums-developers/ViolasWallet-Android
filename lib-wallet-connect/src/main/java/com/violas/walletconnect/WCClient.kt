@@ -20,6 +20,7 @@ import com.violas.walletconnect.models.session.WCSessionUpdate
 import com.violas.walletconnect.models.violas.WCViolasSendRawTransaction
 import com.violas.walletconnect.models.violas.WCViolasSendTransaction
 import com.violas.walletconnect.models.violas.WCViolasSignRawTransaction
+import com.violas.walletconnect.models.violasprivate.WCLibraSendTransaction
 import okhttp3.*
 import okio.ByteString
 import java.util.*
@@ -68,6 +69,8 @@ open class WCClient(
     var onViolasSendRawTransaction: (id: Long, transaction: WCViolasSendRawTransaction) -> Unit =
         { _, _ -> Unit }
     var onViolasSignTransaction: (id: Long, transaction: WCViolasSignRawTransaction) -> Unit =
+        { _, _ -> Unit }
+    var onLibraSendTransaction: (id: Long, transaction: WCLibraSendTransaction) -> Unit =
         { _, _ -> Unit }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -301,6 +304,12 @@ open class WCClient(
             }
             WCMethod.GET_ACCOUNTS -> {
                 onGetAccounts(request.id)
+            }
+            WCMethod.LIBRA_SEND_TRANSACTION->{
+                val params =
+                    gson.fromJson<List<WCLibraSendTransaction>>(request.params).firstOrNull()
+                        ?: throw InvalidJsonRpcParamsException(request.id)
+                onLibraSendTransaction(request.id, params)
             }
             else -> {
                 val response = JsonRpcErrorResponse(

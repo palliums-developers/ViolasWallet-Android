@@ -1,5 +1,6 @@
 package com.violas.wallet.walletconnect.walletConnectMessageHandler
 
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
 import com.violas.walletconnect.models.violas.WCViolasSendRawTransaction
 
@@ -18,6 +19,7 @@ class ViolasSendRawTransactionMessageHandler(private val iWalletConnectMessage: 
             tx.tx,
             true,
             -1L,
+            CoinTypes.Violas,
             TransactionDataType.None.value,
             ""
         )

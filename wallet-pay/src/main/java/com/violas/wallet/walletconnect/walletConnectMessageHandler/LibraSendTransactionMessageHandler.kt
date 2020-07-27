@@ -4,27 +4,28 @@ import android.util.Log
 import com.google.gson.Gson
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.walletconnect.violasTransferDataHandler.ViolasTransferDecodeEngine
+import com.violas.wallet.walletconnect.libraTransferDataHandler.LibraTransferDecodeEngine
 import com.violas.walletconnect.jsonrpc.JsonRpcError
-import com.violas.walletconnect.models.violas.WCViolasSendTransaction
-import org.palliums.violascore.serialization.LCSInputStream
-import org.palliums.violascore.serialization.hexToBytes
-import org.palliums.violascore.serialization.toHex
-import org.palliums.violascore.transaction.TransactionArgument
-import org.palliums.violascore.transaction.TransactionPayload
-import org.palliums.violascore.transaction.lbrStructTagType
-import org.palliums.violascore.transaction.storage.TypeTag
+import com.violas.walletconnect.models.violasprivate.WCLibraSendTransaction
+import org.palliums.libracore.serialization.hexToBytes
+import org.palliums.libracore.serialization.toHex
+import org.palliums.libracore.transaction.AccountAddress
+import org.palliums.libracore.transaction.TransactionArgument
+import org.palliums.libracore.transaction.TransactionPayload
+import org.palliums.libracore.transaction.lbrStructTagType
+import org.palliums.libracore.transaction.storage.StructTag
+import org.palliums.libracore.transaction.storage.TypeTag
 
-class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWalletConnectMessage) :
+class LibraSendTransactionMessageHandler(private val iWalletConnectMessage: IWalletConnectMessage) :
     MessageHandler(iWalletConnectMessage) {
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
-    private val mViolasService by lazy { DataRepository.getViolasService() }
+    private val mLibraService by lazy { DataRepository.getLibraService() }
 
     override suspend fun handler(
         requestID: Long,
         tx: Any
     ): TransactionSwapVo? {
-        tx as WCViolasSendTransaction
+        tx as WCLibraSendTransaction
         val account = mAccountStorage.findByCoinTypeAndCoinAddress(
             CoinTypes.Violas.coinType(),
             tx.from
@@ -40,6 +41,7 @@ class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWa
         val expirationTime = tx.expirationTime ?: System.currentTimeMillis() + 1000
         val gasCurrencyCode = tx.gasCurrencyCode ?: lbrStructTagType()
         val sequenceNumber = tx.sequenceNumber ?: -1
+        val chainId = tx.chainId
 
         val payload = TransactionPayload.Script(
             try {
@@ -52,7 +54,16 @@ class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWa
                 throw ProcessedRuntimeException()
             },
             try {
-                tx.payload.tyArgs.map { TypeTag.decode(LCSInputStream(it.hexToBytes())) }
+                tx.payload.tyArgs.map {
+                    TypeTag.newStructTag(
+                        StructTag(
+                            AccountAddress(it.address.hexToBytes()),
+                            it.module,
+                            it.name,
+                            arrayListOf()
+                        )
+                    )
+                }
             } catch (e: Exception) {
                 sendInvalidParameterErrorMessage(
                     requestID,
@@ -138,18 +149,19 @@ class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWa
 
         Log.e("WalletConnect", Gson().toJson(payload))
 
-        val generateRawTransaction = mViolasService.generateRawTransaction(
+        val generateRawTransaction = mLibraService.generateRawTransaction(
             TransactionPayload(payload),
             tx.from,
             sequenceNumber,
             gasCurrencyCode,
             maxGasAmount,
             gasUnitPrice,
-            expirationTime - System.currentTimeMillis()
+            expirationTime - System.currentTimeMillis(),
+            chainId
         )
 
         val decode = try {
-            ViolasTransferDecodeEngine(generateRawTransaction).decode()
+            LibraTransferDecodeEngine(generateRawTransaction).decode()
         } catch (e: ProcessedRuntimeException) {
             iWalletConnectMessage.sendErrorMessage(
                 requestID,
@@ -163,7 +175,7 @@ class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWa
             generateRawTransaction.toByteArray().toHex(),
             false,
             account.id,
-            CoinTypes.Violas,
+            CoinTypes.Libra,
             decode.first.value,
             decode.second
         )

@@ -20,4 +20,7 @@ enum class WCMethod {
 
     @SerializedName("_get_accounts")
     GET_ACCOUNTS,
+
+    @SerializedName("_libra_sendTransaction")
+    LIBRA_SEND_TRANSACTION,
 }

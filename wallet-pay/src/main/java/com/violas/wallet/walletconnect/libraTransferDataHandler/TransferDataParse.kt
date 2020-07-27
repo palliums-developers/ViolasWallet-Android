@@ -1,7 +1,7 @@
-package com.violas.wallet.walletconnect.transferDataHandler
+package com.violas.wallet.walletconnect.libraTransferDataHandler
 
-import org.palliums.violascore.transaction.TransactionPayload
-import org.palliums.violascore.transaction.storage.TypeTagStructTag
+import org.palliums.libracore.transaction.TransactionPayload
+import org.palliums.libracore.transaction.storage.TypeTagStructTag
 
 fun decodeCoinName(index: Int,payload: TransactionPayload.Payload): String {
     return if (payload is TransactionPayload.Script) {

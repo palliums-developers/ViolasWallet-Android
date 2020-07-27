@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.transferDataHandler
+package com.violas.wallet.walletconnect.libraTransferDataHandler
 
 import com.palliums.content.ContextProvider
 import com.quincysx.crypto.utils.Base64
@@ -6,8 +6,8 @@ import com.violas.wallet.walletconnect.walletConnectMessageHandler.ProcessedRunt
 import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
 import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransferDataType
 import org.palliums.libracore.move.Move
-import org.palliums.violascore.transaction.RawTransaction
-import org.palliums.violascore.transaction.TransactionPayload
+import org.palliums.libracore.transaction.RawTransaction
+import org.palliums.libracore.transaction.TransactionPayload
 
 class TransferP2PWithDataDecode(private val transaction: RawTransaction) : TransferDecode {
 
@@ -15,7 +15,7 @@ class TransferP2PWithDataDecode(private val transaction: RawTransaction) : Trans
         val payload = transaction.payload?.payload
         return payload is TransactionPayload.Script && payload.code.contentEquals(
             Move.decode(
-                ContextProvider.getContext().assets.open("move/violas_peer_to_peer_with_metadata.mv")
+                ContextProvider.getContext().assets.open("move/libra_peer_to_peer_with_metadata.mv")
             )
         )
     }

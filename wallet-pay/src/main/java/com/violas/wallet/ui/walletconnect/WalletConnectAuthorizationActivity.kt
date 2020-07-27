@@ -85,11 +85,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
                         findByCoinTypeByIdentity.map {
                             it.address
                         }
-                    val chainId = if (Vm.TestNet) {
-                        "violasTest"
-                    } else {
-                        "violas"
-                    }
+                    val chainId = Vm.LibraChainId.toString()
                     if (mWalletConnect.approveSession(accounts, chainId)) {
                         mRequestHandle = true
                         finish()

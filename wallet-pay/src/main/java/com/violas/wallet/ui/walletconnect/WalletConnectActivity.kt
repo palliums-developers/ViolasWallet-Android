@@ -12,20 +12,26 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.palliums.content.App
+import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.bitcoin.script.Script
+import com.quincysx.crypto.utils.Base64
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.LackOfBalanceException
+import com.violas.wallet.biz.TransferUnknownException
 import com.violas.wallet.biz.WrongPasswordException
+import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.exchange.processor.ViolasOutputScript
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
+import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.walletconnect.WalletConnect
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.PublishDataType
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionSwapVo
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransferDataType
+import com.violas.wallet.walletconnect.walletConnectMessageHandler.*
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import com.violas.walletconnect.jsonrpc.JsonRpcError
@@ -157,21 +163,107 @@ class WalletConnectActivity : BaseAppActivity() {
             try {
                 if (!transactionSwapVo.isSigned) {
                     val account = mAccountStorage.findById(transactionSwapVo.accountId)
-                    if (account != null) {
-                        val rawTransactionHex = transactionSwapVo.hexTx
-                        val hashByteArray =
-                            RawTransaction.hashByteArray(rawTransactionHex.hexStringToByteArray())
-                        val signature = showPasswordSignTx(account, hashByteArray) ?: return@launch
+                    when (account?.coinNumber) {
+                        CoinTypes.Libra.coinType() -> {
+                            // <editor-fold defaultstate="collapsed" desc="处理 Libra 交易">
+                            val rawTransactionHex = transactionSwapVo.hexTx
+                            val hashByteArray =
+                                org.palliums.libracore.transaction.RawTransaction.hashByteArray(
+                                    rawTransactionHex.hexStringToByteArray()
+                                )
+                            val privateKey = showPasswordSignTx(account) ?: return@launch
 
-                        signedTx = SignedTransactionHex(
-                            rawTransactionHex,
-                            TransactionSignAuthenticator(
-                                Ed25519PublicKey(account.publicKey.hexStringToByteArray()),
-                                signature
+                            val keyPair =
+                                org.palliums.libracore.crypto.KeyPair.fromSecretKey(privateKey)
+                            val signature = keyPair.signMessage(hashByteArray)
+
+                            signedTx = org.palliums.libracore.transaction.SignedTransactionHex(
+                                rawTransactionHex,
+                                org.palliums.libracore.transaction.TransactionSignAuthenticator(
+                                    org.palliums.libracore.crypto.Ed25519PublicKey(account.publicKey.hexStringToByteArray()),
+                                    signature
+                                )
+                            ).toByteArray().toHex()
+                            // </editor-fold>
+                        }
+                        CoinTypes.Violas.coinType() -> {
+                            // <editor-fold defaultstate="collapsed" desc="处理 Violas 交易">
+                            val rawTransactionHex = transactionSwapVo.hexTx
+                            val hashByteArray =
+                                RawTransaction.hashByteArray(rawTransactionHex.hexStringToByteArray())
+                            val privateKey = showPasswordSignTx(account) ?: return@launch
+
+                            val keyPair = KeyPair.fromSecretKey(privateKey)
+                            val signature = keyPair.signMessage(hashByteArray)
+
+                            signedTx = SignedTransactionHex(
+                                rawTransactionHex,
+                                TransactionSignAuthenticator(
+                                    Ed25519PublicKey(account.publicKey.hexStringToByteArray()),
+                                    signature
+                                )
+                            ).toByteArray().toHex()
+                            // </editor-fold>
+                        }
+                        CoinTypes.Bitcoin.coinType(),
+                        CoinTypes.BitcoinTest.coinType() -> {
+                            // <editor-fold defaultstate="collapsed" desc="处理 Violas 交易">
+
+                            val privateKey = showPasswordSignTx(account) ?: return@launch
+
+                            val fromJson = Gson().fromJson<TransferBitcoinDataType>(
+                                Base64.decode(transactionSwapVo.viewData),
+                                TransferBitcoinDataType::class.java
                             )
-                        ).toByteArray().toHex()
-                    } else {
-                        showToast("账户异常")
+                            val mTransactionManager: TransactionManager =
+                                TransactionManager(arrayListOf(fromJson.form))
+                            val checkBalance =
+                                mTransactionManager.checkBalance(fromJson.amount / 100000000.0, 3)
+                            val violasOutputScript = ViolasOutputScript()
+
+                            if (!checkBalance) {
+                                throw LackOfBalanceException()
+                            }
+
+                            val script = try {
+                                if (fromJson.data.isEmpty()) {
+                                    null
+                                } else
+                                    Script(fromJson.data.hexStringToByteArray())
+                            } catch (e: java.lang.Exception) {
+                                null
+                            }
+
+                            val txId: String = suspendCancellableCoroutine { coroutin ->
+                                val subscribe = mTransactionManager.obtainTransaction(
+                                    privateKey,
+                                    account.publicKey.hexStringToByteArray(),
+                                    checkBalance,
+                                    fromJson.to,
+                                    fromJson.changeForm,
+                                    script
+                                ).flatMap {
+                                    try {
+                                        BitcoinChainApi.get()
+                                            .pushTx(it.signBytes.toHex())
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                        throw TransferUnknownException()
+                                    }
+                                }.subscribe({
+                                    coroutin.resume(it)
+                                }, {
+                                    coroutin.resumeWithException(it)
+                                })
+                                coroutin.invokeOnCancellation {
+                                    subscribe.dispose()
+                                }
+                            }
+                            // </editor-fold>
+                        }
+                        else -> {
+                            showToast("账户异常")
+                        }
                     }
                 } else {
                     signedTx = transactionSwapVo.hexTx
@@ -180,7 +272,15 @@ class WalletConnectActivity : BaseAppActivity() {
                     return@launch
                 }
 
-                DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
+                when (transactionSwapVo.coinType) {
+                    CoinTypes.Violas -> {
+                        DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
+                    }
+                    CoinTypes.Libra -> {
+                        DataRepository.getLibraService().submitTransaction(signedTx)
+                    }
+                }
+
                 mWalletConnect.sendSuccessMessage(transactionSwapVo.requestID, "success")
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 mRequestHandle = true
@@ -193,8 +293,8 @@ class WalletConnectActivity : BaseAppActivity() {
             }
         }
 
-    private suspend fun showPasswordSignTx(account: AccountDO, hashByteArray: ByteArray) =
-        suspendCancellableCoroutine<Signature?> { cont ->
+    private suspend fun showPasswordSignTx(account: AccountDO) =
+        suspendCancellableCoroutine<ByteArray?> { cont ->
             authenticateAccount(account, mAccountManager) {
                 showProgress()
                 launch(Dispatchers.IO) {
@@ -203,9 +303,7 @@ class WalletConnectActivity : BaseAppActivity() {
                         cont.resumeWithException(WrongPasswordException())
                         return@launch
                     }
-                    val keyPair = KeyPair.fromSecretKey(decryptPrivateKey)
-                    val signMessage = keyPair.signMessage(hashByteArray)
-                    cont.resume(signMessage)
+                    cont.resume(decryptPrivateKey)
                 }
             }
         }
@@ -262,6 +360,30 @@ class WalletConnectActivity : BaseAppActivity() {
                         view.tvDescribeAddress.text = mTransferDataType.to
                         view.tvDescribeAmount.text = "$amount ${mTransferDataType.coinName}"
                         view.tvDescribeFee.text = "0.00 ${mTransferDataType.coinName}"
+
+                        viewGroupContent.removeAllViews()
+                        viewGroupContent.addView(view)
+                    }
+                }
+                TransactionDataType.BITCOIN_TRANSFER.value -> {
+                    val viewData = transactionSwapVo.viewData
+                    println("transfer data: $viewData")
+                    val mTransferDataType = Gson().fromJson(
+                        viewData,
+                        TransferBitcoinDataType::class.java
+                    )
+
+                    val amount = BigDecimal(mTransferDataType.amount).divide(
+                        BigDecimal("1000000"), 6, RoundingMode.DOWN
+                    ).stripTrailingZeros().toPlainString()
+
+                    val view = LayoutInflater.from(this@WalletConnectActivity)
+                        .inflate(R.layout.view_wallet_connect_transfer, viewGroupContent, false)
+                    withContext(Dispatchers.Main) {
+                        view.tvDescribeSender.text = mTransferDataType.form
+                        view.tvDescribeAddress.text = mTransferDataType.to
+                        view.tvDescribeAmount.text = "$amount BTC"
+                        view.tvDescribeFee.text = "0.00 BTC"
 
                         viewGroupContent.removeAllViews()
                         viewGroupContent.addView(view)

@@ -133,6 +133,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         mWCClient.onGetAccounts = { id ->
             mWalletConnectMessageHandler.handlerGetAccounts(id)
         }
+        mWCClient.onLibraSendTransaction = { id, libraSendTransaction ->
+            mWalletConnectMessageHandler.convertAndCheckTransaction(id, libraSendTransaction)
+        }
     }
 
     override fun <T> sendSuccessMessage(id: Long, result: T): Boolean {

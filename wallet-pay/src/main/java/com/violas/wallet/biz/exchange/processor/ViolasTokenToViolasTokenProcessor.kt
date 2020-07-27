@@ -92,27 +92,37 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         // 开始发起 Violas 交易
         val account = Account(KeyPair.fromSecretKey(privateKey))
 
-        val typeTagFrom = TypeTagStructTag(
+        val minToken:ITokenVo
+        val maxToken:ITokenVo
+        if (tokenFrom.marketIndex > tokenTo.marketIndex) {
+            minToken = tokenTo
+            maxToken = tokenFrom
+        }else{
+            minToken = tokenFrom
+            maxToken = tokenTo
+        }
+
+        val minTypeTag = TypeTagStructTag(
             StructTag(
-                AccountAddress(tokenFrom.address.hexStringToByteArray()),
-                tokenFrom.module,
-                tokenFrom.name,
+                AccountAddress(minToken.address.hexStringToByteArray()),
+                minToken.module,
+                minToken.name,
                 arrayListOf()
             )
         )
-        val typeTagTo = TypeTagStructTag(
+        val maxTypeTag = TypeTagStructTag(
             StructTag(
-                AccountAddress(tokenTo.address.hexStringToByteArray()),
-                tokenTo.module,
-                tokenTo.name,
+                AccountAddress(maxToken.address.hexStringToByteArray()),
+                maxToken.module,
+                maxToken.name,
                 arrayListOf()
             )
         )
 
         val optionTokenSwapTransactionPayload =
             mViolasExchangeContract.optionTokenSwapTransactionPayload(
-                typeTagFrom,
-                typeTagTo,
+                minTypeTag,
+                maxTypeTag,
                 payeeAddress,
                 amountIn,
                 amountOutMin,
@@ -123,7 +133,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         return mViolasRpcService.sendTransaction(
             optionTokenSwapTransactionPayload,
             account,
-            gasCurrencyCode = typeTagFrom.value.module
+            gasCurrencyCode = minTypeTag.value.module
         ).sequenceNumber.toString()
     }
 }
