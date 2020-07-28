@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.market.swap
 
+import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -38,15 +39,12 @@ import java.math.RoundingMode
 class SwapViewModel : BaseViewModel() {
     companion object {
         // 最低价格浮动汇率
-        private const val MINIMUM_PRICE_FLUCTUATION = 1 / 100
+        const val MINIMUM_PRICE_FLUCTUATION = 1 / 100.0
     }
 
     // 输入输出选择的Token
     private val currFromTokenLiveData = MediatorLiveData<ITokenVo?>()
     private val currToTokenLiveData = MediatorLiveData<ITokenVo?>()
-
-    //兑换路径
-    private val swapPath = arrayListOf<Int>()
 
     // 手续费率
     private val handlingFeeRateLiveData = MediatorLiveData<BigDecimal?>()
@@ -55,7 +53,7 @@ class SwapViewModel : BaseViewModel() {
     private val exchangeRateLiveData = MediatorLiveData<BigDecimal?>()
 
     // Gas费
-    private val gasFeeLiveData = MediatorLiveData<Long?>()
+    private val gasFeeLiveData = MediatorLiveData<String?>()
 
     private val mViolasService by lazy {
         DataRepository.getViolasService()
@@ -83,17 +81,6 @@ class SwapViewModel : BaseViewModel() {
                     handlingFeeRateLiveData.postValue(null)
                     exchangeRateLiveData.postValue(null)
                     gasFeeLiveData.postValue(null)
-                } else {
-                    handlingFeeRateLiveData.postValue(
-                        if (fromToken.coinNumber != CoinTypes.Violas.coinType()
-                            || toToken.coinNumber != CoinTypes.Violas.coinType()
-                        )
-                            BigDecimal("0.3")
-                        else
-                            BigDecimal("0.00591")
-                    )
-                    exchangeRateLiveData.postValue(convertToExchangeRate(fromToken, toToken))
-                    gasFeeLiveData.postValue(0)
                 }
             }
         exchangeRateLiveData.addSource(currFromTokenLiveData) { fromToken ->
@@ -151,15 +138,15 @@ class SwapViewModel : BaseViewModel() {
     }
 
     //*********************************** 其它信息相关方法 ***********************************//
-    fun getHandlingFeeRateLiveDataLiveData(): LiveData<BigDecimal?> {
+    fun getHandlingFeeRateLiveDataLiveData(): MutableLiveData<BigDecimal?> {
         return handlingFeeRateLiveData
     }
 
-    fun getExchangeRateLiveData(): LiveData<BigDecimal?> {
+    fun getExchangeRateLiveData(): MutableLiveData<BigDecimal?> {
         return exchangeRateLiveData
     }
 
-    fun getGasFeeLiveData(): MutableLiveData<Long?> {
+    fun getGasFeeLiveData(): MutableLiveData<String?> {
         return gasFeeLiveData
     }
 
@@ -168,7 +155,13 @@ class SwapViewModel : BaseViewModel() {
     }
 
     //*********************************** 其它信息相关方法 ***********************************//
-    suspend fun swap(pwd: ByteArray, inputAmountStr: String, outputAmountStr: String) =
+    suspend fun swap(
+        pwd: ByteArray,
+        inputAmountStr: String,
+        outputAmountStr: String,
+        swapPath: List<Int>,
+        isInputFrom: Boolean
+    ) =
         withContext(Dispatchers.IO) {
             val inputToken = currFromTokenLiveData.value!!
             val outputToken = currToTokenLiveData.value!!
@@ -184,11 +177,17 @@ class SwapViewModel : BaseViewModel() {
                     CoinTypes.parseCoinType(outputToken.coinNumber)
                 )
 
-            val outputMiniAmount = outputAmount - outputAmount * MINIMUM_PRICE_FLUCTUATION
+            val outputMiniAmount = if (isInputFrom) {
+                outputAmount - (outputAmount * MINIMUM_PRICE_FLUCTUATION).toLong()
+            } else {
+                outputAmount
+            }
 
             val swapPathByteArray = swapPath.map {
                 it.and(0xFF).toByte()
             }.toByteArray()
+
+            Log.e("==swap==","amount:${outputMiniAmount}  path:${swapPath}")
 
             mAssetsSwapManager.swap(
                 pwd,

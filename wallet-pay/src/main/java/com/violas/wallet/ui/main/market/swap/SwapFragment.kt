@@ -46,6 +46,7 @@ import kotlinx.coroutines.withContext
 import org.palliums.libracore.http.LibraException
 import org.palliums.violascore.http.ViolasException
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * Created by elephant on 2020/6/23 17:18.
@@ -69,6 +70,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
         ReserveManager()
     }
     private var isInputFrom = true
+    private val mSwapPath = mutableListOf<Int>()
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_swap
@@ -207,6 +209,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
             if (it == null) {
                 tvToSelectText.text = getString(R.string.select_token)
                 handleValueNull(tvToBalance, R.string.market_token_balance_format)
+                etToInputBox.setText("")
                 toAssertsAmountSubscriber.changeSubscriber(null)
             } else {
                 tvToSelectText.text = it.displayName
@@ -277,7 +280,9 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                 swapViewModel.swap(
                     pwd,
                     etFromInputBox.text.toString(),
-                    etToInputBox.text.toString()
+                    etToInputBox.text.toString(),
+                    mSwapPath,
+                    isInputFrom
                 )
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 showToast(getString(R.string.hint_swap_exchange_transaction_broadcast_success))
@@ -355,8 +360,11 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                         }
                         withContext(Dispatchers.Main) {
                             outputEdit.setText("")
-                            btnSwap.setText(R.string.action_swap_unable_change)
+                            btnSwap.setText(R.string.action_swap_input_exchange_quantity)
                             btnSwap.isEnabled = false
+                            swapViewModel.getGasFeeLiveData().value = null
+                            swapViewModel.getExchangeRateLiveData().value = null
+                            swapViewModel.getHandlingFeeRateLiveDataLiveData().value = null
                         }
                     }
                     return@launch
@@ -370,37 +378,101 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                     } else {
                         etFromInputBox
                     }
+                    mSwapPath.clear()
                     withContext(Dispatchers.Main) {
+                        swapViewModel.getExchangeRateLiveData().value = BigDecimal.valueOf(0)
+                        swapViewModel.getHandlingFeeRateLiveDataLiveData().value =
+                            BigDecimal.valueOf(0)
+                        swapViewModel.getGasFeeLiveData().value = "0"
                         outputEdit.setText("")
                         btnSwap.setText(R.string.action_swap_unable_change)
                         btnSwap.isEnabled = false
                     }
                 } else {
+                    // 获取应该输入的输入框
                     val outputEdit = if (isInputFrom) {
                         etToInputBox
                     } else {
                         etFromInputBox
                     }
+                    // 获取应该输出的币种信息
                     val outputCoin = if (isInputFrom) {
                         toToken
                     } else {
                         fromToken
                     }
-                    val outputAmount = convertAmountToDisplayUnit(
-                        tradeExact.amount,
+                    // 获取计算出来的金额
+                    val outputAmount = if (!isInputFrom) {
+                        tradeExact.amount + (tradeExact.amount * SwapViewModel.MINIMUM_PRICE_FLUCTUATION).toLong()
+                    } else {
+                        tradeExact.amount
+                    }
+                    // 根据币种信息转换计算出来的金额单位
+                    val outputAmountByCoin = convertAmountToDisplayUnit(
+                        outputAmount,
                         CoinTypes.parseCoinType(outputCoin.coinNumber)
                     ).first
+
+                    // 获取应该输出的币种信息
+                    val inputCoin = if (isInputFrom) {
+                        fromToken
+                    } else {
+                        toToken
+                    }
+                    // 根据币种信息转换计算出来的手续费金额
                     val outputFeeAmount = convertAmountToDisplayUnit(
                         tradeExact.fee,
-                        CoinTypes.parseCoinType(outputCoin.coinNumber)
+                        CoinTypes.parseCoinType(inputCoin.coinNumber)
                     ).first
+
+                    // 计算手续费率
+                    val handlingFeeRate = if (isInputFrom) {
+                        BigDecimal(tradeExact.fee).divide(
+                            BigDecimal(inputAmount),
+                            6,
+                            RoundingMode.HALF_UP
+                        ).multiply(BigDecimal("100"))
+                    } else {
+                        BigDecimal(tradeExact.fee).divide(
+                            BigDecimal(outputAmount),
+                            6,
+                            RoundingMode.HALF_UP
+                        ).multiply(BigDecimal("100"))
+                    }
+
+                    // 计算兑换率
+                    val exchangeRate = if (isInputFrom) {
+                        BigDecimal(outputAmountByCoin).divide(
+                            BigDecimal(inputAmountStr).divide(
+                                BigDecimal(1),
+                                6,
+                                RoundingMode.HALF_UP
+                            ),
+                            6,
+                            RoundingMode.HALF_UP
+                        )
+                    } else {
+                        BigDecimal(outputAmountStr).divide(
+                            BigDecimal(outputAmountByCoin).divide(
+                                BigDecimal(1),
+                                6,
+                                RoundingMode.HALF_UP
+                            ),
+                            6,
+                            RoundingMode.HALF_UP
+                        )
+                    }
+
+                    mSwapPath.clear()
+                    mSwapPath.addAll(tradeExact.path)
                     withContext(Dispatchers.Main) {
                         btnSwap.setText(R.string.action_swap_nbsp)
                         btnSwap.isEnabled = true
 
-                        outputEdit.setText(outputAmount)
-                        swapViewModel.getGasFeeLiveData().value =
-                            BigDecimal(outputFeeAmount).toLong()
+                        outputEdit.setText(outputAmountByCoin)
+                        swapViewModel.getGasFeeLiveData().value = outputFeeAmount
+                        swapViewModel.getExchangeRateLiveData().value = exchangeRate
+                        swapViewModel.getHandlingFeeRateLiveDataLiveData().value = handlingFeeRate
                     }
                 }
             } catch (e: java.lang.Exception) {

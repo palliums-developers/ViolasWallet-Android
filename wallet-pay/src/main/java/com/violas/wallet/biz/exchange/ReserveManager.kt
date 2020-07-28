@@ -12,6 +12,7 @@ import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.str2CoinType
@@ -111,7 +112,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     private fun startWork() {
         isRun = true
         mHandler.removeMessages(HANDLER_COMMAND)
-        mHandler.sendEmptyMessage(HANDLER_COMMAND)
+        mHandler.sendEmptyMessageDelayed(HANDLER_COMMAND, 1500)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
@@ -188,8 +189,8 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
         if (msg.what == HANDLER_COMMAND) {
             if (isRun) {
                 refreshReserve()
+                mHandler.sendEmptyMessageDelayed(HANDLER_COMMAND, mRefreshInterval)
             }
-            mHandler.sendEmptyMessageDelayed(HANDLER_COMMAND, mRefreshInterval)
         }
         return true
     }
@@ -244,20 +245,22 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
             bestTradeExactOut(mReserveList, inIndex, outIndex, inputAmount)
         }
 
-        Log.e("== == ==", "start")
-        trades?.forEach {
-            Log.e("== == ==", it.toString())
-        }
-        Log.e("== == ==", "end")
-
         trades?.first()?.let {
             if (isInputFrom) {
                 // 由输入价格直接计算输出手续费
-                it.fee = it.amount - getOutputAmountsWithoutFee(inputAmount, it.path).last()
+                it.fee = getOutputAmountsWithoutFee(inputAmount, it.path).last() - it.amount
             } else {
                 // 由输出价格计算手续费
                 it.fee = getOutputAmountsWithoutFee(it.amount, it.path).last() - inputAmount
             }
+        }
+
+        if (BuildConfig.DEBUG) {
+            Log.d("ReserveManager", "route planning start")
+            trades?.forEach {
+                Log.d("ReserveManager", it.toString())
+            }
+            Log.d("ReserveManager", "route planning end")
         }
 
         return trades?.first()
