@@ -81,17 +81,6 @@ class SwapViewModel : BaseViewModel() {
                     handlingFeeRateLiveData.postValue(null)
                     exchangeRateLiveData.postValue(null)
                     gasFeeLiveData.postValue(null)
-                } else {
-                    handlingFeeRateLiveData.postValue(
-                        if (fromToken.coinNumber != CoinTypes.Violas.coinType()
-                            || toToken.coinNumber != CoinTypes.Violas.coinType()
-                        )
-                            BigDecimal("0.3")
-                        else
-                            BigDecimal("0.00591")
-                    )
-                    exchangeRateLiveData.postValue(convertToExchangeRate(fromToken, toToken))
-                    gasFeeLiveData.postValue("0")
                 }
             }
         exchangeRateLiveData.addSource(currFromTokenLiveData) { fromToken ->
@@ -149,11 +138,11 @@ class SwapViewModel : BaseViewModel() {
     }
 
     //*********************************** 其它信息相关方法 ***********************************//
-    fun getHandlingFeeRateLiveDataLiveData(): LiveData<BigDecimal?> {
+    fun getHandlingFeeRateLiveDataLiveData(): MutableLiveData<BigDecimal?> {
         return handlingFeeRateLiveData
     }
 
-    fun getExchangeRateLiveData(): LiveData<BigDecimal?> {
+    fun getExchangeRateLiveData(): MutableLiveData<BigDecimal?> {
         return exchangeRateLiveData
     }
 

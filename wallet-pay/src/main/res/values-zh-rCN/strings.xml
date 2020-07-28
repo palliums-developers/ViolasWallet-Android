@@ -355,6 +355,7 @@
     <string name="output">输出</string>
     <string name="action_swap_nbsp">兑&#160;换</string>
     <string name="action_swap_unable_change">该交易对暂时无法兑换</string>
+    <string name="action_swap_input_exchange_quantity">请输入兑换数量</string>
     <string name="select_token">选择通证</string>
     <string name="title_market_swap_records">兑换记录</string>
     <string name="transfer_in">转入</string>
