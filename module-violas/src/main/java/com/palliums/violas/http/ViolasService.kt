@@ -298,11 +298,11 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     suspend fun getMarketAllReservePair() =
         mViolasRepository.getMarketAllReservePair().data
 
-    suspend fun getPoolLiquidityReserveInfo(
+    suspend fun getPoolLiquidityReserve(
         coinAModule: String,
         coinBModule: String
     ) =
-        mViolasRepository.getPoolLiquidityReserveInfo(coinAModule, coinBModule).data
+        mViolasRepository.getPoolLiquidityReserve(coinAModule, coinBModule).data
 
     suspend fun getMarketMappingPairInfo() =
         mViolasRepository.getMarketMappingPairInfo().data

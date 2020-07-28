@@ -199,8 +199,14 @@ class ExchangeManager {
         val amountBMin =
             amountBDesired - (amountBDesired * MINIMUM_PRICE_FLUCTUATION).toLong()
 
-        lazyLogError { "addLiquidity. coin   a info   : module=${coinA.module}, index=${coinA.marketIndex}" }
-        lazyLogError { "addLiquidity. coin   b info   : module=${coinB.module}, index=${coinB.marketIndex}" }
+        lazyLogError {
+            "addLiquidity. coin   a info   : module=${coinA.module}" +
+                    ", index=${coinA.marketIndex}"
+        }
+        lazyLogError {
+            "addLiquidity. coin   b info   : module=${coinB.module}" +
+                    ", index=${coinB.marketIndex}"
+        }
         lazyLogError { "addLiquidity. amount a desired: $amountADesired" }
         lazyLogError { "addLiquidity. amount b desired: $amountBDesired" }
         lazyLogError { "addLiquidity. amount a min    : $amountAMin" }
@@ -254,8 +260,14 @@ class ExchangeManager {
         val amountBMin =
             amountBDesired - (amountBDesired * MINIMUM_PRICE_FLUCTUATION).toLong()
 
-        lazyLogError { "removeLiquidity. coin   a info   : module=${coinA.module}, index=${coinA.marketIndex}" }
-        lazyLogError { "removeLiquidity. coin   b info   : module=${coinB.module}, index=${coinB.marketIndex}" }
+        lazyLogError {
+            "removeLiquidity. coin   a info   : module=${coinA.module}" +
+                    ", index=${coinA.marketIndex}"
+        }
+        lazyLogError {
+            "removeLiquidity. coin   b info   : module=${coinB.module}" +
+                    ", index=${coinB.marketIndex}"
+        }
         lazyLogError { "removeLiquidity. amount a desired: $amountADesired" }
         lazyLogError { "removeLiquidity. amount b desired: $amountBDesired" }
         lazyLogError { "removeLiquidity. amount a min    : $amountAMin" }

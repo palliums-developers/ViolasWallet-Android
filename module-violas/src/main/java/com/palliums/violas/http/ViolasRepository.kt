@@ -179,12 +179,12 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         }
 
     @Throws(RequestException::class)
-    suspend fun getPoolLiquidityReserveInfo(
+    suspend fun getPoolLiquidityReserve(
         coinAModule: String,
         coinBModule: String
     ) =
         checkResponse(4000) {
-            mViolasApi.getPoolLiquidityReserveInfo(
+            mViolasApi.getPoolLiquidityReserve(
                 coinAModule,
                 coinBModule
             )
