@@ -80,6 +80,10 @@ class PlatformTokenVo(
         result = result * 31 + selected.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return "PlatformTokenVo(accountDoId=$accountDoId, accountType=$accountType, accountAddress=$accountAddress, coinNumber=$coinNumber, displayName='$displayName', logo='$logo', displayAmount=${displayAmount.toPlainString()})"
+    }
 }
 
 /**
@@ -152,5 +156,9 @@ class StableTokenVo(
         result = result * 31 + anchorValue.hashCode()
         result = result * 31 + selected.hashCode()
         return result
+    }
+
+    override fun toString(): String {
+        return "StableTokenVo(accountDoId=$accountDoId, coinNumber=$coinNumber, marketIndex=$marketIndex, tokenDoId=$tokenDoId, address='$address', module='$module', name='$name', displayName='$displayName', logo='$logo', localEnable=$localEnable, chainEnable=$chainEnable, displayAmount=${displayAmount.toPlainString()})"
     }
 }

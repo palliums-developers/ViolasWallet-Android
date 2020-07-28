@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -455,6 +456,10 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
     override fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>?> {
         return marketViewModel.getMarketSupportCoinsLiveData()
+    }
+
+    override fun getTipsMessageLiveData(): EnhancedMutableLiveData<String> {
+        return marketViewModel.tipsMessage
     }
 
     override fun getCurrCoin(action: Int): ITokenVo? {

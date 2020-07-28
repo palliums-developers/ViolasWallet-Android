@@ -14,9 +14,7 @@ import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayAmount
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import java.math.BigDecimal
 
 /**
@@ -138,7 +136,10 @@ class MarketViewModel : BaseViewModel() {
                     )
                 )
             }
-            marketCoinsLiveData.postValue(marketLocalCoins)
+
+            withContext(Dispatchers.Main) {
+                marketCoinsLiveData.value = marketLocalCoins
+            }
         }
 
         // 获取用户链上币种信息，若只需要Violas coins则不请求bitcoin和libra链上币种信息
@@ -202,7 +203,9 @@ class MarketViewModel : BaseViewModel() {
             }
         }
 
-        marketCoinsLiveData.postValue(marketLocalCoins)
+        withContext(Dispatchers.Main) {
+            marketCoinsLiveData.value = marketLocalCoins
+        }
     }
 
     private var mockData = 0
