@@ -12,6 +12,7 @@ import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.str2CoinType
@@ -111,7 +112,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     private fun startWork() {
         isRun = true
         mHandler.removeMessages(HANDLER_COMMAND)
-        mHandler.sendEmptyMessage(HANDLER_COMMAND)
+        mHandler.sendEmptyMessageDelayed(HANDLER_COMMAND, 1500)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
@@ -254,11 +255,13 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
             }
         }
 
-        Log.e("== == ==", "start")
-        trades?.forEach {
-            Log.e("== == ==", it.toString())
+        if (BuildConfig.DEBUG) {
+            Log.d("ReserveManager", "route planning start")
+            trades?.forEach {
+                Log.d("ReserveManager", it.toString())
+            }
+            Log.d("ReserveManager", "route planning end")
         }
-        Log.e("== == ==", "end")
 
         return trades?.first()
     }

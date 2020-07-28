@@ -1,11 +1,13 @@
 package com.violas.wallet.repository.subscribeHub
 
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.*
 import com.palliums.utils.CustomIOScope
 import com.palliums.utils.CustomMainScope
 import com.palliums.utils.toMap
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.BuildConfig
 import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.viewModel.WalletAppViewModel
@@ -86,12 +88,13 @@ object BalanceSubscribeHub : LifecycleOwner, LifecycleObserver, RemoveSubscriber
      */
     fun observe(owner: LifecycleOwner, subscriber: BalanceSubscriber) = launch {
         subscriber.setNoticeSubscriberCallBack(this@BalanceSubscribeHub)
-        mBalanceSubscribers[subscriber] = WrapperBalanceSubscriber(
-            owner,
+        val wrapperBalanceSubscriber = WrapperBalanceSubscriber(
             subscriber,
             this@BalanceSubscribeHub,
             this@BalanceSubscribeHub
         )
+        owner.lifecycle.addObserver(wrapperBalanceSubscriber)
+        mBalanceSubscribers[subscriber] = wrapperBalanceSubscriber
         notice(subscriber)
     }
 
@@ -115,24 +118,25 @@ object BalanceSubscribeHub : LifecycleOwner, LifecycleObserver, RemoveSubscriber
     }
 
     internal class WrapperBalanceSubscriber(
-        owner: LifecycleOwner,
         private val subscriber: BalanceSubscriber,
         private val removeSubscriberCallBack: RemoveSubscriberCallBack,
         private val noticeSubscriberCallBack: NoticeSubscriberCallBack
-    ) :
-        LifecycleObserver {
-        init {
-            owner.lifecycle.addObserver(this)
-        }
+    ) : LifecycleObserver {
 
         @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
         fun onResume() {
+            if (BuildConfig.DEBUG) {
+                checkSubscriber()
+            }
             noticeSubscriberCallBack.notice(subscriber)
         }
 
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         fun onDestroy() {
             removeSubscriberCallBack.remove(subscriber)
+            if (BuildConfig.DEBUG) {
+                checkSubscriber()
+            }
         }
     }
 }
