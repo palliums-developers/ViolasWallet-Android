@@ -402,8 +402,10 @@
     <string name="hint_payee_account_not_active">收款账户没有激活</string>
     <string name="tips_market_add_liquidity_coin_not_selected">请选择通证</string>
     <string name="tips_market_add_liquidity_amount_not_input">请输入转入数量</string>
+    <string name="tips_market_add_liquidity_estimate_amount">正在估算转入金额…</string>
     <string name="tips_market_remove_liquidity_pair_not_selected">请选择交易对</string>
     <string name="tips_market_remove_liquidity_amount_not_input">请输入转出数量</string>
+    <string name="tips_market_remove_liquidity_estimate_amount">正在估算转出金额…</string>
     <string name="tips_market_insufficient_balance_format">%1$s可用余额不足</string>
     <string name="tips_market_add_liquidity_success">转入交易广播成功</string>
     <string name="tips_market_add_liquidity_failure">转入失败</string>
