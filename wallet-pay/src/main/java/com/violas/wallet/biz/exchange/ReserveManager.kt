@@ -188,8 +188,8 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
         if (msg.what == HANDLER_COMMAND) {
             if (isRun) {
                 refreshReserve()
+                mHandler.sendEmptyMessageDelayed(HANDLER_COMMAND, mRefreshInterval)
             }
-            mHandler.sendEmptyMessageDelayed(HANDLER_COMMAND, mRefreshInterval)
         }
         return true
     }
@@ -244,21 +244,21 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
             bestTradeExactOut(mReserveList, inIndex, outIndex, inputAmount)
         }
 
-        Log.e("== == ==", "start")
-        trades?.forEach {
-            Log.e("== == ==", it.toString())
-        }
-        Log.e("== == ==", "end")
-
         trades?.first()?.let {
             if (isInputFrom) {
                 // 由输入价格直接计算输出手续费
-                it.fee = it.amount - getOutputAmountsWithoutFee(inputAmount, it.path).last()
+                it.fee = getOutputAmountsWithoutFee(inputAmount, it.path).last() - it.amount
             } else {
                 // 由输出价格计算手续费
                 it.fee = getOutputAmountsWithoutFee(it.amount, it.path).last() - inputAmount
             }
         }
+
+        Log.e("== == ==", "start")
+        trades?.forEach {
+            Log.e("== == ==", it.toString())
+        }
+        Log.e("== == ==", "end")
 
         return trades?.first()
     }

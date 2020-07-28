@@ -68,6 +68,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
         ReserveManager()
     }
     private var isInputFrom = true
+    private val mSwapPath = mutableListOf<Int>()
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_swap
@@ -206,6 +207,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
             if (it == null) {
                 tvToSelectText.text = getString(R.string.select_token)
                 handleValueNull(tvToBalance, R.string.market_token_balance_format)
+                etToInputBox.setText("")
                 toAssertsAmountSubscriber.changeSubscriber(null)
             } else {
                 tvToSelectText.text = it.displayName
@@ -286,7 +288,9 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                 swapViewModel.swap(
                     pwd,
                     etFromInputBox.text.toString(),
-                    etToInputBox.text.toString()
+                    etToInputBox.text.toString(),
+                    mSwapPath,
+                    isInputFrom
                 )
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 showToast(getString(R.string.hint_swap_exchange_transaction_broadcast_success))
@@ -379,6 +383,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                     } else {
                         etFromInputBox
                     }
+                    mSwapPath.clear()
                     withContext(Dispatchers.Main) {
                         outputEdit.setText("")
                         btnSwap.setText(R.string.action_swap_unable_change)
@@ -395,21 +400,27 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                     } else {
                         fromToken
                     }
+                    val amount = if (!isInputFrom) {
+                        tradeExact.amount + (tradeExact.amount * SwapViewModel.MINIMUM_PRICE_FLUCTUATION).toLong()
+                    } else {
+                        tradeExact.amount
+                    }
                     val outputAmount = convertAmountToDisplayUnit(
-                        tradeExact.amount,
+                        amount,
                         CoinTypes.parseCoinType(outputCoin.coinNumber)
                     ).first
                     val outputFeeAmount = convertAmountToDisplayUnit(
                         tradeExact.fee,
                         CoinTypes.parseCoinType(outputCoin.coinNumber)
                     ).first
+                    mSwapPath.clear()
+                    mSwapPath.addAll(tradeExact.path)
                     withContext(Dispatchers.Main) {
                         btnSwap.setText(R.string.action_swap_nbsp)
                         btnSwap.isEnabled = true
 
                         outputEdit.setText(outputAmount)
-                        swapViewModel.getGasFeeLiveData().value =
-                            BigDecimal(outputFeeAmount).toLong()
+                        swapViewModel.getGasFeeLiveData().value = outputFeeAmount
                     }
                 }
             } catch (e: java.lang.Exception) {
