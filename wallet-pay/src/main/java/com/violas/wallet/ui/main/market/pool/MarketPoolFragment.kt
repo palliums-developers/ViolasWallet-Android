@@ -583,7 +583,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             return true
         }
 
-        if (inputAAmountStr.isEmpty() || inputBAmountStr.isEmpty()) {
+        if (inputAAmountStr.isEmpty() || inputBAmountStr.isEmpty()
+            || poolViewModel.getLiquidityReserveLiveData().value == null
+        ) {
             poolViewModel.startSyncLiquidityReserveWork(showLoadingAndTips = true)
             return true
         }
@@ -609,7 +611,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             return true
         }
 
-        if (etInputBoxB.text.toString().isEmpty()) {
+        if (etInputBoxB.text.toString().isEmpty()
+            || poolViewModel.getLiquidityReserveLiveData().value == null
+        ) {
             poolViewModel.startSyncLiquidityReserveWork(showLoadingAndTips = true)
             return true
         }
