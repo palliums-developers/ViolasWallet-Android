@@ -81,22 +81,22 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
     }
 
     private val fromAssertsAmountSubscriber = object : BalanceSubscriber(null) {
-        override fun onNotice(assets: AssetsVo) {
+        override fun onNotice(assets: AssetsVo?) {
             launch {
-                mCurrFromAssetsAmount = BigDecimal(assets.amountWithUnit.amount)
+                mCurrFromAssetsAmount = BigDecimal(assets?.amountWithUnit?.amount ?: "0")
                 tvFromBalance.text = getString(
                     R.string.market_token_balance_format,
-                    "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
+                    "${assets?.amountWithUnit?.amount ?: 0} ${assets?.getAssetsName() ?: getName()}"
                 )
             }
         }
     }
     private val toAssertsAmountSubscriber = object : BalanceSubscriber(null) {
-        override fun onNotice(assets: AssetsVo) {
+        override fun onNotice(assets: AssetsVo?) {
             launch {
                 tvToBalance.text = getString(
                     R.string.market_token_balance_format,
-                    "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
+                    "${assets?.amountWithUnit?.amount ?: 0} ${assets?.getAssetsName() ?: getName()}"
                 )
             }
         }

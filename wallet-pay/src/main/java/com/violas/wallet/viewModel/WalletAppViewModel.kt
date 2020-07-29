@@ -56,9 +56,11 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
             localAssets = mAccountManager.refreshAssetsAmount(localAssets)
             mAssetsListLiveData.postValue(localAssets) // todo 尝试效果再决定是否删除
             CommandActuator.post(SaveAssetsAllBalanceCommand())
-            localAssets = mAccountManager.refreshFiatAssetsAmount(localAssets)
-            mAssetsListLiveData.postValue(localAssets)
-            CommandActuator.post(SaveAssetsFiatBalanceCommand())
+            if(isFirst){
+                localAssets = mAccountManager.refreshFiatAssetsAmount(localAssets)
+                mAssetsListLiveData.postValue(localAssets)
+                CommandActuator.post(SaveAssetsFiatBalanceCommand())
+            }
         }
         mDataRefreshingLiveData.postValue(false)
         checkAccountActivate(localAssets)

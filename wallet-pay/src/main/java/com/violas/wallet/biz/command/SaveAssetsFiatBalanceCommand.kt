@@ -7,6 +7,7 @@ import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.HiddenTokenVo
 
 class SaveAssetsFiatBalanceCommand() : ISingleCommand {
     companion object {
@@ -14,8 +15,19 @@ class SaveAssetsFiatBalanceCommand() : ISingleCommand {
         fun coinKey(assets: AssetsVo) =
             "${assets.getCoinNumber()}-${assets.getAssetsName()}-${assets.fiatAmountWithUnit.unit}"
 
-        fun tokenKey(assets: AssetsTokenVo) =
-            "${assets.getCoinNumber()}-${assets.getAssetsName()}-${assets.fiatAmountWithUnit.unit}-${assets.module}-${assets.name}-${assets.address}"
+        fun tokenKey(assets: AssetsVo): String {
+            return when (assets) {
+                is AssetsTokenVo -> {
+                    "${assets.getCoinNumber()}-${assets.getAssetsName()}-${assets.fiatAmountWithUnit.unit}-${assets.module}-${assets.name}-${assets.address}"
+                }
+                is HiddenTokenVo -> {
+                    "${assets.getCoinNumber()}-${assets.getAssetsName()}-${assets.fiatAmountWithUnit.unit}-${assets.module}-${assets.name}-${assets.address}"
+                }
+                else -> {
+                    "${assets.getCoinNumber()}-${assets.getAssetsName()}-${assets.fiatAmountWithUnit.unit}"
+                }
+            }
+        }
     }
 
     private val mSharedPreferences by lazy {

@@ -95,3 +95,24 @@ data class AssetsTokenVo(
     override fun getCoinNumber(): Int = coinNumber
     override fun getLogoUrl() = logo
 }
+
+data class HiddenTokenVo(
+    private val id: Long,
+    private val accountId: Long,
+    private val coinNumber: Int,
+    val address: String = "00000000000000000000000000000000",
+    val module: String = "LBR",
+    val name: String = "T",
+    val enable: Boolean = false,
+    private var amount: Long = 0
+) : AssetsVo() {
+    override fun getId() = id
+    override fun getAccountId() = accountId
+    override fun getAmount() = amount
+    override fun setAmount(amount: Long) {
+        this.amount = amount
+    }
+
+    override fun getCoinNumber(): Int = coinNumber
+    override fun getLogoUrl() = ""
+}

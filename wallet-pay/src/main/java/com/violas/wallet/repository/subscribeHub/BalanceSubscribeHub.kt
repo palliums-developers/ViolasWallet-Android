@@ -14,6 +14,7 @@ import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.HiddenTokenVo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,6 +44,14 @@ object BalanceSubscribeHub : LifecycleOwner, LifecycleObserver, RemoveSubscriber
                         is AssetsCoinVo -> {
                             CoinAssetsMark(CoinTypes.parseCoinType(assets.getCoinNumber())).mark()
                         }
+                        is HiddenTokenVo -> {
+                            LibraTokenAssetsMark(
+                                CoinTypes.parseCoinType(assets.getCoinNumber()),
+                                assets.module,
+                                assets.address,
+                                assets.name
+                            ).mark()
+                        }
                         is AssetsTokenVo -> {
                             LibraTokenAssetsMark(
                                 CoinTypes.parseCoinType(assets.getCoinNumber()),
@@ -67,12 +76,11 @@ object BalanceSubscribeHub : LifecycleOwner, LifecycleObserver, RemoveSubscriber
      */
     override fun notice(subscriber: BalanceSubscriber?) {
         if (subscriber != null) {
-            mAssetsMap[subscriber.getAssetsMark()]?.let { assets ->
-                subscriber.onNotice(assets)
-            }
+            val assetsVo = mAssetsMap[subscriber.getAssetsMark()]
+            subscriber.onNotice(assetsVo)
         } else {
             mBalanceSubscribers.keys.forEach { item ->
-                mAssetsMap[item.getAssetsMark()]?.let { assets ->
+                mAssetsMap[item.getAssetsMark()].let { assets ->
                     item.onNotice(assets)
                 }
             }

@@ -46,6 +46,7 @@ import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.HiddenTokenVo
 import com.violas.wallet.walletconnect.WalletConnectStatus
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
@@ -105,10 +106,16 @@ class WalletFragment : BaseFragment() {
         mWalletAppViewModel?.mAssetsListLiveData?.observe(viewLifecycleOwner, Observer {
             val filter =
                 it.filter { asset ->
-                    if (asset !is AssetsCoinVo) {
-                        true
-                    } else {
-                        asset.accountType != AccountType.NoDollars
+                    when (asset) {
+                        is HiddenTokenVo -> {
+                            false
+                        }
+                        !is AssetsCoinVo -> {
+                            true
+                        }
+                        else -> {
+                            asset.accountType != AccountType.NoDollars
+                        }
                     }
                 }
             mAssertAdapter.submitList(filter)
