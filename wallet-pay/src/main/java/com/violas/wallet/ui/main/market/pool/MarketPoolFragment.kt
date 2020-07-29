@@ -159,7 +159,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         poolViewModel.getLiquidityReserveLiveData()
             .observe(viewLifecycleOwner, Observer {
                 if (poolViewModel.isTransferInMode()) {
-                    poolViewModel.calculateTransferIntoAmount(
+                    poolViewModel.estimateTransferIntoAmount(
                         isInputA,
                         if (isInputA)
                             etInputBoxA.text.toString().trim()
@@ -167,7 +167,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                             etInputBoxB.text.toString().trim()
                     )
                 } else {
-                    poolViewModel.calculateTransferOutAmount(
+                    poolViewModel.estimateTransferOutAmount(
                         etInputBoxA.text.toString().trim()
                     )
                 }
@@ -482,9 +482,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             }
 
             if (poolViewModel.isTransferInMode()) {
-                poolViewModel.calculateTransferIntoAmount(isInputA, amountStr)
+                poolViewModel.estimateTransferIntoAmount(isInputA, amountStr)
             } else {
-                poolViewModel.calculateTransferOutAmount(amountStr)
+                poolViewModel.estimateTransferOutAmount(amountStr)
             }
         }
     }
@@ -501,7 +501,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             }
 
             if (poolViewModel.isTransferInMode()) {
-                poolViewModel.calculateTransferIntoAmount(isInputA, amountStr)
+                poolViewModel.estimateTransferIntoAmount(isInputA, amountStr)
             }
         }
     }

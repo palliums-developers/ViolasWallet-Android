@@ -306,7 +306,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         return inputBTextLiveData
     }
 
-    fun calculateTransferIntoAmount(isInputA: Boolean, inputAmountStr: String?) {
+    fun estimateTransferIntoAmount(isInputA: Boolean, inputAmountStr: String?) {
         val coinA = currCoinALiveData.value ?: return
         val coinB = currCoinBLiveData.value ?: return
 
@@ -319,14 +319,14 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 if (inputAmountStr.isNullOrBlank() || liquidityReserve == null)
                     ""
                 else
-                    estimateTransferIntoAmount(
+                    exchangeManager.estimateAddLiquidityAmount(
                         if (isInputA) coinA.module else coinB.module,
                         inputAmountStr,
                         liquidityReserve
-                    )
+                    ).toPlainString()
             }
             lazyLogError(TAG) {
-                "calculateTransferIntoAmount. is input a => $isInputA" +
+                "estimateTransferIntoAmount. is input a => $isInputA" +
                         ", input amount => $inputAmountStr, output amount => $result"
             }
 
@@ -339,28 +339,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         }
     }
 
-    private fun estimateTransferIntoAmount(
-        inputCoinModule: String,
-        inputAmountStr: String,
-        liquidityReserve: PoolLiquidityReserveInfoDTO
-    ): String {
-        val amountA = convertDisplayAmountToAmount(inputAmountStr)
-        val reserveA = if (inputCoinModule == liquidityReserve.coinA.module)
-            liquidityReserve.coinA.amount
-        else
-            liquidityReserve.coinB.amount
-        val reserveB = if (inputCoinModule == liquidityReserve.coinA.module)
-            liquidityReserve.coinB.amount
-        else
-            liquidityReserve.coinA.amount
-        val exchangeRate = convertAmountToExchangeRate(reserveA, reserveB)
-        val amountB = amountA.multiply(exchangeRate)
-            .setScale(0, RoundingMode.DOWN)
-            .toPlainString()
-        return convertAmountToDisplayAmountStr(amountB)
-    }
-
-    fun calculateTransferOutAmount(inputAmountStr: String?) {
+    fun estimateTransferOutAmount(inputAmountStr: String?) {
         val liquidity = currLiquidityLiveData.value ?: return
 
         cancelEstimateAmountJob()
@@ -372,16 +351,18 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 if (inputAmountStr.isNullOrBlank() || liquidityReserve == null) {
                     ""
                 } else {
-                    val amounts = estimateTransferOutAmounts(
-                        liquidity.coinA.module,
-                        BigDecimal(inputAmountStr),
-                        liquidityReserve
-                    )
-                    "${amounts.first.toPlainString()} ${liquidity.coinA.displayName}\n${amounts.second.toPlainString()} ${liquidity.coinB.displayName}"
+                    val amounts =
+                        exchangeManager.estimateRemoveLiquidityAmounts(
+                            liquidity.coinA.module,
+                            BigDecimal(inputAmountStr),
+                            liquidityReserve
+                        )
+                    "${amounts.first.toPlainString()} ${liquidity.coinA.displayName}" +
+                            "\n${amounts.second.toPlainString()} ${liquidity.coinB.displayName}"
                 }
             }
             lazyLogError(TAG) {
-                "calculateTransferOutAmount. input amount => $inputAmountStr" +
+                "estimateTransferOutAmount. input amount => $inputAmountStr" +
                         ", output amount => $result"
             }
 
@@ -389,32 +370,6 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
 
             estimateAmountJob = null
         }
-    }
-
-    private fun estimateTransferOutAmounts(
-        coinAModule: String,
-        liquidityAmount: BigDecimal,
-        liquidityReserve: PoolLiquidityReserveInfoDTO
-    ): Pair<BigDecimal, BigDecimal> {
-        val coinAAmount = liquidityAmount
-            .multiply(
-                if (coinAModule == liquidityReserve.coinA.module)
-                    liquidityReserve.coinA.amount
-                else
-                    liquidityReserve.coinB.amount
-            )
-            .divide(liquidityReserve.liquidityTotalAmount, 6, RoundingMode.DOWN)
-            .stripTrailingZeros()
-        val coinBAmount = liquidityAmount
-            .multiply(
-                if (coinAModule == liquidityReserve.coinA.module)
-                    liquidityReserve.coinB.amount
-                else
-                    liquidityReserve.coinA.amount
-            )
-            .divide(liquidityReserve.liquidityTotalAmount, 6, RoundingMode.DOWN)
-            .stripTrailingZeros()
-        return Pair(coinAAmount, coinBAmount)
     }
 
     private fun cancelEstimateAmountJob() {
@@ -596,11 +551,12 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             ACTION_REMOVE_LIQUIDITY -> {
                 val liquidityAmount = convertDisplayAmountToAmount(params[1] as String)
                 val liquidity = currLiquidityLiveData.value!!
-                val amounts = estimateTransferOutAmounts(
-                    liquidity.coinA.module,
-                    liquidityAmount,
-                    liquidityReserveLiveData.value!!
-                )
+                val amounts =
+                    exchangeManager.estimateRemoveLiquidityAmounts(
+                        liquidity.coinA.module,
+                        liquidityAmount,
+                        liquidityReserveLiveData.value!!
+                    )
                 exchangeManager.removeLiquidity(
                     privateKey = params[0] as ByteArray,
                     coinA = liquidity.coinA,
