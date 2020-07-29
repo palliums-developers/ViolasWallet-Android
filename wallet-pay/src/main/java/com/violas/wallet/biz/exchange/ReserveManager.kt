@@ -54,8 +54,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
 
     data class Trade(
         val path: MutableList<Int>,
-        val amount: Long,
-        var fee: Long = 0
+        var amount: Long
     )
 
     data class ReservesAmount(
@@ -86,26 +85,18 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
         if (amountOut <= 0 || reserveIn <= 0 || reserveOut <= 0) {
             return 0
         }
-        val numerator =
-            BigInteger.valueOf(reserveIn).multiply(BigInteger.valueOf(amountOut))
-                .multiply(BigInteger.valueOf(1000))
-        val denominator =
-            BigInteger.valueOf(reserveOut).subtract(BigInteger.valueOf(amountOut))
-                .multiply(BigInteger.valueOf(997))
-        val amountIn = numerator.divide(denominator).add(BigInteger.valueOf(1))
-        return amountIn.toLong()
+        val numerator = BigInteger.valueOf(reserveIn).multiply(BigInteger.valueOf(amountOut))
+        val denominator = BigInteger.valueOf(reserveOut).subtract(BigInteger.valueOf(amountOut))
+        return numerator.divide(denominator).add(BigInteger.valueOf(1)).toLong()
     }
 
     private fun getOutputAmount(amountIn: Long, reserveIn: Long, reserveOut: Long): Long {
         if (amountIn <= 0 || reserveIn <= 0 || reserveOut <= 0) {
             return 0
         }
-        val amountInWithFee = BigInteger.valueOf(amountIn).multiply(BigInteger.valueOf(997))
-        val numerator = amountInWithFee.multiply(BigInteger.valueOf(reserveOut))
-        val denominator = BigInteger.valueOf(reserveIn).multiply(BigInteger.valueOf(1000))
-            .add(amountInWithFee)
-        val amountOut = numerator.divide(denominator)
-        return amountOut.toLong()
+        val num1 = BigInteger.valueOf(amountIn).multiply(BigInteger.valueOf(reserveOut))
+        val num2 = BigInteger.valueOf(reserveIn).add(BigInteger.valueOf(amountIn))
+        return num1.divide(num2).toLong()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -195,16 +186,16 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
         return true
     }
 
-    private fun getOutputAmountWithoutFee(amountIn: Long, reserveIn: Long, reserveOut: Long): Long {
-        if (amountIn <= 0 || reserveIn <= 0 || reserveOut <= 0) {
-            return 0
-        }
-        val num1 = BigInteger.valueOf(amountIn).multiply(BigInteger.valueOf(reserveOut))
-        val num2 = BigInteger.valueOf(reserveIn).add(BigInteger.valueOf(amountIn))
-        return num1.divide(num2).toLong()
+    private fun getOutputAmountWithFee(amountIn: Long, reserveIn: Long, reserveOut: Long): Long {
+        val amountInWithFee = BigInteger.valueOf(amountIn).multiply(BigInteger.valueOf(997))
+        val numerator = amountInWithFee.multiply(BigInteger.valueOf(reserveOut))
+        val denominator = BigInteger.valueOf(reserveIn).multiply(BigInteger.valueOf(1000))
+            .add(amountInWithFee)
+        val amountOut = numerator.divide(denominator)
+        return amountOut.toLong()
     }
 
-    private fun getOutputAmountsWithoutFee(
+    private fun getOutputAmountsWithFee(
         amountIn: Long,
         path: MutableList<Int>
     ): MutableList<Long> {
@@ -212,7 +203,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
         amounts.add(amountIn)
         for (i in 0 until (path.size - 1)) {
             val (reserveIn, reserveOut) = getReserve(mReserveList, path[i], path[i + 1])
-            val amountOut = getOutputAmountWithoutFee(amounts[i], reserveIn, reserveOut)
+            val amountOut = getOutputAmountWithFee(amounts[i], reserveIn, reserveOut)
             amounts.add(amountOut)
         }
         return amounts
@@ -230,12 +221,18 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
         }
     }
 
+    data class TradeResult(
+        val path: List<Int>,
+        val amount: Long,
+        val fee: Long = 0
+    )
+
     fun tradeExact(
         fromToken: ITokenVo,
         toToken: ITokenVo,
         inputAmount: Long,
         isInputFrom: Boolean
-    ): Trade? {
+    ): TradeResult? {
         val inIndex =
             getMarkIndex(fromToken) ?: throw ExchangeError.UnsupportedCurrenciesException()
         val outIndex = getMarkIndex(toToken) ?: throw ExchangeError.UnsupportedCurrenciesException()
@@ -245,13 +242,16 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
             bestTradeExactOut(mReserveList, inIndex, outIndex, inputAmount)
         }
 
-        trades?.first()?.let {
+        val tradeResult = trades?.first()?.let {
             if (isInputFrom) {
                 // 由输入价格直接计算输出手续费
-                it.fee = getOutputAmountsWithoutFee(inputAmount, it.path).last() - it.amount
+                val amount = getOutputAmountsWithFee(inputAmount, it.path).last()
+                val fee = it.amount - amount
+                TradeResult(it.path, amount, fee)
             } else {
                 // 由输出价格计算手续费
-                it.fee = getOutputAmountsWithoutFee(it.amount, it.path).last() - inputAmount
+                val fee = inputAmount - getOutputAmountsWithFee(it.amount, it.path).last()
+                TradeResult(it.path, it.amount, fee)
             }
         }
 
@@ -263,7 +263,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
             Log.d("ReserveManager", "route planning end")
         }
 
-        return trades?.first()
+        return tradeResult
     }
 
     /**
@@ -335,7 +335,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
                 )
             }
         }
-        return bestTrades.sortedBy { it.amount - (it.path.size * 100) }
+        return bestTrades.sortedBy { it.amount }
     }
 
     /**
@@ -406,6 +406,6 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
                 )
             }
         }
-        return bestTrades.sortedByDescending { it.amount - (it.path.size * 700000) }
+        return bestTrades.sortedByDescending { it.amount }
     }
 }
