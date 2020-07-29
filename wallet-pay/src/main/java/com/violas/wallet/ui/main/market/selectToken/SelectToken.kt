@@ -133,7 +133,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
         statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         statusLayout.setReloadCallback {
             statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
-            coinsBridge!!.getMarketSupportCoins(onlyNeedViolasCoins())
+            getMarketSupportCoins()
         }
 
         coinsBridge!!.getTipsMessageLiveData().observe(viewLifecycleOwner, Observer {
@@ -146,28 +146,27 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
         coinsBridge!!.getMarketSupportCoinsLiveData().observe(viewLifecycleOwner, Observer {
             cancelJob()
 
-            when {
-                it == null -> {
-                    handleLoadFailure()
-                }
-                it.isEmpty() -> {
-                    handleEmptyData(null)
-                }
-                else -> {
-                    filterData(it)
-                }
+            if (it.isEmpty()) {
+                handleEmptyData(null)
+            } else {
+                filterData(it)
             }
         })
-        coinsBridge!!.getMarketSupportCoins(onlyNeedViolasCoins())
+        getMarketSupportCoins()
     }
 
-    private fun onlyNeedViolasCoins(): Boolean {
-        return action == ACTION_POOL_SELECT_A || action == ACTION_POOL_SELECT_B
+    private fun getMarketSupportCoins() {
+        coinsBridge!!.getMarketSupportCoins() {
+            handleLoadFailure()
+        }
     }
 
     private fun cancelJob() {
-        if (job != null) {
-            job!!.cancel()
+        job?.let {
+            try {
+                it.cancel()
+            } catch (ignore: Exception) {
+            }
             job = null
         }
     }
@@ -187,11 +186,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                         ACTION_SWAP_SELECT_TO -> {
                             // 兑换选择输出币种，展示交易市场支持的所有币种
                             val from = coinsBridge?.getCurrCoin(ACTION_SWAP_SELECT_FROM)
-                            if (from?.coinNumber == it.coinNumber) {
-                                true
-                            } else {
-                                false
-                            }
+                            from?.coinNumber == it.coinNumber
                         }
 
                         else -> {
@@ -206,13 +201,13 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                 }
             }
 
-            etSearchBox.isEnabled = true
             displayCoins = list
             if (list.isEmpty()) {
                 handleEmptyData(null)
                 return@launch
             }
 
+            etSearchBox.isEnabled = true
             val searchText = etSearchBox.text.toString().trim()
             if (searchText.isEmpty()) {
                 handleData(list)
@@ -335,9 +330,9 @@ interface CoinsBridge {
 
     fun onSelectCoin(action: Int, coin: ITokenVo)
 
-    fun getMarketSupportCoins(onlyNeedViolasCoins: Boolean)
+    fun getMarketSupportCoins(failureCallback: (error: Throwable) -> Unit)
 
-    fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>?>
+    fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>>
 
     fun getTipsMessageLiveData(): EnhancedMutableLiveData<String>
 

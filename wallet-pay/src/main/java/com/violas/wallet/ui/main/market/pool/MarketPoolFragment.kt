@@ -450,11 +450,11 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         )
     }
 
-    override fun getMarketSupportCoins(onlyNeedViolasCoins: Boolean) {
-        marketViewModel.execute(onlyNeedViolasCoins)
+    override fun getMarketSupportCoins(failureCallback: (error: Throwable) -> Unit) {
+        marketViewModel.execute(failureCallback = failureCallback)
     }
 
-    override fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>?> {
+    override fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>> {
         return marketViewModel.getMarketSupportCoinsLiveData()
     }
 
