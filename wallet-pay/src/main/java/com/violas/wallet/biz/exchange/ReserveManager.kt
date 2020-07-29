@@ -233,7 +233,6 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
         inputAmount: Long,
         isInputFrom: Boolean
     ): TradeResult? {
-        val beginTime = System.currentTimeMillis()
         val inIndex =
             getMarkIndex(fromToken) ?: throw ExchangeError.UnsupportedCurrenciesException()
         val outIndex = getMarkIndex(toToken) ?: throw ExchangeError.UnsupportedCurrenciesException()
@@ -256,14 +255,12 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
             }
         }
 
-        val endTime = System.currentTimeMillis()
-
         if (BuildConfig.DEBUG) {
             Log.d("ReserveManager", "route planning start")
             trades?.forEach {
                 Log.d("ReserveManager", it.toString())
             }
-            Log.d("ReserveManager", "route planning end ${endTime - beginTime} ms")
+            Log.d("ReserveManager", "route planning end")
         }
 
         return tradeResult
