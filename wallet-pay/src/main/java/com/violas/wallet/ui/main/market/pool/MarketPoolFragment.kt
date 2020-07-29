@@ -22,9 +22,14 @@ import com.palliums.utils.*
 import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
+import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
+import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.MarketSwitchPopupView
 import com.violas.wallet.ui.main.market.MarketViewModel
+import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_ADD_LIQUIDITY
@@ -39,7 +44,9 @@ import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.fragment_market_pool.*
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.math.BigDecimal
@@ -59,6 +66,8 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         ViewModelProvider(requireParentFragment()).get(MarketViewModel::class.java)
     }
     private var isInputA = true
+    private var coinABalance = BigDecimal.ZERO
+    private var coinBBalance = BigDecimal.ZERO
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_market_pool
@@ -219,15 +228,8 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             }
         })
 
-        if (!marketViewModel.tipsMessage.hasObservers()) {
-            marketViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
-                it.getDataIfNotHandled()?.let { msg ->
-                    if (msg.isNotEmpty()) {
-                        showToast(msg)
-                    }
-                }
-            })
-        }
+        BalanceSubscribeHub.observe(this, coinABalanceSubscriber)
+        BalanceSubscribeHub.observe(this, coinBBalanceSubscriber)
     }
 
     //*********************************** 切换转入转出模式逻辑 ***********************************//
@@ -268,6 +270,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             ivModeIcon.setImageResource(
                 getResourceId(R.attr.marketPoolOutIcon, requireContext())
             )
+
+            coinABalanceSubscriber.changeSubscriber(null)
+            coinBBalanceSubscriber.changeSubscriber(null)
         }
     }
 
@@ -408,12 +413,10 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         if (it == null) {
             tvSelectTextA.text = getString(R.string.select_token)
             handleValueNull(tvBalanceA, R.string.market_token_balance_format)
+            coinABalanceSubscriber.changeSubscriber(null)
         } else {
             tvSelectTextA.text = it.displayName
-            tvBalanceA.text = getString(
-                R.string.market_token_balance_format,
-                "${it.displayAmount.toPlainString()} ${it.displayName}"
-            )
+            coinABalanceSubscriber.changeSubscriber(IAssetsMark.convert(it))
         }
 
         adjustInputBoxAPaddingEnd()
@@ -426,12 +429,10 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         if (it == null) {
             tvSelectTextB.text = getString(R.string.select_token)
             handleValueNull(tvBalanceB, R.string.market_token_balance_format)
+            coinBBalanceSubscriber.changeSubscriber(null)
         } else {
             tvSelectTextB.text = it.displayName
-            tvBalanceB.text = getString(
-                R.string.market_token_balance_format,
-                "${it.displayAmount.toPlainString()} ${it.displayName}"
-            )
+            coinBBalanceSubscriber.changeSubscriber(IAssetsMark.convert(it))
         }
 
         adjustInputBoxBPaddingEnd()
@@ -564,10 +565,10 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         }
 
         if (inputAAmountStr.isNotEmpty()
-            && BigDecimal(inputAAmountStr) > coinA.displayAmount
+            && BigDecimal(inputAAmountStr) > coinABalance
         ) {
             val prefix = if (inputBAmountStr.isNotEmpty()
-                && BigDecimal(inputBAmountStr) > coinB.displayAmount
+                && BigDecimal(inputBAmountStr) > coinBBalance
             ) {
                 "${coinA.displayName}/${coinB.displayName}"
             } else {
@@ -576,7 +577,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
             return true
         } else if (inputBAmountStr.isNotEmpty()
-            && BigDecimal(inputBAmountStr) > coinB.displayAmount
+            && BigDecimal(inputBAmountStr) > coinBBalance
         ) {
             val prefix = coinB.displayName
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
@@ -626,21 +627,36 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             poolViewModel.getViolasAccount()!!,
             poolViewModel.getAccountManager()
         ) { privateKey ->
+            // 转入转出前停止同步流动资金储备信息
+            poolViewModel.stopSyncLiquidityReserveWork()
+
             if (transferIn) {
+                // 转入成功或失败后不清空当前选择的币种，并继续同步流动资金储备信息
                 poolViewModel.execute(
                     privateKey,
                     etInputBoxA.text.toString().trim(),
                     etInputBoxB.text.toString().trim(),
-                    action = ACTION_ADD_LIQUIDITY
+                    action = ACTION_ADD_LIQUIDITY,
+                    failureCallback = {
+                        poolViewModel.startSyncLiquidityReserveWork()
+                    }
                 ) {
+                    CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                     showToast(R.string.tips_market_add_liquidity_success)
+
+                    poolViewModel.startSyncLiquidityReserveWork()
                 }
             } else {
+                // 转出成功后清空当前选择的交易对；转出失败后不清空当前选择的交易对，并继续同步流动资金储备信息
                 poolViewModel.execute(
                     privateKey,
                     etInputBoxA.text.toString().trim(),
-                    action = ACTION_REMOVE_LIQUIDITY
+                    action = ACTION_REMOVE_LIQUIDITY,
+                    failureCallback = {
+                        poolViewModel.startSyncLiquidityReserveWork()
+                    }
                 ) {
+                    CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                     showToast(R.string.tips_market_remove_liquidity_success)
                 }
             }
@@ -648,6 +664,42 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     }
 
     //*********************************** 其它逻辑 ***********************************//
+    private val coinABalanceSubscriber =
+        object : BalanceSubscriber(null) {
+            override fun onNotice(assets: AssetsVo?) {
+                launch {
+                    if (assets == null) {
+                        coinABalance = BigDecimal.ZERO
+                        return@launch
+                    }
+
+                    coinABalance = BigDecimal(assets.amountWithUnit.amount)
+                    tvBalanceA.text = getString(
+                        R.string.market_token_balance_format,
+                        "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
+                    )
+                }
+            }
+        }
+
+    private val coinBBalanceSubscriber =
+        object : BalanceSubscriber(null) {
+            override fun onNotice(assets: AssetsVo?) {
+                launch {
+                    if (assets == null) {
+                        coinBBalance = BigDecimal.ZERO
+                        return@launch
+                    }
+
+                    coinBBalance = BigDecimal(assets.amountWithUnit.amount)
+                    tvBalanceB.text = getString(
+                        R.string.market_token_balance_format,
+                        "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
+                    )
+                }
+            }
+        }
+
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
         textView.text = getString(formatResId, getString(R.string.value_null))
     }
