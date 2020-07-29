@@ -335,7 +335,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
                 )
             }
         }
-        return bestTrades.sortedBy { it.amount - (it.path.size * 100) }
+        return bestTrades.sortedBy { it.amount }
     }
 
     /**
@@ -406,6 +406,6 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
                 )
             }
         }
-        return bestTrades.sortedByDescending { it.amount - (it.path.size * 700000) }
+        return bestTrades.sortedByDescending { it.amount }
     }
 }

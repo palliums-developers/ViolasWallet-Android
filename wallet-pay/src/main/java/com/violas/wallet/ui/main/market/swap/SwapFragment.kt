@@ -87,7 +87,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                 mCurrFromAssetsAmount = BigDecimal(assets?.amountWithUnit?.amount ?: "0")
                 tvFromBalance.text = getString(
                     R.string.market_token_balance_format,
-                    "${assets?.amountWithUnit?.amount ?: 0} ${assets?.getAssetsName() ?: getName()}"
+                    "${assets?.amountWithUnit?.amount ?: 0} ${assets?.getAssetsName() ?: ""}"
                 )
             }
         }
@@ -97,7 +97,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
             launch {
                 tvToBalance.text = getString(
                     R.string.market_token_balance_format,
-                    "${assets?.amountWithUnit?.amount ?: 0} ${assets?.getAssetsName() ?: getName()}"
+                    "${assets?.amountWithUnit?.amount ?: 0} ${assets?.getAssetsName() ?: ""}"
                 )
             }
         }
@@ -340,15 +340,33 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                 }
 
                 val inputAmount = if (isInputFrom) {
-                    convertDisplayUnitToAmount(
-                        inputAmountStr,
-                        CoinTypes.parseCoinType(fromToken.coinNumber)
-                    )
+                    if (fromToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
+                        fromToken.coinNumber == CoinTypes.Bitcoin.coinType()
+                    ) {
+                        convertDisplayUnitToAmount(
+                            inputAmountStr,
+                            CoinTypes.parseCoinType(fromToken.coinNumber)
+                        ) / 100
+                    } else {
+                        convertDisplayUnitToAmount(
+                            inputAmountStr,
+                            CoinTypes.parseCoinType(fromToken.coinNumber)
+                        )
+                    }
                 } else {
-                    convertDisplayUnitToAmount(
-                        outputAmountStr,
-                        CoinTypes.parseCoinType(toToken.coinNumber)
-                    )
+                    if (fromToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
+                        fromToken.coinNumber == CoinTypes.Bitcoin.coinType()
+                    ) {
+                        convertDisplayUnitToAmount(
+                            outputAmountStr,
+                            CoinTypes.parseCoinType(toToken.coinNumber)
+                        ) / 100
+                    } else {
+                        convertDisplayUnitToAmount(
+                            outputAmountStr,
+                            CoinTypes.parseCoinType(toToken.coinNumber)
+                        )
+                    }
                 }
 
                 if (inputAmount == 0L) {
@@ -420,24 +438,35 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                         toToken
                     }
                     // 根据币种信息转换计算出来的手续费金额
-                    val outputFeeAmount = convertAmountToDisplayUnit(
+                    var outputFeeAmount = convertAmountToDisplayUnit(
                         tradeExact.fee,
                         CoinTypes.parseCoinType(inputCoin.coinNumber)
                     ).first
+                    if (inputCoin.coinNumber == CoinTypes.BitcoinTest.coinType() ||
+                        inputCoin.coinNumber == CoinTypes.BitcoinTest.coinType()
+                    ) {
+                        outputFeeAmount = BigDecimal(outputFeeAmount).multiply(BigDecimal("100"))
+                            .stripTrailingZeros().toPlainString()
+                    }
 
                     // 计算手续费率
-                    val handlingFeeRate = if (isInputFrom) {
+                    var handlingFeeRate = if (isInputFrom) {
                         BigDecimal(tradeExact.fee).divide(
                             BigDecimal(inputAmount),
                             6,
                             RoundingMode.HALF_UP
-                        ).multiply(BigDecimal("100"))
+                        )
                     } else {
                         BigDecimal(tradeExact.fee).divide(
                             BigDecimal(outputAmount),
                             6,
                             RoundingMode.HALF_UP
-                        ).multiply(BigDecimal("100"))
+                        )
+                    }
+                    if (inputCoin.coinNumber == CoinTypes.BitcoinTest.coinType() ||
+                        inputCoin.coinNumber == CoinTypes.BitcoinTest.coinType()
+                    ) {
+                        handlingFeeRate = handlingFeeRate.multiply(BigDecimal("100"))
                     }
 
                     // 计算兑换率
