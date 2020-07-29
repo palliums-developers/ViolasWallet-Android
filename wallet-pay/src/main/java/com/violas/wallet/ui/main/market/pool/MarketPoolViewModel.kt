@@ -22,12 +22,10 @@ import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
-import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertAmountToExchangeRate
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import kotlinx.coroutines.*
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -75,7 +73,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     private val currLiquidityLiveData = MutableLiveData<PoolLiquidityDTO?>()
     private val liquidityListLiveData = MutableLiveData<List<PoolLiquidityDTO>?>()
 
-    // 流动资产的储备信息
+    // 流动资产储备信息
     private val liquidityReserveLiveData = MutableLiveData<PoolLiquidityReserveInfoDTO?>()
     private var syncLiquidityReserveFlag = AtomicBoolean(false)
 
@@ -162,14 +160,14 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 // 交换 Coin B 位置
                 currCoinBLiveData.value = currCoinA
 
-                // 交换位置重新计算兑换率
+                // 交换位置发送当前的流动资产储备信息，以重新估算金额和计算兑换率
                 if (currCoinA != null) {
-                    calculateExchangeRate(selected.module)
+                    postCurrLiquidityReserve()
                 }
                 return
             }
 
-            // 转入模式下选择了新的交易对，开始同步流动资产的储备信息
+            // 转入模式下选择了新的交易对，开始同步流动资产储备信息
             if (currCoinB != null) {
                 startSyncLiquidityReserveWork(selected.module, currCoinB.module)
             }
@@ -188,14 +186,14 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             // 交换 Coin A 位置
             currCoinALiveData.value = currCoinB
 
-            // 交换位置重新计算兑换率
+            // 交换位置发送当前的流动资产储备信息，以重新估算金额和计算兑换率
             if (currCoinB != null) {
-                calculateExchangeRate(currCoinB.module)
+                postCurrLiquidityReserve()
             }
             return
         }
 
-        // 转入模式下选择了新的交易对，开始同步流动资产的储备信息
+        // 转入模式下选择了新的交易对，开始同步流动资产储备信息
         if (currCoinA != null) {
             startSyncLiquidityReserveWork(currCoinA.module, selected.module)
         }
@@ -235,7 +233,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
 
         currLiquidityLiveData.value = selected
 
-        // 转出模式下选择了新的交易对，开始同步流动资产的储备信息
+        // 转出模式下选择了新的交易对，开始同步流动资产储备信息
         if (curr == null
             || selected.coinA.module != curr.coinA.module
             || selected.coinB.module != curr.coinB.module
@@ -382,7 +380,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         }
     }
 
-    //*********************************** 流动资金的储备信息 ***********************************//
+    //*********************************** 流动资金储备信息 ***********************************//
     fun getLiquidityReserveLiveData(): LiveData<PoolLiquidityReserveInfoDTO?> {
         return liquidityReserveLiveData
     }
@@ -517,6 +515,11 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         val liquidity = currLiquidityLiveData.value ?: return false
         return liquidity.coinA.module == coinAModule && liquidity.coinB.module == coinBModule
                 || liquidity.coinA.module == coinBModule && liquidity.coinB.module == coinAModule
+    }
+
+    private fun postCurrLiquidityReserve() {
+        val curr = liquidityReserveLiveData.value
+        liquidityReserveLiveData.value = curr
     }
 
     //*********************************** 耗时相关任务 ***********************************//
