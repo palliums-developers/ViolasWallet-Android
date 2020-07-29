@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -268,16 +269,6 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
             }
         })
 
-        if (!marketViewModel.tipsMessage.hasObservers()) {
-            marketViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
-                it.getDataIfNotHandled()?.let { msg ->
-                    if (msg.isNotEmpty()) {
-                        showToast(msg)
-                    }
-                }
-            })
-        }
-
         BalanceSubscribeHub.observe(this, fromAssertsAmountSubscriber)
         BalanceSubscribeHub.observe(this, toAssertsAmountSubscriber)
     }
@@ -515,6 +506,10 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
 
     override fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>?> {
         return marketViewModel.getMarketSupportCoinsLiveData()
+    }
+
+    override fun getTipsMessageLiveData(): EnhancedMutableLiveData<String> {
+        return marketViewModel.tipsMessage
     }
 
     override fun getCurrCoin(action: Int): ITokenVo? {

@@ -9,12 +9,14 @@ import android.text.style.ForegroundColorSpan
 import android.view.*
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
 import com.palliums.extensions.close
+import com.palliums.extensions.showToast
 import com.palliums.utils.*
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
@@ -134,6 +136,13 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
             coinsBridge!!.getMarketSupportCoins(onlyNeedViolasCoins())
         }
 
+        coinsBridge!!.getTipsMessageLiveData().observe(viewLifecycleOwner, Observer {
+            it.getDataIfNotHandled()?.let { msg ->
+                if (msg.isNotEmpty()) {
+                    showToast(msg)
+                }
+            }
+        })
         coinsBridge!!.getMarketSupportCoinsLiveData().observe(viewLifecycleOwner, Observer {
             cancelJob()
 
@@ -313,7 +322,8 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
 
 val tokenDiffCallback = object : DiffUtil.ItemCallback<ITokenVo>() {
     override fun areContentsTheSame(oldItem: ITokenVo, newItem: ITokenVo): Boolean {
-        return oldItem.areContentsTheSame(newItem)
+        //return oldItem.areContentsTheSame(newItem)
+        return false
     }
 
     override fun areItemsTheSame(oldItem: ITokenVo, newItem: ITokenVo): Boolean {
@@ -328,6 +338,8 @@ interface CoinsBridge {
     fun getMarketSupportCoins(onlyNeedViolasCoins: Boolean)
 
     fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>?>
+
+    fun getTipsMessageLiveData(): EnhancedMutableLiveData<String>
 
     fun getCurrCoin(action: Int): ITokenVo?
 }

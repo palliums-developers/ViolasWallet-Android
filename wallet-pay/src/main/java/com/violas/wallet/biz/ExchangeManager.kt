@@ -3,6 +3,7 @@ package com.violas.wallet.biz
 import com.palliums.extensions.lazyLogError
 import com.palliums.utils.toMap
 import com.palliums.violas.http.PoolLiquidityDTO
+import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
@@ -14,6 +15,8 @@ import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayAmount
+import com.violas.wallet.utils.convertAmountToExchangeRate
+import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -23,6 +26,8 @@ import org.palliums.violascore.transaction.AccountAddress
 import org.palliums.violascore.transaction.storage.StructTag
 import org.palliums.violascore.transaction.storage.TypeTagStructTag
 import org.palliums.violascore.wallet.Account
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class ExchangeManager {
 
@@ -199,8 +204,14 @@ class ExchangeManager {
         val amountBMin =
             amountBDesired - (amountBDesired * MINIMUM_PRICE_FLUCTUATION).toLong()
 
-        lazyLogError { "addLiquidity. coin   a info   : module=${coinA.module}, index=${coinA.marketIndex}" }
-        lazyLogError { "addLiquidity. coin   b info   : module=${coinB.module}, index=${coinB.marketIndex}" }
+        lazyLogError {
+            "addLiquidity. coin   a info   : module=${coinA.module}" +
+                    ", index=${coinA.marketIndex}"
+        }
+        lazyLogError {
+            "addLiquidity. coin   b info   : module=${coinB.module}" +
+                    ", index=${coinB.marketIndex}"
+        }
         lazyLogError { "addLiquidity. amount a desired: $amountADesired" }
         lazyLogError { "addLiquidity. amount b desired: $amountBDesired" }
         lazyLogError { "addLiquidity. amount a min    : $amountAMin" }
@@ -254,8 +265,14 @@ class ExchangeManager {
         val amountBMin =
             amountBDesired - (amountBDesired * MINIMUM_PRICE_FLUCTUATION).toLong()
 
-        lazyLogError { "removeLiquidity. coin   a info   : module=${coinA.module}, index=${coinA.marketIndex}" }
-        lazyLogError { "removeLiquidity. coin   b info   : module=${coinB.module}, index=${coinB.marketIndex}" }
+        lazyLogError {
+            "removeLiquidity. coin   a info   : module=${coinA.module}" +
+                    ", index=${coinA.marketIndex}"
+        }
+        lazyLogError {
+            "removeLiquidity. coin   b info   : module=${coinB.module}" +
+                    ", index=${coinB.marketIndex}"
+        }
         lazyLogError { "removeLiquidity. amount a desired: $amountADesired" }
         lazyLogError { "removeLiquidity. amount b desired: $amountBDesired" }
         lazyLogError { "removeLiquidity. amount a min    : $amountAMin" }
@@ -277,6 +294,53 @@ class ExchangeManager {
             Account(KeyPair.fromSecretKey(privateKey)),
             gasCurrencyCode = coinA.module
         )
+    }
+
+    fun estimateAddLiquidityAmount(
+        inputCoinModule: String,
+        inputAmountStr: String,
+        liquidityReserve: PoolLiquidityReserveInfoDTO
+    ): BigDecimal {
+        val amountA = convertDisplayAmountToAmount(inputAmountStr)
+        val reserveA = if (inputCoinModule == liquidityReserve.coinA.module)
+            liquidityReserve.coinA.amount
+        else
+            liquidityReserve.coinB.amount
+        val reserveB = if (inputCoinModule == liquidityReserve.coinA.module)
+            liquidityReserve.coinB.amount
+        else
+            liquidityReserve.coinA.amount
+        val exchangeRate = convertAmountToExchangeRate(reserveA, reserveB)
+        val amountB = amountA.multiply(exchangeRate)
+            .setScale(0, RoundingMode.DOWN)
+            .toPlainString()
+        return convertAmountToDisplayAmount(amountB)
+    }
+
+    fun estimateRemoveLiquidityAmounts(
+        coinAModule: String,
+        liquidityAmount: BigDecimal,
+        liquidityReserve: PoolLiquidityReserveInfoDTO
+    ): Pair<BigDecimal, BigDecimal> {
+        val coinAAmount = liquidityAmount
+            .multiply(
+                if (coinAModule == liquidityReserve.coinA.module)
+                    liquidityReserve.coinA.amount
+                else
+                    liquidityReserve.coinB.amount
+            )
+            .divide(liquidityReserve.liquidityTotalAmount, 6, RoundingMode.DOWN)
+            .stripTrailingZeros()
+        val coinBAmount = liquidityAmount
+            .multiply(
+                if (coinAModule == liquidityReserve.coinA.module)
+                    liquidityReserve.coinB.amount
+                else
+                    liquidityReserve.coinA.amount
+            )
+            .divide(liquidityReserve.liquidityTotalAmount, 6, RoundingMode.DOWN)
+            .stripTrailingZeros()
+        return Pair(coinAAmount, coinBAmount)
     }
 
     @Throws(Exception::class)

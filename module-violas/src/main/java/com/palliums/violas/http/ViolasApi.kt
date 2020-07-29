@@ -159,7 +159,7 @@ interface ViolasApi {
      * @param coinBModule        Coin B module
      */
     @GET("/1.0/market/pool/reserve/info")
-    suspend fun getPoolLiquidityReserveInfo(
+    suspend fun getPoolLiquidityReserve(
         @Query("coin_a") coinAModule: String,
         @Query("coin_b") coinBModule: String
     ): Response<PoolLiquidityReserveInfoDTO>

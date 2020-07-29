@@ -66,15 +66,15 @@ abstract class BaseViewModel : ViewModel() {
                 }
 
                 val exception = RequestException.networkUnavailable()
-                loadState.postValueSupport(
+                loadState.setValueSupport(
                     LoadState.failure(exception).apply { this.action = action })
-                tipsMessage.postValueSupport(exception.getShowErrorMessage(isLoadAction(action)))
+                tipsMessage.setValueSupport(exception.getShowErrorMessage(isLoadAction(action)))
 
                 failureCallback?.invoke(exception)
                 return false
             }
 
-            loadState.postValueSupport(LoadState.RUNNING.apply { this.action = action })
+            loadState.setValueSupport(LoadState.RUNNING.apply { this.action = action })
         }
 
         viewModelScope.launch(Dispatchers.Main) {
@@ -85,7 +85,7 @@ abstract class BaseViewModel : ViewModel() {
                 synchronized(lock) {
                     retry = null
 
-                    loadState.postValueSupport(LoadState.SUCCESS.apply { this.action = action })
+                    loadState.setValueSupport(LoadState.SUCCESS.apply { this.action = action })
                 }
 
                 successCallback?.invoke()
@@ -94,7 +94,7 @@ abstract class BaseViewModel : ViewModel() {
 
                 if (e.isNoNetwork()) {
                     // 没有网络时返回很快，加载视图一闪而过效果不好
-                    delay(200)
+                    delay(500)
                 }
 
                 synchronized(lock) {
@@ -109,8 +109,8 @@ abstract class BaseViewModel : ViewModel() {
                         )
                     }
 
-                    loadState.postValueSupport(LoadState.failure(e).apply { this.action = action })
-                    tipsMessage.postValueSupport(e.getShowErrorMessage(isLoadAction(action)))
+                    loadState.setValueSupport(LoadState.failure(e).apply { this.action = action })
+                    tipsMessage.setValueSupport(e.getShowErrorMessage(isLoadAction(action)))
                 }
 
                 failureCallback?.invoke(e)
