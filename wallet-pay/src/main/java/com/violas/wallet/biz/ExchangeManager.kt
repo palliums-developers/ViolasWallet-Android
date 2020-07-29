@@ -1,14 +1,12 @@
 package com.violas.wallet.biz
 
 import com.palliums.extensions.lazyLogError
-import com.palliums.utils.toMap
 import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.http.dex.DexOrderDTO
 import com.violas.wallet.repository.http.dex.DexRepository
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -18,8 +16,6 @@ import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.wallet.utils.convertAmountToExchangeRate
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.walletconnect.extensions.hexStringToByteArray
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import org.json.JSONObject
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.AccountAddress
@@ -36,17 +32,11 @@ class ExchangeManager {
         private const val MINIMUM_PRICE_FLUCTUATION = 5 / 1000F
     }
 
-    private val mAccountStorage by lazy {
-        DataRepository.getAccountStorage()
-    }
     val mViolasService by lazy {
         DataRepository.getViolasService()
     }
     private val mViolasRpcService by lazy {
         DataRepository.getViolasChainRpcService()
-    }
-    private val mLibraRpcService by lazy {
-        DataRepository.getLibraService()
     }
 
     val mAccountManager by lazy {
@@ -55,6 +45,7 @@ class ExchangeManager {
     private val mTokenManager by lazy {
         TokenManager()
     }
+
     private val mViolasExchangeContract by lazy {
         ViolasExchangeContract(Vm.TestNet)
     }
@@ -65,115 +56,50 @@ class ExchangeManager {
      * 获取交易市场支持的币种列表
      */
     suspend fun getMarketSupportTokens(): List<ITokenVo> {
-        return coroutineScope {
-            // 交易市场支持的币种
-            val marketCurrenciesDeferred = async {
-                mViolasService.getMarketSupportCurrencies()
-            }
+        // 交易市场支持的币种
+        val marketCurrencies = mViolasService.getMarketSupportCurrencies()
 
-            // 用户bitcoin链上币种信息
-            val bitcoinNumber =
-                if (Vm.TestNet) CoinTypes.BitcoinTest.coinType() else CoinTypes.Bitcoin.coinType()
-            val bitcoinAccount = mAccountStorage.findByCoinType(bitcoinNumber)
-            val bitcoinBalanceDeferred = bitcoinAccount?.let {
-                async { mAccountManager.getBalance(it) }
-            }
-
-            // 用户libra链上币种信息
-            val libraAccount = mAccountStorage.findByCoinType(
-                CoinTypes.Libra.coinType()
+        val marketTokens = mutableListOf<ITokenVo>()
+        if (marketCurrencies?.bitcoinCurrencies?.isNotEmpty() == true) {
+            marketTokens.add(
+                PlatformTokenVo(
+                    coinNumber = if (Vm.TestNet)
+                        CoinTypes.BitcoinTest.coinType()
+                    else
+                        CoinTypes.Bitcoin.coinType(),
+                    displayName = marketCurrencies.bitcoinCurrencies[0].displayName,
+                    logo = marketCurrencies.bitcoinCurrencies[0].logo
+                )
             )
-            val libraAccountStateDeferred = libraAccount?.let {
-                async { mLibraRpcService.getAccountState(it.address) }
-            }
-
-            // 用户violas链上币种信息
-            val violasAccount = mAccountStorage.findByCoinType(
-                CoinTypes.Violas.coinType()
-            )
-            val violasAccountStateDeferred = violasAccount?.let {
-                async { mViolasRpcService.getAccountState(it.address) }
-            }
-
-            val marketCurrencies = marketCurrenciesDeferred.await()
-            val bitcoinBalance = bitcoinBalanceDeferred?.await()
-            val libraRemoteTokens =
-                libraAccountStateDeferred?.await()?.balances?.associate {
-                    it.currency to it.amount
-                }
-            val violasRemoteTokens =
-                violasAccountStateDeferred?.await()?.balances?.associate {
-                    it.currency to it.amount
-                }
-
-            // 用户libra本地币种信息
-            val libraLocalTokens = libraAccount?.let {
-                mTokenManager.loadTokensByAccountId(it.id).toMap { item -> item.module }
-            }
-            // 用户violas本地币种信息
-            val violasLocalTokens = violasAccount?.let {
-                mTokenManager.loadTokensByAccountId(it.id).toMap { item -> item.module }
-            }
-
-            val marketTokens = mutableListOf<ITokenVo>()
-            marketCurrencies?.bitcoinCurrencies?.forEach {
-                marketTokens.add(
-                    PlatformTokenVo(
-                        accountDoId = bitcoinAccount?.id ?: -1,
-                        accountType = bitcoinAccount?.accountType ?: AccountType.Normal,
-                        accountAddress = bitcoinAccount?.address ?: "",
-                        coinNumber = bitcoinAccount?.coinNumber ?: bitcoinNumber,
-                        displayName = it.displayName,
-                        logo = it.logo,
-                        displayAmount = convertAmountToDisplayAmount(
-                            bitcoinBalance ?: 0
-                        )
-                    )
-                )
-            }
-            marketCurrencies?.libraCurrencies?.forEach {
-                marketTokens.add(
-                    StableTokenVo(
-                        accountDoId = libraAccount?.id ?: -1,
-                        coinNumber = CoinTypes.Libra.coinType(),
-                        marketIndex = it.marketIndex,
-                        tokenDoId = libraLocalTokens?.get(it.module)?.id ?: -1,
-                        address = it.address,
-                        module = it.module,
-                        name = it.name,
-                        displayName = it.displayName,
-                        logo = it.logo,
-                        localEnable = libraLocalTokens?.get(it.module)?.enable ?: false,
-                        chainEnable = libraRemoteTokens?.containsKey(it.module) ?: false,
-                        displayAmount = convertAmountToDisplayAmount(
-                            libraRemoteTokens?.get(it.module) ?: 0
-                        )
-                    )
-                )
-            }
-            marketCurrencies?.violasCurrencies?.forEach {
-                marketTokens.add(
-                    StableTokenVo(
-                        accountDoId = violasAccount?.id ?: -1,
-                        coinNumber = CoinTypes.Violas.coinType(),
-                        marketIndex = it.marketIndex,
-                        tokenDoId = violasLocalTokens?.get(it.module)?.id ?: -1,
-                        address = it.address,
-                        module = it.module,
-                        name = it.name,
-                        displayName = it.displayName,
-                        logo = it.logo,
-                        localEnable = violasLocalTokens?.get(it.module)?.enable ?: false,
-                        chainEnable = violasRemoteTokens?.containsKey(it.module) ?: false,
-                        displayAmount = convertAmountToDisplayAmount(
-                            violasRemoteTokens?.get(it.module) ?: 0
-                        )
-                    )
-                )
-            }
-
-            return@coroutineScope marketTokens
         }
+        marketCurrencies?.libraCurrencies?.forEach {
+            marketTokens.add(
+                StableTokenVo(
+                    name = it.name,
+                    module = it.module,
+                    address = it.address,
+                    marketIndex = it.marketIndex,
+                    coinNumber = CoinTypes.Libra.coinType(),
+                    displayName = it.displayName,
+                    logo = it.logo
+                )
+            )
+        }
+        marketCurrencies?.violasCurrencies?.forEach {
+            marketTokens.add(
+                StableTokenVo(
+                    name = it.name,
+                    module = it.module,
+                    address = it.address,
+                    marketIndex = it.marketIndex,
+                    coinNumber = CoinTypes.Violas.coinType(),
+                    displayName = it.displayName,
+                    logo = it.logo
+                )
+            )
+        }
+
+        return marketTokens
     }
 
     suspend fun addLiquidity(
