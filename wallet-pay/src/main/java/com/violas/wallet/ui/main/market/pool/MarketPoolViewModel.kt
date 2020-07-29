@@ -307,14 +307,14 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     fun estimateTransferIntoAmount(isInputA: Boolean, inputAmountStr: String?) {
         val coinA = currCoinALiveData.value ?: return
         val coinB = currCoinBLiveData.value ?: return
+        val liquidityReserve = liquidityReserveLiveData.value ?: return
 
         cancelEstimateAmountJob()
         estimateAmountJob = viewModelScope.launch {
             delay(100)
 
             val result = withContext(Dispatchers.IO) {
-                val liquidityReserve = liquidityReserveLiveData.value
-                if (inputAmountStr.isNullOrBlank() || liquidityReserve == null)
+                if (inputAmountStr.isNullOrBlank())
                     ""
                 else
                     exchangeManager.estimateAddLiquidityAmount(
@@ -339,14 +339,14 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
 
     fun estimateTransferOutAmount(inputAmountStr: String?) {
         val liquidity = currLiquidityLiveData.value ?: return
+        val liquidityReserve = liquidityReserveLiveData.value ?: return
 
         cancelEstimateAmountJob()
         estimateAmountJob = viewModelScope.launch {
             delay(100)
 
             val result = withContext(Dispatchers.IO) {
-                val liquidityReserve = liquidityReserveLiveData.value
-                if (inputAmountStr.isNullOrBlank() || liquidityReserve == null) {
+                if (inputAmountStr.isNullOrBlank()) {
                     ""
                 } else {
                     val amounts =
