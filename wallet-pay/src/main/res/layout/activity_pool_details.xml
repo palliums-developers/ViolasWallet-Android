@@ -194,7 +194,7 @@
 
         <View
             android:id="@+id/vVerticalLine1"
-            android:layout_width="@dimen/dp_1"
+            android:layout_width="@dimen/dp_0.5"
             android:layout_height="@dimen/dp_38"
             android:layout_marginTop="@dimen/dp_4"
             android:background="?attr/marketDetailsCompletedLineBgColor"
@@ -225,7 +225,7 @@
 
         <View
             android:id="@+id/vVerticalLine2"
-            android:layout_width="@dimen/dp_1"
+            android:layout_width="@dimen/dp_0.5"
             android:layout_height="@dimen/dp_38"
             android:layout_marginTop="@dimen/dp_4"
             android:visibility="gone"
