@@ -229,6 +229,7 @@
     <string name="hint_confirm_delete_address_book">Confirm to remove this address from the Address Book！</string>
     <string name="hint_publish_token">Open the stability coin for the first time</string>
     <string name="hint_publish_token_content">The first time to open the stable coin requires a small fee, whether to continue.</string>
+    <string name="hint_publish_token_content_custom">首次开启 %1$s 需向系统支付少量费用激活，系统将默认选择同一链上有余额的币种进行支付。</string>
 
     <string name="tips_no_address">No address at present</string>
     <string name="tips_no_transaction_record">No transaction record</string>
@@ -381,7 +382,7 @@
     <string name="market_swap_state_processing">兑换中</string>
     <string name="market_swap_state_succeeded">兑换成功</string>
     <string name="market_swap_state_failed">兑换失败</string>
-    <string name="market_swap_amount_insufficient">余额不足无法兑换</string>
+    <string name="market_swap_amount_insufficient">可用余额不足</string>
     <string name="market_swap_state_cancelled">已取消</string>
     <string name="action_retry">重试</string>
     <string name="market_liquidity_token_amount_format">通证：%1$s</string>
@@ -398,10 +399,10 @@
     <string name="market_transaction_state_submitted">已提交</string>
     <string name="pool_details">详情</string>
     <string name="label_transaction_details_liquidity_token">通证：</string>
-    <string name="hint_swap_input_assets_not_select">请选择输入币种</string>
-    <string name="hint_swap_output_assets_not_select">请选择输入币种</string>
+    <string name="hint_swap_input_assets_not_select">请选择通证</string>
+    <string name="hint_swap_output_assets_not_select">请选择通证</string>
     <string name="hint_swap_input_assets_amount_input">请输入兑换数量</string>
-    <string name="hint_swap_output_assets_amount_input">正在估算兑换金额</string>
+    <string name="hint_swap_output_assets_amount_input">资金池暂时无法兑换</string>
     <string name="hint_payee_account_not_active">收款账户没有激活</string>
     <string name="tips_market_add_liquidity_coin_not_selected">请选择通证</string>
     <string name="tips_market_add_liquidity_amount_not_input">请输入转入数量</string>

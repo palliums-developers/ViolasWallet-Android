@@ -122,6 +122,7 @@
 
     <!--添加币种页面资源属性-->
     <attr name="addCurrencyTextColor" format="color" />
+    <attr name="addCurrencyWarningIcon" format="reference" />
 
     <!--市场相关页面资源属性-->
     <attr name="marketMenuMyPoolIcon" format="reference" />

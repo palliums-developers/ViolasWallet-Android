@@ -82,52 +82,48 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
         clearInputBoxFocusAndHideSoftInput()
     }
 
+    private fun resetState() = launch {
+        mSwapPath.clear()
+        isInputFrom = true
+        etFromInputBox.setText("")
+        etToInputBox.setText("")
+        swapViewModel.getGasFeeLiveData().value = null
+        swapViewModel.getExchangeRateLiveData().value = null
+        swapViewModel.getHandlingFeeRateLiveDataLiveData().value = null
+    }
+
     private val fromAssertsAmountSubscriber = object : BalanceSubscriber(null) {
         override fun onNotice(assets: AssetsVo?) {
             launch {
                 mCurrFromAssetsAmount = BigDecimal(assets?.amountWithUnit?.amount ?: "0")
-                tvFromBalance.text = getString(
-                    R.string.market_token_balance_format,
-                    "${assets?.amountWithUnit?.amount ?: 0} ${assets?.getAssetsName() ?: ""}"
-                )
+                if (assets == null) {
+                    handleValueNull(tvFromBalance, R.string.market_token_balance_format)
+                } else {
+                    tvFromBalance.text = getString(
+                        R.string.market_token_balance_format,
+                        "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
+                    )
+                }
             }
         }
     }
     private val toAssertsAmountSubscriber = object : BalanceSubscriber(null) {
         override fun onNotice(assets: AssetsVo?) {
             launch {
-                tvToBalance.text = getString(
-                    R.string.market_token_balance_format,
-                    "${assets?.amountWithUnit?.amount ?: 0} ${assets?.getAssetsName() ?: ""}"
-                )
-            }
-        }
-    }
-
-    private fun loadSwapData() {
-        launch {
-            try {
-                layoutFailureTip.visibility = View.GONE
-                showProgress()
-                val success = swapViewModel.initSwapData()
-                dismissProgress()
-                if (!success) {
-                    layoutFailureTip.visibility = View.VISIBLE
+                if (assets == null) {
+                    handleValueNull(tvToBalance, R.string.market_token_balance_format)
+                } else {
+                    tvToBalance.text = getString(
+                        R.string.market_token_balance_format,
+                        "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
+                    )
                 }
-            } catch (e: Exception) {
-                dismissProgress()
-                layoutFailureTip.visibility = View.VISIBLE
             }
         }
     }
 
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
-
-        loadSwapData()
-        tvRetryBtn.setOnClickListener {
-            loadSwapData()
-        }
 
         etFromInputBox.hint = "0.00"
         etToInputBox.hint = "0.00"
@@ -174,14 +170,18 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                 showToast(getString(R.string.hint_swap_input_assets_amount_input))
                 return@setOnClickListener
             }
+            if (etToInputBox.text.isEmpty()) {
+                // 填写输出金额
+                showToast(getString(R.string.hint_swap_input_assets_amount_input))
+                return@setOnClickListener
+            }
             if (mCurrFromAssetsAmount < BigDecimal(etFromInputBox.text.trim().toString())) {
                 showToast(R.string.market_swap_amount_insufficient)
                 return@setOnClickListener
             }
-            if (etToInputBox.text.isEmpty()) {
+            if (mSwapPath.size <= 1) {
                 // 请稍后正在估算输出金额
                 showToast(getString(R.string.hint_swap_output_assets_amount_input))
-                estimateOutputTokenNumber()
                 return@setOnClickListener
             }
             showProgress()
@@ -289,6 +289,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                     isInputFrom
                 )
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                resetState()
                 showToast(getString(R.string.hint_swap_exchange_transaction_broadcast_success))
             } catch (e: ViolasException) {
                 e.printStackTrace()
@@ -312,22 +313,29 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
         pwd: ByteArray,
         e: AccountPayeeTokenNotActiveException
     ) {
-        PublishTokenDialog().setConfirmListener {
-            it.dismiss()
-            launch(Dispatchers.IO) {
-                showProgress()
-                try {
-                    if (swapViewModel.publishToken(pwd, e.coinTypes, e.assetsMark)) {
-                        swap(pwd)
-                    } else {
+        PublishTokenDialog()
+            .setContent(
+                getString(
+                    R.string.hint_publish_token_content_custom,
+                    e.assetsMark.displayName
+                )
+            )
+            .setConfirmListener {
+                it.dismiss()
+                launch(Dispatchers.IO) {
+                    showProgress()
+                    try {
+                        if (swapViewModel.publishToken(pwd, e.coinTypes, e.assetsMark)) {
+                            swap(pwd)
+                        } else {
+                            showToast(R.string.desc_transaction_state_add_currency_failure)
+                        }
+                    } catch (e: Exception) {
                         showToast(R.string.desc_transaction_state_add_currency_failure)
+                        e.printStackTrace()
                     }
-                } catch (e: Exception) {
-                    showToast(R.string.desc_transaction_state_add_currency_failure)
-                    e.printStackTrace()
                 }
-            }
-        }.show(parentFragmentManager)
+            }.show(parentFragmentManager)
     }
 
     private fun estimateOutputTokenNumber() {
@@ -382,8 +390,6 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                         }
                         withContext(Dispatchers.Main) {
                             outputEdit.setText("")
-                            btnSwap.setText(R.string.action_swap_input_exchange_quantity)
-                            btnSwap.isEnabled = false
                             swapViewModel.getGasFeeLiveData().value = null
                             swapViewModel.getExchangeRateLiveData().value = null
                             swapViewModel.getHandlingFeeRateLiveDataLiveData().value = null
@@ -407,8 +413,6 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                             BigDecimal.valueOf(0)
                         swapViewModel.getGasFeeLiveData().value = "0"
                         outputEdit.setText("")
-                        btnSwap.setText(R.string.action_swap_unable_change)
-                        btnSwap.isEnabled = false
                     }
                 } else {
                     // 获取应该输入的输入框
@@ -500,7 +504,6 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                     mSwapPath.addAll(tradeExact.path)
                     withContext(Dispatchers.Main) {
                         btnSwap.setText(R.string.action_swap_nbsp)
-                        btnSwap.isEnabled = true
 
                         outputEdit.setText(outputAmountByCoin)
                         swapViewModel.getGasFeeLiveData().value = outputFeeAmount
@@ -552,11 +555,17 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
             swapViewModel.getCurrToTokenLiveData().value
     }
 
-    override fun getMarketSupportTokens(action: Int): List<ITokenVo>? {
-        return if (action == ACTION_SWAP_SELECT_FROM) {
-            swapViewModel.getSupportTokensLiveData().value
-        } else {
-            swapViewModel.getSwapToTokenList()
+    override suspend fun getMarketSupportTokens(action: Int): List<ITokenVo>? {
+        try {
+            swapViewModel.initSwapData(true)
+            return if (action == ACTION_SWAP_SELECT_FROM) {
+                swapViewModel.getSupportTokensLiveData().value
+            } else {
+                swapViewModel.getSwapToTokenList()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
         }
     }
 
@@ -633,23 +642,5 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
     //*********************************** 其它逻辑 ***********************************//
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
         textView.text = getString(formatResId, getString(R.string.value_null))
-    }
-
-    override fun showProgress(msg: String?) {
-        launch {
-            if (msg != null && msg.isNotEmpty()) {
-                tvProgressContent.text = msg
-                tvProgressContent.visibility = View.VISIBLE
-            } else {
-                tvProgressContent.visibility = View.GONE
-            }
-            layoutLoad.visibility = View.VISIBLE
-        }
-    }
-
-    override fun dismissProgress() {
-        launch {
-            layoutLoad.visibility = View.GONE
-        }
     }
 }

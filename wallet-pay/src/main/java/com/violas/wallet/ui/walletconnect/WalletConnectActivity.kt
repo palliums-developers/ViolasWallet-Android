@@ -207,7 +207,7 @@ class WalletConnectActivity : BaseAppActivity() {
                         }
                         CoinTypes.Bitcoin.coinType(),
                         CoinTypes.BitcoinTest.coinType() -> {
-                            // <editor-fold defaultstate="collapsed" desc="处理 Violas 交易">
+                            // <editor-fold defaultstate="collapsed" desc="处理 Bitcoin 交易">
 
                             val privateKey = showPasswordSignTx(account) ?: return@launch
 

@@ -11,6 +11,8 @@ import com.violas.wallet.biz.exchange.processor.ViolasTokenToViolasTokenProcesso
 import com.violas.wallet.common.Vm
 import com.violas.wallet.ui.main.market.bean.*
 import com.violas.wallet.utils.str2CoinType
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.palliums.violascore.http.ViolasException
 import kotlin.collections.HashMap
 
@@ -35,46 +37,59 @@ class AssetsSwapManager(
     val contract = ViolasMultiTokenContract(Vm.TestNet)
 
     @WorkerThread
-    fun init(): Boolean {
-        try {
-            val supportTokens = supportTokensLoader.load()
-            if (supportTokens.isEmpty()) {
-                return false
-            }
-            val supportTokensPair = getMappingMarketSupportTokens(supportTokens)
+    suspend fun init(force: Boolean = false): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val initializing = mSupportTokensLiveData.value != null
+                        && mSupportTokensLiveData.value?.size != 0
+                        && mMappingSupportSwapPairMapLiveData.value?.size != 0
 
-            mSupportTokensLiveData.postValue(supportTokens)
-            mMappingSupportSwapPairMapLiveData.postValue(supportTokensPair)
+                if (!force || initializing) {
+                    return@withContext true
+                }
 
-            mAssetsSwapEngine.clearProcessor()
-            mAssetsSwapEngine.addProcessor(ViolasTokenToViolasTokenProcessor())
-            mAssetsSwapEngine.addProcessor(
-                ViolasToAssetsMappingProcessor(
-                    supportMappingSwapPairManager.getMappingTokensInfo(CoinTypes.Violas)
-                )
-            )
-            mAssetsSwapEngine.addProcessor(
-                LibraToMappingAssetsProcessor(
-                    supportMappingSwapPairManager.getMappingTokensInfo(CoinTypes.Libra)
-                )
-            )
-            mAssetsSwapEngine.addProcessor(
-                BTCToMappingAssetsProcessor(
-                    contract.getContractAddress(),
-                    supportMappingSwapPairManager.getMappingTokensInfo(
-                        if (Vm.TestNet) {
-                            CoinTypes.BitcoinTest
-                        } else {
-                            CoinTypes.Bitcoin
-                        }
+                val supportTokens = supportTokensLoader.load()
+                if (supportTokens.isEmpty()) {
+                    return@withContext false
+                }
+                withContext(Dispatchers.Main) {
+                    mSupportTokensLiveData.value = supportTokens
+                }
+                val supportTokensPair = getMappingMarketSupportTokens(supportTokens)
+                withContext(Dispatchers.Main) {
+                    mMappingSupportSwapPairMapLiveData.value = supportTokensPair
+                }
+
+                mAssetsSwapEngine.clearProcessor()
+                mAssetsSwapEngine.addProcessor(ViolasTokenToViolasTokenProcessor())
+                mAssetsSwapEngine.addProcessor(
+                    ViolasToAssetsMappingProcessor(
+                        supportMappingSwapPairManager.getMappingTokensInfo(CoinTypes.Violas)
                     )
                 )
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
+                mAssetsSwapEngine.addProcessor(
+                    LibraToMappingAssetsProcessor(
+                        supportMappingSwapPairManager.getMappingTokensInfo(CoinTypes.Libra)
+                    )
+                )
+                mAssetsSwapEngine.addProcessor(
+                    BTCToMappingAssetsProcessor(
+                        contract.getContractAddress(),
+                        supportMappingSwapPairManager.getMappingTokensInfo(
+                            if (Vm.TestNet) {
+                                CoinTypes.BitcoinTest
+                            } else {
+                                CoinTypes.Bitcoin
+                            }
+                        )
+                    )
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return@withContext false
+            }
+            return@withContext true
         }
-        return true
     }
 
     /**

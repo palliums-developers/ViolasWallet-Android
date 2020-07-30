@@ -9,10 +9,14 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.dialog_password_input.view.*
+import kotlinx.android.synthetic.main.dialog_password_input.view.btnCancel
+import kotlinx.android.synthetic.main.dialog_password_input.view.btnConfirm
+import kotlinx.android.synthetic.main.dialog_publish_token.view.*
 
 class PublishTokenDialog : DialogFragment() {
     private lateinit var mRootView: View
 
+    private var content: String? = null
     private var confirmCallback: ((DialogFragment) -> Unit)? = null
     private var cancelCallback: (() -> Unit)? = null
 
@@ -43,11 +47,19 @@ class PublishTokenDialog : DialogFragment() {
             dismiss()
             cancelCallback?.invoke()
         }
+        content?.let {
+            mRootView.tvContent.text = content
+        }
         return mRootView
     }
 
     fun show(manager: FragmentManager) {
         show(manager, "managerAssert")
+    }
+
+    fun setContent(content: String?): PublishTokenDialog {
+        this.content = content
+        return this
     }
 
     fun setConfirmListener(callback: (DialogFragment) -> Unit): PublishTokenDialog {

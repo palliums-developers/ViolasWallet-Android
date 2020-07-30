@@ -91,10 +91,8 @@ class SwapViewModel : BaseViewModel() {
         }
     }
 
-    suspend fun initSwapData(): Boolean {
-        return withContext(Dispatchers.IO) {
-            mAssetsSwapManager.init()
-        }
+    suspend fun initSwapData(force: Boolean = false): Boolean {
+        return mAssetsSwapManager.init(force)
     }
 
     //*********************************** Token相关方法 ***********************************//
@@ -187,7 +185,7 @@ class SwapViewModel : BaseViewModel() {
                 it.and(0xFF).toByte()
             }.toByteArray()
 
-            Log.e("==swap==","amount:${outputMiniAmount}  path:${swapPath}")
+            Log.e("==swap==", "amount:${outputMiniAmount}  path:${swapPath}")
 
             mAssetsSwapManager.swap(
                 pwd,

@@ -198,6 +198,7 @@
 
         <!--添加币种页面资源属性-->
         <item name="addCurrencyTextColor">@color/color_0E0051</item>
+        <item name="addCurrencyWarningIcon">@drawable/ic_warning_red</item>
 
         <!--市场相关页面资源属性-->
         <item name="marketMenuMyPoolIcon">@mipmap/ic_market_my_pool</item>
