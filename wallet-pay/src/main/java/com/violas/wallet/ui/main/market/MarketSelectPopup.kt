@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.market
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
@@ -11,8 +12,8 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.widget.popup.EnhancedAttachPopupView
 import com.violas.wallet.R
-import kotlinx.android.synthetic.main.item_market_switch.view.*
-import kotlinx.android.synthetic.main.popup_market_switch.view.*
+import kotlinx.android.synthetic.main.item_market_select_popup.view.*
+import kotlinx.android.synthetic.main.popup_market_select.view.*
 
 /**
  * Created by elephant on 2020/6/29 19:16.
@@ -20,7 +21,8 @@ import kotlinx.android.synthetic.main.popup_market_switch.view.*
  * <p>
  * desc: 市场选择弹窗
  */
-class MarketSwitchPopupView(
+@SuppressLint("ViewConstructor")
+class MarketSelectPopup(
     context: Context,
     private val checkedPosition: Int,
     private val dataList: MutableList<String>,
@@ -28,7 +30,7 @@ class MarketSwitchPopupView(
 ) : EnhancedAttachPopupView(context) {
 
     override fun getImplLayoutId(): Int {
-        return R.layout.popup_market_switch
+        return R.layout.popup_market_select
     }
 
     override fun initPopupContent() {
@@ -57,7 +59,7 @@ class MarketSwitchPopupView(
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<String> {
             return ViewHolder(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_market_switch,
+                    R.layout.item_market_select_popup,
                     parent,
                     false
                 ), checkedPosition, selectCallback
@@ -80,9 +82,9 @@ class MarketSwitchPopupView(
                 itemView.tvText.text = it
                 itemView.tvText.setBackgroundResource(
                     if (checkedPosition == itemPosition)
-                        R.drawable.sel_bg_market_switch_item_checked
+                        R.drawable.sel_bg_market_select_popup_item_checked
                     else
-                        R.drawable.sel_bg_market_switch_item_normal
+                        R.drawable.sel_bg_market_select_popup_item_normal
                 )
             }
         }

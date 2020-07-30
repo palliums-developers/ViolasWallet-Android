@@ -27,7 +27,7 @@
         android:paddingHorizontal="@dimen/dp_8"
         android:paddingVertical="@dimen/dp_1"
         android:text="@string/action_retry"
-        android:textColor="@color/sel_color_market_btn_primary"
+        android:textColor="@color/sel_text_color_market_btn"
         android:textSize="@dimen/sp_12"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/tvState"
@@ -80,7 +80,7 @@
 
     <View
         android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_0.86"
+        android:layout_height="@dimen/dp_0.5"
         android:layout_marginTop="@dimen/dp_11"
         android:background="?attr/colorDivider"
         app:layout_constraintBottom_toBottomOf="parent"

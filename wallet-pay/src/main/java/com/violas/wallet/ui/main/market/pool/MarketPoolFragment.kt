@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
+import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.net.LoadState
 import com.palliums.utils.*
@@ -27,7 +28,7 @@ import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
-import com.violas.wallet.ui.main.market.MarketSwitchPopupView
+import com.violas.wallet.ui.main.market.MarketSelectPopup
 import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -103,6 +104,11 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         etInputBoxA.addTextChangedListener(inputTextWatcherA)
         etInputBoxB.addTextChangedListener(inputTextWatcherB)
         etInputBoxA.filters = arrayOf(AmountInputFilter(12, 6))
+
+        // 扩展按钮触摸区域
+        llSwitchOpModeGroup.expandTouchArea(6)
+        llSelectGroupA.expandTouchArea(11)
+        llSelectGroupB.expandTouchArea(11)
 
         // 按钮点击事件
         llSwitchOpModeGroup.setOnClickListener {
@@ -286,7 +292,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     }
 
     private fun showSwitchOpModePopup() {
-        setSwitchOpModeViewBgAndTextColor(true)
+        //setSwitchOpModeViewBgAndTextColor(true)
         switchOpModeArrowUpAnimator.start()
         XPopup.Builder(requireContext())
             .hasShadowBg(false)
@@ -295,12 +301,12 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             .setPopupCallback(
                 object : EnhancedPopupCallback() {
                     override fun onDismissBefore() {
-                        setSwitchOpModeViewBgAndTextColor(false)
+                        //setSwitchOpModeViewBgAndTextColor(false)
                         switchOpModeArrowDownAnimator.start()
                     }
                 })
             .asCustom(
-                MarketSwitchPopupView(
+                MarketSelectPopup(
                     requireContext(),
                     poolViewModel.getCurrOpModelPosition(),
                     mutableListOf(
@@ -316,16 +322,16 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
     private fun setSwitchOpModeViewBgAndTextColor(pressed: Boolean) {
         if (pressed) {
-            llSwitchOpModeGroup.setBackgroundResource(R.drawable.bg_market_switch_pressed)
+            llSwitchOpModeGroup.setBackgroundResource(R.drawable.bg_market_btn_pressed)
             ivSwitchOpModeArrow.setBackgroundResource(R.drawable.shape_market_downward_pressed)
             tvSwitchOpModeText.setTextColor(
                 getColorByAttrId(R.attr.colorOnPrimary, requireContext())
             )
         } else {
-            llSwitchOpModeGroup.setBackgroundResource(R.drawable.sel_bg_market_switch)
+            llSwitchOpModeGroup.setBackgroundResource(R.drawable.sel_bg_market_btn_secondary)
             ivSwitchOpModeArrow.setBackgroundResource(R.drawable.sel_market_downward)
             tvSwitchOpModeText.setTextColor(
-                ContextCompat.getColorStateList(requireContext(), R.color.sel_color_market_switch)
+                ContextCompat.getColorStateList(requireContext(), R.color.sel_text_color_market_btn)
             )
         }
     }
@@ -372,12 +378,12 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     }
 
     private val selectLiquidityArrowUpAnimator by lazy {
-        ObjectAnimator.ofFloat(ivSelectArrowB, "rotation", 0F, 180F)
+        ObjectAnimator.ofFloat(ivSelectArrowA, "rotation", 0F, 180F)
             .setDuration(360)
     }
 
     private val selectLiquidityArrowDownAnimator by lazy {
-        ObjectAnimator.ofFloat(ivSelectArrowB, "rotation", 180F, 360F)
+        ObjectAnimator.ofFloat(ivSelectArrowA, "rotation", 180F, 360F)
             .setDuration(360)
     }
 
@@ -394,7 +400,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     }
                 })
             .asCustom(
-                MarketSwitchPopupView(
+                MarketSelectPopup(
                     requireContext(),
                     poolViewModel.getCurrLiquidityPosition(),
                     displayTokenPairs

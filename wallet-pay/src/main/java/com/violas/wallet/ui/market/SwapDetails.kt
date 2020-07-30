@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import com.palliums.extensions.expandTouchArea
 import com.palliums.utils.formatDate
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
@@ -125,6 +126,7 @@ class SwapDetailsActivity : BaseAppActivity() {
             getResourceId(R.attr.iconRecordStateFailed, this)
         )
         tvRetry.visibility = View.VISIBLE
+        tvRetry.expandTouchArea()
         tvRetry.setOnClickListener {
             // TODO 重试
         }

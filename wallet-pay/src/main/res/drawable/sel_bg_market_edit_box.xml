@@ -3,19 +3,19 @@
 
     <item android:state_focused="true">
         <shape android:shape="rectangle">
-            <stroke android:width="@dimen/dp_1" android:color="?attr/colorPrimary" />
+            <stroke android:width="@dimen/dp_0.8" android:color="?attr/colorPrimary" />
             <corners android:radius="@dimen/dp_8" />
         </shape>
     </item>
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
-            <stroke android:width="@dimen/dp_1" android:color="?attr/colorPrimary" />
+            <stroke android:width="@dimen/dp_0.8" android:color="?attr/colorPrimary" />
             <corners android:radius="@dimen/dp_8" />
         </shape>
     </item>
     <item>
         <shape android:shape="rectangle">
-            <stroke android:width="@dimen/dp_1" android:color="?attr/boxStrokeColor" />
+            <stroke android:width="@dimen/dp_0.8" android:color="?attr/boxStrokeColor" />
             <corners android:radius="@dimen/dp_8" />
         </shape>
     </item>

@@ -129,13 +129,14 @@
     <attr name="marketMenuRecordIcon" format="reference" />
     <attr name="marketCoinConversionIcon" format="reference" />
     <attr name="marketSwapRecordIcon" format="reference" />
-    <attr name="marketSwitchBgColor" format="color" />
+    <attr name="marketSwapDetailsIcon" format="reference" />
+    <attr name="marketSelectPopupBgColor" format="color" />
+    <attr name="marketBtnSecondaryBgColor" format="color" />
     <attr name="marketPoolIncomeIcon" format="reference" />
     <attr name="marketPoolAndIcon" format="reference" />
     <attr name="marketPoolOutIcon" format="reference" />
     <attr name="marketTokenSelectedIcon" format="reference" />
     <attr name="marketTokenAmountIcon" format="reference" />
-    <attr name="marketSwapDetailsIcon" format="reference" />
     <attr name="marketDetailsCompletedStateTextColor" format="color" />
     <attr name="marketDetailsCompletedLineBgColor" format="color" />
     <attr name="marketDetailsUncompletedLineBgColor" format="color" />

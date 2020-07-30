@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseFragment
+import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.net.LoadState
 import com.palliums.utils.TextWatcherSimple
@@ -138,6 +139,9 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
         etToInputBox.addTextChangedListener(toInputTextWatcher)
         etFromInputBox.filters = arrayOf(AmountInputFilter(12, 2))
         etToInputBox.filters = arrayOf(AmountInputFilter(12, 2))
+
+        llFromSelectGroup.expandTouchArea(11)
+        llToSelectGroup.expandTouchArea(11)
 
         llFromSelectGroup.setOnClickListener {
             clearInputBoxFocusAndHideSoftInput()
