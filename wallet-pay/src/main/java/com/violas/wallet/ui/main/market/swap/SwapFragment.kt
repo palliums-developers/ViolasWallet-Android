@@ -121,30 +121,8 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
         }
     }
 
-    private fun loadSwapData() {
-        launch {
-            try {
-                layoutFailureTip.visibility = View.GONE
-                showProgress()
-                val success = swapViewModel.initSwapData()
-                dismissProgress()
-                if (!success) {
-                    layoutFailureTip.visibility = View.VISIBLE
-                }
-            } catch (e: Exception) {
-                dismissProgress()
-                layoutFailureTip.visibility = View.VISIBLE
-            }
-        }
-    }
-
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
-
-        loadSwapData()
-        tvRetryBtn.setOnClickListener {
-            loadSwapData()
-        }
 
         etFromInputBox.hint = "0.00"
         etToInputBox.hint = "0.00"
@@ -573,11 +551,17 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
             swapViewModel.getCurrToTokenLiveData().value
     }
 
-    override fun getMarketSupportTokens(action: Int): List<ITokenVo>? {
-        return if (action == ACTION_SWAP_SELECT_FROM) {
-            swapViewModel.getSupportTokensLiveData().value
-        } else {
-            swapViewModel.getSwapToTokenList()
+    override suspend fun getMarketSupportTokens(action: Int): List<ITokenVo>? {
+        try {
+            swapViewModel.initSwapData(true)
+            return if (action == ACTION_SWAP_SELECT_FROM) {
+                swapViewModel.getSupportTokensLiveData().value
+            } else {
+                swapViewModel.getSwapToTokenList()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
         }
     }
 
@@ -654,23 +638,5 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
     //*********************************** 其它逻辑 ***********************************//
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
         textView.text = getString(formatResId, getString(R.string.value_null))
-    }
-
-    override fun showProgress(msg: String?) {
-        launch {
-            if (msg != null && msg.isNotEmpty()) {
-                tvProgressContent.text = msg
-                tvProgressContent.visibility = View.VISIBLE
-            } else {
-                tvProgressContent.visibility = View.GONE
-            }
-            layoutLoad.visibility = View.VISIBLE
-        }
-    }
-
-    override fun dismissProgress() {
-        launch {
-            layoutLoad.visibility = View.GONE
-        }
     }
 }

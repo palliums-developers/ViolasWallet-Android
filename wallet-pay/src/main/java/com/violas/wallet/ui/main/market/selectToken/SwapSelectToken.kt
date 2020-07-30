@@ -127,7 +127,6 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
         statusLayout.setReloadCallback {
             statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
             launch(Dispatchers.IO) {
-                delay(500)
                 loadSwapTokens()
             }
         }
@@ -136,17 +135,17 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
         }
     }
 
-    private fun loadSwapTokens() {
-        swapTokensDataResourcesBridge?.getMarketSupportTokens(action).let {
+    private suspend fun loadSwapTokens() {
+         swapTokensDataResourcesBridge?.getMarketSupportTokens(action).let {
             cancelJob()
             when {
                 it == null -> {
-                    launch(Dispatchers.Main) {
+                    withContext(Dispatchers.Main) {
                         handleLoadFailure()
                     }
                 }
                 it.isEmpty() -> {
-                    launch(Dispatchers.Main) {
+                    withContext(Dispatchers.Main) {
                         handleEmptyData(null)
                     }
                 }
@@ -164,15 +163,15 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
         }
     }
 
-    private fun filterData(marketSupportTokens: List<ITokenVo>) {
-        launch {
+    private suspend fun filterData(marketSupportTokens: List<ITokenVo>) {
+        withContext(Dispatchers.Main) {
             val list = marketSupportTokens
 
             etSearchBox.isEnabled = true
             displayTokens = list
             if (list.isEmpty()) {
                 handleEmptyData(null)
-                return@launch
+                return@withContext
             }
 
             val searchText = etSearchBox.text.toString().trim()
@@ -290,7 +289,7 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
 }
 
 interface SwapTokensDataResourcesBridge {
-    fun getMarketSupportTokens(
+    suspend fun getMarketSupportTokens(
         action: Int
     ): List<ITokenVo>?
 }
