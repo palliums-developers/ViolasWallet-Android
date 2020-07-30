@@ -372,12 +372,12 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     }
 
     private val selectLiquidityArrowUpAnimator by lazy {
-        ObjectAnimator.ofFloat(ivSelectArrowB, "rotation", 0F, 180F)
+        ObjectAnimator.ofFloat(ivSelectArrowA, "rotation", 0F, 180F)
             .setDuration(360)
     }
 
     private val selectLiquidityArrowDownAnimator by lazy {
-        ObjectAnimator.ofFloat(ivSelectArrowB, "rotation", 180F, 360F)
+        ObjectAnimator.ofFloat(ivSelectArrowA, "rotation", 180F, 360F)
             .setDuration(360)
     }
 
