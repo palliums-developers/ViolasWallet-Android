@@ -23,7 +23,10 @@
 
     <dimen name="dp_0">0dp</dimen>
     <dimen name="dp_0.5" tools:ignore="MissingDefaultResource">0.5dp</dimen>
+    <dimen name="dp_0.6" tools:ignore="MissingDefaultResource">0.6dp</dimen>
     <dimen name="dp_0.7" tools:ignore="MissingDefaultResource">0.7dp</dimen>
+    <dimen name="dp_0.8" tools:ignore="MissingDefaultResource">0.8dp</dimen>
+    <dimen name="dp_0.9" tools:ignore="MissingDefaultResource">0.9dp</dimen>
     <dimen name="dp_0.86" tools:ignore="MissingDefaultResource">0.86dp</dimen>
     <dimen name="dp_1">1dp</dimen>
     <dimen name="dp_1.5" tools:ignore="MissingDefaultResource">1.5dp</dimen>
