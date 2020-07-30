@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
+import com.palliums.extensions.expandTouchArea
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.formatDate
@@ -207,6 +208,7 @@ class SwapRecordViewHolder(
                 )
             } else {
                 itemView.tvRetry.visibility = View.VISIBLE
+                itemView.tvRetry.expandTouchArea()
                 itemView.tvState.setText(R.string.market_swap_state_failed)
                 itemView.tvState.setTextColor(
                     getColorByAttrId(R.attr.textColorFailure, itemView.context)

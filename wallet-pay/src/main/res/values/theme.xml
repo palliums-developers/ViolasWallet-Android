@@ -204,13 +204,14 @@
         <item name="marketMenuRecordIcon">@mipmap/ic_market_record</item>
         <item name="marketCoinConversionIcon">@mipmap/ic_coin_conversion</item>
         <item name="marketSwapRecordIcon">@mipmap/ic_swap_record</item>
-        <item name="marketSwitchBgColor">@color/color_F1EEFB</item>
+        <item name="marketSwapDetailsIcon">@mipmap/ic_market_swap_details</item>
+        <item name="marketSelectPopupBgColor">@color/color_F1EEFB</item>
+        <item name="marketBtnSecondaryBgColor">@color/color_F1EEFB</item>
         <item name="marketPoolIncomeIcon">@mipmap/ic_market_pool_income</item>
         <item name="marketPoolAndIcon">@mipmap/ic_market_pool_and</item>
         <item name="marketPoolOutIcon">@mipmap/ic_market_pool_out</item>
         <item name="marketTokenSelectedIcon">@mipmap/ic_market_token_selected</item>
         <item name="marketTokenAmountIcon">@mipmap/ic_market_token_amount</item>
-        <item name="marketSwapDetailsIcon">@mipmap/ic_market_swap_details</item>
         <item name="marketDetailsCompletedStateTextColor">@color/color_82808A</item>
         <item name="marketDetailsCompletedLineBgColor">@color/color_999999</item>
         <item name="marketDetailsUncompletedLineBgColor">@color/color_C2C2C2</item>

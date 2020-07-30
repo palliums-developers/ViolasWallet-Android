@@ -8,5 +8,5 @@
     android:paddingHorizontal="@dimen/dp_10"
     android:paddingVertical="@dimen/dp_5"
     android:textSize="@dimen/sp_12"
-    tools:background="@drawable/sel_bg_market_switch_item_checked"
+    tools:background="@drawable/sel_bg_market_select_popup_item_checked"
     tools:text="@string/transfer_in" />

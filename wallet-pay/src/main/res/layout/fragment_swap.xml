@@ -78,7 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/select_token"
-            android:textColor="@color/sel_color_market_btn_primary"
+            android:textColor="@color/sel_text_color_market_btn"
             android:textSize="@dimen/sp_12" />
 
         <ImageView
@@ -86,8 +86,7 @@
             android:layout_height="@dimen/dp_6"
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/dp_2"
-            android:background="?attr/iconArrow"
-            android:backgroundTint="?attr/colorPrimary" />
+            android:background="@drawable/sel_market_downward" />
 
     </LinearLayout>
 
@@ -160,7 +159,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/select_token"
-            android:textColor="@color/sel_color_market_btn_primary"
+            android:textColor="@color/sel_text_color_market_btn"
             android:textSize="@dimen/sp_12" />
 
         <ImageView
@@ -168,8 +167,7 @@
             android:layout_height="@dimen/dp_6"
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/dp_2"
-            android:background="?attr/iconArrow"
-            android:backgroundTint="?attr/colorPrimary" />
+            android:background="@drawable/sel_market_downward" />
 
     </LinearLayout>
 
