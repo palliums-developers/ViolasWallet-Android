@@ -331,22 +331,29 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
         pwd: ByteArray,
         e: AccountPayeeTokenNotActiveException
     ) {
-        PublishTokenDialog().setConfirmListener {
-            it.dismiss()
-            launch(Dispatchers.IO) {
-                showProgress()
-                try {
-                    if (swapViewModel.publishToken(pwd, e.coinTypes, e.assetsMark)) {
-                        swap(pwd)
-                    } else {
+        PublishTokenDialog()
+            .setContent(
+                getString(
+                    R.string.hint_publish_token_content_custom,
+                    e.assetsMark.displayName
+                )
+            )
+            .setConfirmListener {
+                it.dismiss()
+                launch(Dispatchers.IO) {
+                    showProgress()
+                    try {
+                        if (swapViewModel.publishToken(pwd, e.coinTypes, e.assetsMark)) {
+                            swap(pwd)
+                        } else {
+                            showToast(R.string.desc_transaction_state_add_currency_failure)
+                        }
+                    } catch (e: Exception) {
                         showToast(R.string.desc_transaction_state_add_currency_failure)
+                        e.printStackTrace()
                     }
-                } catch (e: Exception) {
-                    showToast(R.string.desc_transaction_state_add_currency_failure)
-                    e.printStackTrace()
                 }
-            }
-        }.show(parentFragmentManager)
+            }.show(parentFragmentManager)
     }
 
     private fun estimateOutputTokenNumber() {

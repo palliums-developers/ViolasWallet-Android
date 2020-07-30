@@ -230,6 +230,7 @@
     <string name="hint_confirm_delete_address_book">确定要在地址簿中删除该地址！</string>
     <string name="hint_publish_token">首次打开稳定币</string>
     <string name="hint_publish_token_content">首次打开稳定币需要花费少量的手续费，是否继续。</string>
+    <string name="hint_publish_token_content_custom">首次开启 %1$s 需向系统支付少量费用激活，系统将默认选择同一链上有余额的币种进行支付。</string>
 
     <string name="tips_no_address">暂时没有地址</string>
     <string name="tips_no_transaction_record">暂无交易记录</string>

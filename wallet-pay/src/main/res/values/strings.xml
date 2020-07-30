@@ -229,6 +229,7 @@
     <string name="hint_confirm_delete_address_book">Confirm to remove this address from the Address Book！</string>
     <string name="hint_publish_token">Open the stability coin for the first time</string>
     <string name="hint_publish_token_content">The first time to open the stable coin requires a small fee, whether to continue.</string>
+    <string name="hint_publish_token_content_custom">首次开启 %1$s 需向系统支付少量费用激活，系统将默认选择同一链上有余额的币种进行支付。</string>
 
     <string name="tips_no_address">No address at present</string>
     <string name="tips_no_transaction_record">No transaction record</string>
