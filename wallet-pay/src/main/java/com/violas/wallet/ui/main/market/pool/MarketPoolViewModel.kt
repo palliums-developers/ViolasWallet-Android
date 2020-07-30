@@ -545,9 +545,6 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 withContext(Dispatchers.Main) {
                     inputATextLiveData.value = ""
                     inputBTextLiveData.value = ""
-                    currCoinALiveData.value = null
-                    currCoinBLiveData.value = null
-                    liquidityReserveLiveData.value = null
                 }
             }
 
