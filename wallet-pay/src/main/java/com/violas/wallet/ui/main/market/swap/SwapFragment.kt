@@ -137,8 +137,8 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
 
         etFromInputBox.addTextChangedListener(fromInputTextWatcher)
         etToInputBox.addTextChangedListener(toInputTextWatcher)
-        etFromInputBox.filters = arrayOf(AmountInputFilter(12, 2))
-        etToInputBox.filters = arrayOf(AmountInputFilter(12, 2))
+        etFromInputBox.filters = arrayOf(AmountInputFilter(12, 6))
+        etToInputBox.filters = arrayOf(AmountInputFilter(12, 6))
 
         llFromSelectGroup.expandTouchArea(11)
         llToSelectGroup.expandTouchArea(11)
