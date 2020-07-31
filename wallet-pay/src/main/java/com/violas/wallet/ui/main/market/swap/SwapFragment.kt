@@ -351,7 +351,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                     return@launch
                 }
 
-                val inputAmount = if (isInputFrom) {
+                var inputAmount = if (isInputFrom) {
                     if (fromToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
                         fromToken.coinNumber == CoinTypes.Bitcoin.coinType()
                     ) {
@@ -379,6 +379,10 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                             CoinTypes.parseCoinType(toToken.coinNumber)
                         )
                     }
+                }
+
+                if (!isInputFrom) {
+                    inputAmount += (inputAmount * SwapViewModel.MINIMUM_PRICE_FLUCTUATION).toLong()
                 }
 
                 if (inputAmount == 0L) {
@@ -428,11 +432,8 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                         fromToken
                     }
                     // 获取计算出来的金额
-                    val outputAmount = if (!isInputFrom) {
-                        tradeExact.amount + (tradeExact.amount * SwapViewModel.MINIMUM_PRICE_FLUCTUATION).toLong()
-                    } else {
-                        tradeExact.amount
-                    }
+                    val outputAmount = tradeExact.amount
+
                     // 根据币种信息转换计算出来的金额单位
                     val outputAmountByCoin = convertAmountToDisplayUnit(
                         outputAmount,
