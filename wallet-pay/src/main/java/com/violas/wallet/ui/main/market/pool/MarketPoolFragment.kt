@@ -171,6 +171,17 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     )
                 }
             })
+        poolViewModel.getPoolTokenAndPoolShareLiveData()
+            .observe(viewLifecycleOwner, Observer {
+                if (it == null) {
+                    handleValueNull(tvPoolTokenAndPoolShare, R.string.market_my_pool_amount_format)
+                } else {
+                    tvPoolTokenAndPoolShare.text = getString(
+                        R.string.market_my_pool_amount_format,
+                        it.first
+                    )
+                }
+            })
         poolViewModel.getLiquidityReserveLiveData()
             .observe(viewLifecycleOwner, Observer {
                 if (poolViewModel.isTransferInMode()) {
@@ -187,22 +198,15 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     )
                 }
             })
-        poolViewModel.getPoolTokenAndPoolShareLiveData()
-            .observe(viewLifecycleOwner, Observer {
-                if (it == null) {
-                    handleValueNull(tvPoolTokenAndPoolShare, R.string.market_my_pool_amount_format)
-                } else {
-                    tvPoolTokenAndPoolShare.text = getString(
-                        R.string.market_my_pool_amount_format,
-                        it.first
-                    )
-                }
-            })
         poolViewModel.getInputATextLiveData().observe(viewLifecycleOwner, Observer {
-            etInputBoxA.setText(it)
+            if (etInputBoxA.text.toString() != it) {
+                setupInputText(it, etInputBoxA, inputTextWatcherA)
+            }
         })
         poolViewModel.getInputBTextLiveData().observe(viewLifecycleOwner, Observer {
-            etInputBoxB.setText(it)
+            if (etInputBoxB.text.toString() != it) {
+                setupInputText(it, etInputBoxB, inputTextWatcherB)
+            }
         })
 
         poolViewModel.loadState.observe(viewLifecycleOwner, Observer {
@@ -483,9 +487,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
             isInputA = true
             val inputText = s?.toString() ?: ""
-            val amountStr = handleInputText(inputText)
+            val amountStr = correctInputText(inputText)
             if (inputText != amountStr) {
-                handleInputTextWatcher(amountStr, etInputBoxA, this)
+                setupInputText(amountStr, etInputBoxA, this)
             }
 
             if (poolViewModel.isTransferInMode()) {
@@ -502,9 +506,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
             isInputA = false
             val inputText = s?.toString() ?: ""
-            val amountStr = handleInputText(inputText)
+            val amountStr = correctInputText(inputText)
             if (inputText != amountStr) {
-                handleInputTextWatcher(amountStr, etInputBoxB, this)
+                setupInputText(amountStr, etInputBoxB, this)
             }
 
             if (poolViewModel.isTransferInMode()) {
@@ -513,7 +517,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         }
     }
 
-    private val handleInputText: (String) -> String = { inputText ->
+    private val correctInputText: (String) -> String = { inputText ->
         var amountStr = inputText
         if (inputText.startsWith(".")) {
             amountStr = "0$inputText"
@@ -527,7 +531,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         amountStr
     }
 
-    private val handleInputTextWatcher: (String, EditText, TextWatcher) -> Unit =
+    private val setupInputText: (String, EditText, TextWatcher) -> Unit =
         { amountStr, inputBox, textWatcher ->
             inputBox.removeTextChangedListener(textWatcher)
 
