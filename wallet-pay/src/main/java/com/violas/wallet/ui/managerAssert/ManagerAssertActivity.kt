@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.utils.openBrowser
@@ -26,6 +25,7 @@ import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.web.WebCommonActivity
 import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.utils.loadRoundedImage
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
@@ -264,13 +264,11 @@ class MyAdapter(
             holder.itemView.checkBox.visibility = View.GONE
         }
 
-        val defLogoResId =
-            getResourceId(R.attr.walletHomeDefTokenLogo, holder.itemView.context)
-        Glide.with(holder.itemView.context)
-            .load(itemData.logo)
-            .error(defLogoResId)
-            .placeholder(defLogoResId)
-            .into(holder.itemView.ivCoinLogo)
+        holder.itemView.ivCoinLogo.loadRoundedImage(
+            itemData.logo,
+            getResourceId(R.attr.iconCoinDefLogo, holder.itemView.context),
+            14
+        )
 
         holder.itemView.setOnClickListener { view ->
             if (itemData.isToken) {

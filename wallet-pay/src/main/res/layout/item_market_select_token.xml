@@ -16,11 +16,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.palliums.widget.NiceImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ivLogo"
         android:layout_width="@dimen/dp_30"
         android:layout_height="@dimen/dp_30"
-        app:is_circle="true"
         app:layout_constraintBottom_toBottomOf="@id/vLogoGroup"
         app:layout_constraintEnd_toEndOf="@id/vLogoGroup"
         app:layout_constraintStart_toStartOf="@id/vLogoGroup"

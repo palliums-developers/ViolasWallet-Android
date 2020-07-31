@@ -13,14 +13,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getResourceId
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.command.CommandActuator
@@ -42,6 +40,7 @@ import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.utils.loadRoundedImage
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
@@ -398,21 +397,11 @@ class AssertAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemData = getItem(position)
 
-        when (itemData.getCoinNumber()) {
-            CoinTypes.BitcoinTest.coinType(),
-            CoinTypes.Bitcoin.coinType() -> {
-                holder.itemView.ivLogo.setImageResource(R.drawable.ic_bitcoin_big)
-            }
-            else -> {
-                val defLogoResId =
-                    getResourceId(R.attr.walletHomeDefTokenLogo, holder.itemView.context)
-                Glide.with(holder.itemView.context)
-                    .load(itemData.getLogoUrl())
-                    .error(defLogoResId)
-                    .placeholder(defLogoResId)
-                    .into(holder.itemView.ivLogo)
-            }
-        }
+        holder.itemView.ivLogo.loadRoundedImage(
+            itemData.getLogoUrl(),
+            getResourceId(R.attr.iconCoinDefLogo, holder.itemView.context),
+            14
+        )
 
         holder.itemView.tvName.text = itemData.getAssetsName()
 

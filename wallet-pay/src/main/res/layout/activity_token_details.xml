@@ -29,14 +29,13 @@
                 android:background="?attr/tokenDetailsTokenInfoBg"
                 android:paddingEnd="@dimen/dp_14">
 
-                <com.palliums.widget.NiceImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/ivTokenLogo"
                     android:layout_width="@dimen/dp_14"
                     android:layout_height="@dimen/dp_14"
                     android:layout_marginStart="@dimen/dp_14"
                     android:layout_marginTop="@dimen/dp_18"
-                    android:src="?attr/tokenDetailsDefTokenLogo"
-                    app:is_circle="true"
+                    android:src="?attr/iconCoinDefLogo"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 

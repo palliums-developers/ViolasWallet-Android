@@ -125,6 +125,7 @@
         <item name="iconRecordStateSucceeded">@drawable/ic_record_state_succeeded</item>
         <item name="iconRecordStateFailed">@drawable/ic_record_state_failed</item>
         <item name="iconRecordStateCancelled">@drawable/ic_record_state_cancelled</item>
+        <item name="iconCoinDefLogo">@drawable/ic_coin_default_logo</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
@@ -148,7 +149,6 @@
         <item name="walletHomeWalletConnectTextColor">@color/color_FB8F0B</item>
         <item name="walletHomeWalletConnectBgColor">@color/color_463288</item>
         <item name="walletHomeWalletConnectIcon">@drawable/ic_wallet_connect_indicator</item>
-        <item name="walletHomeDefTokenLogo">@drawable/assets_default</item>
         <item name="walletHomeBackupTopBg">@drawable/bg_backup_title</item>
         <item name="walletHomeBackupTopIcon">@drawable/icon_security_backup</item>
 
@@ -159,7 +159,6 @@
         <item name="meHomeSettingsMenuIcon">@mipmap/ic_me_settings</item>
 
         <!--币种详情页资源属性-->
-        <item name="tokenDetailsDefTokenLogo">@drawable/ic_token_info_logo_default</item>
         <item name="tokenDetailsTokenInfoBg">@drawable/bg_token_info_head</item>
         <item name="tokenDetailsTabNormalTextColor">@color/color_C2C2C2</item>
 
