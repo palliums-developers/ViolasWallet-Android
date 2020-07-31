@@ -156,7 +156,6 @@ class ViolasOutputScript {
         vtokenAddress: ByteArray,
         sequence: Long = System.currentTimeMillis()
     ): Script {
-        val authKeyPrefix = byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         val dataStream = BitcoinOutputStream()
         dataStream.write("violas".toByteArray())
         //dataStream.writeInt16(OP_VER)
@@ -164,11 +163,11 @@ class ViolasOutputScript {
         writeInt16(OP_VER, dataStream)
 
         dataStream.write(lable.replace("0x", "").hexToBytes())
-        dataStream.write(authKeyPrefix + payeeAddress)
+        dataStream.write(payeeAddress)
         dataStream.write(
             ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(sequence).array()
         )
-        dataStream.write(authKeyPrefix + vtokenAddress)
+        dataStream.write(vtokenAddress)
 
         val scriptStream = BitcoinOutputStream()
         scriptStream.write(Script.OP_RETURN.toInt())
