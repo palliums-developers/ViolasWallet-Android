@@ -49,6 +49,7 @@
     <attr name="iconRecordStateSucceeded" format="reference" />
     <attr name="iconRecordStateFailed" format="reference" />
     <attr name="iconRecordStateCancelled" format="reference" />
+    <attr name="iconCoinDefLogo" format="reference" />
 
     <!--首页资源属性-->
     <attr name="homeBottomTabSelectedTextColor" format="color" />
@@ -72,7 +73,6 @@
     <attr name="walletHomeWalletConnectTextColor" format="color" />
     <attr name="walletHomeWalletConnectIcon" format="reference" />
     <attr name="walletHomeWalletConnectBgColor" format="color" />
-    <attr name="walletHomeDefTokenLogo" format="reference" />
     <attr name="walletHomeBackupTopBg" format="color|reference" />
     <attr name="walletHomeBackupTopIcon" format="reference" />
 
@@ -83,7 +83,6 @@
     <attr name="meHomeSettingsMenuIcon" format="reference" />
 
     <!--币种详情页面资源属性-->
-    <attr name="tokenDetailsDefTokenLogo" format="reference" />
     <attr name="tokenDetailsTokenInfoBg" format="reference" />
     <attr name="tokenDetailsTabNormalTextColor" format="color" />
 

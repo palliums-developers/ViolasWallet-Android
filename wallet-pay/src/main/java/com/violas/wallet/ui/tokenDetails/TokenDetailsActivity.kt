@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.palliums.base.ViewController
 import com.palliums.extensions.close
@@ -35,6 +34,7 @@ import com.violas.wallet.ui.transactionRecord.TransactionRecordFragment
 import com.violas.wallet.ui.transactionRecord.TransactionType
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
+import com.violas.wallet.utils.loadCircleImage
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
@@ -169,12 +169,10 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
     private fun initTokenInfoView() {
         tvTitle.text = mAssetsVo.getAssetsName()
 
-        val defLogoResId = getResourceId(R.attr.tokenDetailsDefTokenLogo, this)
-        Glide.with(this)
-            .load(mAssetsVo.getLogoUrl())
-            .error(defLogoResId)
-            .placeholder(defLogoResId)
-            .into(ivTokenLogo)
+        ivTokenLogo.loadCircleImage(
+            mAssetsVo.getLogoUrl(),
+            getResourceId(R.attr.iconCoinDefLogo, this)
+        )
 
         tvTokenName.text = mAssetsVo.getAssetsName()
         tvTokenAmount.text = mAssetsVo.amountWithUnit.amount

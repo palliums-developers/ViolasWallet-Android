@@ -14,7 +14,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.bumptech.glide.Glide
 import com.palliums.extensions.close
 import com.palliums.extensions.showToast
 import com.palliums.utils.*
@@ -24,6 +23,7 @@ import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
+import com.violas.wallet.utils.loadCircleImage
 import kotlinx.android.synthetic.main.dialog_market_select_token.*
 import kotlinx.android.synthetic.main.item_market_select_token.view.*
 import kotlinx.coroutines.*
@@ -292,14 +292,11 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
         }
 
         override fun onBindViewHolder(holder: CommonViewHolder, position: Int) {
-            val defLogoResId =
-                getResourceId(R.attr.walletHomeDefTokenLogo, holder.itemView.context)
             val item = getItem(position)
-            Glide.with(holder.itemView)
-                .load(item.logo)
-                .error(defLogoResId)
-                .placeholder(defLogoResId)
-                .into(holder.itemView.ivLogo)
+            holder.itemView.ivLogo.loadCircleImage(
+                item.logo,
+                getResourceId(R.attr.iconCoinDefLogo, holder.itemView.context)
+            )
             holder.itemView.tvTokenName.text = item.displayName
             holder.itemView.tvTokenBalance.text = getString(
                 R.string.market_select_token_balance_format,

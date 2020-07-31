@@ -122,7 +122,7 @@ class TokenManager {
                         fullName = coinTypes.fullName(),
                         coinType = coinTypes.coinType(),
                         amount = 0,
-                        logo = "file:///android_asset/logo/ic_bitcoin_big.png"
+                        logo = account.logo
                     )
                 )
             }

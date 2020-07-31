@@ -69,7 +69,8 @@ class MarketViewModel : BaseViewModel() {
         val assetsMap = assetsList.toMap { getAssetsKey(it) }
         marketCoins.forEach {
             it.displayAmount = convertAmountToDisplayAmount(
-                assetsMap[getMarketCoinKey(it)]?.getAmount() ?: 0
+                assetsMap[getMarketCoinKey(it)]?.getAmount() ?: 0,
+                CoinTypes.parseCoinType(it.coinNumber)
             )
         }
     }

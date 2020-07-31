@@ -418,7 +418,7 @@ class AccountManager {
                     CoinTypes.Bitcoin.coinType()
                 },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                logo = "file:///android_asset/logo/ic_bitcoin_big.png"
+                logo = "file:///android_asset/logo/ic_bitcoin_logo.png"
             )
         )
         if (insertIds.isNotEmpty()) {
@@ -433,7 +433,7 @@ class AccountManager {
                     name = "LBR",
                     address = "00000000000000000000000000000001",
                     enable = true,
-                    logo = "file:///android_asset/logo/ic_violas_big.png"
+                    logo = "file:///android_asset/logo/ic_violas_logo.png"
                 ),
                 TokenDo(
                     account_id = insertIds[1],
@@ -441,7 +441,7 @@ class AccountManager {
                     name = "LBR",
                     address = "00000000000000000000000000000001",
                     enable = true,
-                    logo = "file:///android_asset/logo/ic_libra_big.png"
+                    logo = "file:///android_asset/logo/ic_libra_logo.png"
                 )
             )
         }
