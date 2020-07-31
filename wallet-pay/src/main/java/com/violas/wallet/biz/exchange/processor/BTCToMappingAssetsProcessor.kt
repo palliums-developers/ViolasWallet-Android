@@ -20,6 +20,7 @@ import com.violas.wallet.ui.main.market.bean.*
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.palliums.violascore.serialization.hexToBytes
 import java.lang.RuntimeException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -46,7 +47,6 @@ class BTCToMappingAssetsProcessor(
             CoinTypes.Bitcoin
         }.coinType()
                 && supportMappingPair.containsKey(IAssetsMark.convert(tokenTo).mark())
-                && tokenTo.coinNumber == CoinTypes.Violas.coinType()
     }
 
     override suspend fun handle(
@@ -113,6 +113,7 @@ class BTCToMappingAssetsProcessor(
                 supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.receiverAddress ?: "",
                 sendAccount.address,
                 violasOutputScript.requestExchange(
+                    supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.label ?: "",
                     payeeAddress.hexStringToByteArray(),
                     contractAddress.hexStringToByteArray()
                 )
@@ -150,6 +151,7 @@ class ViolasOutputScript {
      * @param vtokenAddress Token 地址
      */
     fun requestExchange(
+        lable: String,
         payeeAddress: ByteArray,
         vtokenAddress: ByteArray,
         sequence: Long = System.currentTimeMillis()
@@ -161,7 +163,7 @@ class ViolasOutputScript {
         // 此处非 BTC 小端字节规则，需要注意
         writeInt16(OP_VER, dataStream)
 
-        dataStream.write(OP_TYPE_START)
+        dataStream.write(lable.replace("0x", "").hexToBytes())
         dataStream.write(authKeyPrefix + payeeAddress)
         dataStream.write(
             ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(sequence).array()
