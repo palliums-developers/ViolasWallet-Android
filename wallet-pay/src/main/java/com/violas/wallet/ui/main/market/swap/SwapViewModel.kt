@@ -95,11 +95,32 @@ class SwapViewModel() : BaseViewModel() {
         if (selectFrom) {
             val currFromToken = currFromTokenLiveData.value
             if (selected != currFromToken) {
-                val currToToken = currToTokenLiveData.value
-                if (selected == currToToken) {
-                    currToTokenLiveData.value = null
-                }
                 currFromTokenLiveData.value = selected
+                // 检查当前 FromToken 是否可以兑换 当前的 ToToken 不支持则清空
+                viewModelScope.launch(Dispatchers.IO) {
+                    val currToToken = currToTokenLiveData.value
+                    if (selected == currToToken) {
+                        withContext(Dispatchers.Main) {
+                            currToTokenLiveData.value = null
+                        }
+                    } else {
+                        currToToken?.let { toToken ->
+                            var exists = false
+                            getSwapToTokenList().forEach { token ->
+                                if (IAssetsMark.convert(toToken)
+                                        .equals(IAssetsMark.convert(token))
+                                ) {
+                                    exists = true
+                                }
+                            }
+                            if (!exists) {
+                                withContext(Dispatchers.Main) {
+                                    currToTokenLiveData.value = null
+                                }
+                            }
+                        }
+                    }
+                }
             }
         } else {
             val currToToken = currToTokenLiveData.value
