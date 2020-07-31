@@ -337,6 +337,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                     } catch (e: Exception) {
                         showToast(R.string.desc_transaction_state_add_currency_failure)
                         e.printStackTrace()
+                        dismissProgress()
                     }
                 }
             }.show(parentFragmentManager)

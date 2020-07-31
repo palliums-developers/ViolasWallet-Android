@@ -108,7 +108,7 @@ data class GetTransactionDTO(
     @SerializedName("version")
     val version: Int,
     @SerializedName("vm_status")
-    val vmStatus: Int
+    val vmStatus: String
 )
 
 @Keep
