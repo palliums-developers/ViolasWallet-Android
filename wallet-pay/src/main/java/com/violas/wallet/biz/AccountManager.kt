@@ -267,7 +267,7 @@ class AccountManager {
         walletName: String,
         password: ByteArray
     ): Long {
-        val deriveLibra = deriveLibra(wordList)
+        val deriveLibra = deriveViolas(wordList)
         val security = SimpleSecurity.instance(context)
 
         return mAccountStorage.insert(
@@ -379,6 +379,7 @@ class AccountManager {
 
         val deriveBitcoin = deriveBitcoin(seed)
         val deriveLibra = deriveLibra(wordList)
+        val deriveViolas = deriveViolas(wordList)
 
         val security = SimpleSecurity.instance(context)
 
@@ -386,11 +387,11 @@ class AccountManager {
             AccountDO(
                 privateKey = security.encrypt(
                     password,
-                    deriveLibra.keyPair.getPrivateKey().toByteArray()
+                    deriveViolas.keyPair.getPrivateKey().toByteArray()
                 ),
-                publicKey = deriveLibra.getPublicKey(),
-                authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
-                address = deriveLibra.getAddress().toHex(),
+                publicKey = deriveViolas.getPublicKey(),
+                authKeyPrefix = deriveViolas.getAuthenticationKey().prefix().toHex(),
+                address = deriveViolas.getAddress().toHex(),
                 coinNumber = CoinTypes.Violas.coinType(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 accountType = AccountType.NoDollars
@@ -444,6 +445,13 @@ class AccountManager {
                 )
             )
         }
+    }
+
+    private fun deriveViolas(wordList: List<String>): org.palliums.violascore.wallet.Account {
+        val keyFactory = org.palliums.violascore.crypto.KeyFactory(
+            org.palliums.violascore.crypto.Seed.fromMnemonic(wordList)
+        )
+        return org.palliums.violascore.wallet.Account(keyFactory.generateKey(0))
     }
 
     private fun deriveLibra(wordList: List<String>): Account {

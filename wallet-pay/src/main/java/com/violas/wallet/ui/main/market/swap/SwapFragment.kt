@@ -85,8 +85,8 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
     private fun resetState() = launch {
         mSwapPath.clear()
         isInputFrom = true
-        etFromInputBox.setText("")
-        etToInputBox.setText("")
+        handleInputTextWatcher("", etFromInputBox, fromInputTextWatcher)
+        handleInputTextWatcher("", etToInputBox, toInputTextWatcher)
         swapViewModel.getGasFeeLiveData().value = null
         swapViewModel.getExchangeRateLiveData().value = null
         swapViewModel.getHandlingFeeRateLiveDataLiveData().value = null
@@ -213,7 +213,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
             if (it == null) {
                 tvToSelectText.text = getString(R.string.select_token)
                 handleValueNull(tvToBalance, R.string.market_token_balance_format)
-                etToInputBox.setText("")
+                handleInputTextWatcher("", etToInputBox, toInputTextWatcher)
                 toAssertsAmountSubscriber.changeSubscriber(null)
             } else {
                 tvToSelectText.text = it.displayName
@@ -393,7 +393,13 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                             etFromInputBox
                         }
                         withContext(Dispatchers.Main) {
-                            outputEdit.setText("")
+                            handleInputTextWatcher(
+                                "", outputEdit, if (isInputFrom) {
+                                    toInputTextWatcher
+                                } else {
+                                    fromInputTextWatcher
+                                }
+                            )
                             swapViewModel.getGasFeeLiveData().value = null
                             swapViewModel.getExchangeRateLiveData().value = null
                             swapViewModel.getHandlingFeeRateLiveDataLiveData().value = null
@@ -416,7 +422,13 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                         swapViewModel.getHandlingFeeRateLiveDataLiveData().value =
                             BigDecimal.valueOf(0)
                         swapViewModel.getGasFeeLiveData().value = "0"
-                        outputEdit.setText("")
+                        handleInputTextWatcher(
+                            "", outputEdit, if (isInputFrom) {
+                                toInputTextWatcher
+                            } else {
+                                fromInputTextWatcher
+                            }
+                        )
                     }
                 } else {
                     // 获取应该输入的输入框
@@ -506,7 +518,13 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                     withContext(Dispatchers.Main) {
                         btnSwap.setText(R.string.action_swap_nbsp)
 
-                        outputEdit.setText(outputAmountByCoin)
+                        handleInputTextWatcher(
+                            outputAmountByCoin, outputEdit, if (isInputFrom) {
+                                toInputTextWatcher
+                            } else {
+                                fromInputTextWatcher
+                            }
+                        )
                         swapViewModel.getGasFeeLiveData().value = outputFeeAmount
                         swapViewModel.getExchangeRateLiveData().value = exchangeRate
                         swapViewModel.getHandlingFeeRateLiveDataLiveData().value = handlingFeeRate
