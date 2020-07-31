@@ -13,7 +13,6 @@ import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayAmount
-import com.violas.wallet.utils.convertAmountToExchangeRate
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import org.json.JSONObject
@@ -236,9 +235,8 @@ class ExchangeManager {
             liquidityReserve.coinB.amount
         else
             liquidityReserve.coinA.amount
-        val exchangeRate = convertAmountToExchangeRate(reserveA, reserveB)
-        val amountB = amountA.multiply(exchangeRate)
-            .setScale(0, RoundingMode.DOWN)
+        val amountB = amountA.multiply(reserveB)
+            .divide(reserveA, 0, RoundingMode.DOWN)
             .toPlainString()
         return convertAmountToDisplayAmount(amountB)
     }
