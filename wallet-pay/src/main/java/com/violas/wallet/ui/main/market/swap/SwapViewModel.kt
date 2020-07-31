@@ -2,28 +2,20 @@ package com.violas.wallet.ui.main.market.swap
 
 import android.util.Log
 import androidx.annotation.MainThread
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.palliums.base.BaseViewModel
 import com.palliums.content.ContextProvider
-import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.violas.bean.TokenMark
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.biz.exchange.AssetsSwapManager
-import com.violas.wallet.biz.exchange.NetWorkSupportTokensLoader
 import com.violas.wallet.biz.exchange.SupportMappingSwapPairManager
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.*
-import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertDisplayUnitToAmount
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.RuntimeException
@@ -36,7 +28,7 @@ import java.math.RoundingMode
  * <p>
  * desc:
  */
-class SwapViewModel : BaseViewModel() {
+class SwapViewModel() : BaseViewModel() {
     companion object {
         // 最低价格浮动汇率
         const val MINIMUM_PRICE_FLUCTUATION = 1 / 100.0
@@ -55,12 +47,10 @@ class SwapViewModel : BaseViewModel() {
     // Gas费
     private val gasFeeLiveData = MediatorLiveData<String?>()
 
-    private val mViolasService by lazy {
-        DataRepository.getViolasService()
-    }
-
     private val mAssetsSwapManager by lazy {
-        AssetsSwapManager(NetWorkSupportTokensLoader(), SupportMappingSwapPairManager())
+        AssetsSwapManager(
+            SupportMappingSwapPairManager()
+        )
     }
 
     init {
@@ -89,10 +79,6 @@ class SwapViewModel : BaseViewModel() {
         exchangeRateLiveData.addSource(currToTokenLiveData) { toToken ->
             handleCurrTokenChange(currFromTokenLiveData.value, toToken)
         }
-    }
-
-    suspend fun initSwapData(force: Boolean = false): Boolean {
-        return mAssetsSwapManager.init(force)
     }
 
     //*********************************** Token相关方法 ***********************************//
@@ -243,5 +229,11 @@ class SwapViewModel : BaseViewModel() {
             )
         }
         return hasSucceed
+    }
+
+    fun onTokenChange(it: List<ITokenVo>?) {
+        viewModelScope.launch {
+            it?.let { it1 -> mAssetsSwapManager.calculateTokenMapInfo(it1) }
+        }
     }
 }

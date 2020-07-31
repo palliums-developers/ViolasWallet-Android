@@ -1,5 +1,6 @@
 package com.violas.wallet.biz.exchange
 
+import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
@@ -9,6 +10,7 @@ import com.violas.wallet.biz.exchange.processor.LibraToMappingAssetsProcessor
 import com.violas.wallet.biz.exchange.processor.ViolasToAssetsMappingProcessor
 import com.violas.wallet.biz.exchange.processor.ViolasTokenToViolasTokenProcessor
 import com.violas.wallet.common.Vm
+import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.*
 import com.violas.wallet.utils.str2CoinType
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +19,6 @@ import org.palliums.violascore.http.ViolasException
 import kotlin.collections.HashMap
 
 class AssetsSwapManager(
-    private val supportTokensLoader: ISupportTokensLoader,
     private val supportMappingSwapPairManager: SupportMappingSwapPairManager
 ) {
     /**
@@ -37,28 +38,15 @@ class AssetsSwapManager(
     val contract = ViolasMultiTokenContract(Vm.TestNet)
 
     @WorkerThread
-    suspend fun init(force: Boolean = false): Boolean {
+    suspend fun calculateTokenMapInfo(
+        supportTokens: List<ITokenVo>
+    ): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                val initializing = mSupportTokensLiveData.value != null
-                        && mSupportTokensLiveData.value?.size != 0
-                        && mMappingSupportSwapPairMapLiveData.value?.size != 0
+                mSupportTokensLiveData.postValue(supportTokens)
 
-                if (!force || initializing) {
-                    return@withContext true
-                }
-
-                val supportTokens = supportTokensLoader.load()
-                if (supportTokens.isEmpty()) {
-                    return@withContext false
-                }
-                withContext(Dispatchers.Main) {
-                    mSupportTokensLiveData.value = supportTokens
-                }
                 val supportTokensPair = getMappingMarketSupportTokens(supportTokens)
-                withContext(Dispatchers.Main) {
-                    mMappingSupportSwapPairMapLiveData.value = supportTokensPair
-                }
+                mMappingSupportSwapPairMapLiveData.postValue(supportTokensPair)
 
                 mAssetsSwapEngine.clearProcessor()
                 mAssetsSwapEngine.addProcessor(ViolasTokenToViolasTokenProcessor())
@@ -233,4 +221,6 @@ class AssetsSwapManager(
         }
         return resultMap
     }
+
+
 }

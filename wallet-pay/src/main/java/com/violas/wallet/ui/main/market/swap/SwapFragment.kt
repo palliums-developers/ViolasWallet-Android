@@ -275,6 +275,10 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
 
         BalanceSubscribeHub.observe(this, fromAssertsAmountSubscriber)
         BalanceSubscribeHub.observe(this, toAssertsAmountSubscriber)
+
+        marketViewModel.getMarketSupportCoinsLiveData().observe(this, Observer {
+            swapViewModel.onTokenChange(it)
+        })
     }
 
     private fun swap(pwd: ByteArray) {
@@ -574,14 +578,16 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
             swapViewModel.getCurrToTokenLiveData().value
     }
 
-    override suspend fun getMarketSupportTokens(action: Int): List<ITokenVo>? {
+    override suspend fun getMarketSupportFromTokens(): LiveData<List<ITokenVo>?> {
+        withContext(Dispatchers.Main) {
+            marketViewModel.execute()
+        }
+        return swapViewModel.getSupportTokensLiveData()
+    }
+
+    override suspend fun getMarketSupportToTokens(): List<ITokenVo>? {
         try {
-            swapViewModel.initSwapData(true)
-            return if (action == ACTION_SWAP_SELECT_FROM) {
-                swapViewModel.getSupportTokensLiveData().value
-            } else {
-                swapViewModel.getSwapToTokenList()
-            }
+            return swapViewModel.getSwapToTokenList()
         } catch (e: Exception) {
             e.printStackTrace()
             return null

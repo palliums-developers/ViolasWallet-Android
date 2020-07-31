@@ -9,6 +9,8 @@ import android.text.style.ForegroundColorSpan
 import android.view.*
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
 import com.palliums.extensions.close
@@ -135,23 +137,37 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
         }
     }
 
+    private fun handleSwapTokens(tokens: List<ITokenVo>?) {
+        when {
+            tokens == null -> {
+                launch(Dispatchers.Main) {
+                    handleLoadFailure()
+                }
+            }
+            tokens.isEmpty() -> {
+                launch(Dispatchers.Main) {
+                    handleEmptyData(null)
+                }
+            }
+            else -> {
+                launch(Dispatchers.IO) {
+                    filterData(tokens)
+                }
+            }
+        }
+    }
+
     private suspend fun loadSwapTokens() {
-         swapTokensDataResourcesBridge?.getMarketSupportTokens(action).let {
-            cancelJob()
-            when {
-                it == null -> {
-                    withContext(Dispatchers.Main) {
-                        handleLoadFailure()
-                    }
-                }
-                it.isEmpty() -> {
-                    withContext(Dispatchers.Main) {
-                        handleEmptyData(null)
-                    }
-                }
-                else -> {
-                    filterData(it)
-                }
+        if (action == ACTION_SWAP_SELECT_FROM) {
+            withContext(Dispatchers.Main) {
+                swapTokensDataResourcesBridge?.getMarketSupportFromTokens()
+                    ?.observe(this@SwapSelectTokenDialog, Observer {
+                        handleSwapTokens(it)
+                    })
+            }
+        } else {
+            swapTokensDataResourcesBridge?.getMarketSupportToTokens().let {
+                handleSwapTokens(it)
             }
         }
     }
@@ -289,7 +305,7 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
 }
 
 interface SwapTokensDataResourcesBridge {
-    suspend fun getMarketSupportTokens(
-        action: Int
-    ): List<ITokenVo>?
+    suspend fun getMarketSupportFromTokens(): LiveData<List<ITokenVo>?>
+
+    suspend fun getMarketSupportToTokens(): List<ITokenVo>?
 }
