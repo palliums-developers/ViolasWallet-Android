@@ -81,7 +81,7 @@ class SwapViewModel() : BaseViewModel() {
         }
     }
 
-    //*********************************** Token相关方法 ***********************************//
+    // <editor-fold defaultstate="collapsed" desc="兑换中心 Token 相关方法">
     fun getCurrFromTokenLiveData(): LiveData<ITokenVo?> {
         return currFromTokenLiveData
     }
@@ -113,6 +113,9 @@ class SwapViewModel() : BaseViewModel() {
         }
     }
 
+    /**
+     * 获取兑换功能可以兑换转出的币种列表信息
+     */
     fun getSwapToTokenList(): List<ITokenVo> {
         return if (currFromTokenLiveData.value != null) {
             mAssetsSwapManager.getSwapPayeeTokenList(currFromTokenLiveData.value!!)
@@ -121,7 +124,17 @@ class SwapViewModel() : BaseViewModel() {
         }
     }
 
-    //*********************************** 其它信息相关方法 ***********************************//
+    /**
+     * 交易中心支持的币种信息发生变化调用该方法
+     */
+    fun onTokenChange(it: List<ITokenVo>?) {
+        viewModelScope.launch {
+            it?.let { it1 -> mAssetsSwapManager.calculateTokenMapInfo(it1) }
+        }
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="其它信息相关方法">
     fun getHandlingFeeRateLiveDataLiveData(): MutableLiveData<BigDecimal?> {
         return handlingFeeRateLiveData
     }
@@ -137,8 +150,9 @@ class SwapViewModel() : BaseViewModel() {
     fun getSupportTokensLiveData(): MutableLiveData<List<ITokenVo>?> {
         return mAssetsSwapManager.mSupportTokensLiveData
     }
+    // </editor-fold>
 
-    //*********************************** 其它信息相关方法 ***********************************//
+    // <editor-fold defaultstate="collapsed" desc="兑换发起前的各种检查以及 publish 操作">
     suspend fun swap(
         pwd: ByteArray,
         inputAmountStr: String,
@@ -184,11 +198,6 @@ class SwapViewModel() : BaseViewModel() {
             )
         }
 
-    //*********************************** 耗时相关任务 ***********************************//
-    override suspend fun realExecute(action: Int, vararg params: Any) {
-        // TODO 兑换逻辑
-    }
-
     /**
      * publish Token 操作
      */
@@ -230,10 +239,10 @@ class SwapViewModel() : BaseViewModel() {
         }
         return hasSucceed
     }
+    // </editor-fold>
 
-    fun onTokenChange(it: List<ITokenVo>?) {
-        viewModelScope.launch {
-            it?.let { it1 -> mAssetsSwapManager.calculateTokenMapInfo(it1) }
-        }
+    //*********************************** 耗时相关任务 ***********************************//
+    override suspend fun realExecute(action: Int, vararg params: Any) {
+        // TODO 兑换逻辑
     }
 }
