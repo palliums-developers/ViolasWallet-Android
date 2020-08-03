@@ -108,8 +108,12 @@ class ViolasToAssetsMappingProcessor(
             "type",
             supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.label
         )
-        val authKeyPrefix = "00000000000000000000000000000000"
-        subExchangeDate.put("to_address", authKeyPrefix + payeeAddress)
+        if (tokenTo.coinNumber == CoinTypes.BitcoinTest.coinType() || tokenTo.coinNumber == CoinTypes.Bitcoin.coinType()) {
+            subExchangeDate.put("to_address", payeeAddress)
+        } else {
+            val authKeyPrefix = "00000000000000000000000000000000"
+            subExchangeDate.put("to_address", authKeyPrefix + payeeAddress)
+        }
         subExchangeDate.put("state", "start")
         subExchangeDate.put("out_amount", amountOutMin)
         subExchangeDate.put("times", 0)
