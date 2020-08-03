@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.typeToken
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
+import com.google.gson.JsonSyntaxException
 import com.violas.walletconnect.exceptions.InvalidJsonRpcParamsException
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.jsonrpc.JsonRpcError
@@ -20,6 +21,7 @@ import com.violas.walletconnect.models.session.WCSessionUpdate
 import com.violas.walletconnect.models.violas.WCViolasSendRawTransaction
 import com.violas.walletconnect.models.violas.WCViolasSendTransaction
 import com.violas.walletconnect.models.violas.WCViolasSignRawTransaction
+import com.violas.walletconnect.models.violasprivate.WCBitcoinSendTransaction
 import com.violas.walletconnect.models.violasprivate.WCLibraSendTransaction
 import okhttp3.*
 import okio.ByteString
@@ -71,6 +73,8 @@ open class WCClient(
     var onViolasSignTransaction: (id: Long, transaction: WCViolasSignRawTransaction) -> Unit =
         { _, _ -> Unit }
     var onLibraSendTransaction: (id: Long, transaction: WCLibraSendTransaction) -> Unit =
+        { _, _ -> Unit }
+    var onBitcoinSendTransaction: (id: Long, transaction: WCBitcoinSendTransaction) -> Unit =
         { _, _ -> Unit }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -249,8 +253,9 @@ open class WCClient(
     }
 
     private fun handleMessage(payload: String) {
+        var request: JsonRpcRequest<JsonArray>? = null
         try {
-            val request = gson.fromJson<JsonRpcRequest<JsonArray>>(
+            request = gson.fromJson<JsonRpcRequest<JsonArray>>(
                 payload,
                 typeToken<JsonRpcRequest<JsonArray>>()
             )
@@ -260,6 +265,9 @@ open class WCClient(
             } else {
                 onCustomRequest(request.id, payload)
             }
+        } catch (e: JsonSyntaxException) {
+            request?.id?.let { invalidParams(it) }
+            e.printStackTrace()
         } catch (e: InvalidJsonRpcParamsException) {
             invalidParams(e.requestId)
             e.printStackTrace()
@@ -305,11 +313,17 @@ open class WCClient(
             WCMethod.GET_ACCOUNTS -> {
                 onGetAccounts(request.id)
             }
-            WCMethod.LIBRA_SEND_TRANSACTION->{
+            WCMethod.LIBRA_SEND_TRANSACTION -> {
                 val params =
                     gson.fromJson<List<WCLibraSendTransaction>>(request.params).firstOrNull()
                         ?: throw InvalidJsonRpcParamsException(request.id)
                 onLibraSendTransaction(request.id, params)
+            }
+            WCMethod.BITCOIN_SEND_TRANSACTION -> {
+                val params =
+                    gson.fromJson<List<WCBitcoinSendTransaction>>(request.params).firstOrNull()
+                        ?: throw InvalidJsonRpcParamsException(request.id)
+                onBitcoinSendTransaction(request.id, params)
             }
             else -> {
                 val response = JsonRpcErrorResponse(

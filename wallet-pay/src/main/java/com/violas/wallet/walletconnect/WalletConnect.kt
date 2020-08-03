@@ -117,6 +117,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
             mWalletConnectSessionListener?.onRequest(id, peer) ?: rejectSession()
 //            WalletConnectAuthorizationActivity.startActivity(context, id, peer)
         }
+        mWCClient.onFailure = { throwable ->
+            throwable.printStackTrace()
+        }
         mWCClient.onDisconnect = { _, _ ->
             mWCSessionStoreType.session = null
             mWalletConnectListener?.onDisconnect()
@@ -135,6 +138,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         }
         mWCClient.onLibraSendTransaction = { id, libraSendTransaction ->
             mWalletConnectMessageHandler.convertAndCheckTransaction(id, libraSendTransaction)
+        }
+        mWCClient.onBitcoinSendTransaction = { id, bitcoinSendTransaction ->
+            mWalletConnectMessageHandler.convertAndCheckTransaction(id, bitcoinSendTransaction)
         }
     }
 

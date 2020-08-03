@@ -31,7 +31,11 @@ class BitcoinSendTransactionMessageHandler(private val iWalletConnectMessage: IW
     ): TransactionSwapVo? {
         tx as WCBitcoinSendTransaction
         val account = mAccountStorage.findByCoinTypeAndCoinAddress(
-            CoinTypes.Violas.coinType(),
+            if (Vm.TestNet) {
+                CoinTypes.BitcoinTest.coinType()
+            } else {
+                CoinTypes.Bitcoin.coinType()
+            },
             tx.from
         )
 

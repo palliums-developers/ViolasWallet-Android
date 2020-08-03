@@ -23,4 +23,7 @@ enum class WCMethod {
 
     @SerializedName("_libra_sendTransaction")
     LIBRA_SEND_TRANSACTION,
+
+    @SerializedName("_bitcoin_sendTransaction")
+    BITCOIN_SEND_TRANSACTION,
 }

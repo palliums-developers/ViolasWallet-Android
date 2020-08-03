@@ -27,7 +27,7 @@ class LibraSendTransactionMessageHandler(private val iWalletConnectMessage: IWal
     ): TransactionSwapVo? {
         tx as WCLibraSendTransaction
         val account = mAccountStorage.findByCoinTypeAndCoinAddress(
-            CoinTypes.Violas.coinType(),
+            CoinTypes.Libra.coinType(),
             tx.from
         )
 

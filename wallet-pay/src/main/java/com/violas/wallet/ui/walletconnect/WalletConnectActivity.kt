@@ -212,7 +212,7 @@ class WalletConnectActivity : BaseAppActivity() {
                             val privateKey = showPasswordSignTx(account) ?: return@launch
 
                             val fromJson = Gson().fromJson<TransferBitcoinDataType>(
-                                Base64.decode(transactionSwapVo.viewData),
+                                transactionSwapVo.viewData,
                                 TransferBitcoinDataType::class.java
                             )
                             val mTransactionManager: TransactionManager =
@@ -259,6 +259,9 @@ class WalletConnectActivity : BaseAppActivity() {
                                     subscribe.dispose()
                                 }
                             }
+                            if(txId.isNotEmpty()){
+
+                            }
                             // </editor-fold>
                         }
                         else -> {
@@ -268,16 +271,14 @@ class WalletConnectActivity : BaseAppActivity() {
                 } else {
                     signedTx = transactionSwapVo.hexTx
                 }
-                if (signedTx == null) {
-                    return@launch
-                }
-
-                when (transactionSwapVo.coinType) {
-                    CoinTypes.Violas -> {
-                        DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
-                    }
-                    CoinTypes.Libra -> {
-                        DataRepository.getLibraService().submitTransaction(signedTx)
+                if (signedTx != null) {
+                    when (transactionSwapVo.coinType) {
+                        CoinTypes.Violas -> {
+                            DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
+                        }
+                        CoinTypes.Libra -> {
+                            DataRepository.getLibraService().submitTransaction(signedTx)
+                        }
                     }
                 }
 

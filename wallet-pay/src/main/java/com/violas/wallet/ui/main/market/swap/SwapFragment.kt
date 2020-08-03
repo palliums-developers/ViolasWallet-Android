@@ -447,7 +447,12 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                         fromToken
                     }
                     // 获取计算出来的金额
-                    val outputAmount = tradeExact.amount
+                    var outputAmount = tradeExact.amount
+                    if (toToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
+                        toToken.coinNumber == CoinTypes.Bitcoin.coinType()
+                    ) {
+                        outputAmount *= 100
+                    }
 
                     // 根据币种信息转换计算出来的金额单位
                     val outputAmountByCoin = convertAmountToDisplayUnit(
@@ -455,26 +460,8 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                         CoinTypes.parseCoinType(outputCoin.coinNumber)
                     ).first
 
-                    // 获取应该输出的币种信息
-                    val inputCoin = if (isInputFrom) {
-                        fromToken
-                    } else {
-                        toToken
-                    }
-                    // 根据币种信息转换计算出来的手续费金额
-                    var outputFeeAmount = convertAmountToDisplayUnit(
-                        tradeExact.fee,
-                        CoinTypes.parseCoinType(inputCoin.coinNumber)
-                    ).first
-                    if (inputCoin.coinNumber == CoinTypes.BitcoinTest.coinType() ||
-                        inputCoin.coinNumber == CoinTypes.BitcoinTest.coinType()
-                    ) {
-                        outputFeeAmount = BigDecimal(outputFeeAmount).multiply(BigDecimal("100"))
-                            .stripTrailingZeros().toPlainString()
-                    }
-
                     // 计算手续费率
-                    var handlingFeeRate = if (isInputFrom) {
+                    val handlingFeeRate = if (isInputFrom) {
                         BigDecimal(tradeExact.fee).divide(
                             BigDecimal(inputAmount),
                             6,
@@ -486,12 +473,7 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                             6,
                             RoundingMode.HALF_UP
                         )
-                    }
-                    if (inputCoin.coinNumber == CoinTypes.BitcoinTest.coinType() ||
-                        inputCoin.coinNumber == CoinTypes.BitcoinTest.coinType()
-                    ) {
-                        handlingFeeRate = handlingFeeRate.multiply(BigDecimal("100"))
-                    }
+                    }.multiply(BigDecimal("100"))
 
                     // 计算兑换率
                     val exchangeRate = if (isInputFrom) {
