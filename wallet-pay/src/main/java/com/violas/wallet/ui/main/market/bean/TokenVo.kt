@@ -18,8 +18,7 @@ abstract class ITokenVo(
     val displayName: String,        // 币的显示名称
     val logo: String,               // 币的logo
     var displayAmount: BigDecimal,  // 币的金额
-    var anchorValue: Double,        // 币的锚定价值
-    var selected: Boolean           // 币是否选中
+    var anchorValue: Double         // 币的锚定价值
 ) {
     abstract fun areContentsTheSame(another: ITokenVo): Boolean
 }
@@ -32,9 +31,8 @@ class PlatformTokenVo(
     displayName: String,
     logo: String,
     displayAmount: BigDecimal = BigDecimal(0),
-    anchorValue: Double = 0.00,
-    selected: Boolean = false
-) : ITokenVo(coinNumber, displayName, logo, displayAmount, anchorValue, selected) {
+    anchorValue: Double = 0.00
+) : ITokenVo(coinNumber, displayName, logo, displayAmount, anchorValue) {
 
     override fun areContentsTheSame(another: ITokenVo): Boolean {
         return if (another is PlatformTokenVo)
@@ -43,7 +41,6 @@ class PlatformTokenVo(
                     && logo == another.logo
                     && displayAmount == another.displayAmount
                     && anchorValue == another.anchorValue
-                    && selected == another.selected
         else
             false
     }
@@ -64,12 +61,11 @@ class PlatformTokenVo(
         result = result * 31 + logo.hashCode()
         result = result * 31 + displayAmount.hashCode()
         result = result * 31 + anchorValue.hashCode()
-        result = result * 31 + selected.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "PlatformTokenVo(coinNumber=$coinNumber, displayName='$displayName', logo='$logo', displayAmount=${displayAmount.toPlainString()})"
+        return "PlatformTokenVo(coinNumber=$coinNumber, displayName='$displayName', logo='$logo', displayAmount=${displayAmount.toPlainString()}, anchorValue=$anchorValue)"
     }
 }
 
@@ -85,9 +81,8 @@ class StableTokenVo(
     displayName: String,
     logo: String,
     displayAmount: BigDecimal = BigDecimal(0),
-    anchorValue: Double = 0.00,
-    selected: Boolean = false
-) : ITokenVo(coinNumber, displayName, logo, displayAmount, anchorValue, selected) {
+    anchorValue: Double = 0.00
+) : ITokenVo(coinNumber, displayName, logo, displayAmount, anchorValue) {
 
     override fun areContentsTheSame(another: ITokenVo): Boolean {
         return if (another is StableTokenVo)
@@ -100,7 +95,6 @@ class StableTokenVo(
                     && logo == another.logo
                     && displayAmount == another.displayAmount
                     && anchorValue == another.anchorValue
-                    && selected == another.selected
         else
             false
     }
@@ -127,11 +121,10 @@ class StableTokenVo(
         result = result * 31 + logo.hashCode()
         result = result * 31 + displayAmount.hashCode()
         result = result * 31 + anchorValue.hashCode()
-        result = result * 31 + selected.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "StableTokenVo(name='$name', module='$module', address='$address', marketIndex=$marketIndex, coinNumber=$coinNumber, displayName='$displayName', logo='$logo', displayAmount=${displayAmount.toPlainString()})"
+        return "StableTokenVo(name='$name', module='$module', address='$address', marketIndex=$marketIndex, coinNumber=$coinNumber, displayName='$displayName', logo='$logo', displayAmount=${displayAmount.toPlainString()}, anchorValue=$anchorValue)"
     }
 }

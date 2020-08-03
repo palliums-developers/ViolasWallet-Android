@@ -182,7 +182,7 @@ fun convertAmountToExchangeRate(
     amountA: Long,
     amountB: Long,
     coinTypesB: CoinTypes = CoinTypes.Violas
-): BigDecimal {
+): BigDecimal? {
     return convertAmountToExchangeRate(
         BigDecimal(amountA),
         BigDecimal(amountB),
@@ -194,7 +194,7 @@ fun convertAmountToExchangeRate(
     amountAStr: String,
     amountBStr: String,
     coinTypesB: CoinTypes = CoinTypes.Violas
-): BigDecimal {
+): BigDecimal? {
     return convertAmountToExchangeRate(
         BigDecimal(amountAStr),
         BigDecimal(amountBStr),
@@ -206,48 +206,15 @@ fun convertAmountToExchangeRate(
     amountABigDecimal: BigDecimal,
     amountBBigDecimal: BigDecimal,
     coinTypesB: CoinTypes = CoinTypes.Violas
-): BigDecimal {
-    return amountBBigDecimal
-        .divide(
-            amountABigDecimal,
-            getCoinDecimal(coinTypesB),
-            RoundingMode.DOWN
-        )
-        .stripTrailingZeros()
-}
-
-fun convertAmountToExchangeRateStr(
-    amountA: Long,
-    amountB: Long,
-    coinTypesB: CoinTypes = CoinTypes.Violas
-): String {
-    return convertAmountToExchangeRate(
-        BigDecimal(amountA),
-        BigDecimal(amountB),
-        coinTypesB
-    ).toPlainString()
-}
-
-fun convertAmountToExchangeRateStr(
-    amountAStr: String,
-    amountBStr: String,
-    coinTypesB: CoinTypes = CoinTypes.Violas
-): String {
-    return convertAmountToExchangeRate(
-        BigDecimal(amountAStr),
-        BigDecimal(amountBStr),
-        coinTypesB
-    ).toPlainString()
-}
-
-fun convertAmountToExchangeRateStr(
-    amountABigDecimal: BigDecimal,
-    amountBBigDecimal: BigDecimal,
-    coinTypesB: CoinTypes = CoinTypes.Violas
-): String {
-    return convertAmountToExchangeRate(
-        amountABigDecimal,
-        amountBBigDecimal,
-        coinTypesB
-    ).toPlainString()
+): BigDecimal? {
+    return if (amountABigDecimal > BigDecimal.ZERO)
+        amountBBigDecimal
+            .divide(
+                amountABigDecimal,
+                getCoinDecimal(coinTypesB),
+                RoundingMode.DOWN
+            )
+            .stripTrailingZeros()
+    else
+        null
 }

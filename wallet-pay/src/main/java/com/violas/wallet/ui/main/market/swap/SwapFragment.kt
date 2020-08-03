@@ -3,10 +3,8 @@ package com.violas.wallet.ui.main.market.swap
 import android.os.Bundle
 import android.text.AmountInputFilter
 import android.text.TextWatcher
-import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -30,10 +28,9 @@ import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
+import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Companion.ACTION_SWAP_SELECT_FROM
 import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Companion.ACTION_SWAP_SELECT_TO
-import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog
-import com.violas.wallet.ui.main.market.selectToken.CoinsBridge
 import com.violas.wallet.ui.main.market.selectToken.SwapTokensDataResourcesBridge
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
@@ -55,7 +52,7 @@ import java.math.RoundingMode
  * <p>
  * desc: 市场兑换视图
  */
-class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge {
+class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
 
     private val swapViewModel by lazy {
         ViewModelProvider(this).get(SwapViewModel::class.java)
@@ -535,29 +532,6 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
             .show(childFragmentManager)
     }
 
-    override fun onSelectCoin(action: Int, coin: ITokenVo) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getMarketSupportCoins(failureCallback: (error: Throwable) -> Unit) {
-        marketViewModel.execute(failureCallback = failureCallback)
-    }
-
-    override fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>> {
-        return marketViewModel.getMarketSupportCoinsLiveData()
-    }
-
-    override fun getTipsMessageLiveData(): EnhancedMutableLiveData<String> {
-        return marketViewModel.tipsMessage
-    }
-
-    override fun getCurrCoin(action: Int): ITokenVo? {
-        return if (action == ACTION_SWAP_SELECT_FROM)
-            swapViewModel.getCurrFromTokenLiveData().value
-        else
-            swapViewModel.getCurrToTokenLiveData().value
-    }
-
     override suspend fun getMarketSupportFromTokens(): LiveData<List<ITokenVo>?> {
         withContext(Dispatchers.Main) {
             marketViewModel.execute()
@@ -566,12 +540,19 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
     }
 
     override suspend fun getMarketSupportToTokens(): List<ITokenVo>? {
-        try {
-            return swapViewModel.getSwapToTokenList()
+        return try {
+            swapViewModel.getSwapToTokenList()
         } catch (e: Exception) {
             e.printStackTrace()
-            return null
+            null
         }
+    }
+
+    override fun getCurrCoin(action: Int): ITokenVo? {
+        return if (action == ACTION_SWAP_SELECT_FROM)
+            swapViewModel.getCurrFromTokenLiveData().value
+        else
+            swapViewModel.getCurrToTokenLiveData().value
     }
 
     //*********************************** 输入框逻辑 ***********************************//
