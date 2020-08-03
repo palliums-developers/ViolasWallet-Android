@@ -25,6 +25,7 @@ import com.violas.wallet.ui.biometric.UnableBiometricPromptDialog
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.authenticateAccountByPassword
 import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.walletconnect.WalletConnect
 import kotlinx.android.synthetic.main.activity_wallet_manager.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -207,6 +208,8 @@ class WalletManagerActivity : BaseAppActivity() {
                 // 删除本地所有的account和token
                 mAccountManager.deleteAllAccount()
                 TokenManager().deleteAllToken()
+                // 清除 WalletConnect 链接状态
+                WalletConnect.getInstance(this@WalletManagerActivity).disconnect()
                 // 清除本地配置
                 mAccountManager.clearLocalConfig()
             }

@@ -115,7 +115,8 @@ class BTCToMappingAssetsProcessor(
                 violasOutputScript.requestExchange(
                     supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.label ?: "",
                     payeeAddress.hexStringToByteArray(),
-                    contractAddress.hexStringToByteArray()
+                    contractAddress.hexStringToByteArray(),
+                    amountOutMin
                 )
             ).flatMap {
                 try {
@@ -139,7 +140,7 @@ class BTCToMappingAssetsProcessor(
 
 class ViolasOutputScript {
     companion object {
-        const val OP_VER: Int = 0x0002
+        const val OP_VER: Int = 0x0003
         val OP_TYPE_START: ByteArray = byteArrayOf(0x30, 0x00)
         val OP_TYPE_END: ByteArray = byteArrayOf(0x30, 0x01)
         val TYPE_CANCEL: ByteArray = byteArrayOf(0x30, 0x02)
@@ -154,9 +155,9 @@ class ViolasOutputScript {
         lable: String,
         payeeAddress: ByteArray,
         vtokenAddress: ByteArray,
+        miniOutputAmount: Long,
         sequence: Long = System.currentTimeMillis()
     ): Script {
-        val authKeyPrefix = byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         val dataStream = BitcoinOutputStream()
         dataStream.write("violas".toByteArray())
         //dataStream.writeInt16(OP_VER)
@@ -164,11 +165,15 @@ class ViolasOutputScript {
         writeInt16(OP_VER, dataStream)
 
         dataStream.write(lable.replace("0x", "").hexToBytes())
-        dataStream.write(authKeyPrefix + payeeAddress)
+        dataStream.write(payeeAddress)
         dataStream.write(
             ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(sequence).array()
         )
-        dataStream.write(authKeyPrefix + vtokenAddress)
+        dataStream.write(vtokenAddress)
+        dataStream.write(
+            ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(miniOutputAmount).array()
+        )
+        writeInt16(0, dataStream)
 
         val scriptStream = BitcoinOutputStream()
         scriptStream.write(Script.OP_RETURN.toInt())

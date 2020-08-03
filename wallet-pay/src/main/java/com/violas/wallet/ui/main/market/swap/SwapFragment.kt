@@ -405,7 +405,6 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                                     fromInputTextWatcher
                                 }
                             )
-                            swapViewModel.getGasFeeLiveData().value = null
                             swapViewModel.getExchangeRateLiveData().value = null
                             swapViewModel.getHandlingFeeRateLiveDataLiveData().value = null
                         }
@@ -426,7 +425,6 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                         swapViewModel.getExchangeRateLiveData().value = BigDecimal.valueOf(0)
                         swapViewModel.getHandlingFeeRateLiveDataLiveData().value =
                             BigDecimal.valueOf(0)
-                        swapViewModel.getGasFeeLiveData().value = "0"
                         handleInputTextWatcher(
                             "", outputEdit, if (isInputFrom) {
                                 toInputTextWatcher
@@ -530,7 +528,6 @@ class SwapFragment : BaseFragment(), CoinsBridge, SwapTokensDataResourcesBridge 
                                 fromInputTextWatcher
                             }
                         )
-                        swapViewModel.getGasFeeLiveData().value = outputFeeAmount
                         swapViewModel.getExchangeRateLiveData().value = exchangeRate
                         swapViewModel.getHandlingFeeRateLiveDataLiveData().value = handlingFeeRate
                     }
