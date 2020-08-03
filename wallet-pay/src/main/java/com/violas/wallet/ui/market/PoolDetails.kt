@@ -72,38 +72,42 @@ class PoolDetailsActivity : BaseAppActivity() {
 
     private fun initView(record: MarketPoolRecordDTO) {
         tvTokenA.text =
-            if (record.coinAName.isNullOrBlank() || record.coinAAmount.isNullOrBlank()) {
+            if (record.coinAName.isNullOrBlank() || record.coinAAmount.isNullOrBlank())
                 getString(R.string.value_null)
-            } else {
+            else
                 "${convertAmountToDisplayAmountStr(record.coinAAmount!!)} ${record.coinAName}"
-            }
+
         tvTokenB.text =
-            if (record.coinBName.isNullOrBlank() || record.coinBAmount.isNullOrBlank()) {
+            if (record.coinBName.isNullOrBlank() || record.coinBAmount.isNullOrBlank())
                 getString(R.string.value_null)
-            } else {
+            else
                 "${convertAmountToDisplayAmountStr(record.coinBAmount!!)} ${record.coinBName}"
-            }
+
         tvLiquidity.text =
-            if (record.liquidityAmount.isNullOrBlank()) {
-                getString(R.string.value_null)
-            } else {
-                getString(
-                    R.string.market_liquidity_token_amount_format,
-                    if (record.isAddLiquidity())
-                        "+ ${convertAmountToDisplayAmountStr(record.liquidityAmount!!)}"
-                    else
-                        "- ${convertAmountToDisplayAmountStr(record.liquidityAmount!!)}"
-                )
+            when {
+                record.liquidityAmount.isNullOrBlank() ->
+                    getString(R.string.value_null)
+                record.isAddLiquidity() ->
+                    "+ ${convertAmountToDisplayAmountStr(record.liquidityAmount!!)}"
+                else ->
+                    "- ${convertAmountToDisplayAmountStr(record.liquidityAmount!!)}"
             }
+
+
         tvExchangeRate.text =
-            if (record.coinAAmount.isNullOrBlank() || record.coinBAmount.isNullOrBlank()) {
+            if (record.coinAAmount.isNullOrBlank() || record.coinBAmount.isNullOrBlank())
                 getString(R.string.value_null)
-            } else {
+            else
                 convertAmountToExchangeRate(record.coinAAmount!!, record.coinBAmount!!).let {
                     if (it == null) getString(R.string.value_null) else "1:${it.toPlainString()}"
                 }
-            }
-        tvGasFee.text = getString(R.string.value_null)
+
+        tvGasFee.text =
+            if (record.gasUsed.isNullOrBlank() || record.gasCurrency.isNullOrBlank())
+                getString(R.string.value_null)
+            else
+                "${convertAmountToDisplayAmountStr(record.gasUsed!!)} ${record.gasCurrency}"
+
         tvOrderTime.text = formatDate(record.date, pattern = "yyyy-MM-dd HH:mm:ss")
         tvDealTime.text = getString(R.string.value_null)
 
