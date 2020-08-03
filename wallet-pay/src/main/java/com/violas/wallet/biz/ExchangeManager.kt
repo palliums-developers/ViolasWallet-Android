@@ -153,7 +153,7 @@ class ExchangeManager {
                 if (swapPosition) amountAMin else amountBMin
             )
 
-        mViolasRpcService.sendTransaction(
+        mViolasService.sendTransaction(
             addLiquidityTransactionPayload,
             Account(KeyPair.fromSecretKey(privateKey)),
             gasCurrencyCode = coinA.module
@@ -205,7 +205,7 @@ class ExchangeManager {
         lazyLogError { "removeLiquidity. liquidity amount: $liquidityAmount" }
 
         val swapPosition = coinA.marketIndex > coinB.marketIndex
-        val addLiquidityTransactionPayload =
+        val removeLiquidityTransactionPayload =
             mViolasExchangeContract.optionRemoveLiquidityTransactionPayload(
                 if (swapPosition) typeTagB else typeTagA,
                 if (swapPosition) typeTagA else typeTagB,
@@ -214,8 +214,8 @@ class ExchangeManager {
                 if (swapPosition) amountAMin else amountBMin
             )
 
-        mViolasRpcService.sendTransaction(
-            addLiquidityTransactionPayload,
+        mViolasService.sendTransaction(
+            removeLiquidityTransactionPayload,
             Account(KeyPair.fromSecretKey(privateKey)),
             gasCurrencyCode = coinA.module
         )
