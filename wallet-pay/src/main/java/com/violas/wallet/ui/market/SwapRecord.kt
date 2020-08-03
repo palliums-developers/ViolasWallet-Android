@@ -131,6 +131,8 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
                 fromAmount = "10000000",
                 toName = "VLSSGD",
                 toAmount = "13909000",
+                gasUsed = "",
+                gasCurrency = "",
                 version = 1,
                 date = System.currentTimeMillis(),
                 status = 4001
@@ -140,6 +142,8 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
                 fromAmount = "100000",
                 toName = "VLSEUR",
                 toAmount = "87770",
+                gasUsed = "",
+                gasCurrency = "",
                 version = 2,
                 date = System.currentTimeMillis(),
                 status = 4002

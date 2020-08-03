@@ -180,6 +180,10 @@ data class MarketSwapRecordDTO(
     val toName: String?,
     @SerializedName(value = "output_amount")
     val toAmount: String?,
+    @SerializedName(value = "gas_used")
+    val gasUsed: String?,
+    @SerializedName(value = "gas_currency")
+    val gasCurrency: String?,
     val version: Long,
     val date: Long,
     val status: Int
@@ -198,6 +202,10 @@ data class MarketPoolRecordDTO(
     val coinBAmount: String?,
     @SerializedName(value = "token")
     val liquidityAmount: String?,
+    @SerializedName(value = "gas_used")
+    val gasUsed: String?,
+    @SerializedName(value = "gas_currency")
+    val gasCurrency: String?,
     @SerializedName(value = "transaction_type")
     val type: String,
     val version: Long,

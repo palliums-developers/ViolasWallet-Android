@@ -73,27 +73,33 @@ class SwapDetailsActivity : BaseAppActivity() {
 
     private fun initView(record: MarketSwapRecordDTO) {
         tvFromToken.text =
-            if (record.fromName.isNullOrBlank() || record.fromAmount.isNullOrBlank()) {
+            if (record.fromName.isNullOrBlank() || record.fromAmount.isNullOrBlank())
                 getString(R.string.value_null)
-            } else {
+            else
                 "${convertAmountToDisplayAmountStr(record.fromAmount!!)} ${record.fromName}"
-            }
+
         tvToToken.text =
-            if (record.toName.isNullOrBlank() || record.toAmount.isNullOrBlank()) {
+            if (record.toName.isNullOrBlank() || record.toAmount.isNullOrBlank())
                 getString(R.string.value_null)
-            } else {
+            else
                 "${convertAmountToDisplayAmountStr(record.toAmount!!)} ${record.toName}"
-            }
+
         tvExchangeRate.text =
-            if (record.fromAmount.isNullOrBlank() || record.toAmount.isNullOrBlank()) {
+            if (record.fromAmount.isNullOrBlank() || record.toAmount.isNullOrBlank())
                 getString(R.string.value_null)
-            } else {
+            else
                 convertAmountToExchangeRate(record.fromAmount!!, record.toAmount!!).let {
                     if (it == null) getString(R.string.value_null) else "1:${it.toPlainString()}"
                 }
-            }
+
         tvHandlingFee.text = getString(R.string.value_null)
-        tvGasFee.text = getString(R.string.value_null)
+
+        tvGasFee.text =
+            if (record.gasUsed.isNullOrBlank() || record.gasCurrency.isNullOrBlank())
+                getString(R.string.value_null)
+            else
+                "${convertAmountToDisplayAmountStr(record.gasUsed!!)} ${record.gasCurrency}"
+
         tvOrderTime.text = formatDate(record.date, pattern = "yyyy-MM-dd HH:mm:ss")
         tvDealTime.text = getString(R.string.value_null)
 
