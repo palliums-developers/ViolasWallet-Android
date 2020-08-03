@@ -7,6 +7,7 @@ data class JsonRpcError(
     companion object {
         fun accountNotActivationError(message: String) = JsonRpcError(-20001, message)
         fun accountNotControlError(message: String) = JsonRpcError(-20002, message)
+        fun lackOfBalanceError() = JsonRpcError(-20003, "Insufficient balance")
         fun userRefused() = JsonRpcError(-20101, "User active rejection")
         fun transactionBroadcastFailed(message: String) = JsonRpcError(-20201, message)
 

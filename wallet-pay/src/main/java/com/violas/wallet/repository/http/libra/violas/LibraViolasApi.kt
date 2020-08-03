@@ -58,7 +58,7 @@ data class TransactionRecordDTO(
     val sequence_number: Long,
     val version: Long,
     val type: Int,
-    val status: Int
+    val status: String
 )
 
 @Keep

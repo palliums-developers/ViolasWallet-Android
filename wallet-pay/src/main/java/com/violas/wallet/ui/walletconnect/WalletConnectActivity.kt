@@ -259,7 +259,7 @@ class WalletConnectActivity : BaseAppActivity() {
                                     subscribe.dispose()
                                 }
                             }
-                            if(txId.isNotEmpty()){
+                            if (txId.isNotEmpty()) {
 
                             }
                             // </editor-fold>
@@ -287,6 +287,13 @@ class WalletConnectActivity : BaseAppActivity() {
                 mRequestHandle = true
                 finish()
                 dismissProgress()
+            } catch (e: LackOfBalanceException) {
+                dismissProgress()
+                mWalletConnect.sendErrorMessage(
+                    transactionSwapVo.requestID,
+                    JsonRpcError.lackOfBalanceError()
+                )
+                e.message?.let { it1 -> showToast(it1) }
             } catch (e: Exception) {
                 dismissProgress()
                 e.message?.let { it1 -> showToast(it1) }
