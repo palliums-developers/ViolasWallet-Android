@@ -11,8 +11,8 @@ object BaseBizUrl {
     private const val VIOLAS_DEX_BASE_URL_TEST_NET = "http://18.220.66.235:38181"
 
     // Violas chain url
-    private const val VIOLAS_CHAIN_URL_MAIN_NET = "http://47.240.8.80:50001"
-    private const val VIOLAS_CHAIN_URL_TEST_NET = "http://47.240.8.80:50001"
+    private const val VIOLAS_CHAIN_URL_MAIN_NET = "https://ab.testnet.violas.io"
+    private const val VIOLAS_CHAIN_URL_TEST_NET = "https://ab.testnet.violas.io"
 
     // Libra chain url
     private const val LIBRA_BASE_URL_MAIN_NET = "https://client.testnet.libra.org"
