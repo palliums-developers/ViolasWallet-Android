@@ -14,7 +14,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
-import com.violas.wallet.utils.convertAmountToExchangeRateStr
+import com.violas.wallet.utils.convertAmountToExchangeRate
 import kotlinx.android.synthetic.main.activity_swap_details.*
 
 /**
@@ -88,7 +88,9 @@ class SwapDetailsActivity : BaseAppActivity() {
             if (record.fromAmount.isNullOrBlank() || record.toAmount.isNullOrBlank()) {
                 getString(R.string.value_null)
             } else {
-                "1:${convertAmountToExchangeRateStr(record.fromAmount!!, record.toAmount!!)}"
+                convertAmountToExchangeRate(record.fromAmount!!, record.toAmount!!).let {
+                    if (it == null) getString(R.string.value_null) else "1:${it.toPlainString()}"
+                }
             }
         tvHandlingFee.text = getString(R.string.value_null)
         tvGasFee.text = getString(R.string.value_null)

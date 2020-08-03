@@ -13,7 +13,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
-import com.violas.wallet.utils.convertAmountToExchangeRateStr
+import com.violas.wallet.utils.convertAmountToExchangeRate
 import kotlinx.android.synthetic.main.activity_pool_details.*
 
 /**
@@ -99,7 +99,9 @@ class PoolDetailsActivity : BaseAppActivity() {
             if (record.coinAAmount.isNullOrBlank() || record.coinBAmount.isNullOrBlank()) {
                 getString(R.string.value_null)
             } else {
-                "1:${convertAmountToExchangeRateStr(record.coinAAmount!!, record.coinBAmount!!)}"
+                convertAmountToExchangeRate(record.coinAAmount!!, record.coinBAmount!!).let {
+                    if (it == null) getString(R.string.value_null) else "1:${it.toPlainString()}"
+                }
             }
         tvGasFee.text = getString(R.string.value_null)
         tvOrderTime.text = formatDate(record.date, pattern = "yyyy-MM-dd HH:mm:ss")
