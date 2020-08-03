@@ -110,8 +110,7 @@ class MarketViewModel : BaseViewModel() {
             displayName = "VLS",
             logo = "",
             displayAmount = BigDecimal(100_000000),
-            anchorValue = 1.00,
-            selected = false
+            anchorValue = 1.00
         )
 
         val vlsusd = StableTokenVo(
@@ -123,8 +122,7 @@ class MarketViewModel : BaseViewModel() {
             displayName = "VLSUSD",
             logo = "",
             displayAmount = BigDecimal(200_000000),
-            anchorValue = 1.00,
-            selected = false
+            anchorValue = 1.00
         )
 
         val vlsgbp = StableTokenVo(
@@ -136,8 +134,7 @@ class MarketViewModel : BaseViewModel() {
             displayName = "VLSGBP",
             logo = "",
             displayAmount = BigDecimal(300_000000),
-            anchorValue = 1.2526,
-            selected = false
+            anchorValue = 1.2526
         )
 
         val vlseur = StableTokenVo(
@@ -149,8 +146,7 @@ class MarketViewModel : BaseViewModel() {
             displayName = "VLSEUR",
             logo = "",
             displayAmount = BigDecimal(400_000000),
-            anchorValue = 1.1272,
-            selected = false
+            anchorValue = 1.1272
         )
 
         val vlssgd = StableTokenVo(
@@ -162,8 +158,7 @@ class MarketViewModel : BaseViewModel() {
             displayName = "VLSSGD",
             logo = "",
             displayAmount = BigDecimal(500_000000),
-            anchorValue = 0.7167,
-            selected = false
+            anchorValue = 0.7167
         )
 
         val vlsjpy = StableTokenVo(
@@ -175,8 +170,7 @@ class MarketViewModel : BaseViewModel() {
             displayName = "VLSJPY",
             logo = "",
             displayAmount = BigDecimal(500_000000),
-            anchorValue = 0.0093,
-            selected = false
+            anchorValue = 0.0093
         )
 
         val lbr = PlatformTokenVo(
@@ -184,8 +178,7 @@ class MarketViewModel : BaseViewModel() {
             displayName = "LBR",
             logo = "",
             displayAmount = BigDecimal(100_000000),
-            anchorValue = 1.00,
-            selected = false
+            anchorValue = 1.00
         )
 
         val btc = PlatformTokenVo(
@@ -193,8 +186,7 @@ class MarketViewModel : BaseViewModel() {
             displayName = "BTC",
             logo = "",
             displayAmount = BigDecimal(100_000000),
-            anchorValue = 9000.00,
-            selected = false
+            anchorValue = 9000.00
         )
 
         val list = mutableListOf(

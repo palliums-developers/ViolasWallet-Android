@@ -45,6 +45,7 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
     private var tokenCallback: ((Int, ITokenVo) -> Unit)? = null
     private var swapTokensDataResourcesBridge: SwapTokensDataResourcesBridge? = null
     private var displayTokens: List<ITokenVo>? = null
+    private var currCoin: ITokenVo? = null
     private var job: Job? = null
 
     private val tokenAdapter by lazy {
@@ -116,7 +117,11 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
 
             val inputText = it?.toString()?.trim()
             if (inputText.isNullOrEmpty()) {
-                handleData(displayTokens!!)
+                if (displayTokens.isNullOrEmpty()) {
+                    handleEmptyData(null)
+                } else {
+                    handleData(displayTokens!!)
+                }
             } else {
                 searchToken(inputText)
             }
@@ -124,6 +129,8 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
 
         recyclerView.adapter = tokenAdapter
         recyclerView.visibility = View.GONE
+
+        currCoin = swapTokensDataResourcesBridge?.getCurrCoin(action)
 
         statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         statusLayout.setReloadCallback {
@@ -181,18 +188,16 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
 
     private suspend fun filterData(marketSupportTokens: List<ITokenVo>) {
         withContext(Dispatchers.Main) {
-            val list = marketSupportTokens
-
-            etSearchBox.isEnabled = true
-            displayTokens = list
-            if (list.isEmpty()) {
+            displayTokens = marketSupportTokens
+            if (marketSupportTokens.isEmpty()) {
                 handleEmptyData(null)
                 return@withContext
             }
 
+            etSearchBox.isEnabled = true
             val searchText = etSearchBox.text.toString().trim()
             if (searchText.isEmpty()) {
-                handleData(list)
+                handleData(marketSupportTokens)
             } else {
                 searchToken(searchText)
             }
@@ -292,7 +297,8 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
                 item.displayAmount.toPlainString(),
                 item.displayName
             )
-            holder.itemView.tvSelected.visibility = if (item.selected) View.VISIBLE else View.GONE
+            holder.itemView.tvSelected.visibility =
+                if (item == currCoin) View.VISIBLE else View.GONE
             holder.itemView.setOnClickListener {
                 close()
                 tokenCallback?.invoke(action, getItem(position))
@@ -305,4 +311,6 @@ interface SwapTokensDataResourcesBridge {
     suspend fun getMarketSupportFromTokens(): LiveData<List<ITokenVo>?>
 
     suspend fun getMarketSupportToTokens(): List<ITokenVo>?
+
+    fun getCurrCoin(action: Int): ITokenVo?
 }

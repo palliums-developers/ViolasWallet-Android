@@ -51,6 +51,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     private var action: Int = -1
     private var coinsBridge: CoinsBridge? = null
     private var displayCoins: List<ITokenVo>? = null
+    private var currCoin: ITokenVo? = null
     private var job: Job? = null
 
     private val coinAdapter by lazy { CoinAdapter() }
@@ -121,7 +122,11 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
 
             val inputText = it?.toString()?.trim()
             if (inputText.isNullOrEmpty()) {
-                handleData(displayCoins!!)
+                if (displayCoins.isNullOrEmpty()) {
+                    handleEmptyData(null)
+                } else {
+                    handleData(displayCoins!!)
+                }
             } else {
                 searchToken(inputText)
             }
@@ -136,14 +141,15 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
             getMarketSupportCoins()
         }
 
-        coinsBridge!!.getTipsMessageLiveData().observe(viewLifecycleOwner, Observer {
+        currCoin = coinsBridge?.getCurrCoin(action)
+        coinsBridge?.getTipsMessageLiveData()?.observe(viewLifecycleOwner, Observer {
             it.getDataIfNotHandled()?.let { msg ->
                 if (msg.isNotEmpty()) {
                     showToast(msg)
                 }
             }
         })
-        coinsBridge!!.getMarketSupportCoinsLiveData().observe(viewLifecycleOwner, Observer {
+        coinsBridge?.getMarketSupportCoinsLiveData()?.observe(viewLifecycleOwner, Observer {
             cancelJob()
 
             if (it.isEmpty()) {
@@ -156,7 +162,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     private fun getMarketSupportCoins() {
-        coinsBridge!!.getMarketSupportCoins() {
+        coinsBridge?.getMarketSupportCoins {
             handleLoadFailure()
         }
     }
@@ -174,10 +180,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     private fun filterData(marketSupportTokens: List<ITokenVo>) {
         launch {
             val list = withContext(Dispatchers.IO) {
-                val currToken = coinsBridge?.getCurrCoin(action)
                 marketSupportTokens.filter {
-                    it.selected = it == currToken
-
                     when (action) {
                         ACTION_SWAP_SELECT_FROM -> {
                             // 兑换选择输出币种，展示交易市场支持的所有币种
@@ -303,7 +306,8 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                 item.displayAmount.toPlainString(),
                 item.displayName
             )
-            holder.itemView.tvSelected.visibility = if (item.selected) View.VISIBLE else View.GONE
+            holder.itemView.tvSelected.visibility =
+                if (item == currCoin) View.VISIBLE else View.GONE
             holder.itemView.setOnClickListener {
                 close()
                 coinsBridge?.onSelectCoin(action, getItem(position))
