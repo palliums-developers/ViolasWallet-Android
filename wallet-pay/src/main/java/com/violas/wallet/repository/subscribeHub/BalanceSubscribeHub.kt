@@ -1,10 +1,8 @@
 package com.violas.wallet.repository.subscribeHub
 
-import android.os.Build
 import android.util.Log
 import androidx.lifecycle.*
 import com.palliums.utils.CustomIOScope
-import com.palliums.utils.CustomMainScope
 import com.palliums.utils.toMap
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
@@ -16,7 +14,6 @@ import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.viewModel.bean.HiddenTokenVo
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 interface RemoveSubscriberCallBack {
@@ -76,11 +73,11 @@ object BalanceSubscribeHub : LifecycleOwner, LifecycleObserver, RemoveSubscriber
      */
     override fun notice(subscriber: BalanceSubscriber?) {
         if (subscriber != null) {
-            val assetsVo = mAssetsMap[subscriber.getAssetsMark()]
+            val assetsVo = mAssetsMap[subscriber.getAssetsMarkUnique()]
             subscriber.onNotice(assetsVo)
         } else {
             mBalanceSubscribers.keys.forEach { item ->
-                mAssetsMap[item.getAssetsMark()].let { assets ->
+                mAssetsMap[item.getAssetsMarkUnique()].let { assets ->
                     item.onNotice(assets)
                 }
             }

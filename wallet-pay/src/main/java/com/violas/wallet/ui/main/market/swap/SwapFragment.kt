@@ -3,6 +3,7 @@ package com.violas.wallet.ui.main.market.swap
 import android.os.Bundle
 import android.text.AmountInputFilter
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.LiveData
@@ -93,27 +94,34 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
         override fun onNotice(assets: AssetsVo?) {
             launch {
                 mCurrFromAssetsAmount = BigDecimal(assets?.amountWithUnit?.amount ?: "0")
-                if (assets == null) {
-                    handleValueNull(tvFromBalance, R.string.market_token_balance_format)
-                } else {
-                    tvFromBalance.text = getString(
-                        R.string.market_token_balance_format,
-                        "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
-                    )
+                withContext(Dispatchers.IO) {
+                    swapViewModel.getSupportTokensLiveData().value?.forEach {
+                        if (IAssetsMark.convert(it) == getAssetsMark()) {
+                            withContext(Dispatchers.Main) {
+                                tvFromBalance.text = getString(
+                                    R.string.market_token_balance_format,
+                                    "${assets?.amountWithUnit?.amount ?: "0"} ${it.displayName}"
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+
     private val toAssertsAmountSubscriber = object : BalanceSubscriber(null) {
         override fun onNotice(assets: AssetsVo?) {
             launch {
-                if (assets == null) {
-                    handleValueNull(tvToBalance, R.string.market_token_balance_format)
-                } else {
-                    tvToBalance.text = getString(
-                        R.string.market_token_balance_format,
-                        "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
-                    )
+                swapViewModel.getSupportTokensLiveData().value?.forEach {
+                    if (IAssetsMark.convert(it) == getAssetsMark()) {
+                        withContext(Dispatchers.Main) {
+                            tvToBalance.text = getString(
+                                R.string.market_token_balance_format,
+                                "${assets?.amountWithUnit?.amount ?: "0"} ${it.displayName}"
+                            )
+                        }
+                    }
                 }
             }
         }

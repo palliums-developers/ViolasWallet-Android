@@ -10,17 +10,9 @@ abstract class BalanceSubscriber(private var assetsMark: IAssetsMark?) {
 
     private var callBack: NoticeSubscriberCallBack? = null
 
-    fun getAssetsMark() = assetsMark?.mark() ?: ""
+    fun getAssetsMarkUnique() = assetsMark?.mark() ?: ""
 
-    fun getName(): String {
-        return if (assetsMark is CoinAssetsMark) {
-            (assetsMark as CoinAssetsMark).coinTypes.coinName()
-        } else if (assetsMark is LibraTokenAssetsMark) {
-            (assetsMark as LibraTokenAssetsMark).name
-        } else {
-            ""
-        }
-    }
+    fun getAssetsMark() = assetsMark
 
     @WorkerThread
     fun changeSubscriber(assetsMark: IAssetsMark?) {

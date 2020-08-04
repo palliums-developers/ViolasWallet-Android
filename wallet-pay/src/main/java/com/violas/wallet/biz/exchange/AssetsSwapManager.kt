@@ -1,6 +1,5 @@
 package com.violas.wallet.biz.exchange
 
-import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
