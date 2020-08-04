@@ -12,6 +12,7 @@ import com.palliums.paging.PagingViewAdapter
 import com.palliums.utils.formatDate
 import com.palliums.utils.getResourceId
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.utils.getAmountPrefix
 import kotlinx.android.synthetic.main.item_transaction_record.view.*
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
@@ -92,13 +93,11 @@ class TransactionRecordViewHolder(
 
             itemView.tvTime.text = formatDate(it.time, mSimpleDateFormat)
 
-            val amountSymbol = when {
-                BigDecimal(it.amount) <= BigDecimal(0) -> ""
-                it.transactionType == TransactionType.COLLECTION -> "+ "
-                else -> "- "
-            }
+            val amount = BigDecimal(it.amount)
+            val amountPrefix =
+                getAmountPrefix(amount, it.transactionType == TransactionType.COLLECTION)
             val amountWithUnit = convertAmountToDisplayUnit(it.amount, it.coinType)
-            itemView.tvAmount.text = "$amountSymbol${amountWithUnit.first}"
+            itemView.tvAmount.text = "$amountPrefix${amountWithUnit.first}"
             itemView.tvAmount.setTextColor(
                 getColor(
                     getResourceId(
