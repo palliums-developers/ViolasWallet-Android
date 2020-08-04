@@ -8,7 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.ViewModelProvider
+import com.palliums.base.BaseViewHolder
+import com.palliums.listing.ListingViewAdapter
+import com.palliums.listing.ListingViewModel
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.utils.openBrowser
@@ -17,7 +20,7 @@ import com.palliums.widget.dividers.RecycleViewItemDividers
 import com.quincysx.crypto.CoinTypes
 import com.smallraw.support.switchcompat.SwitchButton
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.base.BaseListingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
@@ -29,14 +32,12 @@ import com.violas.wallet.utils.loadRoundedImage
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
-import kotlinx.android.synthetic.main.activity_manager_assert.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ManagerAssertActivity : BaseAppActivity() {
-    override fun getLayoutResId() = R.layout.activity_manager_assert
+class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
 
     companion object {
         //        private const val EXT_ACCOUNT_ID = "0"
@@ -67,9 +68,21 @@ class ManagerAssertActivity : BaseAppActivity() {
         WalletAppViewModel.getViewModelInstance(this)
     }
 
-    private val mSupportTokens = mutableListOf<AssertOriginateToken>()
-    private val mAdapter by lazy {
-        MyAdapter(mSupportTokens) { checkbox, checked, assertToken ->
+    private val viewModel by lazy {
+        ViewModelProvider(
+            this,
+            object : ViewModelProvider.Factory {
+                override fun <T : androidx.lifecycle.ViewModel?> create(modelClass: Class<T>): T {
+                    return modelClass
+                        .getConstructor(TokenManager::class.java)
+                        .newInstance(mTokenManager)
+                }
+            }
+        ).get(ViewModel::class.java)
+    }
+
+    private val viewAdapter by lazy {
+        ViewAdapter { checkbox, checked, assertToken ->
             if (checked) {
                 openToken(checkbox, checked, assertToken)
             } else {
@@ -81,12 +94,24 @@ class ManagerAssertActivity : BaseAppActivity() {
         }
     }
 
+    override fun getViewModel(): ListingViewModel<AssertOriginateToken> {
+        return viewModel
+    }
+
+    override fun getViewAdapter(): ListingViewAdapter<AssertOriginateToken> {
+        return viewAdapter
+    }
+
+    override fun enableRefresh(): Boolean {
+        return true
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_assert_manager)
         setTitleRightText(R.string.action_get_experience_the_coin)
 
-        recyclerView.addItemDecoration(
+        getRecyclerView().addItemDecoration(
             RecycleViewItemDividers(
                 top = DensityUtility.dp2px(this, 5),
                 bottom = DensityUtility.dp2px(this, 5),
@@ -95,17 +120,12 @@ class ManagerAssertActivity : BaseAppActivity() {
                 showFirstTop = true
             )
         )
-        recyclerView.adapter = mAdapter
 
-        showProgress()
-        launch(Dispatchers.IO + handler) {
-            mSupportTokens.clear()
-            mSupportTokens.addAll(mTokenManager.loadSupportToken())
-            withContext(Dispatchers.Main) {
-                mAdapter.notifyDataSetChanged()
-                dismissProgress()
-            }
+        mListingHandler.init()
+        getRefreshLayout()?.setOnRefreshListener {
+            viewModel.execute()
         }
+        viewModel.execute()
     }
 
     private suspend fun isPublish(
@@ -234,65 +254,81 @@ class ManagerAssertActivity : BaseAppActivity() {
         }
         super.onBackPressedSupport()
     }
-}
 
-class MyAdapter(
-    val data: List<AssertOriginateToken>,
-    private val callbacks: (SwitchButton, Boolean, AssertOriginateToken) -> Unit
-) :
-    RecyclerView.Adapter<MyAdapter.ViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_manager_assert,
-                parent,
-                false
+    class ViewModel(
+        private val tokenManager: TokenManager
+    ) : ListingViewModel<AssertOriginateToken>() {
+
+        override suspend fun loadData(vararg params: Any): List<AssertOriginateToken> {
+            return tokenManager.loadSupportToken()
+        }
+
+        override fun checkNetworkBeforeExecute(): Boolean {
+            return false
+        }
+    }
+
+    class ViewAdapter(
+        private val callbacks: (SwitchButton, Boolean, AssertOriginateToken) -> Unit
+    ) : ListingViewAdapter<AssertOriginateToken>() {
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int
+        ): BaseViewHolder<AssertOriginateToken> {
+            return ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_manager_assert,
+                    parent,
+                    false
+                ),
+                callbacks
             )
-        )
+        }
     }
 
-    override fun getItemCount() = data.size
+    class ViewHolder(
+        view: View,
+        private val callbacks: (SwitchButton, Boolean, AssertOriginateToken) -> Unit
+    ) : BaseViewHolder<AssertOriginateToken>(view) {
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val itemData = data[position]
-        holder.itemView.name.text = itemData.name
-        holder.itemView.fullName.text = itemData.fullName
-        if (itemData.isToken) {
-            holder.itemView.checkBox.visibility = View.VISIBLE
-            holder.itemView.checkBox.setCheckedImmediatelyNoEvent(itemData.enable)
-        } else {
-            holder.itemView.checkBox.visibility = View.GONE
+        init {
+            itemView.setOnClickListener(this)
+            itemView.checkBox.setOnClickListener(this)
         }
 
-        holder.itemView.ivCoinLogo.loadRoundedImage(
-            itemData.logo,
-            getResourceId(R.attr.iconCoinDefLogo, holder.itemView.context),
-            14
-        )
+        override fun onViewBind(itemPosition: Int, itemData: AssertOriginateToken?) {
+            itemData?.let {
+                itemView.name.text = itemData.name
+                itemView.fullName.text = itemData.fullName
 
-        holder.itemView.setOnClickListener { view ->
-            if (itemData.isToken) {
-                holder.itemView.checkBox.isChecked = !holder.itemView.checkBox.isChecked
+                if (itemData.isToken) {
+                    itemView.checkBox.visibility = View.VISIBLE
+                    itemView.checkBox.setCheckedImmediatelyNoEvent(itemData.enable)
+                } else {
+                    itemView.checkBox.visibility = View.GONE
+                }
+
+                itemView.ivCoinLogo.loadRoundedImage(
+                    itemData.logo,
+                    getResourceId(R.attr.iconCoinDefLogo, itemView.context),
+                    14
+                )
+            }
+        }
+
+        override fun onViewClick(view: View, itemPosition: Int, itemData: AssertOriginateToken?) {
+            itemData?.let {
+                if (!it.isToken) return@let
+
+                if (view == itemView) {
+                    itemView.checkBox.isChecked = !itemView.checkBox.isChecked
+                }
                 callbacks.invoke(
-                    holder.itemView.checkBox,
-                    holder.itemView.checkBox.isChecked,
+                    itemView.checkBox,
+                    itemView.checkBox.isChecked,
                     itemData
                 )
             }
         }
-        holder.itemView.checkBox.setOnClickListener { view ->
-            if (itemData.isToken) {
-                callbacks.invoke(
-                    holder.itemView.checkBox,
-                    holder.itemView.checkBox.isChecked,
-                    itemData
-                )
-            }
-        }
-//        holder.itemView.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-//            callbacks.invoke(holder.itemView.checkBox, isChecked, itemData)
-//        }
     }
-
-    class ViewHolder(item: View) : RecyclerView.ViewHolder(item)
 }

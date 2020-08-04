@@ -68,8 +68,7 @@ class ListingHandler<VO>(
                         mViewController.dismissProgress()
                     } else {
                         mListingController.getRefreshLayout()?.finishRefresh(false)
-                        if (mListingController.enableRefresh())
-                            mListingController.getRefreshLayout()?.setEnableRefresh(true)
+                        mListingController.getRefreshLayout()?.setEnableRefresh(true)
                     }
 
                     when {
