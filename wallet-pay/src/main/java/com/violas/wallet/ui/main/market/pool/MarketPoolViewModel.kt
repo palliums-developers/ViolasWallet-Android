@@ -314,14 +314,17 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             delay(100)
 
             val result = withContext(Dispatchers.IO) {
-                if (inputAmountStr.isNullOrBlank())
+                if (inputAmountStr.isNullOrBlank()
+                    || BigDecimal(inputAmountStr) <= BigDecimal.ZERO
+                ) {
                     ""
-                else
+                } else {
                     exchangeManager.estimateAddLiquidityAmount(
                         if (isInputA) coinA.module else coinB.module,
                         inputAmountStr,
                         liquidityReserve
                     ).toPlainString()
+                }
             }
             lazyLogError(TAG) {
                 "estimateTransferIntoAmount. is input a => $isInputA" +
@@ -346,7 +349,9 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             delay(100)
 
             val result = withContext(Dispatchers.IO) {
-                if (inputAmountStr.isNullOrBlank()) {
+                if (inputAmountStr.isNullOrBlank()
+                    || BigDecimal(inputAmountStr) <= BigDecimal.ZERO
+                ) {
                     ""
                 } else {
                     val amounts =
