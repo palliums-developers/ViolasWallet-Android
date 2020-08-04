@@ -43,7 +43,6 @@ class LibraToMappingAssetsProcessor(
     override fun hasHandle(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         return tokenFrom is StableTokenVo
                 && tokenFrom.coinNumber == CoinTypes.Libra.coinType()
-                && tokenTo.coinNumber == CoinTypes.Violas.coinType()
                 && supportMappingPair.containsKey(IAssetsMark.convert(tokenTo).mark())
     }
 
@@ -58,30 +57,34 @@ class LibraToMappingAssetsProcessor(
         data: ByteArray
     ): String {
         tokenFrom as StableTokenVo
-        tokenTo as StableTokenVo
 
-        // 开始检查 Violas 账户的基本信息
         val payeeAddress =
             payee ?: mAccountManager.getIdentityByCoinType(tokenTo.coinNumber)?.address
             ?: throw AccountNotFindAddressException()
 
-        // 检查收款地址激活状态
-        val accountState =
-            mViolasRpcService.getAccountState(payeeAddress) ?: throw AccountPayeeNotFindException()
+        // 检查 Libra 的稳定币有没有 Publish
+        if (tokenTo.coinNumber == CoinTypes.Violas.coinType()) {
+            tokenTo as StableTokenVo
+            // 开始检查 Violas 账户的基本信息
+            // 检查收款地址激活状态
+            val accountState =
+                mViolasRpcService.getAccountState(payeeAddress)
+                    ?: throw AccountPayeeNotFindException()
 
-        // 检查收款地址 Token 注册状态
-        var isPublishToken = false
-        accountState.balances?.forEach {
-            if (it.currency.equals(tokenTo.module, true)) {
-                isPublishToken = true
+            // 检查收款地址 Token 注册状态
+            var isPublishToken = false
+            accountState.balances?.forEach {
+                if (it.currency.equals(tokenTo.module, true)) {
+                    isPublishToken = true
+                }
             }
-        }
-        if (!isPublishToken) {
-            throw AccountPayeeTokenNotActiveException(
-                CoinTypes.Libra,
-                payeeAddress,
-                tokenTo
-            )
+            if (!isPublishToken) {
+                throw AccountPayeeTokenNotActiveException(
+                    CoinTypes.Libra,
+                    payeeAddress,
+                    tokenTo
+                )
+            }
         }
 
         // 开始发起 Libra 交易
@@ -109,8 +112,12 @@ class LibraToMappingAssetsProcessor(
             "type",
             supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.label
         )
-        val authKeyPrefix = "00000000000000000000000000000000"
-        subExchangeDate.put("to_address", authKeyPrefix + payeeAddress)
+        if (tokenTo.coinNumber == CoinTypes.BitcoinTest.coinType() || tokenTo.coinNumber == CoinTypes.Bitcoin.coinType()) {
+            subExchangeDate.put("to_address", payeeAddress)
+        } else {
+            val authKeyPrefix = "00000000000000000000000000000000"
+            subExchangeDate.put("to_address", authKeyPrefix + payeeAddress)
+        }
         subExchangeDate.put("state", "start")
         subExchangeDate.put("out_amount", amountOutMin)
         subExchangeDate.put("times", 0)
