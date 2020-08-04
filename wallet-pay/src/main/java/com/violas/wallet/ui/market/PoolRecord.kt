@@ -24,12 +24,14 @@ import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
+import com.violas.wallet.utils.getAmountPrefix
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_pool_record.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -241,12 +243,13 @@ class PoolRecordViewHolder(
                 if (it.liquidityAmount.isNullOrBlank()) {
                     getString(R.string.value_null)
                 } else {
+                    val amount = BigDecimal(it.liquidityAmount)
                     getString(
                         R.string.market_liquidity_token_amount_format,
-                        if (it.isAddLiquidity())
-                            "+ ${convertAmountToDisplayAmountStr(it.liquidityAmount!!)}"
-                        else
-                            "- ${convertAmountToDisplayAmountStr(it.liquidityAmount!!)}"
+                        "${getAmountPrefix(
+                            amount,
+                            it.isAddLiquidity()
+                        )}${convertAmountToDisplayAmountStr(amount)}"
                     )
                 }
 

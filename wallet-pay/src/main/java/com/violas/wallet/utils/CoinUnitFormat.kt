@@ -207,7 +207,7 @@ fun convertAmountToExchangeRate(
     amountBBigDecimal: BigDecimal,
     coinTypesB: CoinTypes = CoinTypes.Violas
 ): BigDecimal? {
-    return if (amountABigDecimal > BigDecimal.ZERO)
+    return if (amountABigDecimal > BigDecimal.ZERO && amountBBigDecimal > BigDecimal.ZERO)
         amountBBigDecimal
             .divide(
                 amountABigDecimal,
@@ -217,4 +217,12 @@ fun convertAmountToExchangeRate(
             .stripTrailingZeros()
     else
         null
+}
+
+fun getAmountPrefix(amountBigDecimal: BigDecimal, input: Boolean): String {
+    return when {
+        amountBigDecimal <= BigDecimal.ZERO -> ""
+        input -> "+ "
+        else -> "- "
+    }
 }

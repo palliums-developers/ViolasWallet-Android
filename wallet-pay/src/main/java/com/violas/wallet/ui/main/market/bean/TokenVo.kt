@@ -30,7 +30,7 @@ class PlatformTokenVo(
     coinNumber: Int,
     displayName: String,
     logo: String,
-    displayAmount: BigDecimal = BigDecimal(0),
+    displayAmount: BigDecimal = BigDecimal.ZERO,
     anchorValue: Double = 0.00
 ) : ITokenVo(coinNumber, displayName, logo, displayAmount, anchorValue) {
 
@@ -80,7 +80,7 @@ class StableTokenVo(
     coinNumber: Int,
     displayName: String,
     logo: String,
-    displayAmount: BigDecimal = BigDecimal(0),
+    displayAmount: BigDecimal = BigDecimal.ZERO,
     anchorValue: Double = 0.00
 ) : ITokenVo(coinNumber, displayName, logo, displayAmount, anchorValue) {
 

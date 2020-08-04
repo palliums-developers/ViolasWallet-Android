@@ -14,7 +14,9 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertAmountToExchangeRate
+import com.violas.wallet.utils.getAmountPrefix
 import kotlinx.android.synthetic.main.activity_pool_details.*
+import java.math.BigDecimal
 
 /**
  * Created by elephant on 2020/7/15 14:32.
@@ -84,15 +86,15 @@ class PoolDetailsActivity : BaseAppActivity() {
                 "${convertAmountToDisplayAmountStr(record.coinBAmount!!)} ${record.coinBName}"
 
         tvLiquidity.text =
-            when {
-                record.liquidityAmount.isNullOrBlank() ->
-                    getString(R.string.value_null)
-                record.isAddLiquidity() ->
-                    "+ ${convertAmountToDisplayAmountStr(record.liquidityAmount!!)}"
-                else ->
-                    "- ${convertAmountToDisplayAmountStr(record.liquidityAmount!!)}"
+            if (record.liquidityAmount.isNullOrBlank()) {
+                getString(R.string.value_null)
+            } else {
+                val amount = BigDecimal(record.liquidityAmount)
+                "${getAmountPrefix(
+                    amount,
+                    record.isAddLiquidity()
+                )}${convertAmountToDisplayAmountStr(amount)}"
             }
-
 
         tvExchangeRate.text =
             if (record.coinAAmount.isNullOrBlank() || record.coinBAmount.isNullOrBlank())
