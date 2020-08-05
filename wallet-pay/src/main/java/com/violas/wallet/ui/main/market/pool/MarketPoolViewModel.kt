@@ -331,9 +331,9 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                         ", input amount => $inputAmountStr, output amount => $result"
             }
 
-            if (isInputA) {
+            if (isInputA)
                 inputBTextLiveData.value = result
-            } else
+            else
                 inputATextLiveData.value = result
 
             estimateAmountJob = null
@@ -478,10 +478,13 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 }
                 lazyLogError(TAG) { "syncLiquidityReserve. liquidity reserve => $liquidityReserve" }
 
+                val syncWorkUnstopped = syncLiquidityReserveFlag.get()
+                lazyLogError(TAG) { "syncLiquidityReserve. sync work unstopped => $syncWorkUnstopped" }
+
                 val coinPairUnchanged = coinPairUnchanged(coinAModule, coinBModule)
                 lazyLogError(TAG) { "syncLiquidityReserve. coin pair unchanged => $coinPairUnchanged" }
 
-                if (coinPairUnchanged) {
+                if (syncWorkUnstopped && coinPairUnchanged) {
                     liquidityReserveLiveData.value = liquidityReserve
                 }
 
@@ -491,7 +494,6 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                     })
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
                 lazyLogError(e, TAG) { "syncLiquidityReserve. sync failed" }
 
                 if (showLoadingAndTips) {
