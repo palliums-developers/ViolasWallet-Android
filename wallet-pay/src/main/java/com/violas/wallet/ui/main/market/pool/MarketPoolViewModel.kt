@@ -91,6 +91,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     private val handler by lazy { Handler(Looper.getMainLooper(), this) }
     private var violasAccountDO: AccountDO? = null
     private var estimateAmountJob: Job? = null
+    private var syncLiquidityReserveJob: Job? = null
 
     init {
         currCoinALiveData.addSource(currOpModeLiveData) {
@@ -433,6 +434,13 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         lazyLogError(TAG) { "stopSyncLiquidityReserveWork" }
         syncLiquidityReserveFlag.set(false)
         handler.removeMessages(ACTION_SYNC_LIQUIDITY_RESERVE)
+        syncLiquidityReserveJob?.let {
+            try {
+                it.cancel()
+            } catch (ignore: Exception) {
+            }
+            syncLiquidityReserveJob = null
+        }
     }
 
     override fun handleMessage(msg: Message): Boolean {
@@ -463,7 +471,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         coinBModule: String,
         showLoadingAndTips: Boolean
     ) {
-        viewModelScope.launch {
+        syncLiquidityReserveJob = viewModelScope.launch {
             if (showLoadingAndTips) {
                 loadState.setValueSupport(LoadState.RUNNING.apply {
                     this.action = ACTION_SYNC_LIQUIDITY_RESERVE
@@ -508,6 +516,8 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                     tipsMessage.setValueSupport(e.getShowErrorMessage(true))
                 }
             }
+
+            syncLiquidityReserveJob = null
         }
     }
 
