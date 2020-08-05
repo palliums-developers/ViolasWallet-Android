@@ -57,7 +57,9 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
-
+/**
+ * 钱包首页
+ */
 class WalletFragment : BaseFragment() {
     companion object {
         private const val REQUEST_ADD_ASSERT = 0
@@ -100,7 +102,9 @@ class WalletFragment : BaseFragment() {
         recyclerAssert.adapter = mAssertAdapter
 
         mWalletAppViewModel?.mDataRefreshingLiveData?.observe(viewLifecycleOwner, Observer {
-            swipeRefreshLayout.isRefreshing = it
+            if (!it) {
+                swipeRefreshLayout.finishRefresh()
+            }
         })
         mWalletAppViewModel?.mAssetsListLiveData?.observe(viewLifecycleOwner, Observer {
             val filter =
@@ -180,9 +184,11 @@ class WalletFragment : BaseFragment() {
         viewCreateAccount.setOnClickListener(this)
         viewImportAccount.setOnClickListener(this)
 
+        swipeRefreshLayout.setEnableOverScrollDrag(true)
         swipeRefreshLayout.setOnRefreshListener {
             CommandActuator.post(RefreshAssetsAllListCommand())
         }
+        swipeRefreshLayout.autoRefresh()
     }
 
     private fun handleBackupMnemonicWarn(existsAccount: Boolean) {
