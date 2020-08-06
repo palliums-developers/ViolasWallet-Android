@@ -117,7 +117,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         }
     }
 
-    //*********************************** 操作模式相关方法 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="操作模式相关方法及逻辑">
     fun getCurrOpModeLiveData(): LiveData<MarketPoolOpMode> {
         return currOpModeLiveData
     }
@@ -137,8 +137,9 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     fun isTransferInMode(): Boolean {
         return currOpModeLiveData.value == MarketPoolOpMode.TransferIn
     }
+    // </editor-fold>
 
-    //*********************************** 转入模式下相关方法 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="转入模式下相关方法及逻辑">
     fun getCurrCoinALiveData(): LiveData<StableTokenVo?> {
         return currCoinALiveData
     }
@@ -199,8 +200,9 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             startSyncLiquidityReserveWork(currCoinA.module, selected.module)
         }
     }
+    // </editor-fold>
 
-    //*********************************** 转出模式下相关方法 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="转出模式下相关方法及逻辑">
     fun getCurrLiquidityLiveData(): LiveData<PoolLiquidityDTO?> {
         return currLiquidityLiveData
     }
@@ -242,8 +244,9 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             startSyncLiquidityReserveWork(selected.coinA.module, selected.coinB.module)
         }
     }
+    // </editor-fold>
 
-    //*********************************** 其它信息相关方法 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="其它信息相关方法及逻辑">
     private fun calculateExchangeRate(
         coinAModule: String?,
         liquidityReserve: PoolLiquidityReserveInfoDTO? = liquidityReserveLiveData.value
@@ -295,8 +298,9 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     fun getAccountManager(): AccountManager {
         return exchangeManager.mAccountManager
     }
+    // </editor-fold>
 
-    //*********************************** 输入金额联动方法 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="输入金额联动相关方法及逻辑">
     fun getInputATextLiveData(): MutableLiveData<String> {
         return inputATextLiveData
     }
@@ -385,8 +389,9 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             estimateAmountJob = null
         }
     }
+    // </editor-fold>
 
-    //*********************************** 流动资金储备信息 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="流动资产储备信息相关方法及逻辑">
     fun getLiquidityReserveLiveData(): LiveData<PoolLiquidityReserveInfoDTO?> {
         return liquidityReserveLiveData
     }
@@ -538,8 +543,9 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         val curr = liquidityReserveLiveData.value
         liquidityReserveLiveData.value = curr
     }
+    // </editor-fold>
 
-    //*********************************** 耗时相关任务 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="耗时操作相关逻辑">
     override suspend fun realExecute(action: Int, vararg params: Any) {
         when (action) {
             ACTION_GET_USER_LIQUIDITY_LIST -> {
@@ -596,6 +602,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             }
         }
     }
+    // </editor-fold>
 
     override fun isLoadAction(action: Int): Boolean {
         return action == ACTION_GET_USER_LIQUIDITY_LIST

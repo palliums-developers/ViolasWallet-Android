@@ -92,6 +92,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         clearInputBoxFocusAndHideSoftInput()
     }
 
+    // <editor-fold defaultState="collapsed" desc="初始化View、Event、Observer">
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
         EventBus.getDefault().register(this)
@@ -241,8 +242,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         BalanceSubscribeHub.observe(this, coinABalanceSubscriber)
         BalanceSubscribeHub.observe(this, coinBBalanceSubscriber)
     }
+    // </editor-fold>
 
-    //*********************************** 切换转入转出模式逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="切换转入转出模式相关逻辑">
     private val currOpModeObserver = Observer<MarketPoolOpMode> {
         if (it == MarketPoolOpMode.TransferIn) {
             tvSwitchOpModeText.setText(R.string.transfer_in)
@@ -349,8 +351,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
         poolViewModel.switchOpModel(event.opMode)
     }
+    // </editor-fold>
 
-    //*********************************** 转出模式选择交易对逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="转出模式下选择交易对相关逻辑">
     private val currLiquidityObserver = Observer<PoolLiquidityDTO?> {
         if (poolViewModel.isTransferInMode()) return@Observer
 
@@ -414,8 +417,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             )
             .show()
     }
+    // </editor-fold>
 
-    //*********************************** 转入模式选择Token逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="转入模式下选择通证相关逻辑">
     private val currCoinAObserver = Observer<StableTokenVo?> {
         if (!poolViewModel.isTransferInMode()) return@Observer
 
@@ -479,8 +483,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         else
             poolViewModel.getCurrCoinBLiveData().value
     }
+    // </editor-fold>
 
-    //*********************************** 输入框逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="输入框相关逻辑">
     private val inputTextWatcherA = object : TextWatcherSimple() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if (!etInputBoxA.isFocused) return
@@ -557,8 +562,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             hideSoftInput()
         }
     }
+    // </editor-fold>
 
-    //*********************************** 转入转出逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="转入转出相关逻辑">
     private fun transferInPreconditionsInvalid(): Boolean {
         // 未选择通证判断
         val coinA = poolViewModel.getCurrCoinALiveData().value
@@ -666,11 +672,11 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             poolViewModel.getViolasAccount()!!,
             poolViewModel.getAccountManager()
         ) { privateKey ->
-            // 转入转出前停止同步流动资金储备信息
+            // 转入转出前停止同步流动资产储备信息
             poolViewModel.stopSyncLiquidityReserveWork()
 
             if (transferIn) {
-                // 转入成功或失败后不清空当前选择的币种，并继续同步流动资金储备信息
+                // 转入成功或失败后不清空当前选择的币种，并继续同步流动资产储备信息
                 poolViewModel.execute(
                     privateKey,
                     etInputBoxA.text.toString().trim(),
@@ -686,7 +692,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     poolViewModel.startSyncLiquidityReserveWork()
                 }
             } else {
-                // 转出成功后清空当前选择的交易对；转出失败后不清空当前选择的交易对，并继续同步流动资金储备信息
+                // 转出成功后清空当前选择的交易对；转出失败后不清空当前选择的交易对，并继续同步流动资产储备信息
                 poolViewModel.execute(
                     privateKey,
                     etInputBoxA.text.toString().trim(),
@@ -701,8 +707,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             }
         }
     }
+    // </editor-fold>
 
-    //*********************************** 其它逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="币种余额更新逻辑">
     private val coinABalanceSubscriber =
         object : BalanceSubscriber(null) {
             override fun onNotice(assets: AssetsVo?) {
@@ -744,7 +751,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                 }
             }
         }
+    // </editor-fold>
 
+    // <editor-fold defaultState="collapsed" desc="其它逻辑">
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
         textView.text = getString(formatResId, getString(R.string.value_null))
     }
@@ -789,4 +798,5 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             )
         }
     }
+    // </editor-fold>
 }
