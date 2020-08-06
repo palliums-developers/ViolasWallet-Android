@@ -28,7 +28,6 @@ import com.violas.wallet.biz.exchange.processor.ViolasOutputScript
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.walletconnect.WalletConnect
 import com.violas.wallet.walletconnect.walletConnectMessageHandler.*
@@ -36,6 +35,7 @@ import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import com.violas.walletconnect.jsonrpc.JsonRpcError
 import kotlinx.android.synthetic.main.activity_wallet_connect.*
+import kotlinx.android.synthetic.main.view_wallet_connect_exchange_swap.view.*
 import kotlinx.android.synthetic.main.view_wallet_connect_none.view.*
 import kotlinx.android.synthetic.main.view_wallet_connect_publish.view.*
 import kotlinx.android.synthetic.main.view_wallet_connect_transfer.view.*
@@ -43,7 +43,6 @@ import kotlinx.android.synthetic.main.view_wallet_connect_transfer.view.tvDescri
 import kotlinx.coroutines.*
 import org.palliums.violascore.crypto.Ed25519PublicKey
 import org.palliums.violascore.crypto.KeyPair
-import org.palliums.violascore.crypto.Signature
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.SignedTransactionHex
 import org.palliums.violascore.transaction.TransactionSignAuthenticator
@@ -393,6 +392,93 @@ class WalletConnectActivity : BaseAppActivity() {
                         view.tvDescribeAmount.text = "$amount BTC"
                         view.tvDescribeFee.text = "0.00 BTC"
 
+                        viewGroupContent.removeAllViews()
+                        viewGroupContent.addView(view)
+                    }
+                }
+                TransactionDataType.VIOLAS_EXCHANGE_SWAP.value -> {
+                    val viewData = transactionSwapVo.viewData
+                    println("transfer data: $viewData")
+                    val mPublishDataType = Gson().fromJson(
+                        viewData,
+                        ExchangeSwapDataType::class.java
+                    )
+                    val view = LayoutInflater.from(this@WalletConnectActivity)
+                        .inflate(
+                            R.layout.view_wallet_connect_exchange_swap,
+                            viewGroupContent,
+                            false
+                        )
+                    withContext(Dispatchers.Main) {
+                        view.tvDescribeSender.text = mPublishDataType.form
+                        view.inputCoinAmount.text =
+                            BigDecimal(mPublishDataType.amountIn).divide(
+                                BigDecimal("1000000"), 6, RoundingMode.DOWN
+                            ).stripTrailingZeros().toPlainString()
+                        view.inputCoinUnit.text = mPublishDataType.inCoinName
+                        view.outputCoinAmount.text =
+                            BigDecimal(mPublishDataType.amountOutMin).divide(
+                                BigDecimal("1000000"), 6, RoundingMode.DOWN
+                            ).stripTrailingZeros().toPlainString()
+                        view.outputCoinUnit.text = mPublishDataType.outCoinName
+                        view.tvDescribePath.text
+                        mPublishDataType.path.map { it.toInt() }.joinToString(separator = ",")
+                        viewGroupContent.removeAllViews()
+                        viewGroupContent.addView(view)
+                    }
+                }
+                TransactionDataType.VIOLAS_EXCHANGE_ADD_LIQUIDITY.value -> {
+                    val viewData = transactionSwapVo.viewData
+                    println("transfer data: $viewData")
+                    val mPublishDataType = Gson().fromJson(
+                        viewData,
+                        ExchangeAddLiquidityDataType::class.java
+                    )
+                    val view = LayoutInflater.from(this@WalletConnectActivity)
+                        .inflate(
+                            R.layout.view_wallet_connect_exchange_add_liquidity,
+                            viewGroupContent,
+                            false
+                        )
+                    withContext(Dispatchers.Main) {
+                        view.tvDescribeSender.text = mPublishDataType.form
+                        view.inputCoinAmount.text = BigDecimal(mPublishDataType.amountIn).divide(
+                            BigDecimal("1000000"), 6, RoundingMode.DOWN
+                        ).stripTrailingZeros().toPlainString()
+                        view.inputCoinUnit.text = mPublishDataType.inCoinName
+                        view.outputCoinAmount.text =
+                            BigDecimal(mPublishDataType.amountOut).divide(
+                                BigDecimal("1000000"), 6, RoundingMode.DOWN
+                            ).stripTrailingZeros().toPlainString()
+                        view.outputCoinUnit.text = mPublishDataType.outCoinName
+                        viewGroupContent.removeAllViews()
+                        viewGroupContent.addView(view)
+                    }
+                }
+                TransactionDataType.VIOLAS_EXCHANGE_REMOVE_LIQUIDITY.value -> {
+                    val viewData = transactionSwapVo.viewData
+                    println("transfer data: $viewData")
+                    val mPublishDataType = Gson().fromJson(
+                        viewData,
+                        ExchangeRemoveLiquidityDataType::class.java
+                    )
+                    val view = LayoutInflater.from(this@WalletConnectActivity)
+                        .inflate(
+                            R.layout.view_wallet_connect_exchange_remove_liquidity,
+                            viewGroupContent,
+                            false
+                        )
+                    withContext(Dispatchers.Main) {
+                        view.tvDescribeSender.text = mPublishDataType.form
+                        view.inputCoinAmount.text = BigDecimal(mPublishDataType.amountInMin).divide(
+                            BigDecimal("1000000"), 6, RoundingMode.DOWN
+                        ).stripTrailingZeros().toPlainString()
+                        view.inputCoinUnit.text = mPublishDataType.inCoinName
+                        view.outputCoinAmount.text =
+                            BigDecimal(mPublishDataType.amountOutMin).divide(
+                                BigDecimal("1000000"), 6, RoundingMode.DOWN
+                            ).stripTrailingZeros().toPlainString()
+                        view.outputCoinUnit.text = mPublishDataType.outCoinName
                         viewGroupContent.removeAllViews()
                         viewGroupContent.addView(view)
                     }
