@@ -92,6 +92,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         clearInputBoxFocusAndHideSoftInput()
     }
 
+    // <editor-fold defaultState="collapsed" desc="初始化View、Event、Observer">
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
         EventBus.getDefault().register(this)
@@ -241,8 +242,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         BalanceSubscribeHub.observe(this, coinABalanceSubscriber)
         BalanceSubscribeHub.observe(this, coinBBalanceSubscriber)
     }
+    // </editor-fold>
 
-    //*********************************** 切换转入转出模式逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="切换转入转出模式相关逻辑">
     private val currOpModeObserver = Observer<MarketPoolOpMode> {
         if (it == MarketPoolOpMode.TransferIn) {
             tvSwitchOpModeText.setText(R.string.transfer_in)
@@ -282,7 +284,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             )
 
             coinABalanceSubscriber.changeSubscriber(null)
+            coinABalance = BigDecimal.ZERO
             coinBBalanceSubscriber.changeSubscriber(null)
+            coinBBalance = BigDecimal.ZERO
         }
     }
 
@@ -349,8 +353,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
         poolViewModel.switchOpModel(event.opMode)
     }
+    // </editor-fold>
 
-    //*********************************** 转出模式选择交易对逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="转出模式下选择交易对相关逻辑">
     private val currLiquidityObserver = Observer<PoolLiquidityDTO?> {
         if (poolViewModel.isTransferInMode()) return@Observer
 
@@ -414,8 +419,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             )
             .show()
     }
+    // </editor-fold>
 
-    //*********************************** 转入模式选择Token逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="转入模式下选择通证相关逻辑">
     private val currCoinAObserver = Observer<StableTokenVo?> {
         if (!poolViewModel.isTransferInMode()) return@Observer
 
@@ -424,6 +430,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             tvSelectTextA.text = getString(R.string.select_token)
             handleValueNull(tvBalanceA, R.string.market_token_balance_format)
             coinABalanceSubscriber.changeSubscriber(null)
+            coinABalance = BigDecimal.ZERO
         } else {
             tvSelectTextA.text = it.displayName
             coinABalanceSubscriber.changeSubscriber(IAssetsMark.convert(it))
@@ -440,6 +447,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             tvSelectTextB.text = getString(R.string.select_token)
             handleValueNull(tvBalanceB, R.string.market_token_balance_format)
             coinBBalanceSubscriber.changeSubscriber(null)
+            coinBBalance = BigDecimal.ZERO
         } else {
             tvSelectTextB.text = it.displayName
             coinBBalanceSubscriber.changeSubscriber(IAssetsMark.convert(it))
@@ -479,8 +487,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         else
             poolViewModel.getCurrCoinBLiveData().value
     }
+    // </editor-fold>
 
-    //*********************************** 输入框逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="输入框相关逻辑">
     private val inputTextWatcherA = object : TextWatcherSimple() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if (!etInputBoxA.isFocused) return
@@ -557,9 +566,11 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             hideSoftInput()
         }
     }
+    // </editor-fold>
 
-    //*********************************** 转入转出逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="转入转出相关逻辑">
     private fun transferInPreconditionsInvalid(): Boolean {
+        // 未选择通证判断
         val coinA = poolViewModel.getCurrCoinALiveData().value
         val coinB = poolViewModel.getCurrCoinBLiveData().value
         if (coinA == null || coinB == null) {
@@ -567,6 +578,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             return true
         }
 
+        // 未输入判断
         val inputAAmountStr = etInputBoxA.text.toString().trim()
         val inputBAmountStr = etInputBoxB.text.toString().trim()
         if (inputAAmountStr.isEmpty() && inputBAmountStr.isEmpty()) {
@@ -574,11 +586,26 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             return true
         }
 
+        // 输入为0判断, 当作未输入判断
         if (inputAAmountStr.isNotEmpty()
-            && BigDecimal(inputAAmountStr) > coinABalance
+            && convertDisplayAmountToAmount(inputAAmountStr) <= BigDecimal.ZERO
+        ) {
+            showToast(R.string.tips_market_add_liquidity_amount_not_input)
+            return true
+        }
+        if (inputBAmountStr.isNotEmpty()
+            && convertDisplayAmountToAmount(inputBAmountStr) <= BigDecimal.ZERO
+        ) {
+            showToast(R.string.tips_market_add_liquidity_amount_not_input)
+            return true
+        }
+
+        // 余额不足判断
+        if (inputAAmountStr.isNotEmpty()
+            && convertDisplayAmountToAmount(inputAAmountStr) > coinABalance
         ) {
             val prefix = if (inputBAmountStr.isNotEmpty()
-                && BigDecimal(inputBAmountStr) > coinBBalance
+                && convertDisplayAmountToAmount(inputBAmountStr) > coinBBalance
             ) {
                 "${coinA.displayName}/${coinB.displayName}"
             } else {
@@ -587,13 +614,14 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
             return true
         } else if (inputBAmountStr.isNotEmpty()
-            && BigDecimal(inputBAmountStr) > coinBBalance
+            && convertDisplayAmountToAmount(inputBAmountStr) > coinBBalance
         ) {
             val prefix = coinB.displayName
             showToast(getString(R.string.tips_market_insufficient_balance_format, prefix))
             return true
         }
 
+        // 估算未完成判断
         if (inputAAmountStr.isEmpty() || inputBAmountStr.isEmpty()
             || poolViewModel.getLiquidityReserveLiveData().value == null
         ) {
@@ -605,23 +633,34 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     }
 
     private fun transferOutPreconditionsInvalid(): Boolean {
+        // 未选择交易对判断
         val liquidity = poolViewModel.getCurrLiquidityLiveData().value
         if (liquidity == null) {
             showToast(R.string.tips_market_remove_liquidity_pair_not_selected)
             return true
         }
 
+        // 未输入判断
         val inputAAmountStr = etInputBoxA.text.toString().trim()
         if (inputAAmountStr.isEmpty()) {
             showToast(R.string.tips_market_remove_liquidity_amount_not_input)
             return true
         }
 
-        if (convertDisplayAmountToAmount(inputAAmountStr) > liquidity.amount) {
+        // 输入为0判断, 当作未输入判断
+        val amount = convertDisplayAmountToAmount(inputAAmountStr)
+        if (amount <= BigDecimal.ZERO) {
+            showToast(R.string.tips_market_remove_liquidity_amount_not_input)
+            return true
+        }
+
+        // 余额不足判断
+        if (amount > liquidity.amount) {
             showToast(getString(R.string.tips_market_insufficient_balance_format, ""))
             return true
         }
 
+        // 估算未完成判断
         if (etInputBoxB.text.toString().isEmpty()
             || poolViewModel.getLiquidityReserveLiveData().value == null
         ) {
@@ -637,11 +676,11 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             poolViewModel.getViolasAccount()!!,
             poolViewModel.getAccountManager()
         ) { privateKey ->
-            // 转入转出前停止同步流动资金储备信息
+            // 转入转出前停止同步流动资产储备信息
             poolViewModel.stopSyncLiquidityReserveWork()
 
             if (transferIn) {
-                // 转入成功或失败后不清空当前选择的币种，并继续同步流动资金储备信息
+                // 转入成功或失败后不清空当前选择的币种，并继续同步流动资产储备信息
                 poolViewModel.execute(
                     privateKey,
                     etInputBoxA.text.toString().trim(),
@@ -657,7 +696,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     poolViewModel.startSyncLiquidityReserveWork()
                 }
             } else {
-                // 转出成功后清空当前选择的交易对；转出失败后不清空当前选择的交易对，并继续同步流动资金储备信息
+                // 转出成功后清空当前选择的交易对；转出失败后不清空当前选择的交易对，并继续同步流动资产储备信息
                 poolViewModel.execute(
                     privateKey,
                     etInputBoxA.text.toString().trim(),
@@ -672,21 +711,25 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             }
         }
     }
+    // </editor-fold>
 
-    //*********************************** 其它逻辑 ***********************************//
+    // <editor-fold defaultState="collapsed" desc="币种余额更新逻辑">
     private val coinABalanceSubscriber =
         object : BalanceSubscriber(null) {
             override fun onNotice(assets: AssetsVo?) {
                 launch {
-                    if (assets == null) {
-                        coinABalance = BigDecimal.ZERO
-                        return@launch
-                    }
+                    val coinA =
+                        poolViewModel.getCurrCoinALiveData().value ?: return@launch
 
-                    coinABalance = BigDecimal(assets.amountWithUnit.amount)
+                    coinABalance = convertDisplayAmountToAmount(
+                        assets?.amountWithUnit?.amount ?: "0"
+                    )
+
                     tvBalanceA.text = getString(
                         R.string.market_token_balance_format,
-                        "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
+                        "${convertAmountToDisplayAmountStr(
+                            coinABalance
+                        )} ${coinA.displayName}"
                     )
                 }
             }
@@ -696,20 +739,25 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         object : BalanceSubscriber(null) {
             override fun onNotice(assets: AssetsVo?) {
                 launch {
-                    if (assets == null) {
-                        coinBBalance = BigDecimal.ZERO
-                        return@launch
-                    }
+                    val coinB =
+                        poolViewModel.getCurrCoinBLiveData().value ?: return@launch
 
-                    coinBBalance = BigDecimal(assets.amountWithUnit.amount)
+                    coinBBalance = convertDisplayAmountToAmount(
+                        assets?.amountWithUnit?.amount ?: "0"
+                    )
+
                     tvBalanceB.text = getString(
                         R.string.market_token_balance_format,
-                        "${assets.amountWithUnit.amount} ${assets.getAssetsName()}"
+                        "${convertAmountToDisplayAmountStr(
+                            coinBBalance
+                        )} ${coinB.displayName}"
                     )
                 }
             }
         }
+    // </editor-fold>
 
+    // <editor-fold defaultState="collapsed" desc="其它逻辑">
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
         textView.text = getString(formatResId, getString(R.string.value_null))
     }
@@ -754,4 +802,5 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             )
         }
     }
+    // </editor-fold>
 }

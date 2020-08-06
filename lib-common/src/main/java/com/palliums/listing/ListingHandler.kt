@@ -68,8 +68,7 @@ class ListingHandler<VO>(
                         mViewController.dismissProgress()
                     } else {
                         mListingController.getRefreshLayout()?.finishRefresh(false)
-                        if (mListingController.enableRefresh())
-                            mListingController.getRefreshLayout()?.setEnableRefresh(true)
+                        mListingController.getRefreshLayout()?.setEnableRefresh(true)
                     }
 
                     when {
@@ -106,7 +105,7 @@ class ListingHandler<VO>(
         mListingController.getRefreshLayout()?.let {
             it.setEnableRefresh(false)
             it.setEnableLoadMore(false)
-            it.setEnableOverScrollBounce(true)
+            //it.setEnableOverScrollBounce(true)
             it.setEnableOverScrollDrag(true)
         }
 
