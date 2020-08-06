@@ -284,7 +284,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             )
 
             coinABalanceSubscriber.changeSubscriber(null)
+            coinABalance = BigDecimal.ZERO
             coinBBalanceSubscriber.changeSubscriber(null)
+            coinBBalance = BigDecimal.ZERO
         }
     }
 
@@ -428,6 +430,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             tvSelectTextA.text = getString(R.string.select_token)
             handleValueNull(tvBalanceA, R.string.market_token_balance_format)
             coinABalanceSubscriber.changeSubscriber(null)
+            coinABalance = BigDecimal.ZERO
         } else {
             tvSelectTextA.text = it.displayName
             coinABalanceSubscriber.changeSubscriber(IAssetsMark.convert(it))
@@ -444,6 +447,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             tvSelectTextB.text = getString(R.string.select_token)
             handleValueNull(tvBalanceB, R.string.market_token_balance_format)
             coinBBalanceSubscriber.changeSubscriber(null)
+            coinBBalance = BigDecimal.ZERO
         } else {
             tvSelectTextB.text = it.displayName
             coinBBalanceSubscriber.changeSubscriber(IAssetsMark.convert(it))
