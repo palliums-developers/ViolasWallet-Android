@@ -8,10 +8,10 @@ import com.palliums.utils.formatDate
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
-import com.palliums.violas.http.MarketPoolRecordDTO
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.repository.http.exchange.PoolRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertAmountToExchangeRate
 import com.violas.wallet.utils.getAmountPrefix
@@ -27,14 +27,14 @@ import java.math.BigDecimal
 class PoolDetailsActivity : BaseAppActivity() {
 
     companion object {
-        fun start(context: Context, record: MarketPoolRecordDTO) {
+        fun start(context: Context, record: PoolRecordDTO) {
             Intent(context, PoolDetailsActivity::class.java)
                 .apply { putExtra(KEY_ONE, record) }
                 .start(context)
         }
     }
 
-    private lateinit var mPoolRecord: MarketPoolRecordDTO
+    private lateinit var mPoolRecord: PoolRecordDTO
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_pool_details
@@ -57,7 +57,7 @@ class PoolDetailsActivity : BaseAppActivity() {
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
-        var record: MarketPoolRecordDTO? = null
+        var record: PoolRecordDTO? = null
         if (savedInstanceState != null) {
             record = savedInstanceState.getParcelable(KEY_ONE)
         } else if (intent != null) {
@@ -72,18 +72,18 @@ class PoolDetailsActivity : BaseAppActivity() {
         }
     }
 
-    private fun initView(record: MarketPoolRecordDTO) {
+    private fun initView(record: PoolRecordDTO) {
         tvTokenA.text =
             if (record.coinAName.isNullOrBlank() || record.coinAAmount.isNullOrBlank())
                 getString(R.string.value_null)
             else
-                "${convertAmountToDisplayAmountStr(record.coinAAmount!!)} ${record.coinAName}"
+                "${convertAmountToDisplayAmountStr(record.coinAAmount)} ${record.coinAName}"
 
         tvTokenB.text =
             if (record.coinBName.isNullOrBlank() || record.coinBAmount.isNullOrBlank())
                 getString(R.string.value_null)
             else
-                "${convertAmountToDisplayAmountStr(record.coinBAmount!!)} ${record.coinBName}"
+                "${convertAmountToDisplayAmountStr(record.coinBAmount)} ${record.coinBName}"
 
         tvLiquidity.text =
             if (record.liquidityAmount.isNullOrBlank()) {
@@ -100,17 +100,17 @@ class PoolDetailsActivity : BaseAppActivity() {
             if (record.coinAAmount.isNullOrBlank() || record.coinBAmount.isNullOrBlank())
                 getString(R.string.value_null)
             else
-                convertAmountToExchangeRate(record.coinAAmount!!, record.coinBAmount!!).let {
+                convertAmountToExchangeRate(record.coinAAmount, record.coinBAmount).let {
                     if (it == null) getString(R.string.value_null) else "1:${it.toPlainString()}"
                 }
 
         tvGasFee.text =
-            if (record.gasUsed.isNullOrBlank() || record.gasCurrency.isNullOrBlank())
+            if (record.gasCoinAmount.isNullOrBlank() || record.gasCoinName.isNullOrBlank())
                 getString(R.string.value_null)
             else
-                "${convertAmountToDisplayAmountStr(record.gasUsed!!)} ${record.gasCurrency}"
+                "${convertAmountToDisplayAmountStr(record.gasCoinAmount)} ${record.gasCoinName}"
 
-        tvOrderTime.text = formatDate(record.date, pattern = "yyyy-MM-dd HH:mm:ss")
+        tvOrderTime.text = formatDate(record.time, pattern = "yyyy-MM-dd HH:mm:ss")
         tvDealTime.text = getString(R.string.value_null)
 
         tvProcessingDesc.setTextColor(

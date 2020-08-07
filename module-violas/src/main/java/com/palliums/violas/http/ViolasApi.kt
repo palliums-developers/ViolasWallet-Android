@@ -92,32 +92,6 @@ interface ViolasApi {
     ): Response<SwapTrialSTO>
 
     /**
-     * 获取指定地址的交易市场兑换记录，分页查询
-     * @param address       地址
-     * @param pageSize      分页大小
-     * @param offset        偏移量，从0开始
-     */
-    @GET("/1.0/market/exchange/transaction")
-    fun getMarketSwapRecords(
-        @Query("address") address: String,
-        @Query("limit") pageSize: Int,
-        @Query("offset") offset: Int
-    ): Observable<ListResponse<MarketSwapRecordDTO>>
-
-    /**
-     * 获取指定地址的交易市场资金池记录，分页查询
-     * @param address       地址
-     * @param pageSize      分页大小
-     * @param offset        偏移量，从0开始
-     */
-    @GET("/1.0/market/pool/transaction")
-    suspend fun getMarketPoolRecords(
-        @Query("address") address: String,
-        @Query("limit") pageSize: Int,
-        @Query("offset") offset: Int
-    ): ListResponse<MarketPoolRecordDTO>
-
-    /**
      * 获取指定地址的交易市场资金池信息
      * @param address       地址
      */

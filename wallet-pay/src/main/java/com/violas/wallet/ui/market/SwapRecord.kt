@@ -16,15 +16,14 @@ import com.palliums.utils.exceptionAsync
 import com.palliums.utils.formatDate
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getString
-import com.palliums.violas.http.MarketSwapRecordDTO
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.exchange.SwapRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_swap_record.view.*
@@ -38,7 +37,7 @@ import java.util.*
  * <p>
  * desc: 交易市场兑换记录页面
  */
-class SwapRecordActivity : BasePagingActivity<MarketSwapRecordDTO>() {
+class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
 
     private val viewModel by lazy {
         ViewModelProvider(this).get(SwapRecordViewModel::class.java)
@@ -55,11 +54,11 @@ class SwapRecordActivity : BasePagingActivity<MarketSwapRecordDTO>() {
         )
     }
 
-    override fun getViewModel(): PagingViewModel<MarketSwapRecordDTO> {
+    override fun getViewModel(): PagingViewModel<SwapRecordDTO> {
         return viewModel
     }
 
-    override fun getViewAdapter(): PagingViewAdapter<MarketSwapRecordDTO> {
+    override fun getViewAdapter(): PagingViewAdapter<SwapRecordDTO> {
         return viewAdapter
     }
 
@@ -94,11 +93,10 @@ class SwapRecordActivity : BasePagingActivity<MarketSwapRecordDTO>() {
     }
 }
 
-class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
+class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
 
-    private val exchangeManager by lazy { ExchangeManager() }
-    private val crossChainExchangeService by lazy {
-        DataRepository.getMappingExchangeService()
+    private val exchangeService by lazy {
+        DataRepository.getExchangeService()
     }
 
     private lateinit var violasAddress: String
@@ -132,7 +130,7 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<MarketSwapRecordDTO>, Any?) -> Unit
+        onSuccess: (List<SwapRecordDTO>, Any?) -> Unit
     ) {
         if (pageNumber == 1) {
             // 刷新动作，重制标记
@@ -152,7 +150,7 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
             val vlsSwapRecordsDeferred =
                 if (vlsHasMoreData)
                     exceptionAsync {
-                        exchangeManager.mViolasService.getMarketSwapRecords(
+                        exchangeService.getSwapRecords(
                             violasAddress, pageSize, offset
                         )
                     }
@@ -162,7 +160,7 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
             val vlsCrossChainSwapRecordsDeferred =
                 if (vlsCrossChainHasMoreData)
                     exceptionAsync {
-                        crossChainExchangeService.getCrossChainSwapRecords(
+                        exchangeService.getCrossChainSwapRecords(
                             violasAddress, "violas", pageSize, offset
                         )
                     }
@@ -172,7 +170,7 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
             val lbrCrossChainSwapRecordsDeferred =
                 if (lbrCrossChainHasMoreData)
                     exceptionAsync {
-                        crossChainExchangeService.getCrossChainSwapRecords(
+                        exchangeService.getCrossChainSwapRecords(
                             libraAddress, "libra", pageSize, offset
                         )
                     }
@@ -182,7 +180,7 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
             val btcCrossChainSwapRecordsDeferred =
                 if (btcCrossChainHasMoreData)
                     exceptionAsync {
-                        crossChainExchangeService.getCrossChainSwapRecords(
+                        exchangeService.getCrossChainSwapRecords(
                             bitcoinAddress, "btc", pageSize, offset
                         )
                     }
@@ -198,13 +196,15 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
             val btcCrossChainSwapRecords =
                 btcCrossChainSwapRecordsDeferred?.await()
 
-            val records = mutableListOf<MarketSwapRecordDTO>()
+            val records = mutableListOf<SwapRecordDTO>()
             vlsSwapRecords?.forEach {
                 records.add(it.apply {
+                    inputCoinType = CoinTypes.Violas
+                    outputCoinType = CoinTypes.Violas
                     customStatus = if (status == 4001)
-                        MarketSwapRecordDTO.Status.SUCCEEDED
+                        SwapRecordDTO.Status.SUCCEEDED
                     else
-                        MarketSwapRecordDTO.Status.FAILED
+                        SwapRecordDTO.Status.FAILED
                 })
             }
             vlsHasMoreData = if (vlsSwapRecords == null)
@@ -214,21 +214,24 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
 
             vlsCrossChainSwapRecords?.forEach {
                 records.add(
-                    MarketSwapRecordDTO(
-                        fromName = it.coinA,
-                        fromAmount = it.amountA,
-                        toName = it.coinB,
-                        toAmount = it.amountB,
-                        gasUsed = null,
-                        gasCurrency = null,
+                    SwapRecordDTO(
+                        inputCoinName = it.inputCoinDisplayName ?: it.inputCoinName,
+                        inputCoinAmount = it.inputCoinAmount,
+                        outputCoinName = it.outputCoinDisplayName ?: it.outputCoinName,
+                        outputCoinAmount = it.outputCoinAmount,
+                        gasCoinName = null,
+                        gasCoinAmount = null,
+                        time = it.time,
+                        confirmedTime = it.confirmedTime,
                         version = it.version,
-                        date = it.date,
                         status = it.status,
+                        inputCoinType = getCoinType(it.inputChainName),
+                        outputCoinType = getCoinType(it.outputChainName),
                         customStatus = when (it.status) {
-                            4001 -> MarketSwapRecordDTO.Status.SUCCEEDED
-                            4002 -> MarketSwapRecordDTO.Status.PROCESSING
-                            4004 -> MarketSwapRecordDTO.Status.CANCELLED
-                            else -> MarketSwapRecordDTO.Status.FAILED
+                            4001 -> SwapRecordDTO.Status.SUCCEEDED
+                            4002 -> SwapRecordDTO.Status.PROCESSING
+                            4004 -> SwapRecordDTO.Status.CANCELLED
+                            else -> SwapRecordDTO.Status.FAILED
                         }
                     )
                 )
@@ -240,21 +243,24 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
 
             lbrCrossChainSwapRecords?.forEach {
                 records.add(
-                    MarketSwapRecordDTO(
-                        fromName = it.coinA,
-                        fromAmount = it.amountA,
-                        toName = it.coinB,
-                        toAmount = it.amountB,
-                        gasUsed = null,
-                        gasCurrency = null,
+                    SwapRecordDTO(
+                        inputCoinName = it.inputCoinDisplayName ?: it.inputCoinName,
+                        inputCoinAmount = it.inputCoinAmount,
+                        outputCoinName = it.outputCoinDisplayName ?: it.outputCoinName,
+                        outputCoinAmount = it.outputCoinAmount,
+                        gasCoinAmount = null,
+                        gasCoinName = null,
+                        time = it.time,
+                        confirmedTime = it.confirmedTime,
                         version = it.version,
-                        date = it.date,
                         status = it.status,
+                        inputCoinType = getCoinType(it.inputChainName),
+                        outputCoinType = getCoinType(it.outputChainName),
                         customStatus = when (it.status) {
-                            4001 -> MarketSwapRecordDTO.Status.SUCCEEDED
-                            4002 -> MarketSwapRecordDTO.Status.PROCESSING
-                            4004 -> MarketSwapRecordDTO.Status.CANCELLED
-                            else -> MarketSwapRecordDTO.Status.FAILED
+                            4001 -> SwapRecordDTO.Status.SUCCEEDED
+                            4002 -> SwapRecordDTO.Status.PROCESSING
+                            4004 -> SwapRecordDTO.Status.CANCELLED
+                            else -> SwapRecordDTO.Status.FAILED
                         }
                     )
                 )
@@ -266,21 +272,24 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
 
             btcCrossChainSwapRecords?.forEach {
                 records.add(
-                    MarketSwapRecordDTO(
-                        fromName = it.coinA,
-                        fromAmount = it.amountA,
-                        toName = it.coinB,
-                        toAmount = it.amountB,
-                        gasUsed = null,
-                        gasCurrency = null,
+                    SwapRecordDTO(
+                        inputCoinName = it.inputCoinDisplayName ?: it.inputCoinName,
+                        inputCoinAmount = it.inputCoinAmount,
+                        outputCoinName = it.outputCoinDisplayName ?: it.outputCoinName,
+                        outputCoinAmount = it.outputCoinAmount,
+                        gasCoinAmount = null,
+                        gasCoinName = null,
+                        time = it.time,
+                        confirmedTime = it.confirmedTime,
                         version = it.version,
-                        date = it.date,
                         status = it.status,
+                        inputCoinType = getCoinType(it.inputChainName),
+                        outputCoinType = getCoinType(it.outputChainName),
                         customStatus = when (it.status) {
-                            4001 -> MarketSwapRecordDTO.Status.SUCCEEDED
-                            4002 -> MarketSwapRecordDTO.Status.PROCESSING
-                            4004 -> MarketSwapRecordDTO.Status.CANCELLED
-                            else -> MarketSwapRecordDTO.Status.FAILED
+                            4001 -> SwapRecordDTO.Status.SUCCEEDED
+                            4002 -> SwapRecordDTO.Status.PROCESSING
+                            4004 -> SwapRecordDTO.Status.CANCELLED
+                            else -> SwapRecordDTO.Status.FAILED
                         }
                     )
                 )
@@ -297,56 +306,71 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
         //onSuccess.invoke(mockData(), null)
     }
 
-    private suspend fun mockData(): List<MarketSwapRecordDTO> {
+    private fun getCoinType(chainName: String?): CoinTypes {
+        return when {
+            chainName?.equals("libra", true) == true ->
+                CoinTypes.Libra
+            chainName?.equals("btc", true) == true ->
+                if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
+            else ->
+                CoinTypes.Violas
+        }
+    }
+
+    private suspend fun mockData(): List<SwapRecordDTO> {
         delay(2000)
         return mutableListOf(
-            MarketSwapRecordDTO(
-                fromName = "VLSUSD",
-                fromAmount = "10000000",
-                toName = "VLSSGD",
-                toAmount = "13909000",
-                gasUsed = "",
-                gasCurrency = "",
+            SwapRecordDTO(
+                inputCoinName = "VLSUSD",
+                inputCoinAmount = "10000000",
+                outputCoinName = "VLSSGD",
+                outputCoinAmount = "13909000",
+                gasCoinName = "",
+                gasCoinAmount = "",
+                time = System.currentTimeMillis(),
+                confirmedTime = System.currentTimeMillis() + 1000,
                 version = 1,
-                date = System.currentTimeMillis(),
                 status = 4001,
-                customStatus = MarketSwapRecordDTO.Status.SUCCEEDED
+                customStatus = SwapRecordDTO.Status.SUCCEEDED
             ),
-            MarketSwapRecordDTO(
-                fromName = "VLSUSD",
-                fromAmount = "100000",
-                toName = "VLSEUR",
-                toAmount = "87770",
-                gasUsed = "",
-                gasCurrency = "",
+            SwapRecordDTO(
+                inputCoinName = "VLSUSD",
+                inputCoinAmount = "100000",
+                outputCoinName = "VLSEUR",
+                outputCoinAmount = "87770",
+                gasCoinName = "",
+                gasCoinAmount = "",
+                time = System.currentTimeMillis(),
+                confirmedTime = System.currentTimeMillis() + 1000,
                 version = 2,
-                date = System.currentTimeMillis(),
                 status = 4002,
-                customStatus = MarketSwapRecordDTO.Status.FAILED
+                customStatus = SwapRecordDTO.Status.FAILED
             ),
-            MarketSwapRecordDTO(
-                fromName = "VLSUSD",
-                fromAmount = "10000000",
-                toName = "VLSGBP",
-                toAmount = "211111",
-                gasUsed = "",
-                gasCurrency = "",
+            SwapRecordDTO(
+                inputCoinName = "VLSUSD",
+                inputCoinAmount = "10000000",
+                outputCoinName = "VLSGBP",
+                outputCoinAmount = "211111",
+                gasCoinName = "",
+                gasCoinAmount = "",
                 version = 1,
-                date = System.currentTimeMillis(),
+                time = System.currentTimeMillis(),
+                confirmedTime = System.currentTimeMillis() + 1000,
                 status = 4003,
-                customStatus = MarketSwapRecordDTO.Status.PROCESSING
+                customStatus = SwapRecordDTO.Status.PROCESSING
             ),
-            MarketSwapRecordDTO(
-                fromName = "VLSUSD",
-                fromAmount = "100000",
-                toName = "BTC",
-                toAmount = "1000",
-                gasUsed = "",
-                gasCurrency = "",
+            SwapRecordDTO(
+                inputCoinName = "VLSUSD",
+                inputCoinAmount = "100000",
+                outputCoinName = "BTC",
+                outputCoinAmount = "1000",
+                gasCoinName = "",
+                gasCoinAmount = "",
+                time = System.currentTimeMillis(),
+                confirmedTime = System.currentTimeMillis() + 1000,
                 version = 2,
-                date = System.currentTimeMillis(),
                 status = 4004,
-                customStatus = MarketSwapRecordDTO.Status.CANCELLED
+                customStatus = SwapRecordDTO.Status.CANCELLED
             )
         )
     }
@@ -354,9 +378,9 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
 
 class SwapRecordViewAdapter(
     retryCallback: () -> Unit,
-    private val clickItemCallback: ((MarketSwapRecordDTO) -> Unit)? = null,
-    private val clickRetryCallback: ((MarketSwapRecordDTO, Int) -> Unit)? = null
-) : PagingViewAdapter<MarketSwapRecordDTO>(retryCallback, SwapRecordDiffCallback()) {
+    private val clickItemCallback: ((SwapRecordDTO) -> Unit)? = null,
+    private val clickRetryCallback: ((SwapRecordDTO, Int) -> Unit)? = null
+) : PagingViewAdapter<SwapRecordDTO>(retryCallback, SwapRecordDiffCallback()) {
 
     private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
 
@@ -380,35 +404,41 @@ class SwapRecordViewAdapter(
 class SwapRecordViewHolder(
     view: View,
     private val simpleDateFormat: SimpleDateFormat,
-    private val clickItemCallback: ((MarketSwapRecordDTO) -> Unit)? = null,
-    private val clickRetryCallback: ((MarketSwapRecordDTO, Int) -> Unit)? = null
-) : BaseViewHolder<MarketSwapRecordDTO>(view) {
+    private val clickItemCallback: ((SwapRecordDTO) -> Unit)? = null,
+    private val clickRetryCallback: ((SwapRecordDTO, Int) -> Unit)? = null
+) : BaseViewHolder<SwapRecordDTO>(view) {
 
     init {
         itemView.setOnClickListener(this)
         itemView.tvRetry.setOnClickListener(this)
     }
 
-    override fun onViewBind(itemPosition: Int, itemData: MarketSwapRecordDTO?) {
+    override fun onViewBind(itemPosition: Int, itemData: SwapRecordDTO?) {
         itemData?.let {
-            itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
+            itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
 
-            itemView.tvFromToken.text =
-                if (it.fromName.isNullOrBlank() || it.fromAmount.isNullOrBlank()) {
+            itemView.tvInputCoin.text =
+                if (it.inputCoinName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
                     getString(R.string.value_null)
                 } else {
-                    "${convertAmountToDisplayAmountStr(it.fromAmount!!)} ${it.fromName}"
+                    "${convertAmountToDisplayAmountStr(
+                        it.inputCoinAmount,
+                        it.inputCoinType
+                    )} ${it.inputCoinName}"
                 }
 
-            itemView.tvToToken.text =
-                if (it.toName.isNullOrBlank() || it.toAmount.isNullOrBlank()) {
+            itemView.tvOutputCoin.text =
+                if (it.outputCoinName.isNullOrBlank() || it.outputCoinAmount.isNullOrBlank()) {
                     getString(R.string.value_null)
                 } else {
-                    "${convertAmountToDisplayAmountStr(it.toAmount!!)} ${it.toName}"
+                    "${convertAmountToDisplayAmountStr(
+                        it.outputCoinAmount,
+                        it.outputCoinType
+                    )} ${it.outputCoinName}"
                 }
 
             when (it.customStatus) {
-                MarketSwapRecordDTO.Status.SUCCEEDED -> {
+                SwapRecordDTO.Status.SUCCEEDED -> {
                     itemView.tvRetry.visibility = View.GONE
                     itemView.tvState.setText(R.string.market_swap_state_succeeded)
                     itemView.tvState.setTextColor(
@@ -416,7 +446,7 @@ class SwapRecordViewHolder(
                     )
                 }
 
-                MarketSwapRecordDTO.Status.PROCESSING -> {
+                SwapRecordDTO.Status.PROCESSING -> {
                     // TODO 取消先隐藏
                     itemView.tvRetry.visibility = View.GONE
                     itemView.tvRetry.expandTouchArea()
@@ -426,7 +456,7 @@ class SwapRecordViewHolder(
                     )
                 }
 
-                MarketSwapRecordDTO.Status.CANCELLED -> {
+                SwapRecordDTO.Status.CANCELLED -> {
                     itemView.tvRetry.visibility = View.GONE
                     itemView.tvState.setText(R.string.market_swap_state_cancelled)
                     itemView.tvState.setTextColor(
@@ -445,7 +475,7 @@ class SwapRecordViewHolder(
         }
     }
 
-    override fun onViewClick(view: View, itemPosition: Int, itemData: MarketSwapRecordDTO?) {
+    override fun onViewClick(view: View, itemPosition: Int, itemData: SwapRecordDTO?) {
         itemData?.let {
             when (view) {
                 itemView -> clickItemCallback?.invoke(it)
@@ -458,17 +488,17 @@ class SwapRecordViewHolder(
     }
 }
 
-class SwapRecordDiffCallback : DiffUtil.ItemCallback<MarketSwapRecordDTO>() {
+class SwapRecordDiffCallback : DiffUtil.ItemCallback<SwapRecordDTO>() {
     override fun areItemsTheSame(
-        oldItem: MarketSwapRecordDTO,
-        newItem: MarketSwapRecordDTO
+        oldItem: SwapRecordDTO,
+        newItem: SwapRecordDTO
     ): Boolean {
         return oldItem.hashCode() == newItem.hashCode()
     }
 
     override fun areContentsTheSame(
-        oldItem: MarketSwapRecordDTO,
-        newItem: MarketSwapRecordDTO
+        oldItem: SwapRecordDTO,
+        newItem: SwapRecordDTO
     ): Boolean {
         return oldItem == newItem
     }

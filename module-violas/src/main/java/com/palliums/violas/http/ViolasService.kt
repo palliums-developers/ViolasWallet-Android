@@ -251,20 +251,6 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         currencyOut: String
     ) = mViolasRepository.exchangeSwapTrial(amount, currencyIn, currencyOut).data
 
-    suspend fun getMarketSwapRecords(
-        address: String,
-        pageSize: Int,
-        offset: Int
-    ) =
-        mViolasRepository.getMarketSwapRecords(address, pageSize, offset).data
-
-    suspend fun getMarketPoolRecords(
-        address: String,
-        pageSize: Int,
-        offset: Int
-    ) =
-        mViolasRepository.getMarketPoolRecords(address, pageSize, offset).data
-
     suspend fun getUserPoolInfo(
         address: String
     ) =

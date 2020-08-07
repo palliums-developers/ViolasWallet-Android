@@ -14,15 +14,15 @@ import com.palliums.utils.formatDate
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.utils.getString
-import com.palliums.violas.http.MarketPoolRecordDTO
-import com.palliums.violas.http.MarketPoolRecordDTO.Companion.TYPE_ADD_LIQUIDITY
-import com.palliums.violas.http.MarketPoolRecordDTO.Companion.TYPE_REMOVE_LIQUIDITY
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.ExchangeManager
+import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.exchange.PoolRecordDTO
+import com.violas.wallet.repository.http.exchange.PoolRecordDTO.Companion.TYPE_ADD_LIQUIDITY
+import com.violas.wallet.repository.http.exchange.PoolRecordDTO.Companion.TYPE_REMOVE_LIQUIDITY
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.getAmountPrefix
 import com.violas.wallet.viewModel.WalletAppViewModel
@@ -41,7 +41,7 @@ import java.util.*
  * <p>
  * desc: 交易市场资金池记录页面
  */
-class PoolRecordActivity : BasePagingActivity<MarketPoolRecordDTO>() {
+class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
 
     private val viewModel by lazy {
         ViewModelProvider(this).get(PoolRecordViewModel::class.java)
@@ -55,11 +55,11 @@ class PoolRecordActivity : BasePagingActivity<MarketPoolRecordDTO>() {
         )
     }
 
-    override fun getViewModel(): PagingViewModel<MarketPoolRecordDTO> {
+    override fun getViewModel(): PagingViewModel<PoolRecordDTO> {
         return viewModel
     }
 
-    override fun getViewAdapter(): PagingViewAdapter<MarketPoolRecordDTO> {
+    override fun getViewAdapter(): PagingViewAdapter<PoolRecordDTO> {
         return viewAdapter
     }
 
@@ -94,9 +94,9 @@ class PoolRecordActivity : BasePagingActivity<MarketPoolRecordDTO>() {
     }
 }
 
-class PoolRecordViewModel : PagingViewModel<MarketPoolRecordDTO>() {
+class PoolRecordViewModel : PagingViewModel<PoolRecordDTO>() {
 
-    private val exchangeManager by lazy { ExchangeManager() }
+    private val exchangeService by lazy { DataRepository.getExchangeService() }
 
     private lateinit var address: String
 
@@ -113,69 +113,69 @@ class PoolRecordViewModel : PagingViewModel<MarketPoolRecordDTO>() {
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<MarketPoolRecordDTO>, Any?) -> Unit
+        onSuccess: (List<PoolRecordDTO>, Any?) -> Unit
     ) {
         val swapRecords =
-            exchangeManager.mViolasService.getMarketPoolRecords(
+            exchangeService.getPoolRecords(
                 address, pageSize, (pageNumber - 1) * pageSize
             )
         onSuccess.invoke(swapRecords ?: emptyList(), null)
         //onSuccess.invoke(mockData(), null)
     }
 
-    private suspend fun mockData(): List<MarketPoolRecordDTO> {
+    private suspend fun mockData(): List<PoolRecordDTO> {
         delay(2000)
         return mutableListOf(
-            MarketPoolRecordDTO(
+            PoolRecordDTO(
                 coinAName = "VLSUSD",
                 coinAAmount = "10000000",
                 coinBName = "VLSSGD",
                 coinBAmount = "13909000",
                 liquidityAmount = "1.001",
-                gasUsed = "",
-                gasCurrency = "",
+                gasCoinAmount = "",
+                gasCoinName = "",
                 type = TYPE_ADD_LIQUIDITY,
+                time = System.currentTimeMillis(),
                 version = 1,
-                date = System.currentTimeMillis(),
                 status = 4001
             ),
-            MarketPoolRecordDTO(
+            PoolRecordDTO(
                 coinAName = "VLSUSD",
                 coinAAmount = "100000",
                 coinBName = "VLSEUR",
                 coinBAmount = "87770",
                 liquidityAmount = "0.781",
-                gasUsed = "",
-                gasCurrency = "",
+                gasCoinAmount = "",
+                gasCoinName = "",
                 type = TYPE_ADD_LIQUIDITY,
+                time = System.currentTimeMillis(),
                 version = 2,
-                date = System.currentTimeMillis(),
                 status = 4002
             ),
-            MarketPoolRecordDTO(
+            PoolRecordDTO(
                 coinAName = "VLSUSD",
                 coinAAmount = "10000000",
                 coinBName = "VLSSGD",
                 coinBAmount = "13909000",
                 liquidityAmount = "1.001",
-                gasUsed = "",
-                gasCurrency = "",
+                gasCoinAmount = "",
+                gasCoinName = "",
                 type = TYPE_REMOVE_LIQUIDITY,
+                time = System.currentTimeMillis(),
                 version = 3,
-                date = System.currentTimeMillis(),
                 status = 4001
             ),
-            MarketPoolRecordDTO(
+            PoolRecordDTO(
                 coinAName = "VLSUSD",
                 coinAAmount = "100000",
                 coinBName = "VLSEUR",
                 coinBAmount = "87770",
                 liquidityAmount = "0.781",
-                gasUsed = "",
-                gasCurrency = "",
+                gasCoinAmount = "",
+                gasCoinName = "",
                 type = TYPE_REMOVE_LIQUIDITY,
+                time = System.currentTimeMillis(),
                 version = 4,
-                date = System.currentTimeMillis(),
                 status = 4002
             )
         )
@@ -184,8 +184,8 @@ class PoolRecordViewModel : PagingViewModel<MarketPoolRecordDTO>() {
 
 class PoolRecordViewAdapter(
     retryCallback: () -> Unit,
-    private val clickItemCallback: ((MarketPoolRecordDTO) -> Unit)? = null
-) : PagingViewAdapter<MarketPoolRecordDTO>(retryCallback, PoolRecordDiffCallback()) {
+    private val clickItemCallback: ((PoolRecordDTO) -> Unit)? = null
+) : PagingViewAdapter<PoolRecordDTO>(retryCallback, PoolRecordDiffCallback()) {
 
     private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
 
@@ -208,28 +208,31 @@ class PoolRecordViewAdapter(
 class PoolRecordViewHolder(
     view: View,
     private val simpleDateFormat: SimpleDateFormat,
-    private val clickItemCallback: ((MarketPoolRecordDTO) -> Unit)? = null
-) : BaseViewHolder<MarketPoolRecordDTO>(view) {
+    private val clickItemCallback: ((PoolRecordDTO) -> Unit)? = null
+) : BaseViewHolder<PoolRecordDTO>(view) {
 
     init {
         itemView.setOnClickListener(this)
     }
 
-    override fun onViewBind(itemPosition: Int, itemData: MarketPoolRecordDTO?) {
+    override fun onViewBind(itemPosition: Int, itemData: PoolRecordDTO?) {
         itemData?.let {
-            itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
+            itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
+
             itemView.tvAToken.text =
                 if (it.coinAName.isNullOrBlank() || it.coinAAmount.isNullOrBlank()) {
                     getString(R.string.value_null)
                 } else {
-                    "${convertAmountToDisplayAmountStr(it.coinAAmount!!)} ${it.coinAName}"
+                    "${convertAmountToDisplayAmountStr(it.coinAAmount)} ${it.coinAName}"
                 }
+
             itemView.tvBToken.text =
                 if (it.coinBName.isNullOrBlank() || it.coinBAmount.isNullOrBlank()) {
                     getString(R.string.value_null)
                 } else {
-                    "${convertAmountToDisplayAmountStr(it.coinBAmount!!)} ${it.coinBName}"
+                    "${convertAmountToDisplayAmountStr(it.coinBAmount)} ${it.coinBName}"
                 }
+
             itemView.ivIcon.setBackgroundResource(
                 getResourceId(
                     if (it.isAddLiquidity())
@@ -239,6 +242,7 @@ class PoolRecordViewHolder(
                     itemView.context
                 )
             )
+
             itemView.tvLiquidity.text =
                 if (it.liquidityAmount.isNullOrBlank()) {
                     getString(R.string.value_null)
@@ -277,7 +281,7 @@ class PoolRecordViewHolder(
         }
     }
 
-    override fun onViewClick(view: View, itemPosition: Int, itemData: MarketPoolRecordDTO?) {
+    override fun onViewClick(view: View, itemPosition: Int, itemData: PoolRecordDTO?) {
         itemData?.let {
             when (view) {
                 itemView -> clickItemCallback?.invoke(it)
@@ -289,17 +293,17 @@ class PoolRecordViewHolder(
     }
 }
 
-class PoolRecordDiffCallback : DiffUtil.ItemCallback<MarketPoolRecordDTO>() {
+class PoolRecordDiffCallback : DiffUtil.ItemCallback<PoolRecordDTO>() {
     override fun areItemsTheSame(
-        oldItem: MarketPoolRecordDTO,
-        newItem: MarketPoolRecordDTO
+        oldItem: PoolRecordDTO,
+        newItem: PoolRecordDTO
     ): Boolean {
         return oldItem.hashCode() == newItem.hashCode()
     }
 
     override fun areContentsTheSame(
-        oldItem: MarketPoolRecordDTO,
-        newItem: MarketPoolRecordDTO
+        oldItem: PoolRecordDTO,
+        newItem: PoolRecordDTO
     ): Boolean {
         return oldItem == newItem
     }

@@ -1,10 +1,8 @@
 package com.palliums.violas.http
 
-import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
-import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 
 /**
@@ -168,65 +166,6 @@ data class MarketCurrencyDTO(
     @SerializedName(value = "index")
     val marketIndex: Int
 )
-
-@Keep
-@Parcelize
-data class MarketSwapRecordDTO(
-    @SerializedName(value = "input_name")
-    val fromName: String?,
-    @SerializedName(value = "input_amount")
-    val fromAmount: String?,
-    @SerializedName(value = "output_name")
-    val toName: String?,
-    @SerializedName(value = "output_amount")
-    val toAmount: String?,
-    @SerializedName(value = "gas_used")
-    val gasUsed: String?,
-    @SerializedName(value = "gas_currency")
-    val gasCurrency: String?,
-    val version: Long,
-    val date: Long,
-    val status: Int,
-    var customStatus: Status = Status.FAILED
-) : Parcelable {
-
-    enum class Status {
-        SUCCEEDED, FAILED, PROCESSING, CANCELLED
-    }
-}
-
-@Keep
-@Parcelize
-data class MarketPoolRecordDTO(
-    @SerializedName(value = "coina")
-    val coinAName: String?,
-    @SerializedName(value = "amounta")
-    val coinAAmount: String?,
-    @SerializedName(value = "coinb")
-    val coinBName: String?,
-    @SerializedName(value = "amountb")
-    val coinBAmount: String?,
-    @SerializedName(value = "token")
-    val liquidityAmount: String?,
-    @SerializedName(value = "gas_used")
-    val gasUsed: String?,
-    @SerializedName(value = "gas_currency")
-    val gasCurrency: String?,
-    @SerializedName(value = "transaction_type")
-    val type: String,
-    val version: Long,
-    val date: Long,
-    val status: Int
-) : Parcelable {
-    companion object {
-        const val TYPE_ADD_LIQUIDITY = "ADD_LIQUIDITY"
-        const val TYPE_REMOVE_LIQUIDITY = "REMOVE_LIQUIDITY"
-    }
-
-    fun isAddLiquidity(): Boolean {
-        return type.equals(TYPE_ADD_LIQUIDITY, true)
-    }
-}
 
 @Keep
 data class UserPoolInfoDTO(

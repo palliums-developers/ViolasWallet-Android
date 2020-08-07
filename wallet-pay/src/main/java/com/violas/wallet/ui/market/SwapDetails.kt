@@ -10,10 +10,10 @@ import com.palliums.utils.formatDate
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
-import com.palliums.violas.http.MarketSwapRecordDTO
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.repository.http.exchange.SwapRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertAmountToExchangeRate
 import kotlinx.android.synthetic.main.activity_swap_details.*
@@ -27,14 +27,14 @@ import kotlinx.android.synthetic.main.activity_swap_details.*
 class SwapDetailsActivity : BaseAppActivity() {
 
     companion object {
-        fun start(context: Context, record: MarketSwapRecordDTO) {
+        fun start(context: Context, record: SwapRecordDTO) {
             Intent(context, SwapDetailsActivity::class.java)
                 .apply { putExtra(KEY_ONE, record) }
                 .start(context)
         }
     }
 
-    private lateinit var mSwapRecord: MarketSwapRecordDTO
+    private lateinit var mSwapRecord: SwapRecordDTO
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_swap_details
@@ -57,7 +57,7 @@ class SwapDetailsActivity : BaseAppActivity() {
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
-        var record: MarketSwapRecordDTO? = null
+        var record: SwapRecordDTO? = null
         if (savedInstanceState != null) {
             record = savedInstanceState.getParcelable(KEY_ONE)
         } else if (intent != null) {
@@ -72,40 +72,49 @@ class SwapDetailsActivity : BaseAppActivity() {
         }
     }
 
-    private fun initView(record: MarketSwapRecordDTO) {
-        tvFromToken.text =
-            if (record.fromName.isNullOrBlank() || record.fromAmount.isNullOrBlank())
+    private fun initView(record: SwapRecordDTO) {
+        tvInputCoin.text =
+            if (record.inputCoinName.isNullOrBlank() || record.inputCoinAmount.isNullOrBlank())
                 getString(R.string.value_null)
             else
-                "${convertAmountToDisplayAmountStr(record.fromAmount!!)} ${record.fromName}"
+                "${convertAmountToDisplayAmountStr(
+                    record.inputCoinAmount,
+                    record.inputCoinType
+                )} ${record.inputCoinName}"
 
-        tvToToken.text =
-            if (record.toName.isNullOrBlank() || record.toAmount.isNullOrBlank())
+        tvOutputCoin.text =
+            if (record.outputCoinName.isNullOrBlank() || record.outputCoinAmount.isNullOrBlank())
                 getString(R.string.value_null)
             else
-                "${convertAmountToDisplayAmountStr(record.toAmount!!)} ${record.toName}"
+                "${convertAmountToDisplayAmountStr(
+                    record.outputCoinAmount,
+                    record.outputCoinType
+                )} ${record.outputCoinName}"
 
         tvExchangeRate.text =
-            if (record.fromAmount.isNullOrBlank() || record.toAmount.isNullOrBlank())
+            if (record.inputCoinAmount.isNullOrBlank() || record.outputCoinAmount.isNullOrBlank())
                 getString(R.string.value_null)
             else
-                convertAmountToExchangeRate(record.fromAmount!!, record.toAmount!!).let {
+                convertAmountToExchangeRate(
+                    record.inputCoinAmount,
+                    record.outputCoinAmount
+                ).let {
                     if (it == null) getString(R.string.value_null) else "1:${it.toPlainString()}"
                 }
 
         tvHandlingFee.text = getString(R.string.value_null)
 
         tvGasFee.text =
-            if (record.gasUsed.isNullOrBlank() || record.gasCurrency.isNullOrBlank())
+            if (record.gasCoinAmount.isNullOrBlank() || record.gasCoinName.isNullOrBlank())
                 getString(R.string.value_null)
             else
-                "${convertAmountToDisplayAmountStr(record.gasUsed!!)} ${record.gasCurrency}"
+                "${convertAmountToDisplayAmountStr(record.gasCoinAmount)} ${record.gasCoinName}"
 
-        tvOrderTime.text = formatDate(record.date, pattern = "yyyy-MM-dd HH:mm:ss")
+        tvOrderTime.text = formatDate(record.time, pattern = "yyyy-MM-dd HH:mm:ss")
         tvDealTime.text = getString(R.string.value_null)
 
         // 兑换中
-        if (record.customStatus == MarketSwapRecordDTO.Status.PROCESSING) {
+        if (record.customStatus == SwapRecordDTO.Status.PROCESSING) {
             tvProcessingDesc.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
             tvProcessingDesc.setTextColor(
                 getColorByAttrId(android.R.attr.textColor, this)
@@ -135,7 +144,7 @@ class SwapDetailsActivity : BaseAppActivity() {
         tvRetry.visibility = View.GONE
 
         when (record.customStatus) {
-            MarketSwapRecordDTO.Status.SUCCEEDED -> {
+            SwapRecordDTO.Status.SUCCEEDED -> {
                 tvResultDesc.setText(R.string.market_swap_state_succeeded)
                 tvResultDesc.setTextColor(
                     getColorByAttrId(android.R.attr.textColor, this)
@@ -145,7 +154,7 @@ class SwapDetailsActivity : BaseAppActivity() {
                 )
             }
 
-            MarketSwapRecordDTO.Status.CANCELLED -> {
+            SwapRecordDTO.Status.CANCELLED -> {
                 tvResultDesc.setText(R.string.market_swap_state_cancelled)
                 tvResultDesc.setTextColor(
                     getColorByAttrId(android.R.attr.textColorTertiary, this)

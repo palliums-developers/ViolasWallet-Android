@@ -15,6 +15,8 @@ import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorService
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.repository.http.dex.DexApi
 import com.violas.wallet.repository.http.dex.DexRepository
+import com.violas.wallet.repository.http.exchange.ExchangeApi
+import com.violas.wallet.repository.http.exchange.ExchangeRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.repository.http.libra.violas.LibraViolasApi
@@ -111,6 +113,9 @@ object DataRepository {
 
     fun getMappingExchangeService() =
         MappingExchangeRepository(retrofit.create(MappingExchangeApi::class.java))
+
+    fun getExchangeService() =
+        ExchangeRepository(retrofit.create(ExchangeApi::class.java))
 
     fun getMultiTokenContractService(): MultiContractRpcApi {
         return retrofit.create(MultiContractRpcApi::class.java)
