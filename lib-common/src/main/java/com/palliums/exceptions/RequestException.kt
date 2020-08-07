@@ -6,6 +6,7 @@ import com.palliums.R
 import com.palliums.net.ApiResponse
 import com.palliums.utils.getString
 import com.palliums.utils.isNetworkConnected
+import kotlinx.coroutines.CancellationException
 import org.apache.http.conn.ConnectTimeoutException
 import org.json.JSONException
 import java.io.InterruptedIOException
@@ -26,20 +27,28 @@ class RequestException : RuntimeException, BaseException {
 
         /** 未知错误 */
         const val ERROR_CODE_UNKNOWN_ERROR = "L100"
+
         /** 连接超时 */
         private const val ERROR_CODE_CONNECT_TIMEOUT = "L101"
+
         /** Socket超时 */
         private const val ERROR_CODE_SOCKET_TIMEOUT = "L102"
+
         /** 服务器证书无效 */
         private const val ERROR_CODE_CERTIFICATE_INVALID = "L103"
+
         /** 未知主机（可能是因为无网络） */
         private const val ERROR_CODE_UNKNOWN_HOST = "L104"
+
         /** 连接异常（可能是主机拒绝了连接） */
         private const val ERROR_CODE_CONNECT_EXCEPTION = "L105"
+
         /** 数据异常 */
         private const val ERROR_CODE_DATA_EXCEPTION = "L106"
+
         /** 没有网络 */
         const val ERROR_CODE_NO_NETWORK = "L107"
+
         /** 主动取消 */
         const val ERROR_CODE_ACTIVE_CANCELLATION = "L108"
 
@@ -67,7 +76,14 @@ class RequestException : RuntimeException, BaseException {
     val errorMsg: String?
 
     constructor(exception: Throwable) : super(exception) {
-        if (exception.javaClass.name == "kotlinx.coroutines.JobCancellationException") {
+        if (exception is RequestException) {
+            errorCode = exception.errorCode
+            errorMsg = exception.errorMsg
+            return
+        } else if (exception is CancellationException
+            || exception is java.util.concurrent.CancellationException
+            || this.javaClass.name == "kotlinx.coroutines.JobCancellationException"
+        ) {
             errorCode = ERROR_CODE_ACTIVE_CANCELLATION
             errorMsg = "Active Cancellation"
             return

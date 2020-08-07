@@ -1,5 +1,6 @@
 package com.palliums.violas.http
 
+import io.reactivex.Observable
 import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -159,10 +160,10 @@ interface ViolasApi {
      * @param coinBModule        Coin B module
      */
     @GET("/1.0/market/pool/reserve/info")
-    suspend fun getPoolLiquidityReserve(
+    fun getPoolLiquidityReserve(
         @Query("coin_a") coinAModule: String,
         @Query("coin_b") coinBModule: String
-    ): Response<PoolLiquidityReserveInfoDTO>
+    ): Observable<Response<PoolLiquidityReserveInfoDTO>>
 
     /**
      * 获取支持的映射币交易对详情

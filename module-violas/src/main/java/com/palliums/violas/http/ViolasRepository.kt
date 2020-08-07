@@ -2,6 +2,7 @@ package com.palliums.violas.http
 
 import com.google.gson.Gson
 import com.palliums.exceptions.RequestException
+import com.palliums.net.await
 import com.palliums.net.checkResponse
 import com.palliums.violas.error.ViolasException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -183,12 +184,10 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         coinAModule: String,
         coinBModule: String
     ) =
-        checkResponse(4000) {
-            mViolasApi.getPoolLiquidityReserve(
-                coinAModule,
-                coinBModule
-            )
-        }
+        mViolasApi.getPoolLiquidityReserve(
+            coinAModule,
+            coinBModule
+        ).await(4000)
 
     @Throws(RequestException::class)
     suspend fun getMarketMappingPairInfo() = checkResponse {
