@@ -421,8 +421,8 @@ class WalletConnectActivity : BaseAppActivity() {
                                 BigDecimal("1000000"), 6, RoundingMode.DOWN
                             ).stripTrailingZeros().toPlainString()
                         view.outputCoinUnit.text = mPublishDataType.outCoinName
-                        view.tvDescribePath.text
-                        mPublishDataType.path.map { it.toInt() }.joinToString(separator = ",")
+                        view.tvDescribePath.text =
+                            mPublishDataType.path.joinToString(separator = ",")
                         viewGroupContent.removeAllViews()
                         viewGroupContent.addView(view)
                     }
