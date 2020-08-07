@@ -10,6 +10,7 @@ import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.walletconnect.extensions.hexStringToByteArray
@@ -137,15 +138,19 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         ).sequenceNumber.toString()
     }
 
-    override fun hasHandleCancel(fromCoinTypes: CoinTypes): Boolean {
+    override fun hasHandleCancel(
+        fromIAssetsMark: IAssetsMark,
+        toIAssetsMark: IAssetsMark
+    ): Boolean {
         return false
     }
 
     override suspend fun cancel(
         pwd: ByteArray,
-        fromCoinTypes: CoinTypes,
+        fromIAssetsMark: IAssetsMark,
+        toIAssetsMark: IAssetsMark,
         typeTag: String,
-        payeeAddress: String,
+        originPayeeAddress: String,
         tranId: String?,
         sequence: String?
     ): String {
