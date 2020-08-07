@@ -222,6 +222,10 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                 }
             }
         } else {
+            try {
+                mWCClient.killSession()
+            } catch (e: Exception) {
+            }
             true
         }
     }
