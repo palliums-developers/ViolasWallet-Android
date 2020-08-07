@@ -248,7 +248,7 @@ class ViolasOutputScript {
         dataStream.write(
             ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(miniOutputAmount).array()
         )
-        writeInt16(0, dataStream)
+        writeInt16(10, dataStream)
 
         val scriptStream = BitcoinOutputStream()
         scriptStream.write(Script.OP_RETURN.toInt())

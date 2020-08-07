@@ -117,7 +117,7 @@ class ViolasToAssetsMappingProcessor(
         }
         subExchangeDate.put("state", "start")
         subExchangeDate.put("out_amount", amountOutMin)
-        subExchangeDate.put("times", 0)
+        subExchangeDate.put("times", 10)
 
         val optionTokenSwapTransactionPayload =
             TransactionPayload.optionTransactionPayload(
