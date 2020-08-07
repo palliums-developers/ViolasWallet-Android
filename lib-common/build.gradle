@@ -80,4 +80,7 @@ dependencies {
 
     api libraries.appcenter_analytics
     api libraries.appcenter_crashes
+
+    api libraries.rxjava2
+    api libraries.rxandroid2
 }

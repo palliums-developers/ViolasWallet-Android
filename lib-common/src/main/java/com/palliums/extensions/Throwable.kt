@@ -6,6 +6,7 @@ import com.palliums.exceptions.BaseException
 import com.palliums.exceptions.RequestException
 import com.palliums.utils.getString
 import com.palliums.utils.isNetworkConnected
+import kotlinx.coroutines.CancellationException
 
 /**
  * Created by elephant on 2020/5/14 11:35.
@@ -21,6 +22,8 @@ fun Throwable.isNoNetwork(): Boolean {
 
 fun Throwable.isActiveCancellation(): Boolean {
     return (this is RequestException && this.errorCode == RequestException.ERROR_CODE_ACTIVE_CANCELLATION)
+            || this is CancellationException
+            || this is java.util.concurrent.CancellationException
             || this.javaClass.name == "kotlinx.coroutines.JobCancellationException"
 }
 

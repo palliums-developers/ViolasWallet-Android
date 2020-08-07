@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.extensions.getShowErrorMessage
+import com.palliums.extensions.isActiveCancellation
 import com.palliums.extensions.isNoNetwork
 import com.palliums.extensions.lazyLogError
 import com.palliums.net.LoadState
@@ -484,11 +485,10 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             }
 
             try {
-                val liquidityReserve = withContext(Dispatchers.IO) {
+                val liquidityReserve =
                     exchangeManager.mViolasService.getPoolLiquidityReserve(
                         coinAModule, coinBModule
                     )
-                }
                 lazyLogError(TAG) { "syncLiquidityReserve. liquidity reserve => $liquidityReserve" }
 
                 val syncWorkUnstopped = syncLiquidityReserveFlag.get()
@@ -510,15 +510,21 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 lazyLogError(e, TAG) { "syncLiquidityReserve. sync failed" }
 
                 if (showLoadingAndTips) {
-                    if (e.isNoNetwork()) {
-                        // 没有网络时返回很快，加载视图一闪而过效果不好
-                        delay(500)
-                    }
+                    if (e.isActiveCancellation()) {
+                        loadState.setValueSupport(LoadState.SUCCESS.apply {
+                            this.action = ACTION_SYNC_LIQUIDITY_RESERVE
+                        })
+                    } else {
+                        if (e.isNoNetwork()) {
+                            // 没有网络时返回很快，加载视图一闪而过效果不好
+                            delay(500)
+                        }
 
-                    loadState.setValueSupport(LoadState.failure(e).apply {
-                        this.action = ACTION_SYNC_LIQUIDITY_RESERVE
-                    })
-                    tipsMessage.setValueSupport(e.getShowErrorMessage(true))
+                        loadState.setValueSupport(LoadState.failure(e).apply {
+                            this.action = ACTION_SYNC_LIQUIDITY_RESERVE
+                        })
+                        tipsMessage.setValueSupport(e.getShowErrorMessage(true))
+                    }
                 }
             }
 

@@ -15,7 +15,10 @@ inline fun Any.lazyLogVerbose(
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
-    Log.v(tag ?: this.javaClass.canonicalName, lazyMsg.invoke())
+    Log.v(
+        tag ?: this.javaClass.canonicalName,
+        "[${getThreadName()}] ${lazyMsg.invoke()}"
+    )
 }
 
 inline fun Any.lazyLogVerbose(
@@ -24,7 +27,11 @@ inline fun Any.lazyLogVerbose(
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
-    Log.v(tag ?: this.javaClass.canonicalName, lazyMsg.invoke(), tr)
+    Log.v(
+        tag ?: this.javaClass.canonicalName,
+        "[${getThreadName()}] ${lazyMsg.invoke()}",
+        tr
+    )
 }
 
 inline fun Any.lazyLogDebug(
@@ -32,7 +39,10 @@ inline fun Any.lazyLogDebug(
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
-    Log.d(tag ?: this.javaClass.canonicalName, lazyMsg.invoke())
+    Log.d(
+        tag ?: this.javaClass.canonicalName,
+        "[${getThreadName()}] ${lazyMsg.invoke()}"
+    )
 }
 
 inline fun Any.lazyLogDebug(
@@ -41,7 +51,11 @@ inline fun Any.lazyLogDebug(
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
-    Log.d(tag ?: this.javaClass.canonicalName, lazyMsg.invoke(), tr)
+    Log.d(
+        tag ?: this.javaClass.canonicalName,
+        "[${getThreadName()}] ${lazyMsg.invoke()}",
+        tr
+    )
 }
 
 inline fun Any.lazyLogInfo(
@@ -49,7 +63,10 @@ inline fun Any.lazyLogInfo(
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
-    Log.i(tag ?: this.javaClass.canonicalName, lazyMsg.invoke())
+    Log.i(
+        tag ?: this.javaClass.canonicalName,
+        "[${getThreadName()}] ${lazyMsg.invoke()}"
+    )
 }
 
 inline fun Any.lazyLogInfo(
@@ -58,7 +75,11 @@ inline fun Any.lazyLogInfo(
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
-    Log.i(tag ?: this.javaClass.canonicalName, lazyMsg.invoke(), tr)
+    Log.i(
+        tag ?: this.javaClass.canonicalName,
+        "[${getThreadName()}] ${lazyMsg.invoke()}",
+        tr
+    )
 }
 
 inline fun Any.lazyLogWarn(
@@ -66,7 +87,10 @@ inline fun Any.lazyLogWarn(
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
-    Log.w(tag ?: this.javaClass.canonicalName, lazyMsg.invoke())
+    Log.w(
+        tag ?: this.javaClass.canonicalName,
+        "[${getThreadName()}] ${lazyMsg.invoke()}"
+    )
 }
 
 inline fun Any.lazyLogWarn(
@@ -75,7 +99,11 @@ inline fun Any.lazyLogWarn(
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
-    Log.w(tag ?: this.javaClass.canonicalName, lazyMsg.invoke(), tr)
+    Log.w(
+        tag ?: this.javaClass.canonicalName,
+        "[${getThreadName()}] ${lazyMsg.invoke()}",
+        tr
+    )
 }
 
 inline fun Any.lazyLogError(
@@ -83,7 +111,10 @@ inline fun Any.lazyLogError(
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
-    Log.e(tag ?: this.javaClass.canonicalName, lazyMsg.invoke())
+    Log.e(
+        tag ?: this.javaClass.canonicalName,
+        "[${getThreadName()}] ${lazyMsg.invoke()}"
+    )
 }
 
 inline fun Any.lazyLogError(
@@ -92,5 +123,17 @@ inline fun Any.lazyLogError(
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
-    Log.e(tag ?: this.javaClass.canonicalName, lazyMsg.invoke(), tr)
+    Log.e(
+        tag ?: this.javaClass.canonicalName,
+        "[${getThreadName()}] ${lazyMsg.invoke()}",
+        tr
+    )
+}
+
+fun getThreadName(): String {
+    val name = Thread.currentThread().name
+    return if (name.isNullOrBlank())
+        Thread.currentThread().id.toString()
+    else
+        name
 }
