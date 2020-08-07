@@ -2,6 +2,7 @@ package com.violas.wallet.biz.exchange
 
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.exchange.processor.IProcessor
+import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import org.palliums.libracore.http.LibraException
 import org.palliums.violascore.http.ViolasException
@@ -55,7 +56,7 @@ internal class AssetsSwapEngine {
         data: ByteArray
     ): String {
         processors.forEach {
-            if (it.hasHandle(tokenFrom, tokenTo)) {
+            if (it.hasHandleSwap(tokenFrom, tokenTo)) {
                 return it.handle(
                     pwd,
                     tokenFrom,
@@ -65,6 +66,32 @@ internal class AssetsSwapEngine {
                     amountOutMin,
                     path,
                     data
+                )
+            }
+        }
+        throw UnsupportedTradingPairsException()
+    }
+
+    @Throws(
+        LibraException::class,
+        ViolasException::class,
+        AccountPayeeNotFindException::class,
+        AccountPayeeTokenNotActiveException::class,
+        UnsupportedTradingPairsException::class
+    )
+    suspend fun cancel(
+        pwd: ByteArray,
+        fromIAssetsMark: IAssetsMark,
+        toIAssetsMark: IAssetsMark,
+        typeTag: String,
+        payeeAddress: String,
+        tranId: String?,
+        sequence: String?
+    ): String {
+        processors.forEach {
+            if (it.hasHandleCancel(fromIAssetsMark,toIAssetsMark)) {
+                return it.cancel(
+                    pwd, fromIAssetsMark,toIAssetsMark, typeTag, payeeAddress, tranId, sequence
                 )
             }
         }

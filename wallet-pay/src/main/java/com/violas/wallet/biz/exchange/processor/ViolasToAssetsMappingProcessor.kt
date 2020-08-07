@@ -8,6 +8,7 @@ import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
+import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import org.json.JSONObject
@@ -36,7 +37,7 @@ class ViolasToAssetsMappingProcessor(
         DataRepository.getLibraService()
     }
 
-    override fun hasHandle(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
+    override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         return tokenFrom is StableTokenVo
                 && tokenFrom.coinNumber == CoinTypes.Violas.coinType()
                 && supportMappingPair.containsKey(IAssetsMark.convert(tokenTo).mark())
@@ -123,6 +124,70 @@ class ViolasToAssetsMappingProcessor(
                 ContextProvider.getContext(),
                 supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.receiverAddress ?: "",
                 amountIn,
+                metaData = subExchangeDate.toString().toByteArray(),
+                typeTag = typeTagFrom
+            )
+
+        return mViolasRpcService.sendTransaction(
+            optionTokenSwapTransactionPayload,
+            account,
+            gasCurrencyCode = typeTagFrom.value.module
+        ).sequenceNumber.toString()
+    }
+
+    override fun hasHandleCancel(
+        fromIAssetsMark: IAssetsMark,
+        toIAssetsMark: IAssetsMark
+    ): Boolean {
+        return fromIAssetsMark is LibraTokenAssetsMark
+                && fromIAssetsMark.coinNumber() == CoinTypes.Violas.coinType()
+                && supportMappingPair.containsKey(toIAssetsMark.mark())
+    }
+
+    override suspend fun cancel(
+        pwd: ByteArray,
+        fromIAssetsMark: IAssetsMark,
+        toIAssetsMark: IAssetsMark,
+        typeTag: String,
+        originPayeeAddress: String,
+        tranId: String?,
+        sequence: String?
+    ): String {
+        fromIAssetsMark as LibraTokenAssetsMark
+
+        val simpleSecurity =
+            SimpleSecurity.instance(ContextProvider.getContext())
+
+        val fromAccount = mAccountManager.getIdentityByCoinType(fromIAssetsMark.coinNumber())
+            ?: throw AccountNotFindAddressException()
+        val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
+            ?: throw RuntimeException("password error")
+        // 开始发起 Violas 交易
+        val account = Account(KeyPair.fromSecretKey(privateKey))
+
+        val typeTagFrom = TypeTagStructTag(
+            StructTag(
+                AccountAddress.DEFAULT,
+                fromIAssetsMark.module,
+                fromIAssetsMark.name,
+                arrayListOf()
+            )
+        )
+
+        val subExchangeDate = JSONObject()
+        subExchangeDate.put("flag", "violas")
+        subExchangeDate.put(
+            "type",
+            typeTag
+        )
+        subExchangeDate.put("tran_id", tranId)
+        subExchangeDate.put("state", "stop")
+
+        val optionTokenSwapTransactionPayload =
+            TransactionPayload.optionTransactionPayload(
+                ContextProvider.getContext(),
+                supportMappingPair[toIAssetsMark.mark()]?.receiverAddress ?: "",
+                1,
                 metaData = subExchangeDate.toString().toByteArray(),
                 typeTag = typeTagFrom
             )

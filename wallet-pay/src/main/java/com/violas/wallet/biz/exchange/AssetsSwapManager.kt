@@ -108,6 +108,26 @@ class AssetsSwapManager(
         )
     }
 
+    suspend fun cancel(
+        pwd: ByteArray,
+        fromIAssetsMark: IAssetsMark,
+        toIAssetsMark: IAssetsMark,
+        typeTag: String,
+        payeeAddress: String,
+        tranId: String? = null,
+        sequence: String? = null
+    ): String {
+        return mAssetsSwapEngine.cancel(
+            pwd,
+            fromIAssetsMark,
+            toIAssetsMark,
+            typeTag,
+            payeeAddress,
+            tranId,
+            sequence
+        )
+    }
+
     /**
      * 获取映射兑换交易 和 币币 交易支持的币种 bitmap
      */

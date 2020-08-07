@@ -22,11 +22,17 @@ interface IAssetsMark {
     }
 
     fun mark(): String
+
+    fun coinNumber(): Int
 }
 
 class CoinAssetsMark(val coinTypes: CoinTypes) : IAssetsMark {
     override fun mark(): String {
         return "c${coinTypes.coinType()}"
+    }
+
+    override fun coinNumber(): Int {
+        return coinTypes.coinType()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -42,6 +48,10 @@ class LibraTokenAssetsMark(
 ) : IAssetsMark {
     override fun mark(): String {
         return "lt${coinTypes.coinType()}${module}${address}${name}"
+    }
+
+    override fun coinNumber(): Int {
+        return coinTypes.coinType()
     }
 
     override fun equals(other: Any?): Boolean {

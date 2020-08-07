@@ -35,7 +35,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         ViolasExchangeContract(Vm.TestNet)
     }
 
-    override fun hasHandle(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
+    override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         val hasToken = tokenFrom is StableTokenVo && tokenTo is StableTokenVo
         val hasViolsToken =
             tokenFrom.coinNumber == CoinTypes.Violas.coinType() && tokenTo.coinNumber == CoinTypes.Violas.coinType()
@@ -135,5 +135,20 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
             account,
             gasCurrencyCode = minTypeTag.value.module
         ).sequenceNumber.toString()
+    }
+
+    override fun hasHandleCancel(fromCoinTypes: CoinTypes): Boolean {
+        return false
+    }
+
+    override suspend fun cancel(
+        pwd: ByteArray,
+        fromCoinTypes: CoinTypes,
+        typeTag: String,
+        payeeAddress: String,
+        tranId: String?,
+        sequence: String?
+    ): String {
+        TODO("Not yet implemented")
     }
 }

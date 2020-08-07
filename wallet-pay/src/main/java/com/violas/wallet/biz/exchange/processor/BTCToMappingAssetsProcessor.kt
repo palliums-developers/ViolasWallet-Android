@@ -39,7 +39,7 @@ class BTCToMappingAssetsProcessor(
         DataRepository.getViolasChainRpcService()
     }
 
-    override fun hasHandle(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
+    override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         return tokenFrom is PlatformTokenVo
                 && tokenFrom.coinNumber == if (Vm.TestNet) {
             CoinTypes.BitcoinTest
@@ -136,6 +136,81 @@ class BTCToMappingAssetsProcessor(
             }
         }
     }
+
+    override fun hasHandleCancel(
+        fromIAssetsMark: IAssetsMark,
+        toIAssetsMark: IAssetsMark
+    ): Boolean {
+        return fromIAssetsMark is CoinAssetsMark
+                && fromIAssetsMark.coinNumber() == if (Vm.TestNet) {
+            CoinTypes.BitcoinTest
+        } else {
+            CoinTypes.Bitcoin
+        }.coinType()
+                && supportMappingPair.containsKey(toIAssetsMark.mark())
+    }
+
+    override suspend fun cancel(
+        pwd: ByteArray,
+        fromIAssetsMark: IAssetsMark,
+        toIAssetsMark: IAssetsMark,
+        typeTag: String,
+        originPayeeAddress: String,
+        tranId: String?,
+        sequence: String?
+    ): String {
+        toIAssetsMark as LibraTokenAssetsMark
+
+        val sendAccount = mAccountManager.getIdentityByCoinType(fromIAssetsMark.coinNumber())
+            ?: throw AccountNotFindAddressException()
+
+        val simpleSecurity =
+            SimpleSecurity.instance(ContextProvider.getContext())
+
+        val fromAccount = mAccountManager.getIdentityByCoinType(fromIAssetsMark.coinNumber())
+            ?: throw AccountNotFindAddressException()
+        val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
+            ?: throw RuntimeException("password error")
+
+        val mTransactionManager: TransactionManager =
+            TransactionManager(arrayListOf(sendAccount.address))
+        val checkBalance = mTransactionManager.checkBalance(500 / 100000000.0, 3)
+        val violasOutputScript = ViolasOutputScript()
+
+        if (!checkBalance) {
+            throw LackOfBalanceException()
+        }
+
+        return suspendCancellableCoroutine { coroutin ->
+            val subscribe = mTransactionManager.obtainTransaction(
+                privateKey,
+                sendAccount.publicKey.hexStringToByteArray(),
+                checkBalance,
+                supportMappingPair[toIAssetsMark.mark()]?.receiverAddress ?: "",
+                sendAccount.address,
+                violasOutputScript.cancelExchange(
+                    typeTag,
+                    originPayeeAddress.hexStringToByteArray(),
+                    sequence = sequence?.toLong() ?: 0
+                )
+            ).flatMap {
+                try {
+                    BitcoinChainApi.get()
+                        .pushTx(it.signBytes.toHex())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    throw TransferUnknownException()
+                }
+            }.subscribe({
+                coroutin.resume(it)
+            }, {
+                coroutin.resumeWithException(it)
+            })
+            coroutin.invokeOnCancellation {
+                subscribe.dispose()
+            }
+        }
+    }
 }
 
 class ViolasOutputScript {
@@ -181,7 +256,11 @@ class ViolasOutputScript {
         return Script(scriptStream.toByteArray())
     }
 
-    fun cancelExchange(address: ByteArray, sequence: Long = System.currentTimeMillis()): Script {
+    fun cancelExchange(
+        lable: String,
+        address: ByteArray,
+        sequence: Long = System.currentTimeMillis()
+    ): Script {
         val dataStream = BitcoinOutputStream()
         dataStream.write("violas".toByteArray())
         //dataStream.writeInt16(OP_VER)
@@ -189,6 +268,7 @@ class ViolasOutputScript {
         writeInt16(OP_VER, dataStream)
 
         dataStream.write(TYPE_CANCEL)
+        dataStream.write(lable.replace("0x", "").hexToBytes())
         dataStream.write(address)
         dataStream.write(
             ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(sequence).array()
