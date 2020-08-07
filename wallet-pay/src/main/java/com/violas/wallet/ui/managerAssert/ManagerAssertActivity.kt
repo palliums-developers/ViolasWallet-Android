@@ -83,13 +83,13 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
 
     private val viewAdapter by lazy {
         ViewAdapter { checkbox, checked, assertToken ->
+            mChange = true
             if (checked) {
                 openToken(checkbox, checked, assertToken)
             } else {
                 launch(Dispatchers.IO) {
                     mTokenManager.insert(checked, assertToken)
                 }
-                mChange = true
             }
         }
     }
@@ -149,7 +149,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                 if (isPublish(assertOriginateToken.account_id, assertOriginateToken.tokenMark)) {
                     mTokenManager.insert(checked, assertOriginateToken)
                     dismissProgress()
-                    mChange = true
+//                    mChange = true
                 } else {
                     val account = mAccountManager.getAccountById(assertOriginateToken.account_id)
                     dismissProgress()

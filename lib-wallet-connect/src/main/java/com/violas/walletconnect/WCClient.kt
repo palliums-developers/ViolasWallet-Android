@@ -208,7 +208,6 @@ open class WCClient(
     }
 
     fun killSession(): Boolean {
-        session
         updateSession(approved = false)
         return disconnect()
     }
