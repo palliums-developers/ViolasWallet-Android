@@ -33,7 +33,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
     /**
      * Just need to call once
      */
-    fun start(pageSize: Int = PAGE_SIZE): Boolean {
+    fun start(pageSize: Int = PAGE_SIZE, fixedPageSize: Boolean = false): Boolean {
         if (result.value != null) {
             return false
         }
@@ -48,7 +48,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                     pageSize = realPageSize,
                     // 注意️ initialLoadSizeHint 必须是 pageSize 的2倍及以上整数倍，
                     // 否则会出现刷新操作之后 loadAfter 不回调的问题
-                    initialLoadSizeHint = realPageSize * 2,
+                    initialLoadSizeHint = if (fixedPageSize) realPageSize else realPageSize * 2,
                     prefetchDistance = 1,
                     enablePlaceholders = false
                 ),

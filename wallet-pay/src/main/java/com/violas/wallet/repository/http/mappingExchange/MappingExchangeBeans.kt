@@ -41,3 +41,19 @@ class MappingExchangeOrdersResponse : Response<MappingExchangeOrdersResponse.Dat
         var list: List<MappingExchangeOrderDTO>? = null
     )
 }
+
+@Keep
+data class CrossChainSwapRecord(
+    @SerializedName(value = "coina")
+    val coinA: String?,
+    @SerializedName(value = "amounta")
+    val amountA: String?,
+    @SerializedName(value = "coinb")
+    val coinB: String?,
+    @SerializedName(value = "amountb")
+    val amountB: String?,
+    val version: Long,
+    @SerializedName(value = "data")
+    val date: Long,
+    val status: Int
+)

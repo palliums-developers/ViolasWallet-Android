@@ -2,6 +2,7 @@ package com.violas.wallet.ui.market
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
 import com.palliums.extensions.expandTouchArea
@@ -103,40 +104,66 @@ class SwapDetailsActivity : BaseAppActivity() {
         tvOrderTime.text = formatDate(record.date, pattern = "yyyy-MM-dd HH:mm:ss")
         tvDealTime.text = getString(R.string.value_null)
 
+        // 兑换中
+        if (record.customStatus == MarketSwapRecordDTO.Status.PROCESSING) {
+            tvProcessingDesc.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
+            tvProcessingDesc.setTextColor(
+                getColorByAttrId(android.R.attr.textColor, this)
+            )
+            vVerticalLine2.setBackgroundColor(
+                getColorByAttrId(R.attr.marketDetailsUncompletedLineBgColor, this)
+            )
+
+            // TODO 取消先隐藏
+            tvRetry.visibility = View.GONE
+            tvRetry.expandTouchArea()
+            tvRetry.setOnClickListener {
+                // TODO 重试
+            }
+            return
+        }
+
+        tvProcessingDesc.setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
         tvProcessingDesc.setTextColor(
             getColorByAttrId(R.attr.marketDetailsCompletedStateTextColor, this)
         )
         vVerticalLine2.setBackgroundColor(
             getColorByAttrId(R.attr.marketDetailsCompletedLineBgColor, this)
         )
-        vVerticalLine2.visibility = View.VISIBLE
         ivResultIcon.visibility = View.VISIBLE
         tvResultDesc.visibility = View.VISIBLE
+        tvRetry.visibility = View.GONE
 
-        // 兑换成功
-        if (record.status == 4001) {
-            tvResultDesc.setText(R.string.market_swap_state_succeeded)
-            tvResultDesc.setTextColor(
-                getColorByAttrId(R.attr.textColorSuccess, this)
-            )
-            ivResultIcon.setBackgroundResource(
-                getResourceId(R.attr.iconRecordStateSucceeded, this)
-            )
-            return
-        }
+        when (record.customStatus) {
+            MarketSwapRecordDTO.Status.SUCCEEDED -> {
+                tvResultDesc.setText(R.string.market_swap_state_succeeded)
+                tvResultDesc.setTextColor(
+                    getColorByAttrId(android.R.attr.textColor, this)
+                )
+                ivResultIcon.setBackgroundResource(
+                    getResourceId(R.attr.iconRecordStateSucceeded, this)
+                )
+            }
 
-        // 兑换失败
-        tvResultDesc.setText(R.string.market_swap_state_failed)
-        tvResultDesc.setTextColor(
-            getColorByAttrId(R.attr.textColorFailure, this)
-        )
-        ivResultIcon.setBackgroundResource(
-            getResourceId(R.attr.iconRecordStateFailed, this)
-        )
-        tvRetry.visibility = View.VISIBLE
-        tvRetry.expandTouchArea()
-        tvRetry.setOnClickListener {
-            // TODO 重试
+            MarketSwapRecordDTO.Status.CANCELLED -> {
+                tvResultDesc.setText(R.string.market_swap_state_cancelled)
+                tvResultDesc.setTextColor(
+                    getColorByAttrId(android.R.attr.textColorTertiary, this)
+                )
+                ivResultIcon.setBackgroundResource(
+                    getResourceId(R.attr.iconRecordStateCancelled, this)
+                )
+            }
+
+            else -> {
+                tvResultDesc.setText(R.string.market_swap_state_failed)
+                tvResultDesc.setTextColor(
+                    getColorByAttrId(R.attr.textColorFailure, this)
+                )
+                ivResultIcon.setBackgroundResource(
+                    getResourceId(R.attr.iconRecordStateFailed, this)
+                )
+            }
         }
     }
 }

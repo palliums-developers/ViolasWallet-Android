@@ -9,8 +9,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.lazyLogError
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
+import com.palliums.utils.exceptionAsync
 import com.palliums.utils.formatDate
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getString
@@ -21,13 +23,12 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
+import com.violas.wallet.common.Vm
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_swap_record.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -72,7 +73,6 @@ class SwapRecordActivity : BasePagingActivity<MarketSwapRecordDTO>() {
                 if (!it) {
                     initNotLoginView()
                     return@Observer
-
                 }
 
                 launch {
@@ -82,7 +82,7 @@ class SwapRecordActivity : BasePagingActivity<MarketSwapRecordDTO>() {
                         return@launch
                     }
 
-                    mPagingHandler.start()
+                    mPagingHandler.start(5, true)
                 }
             })
     }
@@ -97,15 +97,34 @@ class SwapRecordActivity : BasePagingActivity<MarketSwapRecordDTO>() {
 class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
 
     private val exchangeManager by lazy { ExchangeManager() }
+    private val crossChainExchangeService by lazy {
+        DataRepository.getMappingExchangeService()
+    }
 
-    private lateinit var address: String
+    private lateinit var violasAddress: String
+    private lateinit var libraAddress: String
+    private lateinit var bitcoinAddress: String
+
+    private var vlsHasMoreData = true
+    private var vlsCrossChainHasMoreData = true
+    private var lbrCrossChainHasMoreData = true
+    private var btcCrossChainHasMoreData = true
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
             AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
                 ?: return@withContext false
+        val libraAccount =
+            AccountManager().getIdentityByCoinType(CoinTypes.Libra.coinType())
+                ?: return@withContext false
+        val bitcoinAccount =
+            AccountManager().getIdentityByCoinType(
+                if (Vm.TestNet) CoinTypes.BitcoinTest.coinType() else CoinTypes.Bitcoin.coinType()
+            ) ?: return@withContext false
 
-        address = violasAccount.address
+        violasAddress = violasAccount.address
+        libraAddress = libraAccount.address
+        bitcoinAddress = bitcoinAccount.address
         return@withContext true
     }
 
@@ -115,11 +134,166 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
         pageKey: Any?,
         onSuccess: (List<MarketSwapRecordDTO>, Any?) -> Unit
     ) {
-        val swapRecords =
-            exchangeManager.mViolasService.getMarketSwapRecords(
-                address, pageSize, (pageNumber - 1) * pageSize
-            )
-        onSuccess.invoke(swapRecords ?: emptyList(), null)
+        if (pageNumber == 1) {
+            // 刷新动作，重制标记
+            vlsHasMoreData = true
+            vlsCrossChainHasMoreData = true
+            lbrCrossChainHasMoreData = true
+            btcCrossChainHasMoreData = true
+        }
+        lazyLogError("SwapRecord") {
+            "loadData. vlsHasMoreData($vlsHasMoreData), vlsCrossChainHasMoreData($vlsCrossChainHasMoreData), " +
+                    "lbrCrossChainHasMoreData($lbrCrossChainHasMoreData), btcCrossChainHasMoreData($btcCrossChainHasMoreData)"
+        }
+
+        val offset = (pageNumber - 1) * pageSize
+        val swapRecords = coroutineScope {
+
+            val vlsSwapRecordsDeferred =
+                if (vlsHasMoreData)
+                    exceptionAsync {
+                        exchangeManager.mViolasService.getMarketSwapRecords(
+                            violasAddress, pageSize, offset
+                        )
+                    }
+                else
+                    null
+
+            val vlsCrossChainSwapRecordsDeferred =
+                if (vlsCrossChainHasMoreData)
+                    exceptionAsync {
+                        crossChainExchangeService.getCrossChainSwapRecords(
+                            violasAddress, "violas", pageSize, offset
+                        )
+                    }
+                else
+                    null
+
+            val lbrCrossChainSwapRecordsDeferred =
+                if (lbrCrossChainHasMoreData)
+                    exceptionAsync {
+                        crossChainExchangeService.getCrossChainSwapRecords(
+                            libraAddress, "libra", pageSize, offset
+                        )
+                    }
+                else
+                    null
+
+            val btcCrossChainSwapRecordsDeferred =
+                if (btcCrossChainHasMoreData)
+                    exceptionAsync {
+                        crossChainExchangeService.getCrossChainSwapRecords(
+                            bitcoinAddress, "btc", pageSize, offset
+                        )
+                    }
+                else
+                    null
+
+            val vlsSwapRecords =
+                vlsSwapRecordsDeferred?.await()
+            val vlsCrossChainSwapRecords =
+                vlsCrossChainSwapRecordsDeferred?.await()
+            val lbrCrossChainSwapRecords =
+                lbrCrossChainSwapRecordsDeferred?.await()
+            val btcCrossChainSwapRecords =
+                btcCrossChainSwapRecordsDeferred?.await()
+
+            val records = mutableListOf<MarketSwapRecordDTO>()
+            vlsSwapRecords?.forEach {
+                records.add(it.apply {
+                    customStatus = if (status == 4001)
+                        MarketSwapRecordDTO.Status.SUCCEEDED
+                    else
+                        MarketSwapRecordDTO.Status.FAILED
+                })
+            }
+            vlsHasMoreData = if (vlsSwapRecords == null)
+                false
+            else
+                vlsSwapRecords.size >= pageSize
+
+            vlsCrossChainSwapRecords?.forEach {
+                records.add(
+                    MarketSwapRecordDTO(
+                        fromName = it.coinA,
+                        fromAmount = it.amountA,
+                        toName = it.coinB,
+                        toAmount = it.amountB,
+                        gasUsed = null,
+                        gasCurrency = null,
+                        version = it.version,
+                        date = it.date,
+                        status = it.status,
+                        customStatus = when (it.status) {
+                            4001 -> MarketSwapRecordDTO.Status.SUCCEEDED
+                            4002 -> MarketSwapRecordDTO.Status.PROCESSING
+                            4004 -> MarketSwapRecordDTO.Status.CANCELLED
+                            else -> MarketSwapRecordDTO.Status.FAILED
+                        }
+                    )
+                )
+            }
+            vlsCrossChainHasMoreData = if (vlsCrossChainSwapRecords == null)
+                false
+            else
+                vlsCrossChainSwapRecords.size >= pageSize
+
+            lbrCrossChainSwapRecords?.forEach {
+                records.add(
+                    MarketSwapRecordDTO(
+                        fromName = it.coinA,
+                        fromAmount = it.amountA,
+                        toName = it.coinB,
+                        toAmount = it.amountB,
+                        gasUsed = null,
+                        gasCurrency = null,
+                        version = it.version,
+                        date = it.date,
+                        status = it.status,
+                        customStatus = when (it.status) {
+                            4001 -> MarketSwapRecordDTO.Status.SUCCEEDED
+                            4002 -> MarketSwapRecordDTO.Status.PROCESSING
+                            4004 -> MarketSwapRecordDTO.Status.CANCELLED
+                            else -> MarketSwapRecordDTO.Status.FAILED
+                        }
+                    )
+                )
+            }
+            lbrCrossChainHasMoreData = if (lbrCrossChainSwapRecords == null)
+                false
+            else
+                lbrCrossChainSwapRecords.size >= pageSize
+
+            btcCrossChainSwapRecords?.forEach {
+                records.add(
+                    MarketSwapRecordDTO(
+                        fromName = it.coinA,
+                        fromAmount = it.amountA,
+                        toName = it.coinB,
+                        toAmount = it.amountB,
+                        gasUsed = null,
+                        gasCurrency = null,
+                        version = it.version,
+                        date = it.date,
+                        status = it.status,
+                        customStatus = when (it.status) {
+                            4001 -> MarketSwapRecordDTO.Status.SUCCEEDED
+                            4002 -> MarketSwapRecordDTO.Status.PROCESSING
+                            4004 -> MarketSwapRecordDTO.Status.CANCELLED
+                            else -> MarketSwapRecordDTO.Status.FAILED
+                        }
+                    )
+                )
+            }
+            btcCrossChainHasMoreData = if (lbrCrossChainSwapRecords == null)
+                false
+            else
+                lbrCrossChainSwapRecords.size >= pageSize
+
+            records
+        }
+
+        onSuccess.invoke(swapRecords, null)
         //onSuccess.invoke(mockData(), null)
     }
 
@@ -135,7 +309,8 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
                 gasCurrency = "",
                 version = 1,
                 date = System.currentTimeMillis(),
-                status = 4001
+                status = 4001,
+                customStatus = MarketSwapRecordDTO.Status.SUCCEEDED
             ),
             MarketSwapRecordDTO(
                 fromName = "VLSUSD",
@@ -146,7 +321,32 @@ class SwapRecordViewModel : PagingViewModel<MarketSwapRecordDTO>() {
                 gasCurrency = "",
                 version = 2,
                 date = System.currentTimeMillis(),
-                status = 4002
+                status = 4002,
+                customStatus = MarketSwapRecordDTO.Status.FAILED
+            ),
+            MarketSwapRecordDTO(
+                fromName = "VLSUSD",
+                fromAmount = "10000000",
+                toName = "VLSGBP",
+                toAmount = "211111",
+                gasUsed = "",
+                gasCurrency = "",
+                version = 1,
+                date = System.currentTimeMillis(),
+                status = 4003,
+                customStatus = MarketSwapRecordDTO.Status.PROCESSING
+            ),
+            MarketSwapRecordDTO(
+                fromName = "VLSUSD",
+                fromAmount = "100000",
+                toName = "BTC",
+                toAmount = "1000",
+                gasUsed = "",
+                gasCurrency = "",
+                version = 2,
+                date = System.currentTimeMillis(),
+                status = 4004,
+                customStatus = MarketSwapRecordDTO.Status.CANCELLED
             )
         )
     }
@@ -192,31 +392,55 @@ class SwapRecordViewHolder(
     override fun onViewBind(itemPosition: Int, itemData: MarketSwapRecordDTO?) {
         itemData?.let {
             itemView.tvTime.text = formatDate(it.date, simpleDateFormat)
+
             itemView.tvFromToken.text =
                 if (it.fromName.isNullOrBlank() || it.fromAmount.isNullOrBlank()) {
                     getString(R.string.value_null)
                 } else {
                     "${convertAmountToDisplayAmountStr(it.fromAmount!!)} ${it.fromName}"
                 }
+
             itemView.tvToToken.text =
                 if (it.toName.isNullOrBlank() || it.toAmount.isNullOrBlank()) {
                     getString(R.string.value_null)
                 } else {
                     "${convertAmountToDisplayAmountStr(it.toAmount!!)} ${it.toName}"
                 }
-            if (it.status == 4001) {
-                itemView.tvRetry.visibility = View.GONE
-                itemView.tvState.setText(R.string.market_swap_state_succeeded)
-                itemView.tvState.setTextColor(
-                    getColorByAttrId(R.attr.textColorSuccess, itemView.context)
-                )
-            } else {
-                itemView.tvRetry.visibility = View.VISIBLE
-                itemView.tvRetry.expandTouchArea()
-                itemView.tvState.setText(R.string.market_swap_state_failed)
-                itemView.tvState.setTextColor(
-                    getColorByAttrId(R.attr.textColorFailure, itemView.context)
-                )
+
+            when (it.customStatus) {
+                MarketSwapRecordDTO.Status.SUCCEEDED -> {
+                    itemView.tvRetry.visibility = View.GONE
+                    itemView.tvState.setText(R.string.market_swap_state_succeeded)
+                    itemView.tvState.setTextColor(
+                        getColorByAttrId(R.attr.textColorSuccess, itemView.context)
+                    )
+                }
+
+                MarketSwapRecordDTO.Status.PROCESSING -> {
+                    // TODO 取消先隐藏
+                    itemView.tvRetry.visibility = View.GONE
+                    itemView.tvRetry.expandTouchArea()
+                    itemView.tvState.setText(R.string.market_swap_state_processing)
+                    itemView.tvState.setTextColor(
+                        getColorByAttrId(R.attr.textColorProcessing, itemView.context)
+                    )
+                }
+
+                MarketSwapRecordDTO.Status.CANCELLED -> {
+                    itemView.tvRetry.visibility = View.GONE
+                    itemView.tvState.setText(R.string.market_swap_state_cancelled)
+                    itemView.tvState.setTextColor(
+                        getColorByAttrId(android.R.attr.textColorTertiary, itemView.context)
+                    )
+                }
+
+                else -> {
+                    itemView.tvRetry.visibility = View.GONE
+                    itemView.tvState.setText(R.string.market_swap_state_failed)
+                    itemView.tvState.setTextColor(
+                        getColorByAttrId(R.attr.textColorFailure, itemView.context)
+                    )
+                }
             }
         }
     }

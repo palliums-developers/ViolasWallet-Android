@@ -194,7 +194,7 @@
 
         <View
             android:id="@+id/vVerticalLine1"
-            android:layout_width="@dimen/dp_0.5"
+            android:layout_width="@dimen/dp_0.8"
             android:layout_height="@dimen/dp_38"
             android:layout_marginTop="@dimen/dp_4"
             android:background="?attr/marketDetailsCompletedLineBgColor"
@@ -225,7 +225,7 @@
 
         <View
             android:id="@+id/vVerticalLine2"
-            android:layout_width="@dimen/dp_0.5"
+            android:layout_width="@dimen/dp_0.8"
             android:layout_height="@dimen/dp_38"
             android:layout_marginTop="@dimen/dp_4"
             android:visibility="gone"
@@ -252,6 +252,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_5"
             android:textSize="@dimen/sp_14"
+            android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/ivResultIcon"
             app:layout_constraintStart_toEndOf="@id/ivResultIcon"

@@ -127,9 +127,7 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         pageSize: Int,
         offset: Int
     ) =
-        checkResponse {
-            mViolasApi.getMarketSwapRecords(address, pageSize, offset)
-        }
+        mViolasApi.getMarketSwapRecords(address, pageSize, offset).await()
 
     @Throws(RequestException::class)
     suspend fun getMarketPoolRecords(

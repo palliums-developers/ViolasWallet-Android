@@ -186,8 +186,14 @@ data class MarketSwapRecordDTO(
     val gasCurrency: String?,
     val version: Long,
     val date: Long,
-    val status: Int
-) : Parcelable
+    val status: Int,
+    var customStatus: Status = Status.FAILED
+) : Parcelable {
+
+    enum class Status {
+        SUCCEEDED, FAILED, PROCESSING, CANCELLED
+    }
+}
 
 @Keep
 @Parcelize

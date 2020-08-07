@@ -98,11 +98,11 @@ interface ViolasApi {
      * @param offset        偏移量，从0开始
      */
     @GET("/1.0/market/exchange/transaction")
-    suspend fun getMarketSwapRecords(
+    fun getMarketSwapRecords(
         @Query("address") address: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
-    ): ListResponse<MarketSwapRecordDTO>
+    ): Observable<ListResponse<MarketSwapRecordDTO>>
 
     /**
      * 获取指定地址的交易市场资金池记录，分页查询

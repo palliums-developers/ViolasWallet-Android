@@ -1,5 +1,6 @@
 package com.violas.wallet.repository.http.mappingExchange
 
+import com.palliums.net.await
 import com.palliums.net.checkResponse
 
 /**
@@ -26,4 +27,10 @@ class MappingExchangeRepository(private val api: MappingExchangeApi) {
         checkResponse {
             api.getMappingExchangeOrders(walletAddress, walletType, pageSize, offset)
         }
+
+    suspend fun getCrossChainSwapRecords(
+        walletAddress: String, chainName: String, pageSize: Int, offset: Int
+    ) =
+        api.getCrossChainSwapRecords(walletAddress, chainName, pageSize, offset).await().data
+
 }

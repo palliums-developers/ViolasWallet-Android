@@ -31,6 +31,7 @@ class PagingHandler<VO>(
 
     private var autoRefresh = false
     private var pageSize = PagingViewModel.PAGE_SIZE
+    private var fixedPageSize = false
 
     fun init() {
 
@@ -113,7 +114,7 @@ class PagingHandler<VO>(
             it.setOnRefreshListener {
                 if (autoRefresh) {
                     autoRefresh = false
-                    if (!mPagingController.getViewModel().start(pageSize)) {
+                    if (!mPagingController.getViewModel().start(pageSize, fixedPageSize)) {
                         mPagingController.getViewModel().refresh()
                     }
                 } else {
@@ -149,11 +150,12 @@ class PagingHandler<VO>(
         }
     }
 
-    fun start(pageSize: Int = PagingViewModel.PAGE_SIZE) {
+    fun start(pageSize: Int = PagingViewModel.PAGE_SIZE, fixedPageSize: Boolean = false) {
         this.pageSize = pageSize
+        this.fixedPageSize = fixedPageSize
         autoRefresh = false
         //mPagingController.getRefreshLayout()?.autoRefresh()
-        if (!mPagingController.getViewModel().start(pageSize)) {
+        if (!mPagingController.getViewModel().start(pageSize, fixedPageSize)) {
             mPagingController.getViewModel().refresh()
         }
 

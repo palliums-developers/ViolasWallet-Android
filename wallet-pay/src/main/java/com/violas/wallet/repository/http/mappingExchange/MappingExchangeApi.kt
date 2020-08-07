@@ -2,6 +2,7 @@ package com.violas.wallet.repository.http.mappingExchange
 
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
+import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -45,4 +46,19 @@ interface MappingExchangeApi {
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
     ): MappingExchangeOrdersResponse
+
+    /**
+     * 获取跨链兑换记录
+     * @param walletAddress
+     * @param chainName libra、btc、violas
+     * @param pageSize
+     * @param offset
+     */
+    @GET("/1.0/market/crosschain/transaction")
+    fun getCrossChainSwapRecords(
+        @Query("address") walletAddress: String,
+        @Query("chain") chainName: String,
+        @Query("limit") pageSize: Int,
+        @Query("offset") offset: Int
+    ): Observable<ListResponse<CrossChainSwapRecord>>
 }
