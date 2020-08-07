@@ -416,4 +416,9 @@
     <string name="tips_market_remove_liquidity_success">转出交易广播成功</string>
     <string name="tips_market_remove_liquidity_failure">转出失败</string>
     <string name="hint_swap_exchange_transaction_broadcast_success">兑换交易广播成功</string>
+    <string name="hint_exchange_swap_input">输入</string>
+    <string name="hint_exchange_swap_output">输出</string>
+    <string name="hint_exchange_swap_path">路径</string>
+    <string name="exchange_add_liquidity">转入</string>
+    <string name="exchange_remove_liquidity">转出</string>
 </resources>

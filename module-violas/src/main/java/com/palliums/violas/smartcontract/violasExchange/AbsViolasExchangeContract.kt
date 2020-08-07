@@ -158,4 +158,8 @@ abstract class AbsViolasExchangeContract {
             )
         )
     }
+
+    fun getAddLiquidityContract() = replaceContractAddress(mAddLiquidityContract)
+    fun getRemoveLiquidityContract() = replaceContractAddress(mRemoveLiquidityContract)
+    fun getTokenSwapContract() = replaceContractAddress(mTokenSwapContract)
 }

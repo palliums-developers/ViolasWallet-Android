@@ -13,7 +13,10 @@ class ViolasTransferDecodeEngine(
     private val mDecode: ArrayList<TransferDecode> =
         arrayListOf(
             TransferP2PWithDataDecode(mRawTransaction),
-            TransferViolasAddCurrencyToAccountDecode(mRawTransaction)
+            TransferViolasAddCurrencyToAccountDecode(mRawTransaction),
+            TransferExchangeSwapDecode(mRawTransaction),
+            TransferExchangeAddLiquidityDecode(mRawTransaction),
+            TransferExchangeRemoveLiquidityDecode(mRawTransaction)
         )
 
     fun decode(): Pair<TransactionDataType, String> {
