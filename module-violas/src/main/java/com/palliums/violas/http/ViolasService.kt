@@ -42,7 +42,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         gasCurrencyCode: String = lbrStructTagType(),
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
-        delayed: Long = 1000
+        delayed: Long = 600
     ): TransactionResult {
         val (signedTxn, sender, newSequenceNumber) =
             generateTransaction(
@@ -90,7 +90,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         gasCurrencyCode: String = lbrStructTagType(),
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
-        delayed: Long = 1000
+        delayed: Long = 600
     ): GenerateTransactionResult {
         var sequenceNumber = sequenceNumber
         val keyPair = account.keyPair
@@ -131,7 +131,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         gasCurrencyCode: String = lbrStructTagType(),
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
-        delayed: Long = 1000
+        delayed: Long = 600
     ): RawTransaction {
         var sequenceNumber = sequenceNumber
 

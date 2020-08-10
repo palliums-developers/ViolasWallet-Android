@@ -34,7 +34,7 @@ fun RawTransaction.Companion.optionTransaction(
     gasCurrencyCode: String = lbrStructTagType(),
     maxGasAmount: Long = 1_000_000,
     gasUnitPrice: Long = 0,
-    delayed: Long = 1000
+    delayed: Long = 600
 ): RawTransaction {
     val rawTransaction = RawTransaction(
         AccountAddress(HexUtils.fromHex(senderAddress)),
