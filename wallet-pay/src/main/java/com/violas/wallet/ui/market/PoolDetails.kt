@@ -4,10 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import com.palliums.utils.formatDate
-import com.palliums.utils.getColorByAttrId
-import com.palliums.utils.getResourceId
-import com.palliums.utils.start
+import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
@@ -110,8 +107,14 @@ class PoolDetailsActivity : BaseAppActivity() {
             else
                 "${convertAmountToDisplayAmountStr(record.gasCoinAmount)} ${record.gasCoinName}"
 
-        tvOrderTime.text = formatDate(record.time, pattern = "yyyy-MM-dd HH:mm:ss")
-        tvDealTime.text = getString(R.string.value_null)
+        tvOrderTime.text = formatDate(
+            correctDateLength(record.confirmedTime) - 1000,
+            pattern = "yyyy-MM-dd HH:mm:ss"
+        )
+        tvDealTime.text = formatDate(
+            record.confirmedTime,
+            pattern = "yyyy-MM-dd HH:mm:ss"
+        )
 
         tvProcessingDesc.setTextColor(
             getColorByAttrId(R.attr.marketDetailsCompletedStateTextColor, this)
