@@ -81,7 +81,7 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
                         return@launch
                     }
 
-                    mPagingHandler.start(5, true)
+                    mPagingHandler.start(fixedPageSize = true)
                 }
             })
     }
@@ -298,6 +298,8 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
                 false
             else
                 lbrCrossChainSwapRecords.size >= pageSize
+
+            records.sortByDescending { it.time }
 
             records
         }
