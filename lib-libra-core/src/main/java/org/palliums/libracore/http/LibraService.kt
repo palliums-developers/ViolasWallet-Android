@@ -46,7 +46,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         gasCurrencyCode: String = lbrStructTagType(),
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
-        delayed: Long = 1000,
+        delayed: Long = 600,
         chainId: Int
     ): TransactionResult {
         var sequenceNumber = sequenceNumber
@@ -211,7 +211,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         gasCurrencyCode: String = lbrStructTagType(),
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
-        delayed: Long = 1000,
+        delayed: Long = 600,
         chainId: Int
     ): RawTransaction {
         var sequenceNumber = sequenceNumber

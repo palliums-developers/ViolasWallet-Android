@@ -18,7 +18,7 @@ fun RawTransaction.Companion.optionTransaction(
     gasCurrencyCode: String = lbrStructTagType(),
     maxGasAmount: Long = 400_000,
     gasUnitPrice: Long = 0,
-    delayed: Long = 1000,
+    delayed: Long = 600,
     chainId: Int
 ): RawTransaction {
     val rawTransaction = RawTransaction(
