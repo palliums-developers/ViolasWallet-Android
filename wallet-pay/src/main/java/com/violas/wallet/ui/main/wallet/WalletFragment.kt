@@ -32,6 +32,7 @@ import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
 import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
+import com.violas.wallet.ui.mapping.MappingActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.tokenDetails.TokenDetailsActivity
@@ -274,7 +275,7 @@ class WalletFragment : BaseFragment() {
             R.id.llMappingGroup -> {
                 activity?.let {
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
-                        showToast("跳转到映射页面")
+                        MappingActivity.start(it)
                     } else {
                         showToast(R.string.tips_create_or_import_wallet)
                     }

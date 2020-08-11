@@ -126,6 +126,7 @@
         <item name="iconRecordStateFailed">@drawable/ic_record_state_failed</item>
         <item name="iconRecordStateCancelled">@drawable/ic_record_state_cancelled</item>
         <item name="iconCoinDefLogo">@drawable/ic_coin_default_logo</item>
+        <item name="iconDownArrow">@mipmap/ic_down_arrow</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
@@ -207,7 +208,6 @@
         <item name="marketMenuRecordIcon">@mipmap/ic_market_record</item>
         <item name="marketCoinConversionIcon">@mipmap/ic_coin_conversion</item>
         <item name="marketSwapRecordIcon">@mipmap/ic_swap_record</item>
-        <item name="marketSwapDetailsIcon">@mipmap/ic_market_swap_details</item>
         <item name="marketSelectPopupBgColor">@color/color_F1EEFB</item>
         <item name="marketBtnSecondaryBgColor">@color/color_F1EEFB</item>
         <item name="marketPoolIncomeIcon">@mipmap/ic_market_pool_income</item>
@@ -218,6 +218,11 @@
         <item name="marketDetailsCompletedStateTextColor">@color/color_82808A</item>
         <item name="marketDetailsCompletedLineBgColor">@color/color_999999</item>
         <item name="marketDetailsUncompletedLineBgColor">@color/color_C2C2C2</item>
+
+        <!--映射相关页面资源属性-->
+        <item name="mappingMenuIcon">@mipmap/ic_mapping_menu</item>
+        <item name="mappingBalanceIcon">@mipmap/ic_mapping_balance</item>
+        <item name="mappingDividerIcon">@mipmap/ic_mapping_divider</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">

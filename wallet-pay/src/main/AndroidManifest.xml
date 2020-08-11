@@ -142,8 +142,9 @@
             android:name=".ui.dexOrder.details.DexOrderDetails2Activity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.outsideExchange.OutsideExchangeActivity"
-            android:screenOrientation="portrait" />
+            android:name=".ui.mapping.MappingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
         <activity
             android:name=".ui.scan.ScanResultActivity"
             android:screenOrientation="portrait" />
