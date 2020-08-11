@@ -34,6 +34,8 @@ data class PoolRecordDTO(
     val type: String,
     @SerializedName(value = "date")
     val time: Long,
+    @SerializedName(value = "confirmed_time")
+    val confirmedTime: Long,
     val version: Long,
     val status: Int
 ) : Parcelable {

@@ -11,6 +11,7 @@ import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
+import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
@@ -111,8 +112,17 @@ class SwapDetailsActivity : BaseAppActivity() {
             else
                 "${convertAmountToDisplayAmountStr(record.gasCoinAmount)} ${record.gasCoinName}"
 
-        tvOrderTime.text = formatDate(record.time, pattern = "yyyy-MM-dd HH:mm:ss")
-        tvDealTime.text = getString(R.string.value_null)
+        val pattern = "yyyy-MM-dd HH:mm:ss"
+        if (record.inputCoinType == record.outputCoinType) {
+            tvOrderTime.text = formatDate(
+                correctDateLength(record.confirmedTime) - 1000,
+                pattern = pattern
+            )
+            tvDealTime.text = formatDate(record.confirmedTime, pattern = pattern)
+        } else {
+            tvOrderTime.text = formatDate(record.time, pattern = pattern)
+            tvDealTime.text = getString(R.string.value_null)
+        }
 
         // 兑换中
         if (record.customStatus == SwapRecordDTO.Status.PROCESSING) {

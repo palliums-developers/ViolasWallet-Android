@@ -10,10 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
-import com.palliums.utils.formatDate
-import com.palliums.utils.getColorByAttrId
-import com.palliums.utils.getResourceId
-import com.palliums.utils.getString
+import com.palliums.utils.*
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -136,6 +133,7 @@ class PoolRecordViewModel : PagingViewModel<PoolRecordDTO>() {
                 gasCoinName = "",
                 type = TYPE_ADD_LIQUIDITY,
                 time = System.currentTimeMillis(),
+                confirmedTime = System.currentTimeMillis() + 1000,
                 version = 1,
                 status = 4001
             ),
@@ -149,6 +147,7 @@ class PoolRecordViewModel : PagingViewModel<PoolRecordDTO>() {
                 gasCoinName = "",
                 type = TYPE_ADD_LIQUIDITY,
                 time = System.currentTimeMillis(),
+                confirmedTime = System.currentTimeMillis() + 1000,
                 version = 2,
                 status = 4002
             ),
@@ -162,6 +161,7 @@ class PoolRecordViewModel : PagingViewModel<PoolRecordDTO>() {
                 gasCoinName = "",
                 type = TYPE_REMOVE_LIQUIDITY,
                 time = System.currentTimeMillis(),
+                confirmedTime = System.currentTimeMillis() + 1000,
                 version = 3,
                 status = 4001
             ),
@@ -175,6 +175,7 @@ class PoolRecordViewModel : PagingViewModel<PoolRecordDTO>() {
                 gasCoinName = "",
                 type = TYPE_REMOVE_LIQUIDITY,
                 time = System.currentTimeMillis(),
+                confirmedTime = System.currentTimeMillis() + 1000,
                 version = 4,
                 status = 4002
             )
@@ -217,7 +218,10 @@ class PoolRecordViewHolder(
 
     override fun onViewBind(itemPosition: Int, itemData: PoolRecordDTO?) {
         itemData?.let {
-            itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
+            itemView.tvTime.text = formatDate(
+                correctDateLength(it.confirmedTime) - 1000,
+                simpleDateFormat
+            )
 
             itemView.tvAToken.text =
                 if (it.coinAName.isNullOrBlank() || it.coinAAmount.isNullOrBlank()) {

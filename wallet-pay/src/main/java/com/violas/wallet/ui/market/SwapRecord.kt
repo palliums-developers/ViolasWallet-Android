@@ -12,10 +12,7 @@ import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.lazyLogError
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
-import com.palliums.utils.exceptionAsync
-import com.palliums.utils.formatDate
-import com.palliums.utils.getColorByAttrId
-import com.palliums.utils.getString
+import com.palliums.utils.*
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -417,7 +414,10 @@ class SwapRecordViewHolder(
 
     override fun onViewBind(itemPosition: Int, itemData: SwapRecordDTO?) {
         itemData?.let {
-            itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
+            itemView.tvTime.text = if (it.inputCoinType == it.outputCoinType)
+                formatDate(correctDateLength(it.confirmedTime) - 1000, simpleDateFormat)
+            else
+                formatDate(it.time, simpleDateFormat)
 
             itemView.tvInputCoin.text =
                 if (it.inputCoinName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
