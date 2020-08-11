@@ -121,8 +121,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
             throwable.printStackTrace()
         }
         mWCClient.onDisconnect = { _, _ ->
-            mWCSessionStoreType.session = null
-            mWalletConnectListener?.onDisconnect()
+            disconnectAndReset()
         }
         mWCClient.onViolasSendRawTransaction = { id, violasSendRawTransaction ->
             mWalletConnectMessageHandler.convertAndCheckTransaction(id, violasSendRawTransaction)
@@ -142,6 +141,11 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         mWCClient.onBitcoinSendTransaction = { id, bitcoinSendTransaction ->
             mWalletConnectMessageHandler.convertAndCheckTransaction(id, bitcoinSendTransaction)
         }
+    }
+
+    private fun disconnectAndReset(){
+        mWCSessionStoreType.session = null
+        mWalletConnectListener?.onDisconnect()
     }
 
     override fun <T> sendSuccessMessage(id: Long, result: T): Boolean {
@@ -216,14 +220,12 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
 
     fun disconnect(): Boolean {
         return if (mWCSessionStoreType.session != null) {
-            mWCClient.killSession().also {
-                if (!it) {
-                    restore()
-                }
-            }
+            val killSession = mWCClient.killSession()
+            disconnectAndReset()
+            killSession
         } else {
             try {
-                mWCClient.killSession()
+                mWCClient.disconnect()
             } catch (e: Exception) {
             }
             true
