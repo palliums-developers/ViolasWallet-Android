@@ -10,6 +10,7 @@ import com.palliums.utils.formatDate
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
@@ -79,7 +80,7 @@ class SwapDetailsActivity : BaseAppActivity() {
             else
                 "${convertAmountToDisplayAmountStr(
                     record.inputCoinAmount,
-                    record.inputCoinType
+                    CoinTypes.parseCoinType(record.inputCoinType)
                 )} ${record.inputCoinName}"
 
         tvOutputCoin.text =
@@ -88,7 +89,7 @@ class SwapDetailsActivity : BaseAppActivity() {
             else
                 "${convertAmountToDisplayAmountStr(
                     record.outputCoinAmount,
-                    record.outputCoinType
+                    CoinTypes.parseCoinType(record.outputCoinType)
                 )} ${record.outputCoinName}"
 
         tvExchangeRate.text =

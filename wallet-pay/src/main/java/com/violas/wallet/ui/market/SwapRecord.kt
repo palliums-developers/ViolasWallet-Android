@@ -199,8 +199,8 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
             val records = mutableListOf<SwapRecordDTO>()
             vlsSwapRecords?.forEach {
                 records.add(it.apply {
-                    inputCoinType = CoinTypes.Violas
-                    outputCoinType = CoinTypes.Violas
+                    inputCoinType = CoinTypes.Violas.coinType()
+                    outputCoinType = CoinTypes.Violas.coinType()
                     customStatus = if (status == 4001)
                         SwapRecordDTO.Status.SUCCEEDED
                     else
@@ -308,14 +308,14 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
         //onSuccess.invoke(mockData(), null)
     }
 
-    private fun getCoinType(chainName: String?): CoinTypes {
+    private fun getCoinType(chainName: String?): Int {
         return when {
             chainName?.equals("libra", true) == true ->
-                CoinTypes.Libra
+                CoinTypes.Libra.coinType()
             chainName?.equals("btc", true) == true ->
-                if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
+                (if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin).coinType()
             else ->
-                CoinTypes.Violas
+                CoinTypes.Violas.coinType()
         }
     }
 
@@ -425,7 +425,7 @@ class SwapRecordViewHolder(
                 } else {
                     "${convertAmountToDisplayAmountStr(
                         it.inputCoinAmount,
-                        it.inputCoinType
+                        CoinTypes.parseCoinType(it.inputCoinType)
                     )} ${it.inputCoinName}"
                 }
 
@@ -435,7 +435,7 @@ class SwapRecordViewHolder(
                 } else {
                     "${convertAmountToDisplayAmountStr(
                         it.outputCoinAmount,
-                        it.outputCoinType
+                        CoinTypes.parseCoinType(it.outputCoinType)
                     )} ${it.outputCoinName}"
                 }
 
