@@ -151,6 +151,9 @@
         <item name="walletHomeWalletConnectIcon">@drawable/ic_wallet_connect_indicator</item>
         <item name="walletHomeBackupTopBg">@drawable/bg_backup_title</item>
         <item name="walletHomeBackupTopIcon">@drawable/icon_security_backup</item>
+        <item name="walletHomeTransferIcon">@mipmap/ic_wallet_home_transfer</item>
+        <item name="walletHomeCollectionIcon">@mipmap/ic_wallet_home_collection</item>
+        <item name="walletHomeMappingIcon">@mipmap/ic_wallet_home_mapping</item>
 
         <!--我的首页资源属性-->
         <item name="meHomeDefAvatarIcon">@drawable/ic_avatar_logo</item>

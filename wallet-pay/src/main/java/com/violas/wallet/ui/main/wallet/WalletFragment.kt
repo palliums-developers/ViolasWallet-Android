@@ -170,11 +170,11 @@ class WalletFragment : BaseFragment() {
                         viewWalletConnect.visibility = View.GONE
                     }
                     WalletConnectStatus.Login -> {
-                        tvWalletConnectStatus.text = getString(R.string.wallet_connect_have_landed)
                         viewWalletConnect.visibility = View.VISIBLE
                     }
                 }
             })
+        viewWalletConnect.expandTouchArea()
         viewWalletConnect.setOnClickListener {
             activity?.let { it1 -> WalletConnectManagerActivity.startActivity(it1) }
         }
@@ -183,6 +183,9 @@ class WalletFragment : BaseFragment() {
         ivScan.setOnClickListener(this)
         viewCreateAccount.setOnClickListener(this)
         viewImportAccount.setOnClickListener(this)
+        llTransferGroup.setOnClickListener(this)
+        llCollectionGroup.setOnClickListener(this)
+        llMappingGroup.setOnClickListener(this)
 
         swipeRefreshLayout.setEnableOverScrollDrag(true)
         swipeRefreshLayout.setOnRefreshListener {
@@ -242,6 +245,36 @@ class WalletFragment : BaseFragment() {
                 activity?.let { it1 ->
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
                         ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
+                    } else {
+                        showToast(R.string.tips_create_or_import_wallet)
+                    }
+                }
+            }
+
+            R.id.llTransferGroup -> {
+                activity?.let {
+                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                        showToast("跳转到转账页面")
+                    } else {
+                        showToast(R.string.tips_create_or_import_wallet)
+                    }
+                }
+            }
+
+            R.id.llCollectionGroup -> {
+                activity?.let {
+                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                        showToast("跳转到收款页面")
+                    } else {
+                        showToast(R.string.tips_create_or_import_wallet)
+                    }
+                }
+            }
+
+            R.id.llMappingGroup -> {
+                activity?.let {
+                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                        showToast("跳转到映射页面")
                     } else {
                         showToast(R.string.tips_create_or_import_wallet)
                     }

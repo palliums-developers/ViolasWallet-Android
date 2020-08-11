@@ -75,6 +75,9 @@
     <attr name="walletHomeWalletConnectBgColor" format="color" />
     <attr name="walletHomeBackupTopBg" format="color|reference" />
     <attr name="walletHomeBackupTopIcon" format="reference" />
+    <attr name="walletHomeTransferIcon" format="reference" />
+    <attr name="walletHomeCollectionIcon" format="reference" />
+    <attr name="walletHomeMappingIcon" format="reference" />
 
     <!--我的首页资源属性-->
     <attr name="meHomeDefAvatarIcon" format="reference" />

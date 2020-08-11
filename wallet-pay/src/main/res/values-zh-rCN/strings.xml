@@ -419,4 +419,6 @@
     <string name="hint_exchange_swap_path">路径</string>
     <string name="exchange_add_liquidity">转入</string>
     <string name="exchange_remove_liquidity">转出</string>
+
+    <string name="mapping">映射</string>
 </resources>

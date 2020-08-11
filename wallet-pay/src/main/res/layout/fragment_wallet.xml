@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clTopGroup"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_195"
+        android:layout_height="@dimen/dp_210"
         android:background="?attr/homeFragmentTopBg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,7 +19,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_29"
-            android:layout_marginTop="@dimen/dp_56"
+            android:layout_marginTop="@dimen/dp_41"
+            android:includeFontPadding="false"
             android:text="@string/main_wallet_total_fiat_balance"
             android:textColor="?attr/walletHomeTotalAssetsTextColor"
             android:textSize="@dimen/sp_12"
@@ -51,7 +52,8 @@
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_18"
+            android:layout_marginTop="@dimen/dp_20"
+            android:includeFontPadding="false"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/sp_28"
             android:textStyle="bold"
@@ -62,18 +64,16 @@
         <LinearLayout
             android:id="@+id/viewWalletConnect"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_24"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:layout_marginBottom="@dimen/dp_44"
-            android:background="@drawable/shape_bg_main_wallet_connect"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_11"
+            android:layout_marginEnd="@dimen/dp_27"
             android:gravity="center"
-            android:paddingHorizontal="@dimen/dp_10"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent">
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvAmount">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/dp_12.4"
+                android:layout_height="@dimen/dp_11.7"
                 android:layout_marginTop="@dimen/dp_1"
                 android:src="?attr/walletHomeWalletConnectIcon" />
 
@@ -83,9 +83,115 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/dp_5"
                 android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="@string/wallet_connect_have_landed"
                 android:textColor="?attr/walletHomeWalletConnectTextColor"
-                android:textSize="@dimen/sp_12"
-                tools:text="@string/wallet_connect_have_landed" />
+                android:textSize="@dimen/sp_12" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTransferGroup"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_34"
+            android:layout_marginBottom="@dimen/dp_27"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/dp_10"
+            app:layout_constraintEnd_toStartOf="@id/vVerticalLine1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvAmount">
+
+            <View
+                android:layout_width="@dimen/dp_16"
+                android:layout_height="@dimen/dp_16"
+                android:layout_marginStart="@dimen/dp_29"
+                android:background="?attr/walletHomeTransferIcon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_8"
+                android:includeFontPadding="false"
+                android:text="@string/transfer"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="@dimen/sp_12" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/vVerticalLine1"
+            android:layout_width="@dimen/dp_1"
+            android:layout_height="@dimen/dp_12"
+            android:background="?colorOnPrimary"
+            app:layout_constraintBottom_toBottomOf="@id/llTransferGroup"
+            app:layout_constraintEnd_toStartOf="@id/llCollectionGroup"
+            app:layout_constraintStart_toEndOf="@id/llTransferGroup"
+            app:layout_constraintTop_toTopOf="@id/llTransferGroup" />
+
+        <LinearLayout
+            android:id="@+id/llCollectionGroup"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@id/llTransferGroup"
+            app:layout_constraintEnd_toStartOf="@id/vVerticalLine2"
+            app:layout_constraintStart_toEndOf="@id/vVerticalLine1"
+            app:layout_constraintTop_toTopOf="@id/llTransferGroup">
+
+            <View
+                android:layout_width="@dimen/dp_16"
+                android:layout_height="@dimen/dp_16"
+                android:background="?attr/walletHomeCollectionIcon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_8"
+                android:includeFontPadding="false"
+                android:text="@string/collection"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="@dimen/sp_12" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/vVerticalLine2"
+            android:layout_width="@dimen/dp_1"
+            android:layout_height="@dimen/dp_12"
+            android:background="?colorOnPrimary"
+            app:layout_constraintBottom_toBottomOf="@id/llTransferGroup"
+            app:layout_constraintEnd_toStartOf="@id/llMappingGroup"
+            app:layout_constraintStart_toEndOf="@id/llCollectionGroup"
+            app:layout_constraintTop_toTopOf="@id/llTransferGroup" />
+
+        <LinearLayout
+            android:id="@+id/llMappingGroup"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            android:gravity="center_vertical|end"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@id/llTransferGroup"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/vVerticalLine2"
+            app:layout_constraintTop_toTopOf="@id/llTransferGroup">
+
+            <View
+                android:layout_width="@dimen/dp_16"
+                android:layout_height="@dimen/dp_16"
+                android:background="?attr/walletHomeMappingIcon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_8"
+                android:layout_marginEnd="@dimen/dp_27"
+                android:includeFontPadding="false"
+                android:text="@string/mapping"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="@dimen/sp_12" />
 
         </LinearLayout>
 
@@ -95,7 +201,7 @@
         android:id="@+id/viewAssetsGroup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dp_163"
+        android:layout_marginTop="@dimen/dp_190"
         android:background="@drawable/bg_wallet_main_assets_list"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -107,7 +213,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_29"
-            android:layout_marginTop="@dimen/dp_34"
+            android:layout_marginTop="@dimen/dp_20"
+            android:includeFontPadding="false"
             android:text="@string/label_assets"
             android:textColor="?attr/walletHomeAssetsTextColor"
             android:textSize="@dimen/sp_14"
@@ -118,7 +225,7 @@
             android:id="@+id/ivAddAssert"
             android:layout_width="@dimen/dp_42"
             android:layout_height="@dimen/dp_42"
-            android:layout_marginEnd="@dimen/dp_16"
+            android:layout_marginEnd="@dimen/dp_17"
             android:foreground="?attr/actionBarItemBackground"
             android:padding="@dimen/dp_10"
             android:src="?attr/walletHomeAddAssetsIcon"
@@ -158,7 +265,7 @@
         android:id="@+id/viewAddAccount"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dp_163"
+        android:layout_marginTop="@dimen/dp_190"
         android:background="@drawable/bg_wallet_main_assets_list"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/dp_14"
