@@ -12,10 +12,9 @@ import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
-import com.violas.wallet.utils.str2CoinType
+import com.violas.wallet.utils.str2CoinNumber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.math.BigInteger
@@ -137,17 +136,17 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     }
 
     private fun mappingKey(mappingReal: MapRelationDTO): String {
-        return when (str2CoinType(mappingReal.chain)) {
+        return when (str2CoinNumber(mappingReal.chain)) {
             CoinTypes.Bitcoin.coinType(),
             CoinTypes.BitcoinTest.coinType() -> {
-                "${str2CoinType(mappingReal.chain)}"
+                "${str2CoinNumber(mappingReal.chain)}"
             }
             CoinTypes.Violas.coinType(),
             CoinTypes.Libra.coinType() -> {
-                "${str2CoinType(mappingReal.chain)}${mappingReal.mapName}"
+                "${str2CoinNumber(mappingReal.chain)}${mappingReal.mapName}"
             }
             else -> {
-                "${str2CoinType(mappingReal.chain)}${mappingReal.mapName}"
+                "${str2CoinNumber(mappingReal.chain)}${mappingReal.mapName}"
             }
         }
     }

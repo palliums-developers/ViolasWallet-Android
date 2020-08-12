@@ -3,16 +3,13 @@ package com.violas.wallet.biz.exchange
 import com.palliums.utils.CustomIOScope
 import com.palliums.violas.http.MappingPairInfoDTO
 import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
-import com.violas.wallet.utils.str2CoinType
+import com.violas.wallet.utils.str2CoinNumber
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
-import java.util.*
 import java.util.concurrent.CountDownLatch
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -54,11 +51,11 @@ class SupportMappingSwapPairManager : CoroutineScope by CustomIOScope() {
         val result = HashMap<String, MappingInfo>()
         mMappingSwapPair
             .filter {
-                str2CoinType(it.inputCoinType) == coinTypes.coinType()
+                str2CoinNumber(it.inputCoinType) == coinTypes.coinType()
             }
             .map { mappingPair ->
                 val assetsMark =
-                    when (val toMappingCoinTypes = str2CoinType(mappingPair.toCoin.coinType)) {
+                    when (val toMappingCoinTypes = str2CoinNumber(mappingPair.toCoin.coinType)) {
                         CoinTypes.BitcoinTest.coinType(),
                         CoinTypes.Bitcoin.coinType() -> {
                             CoinAssetsMark(CoinTypes.parseCoinType(toMappingCoinTypes))

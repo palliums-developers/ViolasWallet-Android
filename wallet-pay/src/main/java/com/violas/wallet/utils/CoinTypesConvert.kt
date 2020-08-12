@@ -4,7 +4,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
 import java.util.*
 
-fun str2CoinType(str: String): Int? {
+fun str2CoinNumber(str: String): Int? {
     return when (str.toLowerCase(Locale.ROOT)) {
         "btc" -> {
             if (Vm.TestNet) {
@@ -20,5 +20,17 @@ fun str2CoinType(str: String): Int? {
             CoinTypes.Violas.coinType()
         }
         else -> null
+    }
+}
+
+fun str2CoinType(chainName: String?): CoinTypes {
+    return when {
+        chainName?.equals("btc", true) == true
+                || chainName?.equals("bitcoin", true) == true ->
+            if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
+        chainName?.equals("libra", true) == true ->
+            CoinTypes.Libra
+        else ->
+            CoinTypes.Violas
     }
 }
