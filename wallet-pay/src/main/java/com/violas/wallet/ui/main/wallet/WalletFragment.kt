@@ -36,6 +36,7 @@ import com.violas.wallet.ui.mapping.MappingActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.tokenDetails.TokenDetailsActivity
+import com.violas.wallet.ui.transfer.MultiTransferActivity
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
@@ -255,7 +256,7 @@ class WalletFragment : BaseFragment() {
             R.id.llTransferGroup -> {
                 activity?.let {
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
-                        showToast("跳转到转账页面")
+                        context?.let { it1 -> MultiTransferActivity.start(it1) }
                     } else {
                         showToast(R.string.tips_create_or_import_wallet)
                     }

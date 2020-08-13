@@ -2,6 +2,7 @@ package com.violas.wallet.biz
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
@@ -42,7 +43,7 @@ fun decodeScanQRCode(
     msg: String,
     callback: (scanType: ScanCodeType, content: ScanBean) -> Unit
 ) {
-    GlobalScope.launch(Dispatchers.IO) {
+    GlobalScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
         val loginQRCode = decodeLoginQRCode(msg)
         if (loginQRCode != null) {
             callback.invoke(

@@ -427,4 +427,5 @@
     <string name="action_mapping">确定映射</string>
     <string name="label_mapping_exchange_rate">汇率</string>
     <string name="label_miner_fees">矿工费用</string>
+    <string name="hint_please_select_currency_transfer">请选择要转账的币种</string>
 </resources>

@@ -22,6 +22,7 @@ import org.palliums.libracore.transaction.storage.TypeTag
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
 
+class ForcedStopException : RuntimeException("")
 class ToTheirException : RuntimeException(getString(R.string.hint_to_their_error))
 class WrongPasswordException : RuntimeException(getString(R.string.hint_password_error))
 class AddressFaultException : RuntimeException(getString(R.string.hint_address_error))

@@ -1,6 +1,9 @@
 package com.violas.wallet.ui.main.market.bean
 
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.viewModel.bean.AssetsCoinVo
+import com.violas.wallet.viewModel.bean.AssetsTokenVo
+import com.violas.wallet.viewModel.bean.AssetsVo
 import java.lang.RuntimeException
 
 interface IAssetsMark {
@@ -11,6 +14,21 @@ interface IAssetsMark {
             } else if (iTokenVo is StableTokenVo) {
                 LibraTokenAssetsMark(
                     CoinTypes.parseCoinType(iTokenVo.coinNumber),
+                    iTokenVo.module,
+                    iTokenVo.address,
+                    iTokenVo.module
+                )
+            } else {
+                throw RuntimeException("不支持的")
+            }
+        }
+
+        fun convert(iTokenVo: AssetsVo): IAssetsMark {
+            return if (iTokenVo is AssetsCoinVo) {
+                CoinAssetsMark(CoinTypes.parseCoinType(iTokenVo.getCoinNumber()))
+            } else if (iTokenVo is AssetsTokenVo) {
+                LibraTokenAssetsMark(
+                    CoinTypes.parseCoinType(iTokenVo.getCoinNumber()),
                     iTokenVo.module,
                     iTokenVo.address,
                     iTokenVo.module
