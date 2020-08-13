@@ -38,6 +38,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
         const val ACTION_SWAP_SELECT_TO = 0x02
         const val ACTION_POOL_SELECT_A = 0x03
         const val ACTION_POOL_SELECT_B = 0x04
+        const val ACTION_MAPPING_SELECT = 0x05
 
         fun newInstance(action: Int): SelectTokenDialog {
             return SelectTokenDialog().apply {
@@ -190,6 +191,11 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                             // 兑换选择输出币种，展示交易市场支持的所有币种
                             val from = coinsBridge?.getCurrCoin(ACTION_SWAP_SELECT_FROM)
                             from?.coinNumber == it.coinNumber
+                        }
+
+                        ACTION_MAPPING_SELECT -> {
+                            // 映射选择币种，展示映射支持的所有币种
+                            true
                         }
 
                         else -> {

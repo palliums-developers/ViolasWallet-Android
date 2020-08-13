@@ -7,8 +7,11 @@ import android.text.AmountInputFilter
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import androidx.lifecycle.EnhancedMutableLiveData
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.palliums.net.LoadState
 import com.palliums.utils.*
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -18,8 +21,11 @@ import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
+import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
-import com.violas.wallet.ui.mapping.MappingViewModel.Companion.ACTION_MAPPING
+import com.violas.wallet.ui.main.market.selectToken.CoinsBridge
+import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
+import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_MAPPING_SELECT
 import com.violas.wallet.utils.*
 import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_mapping.*
@@ -34,7 +40,7 @@ import java.math.BigDecimal
  * <p>
  * desc: 映射页面
  */
-class MappingActivity : BaseAppActivity() {
+class MappingActivity : BaseAppActivity(), CoinsBridge {
 
     companion object {
         fun start(context: Context) {
@@ -119,13 +125,55 @@ class MappingActivity : BaseAppActivity() {
             adjustInputBoxPaddingEnd()
         })
 
+        mappingViewModel.loadState.observe(this, Observer {
+            when (it.peekData().status) {
+                LoadState.Status.RUNNING -> {
+                    showProgress()
+                }
+
+                else -> {
+                    dismissProgress()
+                }
+            }
+        })
+        mappingViewModel.tipsMessage.observe(this, Observer {
+            it.getDataIfNotHandled()?.let { msg ->
+                if (msg.isNotEmpty()) {
+                    showToast(msg)
+                }
+            }
+        })
+
         BalanceSubscribeHub.observe(this, coinBalanceSubscriber)
     }
     // </editor-fold>
 
     // <editor-fold defaultState="collapsed" desc="选择币种相关逻辑">
     private fun showSelectCoinDialog() {
-        // TODO 选择币种逻辑
+        SelectTokenDialog.newInstance(ACTION_MAPPING_SELECT)
+            .show(supportFragmentManager, SelectTokenDialog::javaClass.name)
+    }
+
+    override fun onSelectCoin(action: Int, coin: ITokenVo) {
+        mappingViewModel.selectCoin(coin)
+    }
+
+    override fun getMarketSupportCoins(failureCallback: (error: Throwable) -> Unit) {
+        mappingViewModel.getMappingCoinParis(failureCallback)
+    }
+
+    override fun getMarketSupportCoinsLiveData(): LiveData<List<ITokenVo>> {
+        return mappingViewModel.getCoinsLiveData()
+    }
+
+    override fun getTipsMessageLiveData(): EnhancedMutableLiveData<String> {
+        return mappingViewModel.coinsTipsMessage
+    }
+
+    override fun getCurrCoin(action: Int): ITokenVo? {
+        val coinPair =
+            mappingViewModel.getCurrMappingCoinPairLiveData().value ?: return null
+        return mappingViewModel.coinPair2Coin(coinPair)
     }
     // </editor-fold>
 
@@ -224,7 +272,7 @@ class MappingActivity : BaseAppActivity() {
 
         // 输入为0判断, 当作未输入判断
         val inputAmount =
-            convertAmountToDisplayAmount(inputAmountStr, str2CoinType(coinPair.fromCoin.chainName))
+            convertDisplayAmountToAmount(inputAmountStr, str2CoinType(coinPair.fromCoin.chainName))
         if (inputAmount <= BigDecimal.ZERO) {
             showToast(R.string.tips_mapping_amount_not_input)
             return true
@@ -248,8 +296,7 @@ class MappingActivity : BaseAppActivity() {
             authenticateAccount(accountDO, mappingViewModel.accountManager) {
                 mappingViewModel.execute(
                     it,
-                    etFromInputBox.text.toString().trim(),
-                    action = ACTION_MAPPING
+                    etFromInputBox.text.toString().trim()
                 ) {
                     CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                     showToast(R.string.tips_mapping_success)

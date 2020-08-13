@@ -36,7 +36,9 @@ data class MappingCoinPairDTO(
         @SerializedName("address")
         val address: String,
         @SerializedName("show_name")
-        val displayName: String
+        val displayName: String,
+        @SerializedName("icon")
+        val logo: String
     )
 }
 
