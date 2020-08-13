@@ -29,6 +29,7 @@ import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
+import com.violas.wallet.ui.collection.MultiCollectionActivity
 import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
@@ -266,7 +267,7 @@ class WalletFragment : BaseFragment() {
             R.id.llCollectionGroup -> {
                 activity?.let {
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
-                        showToast("跳转到收款页面")
+                        context?.let { it1 -> MultiCollectionActivity.start(it1) }
                     } else {
                         showToast(R.string.tips_create_or_import_wallet)
                     }
