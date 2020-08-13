@@ -84,8 +84,7 @@
                 android:id="@+id/tvFromSelectText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:text="@string/select_token"
+                android:text="@string/select_mapping_coin"
                 android:textColor="@color/sel_text_color_market_btn"
                 android:textSize="@dimen/sp_12" />
 
@@ -197,6 +196,7 @@
             tools:text="0.11 BTC" />
 
         <Button
+            android:id="@+id/btnMapping"
             style="@style/BaseButtonPrimary"
             android:layout_marginTop="@dimen/dp_31"
             android:text="@string/action_mapping"

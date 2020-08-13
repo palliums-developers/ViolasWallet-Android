@@ -22,8 +22,8 @@ import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.repository.http.libra.violas.LibraViolasApi
 import com.violas.wallet.repository.http.libra.violas.LibraViolasRepository
 import com.violas.wallet.repository.http.libra.violas.LibraViolasService
-import com.violas.wallet.repository.http.mappingExchange.MappingExchangeApi
-import com.violas.wallet.repository.http.mappingExchange.MappingExchangeRepository
+import com.violas.wallet.repository.http.mapping.MappingApi
+import com.violas.wallet.repository.http.mapping.MappingRepository
 import com.violas.wallet.repository.http.violas.ViolasBizService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -111,8 +111,8 @@ object DataRepository {
     fun getDexService() =
         DexRepository(retrofit.create(DexApi::class.java))
 
-    fun getMappingExchangeService() =
-        MappingExchangeRepository(retrofit.create(MappingExchangeApi::class.java))
+    fun getMappingService() =
+        MappingRepository(retrofit.create(MappingApi::class.java))
 
     fun getExchangeService() =
         ExchangeRepository(retrofit.create(ExchangeApi::class.java))

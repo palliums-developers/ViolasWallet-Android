@@ -22,6 +22,7 @@ import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.exchange.SwapRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
+import com.violas.wallet.utils.str2CoinType
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_swap_record.view.*
 import kotlinx.coroutines.*
@@ -222,8 +223,8 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
                         confirmedTime = it.confirmedTime,
                         version = it.version,
                         status = it.status,
-                        inputCoinType = getCoinType(it.inputChainName),
-                        outputCoinType = getCoinType(it.outputChainName),
+                        inputCoinType = str2CoinType(it.inputChainName),
+                        outputCoinType = str2CoinType(it.outputChainName),
                         customStatus = when (it.status) {
                             4001 -> SwapRecordDTO.Status.SUCCEEDED
                             4002 -> SwapRecordDTO.Status.PROCESSING
@@ -251,8 +252,8 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
                         confirmedTime = it.confirmedTime,
                         version = it.version,
                         status = it.status,
-                        inputCoinType = getCoinType(it.inputChainName),
-                        outputCoinType = getCoinType(it.outputChainName),
+                        inputCoinType = str2CoinType(it.inputChainName),
+                        outputCoinType = str2CoinType(it.outputChainName),
                         customStatus = when (it.status) {
                             4001 -> SwapRecordDTO.Status.SUCCEEDED
                             4002 -> SwapRecordDTO.Status.PROCESSING
@@ -280,8 +281,8 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
                         confirmedTime = it.confirmedTime,
                         version = it.version,
                         status = it.status,
-                        inputCoinType = getCoinType(it.inputChainName),
-                        outputCoinType = getCoinType(it.outputChainName),
+                        inputCoinType = str2CoinType(it.inputChainName),
+                        outputCoinType = str2CoinType(it.outputChainName),
                         customStatus = when (it.status) {
                             4001 -> SwapRecordDTO.Status.SUCCEEDED
                             4002 -> SwapRecordDTO.Status.PROCESSING
@@ -303,17 +304,6 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
 
         onSuccess.invoke(swapRecords, null)
         //onSuccess.invoke(mockData(), null)
-    }
-
-    private fun getCoinType(chainName: String?): CoinTypes {
-        return when {
-            chainName?.equals("libra", true) == true ->
-                CoinTypes.Libra
-            chainName?.equals("btc", true) == true ->
-                if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
-            else ->
-                CoinTypes.Violas
-        }
     }
 
     private suspend fun mockData(): List<SwapRecordDTO> {
