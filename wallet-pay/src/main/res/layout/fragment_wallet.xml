@@ -65,7 +65,7 @@
             android:id="@+id/viewWalletConnect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_11"
+            android:paddingTop="@dimen/dp_11"
             android:layout_marginEnd="@dimen/dp_27"
             android:gravity="center"
             app:layout_constraintRight_toRightOf="parent"

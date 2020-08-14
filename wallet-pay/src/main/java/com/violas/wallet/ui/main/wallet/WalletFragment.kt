@@ -177,7 +177,6 @@ class WalletFragment : BaseFragment() {
                     }
                 }
             })
-        viewWalletConnect.expandTouchArea()
         viewWalletConnect.setOnClickListener {
             activity?.let { it1 -> WalletConnectManagerActivity.startActivity(it1) }
         }
