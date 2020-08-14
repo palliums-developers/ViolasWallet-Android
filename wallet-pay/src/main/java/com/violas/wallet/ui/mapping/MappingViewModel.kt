@@ -1,13 +1,20 @@
 package com.violas.wallet.ui.mapping
 
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.*
 import com.palliums.base.BaseViewModel
+import com.palliums.content.ContextProvider
 import com.palliums.extensions.getShowErrorMessage
 import com.palliums.extensions.isNoNetwork
 import com.palliums.net.LoadState
 import com.palliums.utils.toMap
+import com.palliums.violas.bean.TokenMark
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.bean.AssertOriginateToken
+import com.violas.wallet.biz.mapping.MappingManager
+import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
@@ -15,12 +22,16 @@ import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayAmount
+import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.wallet.utils.str2CoinType
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.viewModel.bean.HiddenTokenVo
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Created by elephant on 2020/8/12 19:01.
@@ -39,6 +50,8 @@ class MappingViewModel : BaseViewModel() {
 
     private val mappingService by lazy { DataRepository.getMappingService() }
     private val appViewModel by lazy { WalletAppViewModel.getViewModelInstance() }
+    private val mappingManager by lazy { MappingManager() }
+    private val tokenManager by lazy { TokenManager() }
 
     val accountManager by lazy { AccountManager() }
     val coinsLoadState by lazy { EnhancedMutableLiveData<LoadState>() }
@@ -56,6 +69,7 @@ class MappingViewModel : BaseViewModel() {
         }
     }
 
+    // <editor-fold defaultState="collapsed" desc="选择币种方法及逻辑">
     fun getCurrMappingCoinPairLiveData(): LiveData<MappingCoinPairDTO?> {
         return currMappingCoinPairLiveData
     }
@@ -82,12 +96,18 @@ class MappingViewModel : BaseViewModel() {
     fun getCoinsLiveData(): LiveData<List<ITokenVo>> {
         return coinsLiveData
     }
+    // </editor-fold>
 
-    suspend fun getAccount(): AccountDO? = coroutineScope {
+    // <editor-fold defaultState="collapsed" desc="辅助方法">
+    @WorkerThread
+    fun getAccount(fromCoin: Boolean): AccountDO? {
         val coinPairs =
-            currMappingCoinPairLiveData.value ?: return@coroutineScope null
-        val coinNumber = str2CoinType(coinPairs.fromCoin.chainName).coinType()
-        accountManager.getIdentityByCoinType(coinNumber)
+            currMappingCoinPairLiveData.value ?: return null
+        return accountManager.getIdentityByCoinType(
+            str2CoinType(
+                if (fromCoin) coinPairs.fromCoin.chainName else coinPairs.toCoin.chainName
+            ).coinType()
+        )
     }
 
     fun coinPair2Coin(coinPair: MappingCoinPairDTO): ITokenVo {
@@ -124,12 +144,9 @@ class MappingViewModel : BaseViewModel() {
 
         return null
     }
+    // </editor-fold>
 
-    override suspend fun realExecute(action: Int, vararg params: Any) {
-        // TODO 映射逻辑
-
-    }
-
+    // <editor-fold defaultState="collapsed" desc="获取映射币种对信息方法及逻辑">
     fun getMappingCoinParis(failureCallback: ((error: Throwable) -> Unit)? = null): Boolean {
         if (coinsLoadState.value?.peekData()?.status == LoadState.Status.RUNNING) {
             return false
@@ -212,5 +229,63 @@ class MappingViewModel : BaseViewModel() {
                 "${coin.coinNumber}${coin.displayName}"
             }
         }
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultState="collapsed" desc="映射及publish操作方法">
+    suspend fun mapping(
+        checkPayeeAccount: Boolean,
+        payeeAccountDO: AccountDO,
+        payerAccountDO: AccountDO,
+        password: ByteArray,
+        amountStr: String
+    ) {
+        val coinPair = currMappingCoinPairLiveData.value!!
+        mappingManager.mapping(
+            checkPayeeAccount,
+            payeeAccountDO,
+            payerAccountDO,
+            password,
+            convertDisplayAmountToAmount(
+                amountStr,
+                str2CoinType(coinPair.fromCoin.chainName)
+            ).toLong(),
+            coinPair
+        )
+    }
+
+    suspend fun publishToken(
+        password: ByteArray,
+        accountDO: AccountDO,
+        assets: MappingCoinPairDTO.Assets
+    ): Boolean {
+        val simpleSecurity =
+            SimpleSecurity.instance(ContextProvider.getContext())
+        val privateKey = simpleSecurity.decrypt(password, accountDO.privateKey)!!
+
+        val tokenMark = TokenMark(assets.module, assets.address, assets.name)
+        val hasSucceed = tokenManager.publishToken(
+            CoinTypes.parseCoinType(accountDO.coinNumber),
+            privateKey,
+            tokenMark
+        )
+        if (hasSucceed) {
+            tokenManager.insert(
+                true, AssertOriginateToken(
+                    tokenMark,
+                    account_id = accountDO.id,
+                    name = assets.displayName,
+                    fullName = assets.displayName,
+                    isToken = true,
+                    logo = assets.logo
+                )
+            )
+        }
+        return hasSucceed
+    }
+    // </editor-fold>
+
+    override suspend fun realExecute(action: Int, vararg params: Any) {
+        // ignore
     }
 }

@@ -14,10 +14,11 @@ interface MappingProcessor {
     fun hasMappable(coinPair: MappingCoinPairDTO): Boolean
 
     suspend fun mapping(
-        payerAccount: AccountDO,
-        payerPrivateKey: ByteArray,
-        payeeAddress: String,
-        coinPair: MappingCoinPairDTO,
-        amount: Long
+        checkPayeeAccount: Boolean,
+        payeeAccountDO: AccountDO,
+        payerAccountDO: AccountDO,
+        password: ByteArray,
+        amount: Long,
+        coinPair: MappingCoinPairDTO
     ): String
 }

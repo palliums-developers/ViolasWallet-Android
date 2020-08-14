@@ -1,11 +1,8 @@
 package com.violas.wallet.biz.mapping
 
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.mapping.processor.MappingProcessor
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
-import com.violas.wallet.ui.main.market.bean.ITokenVo
-import java.lang.RuntimeException
 import java.util.*
 
 /**
@@ -15,11 +12,13 @@ import java.util.*
  * desc:
  */
 // 不支持的映射币种对
-class UnsupportedMappingCoinPairException : RuntimeException()
+class UnsupportedMappingCoinPairException(
+    val coinPair: MappingCoinPairDTO
+) : RuntimeException()
 
+// 收款账户币种未激活
 class PayeeAccountCoinNotActiveException(
-    val coinTypes: CoinTypes,
-    val address: String,
+    val accountDO: AccountDO,
     val assets: MappingCoinPairDTO.Assets
 ) : RuntimeException()
 
@@ -37,18 +36,26 @@ internal class MappingEngine {
     }
 
     suspend fun mapping(
-        payerAccount: AccountDO,
-        payerPrivateKey: ByteArray,
-        payeeAddress: String,
-        coinPair: MappingCoinPairDTO,
-        amount: Long
+        checkPayeeAccount: Boolean,
+        payeeAccountDO: AccountDO,
+        payerAccountDO: AccountDO,
+        password: ByteArray,
+        amount: Long,
+        coinPair: MappingCoinPairDTO
     ): String {
         processors.forEach {
             if (it.hasMappable(coinPair)) {
-                return it.mapping(payerAccount, payerPrivateKey, payeeAddress, coinPair, amount)
+                return it.mapping(
+                    checkPayeeAccount,
+                    payeeAccountDO,
+                    payerAccountDO,
+                    password,
+                    amount,
+                    coinPair
+                )
             }
         }
 
-        throw UnsupportedMappingCoinPairException()
+        throw UnsupportedMappingCoinPairException(coinPair)
     }
 }

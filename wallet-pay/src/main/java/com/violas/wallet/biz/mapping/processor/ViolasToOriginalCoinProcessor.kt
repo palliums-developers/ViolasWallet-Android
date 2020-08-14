@@ -1,10 +1,25 @@
 package com.violas.wallet.biz.mapping.processor
 
+import com.palliums.content.ContextProvider
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
+import com.violas.wallet.biz.mapping.PayeeAccountCoinNotActiveException
+import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.Vm
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
 import com.violas.wallet.utils.str2CoinType
+import com.violas.walletconnect.extensions.hexStringToByteArray
+import org.json.JSONObject
+import org.palliums.libracore.http.LibraService
+import org.palliums.violascore.crypto.KeyPair
+import org.palliums.violascore.transaction.AccountAddress
+import org.palliums.violascore.transaction.TransactionPayload
+import org.palliums.violascore.transaction.optionTransactionPayload
+import org.palliums.violascore.transaction.storage.StructTag
+import org.palliums.violascore.transaction.storage.TypeTagStructTag
+import org.palliums.violascore.wallet.Account
 
 /**
  * Created by elephant on 2020/8/13 17:13.
@@ -12,7 +27,11 @@ import com.violas.wallet.utils.str2CoinType
  * <p>
  * desc:
  */
-class ViolasToOriginalCoinProcessor : MappingProcessor {
+class ViolasToOriginalCoinProcessor(
+    private val libraRpcService: LibraService
+) : MappingProcessor {
+
+    private val violasService by lazy { DataRepository.getViolasService() }
 
     override fun hasMappable(coinPair: MappingCoinPairDTO): Boolean {
         val toCoinType = str2CoinType(coinPair.toCoin.chainName)
@@ -22,12 +41,74 @@ class ViolasToOriginalCoinProcessor : MappingProcessor {
     }
 
     override suspend fun mapping(
-        payerAccount: AccountDO,
-        payerPrivateKey: ByteArray,
-        payeeAddress: String,
-        coinPair: MappingCoinPairDTO,
-        amount: Long
+        checkPayeeAccount: Boolean,
+        payeeAccountDO: AccountDO,
+        payerAccountDO: AccountDO,
+        password: ByteArray,
+        amount: Long,
+        coinPair: MappingCoinPairDTO
     ): String {
-        TODO("Not yet implemented")
+        if (checkPayeeAccount) {
+            // 检查收款账户激活状态
+            val payeeAccountState =
+                libraRpcService.getAccountState(payeeAccountDO.address)
+                    ?: throw AccountPayeeNotFindException()
+
+            // 检查收款账户 Token 注册状态
+            var isPublishToken = false
+            payeeAccountState.balances?.forEach {
+                if (it.currency.equals(coinPair.toCoin.assets.module, true)) {
+                    isPublishToken = true
+                }
+            }
+            if (!isPublishToken) {
+                throw PayeeAccountCoinNotActiveException(
+                    payeeAccountDO,
+                    coinPair.toCoin.assets
+                )
+            }
+        }
+
+        val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
+            .decrypt(password, payerAccountDO.privateKey)!!
+
+        val typeTagFrom = TypeTagStructTag(
+            StructTag(
+                AccountAddress(coinPair.fromCoin.assets.address.hexStringToByteArray()),
+                coinPair.fromCoin.assets.module,
+                coinPair.fromCoin.assets.name,
+                arrayListOf()
+            )
+        )
+
+        val subMappingDate = JSONObject()
+        subMappingDate.put("flag", "violas")
+        subMappingDate.put("type", coinPair.mappingType)
+        subMappingDate.put(
+            "to_address",
+            if (str2CoinType(coinPair.toCoin.chainName)
+                == if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
+            )
+                payeeAccountDO.address
+            else
+                "00000000000000000000000000000000${payeeAccountDO.address}"
+        )
+        subMappingDate.put("state", "start")
+        subMappingDate.put("times", 1)
+
+        val optionMappingTransactionPayload =
+            TransactionPayload.optionTransactionPayload(
+                ContextProvider.getContext(),
+                coinPair.receiverAddress,
+                amount,
+                metaData = subMappingDate.toString().toByteArray(),
+                typeTag = typeTagFrom
+            )
+
+        return violasService.sendTransaction(
+            optionMappingTransactionPayload,
+            Account(KeyPair.fromSecretKey(payerPrivateKey)),
+            gasCurrencyCode = typeTagFrom.value.module
+        ).sequenceNumber.toString()
     }
 }

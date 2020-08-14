@@ -222,6 +222,38 @@ class ViolasOutputScript {
     }
 
     /**
+     * 创建映射交易
+     */
+    fun requestMapping(
+        type: String,
+        payeeAddress: ByteArray,
+        contractAddress: ByteArray,
+        sequence: Long = System.currentTimeMillis()
+    ): Script {
+        val dataStream = BitcoinOutputStream()
+        dataStream.write("violas".toByteArray())
+        //dataStream.writeInt16(OP_VER)
+        // 此处非 BTC 小端字节规则，需要注意
+        writeInt16(OP_VER, dataStream)
+
+        dataStream.write(type.replace("0x", "").hexToBytes())
+        dataStream.write(payeeAddress)
+        dataStream.write(
+            ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(sequence).array()
+        )
+        dataStream.write(contractAddress)
+        dataStream.write(
+            ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(0).array()
+        )
+        writeInt16(1, dataStream)
+
+        val scriptStream = BitcoinOutputStream()
+        scriptStream.write(Script.OP_RETURN.toInt())
+        Script.writeBytes(dataStream.toByteArray(), scriptStream)
+        return Script(scriptStream.toByteArray())
+    }
+
+    /**
      * 创建跨链兑换交易
      * @param address 接收地址
      * @param vtokenAddress Token 地址

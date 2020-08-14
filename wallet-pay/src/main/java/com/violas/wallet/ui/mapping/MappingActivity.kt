@@ -11,6 +11,7 @@ import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.net.LoadState
 import com.palliums.utils.*
 import com.quincysx.crypto.CoinTypes
@@ -18,6 +19,10 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
+import com.violas.wallet.biz.mapping.PayeeAccountCoinNotActiveException
+import com.violas.wallet.biz.mapping.UnsupportedMappingCoinPairException
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
@@ -26,8 +31,12 @@ import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.ui.main.market.selectToken.CoinsBridge
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_MAPPING_SELECT
-import com.violas.wallet.utils.*
+import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
+import com.violas.wallet.utils.convertDisplayAmountToAmount
+import com.violas.wallet.utils.str2CoinType
 import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.activity_mapping.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -93,7 +102,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         btnMapping.setOnClickListener {
             clearInputBoxFocusAndHideSoftInput()
             if (mappingPreconditionsInvalid()) return@setOnClickListener
-            authenticateAccountAndMapping()
+            authenticateAccount()
         }
 
         // 数据观察
@@ -287,21 +296,112 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         return false
     }
 
-    private fun authenticateAccountAndMapping() {
+    private fun authenticateAccount() {
         launch {
-            val accountDO = withContext(Dispatchers.IO) {
-                mappingViewModel.getAccount()
+            val payerAccountDO = withContext(Dispatchers.IO) {
+                mappingViewModel.getAccount(true)
+            } ?: return@launch
+            val payeeAccountDO = withContext(Dispatchers.IO) {
+                mappingViewModel.getAccount(false)
             } ?: return@launch
 
-            authenticateAccount(accountDO, mappingViewModel.accountManager) {
-                mappingViewModel.execute(
-                    it,
+            authenticateAccount(
+                payerAccountDO,
+                mappingViewModel.accountManager,
+                passwordCallback = {
+                    mapping(true, payeeAccountDO, payerAccountDO, it.toByteArray())
+                }
+            )
+        }
+    }
+
+    private fun mapping(
+        checkPayeeAccount: Boolean,
+        payeeAccountDO: AccountDO,
+        payerAccountDO: AccountDO,
+        password: ByteArray
+    ) {
+        showProgress()
+        launch(Dispatchers.IO) {
+            try {
+                mappingViewModel.mapping(
+                    checkPayeeAccount,
+                    payeeAccountDO,
+                    payerAccountDO,
+                    password,
                     etFromInputBox.text.toString().trim()
-                ) {
-                    CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
-                    showToast(R.string.tips_mapping_success)
+                )
+
+                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                clearInputBox()
+                dismissProgress()
+                showToast(R.string.tips_mapping_success)
+            } catch (e: Exception) {
+                dismissProgress()
+
+                when (e) {
+                    is UnsupportedMappingCoinPairException -> {
+                        showToast(R.string.tips_mapping_unsupported)
+                    }
+
+                    is AccountPayeeNotFindException -> {
+                        showToast(R.string.hint_payee_account_not_active)
+                    }
+
+                    is PayeeAccountCoinNotActiveException -> {
+                        showPublishTokenDialog(payeeAccountDO, payerAccountDO, password, e)
+                    }
+
+                    else -> {
+                        e.printStackTrace()
+
+                        showToast(e.getShowErrorMessage(false))
+                    }
                 }
             }
+        }
+    }
+
+    private fun showPublishTokenDialog(
+        payeeAccountDO: AccountDO,
+        payerAccountDO: AccountDO,
+        password: ByteArray,
+        exception: PayeeAccountCoinNotActiveException
+    ) {
+        PublishTokenDialog()
+            .setContent(
+                getString(R.string.hint_publish_token_content_custom, exception.assets.displayName)
+            )
+            .setConfirmListener {
+                it.dismiss()
+
+                launch(Dispatchers.IO) {
+                    showProgress()
+                    try {
+                        if (mappingViewModel.publishToken(
+                                password,
+                                exception.accountDO,
+                                exception.assets
+                            )
+                        ) {
+                            mapping(false, payeeAccountDO, payerAccountDO, password)
+                        } else {
+                            showToast(R.string.desc_transaction_state_add_currency_failure)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+
+                        dismissProgress()
+                        showToast(R.string.desc_transaction_state_add_currency_failure)
+                    }
+                }
+            }.show(supportFragmentManager)
+    }
+
+    private fun clearInputBox() {
+        launch {
+            etFromInputBox.setText("")
+            etToInputBox.setText("0")
         }
     }
     // </editor-fold>
