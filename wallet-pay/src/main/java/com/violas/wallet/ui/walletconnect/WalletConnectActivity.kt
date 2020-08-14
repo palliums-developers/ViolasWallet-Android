@@ -218,7 +218,6 @@ class WalletConnectActivity : BaseAppActivity() {
                                 TransactionManager(arrayListOf(fromJson.form))
                             val checkBalance =
                                 mTransactionManager.checkBalance(fromJson.amount / 100000000.0, 3)
-                            val violasOutputScript = ViolasOutputScript()
 
                             if (!checkBalance) {
                                 throw LackOfBalanceException()
@@ -381,7 +380,7 @@ class WalletConnectActivity : BaseAppActivity() {
                     )
 
                     val amount = BigDecimal(mTransferDataType.amount).divide(
-                        BigDecimal("1000000"), 6, RoundingMode.DOWN
+                        BigDecimal("100000000"), 8, RoundingMode.DOWN
                     ).stripTrailingZeros().toPlainString()
 
                     val view = LayoutInflater.from(this@WalletConnectActivity)
