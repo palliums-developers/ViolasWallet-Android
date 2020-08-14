@@ -52,10 +52,7 @@ class BitcoinSendTransactionMessageHandler(private val iWalletConnectMessage: IW
 
         Log.e("WalletConnect", Gson().toJson(tx))
 
-        val data = script?.let {
-            Base64.encode(it.hexToBytes())
-        }
-
+        val data = script
 
         val transferBitcoinDataType = TransferBitcoinDataType(
             from, payeeAddress, amount, changeAddress, data ?: ""

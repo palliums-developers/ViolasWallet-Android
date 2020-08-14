@@ -53,7 +53,6 @@ data class TransferBitcoinDataType(
     val to: String,
     val amount: Long,
     val changeForm: String,
-    // base64
     val data: String
 )
 
