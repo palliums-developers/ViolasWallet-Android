@@ -433,4 +433,9 @@
     <string name="tips_mapping_success">映射交易广播成功</string>
     <string name="tips_mapping_failure">映射失败</string>
     <string name="tips_mapping_unsupported">不支持该币种映射</string>
+    <string name="mapping_record">映射记录</string>
+    <string name="mapping_state_processing">映射中</string>
+    <string name="mapping_state_succeeded">映射成功</string>
+    <string name="mapping_state_failed">映射失败</string>
+    <string name="mapping_state_cancelled">已取消</string>
 </resources>

@@ -51,6 +51,7 @@
     <attr name="iconRecordStateCancelled" format="reference" />
     <attr name="iconCoinDefLogo" format="reference" />
     <attr name="iconDownArrow" format="reference" />
+    <attr name="iconEndArrow" format="reference" />
 
     <!--首页资源属性-->
     <attr name="homeBottomTabSelectedTextColor" format="color" />

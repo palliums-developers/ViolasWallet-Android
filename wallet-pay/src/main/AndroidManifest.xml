@@ -149,7 +149,7 @@
             android:name=".ui.scan.ScanResultActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.outsideExchange.orders.MappingExchangeOrdersActivity"
+            android:name=".ui.mapping.MappingRecordActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.webManagement.LoginWebActivity"

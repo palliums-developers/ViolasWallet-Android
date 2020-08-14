@@ -71,7 +71,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
     }
 
     override fun onTitleRightViewClick() {
-        showToast("进入兑换记录页面")
+        Intent(this, MappingRecordActivity::class.java).start(this)
     }
 
     // <editor-fold defaultState="collapsed" desc="初始化View、Event、Observer">

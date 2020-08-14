@@ -127,6 +127,7 @@
         <item name="iconRecordStateCancelled">@drawable/ic_record_state_cancelled</item>
         <item name="iconCoinDefLogo">@drawable/ic_coin_default_logo</item>
         <item name="iconDownArrow">@mipmap/ic_down_arrow</item>
+        <item name="iconEndArrow">@mipmap/ic_end_arrow</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>

@@ -59,10 +59,10 @@ data class MappingRecordDTO(
         @SerializedName("name")
         val name: String,
         @SerializedName("amount")
-        val amount: String,
+        val amount: String?,
         @SerializedName("chain")
-        val chainName: String,
+        val chainName: String?,
         @SerializedName("show_name")
-        val displayName: String
+        val displayName: String?
     )
 }
