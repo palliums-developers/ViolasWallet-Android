@@ -52,5 +52,5 @@ interface ExchangeApi {
         @Query("chain") chainName: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
-    ): Observable<ListResponse<CrossChainSwapRecord>>
+    ): Observable<ListResponse<CrossChainSwapRecordDTO>>
 }

@@ -263,17 +263,17 @@ data class MappingPairInfoDTO(
     @SerializedName("receiver_address")
     val receiverAddress: String,
     @SerializedName("to_coin")
-    val toCoin: ToCoin
+    val toCoin: ToCoinDTO
 )
 
-data class ToCoin(
+data class ToCoinDTO(
     @SerializedName("assets")
-    val assets: Assets?,
+    val assets: AssetsDTO?,
     @SerializedName("coin_type")
     val coinType: String
 )
 
-data class Assets(
+data class AssetsDTO(
     @SerializedName("address")
     val address: String,
     @SerializedName("module")

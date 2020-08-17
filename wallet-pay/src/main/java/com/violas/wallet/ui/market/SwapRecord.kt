@@ -197,8 +197,8 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
             val records = mutableListOf<SwapRecordDTO>()
             vlsSwapRecords?.forEach {
                 records.add(it.apply {
-                    inputCoinType = CoinTypes.Violas
-                    outputCoinType = CoinTypes.Violas
+                    inputCoinType = CoinTypes.Violas.coinType()
+                    outputCoinType = CoinTypes.Violas.coinType()
                     customStatus = if (status == 4001)
                         SwapRecordDTO.Status.SUCCEEDED
                     else
@@ -223,8 +223,8 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
                         confirmedTime = it.confirmedTime,
                         version = it.version,
                         status = it.status,
-                        inputCoinType = str2CoinType(it.inputChainName),
-                        outputCoinType = str2CoinType(it.outputChainName),
+                        inputCoinType = str2CoinType(it.inputChainName).coinType(),
+                        outputCoinType = str2CoinType(it.outputChainName).coinType(),
                         customStatus = when (it.status) {
                             4001 -> SwapRecordDTO.Status.SUCCEEDED
                             4002 -> SwapRecordDTO.Status.PROCESSING
@@ -252,8 +252,8 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
                         confirmedTime = it.confirmedTime,
                         version = it.version,
                         status = it.status,
-                        inputCoinType = str2CoinType(it.inputChainName),
-                        outputCoinType = str2CoinType(it.outputChainName),
+                        inputCoinType = str2CoinType(it.inputChainName).coinType(),
+                        outputCoinType = str2CoinType(it.outputChainName).coinType(),
                         customStatus = when (it.status) {
                             4001 -> SwapRecordDTO.Status.SUCCEEDED
                             4002 -> SwapRecordDTO.Status.PROCESSING
@@ -281,8 +281,8 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
                         confirmedTime = it.confirmedTime,
                         version = it.version,
                         status = it.status,
-                        inputCoinType = str2CoinType(it.inputChainName),
-                        outputCoinType = str2CoinType(it.outputChainName),
+                        inputCoinType = str2CoinType(it.inputChainName).coinType(),
+                        outputCoinType = str2CoinType(it.outputChainName).coinType(),
                         customStatus = when (it.status) {
                             4001 -> SwapRecordDTO.Status.SUCCEEDED
                             4002 -> SwapRecordDTO.Status.PROCESSING
@@ -415,7 +415,7 @@ class SwapRecordViewHolder(
                 } else {
                     "${convertAmountToDisplayAmountStr(
                         it.inputCoinAmount,
-                        it.inputCoinType
+                        CoinTypes.parseCoinType(it.inputCoinType)
                     )} ${it.inputCoinName}"
                 }
 
@@ -425,7 +425,7 @@ class SwapRecordViewHolder(
                 } else {
                     "${convertAmountToDisplayAmountStr(
                         it.outputCoinAmount,
-                        it.outputCoinType
+                        CoinTypes.parseCoinType(it.outputCoinType)
                     )} ${it.outputCoinName}"
                 }
 

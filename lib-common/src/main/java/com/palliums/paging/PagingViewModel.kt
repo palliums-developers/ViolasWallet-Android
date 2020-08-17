@@ -8,7 +8,9 @@ import androidx.paging.PageKeyedDataSource
 import androidx.paging.toLiveData
 import com.palliums.extensions.getShowErrorMessage
 import com.palliums.net.LoadState
+import com.palliums.utils.coroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.handleCoroutineException
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
 
@@ -162,7 +164,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                 refreshState.postValueSupport(LoadState.RUNNING)
             }
 
-            this@PagingViewModel.viewModelScope.launch(Dispatchers.IO) {
+            this@PagingViewModel.viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler()) {
 
                 try {
                     loadData(params.requestedLoadSize, 1, null,

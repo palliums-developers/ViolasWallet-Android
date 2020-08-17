@@ -71,18 +71,19 @@ data class SwapRecordDTO(
     val confirmedTime: Long,
     val version: Long,
     val status: Int,
-    var inputCoinType: CoinTypes = CoinTypes.Violas,
-    var outputCoinType: CoinTypes = CoinTypes.Violas,
+    var inputCoinType: Int = CoinTypes.Violas.coinType(),
+    var outputCoinType: Int = CoinTypes.Violas.coinType(),
     var customStatus: Status = Status.FAILED
 ) : Parcelable {
 
+    @Keep
     enum class Status {
         SUCCEEDED, FAILED, PROCESSING, CANCELLED
     }
 }
 
 @Keep
-data class CrossChainSwapRecord(
+data class CrossChainSwapRecordDTO(
     @SerializedName(value = "from_chain")
     val inputChainName: String?,
     @SerializedName(value = "input_name")
