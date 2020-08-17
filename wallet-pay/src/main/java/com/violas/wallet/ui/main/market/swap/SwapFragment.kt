@@ -156,6 +156,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
         llToSelectGroup.setOnClickListener {
             clearInputBoxFocusAndHideSoftInput()
             showSelectTokenDialog(false)
+            swapViewModel.checkTokenMapInfoAndRefresh()
         }
 
         btnSwap.setOnClickListener {

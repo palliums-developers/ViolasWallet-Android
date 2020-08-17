@@ -153,6 +153,20 @@ class SwapViewModel() : BaseViewModel() {
             it?.let { it1 -> mAssetsSwapManager.calculateTokenMapInfo(it1) }
         }
     }
+
+    /**
+     * 检查 Token 映射信息，如果之前映射信息加载失败，则刷新映射信息。
+     */
+    fun checkTokenMapInfoAndRefresh() {
+        if (mAssetsSwapManager.mSupportTokensLiveData.value?.isNotEmpty() == true &&
+            mAssetsSwapManager.mMappingSupportSwapPairMapLiveData.value?.isEmpty() == true
+        ) {
+            viewModelScope.launch {
+                mAssetsSwapManager.calculateTokenMapInfo(mAssetsSwapManager.mSupportTokensLiveData.value!!)
+            }
+        }
+    }
+
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="其它信息相关方法">
