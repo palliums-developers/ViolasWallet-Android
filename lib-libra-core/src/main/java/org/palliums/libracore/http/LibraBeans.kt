@@ -3,7 +3,8 @@ package org.palliums.libracore.http
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
-import kotlin.random.Random
+import java.util.*
+import kotlin.math.abs
 
 /**
  * Created by elephant on 2019-03-30 18:29.
@@ -58,7 +59,7 @@ data class RequestDTO(
     val params: List<Any>,
     @SerializedName("jsonrpc")
     val jsonRPC: String = "2.0",
-    val id: String = Random(10000).nextInt().toString()
+    val id: String = abs(Random().nextInt()).toString()
 )
 
 @Keep

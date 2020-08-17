@@ -1,10 +1,12 @@
 package com.violas.wallet.ui.mapping
 
 import com.palliums.paging.PagingViewModel
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.mapping.MappingRecordDTO
+import com.violas.wallet.utils.getBtcCoinType
+import com.violas.wallet.utils.getLibraCoinType
+import com.violas.wallet.utils.getViolasCoinType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -18,14 +20,24 @@ class MappingRecordViewModel : PagingViewModel<MappingRecordDTO>() {
 
     private val mappingService by lazy { DataRepository.getMappingService() }
 
-    private lateinit var address: String
+    private lateinit var violasWalletAddress: String
+    private lateinit var libraWalletAddress: String
+    private lateinit var bitcoinWalletAddress: String
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
-            AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+            AccountManager().getIdentityByCoinType(getViolasCoinType().coinType())
+                ?: return@withContext false
+        val libraAccount =
+            AccountManager().getIdentityByCoinType(getLibraCoinType().coinType())
+                ?: return@withContext false
+        val bitcoinAccount =
+            AccountManager().getIdentityByCoinType(getBtcCoinType().coinType())
                 ?: return@withContext false
 
-        address = violasAccount.address
+        violasWalletAddress = violasAccount.address
+        libraWalletAddress = libraAccount.address
+        bitcoinWalletAddress = bitcoinAccount.address
         return@withContext true
     }
 
@@ -37,7 +49,11 @@ class MappingRecordViewModel : PagingViewModel<MappingRecordDTO>() {
     ) {
         val mappingRecords =
             mappingService.getMappingRecords(
-                address, pageSize, (pageNumber - 1) * pageSize
+                violasWalletAddress,
+                libraWalletAddress,
+                bitcoinWalletAddress,
+                pageSize,
+                (pageNumber - 1) * pageSize
             )
         onSuccess.invoke(mappingRecords ?: emptyList(), null)
     }

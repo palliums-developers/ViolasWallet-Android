@@ -34,3 +34,15 @@ fun str2CoinType(chainName: String?): CoinTypes {
             CoinTypes.Violas
     }
 }
+
+fun getViolasCoinType(): CoinTypes {
+    return if (Vm.TestNet) CoinTypes.Violas else CoinTypes.Violas
+}
+
+fun getLibraCoinType(): CoinTypes {
+    return if (Vm.TestNet) CoinTypes.Libra else CoinTypes.Libra
+}
+
+fun getBtcCoinType(): CoinTypes {
+    return if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
+}

@@ -14,10 +14,16 @@ class MappingRepository(private val api: MappingApi) {
         api.getMappingCoinPairs().await().data
 
     suspend fun getMappingRecords(
-        walletAddress: String,
+        violasWalletAddress: String,
+        libraWalletAddress: String,
+        bitcoinWalletAddress: String,
         pageSize: Int,
         offset: Int
     ) =
-        api.getMappingRecords(walletAddress, pageSize, offset).await().data
+        api.getMappingRecords(
+            "$violasWalletAddress,$libraWalletAddress,$bitcoinWalletAddress",
+            pageSize,
+            offset
+        ).await().data
 
 }

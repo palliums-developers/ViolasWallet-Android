@@ -21,13 +21,13 @@ interface MappingApi {
 
     /**
      * 分页获取映射记录
-     * @param walletAddress
+     * @param walletAddresses
      * @param pageSize
      * @param offset
      */
-    @GET("/1.0/market/crosschain/transaction")
+    @GET("/1.0/mapping/transaction")
     fun getMappingRecords(
-        @Query("address") walletAddress: String,
+        @Query("addresses") walletAddresses: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
     ): Observable<ListResponse<MappingRecordDTO>>
