@@ -381,7 +381,7 @@ class WalletConnectActivity : BaseAppActivity() {
                     )
 
                     val amount = BigDecimal(mTransferDataType.amount).divide(
-                        BigDecimal("1000000"), 6, RoundingMode.DOWN
+                        BigDecimal("100000000"), 6, RoundingMode.DOWN
                     ).stripTrailingZeros().toPlainString()
 
                     val view = LayoutInflater.from(this@WalletConnectActivity)
