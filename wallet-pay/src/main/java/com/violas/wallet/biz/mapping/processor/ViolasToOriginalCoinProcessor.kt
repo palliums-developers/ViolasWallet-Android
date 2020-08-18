@@ -48,7 +48,7 @@ class ViolasToOriginalCoinProcessor(
         amount: Long,
         coinPair: MappingCoinPairDTO
     ): String {
-        if (checkPayeeAccount) {
+        if (checkPayeeAccount && str2CoinType(coinPair.toCoin.chainName) == CoinTypes.Libra) {
             // 检查收款账户激活状态
             val payeeAccountState =
                 libraRpcService.getAccountState(payeeAccountDO.address)
