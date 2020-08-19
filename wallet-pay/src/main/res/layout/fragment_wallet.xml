@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clTopGroup"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_210"
+        android:layout_height="@dimen/dp_197"
         android:background="?attr/homeFragmentTopBg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,7 +17,7 @@
         <TextView
             android:id="@+id/tvTotalAssetsTitle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_12"
             android:layout_marginStart="@dimen/dp_29"
             android:layout_marginTop="@dimen/dp_41"
             android:includeFontPadding="false"
@@ -51,7 +51,7 @@
         <TextView
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_28"
             android:layout_marginTop="@dimen/dp_20"
             android:includeFontPadding="false"
             android:textColor="?attr/colorOnPrimary"
@@ -65,8 +65,8 @@
             android:id="@+id/viewWalletConnect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/dp_11"
-            android:layout_marginEnd="@dimen/dp_27"
+            android:layout_marginEnd="@dimen/dp_17"
+            android:padding="@dimen/dp_10"
             android:gravity="center"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvAmount">
@@ -80,7 +80,7 @@
             <TextView
                 android:id="@+id/tvWalletConnectStatus"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/dp_12"
                 android:layout_marginStart="@dimen/dp_5"
                 android:gravity="center"
                 android:includeFontPadding="false"
@@ -95,7 +95,6 @@
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_34"
-            android:layout_marginBottom="@dimen/dp_27"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingVertical="@dimen/dp_10"
@@ -111,7 +110,7 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/dp_12"
                 android:layout_marginStart="@dimen/dp_8"
                 android:includeFontPadding="false"
                 android:text="@string/transfer"
@@ -148,7 +147,7 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/dp_12"
                 android:layout_marginStart="@dimen/dp_8"
                 android:includeFontPadding="false"
                 android:text="@string/collection"
@@ -185,7 +184,7 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/dp_12"
                 android:layout_marginStart="@dimen/dp_8"
                 android:layout_marginEnd="@dimen/dp_27"
                 android:includeFontPadding="false"
@@ -201,7 +200,7 @@
         android:id="@+id/viewAssetsGroup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dp_190"
+        android:layout_marginTop="@dimen/dp_181"
         android:background="@drawable/bg_wallet_main_assets_list"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -265,7 +264,7 @@
         android:id="@+id/viewAddAccount"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dp_190"
+        android:layout_marginTop="@dimen/dp_181"
         android:background="@drawable/bg_wallet_main_assets_list"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/dp_14"
