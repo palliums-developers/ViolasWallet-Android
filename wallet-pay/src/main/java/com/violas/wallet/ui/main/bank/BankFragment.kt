@@ -57,6 +57,22 @@ class BankFragment : BaseFragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        if (menu.javaClass.simpleName.equals("MenuBuilder", true)) {
+            try {
+                val method = menu.javaClass.getDeclaredMethod(
+                    "setOptionalIconsVisible",
+                    Boolean::class.java
+                )
+                method.isAccessible = true
+                method.invoke(menu, true)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.deposit_order -> {

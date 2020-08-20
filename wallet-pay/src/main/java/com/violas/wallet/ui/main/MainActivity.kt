@@ -3,7 +3,6 @@ package com.violas.wallet.ui.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
 import android.widget.Toast
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
@@ -139,21 +138,5 @@ class MainActivity : BaseAppActivity() {
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)
         super.onDestroy()
-    }
-
-    override fun onMenuOpened(featureId: Int, menu: Menu): Boolean {
-        if (menu.javaClass.simpleName.equals("MenuBuilder", true)) {
-            try {
-                val method = menu.javaClass.getDeclaredMethod(
-                    "setOptionalIconsVisible",
-                    Boolean::class.java
-                )
-                method.isAccessible = true
-                method.invoke(menu, true)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        return super.onMenuOpened(featureId, menu)
     }
 }
