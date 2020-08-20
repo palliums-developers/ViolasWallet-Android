@@ -9,6 +9,10 @@
         android:icon="?attr/homeBottomMarketTabNormalIcon"
         android:title="@string/tab_market" />
     <item
+        android:id="@+id/tab_bank"
+        android:icon="?attr/homeBottomBankTabNormalIcon"
+        android:title="@string/tab_bank" />
+    <item
         android:id="@+id/tab_me"
         android:icon="?attr/homeBottomMeTabNormalIcon"
         android:title="@string/tab_me" />

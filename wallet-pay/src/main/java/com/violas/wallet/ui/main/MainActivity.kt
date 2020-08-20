@@ -12,6 +12,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
+import com.violas.wallet.ui.main.bank.BankFragment
 import com.violas.wallet.ui.main.market.MarketFragment
 import com.violas.wallet.ui.main.me.MeFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
@@ -66,6 +67,9 @@ class MainActivity : BaseAppActivity() {
                 R.id.tab_market -> {
                     it.setIcon(getResourceId(R.attr.homeBottomMarketTabSelectedIcon, this))
                 }
+                R.id.tab_bank -> {
+                    it.setIcon(getResourceId(R.attr.homeBottomBankTabSelectedIcon, this))
+                }
                 R.id.tab_me -> {
                     it.setIcon(getResourceId(R.attr.homeBottomMeTabSelectedIcon, this))
                 }
@@ -77,10 +81,11 @@ class MainActivity : BaseAppActivity() {
         viewPagerAdapter = FragmentPagerAdapterSupport(supportFragmentManager)
         viewPagerAdapter.addFragment(WalletFragment())
         viewPagerAdapter.addFragment(MarketFragment())
+        viewPagerAdapter.addFragment(BankFragment())
         viewPagerAdapter.addFragment(MeFragment())
 
         view_pager.adapter = viewPagerAdapter
-        view_pager.offscreenPageLimit = 3
+        view_pager.offscreenPageLimit = 4
         bottom_navigation.setupWithViewPager(view_pager)
     }
 
@@ -89,6 +94,8 @@ class MainActivity : BaseAppActivity() {
             .setIcon(getResourceId(R.attr.homeBottomWalletTabNormalIcon, this))
         bottom_navigation.menu.findItem(R.id.tab_market)
             .setIcon(getResourceId(R.attr.homeBottomMarketTabNormalIcon, this))
+        bottom_navigation.menu.findItem(R.id.tab_bank)
+            .setIcon(getResourceId(R.attr.homeBottomBankTabNormalIcon, this))
         bottom_navigation.menu.findItem(R.id.tab_me)
             .setIcon(getResourceId(R.attr.homeBottomMeTabNormalIcon, this))
     }
@@ -102,8 +109,11 @@ class MainActivity : BaseAppActivity() {
             HomePageType.Market -> {
                 view_pager.currentItem = 1
             }
-            HomePageType.Me -> {
+            HomePageType.Bank -> {
                 view_pager.currentItem = 2
+            }
+            HomePageType.Me -> {
+                view_pager.currentItem = 3
             }
         }
     }

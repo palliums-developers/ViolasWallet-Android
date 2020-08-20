@@ -143,6 +143,8 @@
         <item name="homeBottomMarketTabNormalIcon">@drawable/table_market_normal</item>
         <item name="homeBottomMeTabSelectedIcon">@drawable/table_me_selected</item>
         <item name="homeBottomMeTabNormalIcon">@drawable/table_me_normal</item>
+        <item name="homeBottomBankTabSelectedIcon">@drawable/table_bank_selected</item>
+        <item name="homeBottomBankTabNormalIcon">@drawable/table_bank_normal</item>
         <item name="homeBottomNavigationBg">@color/white</item>
         <item name="homeFragmentTopBg">@drawable/bg_wallet_main</item>
 
