@@ -87,6 +87,17 @@
     <attr name="meHomeAddressMenuIcon" format="reference" />
     <attr name="meHomeSettingsMenuIcon" format="reference" />
 
+    <!--首页-数字银行资源属性-->
+    <attr name="homeBankTopBgIcon" format="reference"/>
+    <attr name="homeBankMenuMore" format="reference"/>
+    <attr name="homeBankMenuDepositOrderIcon" format="reference"/>
+    <attr name="homeBankMenuBorrowOrderIcon" format="reference"/>
+    <attr name="homeBankTotalBorrowableIcon" format="reference"/>
+    <attr name="homeBankTotalIncomeIcon" format="reference"/>
+    <attr name="homeBankYesterdayIncomeIcon" format="reference"/>
+    <attr name="homeBankYesterdayIncomeBgColor" format="color"/>
+    <attr name="homeBankYesterdayIncomeTextColor" format="color"/>
+
     <!--币种详情页面资源属性-->
     <attr name="tokenDetailsTokenInfoBg" format="reference" />
     <attr name="tokenDetailsTabNormalTextColor" format="color" />

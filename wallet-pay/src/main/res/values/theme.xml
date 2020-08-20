@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <style name="Theme.APP.DayNight.Home.BankPopup">
+        <item name="actionOverflowMenuStyle">@style/ActionOverflowMenuStyle.HomeBank</item>
+    </style>
+
     <style name="Theme.APP.DayNight.Home">
         <item name="android:windowAnimationStyle">@style/MainWindowAnimation</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
@@ -74,6 +78,7 @@
 
         <item name="android:windowAnimationStyle">@style/AppWindowAnimation</item>
         <item name="actionOverflowButtonStyle">@style/ActionOverflowButtonStyle</item>
+        <item name="actionOverflowMenuStyle">@style/ActionOverflowMenuStyle</item>
         <item name="buttonStyle">@style/ButtonStyle</item>
 
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
@@ -163,6 +168,17 @@
         <item name="meHomeAddressMenuIcon">@mipmap/ic_me_address_book</item>
         <item name="meHomeSettingsMenuIcon">@mipmap/ic_me_settings</item>
 
+        <!--首页-数字银行资源属性-->
+        <item name="homeBankTopBgIcon">@mipmap/ic_home_bank_top_bg</item>
+        <item name="homeBankMenuMore">@mipmap/ic_home_bank_menu_more</item>
+        <item name="homeBankMenuDepositOrderIcon">@mipmap/ic_home_bank_menu_deposit_order</item>
+        <item name="homeBankMenuBorrowOrderIcon">@mipmap/ic_home_bank_menu_borrow_order</item>
+        <item name="homeBankTotalBorrowableIcon">@mipmap/ic_home_bank_total_borrowable</item>
+        <item name="homeBankTotalIncomeIcon">@mipmap/ic_home_bank_total_income</item>
+        <item name="homeBankYesterdayIncomeIcon">@mipmap/ic_home_bank_yesterday_income</item>
+        <item name="homeBankYesterdayIncomeBgColor">@color/color_FB8F0B_10</item>
+        <item name="homeBankYesterdayIncomeTextColor">@color/color_FB8F0B</item>
+
         <!--币种详情页资源属性-->
         <item name="tokenDetailsTokenInfoBg">@drawable/bg_token_info_head</item>
         <item name="tokenDetailsTabNormalTextColor">@color/color_C2C2C2</item>
@@ -228,6 +244,20 @@
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">
         <item name="android:tint">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="ActionOverflowMenuStyle" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
+        <!-- 是否覆盖锚点，为true则盖住Toolbar -->
+        <item name="overlapAnchor">false</item>
+        <!-- 弹出层水平方向上的偏移，即距离屏幕左边的距离，负值会导致右边出现空隙 -->
+        <item name="android:dropDownHorizontalOffset">0dp</item>
+        <!-- 弹出层垂直方向上的偏移，即在竖直方向上距离Toolbar的距离，值为负则会盖住Toolbar -->
+        <item name="android:dropDownVerticalOffset">0dp</item>
+    </style>
+
+    <style name="ActionOverflowMenuStyle.HomeBank">
+        <item name="android:dropDownHorizontalOffset">-10dp</item>
+        <item name="android:dropDownVerticalOffset">-10dp</item>
     </style>
 
     <style name="ButtonStyle" parent="Widget.AppCompat.Button.Borderless">
