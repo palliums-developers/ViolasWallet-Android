@@ -1,6 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurfaceSecondary">
+
+    <ImageView
+        android:id="@+id/ivTopBg"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_238"
+        android:background="?attr/homeBankTopBgIcon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="?attr/statusBarSize"
+        android:paddingHorizontal="@dimen/dp_21"
+        android:theme="@style/Theme.APP.DayNight.Home.BankPopup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTotalDepositLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_10"
+        android:layout_marginStart="@dimen/dp_35"
+        android:includeFontPadding="false"
+        android:text="@string/total_deposit_label"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/toolbar" />
+
+    <TextView
+        android:id="@+id/tvTotalDeposit"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_19"
+        android:layout_marginTop="@dimen/dp_24"
+        android:includeFontPadding="false"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="@dimen/sp_20"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/tvTotalDepositLabel"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalDepositLabel"
+        tools:text="≈2041.76" />
+
+    <ImageView
+        android:id="@+id/ivTotalBorrowableIcon"
+        android:layout_width="@dimen/dp_10"
+        android:layout_height="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_28"
+        android:background="?attr/homeBankTotalBorrowableIcon"
+        app:layout_constraintStart_toStartOf="@id/tvTotalDepositLabel"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalDeposit" />
+
+    <TextView
+        android:id="@+id/tvTotalBorrowableLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_10"
+        android:layout_marginStart="@dimen/dp_8"
+        android:includeFontPadding="false"
+        android:text="@string/total_borrowable_label"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintBottom_toBottomOf="@id/ivTotalBorrowableIcon"
+        app:layout_constraintStart_toEndOf="@id/ivTotalBorrowableIcon"
+        app:layout_constraintTop_toTopOf="@id/ivTotalBorrowableIcon" />
+
+    <TextView
+        android:id="@+id/tvTotalBorrowable"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_10"
+        android:layout_marginStart="@dimen/dp_10"
+        android:includeFontPadding="false"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="@dimen/sp_10"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ivTotalBorrowableIcon"
+        app:layout_constraintStart_toEndOf="@id/tvTotalBorrowableLabel"
+        app:layout_constraintTop_toTopOf="@id/ivTotalBorrowableIcon"
+        tools:text="≈1041.76/1500" />
+
+    <ImageView
+        android:id="@+id/ivTotalIncomeIcon"
+        android:layout_width="@dimen/dp_10"
+        android:layout_height="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_14"
+        android:background="?attr/homeBankTotalIncomeIcon"
+        app:layout_constraintStart_toStartOf="@id/tvTotalDepositLabel"
+        app:layout_constraintTop_toBottomOf="@id/ivTotalBorrowableIcon" />
+
+    <TextView
+        android:id="@+id/tvTotalIncomeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_10"
+        android:layout_marginStart="@dimen/dp_8"
+        android:includeFontPadding="false"
+        android:text="@string/total_income_label"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintBottom_toBottomOf="@id/ivTotalIncomeIcon"
+        app:layout_constraintStart_toEndOf="@id/ivTotalIncomeIcon"
+        app:layout_constraintTop_toTopOf="@id/ivTotalIncomeIcon" />
+
+    <TextView
+        android:id="@+id/tvTotalIncome"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_10"
+        android:layout_marginStart="@dimen/dp_10"
+        android:includeFontPadding="false"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="@dimen/sp_10"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ivTotalIncomeIcon"
+        app:layout_constraintStart_toEndOf="@id/tvTotalIncomeLabel"
+        app:layout_constraintTop_toTopOf="@id/ivTotalIncomeIcon"
+        tools:text="≈41.76" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_30"
+        android:background="@drawable/bg_home_bank_yesterday_income"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/dp_6"
+        android:paddingVertical="@dimen/dp_3"
+        app:layout_constraintBottom_toBottomOf="@id/ivTotalIncomeIcon"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_6"
+            android:layout_marginTop="@dimen/dp_3"
+            android:background="?attr/homeBankYesterdayIncomeIcon" />
+
+        <TextView
+            android:id="@+id/tvYesterdayIncome"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_4"
+            android:includeFontPadding="false"
+            android:text="@string/yesterday_income_format"
+            android:textColor="?attr/homeBankYesterdayIncomeTextColor"
+            android:textSize="@dimen/sp_10" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0"
+        android:layout_marginHorizontal="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_24"
+        android:background="@drawable/bg_home_bank_market"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivTotalIncomeIcon">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_51"
+            android:layout_marginHorizontal="@dimen/dp_10"
+            app:tabBackground="@null"
+            app:tabIndicatorHeight="@dimen/dp_0"
+            app:tabMaxWidth="@dimen/dp_200"
+            app:tabMinWidth="@dimen/dp_30"
+            app:tabMode="scrollable"
+            app:tabPaddingEnd="@dimen/dp_10"
+            app:tabPaddingStart="@dimen/dp_10"
+            app:tabRippleColor="@null"
+            app:tabSelectedTextColor="?android:attr/textColor"
+            app:tabTextColor="?android:attr/textColorTertiary" />
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
