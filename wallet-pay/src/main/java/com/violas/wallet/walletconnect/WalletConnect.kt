@@ -61,7 +61,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     private val mGsonBuilder = GsonBuilder()
     private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
-            .pingInterval(3,TimeUnit.MINUTES)
+            .pingInterval(3, TimeUnit.MINUTES)
             .build()
     }
     private val mWCClient: WCClient = WCClient(httpClient, mGsonBuilder)
@@ -224,16 +224,18 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     }
 
     fun disconnect(): Boolean {
-        return if (mWCSessionStoreType.session != null) {
-            val killSession = mWCClient.killSession()
-            disconnectAndReset()
-            killSession
-        } else {
-            try {
-                mWCClient.disconnect()
-            } catch (e: Exception) {
+        try {
+            return if (mWCSessionStoreType.session != null) {
+                val killSession = mWCClient.killSession()
+                disconnectAndReset()
+                killSession
+            } else {
+                disconnectAndReset()
+                true
             }
-            true
+        } catch (e: IllegalStateException) {
+            disconnectAndReset()
         }
+        return true
     }
 }
