@@ -7,6 +7,8 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.walletconnect.WalletConnect
 import kotlinx.android.synthetic.main.activity_wallet_connect_manager.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class WalletConnectManagerActivity : BaseAppActivity() {
     companion object {
@@ -26,11 +28,17 @@ class WalletConnectManagerActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
 
         btnLogout.setOnClickListener {
-            if (WalletConnect.getInstance(this).disconnect()) {
-                finish()
-            }else{
-                showToast(String.format(getString(R.string.common_http_request_fail), ""))
+            launch(Dispatchers.IO) {
+                showProgress()
+                if (WalletConnect.getInstance(this@WalletConnectManagerActivity).disconnect()) {
+                    dismissProgress()
+                    finish()
+                } else {
+                    dismissProgress()
+                    showToast(String.format(getString(R.string.common_http_request_fail), ""))
+                }
             }
+
         }
         ivClose.setOnClickListener {
             finish()

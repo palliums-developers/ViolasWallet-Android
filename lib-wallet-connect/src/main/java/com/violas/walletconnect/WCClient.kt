@@ -352,17 +352,23 @@ open class WCClient(
         Log.d(TAG, "==> message $result")
         val session =
             this.session ?: throw IllegalStateException("session can't be null on message send")
+
+        return encryptAndSend(result, remotePeerId ?: session.topic, MessageType.PUB, session.key)
+    }
+
+    fun encryptAndSend(result: String, topic: String, type: MessageType, key: String): Boolean {
+        Log.d(TAG, "==> message $result")
         val payload = gson.toJson(
             WCCipher.encrypt(
                 result.toByteArray(Charsets.UTF_8),
-                session.key.hexStringToByteArray()
+                key.hexStringToByteArray()
             )
         )
         val message = WCSocketMessage(
             // Once the remotePeerId is defined, all messages must be sent to this channel. The session.topic channel
             // will be used only to respond the session request message.
-            topic = remotePeerId ?: session.topic,
-            type = MessageType.PUB,
+            topic = topic,
+            type = type,
             payload = payload
         )
         val json = gson.toJson(message)
