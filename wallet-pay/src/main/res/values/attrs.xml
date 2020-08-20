@@ -7,7 +7,7 @@
     </declare-styleable>
 
     <!--App通用资源属性-->
-    <attr name="statusBarSize" format="dimension"/>
+    <attr name="statusBarSize" format="dimension" />
 
     <attr name="colorSurfaceSecondary" format="color" />
     <attr name="colorItemPressedPrimary" format="color" />
@@ -62,6 +62,8 @@
     <attr name="homeBottomMarketTabNormalIcon" format="reference" />
     <attr name="homeBottomMeTabSelectedIcon" format="reference" />
     <attr name="homeBottomMeTabNormalIcon" format="reference" />
+    <attr name="homeBottomBankTabSelectedIcon" format="reference" />
+    <attr name="homeBottomBankTabNormalIcon" format="reference" />
     <attr name="homeBottomNavigationBg" format="color|reference" />
     <attr name="homeFragmentTopBg" format="color|reference" />
 

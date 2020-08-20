@@ -225,6 +225,7 @@
     <string name="tab_wallet">钱包</string>
     <string name="tab_market">市场</string>
     <string name="tab_me">我的</string>
+    <string name="tab_bank">数字银行</string>
     <string name="action_please_choose">请选择</string>
     <string name="hint_please_select_address_system">请选择钱包类型</string>
     <string name="hint_confirm_delete_address_book">确定要在地址簿中删除该地址！</string>
