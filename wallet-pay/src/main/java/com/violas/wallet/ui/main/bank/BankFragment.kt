@@ -1,16 +1,15 @@
 package com.violas.wallet.ui.main.bank
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.lxj.xpopup.XPopup
+import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
-import com.palliums.utils.getDrawableByAttrId
+import com.palliums.utils.getResourceId
 import com.violas.wallet.R
+import com.violas.wallet.widget.popup.MenuPopup
 import kotlinx.android.synthetic.main.fragment_bank.*
 
 /**
@@ -20,11 +19,6 @@ import kotlinx.android.synthetic.main.fragment_bank.*
  * desc: 首页-数字银行
  */
 class BankFragment : BaseFragment() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_bank
@@ -38,58 +32,46 @@ class BankFragment : BaseFragment() {
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
 
-        (activity as? AppCompatActivity)?.let {
-            it.setSupportActionBar(toolbar)
-            it.supportActionBar?.setDisplayShowTitleEnabled(false)
-            it.supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        }
         toolbar.layoutParams = (toolbar.layoutParams as ConstraintLayout.LayoutParams).apply {
             topMargin = StatusBarUtil.getStatusBarHeight()
         }
-        toolbar.overflowIcon = getDrawableByAttrId(R.attr.homeBankMenuMore, context!!)
         ivTopBg.layoutParams = (ivTopBg.layoutParams as ConstraintLayout.LayoutParams).apply {
-            height = StatusBarUtil.getStatusBarHeight() + DensityUtility.dp2px(context, 210)
+            height = StatusBarUtil.getStatusBarHeight() + DensityUtility.dp2px(context, 215)
+        }
+
+        ivMenu.setOnClickListener {
+            showMenuPopup()
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_home_bank, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        if (menu.javaClass.simpleName.equals("MenuBuilder", true)) {
-            try {
-                val method = menu.javaClass.getDeclaredMethod(
-                    "setOptionalIconsVisible",
-                    Boolean::class.java
-                )
-                method.isAccessible = true
-                method.invoke(menu, true)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.deposit_order -> {
-                context?.let {
-                    showToast("进入存款订单页面")
+    private fun showMenuPopup() {
+        XPopup.Builder(requireContext())
+            .hasShadowBg(false)
+            .popupAnimation(PopupAnimation.ScaleAlphaFromRightTop)
+            .atView(ivMenu)
+            .offsetX(DensityUtility.dp2px(context, 12))
+            .offsetY(DensityUtility.dp2px(context, -10))
+            .asCustom(
+                MenuPopup(
+                    requireContext(),
+                    mutableListOf(
+                        Pair(
+                            getResourceId(R.attr.homeBankMenuDepositOrderIcon, context!!),
+                            R.string.deposit_order
+                        ),
+                        Pair(
+                            getResourceId(R.attr.homeBankMenuBorrowOrderIcon, context!!),
+                            R.string.borrow_order
+                        )
+                    )
+                ) {
+                    if (it == 0) {
+                        showToast("进入存款订单页面")
+                    } else {
+                        showToast("进入借款订单页面")
+                    }
                 }
-                return true
-            }
-
-            R.id.borrow_order -> {
-                context?.let {
-                    showToast("进入存借款单页面")
-                }
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
+            )
+            .show()
     }
-
 }
