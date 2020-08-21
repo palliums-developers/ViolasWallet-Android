@@ -189,6 +189,17 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.APP.DayNight.Secondary" />
         <activity
+            android:name=".ui.bank.deposit.DepositActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".ui.transfer.MultiTransferActivity"
             android:screenOrientation="portrait" />
         <!-- 设计图尺寸，用于今日头条适配方案 -->
