@@ -117,9 +117,9 @@
         <item name="iconArrow">@drawable/icon_down_arrow_white</item>
         <item name="iconCopy">@drawable/ic_token_info_copy</item>
         <item name="iconSearch">@mipmap/ic_search</item>
-        <item name="iconShowPrimary">@drawable/ic_total_balance_show</item>
+        <item name="iconShowPrimary">@mipmap/ic_total_balance_show</item>
         <item name="iconShowSecondary">@drawable/ic_password_text_show</item>
-        <item name="iconHidePrimary">@drawable/ic_total_balance_hidden</item>
+        <item name="iconHidePrimary">@mipmap/ic_total_balance_hidden</item>
         <item name="iconHideSecondary">@drawable/ic_password_text_hidden</item>
         <item name="iconScanPrimary">@drawable/icon_scan_purple</item>
         <item name="iconScanSecondary">@drawable/icon_scan_white</item>

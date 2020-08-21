@@ -2,9 +2,12 @@ package com.violas.wallet.ui.main.bank
 
 import android.os.Bundle
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
+import com.palliums.extensions.expandTouchArea
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getResourceId
@@ -20,6 +23,10 @@ import kotlinx.android.synthetic.main.fragment_bank.*
  */
 class BankFragment : BaseFragment() {
 
+    private val bankViewModel by lazy {
+        ViewModelProvider(this).get(BankViewModel::class.java)
+    }
+
     override fun getLayoutResId(): Int {
         return R.layout.fragment_bank
     }
@@ -32,16 +39,58 @@ class BankFragment : BaseFragment() {
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
 
+        initView()
+        initEvent()
+        initObserver()
+    }
+
+    private fun initView() {
         toolbar.layoutParams = (toolbar.layoutParams as ConstraintLayout.LayoutParams).apply {
             topMargin = StatusBarUtil.getStatusBarHeight()
         }
+
         ivTopBg.layoutParams = (ivTopBg.layoutParams as ConstraintLayout.LayoutParams).apply {
             height = StatusBarUtil.getStatusBarHeight() + DensityUtility.dp2px(context, 215)
         }
 
+        ivShowHideAmount.expandTouchArea(20)
+    }
+
+    private fun initEvent() {
         ivMenu.setOnClickListener {
             showMenuPopup()
         }
+
+        ivShowHideAmount.setOnClickListener {
+            bankViewModel.toggleAmountShowHide()
+        }
+    }
+
+    private fun initObserver() {
+        bankViewModel.showAmountLiveData.observe(viewLifecycleOwner, Observer {
+            ivShowHideAmount.setImageResource(
+                getResourceId(
+                    if (it) R.attr.iconShowPrimary else R.attr.iconHidePrimary,
+                    context!!
+                )
+            )
+        })
+
+        bankViewModel.totalDepositLiveData.observe(viewLifecycleOwner, Observer {
+            tvTotalDeposit.text = it
+        })
+
+        bankViewModel.totalBorrowableLiveData.observe(viewLifecycleOwner, Observer {
+            tvTotalBorrowable.text = it
+        })
+
+        bankViewModel.totalIncomeLiveData.observe(viewLifecycleOwner, Observer {
+            tvTotalIncome.text = it
+        })
+
+        bankViewModel.yesterdayIncomeLiveData.observe(viewLifecycleOwner, Observer {
+            tvYesterdayIncome.text = it
+        })
     }
 
     private fun showMenuPopup() {
