@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/handling_fee_rate_format" />
 
-    <EditText
+    <NumberEditText
         android:id="@+id/etFromInputBox"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etFromInputBox" />
 
-    <EditText
+    <NumberEditText
         android:id="@+id/etToInputBox"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
