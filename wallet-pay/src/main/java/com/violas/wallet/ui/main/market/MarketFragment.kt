@@ -47,10 +47,11 @@ class MarketFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         EventBus.getDefault().register(this)
 
-        val appCompatActivity = activity as? AppCompatActivity
-        appCompatActivity?.setSupportActionBar(toolbar)
-        appCompatActivity?.supportActionBar?.setDisplayShowTitleEnabled(false)
-        //appCompatActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as? AppCompatActivity)?.let {
+            it.setSupportActionBar(toolbar)
+            it.supportActionBar?.setDisplayShowTitleEnabled(false)
+            //it.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        }
         toolbar.layoutParams = (toolbar.layoutParams as ConstraintLayout.LayoutParams).apply {
             topMargin = StatusBarUtil.getStatusBarHeight()
         }

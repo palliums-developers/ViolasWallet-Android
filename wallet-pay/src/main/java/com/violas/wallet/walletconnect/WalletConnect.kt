@@ -24,6 +24,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import java.util.concurrent.TimeUnit
 
 enum class WalletConnectStatus {
     None, Login
@@ -58,7 +59,11 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     var mWalletConnectSessionListener: WalletConnectSessionListener? = null
 
     private val mGsonBuilder = GsonBuilder()
-    private val httpClient: OkHttpClient = OkHttpClient()
+    private val httpClient: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .pingInterval(3, TimeUnit.MINUTES)
+            .build()
+    }
     private val mWCClient: WCClient = WCClient(httpClient, mGsonBuilder)
     private val mWCSessionStoreType =
         WCSessionStoreType(WCSessionStoreType.getSharedPreferences(context), mGsonBuilder)
@@ -143,7 +148,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         }
     }
 
-    private fun disconnectAndReset(){
+    private fun disconnectAndReset() {
         mWCSessionStoreType.session = null
         mWalletConnectListener?.onDisconnect()
     }
@@ -219,16 +224,18 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     }
 
     fun disconnect(): Boolean {
-        return if (mWCSessionStoreType.session != null) {
-            val killSession = mWCClient.killSession()
-            disconnectAndReset()
-            killSession
-        } else {
-            try {
-                mWCClient.disconnect()
-            } catch (e: Exception) {
+        try {
+            return if (mWCSessionStoreType.session != null) {
+                val killSession = mWCClient.killSession()
+                disconnectAndReset()
+                killSession
+            } else {
+                disconnectAndReset()
+                true
             }
-            true
+        } catch (e: IllegalStateException) {
+            disconnectAndReset()
         }
+        return true
     }
 }

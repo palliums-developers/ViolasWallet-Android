@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/ivHeader"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_196"
+        android:layout_height="@dimen/dp_197"
         android:background="?attr/homeFragmentTopBg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

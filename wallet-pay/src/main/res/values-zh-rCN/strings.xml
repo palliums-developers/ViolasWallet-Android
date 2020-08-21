@@ -225,6 +225,7 @@
     <string name="tab_wallet">钱包</string>
     <string name="tab_market">市场</string>
     <string name="tab_me">我的</string>
+    <string name="tab_bank">数字银行</string>
     <string name="action_please_choose">请选择</string>
     <string name="hint_please_select_address_system">请选择钱包类型</string>
     <string name="hint_confirm_delete_address_book">确定要在地址簿中删除该地址！</string>
@@ -438,4 +439,13 @@
     <string name="mapping_state_succeeded">映射成功</string>
     <string name="mapping_state_failed">映射失败</string>
     <string name="mapping_state_cancelled">已取消</string>
+
+    <string name="total_deposit_label">存款总额（$）</string>
+    <string name="total_borrowable_label">可借总额（$）</string>
+    <string name="total_income_label">累计收益（$）</string>
+    <string name="yesterday_income_format">昨日收益 %1$s $</string>
+    <string name="deposit_market">存款市场</string>
+    <string name="borrow_market">借款市场</string>
+    <string name="deposit_order">存款订单</string>
+    <string name="borrow_order">借款订单</string>
 </resources>
