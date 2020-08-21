@@ -28,7 +28,7 @@
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/sp_12" />
 
-        <TextView
+        <NumberTextView
             android:id="@+id/tvLiquidityTotalAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

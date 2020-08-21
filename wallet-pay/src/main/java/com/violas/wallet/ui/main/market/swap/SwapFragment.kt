@@ -171,17 +171,17 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                 showToast(getString(R.string.hint_swap_output_assets_not_select))
                 return@setOnClickListener
             }
-            if (etFromInputBox.text.isEmpty()) {
+            if (etFromInputBox.text?.isEmpty() == true) {
                 // 填写输入金额
                 showToast(getString(R.string.hint_swap_input_assets_amount_input))
                 return@setOnClickListener
             }
-            if (etToInputBox.text.isEmpty()) {
+            if (etToInputBox.text?.isEmpty() == true) {
                 // 填写输出金额
                 showToast(getString(R.string.hint_swap_input_assets_amount_input))
                 return@setOnClickListener
             }
-            if (mCurrFromAssetsAmount < BigDecimal(etFromInputBox.text.trim().toString())) {
+            if (mCurrFromAssetsAmount < BigDecimal(etFromInputBox.text?.trim()?.toString() ?: "0")) {
                 showToast(R.string.market_swap_amount_insufficient)
                 return@setOnClickListener
             }
