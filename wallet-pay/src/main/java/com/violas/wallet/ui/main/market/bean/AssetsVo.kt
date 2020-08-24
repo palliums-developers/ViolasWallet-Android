@@ -16,7 +16,7 @@ interface IAssetsMark {
                     CoinTypes.parseCoinType(iTokenVo.coinNumber),
                     iTokenVo.module,
                     iTokenVo.address,
-                    iTokenVo.module
+                    iTokenVo.name
                 )
             } else {
                 throw RuntimeException("不支持的")
@@ -31,7 +31,7 @@ interface IAssetsMark {
                     CoinTypes.parseCoinType(iTokenVo.getCoinNumber()),
                     iTokenVo.module,
                     iTokenVo.address,
-                    iTokenVo.module
+                    iTokenVo.name
                 )
             } else {
                 throw RuntimeException("不支持的")

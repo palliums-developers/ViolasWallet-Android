@@ -1,9 +1,12 @@
 package com.violas.wallet.ui.bank
 
+import android.text.SpannableStringBuilder
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.violas.wallet.ui.main.market.bean.IAssetsMark
+import com.violas.wallet.viewModel.bean.AssetsVo
 
 data class BusinessParameter(
     val title: String,
@@ -19,8 +22,8 @@ data class ProductExplanation(
 )
 
 data class FAQ(
-    val Q: String,
-    val A: String
+    val q: String,
+    val a: String
 )
 
 data class BusinessUserAmountInfo(
@@ -32,45 +35,44 @@ data class BusinessUserAmountInfo(
     val value2: String? = null
 )
 
+data class BusinessUserInfo(
+    val businessName: String,
+    val businessInputHint: String,
+    val businessUsableAmount: BusinessUserAmountInfo,
+    val businessLimitAmount: BusinessUserAmountInfo? = null
+)
+
 class BankBusinessViewModel : ViewModel() {
     /**
      * 页面标题
      */
     val mPageTitleLiveData = MutableLiveData<String>()
 
-    // <editor-fold defaultstate="collapsed" desc="我要存款框里面的数据">
     /**
-     * 业务名称
+     * 我要存款框里面的数据
      */
-    val mBusinessNameLiveData = MutableLiveData<String>()
+    val mBusinessUserInfoLiveData = MutableLiveData<BusinessUserInfo>()
 
     /**
-     * 输入框标题
+     * 当前选中的币种
      */
-    val mBusinessHintLiveData = MutableLiveData<String>()
-
-    /**
-     * 可用资金提示，可用余额、可借额度
-     */
-    val mBusinessUsableAmountLiveData = MutableLiveData<BusinessUserAmountInfo>()
-
-    /**
-     * 金额限制
-     */
-    val mBusinessLimitAmountLiveData = MutableLiveData<BusinessUserAmountInfo?>()
-
-    //</editor-fold>
+    val mCurrentAssetsLiveData = MutableLiveData<AssetsVo>()
 
     // <editor-fold defaultstate="collapsed" desc="底部悬浮栏里面的内容">
     /**
      * 操作提示
      */
-    val mBusinessActionHintLiveData = MutableLiveData<String>()
+    val mBusinessActionHintLiveData = MutableLiveData<String?>()
 
     /**
      * 按钮字符
      */
     val mBusinessActionLiveData = MutableLiveData<String>()
+
+    /**
+     * 隐私条款
+     */
+    val mBusinessPolicyLiveData = MutableLiveData<SpannableStringBuilder?>()
     //</editor-fold>
 
     /**
