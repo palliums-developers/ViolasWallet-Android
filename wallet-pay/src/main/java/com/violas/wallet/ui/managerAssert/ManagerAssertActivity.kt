@@ -204,7 +204,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                             showToast(
                                 getString(
                                     R.string.hint_not_none_coin_or_net_error,
-                                    CoinTypes.Violas.coinName()
+                                    CoinTypes.parseCoinType(account.coinNumber).coinName()
                                 ),
                                 Toast.LENGTH_LONG
                             )
@@ -216,7 +216,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                         showToast(
                             getString(
                                 R.string.hint_not_none_coin_or_net_error,
-                                CoinTypes.Violas.coinName()
+                                CoinTypes.parseCoinType(account.coinNumber).coinName()
                             ),
                             Toast.LENGTH_LONG
                         )
