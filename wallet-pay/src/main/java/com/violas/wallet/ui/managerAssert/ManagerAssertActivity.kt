@@ -16,7 +16,7 @@ import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.utils.openBrowser
 import com.palliums.violas.bean.TokenMark
-import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.quincysx.crypto.CoinTypes
 import com.smallraw.support.switchcompat.SwitchButton
 import com.violas.wallet.R
@@ -112,7 +112,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
         setTitleRightText(R.string.action_get_experience_the_coin)
 
         getRecyclerView().addItemDecoration(
-            RecycleViewItemDividers(
+            RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(this, 5),
                 bottom = DensityUtility.dp2px(this, 5),
                 left = DensityUtility.dp2px(this, 16),

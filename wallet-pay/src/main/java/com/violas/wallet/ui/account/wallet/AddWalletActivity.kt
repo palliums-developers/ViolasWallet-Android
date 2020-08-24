@@ -13,7 +13,7 @@ import com.palliums.listing.ListingViewAdapter
 import com.palliums.listing.ListingViewModel
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.start
-import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseListingActivity
@@ -61,7 +61,7 @@ class AddWalletActivity : BaseListingActivity<AddWalletVo>() {
         setTitle(R.string.add_wallet_title)
 
         getRecyclerView().addItemDecoration(
-            RecycleViewItemDividers(
+            RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(this, 10),
                 bottom = 0,
                 showFirstTop = true,

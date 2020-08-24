@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_35"
         android:layout_marginTop="@dimen/dp_5"
-        android:background="@drawable/sel_bg_market_btn_secondary"
+        android:background="@drawable/sel_bg_btn2_secondary"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/transfer_in"
-            android:textColor="@color/sel_text_color_market_btn"
+            android:textColor="@color/sel_text_color_btn2"
             android:textSize="@dimen/sp_12" />
 
         <ImageView
@@ -101,7 +101,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_11"
         android:layout_marginBottom="@dimen/dp_11"
-        android:background="@drawable/sel_bg_market_btn_primary"
+        android:background="@drawable/sel_bg_btn2_primary"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
         app:layout_constraintBottom_toBottomOf="@id/etInputBoxA"
@@ -112,7 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/select_token"
-            android:textColor="@color/sel_text_color_market_btn"
+            android:textColor="@color/sel_text_color_btn2"
             android:textSize="@dimen/sp_12" />
 
         <ImageView
@@ -184,7 +184,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_11"
         android:layout_marginBottom="@dimen/dp_11"
-        android:background="@drawable/sel_bg_market_btn_primary"
+        android:background="@drawable/sel_bg_btn2_primary"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
         app:layout_constraintBottom_toBottomOf="@id/etInputBoxB"
@@ -195,7 +195,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/select_token"
-            android:textColor="@color/sel_text_color_market_btn"
+            android:textColor="@color/sel_text_color_btn2"
             android:textSize="@dimen/sp_12" />
 
         <ImageView

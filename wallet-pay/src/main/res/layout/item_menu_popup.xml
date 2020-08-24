@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerInside"
-        tools:src="?attr/homeBankMenuDepositOrderIcon" />
+        tools:src="?attr/bankDepositOrderIcon" />
 
     <TextView
         android:id="@+id/tvText"

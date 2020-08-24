@@ -133,6 +133,9 @@
         <item name="iconCoinDefLogo">@drawable/ic_coin_default_logo</item>
         <item name="iconDownArrow">@mipmap/ic_down_arrow</item>
         <item name="iconEndArrow">@mipmap/ic_end_arrow</item>
+        <item name="iconRecordPrimary">@mipmap/ic_record_primary</item>
+        <item name="iconRecordSecondary">@mipmap/ic_record_secondary</item>
+        <item name="iconMore">@mipmap/ic_more</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
@@ -171,10 +174,7 @@
         <item name="meHomeSettingsMenuIcon">@mipmap/ic_me_settings</item>
 
         <!--首页-数字银行资源属性-->
-        <item name="homeBankTopBgIcon">@mipmap/ic_home_bank_top_bg</item>
-        <item name="homeBankMenuMore">@mipmap/ic_home_bank_menu_more</item>
-        <item name="homeBankMenuDepositOrderIcon">@mipmap/ic_home_bank_menu_deposit_order</item>
-        <item name="homeBankMenuBorrowOrderIcon">@mipmap/ic_home_bank_menu_borrow_order</item>
+        <item name="homeBankTopBgIcon">@mipmap/bg_home_bank_top</item>
         <item name="homeBankTotalBorrowableIcon">@mipmap/ic_home_bank_total_borrowable</item>
         <item name="homeBankTotalIncomeIcon">@mipmap/ic_home_bank_total_income</item>
         <item name="homeBankYesterdayIncomeIcon">@mipmap/ic_home_bank_yesterday_income</item>
@@ -239,9 +239,17 @@
         <item name="marketDetailsUncompletedLineBgColor">@color/color_C2C2C2</item>
 
         <!--映射相关页面资源属性-->
-        <item name="mappingMenuIcon">@mipmap/ic_mapping_menu</item>
         <item name="mappingBalanceIcon">@mipmap/ic_mapping_balance</item>
         <item name="mappingDividerIcon">@mipmap/ic_mapping_divider</item>
+
+        <!--数字银行相关页面资源属性-->
+        <item name="bankDepositOrderIcon">@mipmap/ic_bank_deposit_order</item>
+        <item name="bankBorrowOrderIcon">@mipmap/ic_bank_borrow_order</item>
+        <item name="bankListEmptyDataBg">@mipmap/bg_bank_list_empty_data</item>
+        <item name="bankDepositYieldTextColor">@color/color_13B788</item>
+        <item name="bankDepositEarningTextColor">@color/color_13B788</item>
+        <item name="bankDepositEarningBgColor">@color/color_13B788_06</item>
+        <item name="bankBorrowRateTextColor">@color/color_13B788</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">

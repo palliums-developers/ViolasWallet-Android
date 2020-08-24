@@ -6,7 +6,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.content.ContextProvider
 
-class RecycleViewItemDividers(
+class RecyclerViewItemDividers(
     val top: Int,
     val bottom: Int,
     val left: Int = 0,

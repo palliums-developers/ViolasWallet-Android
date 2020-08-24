@@ -330,16 +330,16 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
     private fun setSwitchOpModeViewBgAndTextColor(pressed: Boolean) {
         if (pressed) {
-            llSwitchOpModeGroup.setBackgroundResource(R.drawable.bg_market_btn_pressed)
+            llSwitchOpModeGroup.setBackgroundResource(R.drawable.bg_btn2_pressed)
             ivSwitchOpModeArrow.setBackgroundResource(R.drawable.shape_market_downward_pressed)
             tvSwitchOpModeText.setTextColor(
                 getColorByAttrId(R.attr.colorOnPrimary, requireContext())
             )
         } else {
-            llSwitchOpModeGroup.setBackgroundResource(R.drawable.sel_bg_market_btn_secondary)
+            llSwitchOpModeGroup.setBackgroundResource(R.drawable.sel_bg_btn2_secondary)
             ivSwitchOpModeArrow.setBackgroundResource(R.drawable.sel_market_downward)
             tvSwitchOpModeText.setTextColor(
-                ContextCompat.getColorStateList(requireContext(), R.color.sel_text_color_market_btn)
+                ContextCompat.getColorStateList(requireContext(), R.color.sel_text_color_btn2)
             )
         }
     }

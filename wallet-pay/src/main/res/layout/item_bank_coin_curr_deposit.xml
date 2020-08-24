@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_solid_color_surface_corners_8"
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingHorizontal="@dimen/dp_14"
+    android:paddingTop="@dimen/dp_20"
+    android:paddingBottom="@dimen/dp_19">
+
+    <ImageView
+        android:id="@+id/ivCoinLogo"
+        android:layout_width="@dimen/dp_24"
+        android:layout_height="@dimen/dp_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="?attr/iconCoinDefLogo" />
+
+    <TextView
+        android:id="@+id/tvCoinName"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_16"
+        android:layout_marginStart="@dimen/dp_8"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/sp_16"
+        app:layout_constraintBottom_toBottomOf="@id/ivCoinLogo"
+        app:layout_constraintStart_toEndOf="@id/ivCoinLogo"
+        app:layout_constraintTop_toTopOf="@id/ivCoinLogo"
+        tools:text="VLSUSD" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_16"
+        android:layout_marginStart="@dimen/dp_6"
+        android:background="@drawable/bg_bank_deposit_earning"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/dp_6"
+        android:paddingEnd="@dimen/dp_5"
+        android:text="@string/earning"
+        android:textColor="?attr/bankDepositEarningTextColor"
+        android:textSize="@dimen/sp_9"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ivCoinLogo"
+        app:layout_constraintStart_toEndOf="@id/tvCoinName"
+        app:layout_constraintTop_toTopOf="@id/ivCoinLogo" />
+
+    <TextView
+        android:id="@+id/tvWithdrawal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/sel_bg_btn2_primary"
+        android:includeFontPadding="false"
+        android:minWidth="@dimen/dp_50"
+        android:paddingHorizontal="@dimen/dp_14"
+        android:paddingVertical="@dimen/dp_5"
+        android:text="@string/withdrawal_nbsp"
+        android:textColor="@color/sel_text_color_btn2"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintBottom_toBottomOf="@id/ivCoinLogo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ivCoinLogo" />
+
+    <TextView
+        android:id="@+id/tvPrincipalLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_24"
+        android:includeFontPadding="false"
+        android:text="@string/principal"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivCoinLogo" />
+
+    <NumberTextView
+        android:id="@+id/tvPrincipal"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_14"
+        android:layout_marginTop="@dimen/dp_12"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintStart_toStartOf="@id/tvPrincipalLabel"
+        app:layout_constraintTop_toBottomOf="@id/tvPrincipalLabel"
+        tools:text="3828.00" />
+
+    <TextView
+        android:id="@+id/tvEarningsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_10"
+        android:includeFontPadding="false"
+        android:text="@string/earnings"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvPrincipalLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <NumberTextView
+        android:id="@+id/tvEarnings"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_14"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintTop_toTopOf="@id/tvPrincipal"
+        app:layout_constraintStart_toStartOf="@id/tvEarningsLabel"
+        tools:text="3828.00" />
+
+    <TextView
+        android:id="@+id/tvSevenDayAnnualYieldLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_10"
+        android:includeFontPadding="false"
+        android:text="@string/seven_day_annual_yield"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvPrincipalLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvSevenDayAnnualYield"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_14"
+        android:includeFontPadding="false"
+        android:textColor="?attr/bankDepositYieldTextColor"
+        android:textSize="@dimen/sp_14"
+        app:layout_constraintTop_toTopOf="@id/tvPrincipal"
+        app:layout_constraintEnd_toEndOf="@id/tvSevenDayAnnualYieldLabel"
+        tools:text="5.00%" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

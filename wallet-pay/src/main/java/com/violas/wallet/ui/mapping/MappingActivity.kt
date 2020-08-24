@@ -82,7 +82,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         StatusBarUtil.setLightStatusBarMode(window, false)
         setTopBackgroundResource(getResourceId(R.attr.homeFragmentTopBg, this))
         setTitleLeftImageResource(getResourceId(R.attr.iconBackSecondary, this))
-        setTitleRightImageResource(getResourceId(R.attr.mappingMenuIcon, this))
+        setTitleRightImageResource(getResourceId(R.attr.iconRecordSecondary, this))
         titleColor = getResourceId(R.attr.colorOnPrimary, this)
         setTitle(R.string.mapping)
 

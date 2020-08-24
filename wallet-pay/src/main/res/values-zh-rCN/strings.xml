@@ -442,10 +442,16 @@
 
     <string name="total_deposit_label">存款总额（$）</string>
     <string name="total_borrowable_label">可借总额（$）</string>
-    <string name="total_income_label">累计收益（$）</string>
-    <string name="yesterday_income_label">昨日收益&#160;</string>
+    <string name="total_earnings_label">累计收益（$）</string>
+    <string name="yesterday_earnings_label">昨日收益&#160;</string>
     <string name="deposit_market">存款市场</string>
     <string name="borrow_market">借款市场</string>
     <string name="deposit_order">存款订单</string>
     <string name="borrow_order">借款订单</string>
+    <string name="current_deposit">当前存款</string>
+    <string name="earning">收益中</string>
+    <string name="principal">本金</string>
+    <string name="earnings">收益</string>
+    <string name="seven_day_annual_yield">7日年化收益率</string>
+    <string name="withdrawal_nbsp">提&#160;取</string>
 </resources>

@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.isFastMultiClick
 import com.palliums.utils.start
-import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.groupList.GroupListLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -160,7 +160,7 @@ class AccountOperationsActivity : BaseAppActivity() {
             }
         }
         vAccountList.addItemDecoration(
-            RecycleViewItemDividers(
+            RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(this, 12),
                 bottom = DensityUtility.dp2px(this, 80),
                 showFirstTop = true,

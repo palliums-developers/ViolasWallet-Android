@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.bank
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
@@ -11,7 +12,9 @@ import com.palliums.extensions.expandTouchArea
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getResourceId
+import com.palliums.utils.start
 import com.violas.wallet.R
+import com.violas.wallet.ui.bank.order.deposit.BankDepositOrderActivity
 import com.violas.wallet.widget.popup.MenuPopup
 import kotlinx.android.synthetic.main.fragment_bank.*
 
@@ -105,19 +108,21 @@ class BankFragment : BaseFragment() {
                     requireContext(),
                     mutableListOf(
                         Pair(
-                            getResourceId(R.attr.homeBankMenuDepositOrderIcon, context!!),
+                            getResourceId(R.attr.bankDepositOrderIcon, context!!),
                             R.string.deposit_order
                         ),
                         Pair(
-                            getResourceId(R.attr.homeBankMenuBorrowOrderIcon, context!!),
+                            getResourceId(R.attr.bankBorrowOrderIcon, context!!),
                             R.string.borrow_order
                         )
                     )
-                ) {
-                    if (it == 0) {
-                        showToast("进入存款订单页面")
-                    } else {
-                        showToast("进入借款订单页面")
+                ) { position ->
+                    context?.let {
+                        if (position == 0) {
+                            Intent(it, BankDepositOrderActivity::class.java).start(it)
+                        } else {
+                            showToast("进入借款订单页面")
+                        }
                     }
                 }
             )

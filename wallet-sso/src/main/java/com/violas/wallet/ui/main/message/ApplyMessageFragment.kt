@@ -10,7 +10,7 @@ import com.palliums.extensions.isNoNetwork
 import com.palliums.net.LoadState
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColor
-import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.event.RefreshGovernorApplicationProgressEvent
@@ -175,7 +175,7 @@ class ApplyMessageFragment : BaseFragment() {
 
             rvSSOMsgList.adapter = mSSOMsgViewAdapter
             rvSSOMsgList.addItemDecoration(
-                RecycleViewItemDividers(
+                RecyclerViewItemDividers(
                     top = DensityUtility.dp2px(requireContext(), 10),
                     bottom = 0,
                     showFirstTop = true,

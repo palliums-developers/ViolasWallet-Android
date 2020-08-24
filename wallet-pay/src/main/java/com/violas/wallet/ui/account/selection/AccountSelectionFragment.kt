@@ -12,7 +12,7 @@ import com.palliums.base.BaseFragment
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColor
 import com.palliums.utils.isFastMultiClick
-import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.groupList.GroupListLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -112,7 +112,7 @@ class AccountSelectionFragment : BaseFragment() {
             }
         }
         vAccountList.addItemDecoration(
-            RecycleViewItemDividers(
+            RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(context, 10),
                 bottom = DensityUtility.dp2px(context, 60),
                 showFirstTop = true,
