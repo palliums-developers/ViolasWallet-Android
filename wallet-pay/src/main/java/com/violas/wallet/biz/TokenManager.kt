@@ -163,28 +163,6 @@ class TokenManager {
             if (loadSupportToken != null) {
                 resultTokenList.addAll(loadSupportToken)
             }
-
-            localToken.map {
-                val tokenMark = TokenMark(
-                    it.module,
-                    it.address,
-                    it.name
-                )
-                if (it.enable && !localSupportTokenMap.contains(tokenMark)) {
-                    resultTokenList.add(
-                        AssertOriginateToken(
-                            account_id = account.id,
-                            enable = true,
-                            tokenMark = tokenMark,
-                            isToken = true,
-                            name = it.assetsName,
-                            fullName = "",
-                            amount = 0,
-                            logo = it.logo
-                        )
-                    )
-                }
-            }
         }
 
         return resultTokenList
