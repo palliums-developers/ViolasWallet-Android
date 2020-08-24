@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.Toolbar
+    <View
         android:id="@+id/toolbar"
         android:layout_width="@dimen/dp_0"
         android:layout_height="?attr/actionBarSize"
@@ -146,9 +146,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_30"
         android:background="@drawable/bg_home_bank_yesterday_income"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="@dimen/dp_6"
-        android:gravity="center_vertical"
         android:paddingVertical="@dimen/dp_3"
         app:layout_constraintBottom_toBottomOf="@id/ivTotalIncomeIcon"
         app:layout_constraintEnd_toEndOf="parent">

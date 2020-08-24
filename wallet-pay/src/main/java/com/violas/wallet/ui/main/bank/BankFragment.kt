@@ -53,7 +53,7 @@ class BankFragment : BaseFragment() {
             height = StatusBarUtil.getStatusBarHeight() + DensityUtility.dp2px(context, 215)
         }
 
-        ivShowHideAmount.expandTouchArea(20)
+        ivShowHideAmount.expandTouchArea(30)
     }
 
     private fun initEvent() {

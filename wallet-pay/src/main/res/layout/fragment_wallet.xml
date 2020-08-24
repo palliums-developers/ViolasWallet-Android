@@ -34,7 +34,8 @@
             android:layout_marginStart="@dimen/dp_8"
             app:layout_constraintBottom_toBottomOf="@+id/tvTotalAssetsTitle"
             app:layout_constraintStart_toEndOf="@+id/tvTotalAssetsTitle"
-            app:layout_constraintTop_toTopOf="@+id/tvTotalAssetsTitle" />
+            app:layout_constraintTop_toTopOf="@+id/tvTotalAssetsTitle"
+            tools:src="?attr/iconShowPrimary" />
 
         <ImageView
             android:id="@+id/ivScan"
@@ -65,8 +66,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_17"
-            android:padding="@dimen/dp_10"
             android:gravity="center"
+            android:padding="@dimen/dp_10"
             android:paddingTop="@dimen/dp_11"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvAmount">
