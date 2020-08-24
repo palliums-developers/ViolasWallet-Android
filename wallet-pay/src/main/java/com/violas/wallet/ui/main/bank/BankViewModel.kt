@@ -22,23 +22,23 @@ class BankViewModel : BaseViewModel() {
     val totalBorrowableLiveData = MediatorLiveData<String>()
 
     // 累计收益
-    val totalIncomeLiveData = MediatorLiveData<String>()
+    val totalEarningsLiveData = MediatorLiveData<String>()
 
     // 昨日收益
-    val yesterdayIncomeLiveData = MediatorLiveData<String>()
+    val yesterdayEarningsLiveData = MediatorLiveData<String>()
 
     init {
         totalDepositLiveData.addSource(showAmountLiveData) {
             if (it) {
                 totalDepositLiveData.value = "≈ 0.00"
                 totalBorrowableLiveData.value = "≈ 0.00"
-                totalIncomeLiveData.value = "≈ 0.00"
-                yesterdayIncomeLiveData.value = "0.00 $"
+                totalEarningsLiveData.value = "≈ 0.00"
+                yesterdayEarningsLiveData.value = "0.00 $"
             } else {
                 totalDepositLiveData.value = "≈ ******"
                 totalBorrowableLiveData.value = "≈ ******"
-                totalIncomeLiveData.value = "≈ ******"
-                yesterdayIncomeLiveData.value = "***"
+                totalEarningsLiveData.value = "≈ ******"
+                yesterdayEarningsLiveData.value = "***"
             }
         }
     }

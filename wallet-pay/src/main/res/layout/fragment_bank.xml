@@ -107,7 +107,7 @@
         tools:text="≈1041.76/1500" />
 
     <ImageView
-        android:id="@+id/ivTotalIncomeIcon"
+        android:id="@+id/ivTotalEarningsIcon"
         android:layout_width="@dimen/dp_10"
         android:layout_height="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_14"
@@ -116,7 +116,7 @@
         app:layout_constraintTop_toBottomOf="@id/ivTotalBorrowableIcon" />
 
     <TextView
-        android:id="@+id/tvTotalIncomeLabel"
+        android:id="@+id/tvTotalEarningsLabel"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_10"
         android:layout_marginStart="@dimen/dp_8"
@@ -124,21 +124,21 @@
         android:text="@string/total_earnings_label"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="@dimen/sp_10"
-        app:layout_constraintBottom_toBottomOf="@id/ivTotalIncomeIcon"
-        app:layout_constraintStart_toEndOf="@id/ivTotalIncomeIcon"
-        app:layout_constraintTop_toTopOf="@id/ivTotalIncomeIcon" />
+        app:layout_constraintBottom_toBottomOf="@id/ivTotalEarningsIcon"
+        app:layout_constraintStart_toEndOf="@id/ivTotalEarningsIcon"
+        app:layout_constraintTop_toTopOf="@id/ivTotalEarningsIcon" />
 
     <NumberTextView
-        android:id="@+id/tvTotalIncome"
+        android:id="@+id/tvTotalEarnings"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_10"
         android:layout_marginStart="@dimen/dp_10"
         android:includeFontPadding="false"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="@dimen/sp_10"
-        app:layout_constraintBottom_toBottomOf="@id/ivTotalIncomeIcon"
-        app:layout_constraintStart_toEndOf="@id/tvTotalIncomeLabel"
-        app:layout_constraintTop_toTopOf="@id/ivTotalIncomeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/ivTotalEarningsIcon"
+        app:layout_constraintStart_toEndOf="@id/tvTotalEarningsLabel"
+        app:layout_constraintTop_toTopOf="@id/ivTotalEarningsIcon"
         tools:text="≈41.76" />
 
     <LinearLayout
@@ -150,7 +150,7 @@
         android:orientation="horizontal"
         android:paddingHorizontal="@dimen/dp_6"
         android:paddingVertical="@dimen/dp_3"
-        app:layout_constraintBottom_toBottomOf="@id/ivTotalIncomeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/ivTotalEarningsIcon"
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
@@ -169,7 +169,7 @@
             android:textSize="@dimen/sp_10" />
 
         <NumberTextView
-            android:id="@+id/tvYesterdayIncome"
+            android:id="@+id/tvYesterdayEarnings"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_10"
             android:includeFontPadding="false"
@@ -189,7 +189,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivTotalIncomeIcon">
+        app:layout_constraintTop_toBottomOf="@id/ivTotalEarningsIcon">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"

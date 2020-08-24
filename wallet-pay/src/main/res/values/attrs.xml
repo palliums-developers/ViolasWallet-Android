@@ -163,7 +163,7 @@
 
     <!--数字银行相关页面资源属性-->
     <attr name="bankDepositOrderIcon" format="reference" />
-    <attr name="bankBorrowOrderIcon" format="reference" />
+    <attr name="bankBorrowingOrderIcon" format="reference" />
     <attr name="bankListEmptyDataBg" format="reference" />
     <attr name="bankDepositYieldTextColor" format="color" />
     <attr name="bankDepositEarningTextColor" format="color" />

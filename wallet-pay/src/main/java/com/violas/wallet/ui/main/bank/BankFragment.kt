@@ -14,6 +14,7 @@ import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.violas.wallet.R
+import com.violas.wallet.ui.bank.order.borrowing.BankBorrowingOrderActivity
 import com.violas.wallet.ui.bank.order.deposit.BankDepositOrderActivity
 import com.violas.wallet.widget.popup.MenuPopup
 import kotlinx.android.synthetic.main.fragment_bank.*
@@ -87,12 +88,12 @@ class BankFragment : BaseFragment() {
             tvTotalBorrowable.text = it
         })
 
-        bankViewModel.totalIncomeLiveData.observe(viewLifecycleOwner, Observer {
-            tvTotalIncome.text = it
+        bankViewModel.totalEarningsLiveData.observe(viewLifecycleOwner, Observer {
+            tvTotalEarnings.text = it
         })
 
-        bankViewModel.yesterdayIncomeLiveData.observe(viewLifecycleOwner, Observer {
-            tvYesterdayIncome.text = it
+        bankViewModel.yesterdayEarningsLiveData.observe(viewLifecycleOwner, Observer {
+            tvYesterdayEarnings.text = it
         })
     }
 
@@ -112,8 +113,8 @@ class BankFragment : BaseFragment() {
                             R.string.deposit_order
                         ),
                         Pair(
-                            getResourceId(R.attr.bankBorrowOrderIcon, context!!),
-                            R.string.borrow_order
+                            getResourceId(R.attr.bankBorrowingOrderIcon, context!!),
+                            R.string.borrowing_order
                         )
                     )
                 ) { position ->
@@ -121,7 +122,7 @@ class BankFragment : BaseFragment() {
                         if (position == 0) {
                             Intent(it, BankDepositOrderActivity::class.java).start(it)
                         } else {
-                            showToast("进入借款订单页面")
+                            Intent(it, BankBorrowingOrderActivity::class.java).start(it)
                         }
                     }
                 }

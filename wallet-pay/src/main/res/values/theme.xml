@@ -244,7 +244,7 @@
 
         <!--数字银行相关页面资源属性-->
         <item name="bankDepositOrderIcon">@mipmap/ic_bank_deposit_order</item>
-        <item name="bankBorrowOrderIcon">@mipmap/ic_bank_borrow_order</item>
+        <item name="bankBorrowingOrderIcon">@mipmap/ic_bank_borrow_order</item>
         <item name="bankListEmptyDataBg">@mipmap/bg_bank_list_empty_data</item>
         <item name="bankDepositYieldTextColor">@color/color_13B788</item>
         <item name="bankDepositEarningTextColor">@color/color_13B788</item>

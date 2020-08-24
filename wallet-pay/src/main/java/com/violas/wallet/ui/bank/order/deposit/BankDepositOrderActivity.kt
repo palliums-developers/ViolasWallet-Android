@@ -14,7 +14,7 @@ import com.violas.wallet.repository.http.bank.CoinCurrDepositDTO
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.loadCircleImage
-import kotlinx.android.synthetic.main.activity_bank_deposit_order.*
+import kotlinx.android.synthetic.main.activity_bank_order.*
 import kotlinx.android.synthetic.main.item_bank_coin_curr_deposit.view.*
 import kotlinx.coroutines.launch
 import java.math.BigDecimal

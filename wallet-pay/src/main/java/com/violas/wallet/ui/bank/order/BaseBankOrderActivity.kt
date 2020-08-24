@@ -9,7 +9,7 @@ import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseListingActivity
-import kotlinx.android.synthetic.main.activity_bank_deposit_order.*
+import kotlinx.android.synthetic.main.activity_bank_order.*
 
 /**
  * Created by elephant on 2020/8/24 17:54.
@@ -24,7 +24,7 @@ abstract class BaseBankOrderActivity<VO> : BaseListingActivity<VO>() {
     }
 
     override fun getLayoutResId(): Int {
-        return R.layout.activity_bank_deposit_order
+        return R.layout.activity_bank_order
     }
 
     override fun enableRefresh(): Boolean {

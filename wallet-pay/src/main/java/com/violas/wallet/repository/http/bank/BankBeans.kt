@@ -19,3 +19,12 @@ data class CoinCurrDepositDTO(
     val totalEarnings: String,       // 累计收益
     val sevenDayAnnualYield: String  // 7日年化收益率
 )
+
+@Keep
+data class CoinCurrBorrowingDTO(
+    val coinName: String,
+    val coinModule: String,
+    val coinAddress: String,
+    val coinLogo: String,
+    val borrowed: String            // 借款金额
+)
