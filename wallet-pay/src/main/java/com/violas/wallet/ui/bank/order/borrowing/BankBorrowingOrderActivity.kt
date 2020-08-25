@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.bank.order.borrowing
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +10,11 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.listing.ListingViewModel
 import com.palliums.utils.getResourceId
+import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.repository.http.bank.CurrBorrowingDTO
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
+import com.violas.wallet.ui.bank.record.borrowing.BankBorrowingRecordActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.loadCircleImage
 import kotlinx.android.synthetic.main.activity_bank_order.*
@@ -45,8 +48,7 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<CurrBorrowingDTO>() {
     }
 
     override fun onTitleRightViewClick() {
-        // TODO 进入借款记录页面
-        showToast("进入借款记录页面")
+        Intent(this, BankBorrowingRecordActivity::class.java).start(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -37,3 +37,12 @@ data class DepositRecordDTO(
     val time: Long,
     val state: Int
 )
+
+@Keep
+data class BorrowingRecordDTO(
+    val coinName: String,
+    val coinLogo: String,
+    val amount: String,
+    val time: Long,
+    val state: Int
+)
