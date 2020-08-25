@@ -1,6 +1,7 @@
 package com.violas.wallet.viewModel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -37,6 +38,7 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
     val mDataRefreshingLiveData = MutableLiveData<Boolean>()
 
     init {
+        Log.d("==assets==","WalletAppViewModel init")
         refreshAssetsList(true)
     }
 
@@ -54,6 +56,7 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
                 mAssetsListLiveData.postValue(localAssets)
             }
             localAssets = mAccountManager.refreshAssetsAmount(localAssets)
+            Log.d("==assets==","WalletFragment AssetsList Refresh")
             mAssetsListLiveData.postValue(localAssets) // todo 尝试效果再决定是否删除
             CommandActuator.post(SaveAssetsAllBalanceCommand())
             if(isFirst){

@@ -48,13 +48,13 @@ class SaveAssetsFiatBalanceCommand() : ISingleCommand {
             }.forEach { assets ->
                 edit.putString(
                     coinKey(assets),
-                    assets.fiatAmountWithUnit.amount
+                    assets.fiatAmountWithUnit.rate
                 )
             }
             it.filterIsInstance<AssetsTokenVo>().forEach { assets ->
                 edit.putString(
                     tokenKey(assets),
-                    assets.fiatAmountWithUnit.amount
+                    assets.fiatAmountWithUnit.rate
                 )
             }
         }
