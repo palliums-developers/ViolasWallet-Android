@@ -10,8 +10,7 @@
     <attr name="statusBarSize" format="dimension" />
 
     <attr name="colorSurfaceSecondary" format="color" />
-    <attr name="colorItemPressedPrimary" format="color" />
-    <attr name="colorItemPressedSecondary" format="color" />
+    <attr name="colorItemPressed" format="color" />
     <attr name="colorWebProgressBg" format="color" />
     <attr name="colorDivider" format="color" />
     <attr name="colorTint" format="color" />

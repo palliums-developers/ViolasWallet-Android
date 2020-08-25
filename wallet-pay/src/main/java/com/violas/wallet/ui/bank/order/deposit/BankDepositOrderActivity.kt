@@ -10,12 +10,12 @@ import com.palliums.listing.ListingViewAdapter
 import com.palliums.listing.ListingViewModel
 import com.palliums.utils.getResourceId
 import com.violas.wallet.R
-import com.violas.wallet.repository.http.bank.CoinCurrDepositDTO
+import com.violas.wallet.repository.http.bank.CurrDepositDTO
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.loadCircleImage
 import kotlinx.android.synthetic.main.activity_bank_order.*
-import kotlinx.android.synthetic.main.item_bank_coin_curr_deposit.view.*
+import kotlinx.android.synthetic.main.item_bank_curr_deposit.view.*
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -26,23 +26,23 @@ import java.math.RoundingMode
  * <p>
  * desc: 银行存款订单页面
  */
-class BankDepositOrderActivity : BaseBankOrderActivity<CoinCurrDepositDTO>() {
+class BankDepositOrderActivity : BaseBankOrderActivity<CurrDepositDTO>() {
 
     private val viewModel by lazy {
-        ViewModelProvider(this).get(CoinCurrDepositViewModel::class.java)
+        ViewModelProvider(this).get(CurrDepositViewModel::class.java)
     }
     private val viewAdapter by lazy {
-        CoinCurrDepositViewAdapter { deposit, position ->
+        CurrDepositViewAdapter { currDeposit, position ->
             // TODO 提取操作
             showToast("提取操作")
         }
     }
 
-    override fun getViewModel(): ListingViewModel<CoinCurrDepositDTO> {
+    override fun getViewModel(): ListingViewModel<CurrDepositDTO> {
         return viewModel
     }
 
-    override fun getViewAdapter(): ListingViewAdapter<CoinCurrDepositDTO> {
+    override fun getViewAdapter(): ListingViewAdapter<CurrDepositDTO> {
         return viewAdapter
     }
 
@@ -70,33 +70,33 @@ class BankDepositOrderActivity : BaseBankOrderActivity<CoinCurrDepositDTO>() {
     }
 }
 
-class CoinCurrDepositViewAdapter(
-    private val withdrawalCallback: (CoinCurrDepositDTO, Int) -> Unit
-) : ListingViewAdapter<CoinCurrDepositDTO>() {
+class CurrDepositViewAdapter(
+    private val withdrawalCallback: (CurrDepositDTO, Int) -> Unit
+) : ListingViewAdapter<CurrDepositDTO>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BaseViewHolder<CoinCurrDepositDTO> {
-        return CoinCurrDepositViewHolder(
+    ): BaseViewHolder<CurrDepositDTO> {
+        return CurrDepositViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.item_bank_coin_curr_deposit, parent, false
+                R.layout.item_bank_curr_deposit, parent, false
             ),
             withdrawalCallback
         )
     }
 }
 
-class CoinCurrDepositViewHolder(
+class CurrDepositViewHolder(
     view: View,
-    private val withdrawalCallback: (CoinCurrDepositDTO, Int) -> Unit
-) : BaseViewHolder<CoinCurrDepositDTO>(view) {
+    private val withdrawalCallback: (CurrDepositDTO, Int) -> Unit
+) : BaseViewHolder<CurrDepositDTO>(view) {
 
     init {
         itemView.tvWithdrawal.setOnClickListener(this)
     }
 
-    override fun onViewBind(itemPosition: Int, itemData: CoinCurrDepositDTO?) {
+    override fun onViewBind(itemPosition: Int, itemData: CurrDepositDTO?) {
         itemData?.let {
             itemView.ivCoinLogo.loadCircleImage(
                 it.coinLogo,
@@ -112,7 +112,7 @@ class CoinCurrDepositViewHolder(
         }
     }
 
-    override fun onViewClick(view: View, itemPosition: Int, itemData: CoinCurrDepositDTO?) {
+    override fun onViewClick(view: View, itemPosition: Int, itemData: CurrDepositDTO?) {
         itemData?.let {
             when (view) {
                 itemView.tvWithdrawal -> {

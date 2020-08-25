@@ -3,7 +3,7 @@ package com.violas.wallet.ui.bank.order.deposit
 import com.palliums.listing.ListingViewModel
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.repository.http.bank.CoinCurrDepositDTO
+import com.violas.wallet.repository.http.bank.CurrDepositDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
  * <p>
  * desc:
  */
-class CoinCurrDepositViewModel : ListingViewModel<CoinCurrDepositDTO>() {
+class CurrDepositViewModel : ListingViewModel<CurrDepositDTO>() {
 
     private lateinit var address: String
 
@@ -27,15 +27,15 @@ class CoinCurrDepositViewModel : ListingViewModel<CoinCurrDepositDTO>() {
         return@withContext true
     }
 
-    override suspend fun loadData(vararg params: Any): List<CoinCurrDepositDTO> {
+    override suspend fun loadData(vararg params: Any): List<CurrDepositDTO> {
         // TODO 对接后台接口
         delay(2000)
         return fakeData()
     }
 
-    private fun fakeData(): List<CoinCurrDepositDTO> {
+    private fun fakeData(): List<CurrDepositDTO> {
         return mutableListOf(
-            CoinCurrDepositDTO(
+            CurrDepositDTO(
                 "VLSUSD",
                 "VLSUSD",
                 "00000000000000000000000000000001",
@@ -44,7 +44,7 @@ class CoinCurrDepositViewModel : ListingViewModel<CoinCurrDepositDTO>() {
                 "23400000",
                 "5.123"
             ),
-            CoinCurrDepositDTO(
+            CurrDepositDTO(
                 "VLSEUR",
                 "VLSEUR",
                 "00000000000000000000000000000001",

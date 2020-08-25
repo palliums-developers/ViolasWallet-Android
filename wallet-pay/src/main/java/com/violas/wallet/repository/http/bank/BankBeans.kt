@@ -10,7 +10,7 @@ import androidx.annotation.Keep
  */
 
 @Keep
-data class CoinCurrDepositDTO(
+data class CurrDepositDTO(
     val coinName: String,
     val coinModule: String,
     val coinAddress: String,
@@ -21,7 +21,7 @@ data class CoinCurrDepositDTO(
 )
 
 @Keep
-data class CoinCurrBorrowingDTO(
+data class CurrBorrowingDTO(
     val coinName: String,
     val coinModule: String,
     val coinAddress: String,

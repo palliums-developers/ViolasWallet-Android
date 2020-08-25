@@ -10,12 +10,12 @@ import com.palliums.listing.ListingViewAdapter
 import com.palliums.listing.ListingViewModel
 import com.palliums.utils.getResourceId
 import com.violas.wallet.R
-import com.violas.wallet.repository.http.bank.CoinCurrBorrowingDTO
+import com.violas.wallet.repository.http.bank.CurrBorrowingDTO
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.loadCircleImage
 import kotlinx.android.synthetic.main.activity_bank_order.*
-import kotlinx.android.synthetic.main.item_bank_coin_curr_borrowing.view.*
+import kotlinx.android.synthetic.main.item_bank_curr_borrowing.view.*
 import kotlinx.coroutines.launch
 
 /**
@@ -24,23 +24,23 @@ import kotlinx.coroutines.launch
  * <p>
  * desc:
  */
-class BankBorrowingOrderActivity : BaseBankOrderActivity<CoinCurrBorrowingDTO>() {
+class BankBorrowingOrderActivity : BaseBankOrderActivity<CurrBorrowingDTO>() {
 
     private val viewModel by lazy {
-        ViewModelProvider(this).get(CoinCurrBorrowingViewModel::class.java)
+        ViewModelProvider(this).get(CurrBorrowingViewModel::class.java)
     }
     private val viewAdapter by lazy {
-        CoinCurrBorrowingViewAdapter { borrowing, position ->
+        CurrBorrowingViewAdapter { currBorrowing, position ->
             // TODO 进入币种借款详情页面
             showToast("进入币种借款详情页面")
         }
     }
 
-    override fun getViewModel(): ListingViewModel<CoinCurrBorrowingDTO> {
+    override fun getViewModel(): ListingViewModel<CurrBorrowingDTO> {
         return viewModel
     }
 
-    override fun getViewAdapter(): ListingViewAdapter<CoinCurrBorrowingDTO> {
+    override fun getViewAdapter(): ListingViewAdapter<CurrBorrowingDTO> {
         return viewAdapter
     }
 
@@ -68,33 +68,33 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<CoinCurrBorrowingDTO>()
     }
 }
 
-class CoinCurrBorrowingViewAdapter(
-    private val itemClickCallback: (CoinCurrBorrowingDTO, Int) -> Unit
-) : ListingViewAdapter<CoinCurrBorrowingDTO>() {
+class CurrBorrowingViewAdapter(
+    private val itemClickCallback: (CurrBorrowingDTO, Int) -> Unit
+) : ListingViewAdapter<CurrBorrowingDTO>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BaseViewHolder<CoinCurrBorrowingDTO> {
-        return CoinCurrBorrowingViewHolder(
+    ): BaseViewHolder<CurrBorrowingDTO> {
+        return CurrBorrowingViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.item_bank_coin_curr_borrowing, parent, false
+                R.layout.item_bank_curr_borrowing, parent, false
             ),
             itemClickCallback
         )
     }
 }
 
-class CoinCurrBorrowingViewHolder(
+class CurrBorrowingViewHolder(
     view: View,
-    private val itemClickCallback: (CoinCurrBorrowingDTO, Int) -> Unit
-) : BaseViewHolder<CoinCurrBorrowingDTO>(view) {
+    private val itemClickCallback: (CurrBorrowingDTO, Int) -> Unit
+) : BaseViewHolder<CurrBorrowingDTO>(view) {
 
     init {
         itemView.setOnClickListener(this)
     }
 
-    override fun onViewBind(itemPosition: Int, itemData: CoinCurrBorrowingDTO?) {
+    override fun onViewBind(itemPosition: Int, itemData: CurrBorrowingDTO?) {
         itemData?.let {
             itemView.ivCoinLogo.loadCircleImage(
                 it.coinLogo,
@@ -105,7 +105,7 @@ class CoinCurrBorrowingViewHolder(
         }
     }
 
-    override fun onViewClick(view: View, itemPosition: Int, itemData: CoinCurrBorrowingDTO?) {
+    override fun onViewClick(view: View, itemPosition: Int, itemData: CurrBorrowingDTO?) {
         itemData?.let {
             when (view) {
                 itemView -> {
