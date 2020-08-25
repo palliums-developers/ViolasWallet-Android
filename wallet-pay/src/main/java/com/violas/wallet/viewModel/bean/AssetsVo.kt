@@ -38,7 +38,8 @@ abstract class AssetsVo {
 data class FiatAmountWithUnit(
     var amount: String,
     var symbol: String,
-    var unit: String
+    var unit: String,
+    var rate: String = "0"
 )
 
 data class AmountWithUnit(
