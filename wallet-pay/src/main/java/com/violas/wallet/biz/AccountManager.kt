@@ -601,12 +601,16 @@ class AccountManager {
                             coin.amountWithUnit.amount = convertDisplayUnitToAmount.first
                             coin.amountWithUnit.unit = coin.getAssetsName()
 
-                            val fiatAmount = assetsFiatBalanceSharedPreferences.getString(
-                                SaveAssetsFiatBalanceCommand.coinKey(
+                            val rateAmount = assetsFiatBalanceSharedPreferences.getString(
+                                SaveAssetsFiatBalanceCommand.tokenKey(
                                     coin
                                 ), "0.00"
                             ) ?: "0.00"
-                            coin.fiatAmountWithUnit.amount = fiatAmount
+                            coin.fiatAmountWithUnit.rate = rateAmount
+                            coin.fiatAmountWithUnit.amount =
+                                BigDecimal(coin.amountWithUnit.amount).multiply(
+                                    BigDecimal(rateAmount)
+                                ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
                         }
                     )
                 }
@@ -638,12 +642,16 @@ class AccountManager {
                         ).stripTrailingZeros().toPlainString()
                         tokenVo.amountWithUnit.unit = it.assetsName
 
-                        val fiatAmount = assetsFiatBalanceSharedPreferences.getString(
+                        val rateAmount = assetsFiatBalanceSharedPreferences.getString(
                             SaveAssetsFiatBalanceCommand.tokenKey(
                                 tokenVo
                             ), "0.00"
                         ) ?: "0.00"
-                        tokenVo.fiatAmountWithUnit.amount = fiatAmount
+                        tokenVo.fiatAmountWithUnit.rate = rateAmount
+                        tokenVo.fiatAmountWithUnit.amount =
+                            BigDecimal(tokenVo.amountWithUnit.amount).multiply(
+                                BigDecimal(rateAmount)
+                            ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
                     }
                 )
             }
@@ -716,19 +724,24 @@ class AccountManager {
                                     amount = balance.amount
                                 ).also { tokenVo ->
                                     tokenVo.setAssetsName(balance.currency)
-                                    tokenVo.amountWithUnit.amount = BigDecimal(balance.amount).divide(
-                                        BigDecimal("1000000"),
-                                        6,
-                                        RoundingMode.DOWN
-                                    ).stripTrailingZeros().toPlainString()
+                                    tokenVo.amountWithUnit.amount =
+                                        BigDecimal(balance.amount).divide(
+                                            BigDecimal("1000000"),
+                                            6,
+                                            RoundingMode.DOWN
+                                        ).stripTrailingZeros().toPlainString()
                                     tokenVo.amountWithUnit.unit = balance.currency
 
-                                    val fiatAmount = assetsFiatBalanceSharedPreferences.getString(
+                                    val rateAmount = assetsFiatBalanceSharedPreferences.getString(
                                         SaveAssetsFiatBalanceCommand.tokenKey(
                                             tokenVo
                                         ), "0.00"
                                     ) ?: "0.00"
-                                    tokenVo.fiatAmountWithUnit.amount = fiatAmount
+                                    tokenVo.fiatAmountWithUnit.rate = rateAmount
+                                    tokenVo.fiatAmountWithUnit.amount =
+                                        BigDecimal(tokenVo.amountWithUnit.amount).multiply(
+                                            BigDecimal(rateAmount)
+                                        ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
                                 })
                             } else {
                                 assetsVo.apply {
@@ -782,19 +795,24 @@ class AccountManager {
                                     amount = balance.amount
                                 ).also { tokenVo ->
                                     tokenVo.setAssetsName(balance.currency)
-                                    tokenVo.amountWithUnit.amount = BigDecimal(balance.amount).divide(
-                                        BigDecimal("1000000"),
-                                        6,
-                                        RoundingMode.DOWN
-                                    ).stripTrailingZeros().toPlainString()
+                                    tokenVo.amountWithUnit.amount =
+                                        BigDecimal(balance.amount).divide(
+                                            BigDecimal("1000000"),
+                                            6,
+                                            RoundingMode.DOWN
+                                        ).stripTrailingZeros().toPlainString()
                                     tokenVo.amountWithUnit.unit = balance.currency
 
-                                    val fiatAmount = assetsFiatBalanceSharedPreferences.getString(
+                                    val rateAmount = assetsFiatBalanceSharedPreferences.getString(
                                         SaveAssetsFiatBalanceCommand.tokenKey(
                                             tokenVo
                                         ), "0.00"
                                     ) ?: "0.00"
-                                    tokenVo.fiatAmountWithUnit.amount = fiatAmount
+                                    tokenVo.fiatAmountWithUnit.rate = rateAmount
+                                    tokenVo.fiatAmountWithUnit.amount =
+                                        BigDecimal(tokenVo.amountWithUnit.amount).multiply(
+                                            BigDecimal(rateAmount)
+                                        ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
                                 })
                             } else {
                                 assetsVo.apply {
@@ -872,6 +890,7 @@ class AccountManager {
                                     if (assetsVo.amountWithUnit.amount.toDouble() == 0.0 || it.rate == 0.0) {
                                         assetsVo.fiatAmountWithUnit.amount = "0.00"
                                     } else {
+                                        assetsVo.fiatAmountWithUnit.rate = it.rate.toString()
                                         assetsVo.fiatAmountWithUnit.amount =
                                             BigDecimal(assetsVo.amountWithUnit.amount).multiply(
                                                 BigDecimal(it.rate.toString())
