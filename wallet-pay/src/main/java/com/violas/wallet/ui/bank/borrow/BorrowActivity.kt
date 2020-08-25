@@ -13,9 +13,12 @@ import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.View
 import com.palliums.utils.getColorByAttrId
+import com.palliums.utils.start
+import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip44.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.ui.bank.*
+import com.violas.wallet.ui.bank.deposit.DepositActivity
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.coroutines.Dispatchers
@@ -26,12 +29,17 @@ class BorrowActivity : BankBusinessActivity() {
     companion object {
         fun start(
             context: Context,
-            coinType: CoinType,
+            coinType: CoinTypes,
             module: String? = null,
             address: String? = null,
             name: String? = null
         ) {
-
+            Intent(context, BorrowActivity::class.java).run {
+                putExtra(EXT_ASSETS_COINTYPE, coinType.coinType())
+                putExtra(EXT_ASSETS_MODULE, module)
+                putExtra(EXT_ASSETS_ADDRESS, address)
+                putExtra(EXT_ASSETS_NAME, name)
+            }.start(context)
         }
     }
 

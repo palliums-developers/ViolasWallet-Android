@@ -472,4 +472,5 @@
     <string name="hint_bank_deposit_available_balance">可用余额 :</string>
     <string name="hint_bank_deposit_daily_limit">每日限额 :</string>
     <string name="action_deposit_immediately">立即存款</string>
+    <string name="hint_currencies_not_supported_in_current_version">当前版本不支持的币种</string>
 </resources>

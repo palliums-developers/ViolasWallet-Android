@@ -1,8 +1,11 @@
 package com.violas.wallet.ui.bank.deposit
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import com.palliums.utils.start
+import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip44.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.ui.bank.*
@@ -17,12 +20,17 @@ class DepositActivity : BankBusinessActivity() {
     companion object {
         fun start(
             context: Context,
-            coinType: CoinType,
+            coinType: CoinTypes,
             module: String? = null,
             address: String? = null,
             name: String? = null
         ) {
-
+            Intent(context, DepositActivity::class.java).run {
+                putExtra(EXT_ASSETS_COINTYPE, coinType.coinType())
+                putExtra(EXT_ASSETS_MODULE, module)
+                putExtra(EXT_ASSETS_ADDRESS, address)
+                putExtra(EXT_ASSETS_NAME, name)
+            }.start(context)
         }
     }
 

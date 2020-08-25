@@ -12,10 +12,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.utils.getResourceId
+import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.bip44.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.ui.transfer.TransferSelectTokenDialog
 import com.violas.wallet.utils.loadRoundedImage
+import com.violas.wallet.viewModel.WalletAppViewModel
+import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
@@ -31,8 +35,19 @@ import kotlinx.coroutines.launch
  * desc: 数字银行-存款/借款业务
  */
 abstract class BankBusinessActivity : BaseAppActivity(), BankAssetsDataResourcesBridge {
+    companion object {
+        const val EXT_ASSETS_COINTYPE = "key1"
+        const val EXT_ASSETS_MODULE = "key2"
+        const val EXT_ASSETS_ADDRESS = "key3"
+        const val EXT_ASSETS_NAME = "key4"
+    }
+
     protected val mBankBusinessViewModel by lazy {
         ViewModelProvider(this).get(BankBusinessViewModel::class.java)
+    }
+
+    protected val mWalletAppViewModel by lazy {
+        WalletAppViewModel.getViewModelInstance(this)
     }
 
     override fun getLayoutResId() = R.layout.activity_bank_business
@@ -60,6 +75,8 @@ abstract class BankBusinessActivity : BaseAppActivity(), BankAssetsDataResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handlerIntentParameter()
+
         mBankBusinessViewModel.mPageTitleLiveData.observe(this, Observer {
             title = it
         })
@@ -184,6 +201,38 @@ abstract class BankBusinessActivity : BaseAppActivity(), BankAssetsDataResources
 
         tvAllValue.setOnClickListener { clickSendAll() }
         viewGroupCurrentAssets.setOnClickListener { showSelectTokenDialog() }
+    }
+
+    private fun handlerIntentParameter() {
+        val coinType = intent.getIntExtra(EXT_ASSETS_COINTYPE, CoinTypes.Violas.coinType())
+        val module = intent.getStringExtra(EXT_ASSETS_MODULE)
+        val address = intent.getStringExtra(EXT_ASSETS_ADDRESS)
+        val name = intent.getStringExtra(EXT_ASSETS_NAME)
+
+        var isFind = false
+        mWalletAppViewModel.mAssetsListLiveData.value?.forEach {
+            if (it.isBitcoin()
+                && it.getCoinNumber() == coinType
+            ) {
+                isFind = true
+                changeCurrAssets(it)
+            } else if (it is AssetsTokenVo
+                && it.getCoinNumber() == coinType
+                && it.module == module
+                && it.address == address
+                && it.name == name
+            ) {
+                isFind = true
+                changeCurrAssets(it)
+            }
+            if (isFind) {
+                return@forEach
+            }
+        }
+        if (!isFind) {
+            showToast(getString(R.string.hint_currencies_not_supported_in_current_version))
+            finish()
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="当前币种的选择与切换逻辑">
