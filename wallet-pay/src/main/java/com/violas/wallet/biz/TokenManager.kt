@@ -250,7 +250,7 @@ class TokenManager {
                         addCurrency.sender,
                         addCurrency.sequenceNumber
                     )
-                    if (transaction.data?.vmStatus == "executed") {
+                    if (transaction.data?.vmStatus?.isSuccessExecuted() == true) {
                         return true
                     }
                 }
