@@ -106,7 +106,9 @@ class WalletFragment : BaseFragment() {
                 swipeRefreshLayout.finishRefresh()
             }
         })
+        Log.d("==assets==","WalletFragment Subscribe to AssetsList")
         mWalletAppViewModel?.mAssetsListLiveData?.observe(viewLifecycleOwner, Observer {
+            Log.d("==assets==","WalletFragment AssetsList Observer Update")
             val filter =
                 it.filter { asset ->
                     when (asset) {
