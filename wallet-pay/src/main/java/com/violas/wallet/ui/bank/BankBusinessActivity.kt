@@ -5,18 +5,24 @@ import android.text.method.LinkMovementMethod
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.show
 import com.palliums.utils.getResourceId
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.ui.transfer.TransferSelectTokenDialog
 import com.violas.wallet.utils.loadRoundedImage
+import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.android.synthetic.main.view_bank_business_parameter.view.*
 import kotlinx.android.synthetic.main.view_bank_business_parameter.view.tvContent
 import kotlinx.android.synthetic.main.view_bank_business_parameter.view.tvTitle
+import kotlinx.coroutines.launch
 
 /**
  * Created by QuincySx on 2020/8/21 15:28.
@@ -24,7 +30,7 @@ import kotlinx.android.synthetic.main.view_bank_business_parameter.view.tvTitle
  * <p>
  * desc: 数字银行-存款/借款业务
  */
-abstract class BankBusinessActivity : BaseAppActivity() {
+abstract class BankBusinessActivity : BaseAppActivity(), BankAssetsDataResourcesBridge {
     protected val mBankBusinessViewModel by lazy {
         ViewModelProvider(this).get(BankBusinessViewModel::class.java)
     }
@@ -177,7 +183,38 @@ abstract class BankBusinessActivity : BaseAppActivity() {
         })
 
         tvAllValue.setOnClickListener { clickSendAll() }
+        viewGroupCurrentAssets.setOnClickListener { showSelectTokenDialog() }
     }
+
+    // <editor-fold defaultstate="collapsed" desc="当前币种的选择与切换逻辑">
+
+    private fun changeCurrAssets(assetsVo: AssetsVo) {
+        launch {
+            if (mBankBusinessViewModel.mCurrentAssetsLiveData.value != assetsVo) {
+                mBankBusinessViewModel.mCurrentAssetsLiveData.value = assetsVo
+            }
+        }
+    }
+
+    private fun showSelectTokenDialog() {
+        TransferSelectTokenDialog
+            .newInstance()
+            .setCallback { assetsVo ->
+                changeCurrAssets(assetsVo)
+
+            }
+            .show(supportFragmentManager)
+    }
+
+    override fun getCurrCoin(): AssetsVo? {
+        return mBankBusinessViewModel.mCurrentAssetsLiveData.value
+    }
+
+    override suspend fun getSupportAssetsTokens(): LiveData<List<AssetsVo>?> {
+        return mBankBusinessViewModel.mSupportAssetsTokensLiveData
+    }
+
+    //</editor-fold>
 
     abstract fun clickSendAll()
 }

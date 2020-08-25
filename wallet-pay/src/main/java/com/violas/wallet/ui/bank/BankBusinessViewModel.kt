@@ -89,4 +89,9 @@ class BankBusinessViewModel : ViewModel() {
      * 常见问题
      */
     val mFAQListLiveData = MutableLiveData<List<FAQ>>()
+
+
+    // <editor-fold defaultstate="collapsed" desc="业务数据">
+    val mSupportAssetsTokensLiveData = MutableLiveData<List<AssetsVo>?>()
+    //</editor-fold>
 }
