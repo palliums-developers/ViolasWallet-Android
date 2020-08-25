@@ -37,14 +37,19 @@ class BorrowActivity : BankBusinessActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBankBusinessViewModel.mPageTitleLiveData.value = "借款"
+        mBankBusinessViewModel.mPageTitleLiveData.value = getString(R.string.title_borrow)
         mBankBusinessViewModel.mBusinessUserInfoLiveData.value = BusinessUserInfo(
-            "我要借", "500 V-AAA起，每1V-AAA递增",
+            getString(R.string.hint_bank_borrow_business_name), "500 V-AAA起，每1V-AAA递增",
             BusinessUserAmountInfo(
-                R.drawable.icon_bank_user_amount_info, "可借额度 :", "800", "VLSUSD", "1000"
+                R.drawable.icon_bank_user_amount_info,
+                getString(R.string.hint_can_borrow_lines),
+                "800",
+                "VLSUSD",
+                "1000"
             )
         )
-        mBankBusinessViewModel.mBusinessActionLiveData.value = "立即借款"
+        mBankBusinessViewModel.mBusinessActionLiveData.value =
+            getString(R.string.action_borrowing_immediately)
         mBankBusinessViewModel.mBusinessParameterListLiveData.value = arrayListOf(
             BusinessParameter("借款利率", "0.50%/日", contentColor = Color.parseColor("#13B788")),
             BusinessParameter("质押率", "50%", "质押率=借贷数量/存款数量"),
@@ -73,7 +78,8 @@ class BorrowActivity : BankBusinessActivity() {
         launch {
             mBankBusinessViewModel.mBusinessPolicyLiveData.value = buildUseBehaviorSpan()
         }
-        mBankBusinessViewModel.mBusinessActionHintLiveData.value = "请输入借款数量"
+        mBankBusinessViewModel.mBusinessActionHintLiveData.value =
+            getString(R.string.hint_please_enter_the_amount_borrowed)
     }
 
     private fun openWebPage(url: String) {

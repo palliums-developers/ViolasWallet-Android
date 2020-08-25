@@ -455,4 +455,21 @@
     <string name="bank_borrow_policy">《质押借款服务协议》</string>
     <string name="bank_borrow_service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service</string>
     <string name="hint_bank_borrow_agree_terms">请阅读并同意质押借款服务协议</string>
+
+    <string name="action_bank_amount_all">全部</string>
+    <string name="hint_bank_product_description">产品说明</string>
+    <string name="hint_bank_common_problem">常见问题</string>
+
+    <string name="title_borrow">借款</string>
+    <string name="hint_bank_borrow_business_name">我要借</string>
+    <string name="title_bank_borrow_business_name">我要借</string>
+    <string name="hint_can_borrow_lines">可借额度 :</string>
+    <string name="action_borrowing_immediately">立即借款</string>
+    <string name="hint_please_enter_the_amount_borrowed">请输入借款数量</string>
+
+    <string name="title_deposit">存款</string>
+    <string name="hint_bank_deposit_business_name">我要存</string>
+    <string name="hint_bank_deposit_available_balance">可用余额 :</string>
+    <string name="hint_bank_deposit_daily_limit">每日限额 :</string>
+    <string name="action_deposit_immediately">立即存款</string>
 </resources>

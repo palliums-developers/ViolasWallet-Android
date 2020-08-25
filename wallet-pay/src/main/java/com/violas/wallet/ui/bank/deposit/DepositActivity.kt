@@ -25,20 +25,28 @@ class DepositActivity : BankBusinessActivity() {
 
         }
     }
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBankBusinessViewModel.mPageTitleLiveData.value = "存款"
+        mBankBusinessViewModel.mPageTitleLiveData.value = getString(R.string.title_deposit)
         mBankBusinessViewModel.mBusinessUserInfoLiveData.value = BusinessUserInfo(
-            "我要存", "500 V-AAA起，每1V-AAA递增",
+            getString(R.string.hint_bank_deposit_business_name), "500 V-AAA起，每1V-AAA递增",
             BusinessUserAmountInfo(
-                R.drawable.icon_bank_user_amount_info, "可用余额 :", "0", "VLSUSD"
+                R.drawable.icon_bank_user_amount_info,
+                getString(R.string.hint_bank_deposit_available_balance),
+                "0",
+                "VLSUSD"
             ),
             BusinessUserAmountInfo(
-                R.drawable.icon_bank_user_amount_limit, "每日限额 :", "1000", "VLSUSD", "1000"
+                R.drawable.icon_bank_user_amount_limit,
+                getString(R.string.hint_bank_deposit_daily_limit),
+                "1000",
+                "VLSUSD",
+                "1000"
             )
         )
-        mBankBusinessViewModel.mBusinessActionLiveData.value = "立即存款"
+        mBankBusinessViewModel.mBusinessActionLiveData.value =
+            getString(R.string.action_deposit_immediately)
         mBankBusinessViewModel.mBusinessParameterListLiveData.value = arrayListOf(
             BusinessParameter("存款年利率", "0.50%", contentColor = Color.parseColor("#13B788")),
             BusinessParameter("质押率", "50%", "质押率=借贷数量/存款数量")
