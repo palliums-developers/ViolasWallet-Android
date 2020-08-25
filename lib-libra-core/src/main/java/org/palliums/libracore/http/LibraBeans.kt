@@ -108,8 +108,21 @@ data class GetTransactionDTO(
     @SerializedName("version")
     val version: Int,
     @SerializedName("vm_status")
-    val vmStatus: String
+    val vmStatus: VmStatus
 )
+
+@Keep
+data class VmStatus(
+    val type: String
+) {
+    companion object {
+        const val SUCCESS = "executed"
+    }
+
+    fun isSuccessExecuted(): Boolean {
+        return type.equals(SUCCESS, true)
+    }
+}
 
 @Keep
 data class Event(
