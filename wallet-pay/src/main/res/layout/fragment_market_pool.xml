@@ -36,16 +36,16 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/tvIncomeDesc"
+        android:id="@+id/tvEarningsDesc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_20"
         android:layout_marginEnd="@dimen/dp_41"
-        android:drawableStart="?attr/marketPoolIncomeIcon"
+        android:drawableStart="?attr/marketPoolEarningsIcon"
         android:drawablePadding="@dimen/dp_4"
         android:ellipsize="end"
         android:singleLine="true"
-        android:text="@string/market_pool_income_desc"
+        android:text="@string/market_pool_earnings_desc"
         android:textColor="?android:textColorSecondary"
         android:textSize="@dimen/sp_12"
         app:layout_constraintBottom_toBottomOf="@id/llSwitchOpModeGroup"

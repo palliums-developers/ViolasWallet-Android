@@ -54,6 +54,7 @@
     <attr name="iconMore" format="reference" />
     <attr name="iconRecordPrimary" format="reference" />
     <attr name="iconRecordSecondary" format="reference" />
+    <attr name="iconTriangleArrow" format="reference" />
 
     <!--首页资源属性-->
     <attr name="homeBottomTabSelectedTextColor" format="color" />
@@ -94,10 +95,10 @@
     <!--首页-数字银行资源属性-->
     <attr name="homeBankTopBgIcon" format="reference"/>
     <attr name="homeBankTotalBorrowableIcon" format="reference"/>
-    <attr name="homeBankTotalIncomeIcon" format="reference"/>
-    <attr name="homeBankYesterdayIncomeIcon" format="reference"/>
-    <attr name="homeBankYesterdayIncomeBgColor" format="color"/>
-    <attr name="homeBankYesterdayIncomeTextColor" format="color"/>
+    <attr name="homeBankTotalEarningsIcon" format="reference"/>
+    <attr name="homeBankYesterdayEarningsIcon" format="reference"/>
+    <attr name="homeBankYesterdayEarningsBgColor" format="color"/>
+    <attr name="homeBankYesterdayEarningsTextColor" format="color"/>
 
     <!--币种详情页面资源属性-->
     <attr name="tokenDetailsTokenInfoBg" format="reference" />
@@ -147,7 +148,7 @@
     <attr name="marketSwapRecordIcon" format="reference" />
     <attr name="marketSelectPopupBgColor" format="color" />
     <attr name="marketBtnSecondaryBgColor" format="color" />
-    <attr name="marketPoolIncomeIcon" format="reference" />
+    <attr name="marketPoolEarningsIcon" format="reference" />
     <attr name="marketPoolAndIcon" format="reference" />
     <attr name="marketPoolOutIcon" format="reference" />
     <attr name="marketTokenSelectedIcon" format="reference" />

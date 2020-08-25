@@ -132,9 +132,10 @@
         <item name="iconCoinDefLogo">@drawable/ic_coin_default_logo</item>
         <item name="iconDownArrow">@mipmap/ic_down_arrow</item>
         <item name="iconEndArrow">@mipmap/ic_end_arrow</item>
+        <item name="iconMore">@mipmap/ic_more</item>
         <item name="iconRecordPrimary">@mipmap/ic_record_primary</item>
         <item name="iconRecordSecondary">@mipmap/ic_record_secondary</item>
-        <item name="iconMore">@mipmap/ic_more</item>
+        <item name="iconTriangleArrow">@mipmap/ic_triangle_arrow</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
@@ -175,10 +176,10 @@
         <!--首页-数字银行资源属性-->
         <item name="homeBankTopBgIcon">@mipmap/bg_home_bank_top</item>
         <item name="homeBankTotalBorrowableIcon">@mipmap/ic_home_bank_total_borrowable</item>
-        <item name="homeBankTotalIncomeIcon">@mipmap/ic_home_bank_total_income</item>
-        <item name="homeBankYesterdayIncomeIcon">@mipmap/ic_home_bank_yesterday_income</item>
-        <item name="homeBankYesterdayIncomeBgColor">@color/color_FB8F0B_10</item>
-        <item name="homeBankYesterdayIncomeTextColor">@color/color_FB8F0B</item>
+        <item name="homeBankTotalEarningsIcon">@mipmap/ic_home_bank_total_earnings</item>
+        <item name="homeBankYesterdayEarningsIcon">@mipmap/ic_home_bank_yesterday_earnings</item>
+        <item name="homeBankYesterdayEarningsBgColor">@color/color_FB8F0B_10</item>
+        <item name="homeBankYesterdayEarningsTextColor">@color/color_FB8F0B</item>
 
         <!--币种详情页资源属性-->
         <item name="tokenDetailsTokenInfoBg">@drawable/bg_token_info_head</item>
@@ -228,7 +229,7 @@
         <item name="marketSwapRecordIcon">@mipmap/ic_swap_record</item>
         <item name="marketSelectPopupBgColor">@color/color_F1EEFB</item>
         <item name="marketBtnSecondaryBgColor">@color/color_F1EEFB</item>
-        <item name="marketPoolIncomeIcon">@mipmap/ic_market_pool_income</item>
+        <item name="marketPoolEarningsIcon">@mipmap/ic_market_pool_earnings</item>
         <item name="marketPoolAndIcon">@mipmap/ic_market_pool_and</item>
         <item name="marketPoolOutIcon">@mipmap/ic_market_pool_out</item>
         <item name="marketTokenSelectedIcon">@mipmap/ic_market_token_selected</item>

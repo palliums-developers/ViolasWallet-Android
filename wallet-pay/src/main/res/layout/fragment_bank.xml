@@ -111,7 +111,7 @@
         android:layout_width="@dimen/dp_10"
         android:layout_height="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_14"
-        android:background="?attr/homeBankTotalIncomeIcon"
+        android:background="?attr/homeBankTotalEarningsIcon"
         app:layout_constraintStart_toStartOf="@id/tvTotalDepositLabel"
         app:layout_constraintTop_toBottomOf="@id/ivTotalBorrowableIcon" />
 
@@ -145,7 +145,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_30"
-        android:background="@drawable/bg_home_bank_yesterday_income"
+        android:background="@drawable/bg_home_bank_yesterday_earnings"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="@dimen/dp_6"
@@ -157,7 +157,7 @@
             android:layout_width="@dimen/dp_10"
             android:layout_height="@dimen/dp_6"
             android:layout_marginTop="@dimen/dp_1"
-            android:background="?attr/homeBankYesterdayIncomeIcon" />
+            android:background="?attr/homeBankYesterdayEarningsIcon" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -165,7 +165,7 @@
             android:layout_marginStart="@dimen/dp_4"
             android:includeFontPadding="false"
             android:text="@string/yesterday_earnings_label"
-            android:textColor="?attr/homeBankYesterdayIncomeTextColor"
+            android:textColor="?attr/homeBankYesterdayEarningsTextColor"
             android:textSize="@dimen/sp_10" />
 
         <NumberTextView
@@ -173,7 +173,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_10"
             android:includeFontPadding="false"
-            android:textColor="?attr/homeBankYesterdayIncomeTextColor"
+            android:textColor="?attr/homeBankYesterdayEarningsTextColor"
             android:textSize="@dimen/sp_10"
             tools:text="0.01 $" />
 

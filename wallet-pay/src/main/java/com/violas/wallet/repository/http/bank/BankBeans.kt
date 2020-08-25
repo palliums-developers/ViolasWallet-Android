@@ -28,3 +28,12 @@ data class CurrBorrowingDTO(
     val coinLogo: String,
     val borrowed: String            // 借款金额
 )
+
+@Keep
+data class DepositRecordDTO(
+    val coinName: String,
+    val coinLogo: String,
+    val amount: String,
+    val time: Long,
+    val state: Int
+)

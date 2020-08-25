@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
  * <p>
  * desc:
  */
-class CurrDepositViewModel : ListingViewModel<CurrDepositDTO>() {
+class BankDepositOrderViewModel : ListingViewModel<CurrDepositDTO>() {
 
     private lateinit var address: String
 

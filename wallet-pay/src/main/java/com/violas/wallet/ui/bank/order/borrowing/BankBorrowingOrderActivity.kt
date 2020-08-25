@@ -22,12 +22,12 @@ import kotlinx.coroutines.launch
  * Created by elephant on 2020/8/24 18:09.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc:
+ * desc: 银行借款订单页面
  */
 class BankBorrowingOrderActivity : BaseBankOrderActivity<CurrBorrowingDTO>() {
 
     private val viewModel by lazy {
-        ViewModelProvider(this).get(CurrBorrowingViewModel::class.java)
+        ViewModelProvider(this).get(BankBorrowingOrderViewModel::class.java)
     }
     private val viewAdapter by lazy {
         CurrBorrowingViewAdapter { currBorrowing, position ->
@@ -66,50 +66,50 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<CurrBorrowingDTO>() {
             viewModel.execute()
         }
     }
-}
 
-class CurrBorrowingViewAdapter(
-    private val itemClickCallback: (CurrBorrowingDTO, Int) -> Unit
-) : ListingViewAdapter<CurrBorrowingDTO>() {
+    class CurrBorrowingViewAdapter(
+        private val itemClickCallback: (CurrBorrowingDTO, Int) -> Unit
+    ) : ListingViewAdapter<CurrBorrowingDTO>() {
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): BaseViewHolder<CurrBorrowingDTO> {
-        return CurrBorrowingViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_bank_curr_borrowing, parent, false
-            ),
-            itemClickCallback
-        )
-    }
-}
-
-class CurrBorrowingViewHolder(
-    view: View,
-    private val itemClickCallback: (CurrBorrowingDTO, Int) -> Unit
-) : BaseViewHolder<CurrBorrowingDTO>(view) {
-
-    init {
-        itemView.setOnClickListener(this)
-    }
-
-    override fun onViewBind(itemPosition: Int, itemData: CurrBorrowingDTO?) {
-        itemData?.let {
-            itemView.ivCoinLogo.loadCircleImage(
-                it.coinLogo,
-                getResourceId(R.attr.iconCoinDefLogo, itemView.context)
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int
+        ): BaseViewHolder<CurrBorrowingDTO> {
+            return CurrBorrowingViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_bank_curr_borrowing, parent, false
+                ),
+                itemClickCallback
             )
-            itemView.tvCoinName.text = it.coinName
-            itemView.tvAmountToBeRepaid.text = convertAmountToDisplayAmountStr(it.borrowed)
         }
     }
 
-    override fun onViewClick(view: View, itemPosition: Int, itemData: CurrBorrowingDTO?) {
-        itemData?.let {
-            when (view) {
-                itemView -> {
-                    itemClickCallback.invoke(it, itemPosition)
+    class CurrBorrowingViewHolder(
+        view: View,
+        private val itemClickCallback: (CurrBorrowingDTO, Int) -> Unit
+    ) : BaseViewHolder<CurrBorrowingDTO>(view) {
+
+        init {
+            itemView.setOnClickListener(this)
+        }
+
+        override fun onViewBind(itemPosition: Int, itemData: CurrBorrowingDTO?) {
+            itemData?.let {
+                itemView.ivCoinLogo.loadCircleImage(
+                    it.coinLogo,
+                    getResourceId(R.attr.iconCoinDefLogo, itemView.context)
+                )
+                itemView.tvCoinName.text = it.coinName
+                itemView.tvAmountToBeRepaid.text = convertAmountToDisplayAmountStr(it.borrowed)
+            }
+        }
+
+        override fun onViewClick(view: View, itemPosition: Int, itemData: CurrBorrowingDTO?) {
+            itemData?.let {
+                when (view) {
+                    itemView -> {
+                        itemClickCallback.invoke(it, itemPosition)
+                    }
                 }
             }
         }

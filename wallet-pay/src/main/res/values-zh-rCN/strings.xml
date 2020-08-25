@@ -368,7 +368,7 @@
     <string name="action_transfer_out_nbsp">转&#160;出</string>
     <string name="title_market_pool_records">资金池记录</string>
     <string name="select_token_pair">选择交易对</string>
-    <string name="market_pool_income_desc">转入资金池可获取手续费收益</string>
+    <string name="market_pool_earnings_desc">转入资金池可获取手续费收益</string>
     <string name="wallet_connect_transfer_registered_coinname">注册币种</string>
     <string name="tips_market_pool_select_token_pair_empty">没有可选择的交易对</string>
     <string name="hint_market_select_token_search_box">搜索token</string>
@@ -456,4 +456,15 @@
     <string name="seven_day_annual_yield">7日年化收益率</string>
     <string name="withdrawal_nbsp">提&#160;取</string>
     <string name="amount_to_be_repaid">待还金额</string>
+    <string name="deposit_details">存款明细</string>
+    <string name="borrowing_details">借款明细</string>
+    <string name="all_currencies">全部币种</string>
+    <string name="all_state">全部状态</string>
+    <string name="bank_deposit_state_depositing">存入中</string>
+    <string name="bank_deposit_state_withdrawing">提取中</string>
+    <string name="bank_deposit_state_deposit_succeeded">已存入</string>
+    <string name="bank_deposit_state_withdrawal_succeeded">已提取</string>
+    <string name="bank_deposit_state_deposit_failed">存入失败</string>
+    <string name="bank_deposit_state_withdrawal_failed">提取失败</string>
+
 </resources>
