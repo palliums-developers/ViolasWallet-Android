@@ -8,19 +8,23 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextPaint
-import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.util.Log
 import android.view.View
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
-import com.quincysx.crypto.bip44.CoinType
 import com.violas.wallet.R
+import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.bank.BankManager
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.bank.*
-import com.violas.wallet.ui.bank.deposit.DepositActivity
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
+import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.utils.convertDisplayUnitToAmount
+import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,6 +45,14 @@ class BorrowActivity : BankBusinessActivity() {
                 putExtra(EXT_ASSETS_NAME, name)
             }.start(context)
         }
+    }
+
+    private val mAccountManager by lazy {
+        AccountManager()
+    }
+
+    private val mBankManager by lazy {
+        BankManager()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -129,6 +141,52 @@ class BorrowActivity : BankBusinessActivity() {
         }
 
     override fun clickSendAll() {
+        launch(Dispatchers.IO) {
+            val amountStr = editBusinessValue.text.toString()
+            val assets = mBankBusinessViewModel.mCurrentAssetsLiveData.value
+            if (assets == null) {
+                showToast(getString(R.string.hint_bank_business_select_assets))
+                return@launch
+            }
+            val account = mAccountManager.getIdentityByCoinType(assets.getCoinNumber())
+            if (account == null) {
+                showToast(getString(R.string.hint_bank_business_account_error))
+                return@launch
+            }
+            val amount =
+                convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
 
+            val market = IAssetsMark.convert(assets)
+
+            if (market !is LibraTokenAssetsMark) {
+                showToast(getString(R.string.hint_bank_business_assets_error))
+                return@launch
+            }
+
+            authenticateAccount(account, mAccountManager, passwordCallback = {
+                sendTransfer(account, market, it, amount)
+            })
+        }
+    }
+
+    private fun sendTransfer(
+        account: AccountDO,
+        mark: LibraTokenAssetsMark,
+        pwd: String,
+        amount: Long
+    ) {
+        launch(Dispatchers.IO) {
+            try {
+                showProgress()
+                mBankManager.borrow(pwd.toByteArray(), account, mark, amount)
+                dismissProgress()
+                showToast(getString(R.string.hint_bank_business_borrow_success))
+                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                finish()
+            } catch (e: Exception) {
+                e.message?.let { showToast(it) }
+                dismissProgress()
+            }
+        }
     }
 }

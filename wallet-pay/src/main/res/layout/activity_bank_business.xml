@@ -68,7 +68,7 @@
                         android:src="@drawable/icon_bank_info_fold" />
                 </LinearLayout>
 
-                <NumberEditText
+                <EditText
                     android:id="@+id/editBusinessValue"
                     android:layout_width="0dp"
                     android:layout_height="38dp"

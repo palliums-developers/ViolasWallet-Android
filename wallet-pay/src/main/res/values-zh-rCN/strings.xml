@@ -497,4 +497,9 @@
     <string name="hint_bank_deposit_daily_limit">每日限额 :</string>
     <string name="action_deposit_immediately">立即存款</string>
     <string name="hint_currencies_not_supported_in_current_version">当前版本不支持的币种</string>
+    <string name="hint_bank_business_select_assets">请先选择币种</string>
+    <string name="hint_bank_business_account_error">账户异常</string>
+    <string name="hint_bank_business_assets_error">选择的币种信息异常</string>
+    <string name="hint_bank_business_borrow_success">借款成功</string>
+    <string name="hint_bank_business_deposit_success">存款成功</string>
 </resources>
