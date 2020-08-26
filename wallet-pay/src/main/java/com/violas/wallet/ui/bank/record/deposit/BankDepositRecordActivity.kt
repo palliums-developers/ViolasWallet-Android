@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
@@ -54,6 +55,36 @@ class BankDepositRecordActivity : BaseBankRecordActivity<DepositRecordDTO>() {
         mPagingHandler.start()
     }
 
+    override fun getCurrFilterLiveData(coinFilter: Boolean): MutableLiveData<Pair<Int, String?>> {
+        return if (coinFilter)
+            viewModel.currCoinFilterLiveData
+        else
+            viewModel.currStateFilterLiveData
+    }
+
+    override fun getFilterData(coinFilter: Boolean): MutableList<String> {
+        return if (coinFilter)
+            mutableListOf(
+                getString(R.string.all_currencies),
+                "VLS",
+                "BTC",
+                "USD",
+                "EUR",
+                "GBP",
+                "SGD",
+                "VLSUSD",
+                "VLSEUR",
+                "VLSGBP",
+                "VLSSGD"
+            )
+        else
+            mutableListOf(
+                getString(R.string.label_all),
+                getString(R.string.bank_deposit_state_deposited),
+                getString(R.string.bank_deposit_state_withdrew)
+            )
+    }
+
     class ViewAdapter(
         retryCallback: () -> Unit
     ) : PagingViewAdapter<DepositRecordDTO>(retryCallback, DiffCallback()) {
@@ -94,10 +125,10 @@ class BankDepositRecordActivity : BaseBankRecordActivity<DepositRecordDTO>() {
                 itemView.tvDesc.text = getString(
                     when (it.state) {
                         0 -> R.string.bank_deposit_state_depositing
-                        1 -> R.string.bank_deposit_state_deposit_succeeded
-                        2 -> R.string.bank_deposit_state_deposit_failed
+                        1 -> R.string.bank_deposit_state_deposited
+                        2 -> R.string.bank_deposit_state_withdrew
                         3 -> R.string.bank_deposit_state_withdrawing
-                        4 -> R.string.bank_deposit_state_withdrawal_succeeded
+                        4 -> R.string.bank_deposit_state_deposit_failed
                         else -> R.string.bank_deposit_state_withdrawal_failed
                     }
                 )

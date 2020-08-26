@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
@@ -54,6 +55,37 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
         mPagingHandler.start()
     }
 
+    override fun getCurrFilterLiveData(coinFilter: Boolean): MutableLiveData<Pair<Int, String?>> {
+        return if (coinFilter)
+            viewModel.currCoinFilterLiveData
+        else
+            viewModel.currStateFilterLiveData
+    }
+
+    override fun getFilterData(coinFilter: Boolean): MutableList<String> {
+        return if (coinFilter)
+            mutableListOf(
+                getString(R.string.all_currencies),
+                "VLS",
+                "BTC",
+                "USD",
+                "EUR",
+                "GBP",
+                "SGD",
+                "VLSUSD",
+                "VLSEUR",
+                "VLSGBP",
+                "VLSSGD"
+            )
+        else
+            mutableListOf(
+                getString(R.string.label_all),
+                getString(R.string.bank_borrowing_state_borrowed),
+                getString(R.string.bank_borrowing_state_repaid),
+                getString(R.string.bank_borrowing_state_liquidated)
+            )
+    }
+
     class ViewAdapter(
         retryCallback: () -> Unit
     ) : PagingViewAdapter<BorrowingRecordDTO>(retryCallback, DiffCallback()) {
@@ -95,15 +127,15 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
                     when (it.state) {
                         0 -> R.string.bank_borrowing_state_borrowing
                         1 -> R.string.bank_borrowing_state_borrowed
-                        2 -> R.string.bank_borrowing_state_repaying
-                        3 -> R.string.bank_borrowing_state_repaid
-                        else -> R.string.bank_borrowing_state_liquidated
+                        2 -> R.string.bank_borrowing_state_repaid
+                        3 -> R.string.bank_borrowing_state_liquidated
+                        else -> R.string.bank_borrowing_state_repaying
                     }
                 )
                 itemView.tvDesc.setTextColor(
                     getColorByAttrId(
                         when (it.state) {
-                            0, 2 -> R.attr.textColorProcessing
+                            0, 4 -> R.attr.textColorProcessing
                             else -> android.R.attr.textColorTertiary
                         },
                         itemView.context

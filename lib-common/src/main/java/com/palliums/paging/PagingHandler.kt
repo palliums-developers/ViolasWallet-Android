@@ -6,6 +6,7 @@ import androidx.paging.PagedList
 import com.palliums.base.ViewController
 import com.palliums.net.LoadState
 import com.palliums.widget.status.IStatusLayout
+import com.scwang.smartrefresh.layout.constant.RefreshState
 
 /**
  * Created by elephant on 2019-08-16 14:50.
@@ -148,6 +149,18 @@ class PagingHandler<VO>(
             }
             cachePagedList = null
         }
+    }
+
+    fun restart() {
+        mPagingController.getViewModel().refresh()
+        mPagingController.getViewAdapter().setLoadMoreState(LoadState.IDLE)
+        mPagingController.getRefreshLayout()?.let {
+            if (it.state == RefreshState.Refreshing) {
+                it.finishRefresh()
+            }
+            it.setEnableRefresh(false)
+        }
+        mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
     }
 
     fun start(pageSize: Int = PagingViewModel.PAGE_SIZE, fixedPageSize: Boolean = false) {

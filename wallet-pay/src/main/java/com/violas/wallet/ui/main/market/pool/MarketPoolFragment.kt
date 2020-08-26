@@ -290,18 +290,14 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         }
     }
 
-    private val switchOpModeArrowUpAnimator by lazy {
+    private val switchOpModeArrowAnimator by lazy {
         ObjectAnimator.ofFloat(ivSwitchOpModeArrow, "rotation", 0F, 180F)
-            .setDuration(360)
-    }
-    private val switchOpModeArrowDownAnimator by lazy {
-        ObjectAnimator.ofFloat(ivSwitchOpModeArrow, "rotation", 180F, 360F)
             .setDuration(360)
     }
 
     private fun showSwitchOpModePopup() {
         //setSwitchOpModeViewBgAndTextColor(true)
-        switchOpModeArrowUpAnimator.start()
+        switchOpModeArrowAnimator.start()
         XPopup.Builder(requireContext())
             .hasShadowBg(false)
             .popupAnimation(PopupAnimation.ScrollAlphaFromTop)
@@ -310,7 +306,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                 object : EnhancedPopupCallback() {
                     override fun onDismissBefore() {
                         //setSwitchOpModeViewBgAndTextColor(false)
-                        switchOpModeArrowDownAnimator.start()
+                        switchOpModeArrowAnimator.reverse()
                     }
                 })
             .asCustom(
@@ -386,18 +382,13 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         }
     }
 
-    private val selectLiquidityArrowUpAnimator by lazy {
+    private val selectLiquidityArrowAnimator by lazy {
         ObjectAnimator.ofFloat(ivSelectArrowA, "rotation", 0F, 180F)
             .setDuration(360)
     }
 
-    private val selectLiquidityArrowDownAnimator by lazy {
-        ObjectAnimator.ofFloat(ivSelectArrowA, "rotation", 180F, 360F)
-            .setDuration(360)
-    }
-
     private fun showSelectLiquidityPopup(displayTokenPairs: MutableList<String>) {
-        selectLiquidityArrowUpAnimator.start()
+        selectLiquidityArrowAnimator.start()
         XPopup.Builder(requireContext())
             .hasShadowBg(false)
             .popupAnimation(PopupAnimation.ScrollAlphaFromTop)
@@ -405,7 +396,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             .setPopupCallback(
                 object : EnhancedPopupCallback() {
                     override fun onDismissBefore() {
-                        selectLiquidityArrowDownAnimator.start()
+                        selectLiquidityArrowAnimator.reverse()
                     }
                 })
             .asCustom(

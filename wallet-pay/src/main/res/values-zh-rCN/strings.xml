@@ -462,8 +462,8 @@
     <string name="all_state">全部状态</string>
     <string name="bank_deposit_state_depositing">存款中</string>
     <string name="bank_deposit_state_withdrawing">提取中</string>
-    <string name="bank_deposit_state_deposit_succeeded">已存款</string>
-    <string name="bank_deposit_state_withdrawal_succeeded">已提取</string>
+    <string name="bank_deposit_state_deposited">已存款</string>
+    <string name="bank_deposit_state_withdrew">已提取</string>
     <string name="bank_deposit_state_deposit_failed">存款失败</string>
     <string name="bank_deposit_state_withdrawal_failed">提取失败</string>
     <string name="bank_borrowing_state_borrowing">借款中</string>
@@ -471,5 +471,6 @@
     <string name="bank_borrowing_state_repaying">还款中</string>
     <string name="bank_borrowing_state_repaid">已还款</string>
     <string name="bank_borrowing_state_liquidated">已清算</string>
+    <string name="no_matching_search_results">没有匹配的搜索结果</string>
 
 </resources>

@@ -16,15 +16,16 @@
 
         <LinearLayout
             android:id="@+id/llCoinFilter"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/dp_120"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:orientation="horizontal"
             android:paddingTop="@dimen/dp_3"
             android:paddingBottom="@dimen/dp_9">
 
             <TextView
+                android:id="@+id/tvCoinFilterText"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dp_12"
                 android:includeFontPadding="false"
@@ -53,15 +54,16 @@
 
         <LinearLayout
             android:id="@+id/llStateFilter"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/dp_120"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:orientation="horizontal"
             android:paddingTop="@dimen/dp_3"
             android:paddingBottom="@dimen/dp_9">
 
             <TextView
+                android:id="@+id/tvStateFilterText"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dp_12"
                 android:includeFontPadding="false"

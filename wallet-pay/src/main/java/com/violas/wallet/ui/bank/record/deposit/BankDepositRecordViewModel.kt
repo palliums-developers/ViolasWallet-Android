@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.bank.record.deposit
 
+import androidx.lifecycle.MutableLiveData
 import com.palliums.paging.PagingViewModel
 import com.violas.wallet.repository.http.bank.DepositRecordDTO
 import kotlinx.coroutines.delay
@@ -11,6 +12,12 @@ import kotlinx.coroutines.delay
  * desc:
  */
 class BankDepositRecordViewModel : PagingViewModel<DepositRecordDTO>() {
+
+    // 当前的币种过滤器，Pair.first 表示所处列表位置，Pair.second 表示 coin name
+    val currCoinFilterLiveData = MutableLiveData<Pair<Int, String?>>()
+
+    // 当前的状态过滤器，Pair.first 表示所处列表位置，Pair.second 表示 state name
+    val currStateFilterLiveData = MutableLiveData<Pair<Int, String?>>()
 
     override suspend fun loadData(
         pageSize: Int,
@@ -24,48 +31,51 @@ class BankDepositRecordViewModel : PagingViewModel<DepositRecordDTO>() {
     }
 
     private fun fakeData(): List<DepositRecordDTO> {
+        val coinName = currCoinFilterLiveData.value?.second
+        val state = currStateFilterLiveData.value?.first ?: 0
+
         return mutableListOf(
             DepositRecordDTO(
-                "VLSUSD",
-                "VLSUSD",
+                if (coinName.isNullOrBlank()) "VLSUSD" else coinName,
+                "",
                 "1001110000",
                 System.currentTimeMillis(),
-                0
+                if (state == 0) 0 else state
             ),
             DepositRecordDTO(
-                "VLSEUR",
-                "VLSEUR",
+                if (coinName.isNullOrBlank()) "VLSEUR" else coinName,
+                "",
                 "1231410000",
                 System.currentTimeMillis(),
-                1
+                if (state == 0) 1 else state
             ),
             DepositRecordDTO(
-                "VLSUSD",
-                "VLSUSD",
+                if (coinName.isNullOrBlank()) "VLSUSD" else coinName,
+                "",
                 "1001110000",
                 System.currentTimeMillis(),
-                2
+                if (state == 0) 2 else state
             ),
             DepositRecordDTO(
-                "VLSEUR",
-                "VLSEUR",
+                if (coinName.isNullOrBlank()) "VLSEUR" else coinName,
+                "",
                 "1231410000",
                 System.currentTimeMillis(),
-                3
+                if (state == 0) 3 else state
             ),
             DepositRecordDTO(
-                "VLSUSD",
-                "VLSUSD",
+                if (coinName.isNullOrBlank()) "VLSUSD" else coinName,
+                "",
                 "1001110000",
                 System.currentTimeMillis(),
-                4
+                if (state == 0) 4 else state
             ),
             DepositRecordDTO(
-                "VLSEUR",
-                "VLSEUR",
+                if (coinName.isNullOrBlank()) "VLSEUR" else coinName,
+                "",
                 "1231410000",
                 System.currentTimeMillis(),
-                5
+                if (state == 0) 5 else state
             )
         )
     }

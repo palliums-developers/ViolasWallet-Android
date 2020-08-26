@@ -165,9 +165,11 @@
     <attr name="bankDepositOrderIcon" format="reference" />
     <attr name="bankBorrowingOrderIcon" format="reference" />
     <attr name="bankListEmptyDataBg" format="reference" />
+    <attr name="bankSearchEmptyDataBg" format="reference" />
     <attr name="bankDepositYieldTextColor" format="color" />
     <attr name="bankDepositEarningTextColor" format="color" />
     <attr name="bankDepositEarningBgColor" format="color" />
     <attr name="bankBorrowRateTextColor" format="color" />
+    <attr name="bankFilterPopupSelectedBgColor" format="color"/>
 
 </resources>
