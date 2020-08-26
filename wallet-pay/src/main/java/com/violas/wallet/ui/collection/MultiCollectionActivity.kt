@@ -16,13 +16,12 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.common.Vm
-import com.violas.wallet.ui.transfer.TransferAssetsDataResourcesBridge
-import com.violas.wallet.ui.transfer.TransferSelectTokenDialog
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_collection.*
 import kotlinx.android.synthetic.main.activity_multi_transfer.*
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +30,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class MultiCollectionActivity : BaseAppActivity(), TransferAssetsDataResourcesBridge {
+class MultiCollectionActivity : BaseAppActivity(),
+    AssetsVoTokenSelectTokenDialog.AssetsDataResourcesBridge {
     companion object {
         const val EXT_ASSETS_NAME = "1"
         const val EXT_COIN_NUMBER = "2"
@@ -127,8 +127,10 @@ class MultiCollectionActivity : BaseAppActivity(), TransferAssetsDataResourcesBr
                 }
 
                 val collectionAddress =
-                    "${CoinTypes.parseCoinType(currentAccount.coinNumber).fullName()
-                        .toLowerCase(Locale.CHINA)}${prefix}:${currentAccount.address}"
+                    "${
+                        CoinTypes.parseCoinType(currentAccount.coinNumber).fullName()
+                            .toLowerCase(Locale.CHINA)
+                    }${prefix}:${currentAccount.address}"
                 val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
                     collectionAddress,
                     DensityUtility.dp2px(this@MultiCollectionActivity, 164),
@@ -142,8 +144,7 @@ class MultiCollectionActivity : BaseAppActivity(), TransferAssetsDataResourcesBr
     }
 
     private fun showSelectTokenDialog() {
-        TransferSelectTokenDialog
-            .newInstance()
+        AssetsVoTokenSelectTokenDialog()
             .setCallback { assetsVo ->
                 changeCurrAssets(assetsVo)
             }
