@@ -447,6 +447,7 @@
     <string name="deposit_market">存款市场</string>
     <string name="borrowing_market">借款市场</string>
     <string name="deposit_order">存款订单</string>
+
     <string name="borrowing_order">借款订单</string>
     <string name="current_deposit">当前存款</string>
     <string name="current_borrowing">当前借款</string>
@@ -473,4 +474,33 @@
     <string name="bank_borrowing_state_liquidated">已清算</string>
     <string name="no_matching_search_results">没有匹配的搜索结果</string>
 
+    <string name="borrow_order">借款订单</string>
+
+    <string name="bank_borrow_agreement_read_and_agree">我已阅读并同意《质押借款服务协议》</string>
+    <string name="bank_borrow_policy">《质押借款服务协议》</string>
+    <string name="bank_borrow_service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service</string>
+    <string name="hint_bank_borrow_agree_terms">请阅读并同意质押借款服务协议</string>
+
+    <string name="action_bank_amount_all">全部</string>
+    <string name="hint_bank_product_description">产品说明</string>
+    <string name="hint_bank_common_problem">常见问题</string>
+
+    <string name="title_borrow">借款</string>
+    <string name="hint_bank_borrow_business_name">我要借</string>
+    <string name="title_bank_borrow_business_name">我要借</string>
+    <string name="hint_can_borrow_lines">可借额度 :</string>
+    <string name="action_borrowing_immediately">立即借款</string>
+    <string name="hint_please_enter_the_amount_borrowed">请输入借款数量</string>
+
+    <string name="title_deposit">存款</string>
+    <string name="hint_bank_deposit_business_name">我要存</string>
+    <string name="hint_bank_deposit_available_balance">可用余额 :</string>
+    <string name="hint_bank_deposit_daily_limit">每日限额 :</string>
+    <string name="action_deposit_immediately">立即存款</string>
+    <string name="hint_currencies_not_supported_in_current_version">当前版本不支持的币种</string>
+    <string name="hint_bank_business_select_assets">请先选择币种</string>
+    <string name="hint_bank_business_account_error">账户异常</string>
+    <string name="hint_bank_business_assets_error">选择的币种信息异常</string>
+    <string name="hint_bank_business_borrow_success">借款成功</string>
+    <string name="hint_bank_business_deposit_success">存款成功</string>
 </resources>

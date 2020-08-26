@@ -35,6 +35,8 @@ import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
+import com.violas.wallet.widget.dialog.TokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_multi_transfer.*
 import kotlinx.android.synthetic.main.activity_multi_transfer.btnConfirm
 import kotlinx.android.synthetic.main.activity_multi_transfer.editAddressInput
@@ -49,7 +51,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 
-class MultiTransferActivity : BaseAppActivity(), TransferAssetsDataResourcesBridge {
+class MultiTransferActivity : BaseAppActivity(), AssetsVoTokenSelectTokenDialog.AssetsDataResourcesBridge {
     companion object {
         const val REQUEST_SELECTOR_ADDRESS = 1
         const val REQUEST_SCAN_QR_CODE = 2
@@ -245,8 +247,7 @@ class MultiTransferActivity : BaseAppActivity(), TransferAssetsDataResourcesBrid
     }
 
     private fun showSelectTokenDialog() {
-        TransferSelectTokenDialog
-            .newInstance()
+        AssetsVoTokenSelectTokenDialog()
             .setCallback { assetsVo ->
                 changeCurrAssets(assetsVo)
             }

@@ -43,7 +43,8 @@ class CreateIdentityActivity : BaseAppActivity() {
 
         launch {
             tvPrivacyPolicy.movementMethod = LinkMovementMethod.getInstance()
-            tvPrivacyPolicy.text = buildUseBehaviorSpan()
+            val buildUseBehaviorSpan = buildUseBehaviorSpan()
+            tvPrivacyPolicy.text = buildUseBehaviorSpan
             tvPrivacyPolicy.highlightColor = Color.TRANSPARENT
             btnHasAgreePrivacyPolicy.expandTouchArea(28)
         }

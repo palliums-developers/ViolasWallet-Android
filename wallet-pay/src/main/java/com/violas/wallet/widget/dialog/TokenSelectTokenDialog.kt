@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.transfer
+package com.violas.wallet.widget.dialog
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -18,28 +18,35 @@ import com.palliums.utils.*
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.repository.database.entity.AccountType
-import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.utils.loadCircleImage
 import com.violas.wallet.viewModel.bean.*
 import kotlinx.android.synthetic.main.dialog_market_select_token.*
 import kotlinx.android.synthetic.main.item_market_select_token.view.*
 import kotlinx.coroutines.*
 
+class AssetsVoTokenSelectTokenDialog : TokenSelectTokenDialog<AssetsVo>() {
+    override fun getContent(vo: AssetsVo) = vo.getAssetsName()
+
+    override fun getLogoUrl(vo: AssetsVo) = vo.getLogoUrl()
+
+    override fun getName(vo: AssetsVo) = vo.getAssetsName()
+
+    override fun getBalance(vo: AssetsVo) = vo.amountWithUnit.amount
+
+    override fun getUnit(vo: AssetsVo) = vo.amountWithUnit.unit
+
+    interface AssetsDataResourcesBridge : DataResourcesBridge<AssetsVo>
+}
+
 /**
  * 选择Token对话框
  */
-class TransferSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() {
+abstract class TokenSelectTokenDialog<VO> : DialogFragment(), CoroutineScope by CustomMainScope() {
 
-    companion object {
-        fun newInstance(): TransferSelectTokenDialog {
-            return TransferSelectTokenDialog()
-        }
-    }
-
-    private var mTransferAssetsDataResourcesBridge: TransferAssetsDataResourcesBridge? = null
-    private var mCurrCoin: AssetsVo? = null
-    private var mDisplayTokens: List<AssetsVo>? = null
-    private var mTokenCallback: ((AssetsVo) -> Unit)? = null
+    private var mDataResourcesBridge: DataResourcesBridge<VO>? = null
+    private var mCurrCoin: VO? = null
+    private var mDisplayTokens: List<VO>? = null
+    private var mTokenCallback: ((VO) -> Unit)? = null
     private var mJob: Job? = null
 
     private val mTokenAdapter by lazy {
@@ -48,9 +55,9 @@ class TransferSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMain
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mTransferAssetsDataResourcesBridge = parentFragment as? TransferAssetsDataResourcesBridge
-            ?: parentFragment?.parentFragment as? TransferAssetsDataResourcesBridge
-                    ?: activity as? TransferAssetsDataResourcesBridge
+        mDataResourcesBridge = parentFragment as? DataResourcesBridge<VO>
+            ?: parentFragment?.parentFragment as? DataResourcesBridge<VO>
+                    ?: activity as? DataResourcesBridge<VO>
     }
 
     override fun onStart() {
@@ -78,7 +85,7 @@ class TransferSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMain
     }
 
     override fun onDetach() {
-        mTransferAssetsDataResourcesBridge = null
+        mDataResourcesBridge = null
         super.onDetach()
     }
 
@@ -112,7 +119,7 @@ class TransferSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMain
         recyclerView.adapter = mTokenAdapter
         recyclerView.visibility = View.GONE
 
-        mCurrCoin = mTransferAssetsDataResourcesBridge?.getCurrCoin()
+        mCurrCoin = mDataResourcesBridge?.getCurrCoin()
 
         statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         statusLayout.setReloadCallback {
@@ -126,7 +133,7 @@ class TransferSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMain
         }
     }
 
-    private fun handleSwapTokens(tokens: List<AssetsVo>?) {
+    private fun handleSwapTokens(tokens: List<VO>?) {
         when {
             tokens == null -> {
                 launch(Dispatchers.Main) {
@@ -148,8 +155,8 @@ class TransferSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMain
 
     private suspend fun loadSwapTokens() {
         withContext(Dispatchers.Main) {
-            mTransferAssetsDataResourcesBridge?.getSupportAssetsTokens()
-                ?.observe(this@TransferSelectTokenDialog, Observer {
+            mDataResourcesBridge?.getSupportAssetsTokens()
+                ?.observe(this@TokenSelectTokenDialog, Observer {
                     val filter = it?.filter { asstsVo ->
                         if (asstsVo is AssetsCoinVo && asstsVo.accountType == AccountType.NoDollars) {
                             false
@@ -171,7 +178,7 @@ class TransferSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMain
         }
     }
 
-    private suspend fun filterData(marketSupportTokens: List<AssetsVo>) {
+    private suspend fun filterData(marketSupportTokens: List<VO>) {
         withContext(Dispatchers.Main) {
             mDisplayTokens = marketSupportTokens
             if (marketSupportTokens.isEmpty()) {
@@ -193,7 +200,7 @@ class TransferSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMain
         mJob = launch {
             val searchResult = withContext(Dispatchers.IO) {
                 mDisplayTokens?.filter { item ->
-                    item.getAssetsName().contains(searchText, true)
+                    getContent(item).contains(searchText, true)
                 }
             }
 
@@ -245,20 +252,20 @@ class TransferSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMain
         spannableStringBuilder
     }
 
-    private fun handleData(list: List<AssetsVo>) {
+    private fun handleData(list: List<VO>) {
         statusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
         recyclerView.visibility = View.VISIBLE
         mTokenAdapter.submitList(list)
     }
 
     fun setCallback(
-        tokenCallback: ((AssetsVo) -> Unit)? = null
-    ): TransferSelectTokenDialog {
+        tokenCallback: ((VO) -> Unit)? = null
+    ): TokenSelectTokenDialog<VO> {
         this.mTokenCallback = tokenCallback
         return this
     }
 
-    inner class TokenAdapter : ListAdapter<AssetsVo, CommonViewHolder>(tokenDiffCallback) {
+    inner class TokenAdapter : ListAdapter<VO, CommonViewHolder>(VoDiff<VO>()) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommonViewHolder {
             return CommonViewHolder(
@@ -273,14 +280,14 @@ class TransferSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMain
         override fun onBindViewHolder(holder: CommonViewHolder, position: Int) {
             val item = getItem(position)
             holder.itemView.ivLogo.loadCircleImage(
-                item.getLogoUrl(),
+                getLogoUrl(item),
                 getResourceId(R.attr.iconCoinDefLogo, holder.itemView.context)
             )
-            holder.itemView.tvTokenName.text = item.getAssetsName()
+            holder.itemView.tvTokenName.text = getName(item)
             holder.itemView.tvTokenBalance.text = getString(
                 R.string.market_select_token_balance_format,
-                item.amountWithUnit.amount,
-                item.amountWithUnit.unit
+                getBalance(item),
+                getUnit(item)
             )
             holder.itemView.tvSelected.visibility =
                 if (item == mCurrCoin) View.VISIBLE else View.GONE
@@ -290,21 +297,27 @@ class TransferSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMain
             }
         }
     }
+
+    abstract fun getContent(vo: VO): String
+    abstract fun getLogoUrl(vo: VO): String
+    abstract fun getName(vo: VO): String
+    abstract fun getBalance(vo: VO): String
+    abstract fun getUnit(vo: VO): String
 }
 
-val tokenDiffCallback = object : DiffUtil.ItemCallback<AssetsVo>() {
-    override fun areContentsTheSame(oldItem: AssetsVo, newItem: AssetsVo): Boolean {
+class VoDiff<VO> : DiffUtil.ItemCallback<VO>() {
+    override fun areContentsTheSame(oldItem: VO, newItem: VO): Boolean {
         //return oldItem.areContentsTheSame(newItem)
         return false
     }
 
-    override fun areItemsTheSame(oldItem: AssetsVo, newItem: AssetsVo): Boolean {
+    override fun areItemsTheSame(oldItem: VO, newItem: VO): Boolean {
         return oldItem == newItem
     }
 }
 
-interface TransferAssetsDataResourcesBridge {
-    suspend fun getSupportAssetsTokens(): LiveData<List<AssetsVo>?>
+interface DataResourcesBridge<VO> {
+    suspend fun getSupportAssetsTokens(): LiveData<List<VO>?>
 
-    fun getCurrCoin(): AssetsVo?
+    fun getCurrCoin(): VO?
 }
