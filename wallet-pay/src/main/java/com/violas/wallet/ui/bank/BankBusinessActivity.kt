@@ -6,21 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.utils.getResourceId
 import com.quincysx.crypto.CoinTypes
-import com.quincysx.crypto.bip44.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.ui.transfer.TransferSelectTokenDialog
 import com.violas.wallet.utils.loadRoundedImage
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.android.synthetic.main.view_bank_business_parameter.view.*
@@ -34,7 +32,8 @@ import kotlinx.coroutines.launch
  * <p>
  * desc: 数字银行-存款/借款业务
  */
-abstract class BankBusinessActivity : BaseAppActivity(), BankAssetsDataResourcesBridge {
+abstract class BankBusinessActivity : BaseAppActivity(),
+    AssetsVoTokenSelectTokenDialog.AssetsDataResourcesBridge {
     companion object {
         const val EXT_ASSETS_COINTYPE = "key1"
         const val EXT_ASSETS_MODULE = "key2"
@@ -101,7 +100,7 @@ abstract class BankBusinessActivity : BaseAppActivity(), BankAssetsDataResources
         })
         mBankBusinessViewModel.mCurrentAssetsLiveData.observe(this, Observer {
             ivCurrentAssetsName.text = it.getAssetsName()
-            ivCurrentAssetsIcon.ivCoinLogo.loadRoundedImage(
+            ivCurrentAssetsIcon.loadRoundedImage(
                 it.getLogoUrl(),
                 getResourceId(R.attr.iconCoinDefLogo, baseContext),
                 14
@@ -246,13 +245,10 @@ abstract class BankBusinessActivity : BaseAppActivity(), BankAssetsDataResources
     }
 
     private fun showSelectTokenDialog() {
-        TransferSelectTokenDialog
-            .newInstance()
+        AssetsVoTokenSelectTokenDialog()
             .setCallback { assetsVo ->
                 changeCurrAssets(assetsVo)
-
-            }
-            .show(supportFragmentManager)
+            }.show(supportFragmentManager)
     }
 
     override fun getCurrCoin(): AssetsVo? {
