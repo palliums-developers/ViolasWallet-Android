@@ -137,18 +137,26 @@ abstract class BankBusinessActivity : BaseAppActivity(),
             ivProductInfo.setBackgroundResource(resId)
         }
         mBankBusinessViewModel.mProductExplanationListLiveData.observe(this, Observer {
-            expandLayoutProductInfo.removeAllViews()
-            it.forEach { productInfo ->
-                val inflate = layoutInflater.inflate(
-                    R.layout.view_item_expand_product_info,
-                    null
-                )
-                inflate.tvTitle.text = productInfo.title
-                inflate.tvContent.text = productInfo.content
-                expandLayoutProductInfo.addView(inflate)
+            if (it == null) {
+                viewGroupProductInfo.visibility = View.GONE
+                expandLayoutProductInfo.visibility = View.GONE
+            } else {
+                viewGroupProductInfo.visibility = View.VISIBLE
+                expandLayoutProductInfo.visibility = View.VISIBLE
+
+                expandLayoutProductInfo.removeAllViews()
+                it.forEach { productInfo ->
+                    val inflate = layoutInflater.inflate(
+                        R.layout.view_item_expand_product_info,
+                        null
+                    )
+                    inflate.tvTitle.text = productInfo.title
+                    inflate.tvContent.text = productInfo.content
+                    expandLayoutProductInfo.addView(inflate)
+                }
+                expandLayoutProductInfo.initExpand(true)
+                expandLayoutProductInfo.reSetViewDimensions()
             }
-            expandLayoutProductInfo.initExpand(true)
-            expandLayoutProductInfo.reSetViewDimensions()
         })
 
         ivProductIssue.expandTouchArea(20)
@@ -162,18 +170,26 @@ abstract class BankBusinessActivity : BaseAppActivity(),
             ivProductIssue.setBackgroundResource(resId)
         }
         mBankBusinessViewModel.mFAQListLiveData.observe(this, Observer {
-            expandLayoutProductIssue.removeAllViews()
-            it.forEach { productIssue ->
-                val inflate = layoutInflater.inflate(
-                    R.layout.view_item_expand_product_info,
-                    null
-                )
-                inflate.tvTitle.text = productIssue.q
-                inflate.tvContent.text = productIssue.a
-                expandLayoutProductIssue.addView(inflate)
+            if (it == null) {
+                viewGroupProductIssue.visibility = View.GONE
+                expandLayoutProductIssue.visibility = View.GONE
+            } else {
+                viewGroupProductIssue.visibility = View.VISIBLE
+                expandLayoutProductIssue.visibility = View.VISIBLE
+
+                expandLayoutProductIssue.removeAllViews()
+                it.forEach { productIssue ->
+                    val inflate = layoutInflater.inflate(
+                        R.layout.view_item_expand_product_info,
+                        null
+                    )
+                    inflate.tvTitle.text = productIssue.q
+                    inflate.tvContent.text = productIssue.a
+                    expandLayoutProductIssue.addView(inflate)
+                }
+                expandLayoutProductIssue.reSetViewDimensions()
+                expandLayoutProductIssue.collapse()
             }
-            expandLayoutProductIssue.reSetViewDimensions()
-            expandLayoutProductIssue.collapse()
         })
 
         mBankBusinessViewModel.mBusinessPolicyLiveData.observe(this, Observer {

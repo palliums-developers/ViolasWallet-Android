@@ -7,15 +7,20 @@ import android.widget.Toast
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
+import com.violas.wallet.ui.bank.borrow.BorrowActivity
+import com.violas.wallet.ui.bank.repayBorrow.RepayBorrowActivity
 import com.violas.wallet.ui.main.bank.BankFragment
 import com.violas.wallet.ui.main.market.MarketFragment
 import com.violas.wallet.ui.main.me.MeFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -86,6 +91,17 @@ class MainActivity : BaseAppActivity() {
         view_pager.adapter = viewPagerAdapter
         view_pager.offscreenPageLimit = 4
         bottom_navigation.setupWithViewPager(view_pager)
+
+        launch {
+            delay(100)
+            BorrowActivity.start(
+                this@MainActivity,
+                CoinTypes.Violas,
+                "VLSUSD",
+                "00000000000000000000000000000001",
+                "VLSUSD"
+            )
+        }
     }
 
     private fun resetToDefaultIcon() {
