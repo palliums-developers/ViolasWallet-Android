@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.bank.borrow
+package com.violas.wallet.ui.bank.repayBorrow
 
 import android.content.Context
 import android.content.Intent
@@ -33,9 +33,9 @@ import kotlinx.coroutines.withContext
  * Created by elephant on 2020/8/19 15:38.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 数字银行-借款页面
+ * desc: 数字银行-还款页面
  */
-class BorrowActivity : BankBusinessActivity() {
+class RepayBorrowActivity : BankBusinessActivity() {
     companion object {
         fun start(
             context: Context,
@@ -44,7 +44,7 @@ class BorrowActivity : BankBusinessActivity() {
             address: String? = null,
             name: String? = null
         ) {
-            Intent(context, BorrowActivity::class.java).run {
+            Intent(context, RepayBorrowActivity::class.java).run {
                 putExtra(EXT_ASSETS_COINTYPE, coinType.coinType())
                 putExtra(EXT_ASSETS_MODULE, module)
                 putExtra(EXT_ASSETS_ADDRESS, address)
@@ -63,88 +63,27 @@ class BorrowActivity : BankBusinessActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBankBusinessViewModel.mPageTitleLiveData.value = getString(R.string.title_borrow)
+        mBankBusinessViewModel.mPageTitleLiveData.value = getString(R.string.title_repay_borrow)
         mBankBusinessViewModel.mBusinessUserInfoLiveData.value = BusinessUserInfo(
-            getString(R.string.hint_bank_borrow_business_name), "500 V-AAA起，每1V-AAA递增",
+            getString(R.string.hint_bank_repay_borrow_business_name), "500 V-AAA起，每1V-AAA递增",
             BusinessUserAmountInfo(
                 R.drawable.icon_bank_user_amount_info,
-                getString(R.string.hint_can_borrow_lines),
+                getString(R.string.hint_can_repay_borrow_lines),
                 "800",
-                "VLSUSD",
-                "1000"
+                "VLSUSD"
             )
         )
         mBankBusinessViewModel.mBusinessActionLiveData.value =
-            getString(R.string.action_borrowing_immediately)
+            getString(R.string.action_repay_borrowing_immediately)
         mBankBusinessViewModel.mBusinessParameterListLiveData.value = arrayListOf(
-            BusinessParameter("借款利率", "0.50%/日", contentColor = Color.parseColor("#13B788")),
-            BusinessParameter("质押率", "50%", "质押率=借贷数量/存款数量"),
-            BusinessParameter("质押账户", "银行余额", "清算部分将从存款账户扣除")
+            BusinessParameter("借贷率", "5%"),
+            BusinessParameter("矿工费用", "0.00VLS"),
+            BusinessParameter("还款账户", "钱包余额")
         )
-        mBankBusinessViewModel.mProductExplanationListLiveData.value = arrayListOf(
-            ProductExplanation(
-                "清算率",
-                "清算率是指***************************************************************"
-            ),
-            ProductExplanation(
-                "清算罚金",
-                "清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金"
-            )
-        )
-        mBankBusinessViewModel.mFAQListLiveData.value = arrayListOf(
-            FAQ(
-                "清算率",
-                "清算率是指***************************************************************"
-            ),
-            FAQ(
-                "清算罚金",
-                "清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金"
-            )
-        )
-        launch {
-            mBankBusinessViewModel.mBusinessPolicyLiveData.value = buildUseBehaviorSpan()
-        }
+
         mBankBusinessViewModel.mBusinessActionHintLiveData.value =
-            getString(R.string.hint_please_enter_the_amount_borrowed)
+            getString(R.string.hint_please_enter_the_amount_repay_borrowed)
     }
-
-    private fun openWebPage(url: String) {
-        val webpage: Uri = Uri.parse(url)
-        val intent = Intent(Intent.ACTION_VIEW, webpage)
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(intent)
-        }
-    }
-
-    private suspend fun buildUseBehaviorSpan(): SpannableStringBuilder? =
-        withContext(Dispatchers.IO) {
-            val useBehavior = getString(R.string.bank_borrow_agreement_read_and_agree)
-            val borrowPolicy = getString(R.string.bank_borrow_policy)
-            val spannableStringBuilder = SpannableStringBuilder(useBehavior)
-            val userAgreementClickSpanPrivacy = object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    openWebPage(getString(R.string.bank_borrow_service_agreement_url))
-                }
-
-                override fun updateDrawState(ds: TextPaint) {
-                    ds.color = getColorByAttrId(
-                        R.attr.colorPrimary,
-                        this@BorrowActivity
-                    )
-                    ds.isUnderlineText = false//去掉下划线
-                }
-            }
-
-            useBehavior.indexOf(borrowPolicy).also {
-                spannableStringBuilder.setSpan(
-                    userAgreementClickSpanPrivacy,
-                    it,
-                    it + borrowPolicy.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            }
-            spannableStringBuilder
-        }
 
     override fun clickSendAll() {
         launch(Dispatchers.IO) {
@@ -184,7 +123,7 @@ class BorrowActivity : BankBusinessActivity() {
         launch(Dispatchers.IO) {
             try {
                 showProgress()
-                mBankManager.borrow(pwd.toByteArray(), account, mark, amount)
+                mBankManager.repayBorrow(pwd.toByteArray(), account, mark, amount)
                 dismissProgress()
                 showToast(getString(R.string.hint_bank_business_borrow_success))
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)

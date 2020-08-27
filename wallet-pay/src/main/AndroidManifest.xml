@@ -197,6 +197,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.APP.DayNight.Secondary" />
         <activity
+            android:name=".ui.bank.repayBorrow.RepayBorrowActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
+        <activity
             android:name=".ui.transfer.MultiTransferActivity"
             android:screenOrientation="portrait" />
         <activity

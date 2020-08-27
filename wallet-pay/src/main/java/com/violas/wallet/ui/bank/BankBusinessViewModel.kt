@@ -83,12 +83,12 @@ class BankBusinessViewModel : ViewModel() {
     /**
      * 产品说明
      */
-    val mProductExplanationListLiveData = MutableLiveData<List<ProductExplanation>>()
+    val mProductExplanationListLiveData = MutableLiveData<List<ProductExplanation>?>()
 
     /**
      * 常见问题
      */
-    val mFAQListLiveData = MutableLiveData<List<FAQ>>()
+    val mFAQListLiveData = MutableLiveData<List<FAQ>?>()
 
 
     // <editor-fold defaultstate="collapsed" desc="业务数据">

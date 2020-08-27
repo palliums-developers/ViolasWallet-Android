@@ -40,6 +40,7 @@ class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWa
         val expirationTime = tx.expirationTime ?: System.currentTimeMillis() + 1000
         val gasCurrencyCode = tx.gasCurrencyCode ?: lbrStructTagType()
         val sequenceNumber = tx.sequenceNumber ?: -1
+        val chainId = tx.chainId
 
         val payload = TransactionPayload.Script(
             try {
@@ -145,7 +146,8 @@ class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWa
             gasCurrencyCode,
             maxGasAmount,
             gasUnitPrice,
-            expirationTime - System.currentTimeMillis()
+            expirationTime - System.currentTimeMillis(),
+            chainId
         )
 
         val decode = try {

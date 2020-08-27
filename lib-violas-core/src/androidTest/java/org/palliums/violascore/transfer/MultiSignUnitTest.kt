@@ -114,7 +114,8 @@ class MultiSignUnitTest {
         val rawTransaction = RawTransaction.optionTransaction(
             senderAddress,
             publishTokenPayload,
-            3
+            3,
+            chainId = 2
         )
 
         val signedTransaction =
@@ -189,7 +190,8 @@ class MultiSignUnitTest {
         val rawTransaction = RawTransaction.optionTransaction(
             senderAddress,
             publishTokenPayload,
-            0
+            0,
+            chainId = 2
         )
 
         val signedTransaction =

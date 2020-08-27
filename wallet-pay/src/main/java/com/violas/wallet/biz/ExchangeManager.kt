@@ -156,7 +156,8 @@ class ExchangeManager {
         mViolasService.sendTransaction(
             addLiquidityTransactionPayload,
             Account(KeyPair.fromSecretKey(privateKey)),
-            gasCurrencyCode = coinA.module
+            gasCurrencyCode = coinA.module,
+            chainId = Vm.ViolasChainId
         )
     }
 
@@ -217,7 +218,8 @@ class ExchangeManager {
         mViolasService.sendTransaction(
             removeLiquidityTransactionPayload,
             Account(KeyPair.fromSecretKey(privateKey)),
-            gasCurrencyCode = coinA.module
+            gasCurrencyCode = coinA.module,
+            chainId = Vm.ViolasChainId
         )
     }
 
@@ -289,7 +291,8 @@ class ExchangeManager {
 
             val (signedTxn, _, _) = mViolasService.generateTransaction(
                 optionUndoExchangePayload,
-                account
+                account,
+                chainId = Vm.ViolasChainId
             )
 
             // 2.通知交易中心撤销订单，交易中心此时只会标记需要撤销订单的状态为CANCELLING并停止兑换，失败会抛异常

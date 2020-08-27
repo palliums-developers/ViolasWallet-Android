@@ -18,7 +18,7 @@ class ViolasRpcRepository(private val mViolasRpcApi: ViolasRpcApi) {
         companion object {
             const val SUBMIT = "submit"
             const val GET_ACCOUNT_TRANSACTION = "get_account_transaction"
-            const val GET_ACCOUNT_STATE = "get_account_state"
+            const val GET_ACCOUNT_STATE = "get_account"
             const val GET_CURRENCIES = "get_currencies"
         }
     }

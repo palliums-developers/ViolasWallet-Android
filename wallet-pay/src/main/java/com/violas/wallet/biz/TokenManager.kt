@@ -219,9 +219,7 @@ class TokenManager {
                 val addCurrency = violasChainRpcService
                     .addCurrency(
                         Account(KeyPair.fromSecretKey(privateKey)),
-                        tokenMark.address,
-                        tokenMark.module,
-                        tokenMark.name
+                        tokenMark.address, tokenMark.module, tokenMark.name, Vm.ViolasChainId
                     )
                 for (item in 1 until 4) {
                     delay(item * 1000L)
@@ -229,7 +227,7 @@ class TokenManager {
                         addCurrency.sender,
                         addCurrency.sequenceNumber
                     )
-                    if (transaction.data?.vmStatus == 4001) {
+                    if (transaction.data?.vmStatus?.isSuccessExecuted() == true) {
                         return true
                     }
                 }
@@ -297,19 +295,6 @@ class TokenManager {
             }
             isPublish
         } ?: false
-    }
-
-    suspend fun sendViolasToken(
-        tokenIdx: Long,
-        account: Account,
-        address: String,
-        amount: Long,
-        date: ByteArray = byteArrayOf()
-    ) {
-        val publishTokenPayload = mViolasMultiTokenService.transferTokenPayload(
-            tokenIdx, address, amount, date
-        )
-        mViolasService.sendTransaction(publishTokenPayload, account)
     }
 
     fun transferTokenPayload(

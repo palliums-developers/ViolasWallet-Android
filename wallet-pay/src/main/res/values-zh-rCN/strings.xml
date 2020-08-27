@@ -505,4 +505,11 @@
     <string name="hint_bank_business_assets_error">选择的币种信息异常</string>
     <string name="hint_bank_business_borrow_success">借款成功</string>
     <string name="hint_bank_business_deposit_success">存款成功</string>
+
+    <string name="title_repay_borrow">还款</string>
+    <string name="hint_bank_repay_borrow_business_name">我要还</string>
+    <string name="hint_can_repay_borrow_lines">待还余额 :</string>
+    <string name="action_repay_borrowing_immediately">立即还款</string>
+    <string name="hint_please_enter_the_amount_repay_borrowed">请输入还款数量</string>
+    <string name="hint_bank_business_repay_borrow_success">还款成功</string>
 </resources>

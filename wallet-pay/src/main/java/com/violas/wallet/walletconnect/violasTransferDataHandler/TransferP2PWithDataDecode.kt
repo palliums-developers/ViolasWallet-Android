@@ -44,9 +44,9 @@ class TransferP2PWithDataDecode(private val transaction: RawTransaction) : Trans
         } catch (e: ProcessedRuntimeException) {
             throw ProcessedRuntimeException(
                 "peer_to_peer_with_metadata contract parameter list(payee: Address,\n" +
-                        "    amount: U64,\n" +
-                        "    metadata: vector,\n" +
-                        "    metadata_signature: vector)"
+                        "    amount: Number,\n" +
+                        "    metadata: Bytes,\n" +
+                        "    metadata_signature: Bytes)"
             )
         }
     }

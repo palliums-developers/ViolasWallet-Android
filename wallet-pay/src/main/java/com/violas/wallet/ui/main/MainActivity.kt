@@ -7,15 +7,20 @@ import android.widget.Toast
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
+import com.violas.wallet.ui.bank.borrow.BorrowActivity
+import com.violas.wallet.ui.bank.repayBorrow.RepayBorrowActivity
 import com.violas.wallet.ui.main.bank.BankFragment
 import com.violas.wallet.ui.main.market.MarketFragment
 import com.violas.wallet.ui.main.me.MeFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 

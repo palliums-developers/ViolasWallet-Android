@@ -45,7 +45,8 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
         gasCurrencyCode: String = lbrStructTagType(),
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
-        delayed: Long = 600
+        delayed: Long = 600,
+        chainId: Int
     ): TransactionResult {
         var sequenceNumber = sequenceNumber
         val keyPair = account.keyPair
@@ -67,7 +68,8 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
             gasCurrencyCode,
             maxGasAmount,
             gasUnitPrice,
-            delayed
+            delayed,
+            chainId = chainId
         )
         sendTransaction(
             rawTransaction.toByteArray().toHex(),
@@ -125,13 +127,19 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
         address: String,
         amount: Long,
         typeTag: TypeTag = lbrStructTag(),
-        gasCurrencyCode: String = lbrStructTagType()
+        gasCurrencyCode: String = lbrStructTagType(),
+        chainId: Int
     ) {
         val transactionPayload =
             TransactionPayload.optionTransactionPayload(
                 context, address, amount, typeTag = typeTag
             )
-        sendTransaction(transactionPayload, account, gasCurrencyCode = gasCurrencyCode)
+        sendTransaction(
+            transactionPayload,
+            account,
+            gasCurrencyCode = gasCurrencyCode,
+            chainId = chainId
+        )
     }
 
     suspend fun getBalance(address: String): String {
@@ -176,7 +184,8 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
         account: Account,
         address: String,
         module: String,
-        name: String
+        name: String,
+        chainId: Int
     ): TransactionResult {
         val transactionPayload =
             TransactionPayload.optionAddCurrencyPayload(
@@ -189,6 +198,11 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
                     )
                 )
             )
-        return sendTransaction(transactionPayload, account, gasCurrencyCode = lbrStructTagType())
+        return sendTransaction(
+            transactionPayload,
+            account,
+            gasCurrencyCode = lbrStructTagType(),
+            chainId = chainId
+        )
     }
 }
