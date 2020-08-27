@@ -170,6 +170,5 @@
     <attr name="bankDepositEarningTextColor" format="color" />
     <attr name="bankDepositEarningBgColor" format="color" />
     <attr name="bankBorrowRateTextColor" format="color" />
-    <attr name="bankFilterPopupSelectedBgColor" format="color"/>
 
 </resources>

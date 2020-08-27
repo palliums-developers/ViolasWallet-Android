@@ -36,6 +36,7 @@
     <style name="Theme.APP.DayNight" parent="Theme.APP" />
 
     <style name="Theme.APP" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--System attrs-->
         <item name="colorPrimary">@color/color_7038FD</item>
         <item name="colorPrimaryVariant">@color/color_2A00C9</item>
         <item name="colorPrimaryDark">@color/color_2A00C9</item>
@@ -85,6 +86,10 @@
 
         <item name="actionBarSize">@dimen/dp_48</item>
         <item name="android:actionBarSize">@dimen/dp_48</item>
+
+        <!--Library attrs-->
+        <item name="slTipsTextColor">@color/color_BABABA</item>
+        <item name="slTipsTextSize">@dimen/sp_14</item>
 
         <!--App custom attrs-->
         <!--App通用资源属性-->
@@ -251,7 +256,6 @@
         <item name="bankDepositEarningTextColor">@color/color_13B788</item>
         <item name="bankDepositEarningBgColor">@color/color_13B788_06</item>
         <item name="bankBorrowRateTextColor">@color/color_13B788</item>
-        <item name="bankFilterPopupSelectedBgColor">@color/color_FAF7FF</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">

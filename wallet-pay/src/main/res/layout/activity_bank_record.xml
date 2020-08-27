@@ -16,7 +16,7 @@
 
         <LinearLayout
             android:id="@+id/llCoinFilter"
-            android:layout_width="@dimen/dp_120"
+            android:layout_width="@dimen/dp_132"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center"
@@ -54,7 +54,7 @@
 
         <LinearLayout
             android:id="@+id/llStateFilter"
-            android:layout_width="@dimen/dp_120"
+            android:layout_width="@dimen/dp_132"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center"

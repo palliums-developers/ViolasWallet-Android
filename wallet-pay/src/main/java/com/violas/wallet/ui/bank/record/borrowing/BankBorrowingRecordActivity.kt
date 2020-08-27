@@ -65,7 +65,7 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
     override fun getFilterData(coinFilter: Boolean): MutableList<String> {
         return if (coinFilter)
             mutableListOf(
-                getString(R.string.all_currencies),
+                getString(R.string.label_all),
                 "VLS",
                 "BTC",
                 "USD",

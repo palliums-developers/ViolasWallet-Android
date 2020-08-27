@@ -3,7 +3,6 @@ package com.violas.wallet.ui.bank.record
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
-import android.graphics.Typeface
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +14,8 @@ import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColorByAttrId
 import com.palliums.widget.popup.EnhancedAttachPopupView
 import com.violas.wallet.R
-import kotlinx.android.synthetic.main.item_market_select_popup.view.*
-import kotlinx.android.synthetic.main.popup_market_select.view.*
+import kotlinx.android.synthetic.main.item_bank_record_filter_popup.view.*
+import kotlinx.android.synthetic.main.popup_bank_record_filter.view.*
 
 /**
  * Created by elephant on 2020/6/29 19:16.
@@ -51,7 +50,7 @@ class BankRecordFilterPopup(
                     childrenBounds,
                     wSpec,
                     MeasureSpec.makeMeasureSpec(
-                        DensityUtility.dp2px(context, 120),
+                        DensityUtility.dp2px(context, 209),
                         MeasureSpec.AT_MOST
                     )
                 )
@@ -93,18 +92,15 @@ class BankRecordFilterPopup(
         override fun onViewBind(itemPosition: Int, itemData: String?) {
             itemData?.let {
                 itemView.tvText.text = it
-                if (checkedPosition == itemPosition) {
-                    itemView.tvText.setBackgroundColor(
-                        getColorByAttrId(
-                            R.attr.bankFilterPopupSelectedBgColor,
-                            itemView.context
-                        )
+                itemView.tvText.setTextColor(
+                    getColorByAttrId(
+                        if (itemPosition == checkedPosition)
+                            R.attr.colorPrimary
+                        else
+                            android.R.attr.textColorSecondary,
+                        itemView.context
                     )
-                    itemView.tvText.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
-                } else {
-                    itemView.tvText.background = null
-                    itemView.tvText.setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
-                }
+                )
             }
         }
 

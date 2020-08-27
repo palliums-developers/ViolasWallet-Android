@@ -4,9 +4,8 @@
     android:id="@+id/tvText"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:includeFontPadding="false"
-    android:paddingHorizontal="@dimen/dp_8"
-    android:paddingVertical="@dimen/dp_6"
-    android:textSize="@dimen/sp_12"
     android:foreground="?attr/selectableItemBackground"
+    android:gravity="center"
+    android:paddingVertical="@dimen/dp_8"
+    android:textSize="@dimen/sp_14"
     tools:text="@string/all_currencies" />
