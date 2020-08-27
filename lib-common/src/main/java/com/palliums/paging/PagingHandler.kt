@@ -4,6 +4,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.palliums.base.ViewController
+import com.palliums.extensions.lazyLogError
 import com.palliums.net.LoadState
 import com.palliums.widget.status.IStatusLayout
 import com.scwang.smartrefresh.layout.constant.RefreshState
@@ -19,6 +20,10 @@ class PagingHandler<VO>(
     private val mViewController: ViewController,
     private val mPagingController: PagingController<VO>
 ) {
+
+    companion object {
+        private const val TAG = "Paging"
+    }
 
     /**
      * 更新数据标志，刷新中会置为false，刷新完成后再置为true
@@ -37,6 +42,9 @@ class PagingHandler<VO>(
     fun init() {
 
         mPagingController.getViewModel().pagedList.observe(mLifecycleOwner, Observer {
+            lazyLogError(TAG) {
+                "pagedList onChanged, updateDataFlag = $updateDataFlag, $it"
+            }
             if (updateDataFlag) {
                 mPagingController.getViewAdapter().submitList(it)
             } else {
@@ -45,6 +53,9 @@ class PagingHandler<VO>(
         })
 
         mPagingController.getViewModel().refreshState.observe(mLifecycleOwner, Observer {
+            lazyLogError(TAG) {
+                "refreshState onChanged, updateDataFlag = $updateDataFlag, ${it.peekData()}"
+            }
             when (it.peekData().status) {
                 LoadState.Status.RUNNING -> {
                     //mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_NONE)
@@ -96,6 +107,9 @@ class PagingHandler<VO>(
         })
 
         mPagingController.getViewModel().loadMoreState.observe(mLifecycleOwner, Observer {
+            lazyLogError(TAG) {
+                "loadMoreState onChanged, updateDataFlag = $updateDataFlag, ${it.peekData()}"
+            }
             mPagingController.getViewAdapter().setLoadMoreState(it.peekData())
         })
 
@@ -113,6 +127,7 @@ class PagingHandler<VO>(
             //it.setEnableOverScrollBounce(true)  // 启用越界回弹
             it.setEnableOverScrollDrag(true)    // 启用越界拖动
             it.setOnRefreshListener {
+                lazyLogError(TAG) { "onRefresh" }
                 if (autoRefresh) {
                     autoRefresh = false
                     if (!mPagingController.getViewModel().start(pageSize, fixedPageSize)) {
@@ -152,7 +167,8 @@ class PagingHandler<VO>(
     }
 
     fun restart() {
-        mPagingController.getViewModel().refresh()
+        lazyLogError(TAG) { "restart" }
+        // 清除加载更多和下拉刷新动画
         mPagingController.getViewAdapter().setLoadMoreState(LoadState.IDLE)
         mPagingController.getRefreshLayout()?.let {
             if (it.state == RefreshState.Refreshing) {
@@ -160,10 +176,15 @@ class PagingHandler<VO>(
             }
             it.setEnableRefresh(false)
         }
+
+        // 重新初始加载
         mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
+        updateDataFlag = true
+        mPagingController.getViewModel().refresh()
     }
 
     fun start(pageSize: Int = PagingViewModel.PAGE_SIZE, fixedPageSize: Boolean = false) {
+        lazyLogError(TAG) { "start" }
         this.pageSize = pageSize
         this.fixedPageSize = fixedPageSize
         autoRefresh = false
