@@ -93,12 +93,12 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         // 开始发起 Violas 交易
         val account = Account(KeyPair.fromSecretKey(privateKey))
 
-        val minToken:ITokenVo
-        val maxToken:ITokenVo
+        val minToken: ITokenVo
+        val maxToken: ITokenVo
         if (tokenFrom.marketIndex > tokenTo.marketIndex) {
             minToken = tokenTo
             maxToken = tokenFrom
-        }else{
+        } else {
             minToken = tokenFrom
             maxToken = tokenTo
         }
@@ -134,7 +134,8 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         return mViolasRpcService.sendTransaction(
             optionTokenSwapTransactionPayload,
             account,
-            gasCurrencyCode = minTypeTag.value.module
+            gasCurrencyCode = minTypeTag.value.module,
+            chainId = Vm.ViolasChainId
         ).sequenceNumber.toString()
     }
 

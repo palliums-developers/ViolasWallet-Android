@@ -114,7 +114,6 @@ class TransferManager {
                 )
             }
             CoinTypes.Violas.coinType() -> {
-//                if (token) {
                 transferViolas(
                     context,
                     address,
@@ -125,17 +124,6 @@ class TransferManager {
                     success,
                     error
                 )
-//                } else {
-//                    transferViolas(
-//                        context,
-//                        address,
-//                        amount,
-//                        privateKey,
-//                        accountDO,
-//                        success,
-//                        error
-//                    )
-//                }
             }
         }
     }
@@ -180,34 +168,6 @@ class TransferManager {
             }, {
 
             })
-    }
-
-    private suspend fun transferViolasToken(
-        context: Context,
-        address: String,
-        amount: Double,
-        decryptPrivateKey: ByteArray,
-        account: AccountDO,
-        tokenId: Long,
-        success: (String) -> Unit,
-        error: (Throwable) -> Unit
-    ) {
-        val token = DataRepository.getTokenStorage().findById(tokenId)
-        token?.let {
-            try {
-//                mTokenManager.sendViolasToken(
-//                    token.tokenIdx,
-//                    Account(
-//                        KeyPair.fromSecretKey(decryptPrivateKey)
-//                    ),
-//                    address,
-//                    (amount * 1000000L).toLong()
-//                )
-                success.invoke("")
-            } catch (e: Exception) {
-                error.invoke(convertViolasTransferException(e))
-            }
-        }
     }
 
     private suspend fun transferLibra(
@@ -281,7 +241,7 @@ class TransferManager {
                         arrayListOf()
                     )
                 ),
-                token.module
+                token.module, chainId = Vm.ViolasChainId
             )
             success.invoke("")
         } catch (e: Exception) {

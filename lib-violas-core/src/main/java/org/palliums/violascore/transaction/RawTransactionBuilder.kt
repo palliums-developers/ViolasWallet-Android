@@ -34,7 +34,8 @@ fun RawTransaction.Companion.optionTransaction(
     gasCurrencyCode: String = lbrStructTagType(),
     maxGasAmount: Long = 1_000_000,
     gasUnitPrice: Long = 0,
-    delayed: Long = 600
+    delayed: Long = 600,
+    chainId: Int
 ): RawTransaction {
     val rawTransaction = RawTransaction(
         AccountAddress(HexUtils.fromHex(senderAddress)),
@@ -43,7 +44,8 @@ fun RawTransaction.Companion.optionTransaction(
         maxGasAmount,
         gasUnitPrice,
         gasCurrencyCode,
-        (Date().time / 1000) + delayed
+        (Date().time / 1000) + delayed,
+        chainId
     )
     println("rawTransaction ${HexUtils.toHex(rawTransaction.toByteArray())}")
     return rawTransaction
@@ -55,30 +57,6 @@ fun RawTransaction.Companion.optionTransaction(
 fun TransactionPayload.Companion.optionTransactionPayload(
     context: Context,
     address: String,
-    amount: Long,
-    metaData: ByteArray = byteArrayOf(),
-    metadataSignature: ByteArray = byteArrayOf(),
-    typeTag: TypeTag = lbrStructTag()
-): TransactionPayload {
-    val convert = AccountAddress.convert(address)
-    return optionTransactionPayload(
-        context,
-        convert.address,
-        convert.authenticationKeyPrefix,
-        amount,
-        metaData,
-        metadataSignature,
-        typeTag
-    )
-}
-
-/**
- * 创建 Token 转账 payload
- */
-fun TransactionPayload.Companion.optionTransactionPayload(
-    context: Context,
-    address: String,
-    authenticationKeyPrefix: String,
     amount: Long,
     metaData: ByteArray = byteArrayOf(),
     metadataSignature: ByteArray = byteArrayOf(),

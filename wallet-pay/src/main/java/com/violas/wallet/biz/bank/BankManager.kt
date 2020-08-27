@@ -49,7 +49,8 @@ class BankManager {
         return mViolasService.sendTransaction(
             optionBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
-            gasCurrencyCode = typeTagFrom.value.module
+            gasCurrencyCode = typeTagFrom.value.module,
+            chainId = Vm.ViolasChainId
         ).sequenceNumber.toString()
     }
 
@@ -81,7 +82,8 @@ class BankManager {
         return mViolasService.sendTransaction(
             optionRepayBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
-            gasCurrencyCode = typeTagFrom.value.module
+            gasCurrencyCode = typeTagFrom.value.module,
+            chainId = Vm.ViolasChainId
         ).sequenceNumber.toString()
     }
 
@@ -113,7 +115,8 @@ class BankManager {
         return mViolasService.sendTransaction(
             optionLockBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
-            gasCurrencyCode = typeTagFrom.value.module
+            gasCurrencyCode = typeTagFrom.value.module,
+            chainId = Vm.ViolasChainId
         ).sequenceNumber.toString()
     }
 
@@ -145,7 +148,8 @@ class BankManager {
         return mViolasService.sendTransaction(
             optionRedeemBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
-            gasCurrencyCode = typeTagFrom.value.module
+            gasCurrencyCode = typeTagFrom.value.module,
+            chainId = Vm.ViolasChainId
         ).sequenceNumber.toString()
     }
 }

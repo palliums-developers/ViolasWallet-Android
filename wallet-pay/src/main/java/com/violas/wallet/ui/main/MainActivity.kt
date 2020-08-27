@@ -91,17 +91,6 @@ class MainActivity : BaseAppActivity() {
         view_pager.adapter = viewPagerAdapter
         view_pager.offscreenPageLimit = 4
         bottom_navigation.setupWithViewPager(view_pager)
-
-        launch {
-            delay(100)
-            BorrowActivity.start(
-                this@MainActivity,
-                CoinTypes.Violas,
-                "VLSUSD",
-                "00000000000000000000000000000001",
-                "VLSUSD"
-            )
-        }
     }
 
     private fun resetToDefaultIcon() {

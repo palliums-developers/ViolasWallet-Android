@@ -108,7 +108,8 @@ class ViolasToOriginalCoinProcessor(
         return violasService.sendTransaction(
             optionMappingTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
-            gasCurrencyCode = typeTagFrom.value.module
+            gasCurrencyCode = typeTagFrom.value.module,
+            chainId = Vm.ViolasChainId
         ).sequenceNumber.toString()
     }
 }

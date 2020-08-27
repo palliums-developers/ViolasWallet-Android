@@ -17,7 +17,8 @@ data class RawTransaction(
     val max_gas_amount: Long,
     val gas_unit_price: Long,
     val gas_currency_code: String,
-    val expiration_time: Long
+    val expiration_time: Long,
+    val chainId: Int
 ) {
     fun toByteArray(): ByteArray {
         val stream = LCSOutputStream()
@@ -30,6 +31,7 @@ data class RawTransaction(
         stream.writeLong(gas_unit_price)
         stream.writeBytes(gas_currency_code.toByteArray())
         stream.writeLong(expiration_time)
+        stream.writeU8(chainId)
         return stream.toByteArray()
     }
 
@@ -46,15 +48,13 @@ data class RawTransaction(
                 input.readLong(),
                 input.readLong(),
                 input.readString(),
-                input.readLong()
+                input.readLong(),
+                input.readU8()
             )
         }
 
         fun hashByteArray(txBytes: ByteArray): ByteArray {
-            val sha3256 = SHA3.Digest256()
-            sha3256.update(SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()))
-            sha3256.update(txBytes)
-            return sha3256.digest()
+            return SHA3.Digest256().digest(RAW_TRANSACTION_HASH_SALT.toByteArray()) + txBytes
         }
     }
 }
