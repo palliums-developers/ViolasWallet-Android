@@ -213,6 +213,10 @@
         <activity
             android:name=".ui.bank.record.borrowing.BankBorrowingRecordActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.bank.details.borrowing.BankBorrowingDetailsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
 
         <!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data

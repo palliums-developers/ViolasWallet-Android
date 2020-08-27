@@ -13,6 +13,7 @@ import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.repository.http.bank.CurrBorrowingDTO
+import com.violas.wallet.ui.bank.details.borrowing.BankBorrowingDetailsActivity
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.ui.bank.record.borrowing.BankBorrowingRecordActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
@@ -34,8 +35,7 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<CurrBorrowingDTO>() {
     }
     private val viewAdapter by lazy {
         CurrBorrowingViewAdapter { currBorrowing, position ->
-            // TODO 进入币种借款详情页面
-            showToast("进入币种借款详情页面")
+            BankBorrowingDetailsActivity.start(this, currBorrowing)
         }
     }
 

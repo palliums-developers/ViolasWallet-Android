@@ -1,6 +1,8 @@
 package com.violas.wallet.repository.http.bank
 
+import android.os.Parcelable
 import androidx.annotation.Keep
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by elephant on 2020/8/24 11:23.
@@ -21,13 +23,14 @@ data class CurrDepositDTO(
 )
 
 @Keep
+@Parcelize
 data class CurrBorrowingDTO(
     val coinName: String,
     val coinModule: String,
     val coinAddress: String,
     val coinLogo: String,
     val borrowed: String            // 借款金额
-)
+) : Parcelable
 
 @Keep
 data class DepositRecordDTO(

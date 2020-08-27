@@ -447,7 +447,6 @@
     <string name="deposit_market">存款市场</string>
     <string name="borrowing_market">借款市场</string>
     <string name="deposit_order">存款订单</string>
-
     <string name="borrowing_order">借款订单</string>
     <string name="current_deposit">当前存款</string>
     <string name="current_borrowing">当前借款</string>
@@ -457,8 +456,11 @@
     <string name="seven_day_annual_yield">7日年化收益率</string>
     <string name="withdrawal_nbsp">提&#160;取</string>
     <string name="amount_to_be_repaid">待还金额</string>
-    <string name="deposit_details">存款明细</string>
+    <string name="deposit_record">存款记录</string>
+    <string name="borrowing_record">借款记录</string>
     <string name="borrowing_details">借款明细</string>
+    <string name="repayment_details">还款明细</string>
+    <string name="liquidation_details">清算明细</string>
     <string name="all_currencies">全部币种</string>
     <string name="all_state">全部状态</string>
     <string name="bank_deposit_state_depositing">存款中</string>

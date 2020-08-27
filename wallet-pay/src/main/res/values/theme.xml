@@ -256,6 +256,7 @@
         <item name="bankDepositEarningTextColor">@color/color_13B788</item>
         <item name="bankDepositEarningBgColor">@color/color_13B788_06</item>
         <item name="bankBorrowRateTextColor">@color/color_13B788</item>
+        <item name="bankDetailsTopBg">@mipmap/bg_bank_details_top</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">

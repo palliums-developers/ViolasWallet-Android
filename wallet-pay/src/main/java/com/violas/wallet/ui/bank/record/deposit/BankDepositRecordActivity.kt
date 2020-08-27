@@ -51,7 +51,7 @@ class BankDepositRecordActivity : BaseBankRecordActivity<DepositRecordDTO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.deposit_details)
+        setTitle(R.string.deposit_record)
         mPagingHandler.start()
     }
 

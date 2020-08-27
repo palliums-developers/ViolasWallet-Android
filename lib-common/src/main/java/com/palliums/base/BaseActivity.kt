@@ -199,6 +199,13 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
     }
 
     /**
+     * 设置顶部视图的背景高度，顶部视图在标题栏之下，在根视图之上
+     */
+    fun setTopBackgroundHeight(heightPx: Int) {
+        vTopView.layoutParams.height = heightPx
+    }
+
+    /**
      * 设置根视图的背景资源
      */
     fun setRootBackgroundResource(@DrawableRes resId: Int) {
