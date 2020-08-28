@@ -95,7 +95,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
             getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
         }
 
-        mPagingHandler.start(5)
+        mPagingHandler.start()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -49,3 +49,27 @@ data class BorrowingRecordDTO(
     val time: Long,
     val state: Int
 )
+
+@Keep
+data class BorrowingDetailDTO(
+    val amount: String,
+    val time: Long,
+    val state: Int
+)
+
+@Keep
+data class RepaymentDetailDTO(
+    val amount: String,
+    val time: Long,
+    val state: Int
+)
+
+@Keep
+data class LiquidationDetailDTO(
+    val liquidateCoin: String,
+    val liquidateAmount: String,
+    val deductCoin: String,
+    val deductAmount: String,
+    val time: Long,
+    val state: Int
+)

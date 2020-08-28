@@ -466,17 +466,25 @@
     <string name="all_currencies">全部币种</string>
     <string name="all_state">全部状态</string>
     <string name="bank_deposit_state_depositing">存款中</string>
-    <string name="bank_deposit_state_withdrawing">提取中</string>
     <string name="bank_deposit_state_deposited">已存款</string>
-    <string name="bank_deposit_state_withdrew">已提取</string>
     <string name="bank_deposit_state_deposit_failed">存款失败</string>
+    <string name="bank_deposit_state_withdrawing">提取中</string>
+    <string name="bank_deposit_state_withdrew">已提取</string>
     <string name="bank_deposit_state_withdrawal_failed">提取失败</string>
     <string name="bank_borrowing_state_borrowing">借款中</string>
     <string name="bank_borrowing_state_borrowed">已借款</string>
+    <string name="bank_borrowing_state_borrowing_failed">借款失败</string>
     <string name="bank_borrowing_state_repaying">还款中</string>
     <string name="bank_borrowing_state_repaid">已还款</string>
+    <string name="bank_borrowing_state_repayment_failed">还款失败</string>
+    <string name="bank_borrowing_state_liquidating">已清算中</string>
     <string name="bank_borrowing_state_liquidated">已清算</string>
+    <string name="bank_borrowing_state_liquidation_failed">清算失败</string>
     <string name="no_matching_search_results">没有匹配的搜索结果</string>
+    <string name="amount">数量</string>
+    <string name="state">状态</string>
+    <string name="liquidated">被清算</string>
+    <string name="deducted">已抵扣</string>
 
     <string name="borrow_order">借款订单</string>
 
