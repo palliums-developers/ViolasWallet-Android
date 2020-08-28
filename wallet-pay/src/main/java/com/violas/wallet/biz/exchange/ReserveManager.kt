@@ -186,9 +186,9 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     }
 
     private fun getOutputAmountWithFee(amountIn: Long, reserveIn: Long, reserveOut: Long): Long {
-        val amountInWithFee = BigInteger.valueOf(amountIn).multiply(BigInteger.valueOf(997))
+        val amountInWithFee = BigInteger.valueOf(amountIn).multiply(BigInteger.valueOf(9997))
         val numerator = amountInWithFee.multiply(BigInteger.valueOf(reserveOut))
-        val denominator = BigInteger.valueOf(reserveIn).multiply(BigInteger.valueOf(1000))
+        val denominator = BigInteger.valueOf(reserveIn).multiply(BigInteger.valueOf(10000))
             .add(amountInWithFee)
         val amountOut = numerator.divide(denominator)
         return amountOut.toLong()
