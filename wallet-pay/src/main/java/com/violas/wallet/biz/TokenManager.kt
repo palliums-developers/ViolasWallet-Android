@@ -227,7 +227,7 @@ class TokenManager {
                         addCurrency.sender,
                         addCurrency.sequenceNumber
                     )
-                    if (transaction.data?.vmStatus?.isSuccessExecuted() == true) {
+                    if (transaction.data?.isSuccessExecuted() == true) {
                         return true
                     }
                 }
@@ -248,7 +248,7 @@ class TokenManager {
                         addCurrency.sender,
                         addCurrency.sequenceNumber
                     )
-                    if (transaction.data?.vmStatus?.isSuccessExecuted() == true) {
+                    if (transaction.data?.isSuccessExecuted() == true) {
                         return true
                     }
                 }
