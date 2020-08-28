@@ -62,13 +62,9 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     }
 
     private val mViewAdapter by lazy {
-        TransactionRecordViewAdapter(
-            retryCallback = {
-                mViewModel.retry()
-            },
-            onItemClick = {
-                TransactionDetailsActivity.start(requireContext(), it)
-            })
+        TransactionRecordViewAdapter {
+            TransactionDetailsActivity.start(requireContext(), it)
+        }
     }
 
     override fun getViewModel(): PagingViewModel<TransactionRecordVO> {
@@ -99,7 +95,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
             getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
         }
 
-        mPagingHandler.start()
+        mPagingHandler.start(5)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -53,19 +53,15 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     }
 
     private val mViewAdapter by lazy {
-        TransactionRecordViewAdapter(
-            retryCallback = {
-                mViewModel.retry()
-            },
-            onClickQuery = {
-                if (it.url.isNullOrEmpty()) {
-                    showToast(R.string.transaction_record_not_supported_query)
-                } else {
-                    if (!openBrowser(requireActivity(), it.url)) {
-                        WebCommonActivity.start(requireActivity(), it.url)
-                    }
+        TransactionRecordViewAdapter {
+            if (it.url.isNullOrEmpty()) {
+                showToast(R.string.transaction_record_not_supported_query)
+            } else {
+                if (!openBrowser(requireActivity(), it.url)) {
+                    WebCommonActivity.start(requireActivity(), it.url)
                 }
-            })
+            }
+        }
     }
 
     override fun getViewModel(): PagingViewModel<TransactionRecordVO> {

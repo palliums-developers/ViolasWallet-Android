@@ -149,6 +149,10 @@ class PagingHandler<VO>(
         }*/
         mPagingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
 
+        mPagingController.getViewAdapter().setRetryCallback {
+            mPagingController.getViewModel().retry()
+        }
+
         mPagingController.getRecyclerView().adapter = mPagingController.getViewAdapter()
     }
 

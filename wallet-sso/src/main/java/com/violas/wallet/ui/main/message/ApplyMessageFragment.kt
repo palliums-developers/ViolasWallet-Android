@@ -37,6 +37,7 @@ class ApplyMessageFragment : BaseFragment() {
      * 更新数据标志，刷新中会置为false，刷新完成后再置为true
      */
     private var mUpdateSSOMsgDataFlag: Boolean = true
+
     /**
      * [mUpdateSSOMsgDataFlag]为false期间缓存的刷新数据
      */
@@ -46,7 +47,7 @@ class ApplyMessageFragment : BaseFragment() {
         ViewModelProvider(this).get(ApplyMessageViewModel::class.java)
     }
     private val mSSOMsgViewAdapter by lazy {
-        SSOApplicationMsgViewAdapter(retryCallback = { mViewModel.retry() }) { msg ->
+        SSOApplicationMsgViewAdapter { msg ->
             activity?.let {
                 mViewModel.observeChangedSSOApplicationMsg(msg)
                 GovernorApprovalActivity.start(it, msg)

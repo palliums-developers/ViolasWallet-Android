@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
@@ -35,9 +34,7 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
         ViewModelProvider(this).get(BankBorrowingRecordViewModel::class.java)
     }
     private val viewAdapter by lazy {
-        ViewAdapter {
-            viewModel.retry()
-        }
+        ViewAdapter()
     }
 
     override fun getViewModel(): PagingViewModel<BorrowingRecordDTO> {
@@ -86,9 +83,7 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
             )
     }
 
-    class ViewAdapter(
-        retryCallback: () -> Unit
-    ) : PagingViewAdapter<BorrowingRecordDTO>(retryCallback, DiffCallback()) {
+    class ViewAdapter : PagingViewAdapter<BorrowingRecordDTO>() {
 
         private val simpleDateFormat by lazy {
             SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH)
@@ -142,22 +137,6 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
                     )
                 )
             }
-        }
-    }
-
-    class DiffCallback : DiffUtil.ItemCallback<BorrowingRecordDTO>() {
-        override fun areItemsTheSame(
-            oldItem: BorrowingRecordDTO,
-            newItem: BorrowingRecordDTO
-        ): Boolean {
-            return oldItem.hashCode() == newItem.hashCode()
-        }
-
-        override fun areContentsTheSame(
-            oldItem: BorrowingRecordDTO,
-            newItem: BorrowingRecordDTO
-        ): Boolean {
-            return oldItem == newItem
         }
     }
 }

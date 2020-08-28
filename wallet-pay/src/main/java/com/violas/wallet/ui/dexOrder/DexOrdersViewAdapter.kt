@@ -2,7 +2,6 @@ package com.violas.wallet.ui.dexOrder
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
 import com.violas.wallet.R
@@ -17,10 +16,9 @@ import java.util.*
  * desc:
  */
 class DexOrdersViewAdapter(
-    retryCallback: () -> Unit,
     private val onClickItem: ((DexOrderDTO) -> Unit)? = null,
     private val onClickRevokeOrder: ((DexOrderDTO, Int) -> Unit)? = null
-) : PagingViewAdapter<DexOrderDTO>(retryCallback, DexOrdersDiffCallback()) {
+) : PagingViewAdapter<DexOrderDTO>() {
 
     private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
 
@@ -38,21 +36,5 @@ class DexOrdersViewAdapter(
             onClickItem,
             onClickRevokeOrder
         )
-    }
-}
-
-class DexOrdersDiffCallback : DiffUtil.ItemCallback<DexOrderDTO>() {
-    override fun areItemsTheSame(
-        oldItem: DexOrderDTO,
-        newItem: DexOrderDTO
-    ): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(
-        oldItem: DexOrderDTO,
-        newItem: DexOrderDTO
-    ): Boolean {
-        return oldItem == newItem
     }
 }

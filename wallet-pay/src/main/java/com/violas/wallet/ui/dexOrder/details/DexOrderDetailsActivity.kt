@@ -60,7 +60,6 @@ class DexOrderDetailsActivity : BasePagingActivity<DexOrderTradeDTO>() {
 
     private val mViewAdapter by lazy {
         DexOrderDetailsViewAdapter(
-            retryCallback = { mViewModel.retry() },
             addHeader = true,
             dexOrder = dexOrder!!,
             onOpenBrowserView = {

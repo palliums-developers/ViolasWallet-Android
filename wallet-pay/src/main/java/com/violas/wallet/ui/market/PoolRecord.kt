@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
@@ -44,12 +43,9 @@ class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
         ViewModelProvider(this).get(PoolRecordViewModel::class.java)
     }
     private val viewAdapter by lazy {
-        PoolRecordViewAdapter(
-            retryCallback = { viewModel.retry() },
-            clickItemCallback = {
-                PoolDetailsActivity.start(this, it)
-            }
-        )
+        PoolRecordViewAdapter {
+            PoolDetailsActivity.start(this, it)
+        }
     }
 
     override fun getViewModel(): PagingViewModel<PoolRecordDTO> {
@@ -184,9 +180,8 @@ class PoolRecordViewModel : PagingViewModel<PoolRecordDTO>() {
 }
 
 class PoolRecordViewAdapter(
-    retryCallback: () -> Unit,
     private val clickItemCallback: ((PoolRecordDTO) -> Unit)? = null
-) : PagingViewAdapter<PoolRecordDTO>(retryCallback, PoolRecordDiffCallback()) {
+) : PagingViewAdapter<PoolRecordDTO>() {
 
     private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
 
@@ -294,21 +289,5 @@ class PoolRecordViewHolder(
                 }
             }
         }
-    }
-}
-
-class PoolRecordDiffCallback : DiffUtil.ItemCallback<PoolRecordDTO>() {
-    override fun areItemsTheSame(
-        oldItem: PoolRecordDTO,
-        newItem: PoolRecordDTO
-    ): Boolean {
-        return oldItem.hashCode() == newItem.hashCode()
-    }
-
-    override fun areContentsTheSame(
-        oldItem: PoolRecordDTO,
-        newItem: PoolRecordDTO
-    ): Boolean {
-        return oldItem == newItem
     }
 }

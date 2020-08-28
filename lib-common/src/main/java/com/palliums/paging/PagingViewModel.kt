@@ -10,10 +10,7 @@ import com.palliums.extensions.isActiveCancellation
 import com.palliums.extensions.lazyLogError
 import com.palliums.net.LoadState
 import com.palliums.utils.coroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -163,19 +160,16 @@ abstract class PagingViewModel<VO> : ViewModel() {
             params: LoadInitialParams<Int>,
             callback: LoadInitialCallback<Int, VO>
         ) {
+            lazyLogError(TAG) { "refresh data => start" }
             synchronized(lock) {
                 val currentRefreshState = refreshState.value?.peekData()
-                if (currentRefreshState != null
-                    && currentRefreshState.status == LoadState.Status.RUNNING
-                ) {
+                if (currentRefreshState?.status == LoadState.Status.RUNNING) {
                     // 处于刷新中时，不需要再次刷新操作
                     return
                 }
 
                 val currentLoadMoreState = loadMoreState.value?.peekData()
-                if (currentLoadMoreState != null
-                    && currentLoadMoreState.status == LoadState.Status.RUNNING
-                ) {
+                if (currentLoadMoreState?.status == LoadState.Status.RUNNING) {
                     // 处于加载更多中时，不处理刷新操作
                     return
                 }
@@ -186,6 +180,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
             loadDataJob = this@PagingViewModel.viewModelScope
                 .launch(Dispatchers.IO + coroutineExceptionHandler()) {
 
+                    val startTime = System.currentTimeMillis()
                     try {
                         loadData(params.requestedLoadSize, 1, null,
 
@@ -220,10 +215,15 @@ abstract class PagingViewModel<VO> : ViewModel() {
                             })
 
                     } catch (e: Exception) {
-                        lazyLogError(e, TAG) { "refresh data failed" }
+                        lazyLogError(e, TAG) { "refresh data => failed" }
+
+                        val activeCancellation = e.isActiveCancellation()
+                        if (!activeCancellation) {
+                            delayOnError(startTime)
+                        }
 
                         synchronized(lock) {
-                            if (e.isActiveCancellation()) {
+                            if (activeCancellation) {
                                 refreshState.postValueSupport(LoadState.IDLE)
                             } else {
                                 retry = { loadInitial(params, callback) }
@@ -244,6 +244,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
             params: LoadParams<Int>,
             callback: LoadCallback<Int, VO>
         ) {
+            lazyLogError(TAG) { "load more data => start" }
             synchronized(lock) {
                 val currentRefreshState = refreshState.value?.peekData()
                 if (currentRefreshState != null
@@ -269,6 +270,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
             loadDataJob = this@PagingViewModel.viewModelScope
                 .launch(Dispatchers.IO + coroutineExceptionHandler()) {
 
+                    val startTime = System.currentTimeMillis()
                     try {
                         loadData(params.requestedLoadSize, pageNumber, nextPageKey,
 
@@ -295,10 +297,15 @@ abstract class PagingViewModel<VO> : ViewModel() {
                             })
 
                     } catch (e: Exception) {
-                        lazyLogError(e, TAG) { "load more data failed" }
+                        lazyLogError(e, TAG) { "load more data => failed" }
+
+                        val activeCancellation = e.isActiveCancellation()
+                        if (!activeCancellation) {
+                            delayOnError(startTime)
+                        }
 
                         synchronized(lock) {
-                            if (e.isActiveCancellation()) {
+                            if (activeCancellation) {
                                 loadMoreState.postValueSupport(LoadState.IDLE)
                             } else {
                                 retry = { loadAfter(params, callback) }
@@ -317,6 +324,16 @@ abstract class PagingViewModel<VO> : ViewModel() {
 
         override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, VO>) {
             // ignored, since we only ever append to our initial load
+        }
+
+        private suspend fun delayOnError(startTime: Long) {
+            val spentTime = System.currentTimeMillis() - startTime
+            if (System.currentTimeMillis() - startTime < 1000) {
+                try {
+                    delay(1000 - spentTime)
+                } catch (ignore: Exception) {
+                }
+            }
         }
     }
 }

@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.lazyLogError
@@ -42,7 +41,6 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
     }
     private val viewAdapter by lazy {
         SwapRecordViewAdapter(
-            retryCallback = { viewModel.retry() },
             clickItemCallback = {
                 SwapDetailsActivity.start(this, it)
             },
@@ -79,7 +77,7 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
                         return@launch
                     }
 
-                    mPagingHandler.start(fixedPageSize = true)
+                    mPagingHandler.start()
                 }
             })
     }
@@ -366,10 +364,9 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
 }
 
 class SwapRecordViewAdapter(
-    retryCallback: () -> Unit,
     private val clickItemCallback: ((SwapRecordDTO) -> Unit)? = null,
     private val clickRetryCallback: ((SwapRecordDTO, Int) -> Unit)? = null
-) : PagingViewAdapter<SwapRecordDTO>(retryCallback, SwapRecordDiffCallback()) {
+) : PagingViewAdapter<SwapRecordDTO>() {
 
     private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
 
@@ -477,21 +474,5 @@ class SwapRecordViewHolder(
                 }
             }
         }
-    }
-}
-
-class SwapRecordDiffCallback : DiffUtil.ItemCallback<SwapRecordDTO>() {
-    override fun areItemsTheSame(
-        oldItem: SwapRecordDTO,
-        newItem: SwapRecordDTO
-    ): Boolean {
-        return oldItem.hashCode() == newItem.hashCode()
-    }
-
-    override fun areContentsTheSame(
-        oldItem: SwapRecordDTO,
-        newItem: SwapRecordDTO
-    ): Boolean {
-        return oldItem == newItem
     }
 }

@@ -37,6 +37,9 @@ class TransactionRecordViewModel(
             // 在币种信息页面刷新时，通知Activity刷新余额
             EventBus.getDefault().post(RefreshBalanceEvent(0))
         }
+        if(pageNumber > 1){
+            error("test error")
+        }
 
         mTransactionRecordService.getTransactionRecords(
             mWalletAddress,

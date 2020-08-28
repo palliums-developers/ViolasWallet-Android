@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
@@ -34,12 +33,9 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
         ViewModelProvider(this).get(MappingRecordViewModel::class.java)
     }
     private val viewAdapter by lazy {
-        MappingRecordViewAdapter(
-            retryCallback = { viewModel.retry() },
-            clickItemCallback = {
-                // TODO 点击处理
-            }
-        )
+        MappingRecordViewAdapter {
+            // TODO 点击处理
+        }
     }
 
     override fun getViewModel(): PagingViewModel<MappingRecordDTO> {
@@ -67,9 +63,8 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
     }
 
     class MappingRecordViewAdapter(
-        retryCallback: () -> Unit,
         private val clickItemCallback: ((MappingRecordDTO) -> Unit)? = null
-    ) : PagingViewAdapter<MappingRecordDTO>(retryCallback, MappingRecordDiffCallback()) {
+    ) : PagingViewAdapter<MappingRecordDTO>() {
 
         private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
 
@@ -171,22 +166,6 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
                     }
                 }
             }
-        }
-    }
-
-    class MappingRecordDiffCallback : DiffUtil.ItemCallback<MappingRecordDTO>() {
-        override fun areItemsTheSame(
-            oldItem: MappingRecordDTO,
-            newItem: MappingRecordDTO
-        ): Boolean {
-            return oldItem.hashCode() == newItem.hashCode()
-        }
-
-        override fun areContentsTheSame(
-            oldItem: MappingRecordDTO,
-            newItem: MappingRecordDTO
-        ): Boolean {
-            return oldItem == newItem
         }
     }
 }

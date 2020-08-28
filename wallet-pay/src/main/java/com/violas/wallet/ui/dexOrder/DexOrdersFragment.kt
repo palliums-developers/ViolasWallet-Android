@@ -66,7 +66,6 @@ class DexOrdersFragment : BasePagingFragment<DexOrderDTO>() {
 
     private val mViewAdapter by lazy {
         DexOrdersViewAdapter(
-            retryCallback = { mViewModel.retry() },
             onClickItem = {
                 //DexOrderDetailsActivity.start(requireContext(), it)
                 DexOrderDetails2Activity.start(requireContext(), it)

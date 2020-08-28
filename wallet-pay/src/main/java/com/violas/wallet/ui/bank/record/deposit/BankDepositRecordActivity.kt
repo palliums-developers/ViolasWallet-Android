@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
@@ -35,9 +34,7 @@ class BankDepositRecordActivity : BaseBankRecordActivity<DepositRecordDTO>() {
         ViewModelProvider(this).get(BankDepositRecordViewModel::class.java)
     }
     private val viewAdapter by lazy {
-        ViewAdapter {
-            viewModel.retry()
-        }
+        ViewAdapter()
     }
 
     override fun getViewModel(): PagingViewModel<DepositRecordDTO> {
@@ -85,9 +82,7 @@ class BankDepositRecordActivity : BaseBankRecordActivity<DepositRecordDTO>() {
             )
     }
 
-    class ViewAdapter(
-        retryCallback: () -> Unit
-    ) : PagingViewAdapter<DepositRecordDTO>(retryCallback, DiffCallback()) {
+    class ViewAdapter : PagingViewAdapter<DepositRecordDTO>() {
 
         private val simpleDateFormat by lazy {
             SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH)
@@ -142,22 +137,6 @@ class BankDepositRecordActivity : BaseBankRecordActivity<DepositRecordDTO>() {
                     )
                 )
             }
-        }
-    }
-
-    class DiffCallback : DiffUtil.ItemCallback<DepositRecordDTO>() {
-        override fun areItemsTheSame(
-            oldItem: DepositRecordDTO,
-            newItem: DepositRecordDTO
-        ): Boolean {
-            return oldItem.hashCode() == newItem.hashCode()
-        }
-
-        override fun areContentsTheSame(
-            oldItem: DepositRecordDTO,
-            newItem: DepositRecordDTO
-        ): Boolean {
-            return oldItem == newItem
         }
     }
 }
