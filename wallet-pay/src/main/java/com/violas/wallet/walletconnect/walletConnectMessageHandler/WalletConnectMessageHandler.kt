@@ -5,6 +5,7 @@ import com.microsoft.appcenter.crashes.Crashes
 import com.palliums.exceptions.RequestException
 import com.palliums.violas.error.ViolasException
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.walletconnect.WalletConnectActivity
 import com.violas.walletconnect.jsonrpc.JsonRpcError
@@ -108,9 +109,12 @@ class WalletConnectMessageHandler(
                     CoinTypes.Libra.coinType() -> "libra"
                     else -> "bitcoin"
                 },
-                name = "",
                 address = it.address,
-                walletType = 0
+                chainId = when (it.coinNumber) {
+                    CoinTypes.Violas.coinType() -> Vm.ViolasChainId
+                    CoinTypes.Libra.coinType() -> Vm.LibraChainId
+                    else -> 0
+                }
             )
         }
         iWalletConnectMessage.sendSuccessMessage(id, accounts)

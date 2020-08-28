@@ -5,8 +5,9 @@ open class WCViolasGetAccount(
 )
 
 open class WCViolasAccount(
-    val walletType: Int,
+//    val walletType: Int,
     val coinType: String,
-    val name: String,
-    val address: String
+//    val name: String,
+    val address: String,
+    val chainId: Int
 )
