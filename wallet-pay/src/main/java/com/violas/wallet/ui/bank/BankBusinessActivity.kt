@@ -20,7 +20,6 @@ import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_bank_business.*
-import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.android.synthetic.main.view_bank_business_parameter.view.*
 import kotlinx.android.synthetic.main.view_bank_business_parameter.view.tvContent
 import kotlinx.android.synthetic.main.view_bank_business_parameter.view.tvTitle
@@ -35,10 +34,8 @@ import kotlinx.coroutines.launch
 abstract class BankBusinessActivity : BaseAppActivity(),
     AssetsVoTokenSelectTokenDialog.AssetsDataResourcesBridge {
     companion object {
-        const val EXT_ASSETS_COINTYPE = "key1"
-        const val EXT_ASSETS_MODULE = "key2"
-        const val EXT_ASSETS_ADDRESS = "key3"
-        const val EXT_ASSETS_NAME = "key4"
+        const val EXT_BUSINESS_ID = "key1"
+        const val EXT_BUSINESS_LIST = "key2"
     }
 
     protected val mBankBusinessViewModel by lazy {
@@ -72,9 +69,20 @@ abstract class BankBusinessActivity : BaseAppActivity(),
         amountView.text = content
     }
 
+    abstract fun loadBusiness(businessId: String)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        handlerIntentParameter()
+
+        val businessId = intent.getStringExtra(EXT_BUSINESS_ID)
+        businessId.ifEmpty {
+            loadBusiness(businessId)
+        }
+        if (businessId != null) {
+            loadBusiness(businessId)
+        } else {
+            throw Exception("BankBusinessActivity Param EXT_BUSINESS_ID is null.")
+        }
 
         mBankBusinessViewModel.mPageTitleLiveData.observe(this, Observer {
             title = it
@@ -218,12 +226,12 @@ abstract class BankBusinessActivity : BaseAppActivity(),
         viewGroupCurrentAssets.setOnClickListener { showSelectTokenDialog() }
     }
 
-    private fun handlerIntentParameter() {
-        val coinType = intent.getIntExtra(EXT_ASSETS_COINTYPE, CoinTypes.Violas.coinType())
-        val module = intent.getStringExtra(EXT_ASSETS_MODULE)
-        val address = intent.getStringExtra(EXT_ASSETS_ADDRESS)
-        val name = intent.getStringExtra(EXT_ASSETS_NAME)
-
+    protected fun selectCurrentCoin(
+        module: String,
+        address: String,
+        name: String,
+        coinType: Int = CoinTypes.Violas.coinType()
+    ) {
         var isFind = false
         mWalletAppViewModel.mAssetsListLiveData.value?.forEach {
             if (it.isBitcoin()

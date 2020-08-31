@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextPaint
@@ -39,16 +40,12 @@ class BorrowActivity : BankBusinessActivity() {
     companion object {
         fun start(
             context: Context,
-            coinType: CoinTypes,
-            module: String? = null,
-            address: String? = null,
-            name: String? = null
+            businessId: String,
+            businessList: Array<Parcelable>? = null
         ) {
             Intent(context, BorrowActivity::class.java).run {
-                putExtra(EXT_ASSETS_COINTYPE, coinType.coinType())
-                putExtra(EXT_ASSETS_MODULE, module)
-                putExtra(EXT_ASSETS_ADDRESS, address)
-                putExtra(EXT_ASSETS_NAME, name)
+                putExtra(EXT_BUSINESS_ID, businessId)
+                putExtra(EXT_BUSINESS_LIST, businessList)
             }.start(context)
         }
     }
@@ -59,6 +56,10 @@ class BorrowActivity : BankBusinessActivity() {
 
     private val mBankManager by lazy {
         BankManager()
+    }
+
+    override fun loadBusiness(businessId: String) {
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

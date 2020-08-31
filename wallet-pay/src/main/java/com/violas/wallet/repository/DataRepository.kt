@@ -9,6 +9,8 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.BaseBizUrl.getViolasBaseUrl
 import com.violas.wallet.repository.database.AppDatabase
+import com.violas.wallet.repository.http.bank.BankApi
+import com.violas.wallet.repository.http.bank.BankRepository
 import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorApi
 import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorRepository
 import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorService
@@ -27,7 +29,9 @@ import com.violas.wallet.repository.http.mapping.MappingRepository
 import com.violas.wallet.repository.http.violas.ViolasBizService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.palliums.libracore.http.*
+import org.palliums.libracore.http.LibraApi
+import org.palliums.libracore.http.LibraRepository
+import org.palliums.libracore.http.LibraService
 import org.palliums.violascore.http.ViolasRpcApi
 import org.palliums.violascore.http.ViolasRpcRepository
 import org.palliums.violascore.http.ViolasRpcService
@@ -116,6 +120,9 @@ object DataRepository {
 
     fun getExchangeService() =
         ExchangeRepository(retrofit.create(ExchangeApi::class.java))
+
+    fun getBankService() =
+        BankRepository(retrofit.create(BankApi::class.java))
 
     fun getMultiTokenContractService(): MultiContractRpcApi {
         return retrofit.create(MultiContractRpcApi::class.java)
