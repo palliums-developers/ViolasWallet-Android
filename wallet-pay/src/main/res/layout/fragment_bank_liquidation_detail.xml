@@ -1,35 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.palliums.widget.refresh.DefaultRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/vRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/dp_19"
     tools:context=".ui.bank.details.borrowing.LiquidationDetailFragment">
 
-    <com.palliums.widget.refresh.RefreshClassicsHeader
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <com.palliums.widget.refresh.DefaultRefreshLayout
+        android:id="@+id/vRefreshLayout"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0"
+        android:layout_marginTop="@dimen/dp_19"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/vRecyclerView"
+        <com.palliums.widget.refresh.RefreshClassicsHeader
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:overScrollMode="never"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_bank_liquidation_detail" />
+            android:layout_height="wrap_content" />
 
-        <com.palliums.widget.status.DefaultStatusLayout
-            android:id="@+id/vStatusLayout"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:lsStatus="empty" />
+            android:layout_height="match_parent">
 
-    </FrameLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/vRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_bank_liquidation_detail" />
 
-</com.palliums.widget.refresh.DefaultRefreshLayout>
+            <com.palliums.widget.status.DefaultStatusLayout
+                android:id="@+id/vStatusLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:lsStatus="empty" />
+
+        </FrameLayout>
+
+    </com.palliums.widget.refresh.DefaultRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

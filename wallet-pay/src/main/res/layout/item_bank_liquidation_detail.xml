@@ -33,13 +33,12 @@
         android:id="@+id/tvDeductedLabel"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_10"
+        android:layout_marginStart="@dimen/dp_122"
         android:includeFontPadding="false"
         android:text="@string/deducted"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/sp_10"
         app:layout_constraintBottom_toBottomOf="@id/tvLiquidatedLabel"
-        app:layout_constraintEnd_toEndOf="@id/tvTime"
-        app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="@id/tvLiquidatedLabel" />
 
     <NumberTextView

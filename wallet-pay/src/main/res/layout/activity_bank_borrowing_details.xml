@@ -87,7 +87,8 @@
         <Button
             android:id="@+id/btnGoRepayment"
             style="@style/BaseButtonPrimary"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:text="@string/action_repay_borrowing_immediately" />
 
     </FrameLayout>
 

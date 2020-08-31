@@ -174,7 +174,7 @@ class LiquidationDetailViewModel(
             LiquidationDetailDTO(
                 coinName,
                 "333030333",
-                "EYR",
+                "EUR",
                 "222020220",
                 System.currentTimeMillis(),
                 2

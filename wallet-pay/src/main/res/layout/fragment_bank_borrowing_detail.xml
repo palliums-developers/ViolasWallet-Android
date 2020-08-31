@@ -14,6 +14,7 @@
         android:layout_marginTop="@dimen/dp_19"
         android:includeFontPadding="false"
         android:text="@string/label_time"
+        android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/sp_10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,12 +23,12 @@
         android:id="@+id/tvAmountLabel"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_10"
+        android:layout_marginStart="@dimen/dp_122"
         android:includeFontPadding="false"
         android:text="@string/amount"
+        android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/sp_10"
         app:layout_constraintBottom_toBottomOf="@id/tvTimeLabel"
-        app:layout_constraintEnd_toEndOf="@id/tvStateLabel"
-        app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="@id/tvTimeLabel" />
 
     <TextView
@@ -37,6 +38,7 @@
         android:layout_marginEnd="@dimen/dp_34"
         android:includeFontPadding="false"
         android:text="@string/state"
+        android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/sp_10"
         app:layout_constraintBottom_toBottomOf="@id/tvTimeLabel"
         app:layout_constraintEnd_toEndOf="parent" />

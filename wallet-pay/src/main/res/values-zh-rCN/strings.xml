@@ -475,7 +475,7 @@
     <string name="bank_borrowing_state_repaying">还款中</string>
     <string name="bank_borrowing_state_repaid">已还款</string>
     <string name="bank_borrowing_state_repayment_failed">还款失败</string>
-    <string name="bank_borrowing_state_liquidating">已清算中</string>
+    <string name="bank_borrowing_state_liquidating">清算中</string>
     <string name="bank_borrowing_state_liquidated">已清算</string>
     <string name="bank_borrowing_state_liquidation_failed">清算失败</string>
     <string name="no_matching_search_results">没有匹配的搜索结果</string>

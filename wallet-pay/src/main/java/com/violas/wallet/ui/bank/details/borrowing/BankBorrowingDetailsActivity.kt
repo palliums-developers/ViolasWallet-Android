@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.palliums.utils.*
@@ -15,6 +14,7 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.repository.http.bank.CurrBorrowingDTO
+import com.violas.wallet.ui.bank.repayBorrow.RepayBorrowActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import kotlinx.android.synthetic.main.activity_bank_borrowing_details.*
 import kotlinx.coroutines.Dispatchers
@@ -73,23 +73,17 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
-        var currBorrowing: CurrBorrowingDTO? = null
         if (savedInstanceState != null) {
-            currBorrowing = savedInstanceState.getParcelable(KEY_ONE)
+            currBorrowing = savedInstanceState.getParcelable(KEY_ONE) ?: return false
         } else if (intent != null) {
-            currBorrowing = intent.getParcelableExtra(KEY_ONE)
+            currBorrowing = intent.getParcelableExtra(KEY_ONE) ?: return false
         }
 
         violasAddress =
             AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())?.address
                 ?: return false
 
-        return if (currBorrowing == null) {
-            false
-        } else {
-            this.currBorrowing = currBorrowing
-            true
-        }
+        return true
     }
 
     private fun initTitleBar() {
@@ -127,13 +121,38 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         }
 
         tabLayout.setupWithViewPager(viewPager)
-        tabLayout.getTabAt(0)?.select()
+        val count = viewPager.adapter!!.count
+        for (i in 0 until count) {
+            tabLayout.getTabAt(i)?.let { tab ->
+                tab.setCustomView(R.layout.item_bank_borrowing_details_tab_layout)
+                updateTabView(tab, i == 0)?.let {
+                    it.text = tab.text
+                }
+            }
+        }
+    }
+
+    private fun updateTabView(tab: TabLayout.Tab, select: Boolean): TextView? {
+        return tab.customView?.findViewById<TextView>(R.id.textView)?.also {
+            it.textSize = if (select) 16f else 10f
+            it.setTextColor(
+                getColorByAttrId(
+                    if (select) android.R.attr.textColor else android.R.attr.textColorTertiary,
+                    this
+                )
+            )
+        }
     }
 
     private fun initEvent() {
         btnGoRepayment.setOnClickListener {
-            // TODO 进入还款页面
-            showToast("进入还款页面")
+            RepayBorrowActivity.start(
+                this,
+                CoinTypes.Violas,
+                currBorrowing.coinModule,
+                currBorrowing.coinAddress,
+                currBorrowing.coinName
+            )
         }
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -142,38 +161,11 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
-                getTextView(tab).run {
-                    textSize = 10f
-                    setTextColor(
-                        getColorByAttrId(
-                            android.R.attr.textColorTertiary,
-                            this@BankBorrowingDetailsActivity
-                        )
-                    )
-                }
+                updateTabView(tab, false)
             }
 
             override fun onTabSelected(tab: TabLayout.Tab) {
-                getTextView(tab).run {
-                    textSize = 16f
-                    setTextColor(
-                        getColorByAttrId(
-                            android.R.attr.textColor,
-                            this@BankBorrowingDetailsActivity
-                        )
-                    )
-                }
-            }
-
-            private fun getTextView(tab: TabLayout.Tab): TextView {
-                var textView = tab.customView as? TextView
-                if (textView == null) {
-                    textView = AppCompatTextView(this@BankBorrowingDetailsActivity).apply {
-                        text = tab.text
-                    }
-                    tab.customView = textView
-                }
-                return textView
+                updateTabView(tab, true)
             }
         })
     }
