@@ -226,3 +226,9 @@ fun getAmountPrefix(amountBigDecimal: BigDecimal, input: Boolean): String {
         else -> "- "
     }
 }
+
+fun keepTwoDecimals(amountStr: String): String {
+    return BigDecimal(amountStr)
+        .setScale(2, RoundingMode.DOWN)
+        .toPlainString()
+}

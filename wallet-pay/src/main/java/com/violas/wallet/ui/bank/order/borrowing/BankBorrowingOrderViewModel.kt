@@ -38,14 +38,14 @@ class BankBorrowingOrderViewModel : ListingViewModel<CurrBorrowingDTO>() {
             CurrBorrowingDTO(
                 "VLSUSD",
                 "VLSUSD",
-                "00000000000000000000000000000001",
+                "00000000000000000000000000000000",
                 "",
                 "1001110000"
             ),
             CurrBorrowingDTO(
                 "VLSEUR",
                 "VLSEUR",
-                "00000000000000000000000000000001",
+                "00000000000000000000000000000000",
                 "",
                 "1231410000"
             )

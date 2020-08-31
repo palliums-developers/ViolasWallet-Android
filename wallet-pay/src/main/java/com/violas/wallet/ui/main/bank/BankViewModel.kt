@@ -3,6 +3,14 @@ package com.violas.wallet.ui.main.bank
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.palliums.base.BaseViewModel
+import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.repository.http.bank.BankProductSummaryDTO
+import com.violas.wallet.repository.http.bank.UserBankInfoDTO
+import com.violas.wallet.utils.keepTwoDecimals
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 /**
  * Created by elephant on 2020/8/21 17:05.
@@ -27,19 +35,66 @@ class BankViewModel : BaseViewModel() {
     // 昨日收益
     val yesterdayEarningsLiveData = MediatorLiveData<String>()
 
+    // 用户银行信息
+    val userBankInfoLiveData = MutableLiveData<UserBankInfoDTO>()
+
+    private var address: String? = null
+
     init {
+        val hiddenAmount: () -> Unit = {
+            totalDepositLiveData.value = "≈ ******"
+            totalBorrowableLiveData.value = "≈ ******"
+            totalEarningsLiveData.value = "≈ ******"
+            yesterdayEarningsLiveData.value = "***"
+        }
         totalDepositLiveData.addSource(showAmountLiveData) {
             if (it) {
-                totalDepositLiveData.value = "≈ 0.00"
-                totalBorrowableLiveData.value = "≈ 0.00"
-                totalEarningsLiveData.value = "≈ 0.00"
-                yesterdayEarningsLiveData.value = "0.00 $"
+                val userBankInfo = userBankInfoLiveData.value
+                totalDepositLiveData.value =
+                    "≈ ${keepTwoDecimals(userBankInfo?.totalDeposit ?: "0")}"
+                totalBorrowableLiveData.value =
+                    "≈ ${keepTwoDecimals(userBankInfo?.totalBorrowable ?: "0")}"
+                totalEarningsLiveData.value =
+                    "≈ ${keepTwoDecimals(userBankInfo?.totalEarnings ?: "0")}"
+                yesterdayEarningsLiveData.value =
+                    "${keepTwoDecimals(userBankInfo?.yesterdayEarnings ?: "0")} $"
             } else {
-                totalDepositLiveData.value = "≈ ******"
-                totalBorrowableLiveData.value = "≈ ******"
-                totalEarningsLiveData.value = "≈ ******"
-                yesterdayEarningsLiveData.value = "***"
+                hiddenAmount()
             }
+        }
+        totalDepositLiveData.addSource(userBankInfoLiveData) {
+            if (showAmountLiveData.value == true) {
+                totalDepositLiveData.value = "≈ ${keepTwoDecimals(it.totalDeposit)}"
+                totalBorrowableLiveData.value = "≈ ${keepTwoDecimals(it.totalBorrowable)}"
+                totalEarningsLiveData.value = "≈ ${keepTwoDecimals(it.totalEarnings)}"
+                yesterdayEarningsLiveData.value = "${keepTwoDecimals(it.yesterdayEarnings)} $"
+            } else {
+                hiddenAmount()
+            }
+        }
+    }
+
+    suspend fun initAddress() = withContext(Dispatchers.IO) {
+        synchronized(lock) {
+            val violasAccount =
+                AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+            val lastAddress = address
+            address = violasAccount?.address
+
+            // 如果是删除钱包后，立即重置用户银行的存款取款信息
+            if (!lastAddress.isNullOrBlank()
+                && address.isNullOrBlank()
+                && userBankInfoLiveData.value != null
+            ) {
+                userBankInfoLiveData.value = userBankInfoLiveData.value!!.also {
+                    it.totalDeposit = "0"
+                    it.totalBorrowable = "0"
+                    it.totalEarnings = "0"
+                    it.yesterdayEarnings = "0"
+                }
+            }
+
+            return@withContext !address.isNullOrBlank()
         }
     }
 
@@ -48,6 +103,63 @@ class BankViewModel : BaseViewModel() {
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        TODO("Not yet implemented")
+        // TODO 对接接口
+        var address: String?
+        synchronized(lock) {
+            address = this.address
+        }
+
+        delay(2000)
+        val userBankInfo = fakeData(address)
+        userBankInfoLiveData.postValue(userBankInfo)
+    }
+
+    private fun fakeData(address: String?): UserBankInfoDTO {
+        return UserBankInfoDTO(
+            totalDeposit = if (address.isNullOrBlank()) "0" else "1000.11",
+            totalBorrowable = if (address.isNullOrBlank()) "0" else "500.22",
+            totalEarnings = if (address.isNullOrBlank()) "0" else "111.01",
+            yesterdayEarnings = if (address.isNullOrBlank()) "0" else "1.1",
+            depositProducts = mutableListOf(
+                BankProductSummaryDTO(
+                    productId = "1",
+                    productName = "VLSUSD",
+                    productDesc = "持币生息的VLSUSD",
+                    productLogo = "",
+                    productRate = "3.7",
+                    tokenName = "VLSUSD",
+                    tokenModule = "VLSUSD"
+                ),
+                BankProductSummaryDTO(
+                    productId = "2",
+                    productName = "VLSEUR",
+                    productDesc = "存生息，支持17个币种",
+                    productLogo = "",
+                    productRate = "3.5",
+                    tokenName = "VLSEUR",
+                    tokenModule = "VLSEUR"
+                )
+            ),
+            borrowingProducts = mutableListOf(
+                BankProductSummaryDTO(
+                    productId = "1",
+                    productName = "VLSUSD",
+                    productDesc = "质押挖矿",
+                    productLogo = "",
+                    productRate = "3.7",
+                    tokenName = "VLSUSD",
+                    tokenModule = "VLSUSD"
+                ),
+                BankProductSummaryDTO(
+                    productId = "2",
+                    productName = "VLSEUR",
+                    productDesc = "借生息，支持17个币种",
+                    productLogo = "",
+                    productRate = "3.5",
+                    tokenName = "VLSEUR",
+                    tokenModule = "VLSEUR"
+                )
+            )
+        )
     }
 }

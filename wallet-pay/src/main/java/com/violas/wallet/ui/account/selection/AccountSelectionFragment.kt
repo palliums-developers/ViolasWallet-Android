@@ -115,7 +115,6 @@ class AccountSelectionFragment : BaseFragment() {
             RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(context, 10),
                 bottom = DensityUtility.dp2px(context, 60),
-                showFirstTop = true,
                 onlyShowLastBottom = true
             )
         )

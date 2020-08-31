@@ -16,6 +16,7 @@ import com.violas.wallet.repository.http.bank.CurrDepositDTO
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.ui.bank.record.deposit.BankDepositRecordActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
+import com.violas.wallet.utils.keepTwoDecimals
 import com.violas.wallet.utils.loadCircleImage
 import kotlinx.android.synthetic.main.activity_bank_order.*
 import kotlinx.android.synthetic.main.item_bank_curr_deposit.view.*
@@ -106,11 +107,7 @@ class BankDepositOrderActivity : BaseBankOrderActivity<CurrDepositDTO>() {
                 itemView.tvCoinName.text = it.coinName
                 itemView.tvPrincipal.text = convertAmountToDisplayAmountStr(it.principal)
                 itemView.tvEarnings.text = convertAmountToDisplayAmountStr(it.totalEarnings)
-                itemView.tvSevenDayAnnualYield.text =
-                    "${BigDecimal(it.sevenDayAnnualYield).setScale(
-                        2,
-                        RoundingMode.DOWN
-                    ).toPlainString()}%"
+                itemView.tvDepositYield.text = "${keepTwoDecimals(it.depositYield)}%"
             }
         }
 

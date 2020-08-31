@@ -108,25 +108,25 @@
         tools:text="3828.00" />
 
     <TextView
-        android:id="@+id/tvSevenDayAnnualYieldLabel"
+        android:id="@+id/tvDepositYieldLabel"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_10"
         android:includeFontPadding="false"
-        android:text="@string/seven_day_annual_yield"
+        android:text="@string/deposit_yield"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/sp_10"
         app:layout_constraintBaseline_toBaselineOf="@id/tvPrincipalLabel"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/tvSevenDayAnnualYield"
+        android:id="@+id/tvDepositYield"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_14"
         android:includeFontPadding="false"
-        android:textColor="?attr/bankDepositYieldTextColor"
+        android:textColor="?attr/bankProductRateTextColor"
         android:textSize="@dimen/sp_14"
         app:layout_constraintTop_toTopOf="@id/tvPrincipal"
-        app:layout_constraintEnd_toEndOf="@id/tvSevenDayAnnualYieldLabel"
+        app:layout_constraintEnd_toEndOf="@id/tvDepositYieldLabel"
         tools:text="5.00%" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

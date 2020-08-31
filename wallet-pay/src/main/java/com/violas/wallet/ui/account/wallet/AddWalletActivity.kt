@@ -64,7 +64,6 @@ class AddWalletActivity : BaseListingActivity<AddWalletVo>() {
             RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(this, 10),
                 bottom = 0,
-                showFirstTop = true,
                 onlyShowLastBottom = true
             )
         )

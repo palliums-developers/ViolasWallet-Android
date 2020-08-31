@@ -55,8 +55,7 @@ abstract class BaseBankOrderActivity<VO> : BaseListingActivity<VO>() {
                 top = DensityUtility.dp2px(this, 5),
                 bottom = DensityUtility.dp2px(this, 5),
                 left = DensityUtility.dp2px(this, 15),
-                right = DensityUtility.dp2px(this, 15),
-                showFirstTop = true
+                right = DensityUtility.dp2px(this, 15)
             )
         )
         refreshLayout.setOnRefreshListener {

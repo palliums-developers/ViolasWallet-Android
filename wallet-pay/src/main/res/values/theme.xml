@@ -252,10 +252,9 @@
         <item name="bankBorrowingOrderIcon">@mipmap/ic_bank_borrow_order</item>
         <item name="bankListEmptyDataBg">@mipmap/bg_bank_list_empty_data</item>
         <item name="bankSearchEmptyDataBg">@mipmap/bg_bank_search_empty_data</item>
-        <item name="bankDepositYieldTextColor">@color/color_13B788</item>
+        <item name="bankProductRateTextColor">@color/color_13B788</item>
         <item name="bankDepositEarningTextColor">@color/color_13B788</item>
         <item name="bankDepositEarningBgColor">@color/color_13B788_06</item>
-        <item name="bankBorrowRateTextColor">@color/color_13B788</item>
         <item name="bankDetailsTopBg">@mipmap/bg_bank_details_top</item>
     </style>
 

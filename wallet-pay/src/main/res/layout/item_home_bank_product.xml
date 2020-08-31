@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/sel_bg_style_2_solid_corners_8"
+    android:padding="@dimen/dp_12">
+
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="@dimen/dp_36"
+        android:layout_height="@dimen/dp_36"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="?attr/iconCoinDefLogo" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_16"
+        android:layout_marginStart="@dimen/dp_8"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/sp_16"
+        app:layout_constraintStart_toEndOf="@id/ivLogo"
+        app:layout_constraintTop_toTopOf="@id/ivLogo"
+        tools:text="VLSUSD" />
+
+    <TextView
+        android:id="@+id/tvDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_10"
+        android:includeFontPadding="false"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintBottom_toBottomOf="@id/ivLogo"
+        app:layout_constraintStart_toStartOf="@id/tvName"
+        tools:text="存/借生息，支持17个币种" />
+
+    <TextView
+        android:id="@+id/tvRate"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_18"
+        android:includeFontPadding="false"
+        android:textColor="?attr/bankProductRateTextColor"
+        android:textSize="@dimen/sp_18"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ivLogo"
+        tools:text="3.7%" />
+
+    <TextView
+        android:id="@+id/tvRateLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_10"
+        android:includeFontPadding="false"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/sp_10"
+        app:layout_constraintBottom_toBottomOf="@id/ivLogo"
+        app:layout_constraintEnd_toEndOf="@id/tvRate"
+        tools:text="@string/deposit_yield" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

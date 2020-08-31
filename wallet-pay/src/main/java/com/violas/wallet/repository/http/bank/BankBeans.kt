@@ -2,6 +2,7 @@ package com.violas.wallet.repository.http.bank
 
 import android.os.Parcelable
 import androidx.annotation.Keep
+import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -12,14 +13,51 @@ import kotlinx.android.parcel.Parcelize
  */
 
 @Keep
+data class UserBankInfoDTO(
+    @SerializedName("amount")
+    var totalDeposit: String,
+    @SerializedName("borrow")
+    var totalBorrowable: String,
+    @SerializedName("total")
+    var totalEarnings: String,
+    @SerializedName("yesterday")
+    var yesterdayEarnings: String,
+    @SerializedName("deposits")
+    val depositProducts: List<BankProductSummaryDTO>?,
+    @SerializedName("borrows")
+    val borrowingProducts: List<BankProductSummaryDTO>?
+)
+
+@Keep
+@Parcelize
+data class BankProductSummaryDTO(
+    @SerializedName("id")
+    val productId: String,
+    @SerializedName("name")
+    val productName: String,
+    @SerializedName("intro")
+    val productDesc: String,
+    @SerializedName("logo")
+    val productLogo: String,
+    @SerializedName("rate")
+    val productRate: String,        // 存款收益率，或借款借贷率
+    @SerializedName("name")
+    val tokenName: String,
+    @SerializedName("name")
+    val tokenModule: String,
+    @SerializedName("id")
+    val tokenAddress: String = "00000000000000000000000000000000"
+) : Parcelable
+
+@Keep
 data class CurrDepositDTO(
     val coinName: String,
     val coinModule: String,
-    val coinAddress: String,
+    val coinAddress: String = "00000000000000000000000000000000",
     val coinLogo: String,
-    val principal: String,           // 本金
-    val totalEarnings: String,       // 累计收益
-    val sevenDayAnnualYield: String  // 7日年化收益率
+    val principal: String,          // 本金
+    val totalEarnings: String,      // 累计收益
+    val depositYield: String        // 存款收益率
 )
 
 @Keep
@@ -27,7 +65,7 @@ data class CurrDepositDTO(
 data class CurrBorrowingDTO(
     val coinName: String,
     val coinModule: String,
-    val coinAddress: String,
+    val coinAddress: String = "00000000000000000000000000000000",
     val coinLogo: String,
     val borrowed: String            // 借款金额
 ) : Parcelable

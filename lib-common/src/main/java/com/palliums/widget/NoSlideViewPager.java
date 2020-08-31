@@ -12,6 +12,7 @@ import androidx.viewpager.widget.ViewPager;
 
 public class NoSlideViewPager extends ViewPager {
     private boolean isCanScroll = false;
+    private boolean smoothScroll = false;
 
     public NoSlideViewPager(Context context) {
         super(context);
@@ -23,6 +24,10 @@ public class NoSlideViewPager extends ViewPager {
 
     public void setScanScroll(boolean isCanScroll) {
         this.isCanScroll = isCanScroll;
+    }
+
+    public void setSmoothScroll(boolean smoothScroll) {
+        this.smoothScroll = smoothScroll;
     }
 
     @Override
@@ -46,7 +51,7 @@ public class NoSlideViewPager extends ViewPager {
 
     @Override
     public void setCurrentItem(int item) {
-        super.setCurrentItem(item);
+        super.setCurrentItem(item, smoothScroll);
     }
 
     @Override

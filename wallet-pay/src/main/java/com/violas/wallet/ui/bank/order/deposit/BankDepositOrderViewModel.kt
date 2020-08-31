@@ -38,7 +38,7 @@ class BankDepositOrderViewModel : ListingViewModel<CurrDepositDTO>() {
             CurrDepositDTO(
                 "VLSUSD",
                 "VLSUSD",
-                "00000000000000000000000000000001",
+                "00000000000000000000000000000000",
                 "",
                 "1001110000",
                 "23400000",
@@ -47,7 +47,7 @@ class BankDepositOrderViewModel : ListingViewModel<CurrDepositDTO>() {
             CurrDepositDTO(
                 "VLSEUR",
                 "VLSEUR",
-                "00000000000000000000000000000001",
+                "00000000000000000000000000000000",
                 "",
                 "1231410000",
                 "33500000",

@@ -163,7 +163,6 @@ class AccountOperationsActivity : BaseAppActivity() {
             RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(this, 12),
                 bottom = DensityUtility.dp2px(this, 80),
-                showFirstTop = true,
                 onlyShowLastBottom = true
             )
         )

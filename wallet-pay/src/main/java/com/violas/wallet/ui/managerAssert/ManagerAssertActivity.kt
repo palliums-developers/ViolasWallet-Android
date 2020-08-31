@@ -116,8 +116,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                 top = DensityUtility.dp2px(this, 5),
                 bottom = DensityUtility.dp2px(this, 5),
                 left = DensityUtility.dp2px(this, 16),
-                right = DensityUtility.dp2px(this, 16),
-                showFirstTop = true
+                right = DensityUtility.dp2px(this, 16)
             )
         )
 

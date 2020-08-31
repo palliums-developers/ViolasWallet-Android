@@ -11,7 +11,7 @@ class RecyclerViewItemDividers(
     val bottom: Int,
     val left: Int = 0,
     val right: Int = 0,
-    val showFirstTop: Boolean = false,
+    val showFirstTop: Boolean = true,
     val onlyShowLastBottom: Boolean = false,
     val context: Context = ContextProvider.getContext()
 ) : RecyclerView.ItemDecoration() {

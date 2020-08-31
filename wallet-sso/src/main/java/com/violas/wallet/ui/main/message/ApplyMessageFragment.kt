@@ -179,7 +179,6 @@ class ApplyMessageFragment : BaseFragment() {
                 RecyclerViewItemDividers(
                     top = DensityUtility.dp2px(requireContext(), 10),
                     bottom = 0,
-                    showFirstTop = true,
                     onlyShowLastBottom = true
                 )
             )
