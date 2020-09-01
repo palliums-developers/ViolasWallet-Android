@@ -1,6 +1,7 @@
 package com.violas.wallet.repository.http.bank
 
 import com.palliums.violas.http.ListResponse
+import com.palliums.violas.http.Response
 import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -20,7 +21,7 @@ interface BankApi {
     @GET("/1.0/violas/bank/account/info")
     fun getUserBankInfo(
         @Query("address") address: String
-    ): Observable<UserBankInfoDTO>
+    ): Observable<Response<UserBankInfoDTO>>
 
     /**
      * 获取存款产品信息

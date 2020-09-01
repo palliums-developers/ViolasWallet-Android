@@ -148,10 +148,7 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         btnGoRepayment.setOnClickListener {
             RepayBorrowActivity.start(
                 this,
-                CoinTypes.Violas,
-                currBorrowing.coinModule,
-                currBorrowing.coinAddress,
-                currBorrowing.coinName
+                ""
             )
         }
 

@@ -3,7 +3,8 @@ package com.violas.wallet.ui.main.bank
 import android.view.View
 import com.palliums.utils.getResourceId
 import com.violas.wallet.R
-import com.violas.wallet.repository.http.bank.BankProductSummaryDTO
+import com.violas.wallet.repository.http.bank.BorrowingProductSummaryDTO
+import com.violas.wallet.ui.bank.borrow.BorrowActivity
 import com.violas.wallet.utils.keepTwoDecimals
 import com.violas.wallet.utils.loadCircleImage
 import kotlinx.android.synthetic.main.item_home_bank_product.view.*
@@ -14,20 +15,20 @@ import kotlinx.android.synthetic.main.item_home_bank_product.view.*
  * <p>
  * desc: 首页-银行-借款市场
  */
-class BorrowingMarketFragment : BaseBankMarketFragment<BankProductSummaryDTO>() {
+class BorrowingMarketFragment : BaseBankMarketFragment<BorrowingProductSummaryDTO>() {
 
-    override fun onBindView(itemData: BankProductSummaryDTO, itemView: View) {
+    override fun onBindView(itemData: BorrowingProductSummaryDTO, itemView: View) {
         itemView.ivLogo.loadCircleImage(
             itemData.productLogo,
             getResourceId(R.attr.iconCoinDefLogo, itemView.context)
         )
         itemView.tvName.text = itemData.productName
         itemView.tvDesc.text = itemData.productDesc
-        itemView.tvRate.text = "${keepTwoDecimals(itemData.productRate)}%"
+        itemView.tvRate.text = "${keepTwoDecimals(itemData.borrowingRate)}%"
         itemView.tvRateLabel.setText(R.string.borrowing_rate)
     }
 
-    override fun onItemClick(itemData: BankProductSummaryDTO, itemPosition: Int) {
-
+    override fun onItemClick(itemData: BorrowingProductSummaryDTO, itemPosition: Int) {
+        BorrowActivity.start(requireContext(), itemData.productId)
     }
 }

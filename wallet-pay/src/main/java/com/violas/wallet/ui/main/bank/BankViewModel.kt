@@ -5,11 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import com.palliums.base.BaseViewModel
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.repository.http.bank.BankProductSummaryDTO
+import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.bank.BorrowingProductSummaryDTO
+import com.violas.wallet.repository.http.bank.DepositProductSummaryDTO
 import com.violas.wallet.repository.http.bank.UserBankInfoDTO
 import com.violas.wallet.utils.keepTwoDecimals
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 /**
@@ -39,6 +40,7 @@ class BankViewModel : BaseViewModel() {
     val userBankInfoLiveData = MutableLiveData<UserBankInfoDTO>()
 
     private var address: String? = null
+    private val bankService by lazy { DataRepository.getBankService() }
 
     init {
         val hiddenAmount: () -> Unit = {
@@ -103,14 +105,11 @@ class BankViewModel : BaseViewModel() {
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        // TODO 对接接口
-        var address: String?
+        val address: String
         synchronized(lock) {
-            address = this.address
+            address = this.address ?: ""
         }
-
-        delay(2000)
-        val userBankInfo = fakeData(address)
+        val userBankInfo = bankService.getUserBankInfo(address)
         userBankInfoLiveData.postValue(userBankInfo)
     }
 
@@ -121,43 +120,35 @@ class BankViewModel : BaseViewModel() {
             totalEarnings = if (address.isNullOrBlank()) "0" else "111.01",
             yesterdayEarnings = if (address.isNullOrBlank()) "0" else "1.1",
             depositProducts = mutableListOf(
-                BankProductSummaryDTO(
+                DepositProductSummaryDTO(
                     productId = "1",
                     productName = "VLSUSD",
                     productDesc = "持币生息的VLSUSD",
                     productLogo = "",
-                    productRate = "3.7",
-                    tokenName = "VLSUSD",
-                    tokenModule = "VLSUSD"
+                    depositYield = "3.7"
                 ),
-                BankProductSummaryDTO(
+                DepositProductSummaryDTO(
                     productId = "2",
                     productName = "VLSEUR",
                     productDesc = "存生息，支持17个币种",
                     productLogo = "",
-                    productRate = "3.5",
-                    tokenName = "VLSEUR",
-                    tokenModule = "VLSEUR"
+                    depositYield = "3.5"
                 )
             ),
             borrowingProducts = mutableListOf(
-                BankProductSummaryDTO(
+                BorrowingProductSummaryDTO(
                     productId = "1",
                     productName = "VLSUSD",
                     productDesc = "质押挖矿",
                     productLogo = "",
-                    productRate = "3.7",
-                    tokenName = "VLSUSD",
-                    tokenModule = "VLSUSD"
+                    borrowingRate = "3.7"
                 ),
-                BankProductSummaryDTO(
+                BorrowingProductSummaryDTO(
                     productId = "2",
                     productName = "VLSEUR",
                     productDesc = "借生息，支持17个币种",
                     productLogo = "",
-                    productRate = "3.5",
-                    tokenName = "VLSEUR",
-                    tokenModule = "VLSEUR"
+                    borrowingRate = "3.5"
                 )
             )
         )

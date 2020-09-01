@@ -25,31 +25,38 @@ data class UserBankInfoDTO(
     @SerializedName("yesterday")
     var yesterdayEarnings: String,
     @SerializedName("deposits")
-    val depositProducts: List<BankProductSummaryDTO>?,
+    val depositProducts: List<DepositProductSummaryDTO>?,
     @SerializedName("borrows")
-    val borrowingProducts: List<BankProductSummaryDTO>?
+    val borrowingProducts: List<BorrowingProductSummaryDTO>?
 )
 
 @Keep
-@Parcelize
-data class BankProductSummaryDTO(
+data class DepositProductSummaryDTO(
     @SerializedName("id")
     val productId: String,
     @SerializedName("name")
     val productName: String,
-    @SerializedName("intro")
+    @SerializedName("desc")
     val productDesc: String,
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("rate")
-    val productRate: String,        // 存款收益率，或借款借贷率
-    @SerializedName("name")
-    val tokenName: String,
-    @SerializedName("name")
-    val tokenModule: String,
+    val depositYield: String         // 收益率
+)
+
+@Keep
+data class BorrowingProductSummaryDTO(
     @SerializedName("id")
-    val tokenAddress: String = "00000000000000000000000000000000"
-) : Parcelable
+    val productId: String,
+    @SerializedName("name")
+    val productName: String,
+    @SerializedName("desc")
+    val productDesc: String,
+    @SerializedName("logo")
+    val productLogo: String,
+    @SerializedName("rate")
+    val borrowingRate: String         // 借贷率
+)
 //endregion
 
 @Keep

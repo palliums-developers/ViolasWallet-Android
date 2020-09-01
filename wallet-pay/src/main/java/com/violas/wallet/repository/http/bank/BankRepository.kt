@@ -10,7 +10,7 @@ class BankRepository(private val api: BankApi) {
     suspend fun getUserBankInfo(
         address: String
     ) =
-        api.getUserBankInfo(address).await()
+        api.getUserBankInfo(address).await().data
 
     /**
      * 获取存款产品信息
