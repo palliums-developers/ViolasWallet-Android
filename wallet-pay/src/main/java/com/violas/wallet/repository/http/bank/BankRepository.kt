@@ -3,26 +3,26 @@ package com.violas.wallet.repository.http.bank
 import com.palliums.net.await
 
 class BankRepository(private val api: BankApi) {
+
     /**
      * 账户信息
      */
-    suspend fun getInfo(
+    suspend fun getUserBankInfo(
         address: String
-    ): AccountInfoDTO {
-        return api.getInfo(address).await()
-    }
+    ) =
+        api.getUserBankInfo(address).await()
 
     /**
      * 获取存款产品信息
      * @param id 业务 ID
      * @param address
      */
-    suspend fun getDepositInfo(
+    suspend fun getDepositProductDetails(
         id: String,
         address: String
-    ): DepositInfo {
-        return api.getDepositInfo(id, address).await()
-    }
+    ) =
+        api.getDepositProductDetails(id, address).await()
+
 
     /**
      * 获取存款订单信息
@@ -50,16 +50,14 @@ class BankRepository(private val api: BankApi) {
 
     /**
      * 获取借贷产品信息
-     * @param walletAddresses
-     * @param pageSize
-     * @param offset
+     * @param id
+     * @param address
      */
-    suspend fun getBorrowInfo(
+    suspend fun getBorrowProductDetails(
         id: String,
         address: String
-    ): BorrowInfoDTO {
-        return api.getBorrowInfo(id, address).await()
-    }
+    ) =
+        api.getBorrowProductDetails(id, address).await()
 
     /**
      * 获取借贷订单信息

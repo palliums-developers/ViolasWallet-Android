@@ -18,9 +18,9 @@ interface BankApi {
      * 账户信息
      */
     @GET("/1.0/violas/bank/account/info")
-    fun getInfo(
+    fun getUserBankInfo(
         @Query("address") address: String
-    ): Observable<AccountInfoDTO>
+    ): Observable<UserBankInfoDTO>
 
     /**
      * 获取存款产品信息
@@ -28,10 +28,10 @@ interface BankApi {
      * @param address
      */
     @GET("/1.0/violas/bank/deposit/info")
-    fun getDepositInfo(
+    fun getDepositProductDetails(
         @Query("id") id: String,
         @Query("address") address: String
-    ): Observable<DepositInfo>
+    ): Observable<DepositProductDetailsDTO>
 
     /**
      * 获取存款订单信息
@@ -57,15 +57,14 @@ interface BankApi {
 
     /**
      * 获取借贷产品信息
-     * @param walletAddresses
-     * @param pageSize
-     * @param offset
+     * @param id
+     * @param address
      */
     @GET("/1.0/violas/bank/borrow/info")
-    fun getBorrowInfo(
+    fun getBorrowProductDetails(
         @Query("id") id: String,
         @Query("address") address: String
-    ): Observable<BorrowInfoDTO>
+    ): Observable<BorrowProductDetailsDTO>
 
     /**
      * 获取借贷订单信息

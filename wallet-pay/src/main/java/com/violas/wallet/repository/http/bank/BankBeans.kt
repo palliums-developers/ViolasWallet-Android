@@ -13,6 +13,7 @@ import kotlinx.android.parcel.Parcelize
  * desc:
  */
 
+//region /1.0/violas/bank/account/info DTO
 @Keep
 data class UserBankInfoDTO(
     @SerializedName("amount")
@@ -49,6 +50,7 @@ data class BankProductSummaryDTO(
     @SerializedName("id")
     val tokenAddress: String = "00000000000000000000000000000000"
 ) : Parcelable
+//endregion
 
 @Keep
 data class CurrDepositDTO(
@@ -113,55 +115,9 @@ data class LiquidationDetailDTO(
     val state: Int
 )
 
-//region /1.0/violas/bank/account/info DTO
-@Keep
-data class AccountInfoDTO(
-    @SerializedName("amount")
-    val amount: Double,
-    @SerializedName("borrow")
-    val borrow: Double,
-    @SerializedName("borrows")
-    val borrows: List<BorrowDTO>,
-    @SerializedName("deposits")
-    val deposits: List<DepositDTO>,
-    @SerializedName("total")
-    val total: Double,
-    @SerializedName("yesterday")
-    val yesterday: Double
-)
-
-@Keep
-data class BorrowDTO(
-    @SerializedName("desc")
-    val desc: String,
-    @SerializedName("id")
-    val id: String,
-    @SerializedName("logo")
-    val logo: String,
-    @SerializedName("name")
-    val name: String,
-    @SerializedName("rate")
-    val rate: Double
-)
-
-@Keep
-data class DepositDTO(
-    @SerializedName("desc")
-    val desc: String,
-    @SerializedName("id")
-    val id: String,
-    @SerializedName("logo")
-    val logo: String,
-    @SerializedName("name")
-    val name: String,
-    @SerializedName("rate")
-    val rate: Double
-)
-//endregion
-
 //region /1.0/violas/bank/deposit/info DTO
 @Keep
-data class DepositInfo(
+data class DepositProductDetailsDTO(
     @SerializedName("id")
     val id: String,
     @SerializedName("intor")
@@ -253,7 +209,7 @@ data class DepositOrderDTO(
 //endregion
 
 //region /1.0/violas/bank/borrow/info DTO
-data class BorrowInfoDTO(
+data class BorrowProductDetailsDTO(
     @SerializedName("id")
     val id: String,
     @SerializedName("intor")
