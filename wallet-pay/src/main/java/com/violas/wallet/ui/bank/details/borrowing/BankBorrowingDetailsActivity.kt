@@ -13,7 +13,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.repository.http.bank.CurrBorrowingDTO
+import com.violas.wallet.repository.http.bank.AccountBorrowingInfoDTO
 import com.violas.wallet.ui.bank.repayBorrow.RepayBorrowActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import kotlinx.android.synthetic.main.activity_bank_borrowing_details.*
@@ -30,15 +30,15 @@ import kotlinx.coroutines.withContext
 class BankBorrowingDetailsActivity : BaseAppActivity() {
 
     companion object {
-        fun start(context: Context, currBorrowing: CurrBorrowingDTO) {
+        fun start(context: Context, borrowingInfo: AccountBorrowingInfoDTO) {
             Intent(context, BankBorrowingDetailsActivity::class.java)
-                .apply { putExtra(KEY_ONE, currBorrowing) }
+                .apply { putExtra(KEY_ONE, borrowingInfo) }
                 .start(context)
         }
     }
 
     private lateinit var violasAddress: String
-    private lateinit var currBorrowing: CurrBorrowingDTO
+    private lateinit var borrowingInfo: AccountBorrowingInfoDTO
 
     override fun getTitleStyle(): Int {
         return PAGE_STYLE_CUSTOM
@@ -69,14 +69,14 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_ONE, currBorrowing)
+        outState.putParcelable(KEY_ONE, borrowingInfo)
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
         if (savedInstanceState != null) {
-            currBorrowing = savedInstanceState.getParcelable(KEY_ONE) ?: return false
+            borrowingInfo = savedInstanceState.getParcelable(KEY_ONE) ?: return false
         } else if (intent != null) {
-            currBorrowing = intent.getParcelableExtra(KEY_ONE) ?: return false
+            borrowingInfo = intent.getParcelableExtra(KEY_ONE) ?: return false
         }
 
         violasAddress =
@@ -96,9 +96,9 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     }
 
     private fun initCurrBorrowingInfo() {
-        title = currBorrowing.coinName
-        tvAmountToBeRepaid.text = convertAmountToDisplayAmountStr(currBorrowing.borrowed)
-        tvCoinUnit.text = currBorrowing.coinName
+        title = borrowingInfo.productName
+        tvAmountToBeRepaid.text = convertAmountToDisplayAmountStr(borrowingInfo.borrowedAmount)
+        tvCoinUnit.text = borrowingInfo.productName
     }
 
     private fun initTab() {
@@ -106,9 +106,9 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         viewPager.adapter = FragmentPagerAdapterSupport(supportFragmentManager).apply {
             setFragments(
                 mutableListOf<Fragment>(
-                    BorrowingDetailFragment.newInstance(currBorrowing.coinName, violasAddress),
-                    RepaymentDetailFragment.newInstance(currBorrowing.coinName, violasAddress),
-                    LiquidationDetailFragment.newInstance(currBorrowing.coinName, violasAddress)
+                    BorrowingDetailFragment.newInstance(borrowingInfo.productId, violasAddress),
+                    RepaymentDetailFragment.newInstance(borrowingInfo.productId, violasAddress),
+                    LiquidationDetailFragment.newInstance(borrowingInfo.productId, violasAddress)
                 )
             )
             setTitles(
@@ -148,7 +148,7 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         btnGoRepayment.setOnClickListener {
             RepayBorrowActivity.start(
                 this,
-                ""
+                borrowingInfo.productId
             )
         }
 

@@ -17,7 +17,7 @@ import com.violas.wallet.common.KEY_TWO
  */
 abstract class BaseBankDetailFragment<VO> : BasePagingFragment<VO>() {
 
-    protected lateinit var mCoinName: String
+    protected lateinit var mProductId: String
     protected lateinit var mWalletAddress: String
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -30,14 +30,14 @@ abstract class BaseBankDetailFragment<VO> : BasePagingFragment<VO>() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(KEY_ONE, mCoinName)
+        outState.putString(KEY_ONE, mProductId)
         outState.putString(KEY_TWO, mWalletAddress)
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
         try {
             val bundle = savedInstanceState ?: arguments ?: return false
-            mCoinName = bundle.getString(KEY_ONE, null) ?: return false
+            mProductId = bundle.getString(KEY_ONE, null) ?: return false
             mWalletAddress = bundle.getString(KEY_TWO, null) ?: return false
             return true
         } catch (e: Exception) {

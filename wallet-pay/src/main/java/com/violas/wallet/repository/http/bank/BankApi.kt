@@ -35,14 +35,14 @@ interface BankApi {
     ): Observable<DepositProductDetailsDTO>
 
     /**
-     * 获取存款订单信息
+     * 获取账户存款信息
      */
     @GET("/1.0/violas/bank/deposit/orders")
-    fun getDepositOrderInfos(
+    fun getAccountDepositInfos(
         @Query("address") address: String,
-        @Query("offset") offset: Int,
-        @Query("limit") limit: Int
-    ): Observable<ListResponse<DepositOrderInfoDTO>>
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
+    ): Observable<ListResponse<AccountDepositInfoDTO>>
 
     /**
      * 获取存款订单列表
@@ -68,14 +68,14 @@ interface BankApi {
     ): Observable<BorrowProductDetailsDTO>
 
     /**
-     * 获取借贷订单信息
+     * 获取账户借贷信息
      */
     @GET("/1.0/violas/bank/borrow/orders")
-    fun getBorrowOrderInfos(
+    fun getAccountBorrowingInfos(
         @Query("address") address: String,
-        @Query("offset") offset: Int,
-        @Query("limit") limit: Int
-    ): Observable<ListResponse<BorrowOrderInfoDTO>>
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
+    ): Observable<ListResponse<AccountBorrowingInfoDTO>>
 
     /**
      * 获取借贷订单列表

@@ -35,10 +35,10 @@ import java.util.*
 class RepaymentDetailFragment : BaseBankDetailFragment<RepaymentDetailDTO>() {
 
     companion object {
-        fun newInstance(coinName: String, walletAddress: String): RepaymentDetailFragment {
+        fun newInstance(productId: String, walletAddress: String): RepaymentDetailFragment {
             return RepaymentDetailFragment().apply {
                 arguments = Bundle().apply {
-                    putString(KEY_ONE, coinName)
+                    putString(KEY_ONE, productId)
                     putString(KEY_TWO, walletAddress)
                 }
             }
@@ -52,7 +52,7 @@ class RepaymentDetailFragment : BaseBankDetailFragment<RepaymentDetailDTO>() {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return modelClass
                         .getConstructor(String::class.java, String::class.java)
-                        .newInstance(mCoinName, mWalletAddress)
+                        .newInstance(mProductId, mWalletAddress)
                 }
             }
         ).get(RepaymentDetailViewModel::class.java)
@@ -135,7 +135,7 @@ class RepaymentDetailFragment : BaseBankDetailFragment<RepaymentDetailDTO>() {
 }
 
 class RepaymentDetailViewModel(
-    private val coinName: String,
+    private val productId: String,
     private val walletAddress: String
 ) : PagingViewModel<RepaymentDetailDTO>() {
 

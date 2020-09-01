@@ -35,10 +35,10 @@ import java.util.*
 class LiquidationDetailFragment : BaseBankDetailFragment<LiquidationDetailDTO>() {
 
     companion object {
-        fun newInstance(coinName: String, walletAddress: String): LiquidationDetailFragment {
+        fun newInstance(productId: String, walletAddress: String): LiquidationDetailFragment {
             return LiquidationDetailFragment().apply {
                 arguments = Bundle().apply {
-                    putString(KEY_ONE, coinName)
+                    putString(KEY_ONE, productId)
                     putString(KEY_TWO, walletAddress)
                 }
             }
@@ -52,7 +52,7 @@ class LiquidationDetailFragment : BaseBankDetailFragment<LiquidationDetailDTO>()
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return modelClass
                         .getConstructor(String::class.java, String::class.java)
-                        .newInstance(mCoinName, mWalletAddress)
+                        .newInstance(mProductId, mWalletAddress)
                 }
             }
         ).get(LiquidationDetailViewModel::class.java)
@@ -138,7 +138,7 @@ class LiquidationDetailFragment : BaseBankDetailFragment<LiquidationDetailDTO>()
 }
 
 class LiquidationDetailViewModel(
-    private val coinName: String,
+    private val productId: String,
     private val walletAddress: String
 ) : PagingViewModel<LiquidationDetailDTO>() {
 
@@ -156,7 +156,7 @@ class LiquidationDetailViewModel(
     private fun fakeData(): List<LiquidationDetailDTO> {
         return mutableListOf(
             LiquidationDetailDTO(
-                coinName,
+                "VLS",
                 "111010110",
                 "VLS",
                 "111010110",
@@ -164,7 +164,7 @@ class LiquidationDetailViewModel(
                 0
             ),
             LiquidationDetailDTO(
-                coinName,
+                "USD",
                 "222020220",
                 "USD",
                 "222020220",
@@ -172,7 +172,7 @@ class LiquidationDetailViewModel(
                 1
             ),
             LiquidationDetailDTO(
-                coinName,
+                "EUR",
                 "333030333",
                 "EUR",
                 "222020220",

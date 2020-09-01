@@ -7,12 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewHolder
-import com.palliums.listing.ListingViewAdapter
-import com.palliums.listing.ListingViewModel
+import com.palliums.paging.PagingViewAdapter
+import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
+import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
-import com.violas.wallet.repository.http.bank.CurrDepositDTO
+import com.violas.wallet.repository.http.bank.AccountDepositInfoDTO
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.ui.bank.record.deposit.BankDepositRecordActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
@@ -21,8 +22,6 @@ import com.violas.wallet.utils.loadCircleImage
 import kotlinx.android.synthetic.main.activity_bank_order.*
 import kotlinx.android.synthetic.main.item_bank_curr_deposit.view.*
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 /**
  * Created by elephant on 2020/8/24 11:19.
@@ -30,23 +29,23 @@ import java.math.RoundingMode
  * <p>
  * desc: 银行存款订单页面
  */
-class BankDepositOrderActivity : BaseBankOrderActivity<CurrDepositDTO>() {
+class BankDepositOrderActivity : BaseBankOrderActivity<AccountDepositInfoDTO>() {
 
     private val viewModel by lazy {
         ViewModelProvider(this).get(BankDepositOrderViewModel::class.java)
     }
     private val viewAdapter by lazy {
-        CurrDepositViewAdapter { currDeposit, position ->
+        ViewAdapter { depositInfo, position ->
             // TODO 提取操作
             showToast("提取操作")
         }
     }
 
-    override fun getViewModel(): ListingViewModel<CurrDepositDTO> {
+    override fun getViewModel(): PagingViewModel<AccountDepositInfoDTO> {
         return viewModel
     }
 
-    override fun getViewAdapter(): ListingViewAdapter<CurrDepositDTO> {
+    override fun getViewAdapter(): PagingViewAdapter<AccountDepositInfoDTO> {
         return viewAdapter
     }
 
@@ -62,25 +61,25 @@ class BankDepositOrderActivity : BaseBankOrderActivity<CurrDepositDTO>() {
         tvLabel.setText(R.string.current_deposit)
 
         launch {
-            val initResult = viewModel.initAddress()
-            if (!initResult) {
-                close()
-                return@launch
+            val hasAccount = viewModel.initAddress()
+            if (hasAccount) {
+                viewModel.start()
+            } else {
+                refreshLayout.setEnableRefresh(false)
+                statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
             }
-
-            viewModel.execute()
         }
     }
 
-    class CurrDepositViewAdapter(
-        private val withdrawalCallback: (CurrDepositDTO, Int) -> Unit
-    ) : ListingViewAdapter<CurrDepositDTO>() {
+    class ViewAdapter(
+        private val withdrawalCallback: (AccountDepositInfoDTO, Int) -> Unit
+    ) : PagingViewAdapter<AccountDepositInfoDTO>() {
 
-        override fun onCreateViewHolder(
+        override fun onCreateViewHolderSupport(
             parent: ViewGroup,
             viewType: Int
-        ): BaseViewHolder<CurrDepositDTO> {
-            return CurrDepositViewHolder(
+        ): BaseViewHolder<out Any> {
+            return ViewHolder(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_bank_curr_deposit, parent, false
                 ),
@@ -89,19 +88,19 @@ class BankDepositOrderActivity : BaseBankOrderActivity<CurrDepositDTO>() {
         }
     }
 
-    class CurrDepositViewHolder(
+    class ViewHolder(
         view: View,
-        private val withdrawalCallback: (CurrDepositDTO, Int) -> Unit
-    ) : BaseViewHolder<CurrDepositDTO>(view) {
+        private val withdrawalCallback: (AccountDepositInfoDTO, Int) -> Unit
+    ) : BaseViewHolder<AccountDepositInfoDTO>(view) {
 
         init {
             itemView.tvWithdrawal.setOnClickListener(this)
         }
 
-        override fun onViewBind(itemPosition: Int, itemData: CurrDepositDTO?) {
+        override fun onViewBind(itemPosition: Int, itemData: AccountDepositInfoDTO?) {
             itemData?.let {
                 itemView.ivCoinLogo.loadCircleImage(
-                    it.coinLogo,
+                    it.productLogo,
                     getResourceId(R.attr.iconCoinDefLogo, itemView.context)
                 )
                 itemView.tvCoinName.text = it.coinName
@@ -111,7 +110,7 @@ class BankDepositOrderActivity : BaseBankOrderActivity<CurrDepositDTO>() {
             }
         }
 
-        override fun onViewClick(view: View, itemPosition: Int, itemData: CurrDepositDTO?) {
+        override fun onViewClick(view: View, itemPosition: Int, itemData: AccountDepositInfoDTO?) {
             itemData?.let {
                 when (view) {
                     itemView.tvWithdrawal -> {

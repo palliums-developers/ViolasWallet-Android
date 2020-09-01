@@ -1,11 +1,11 @@
 package com.violas.wallet.ui.bank.order.deposit
 
-import com.palliums.listing.ListingViewModel
+import com.palliums.paging.PagingViewModel
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.repository.http.bank.CurrDepositDTO
+import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.bank.AccountDepositInfoDTO
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 /**
@@ -14,9 +14,11 @@ import kotlinx.coroutines.withContext
  * <p>
  * desc:
  */
-class BankDepositOrderViewModel : ListingViewModel<CurrDepositDTO>() {
+class BankDepositOrderViewModel : PagingViewModel<AccountDepositInfoDTO>() {
 
     private lateinit var address: String
+
+    private val bankService by lazy { DataRepository.getBankService() }
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
@@ -27,31 +29,47 @@ class BankDepositOrderViewModel : ListingViewModel<CurrDepositDTO>() {
         return@withContext true
     }
 
-    override suspend fun loadData(vararg params: Any): List<CurrDepositDTO> {
-        // TODO 对接后台接口
-        delay(2000)
-        return fakeData()
+    override suspend fun loadData(
+        pageSize: Int,
+        pageNumber: Int,
+        pageKey: Any?,
+        onSuccess: (List<AccountDepositInfoDTO>, Any?) -> Unit
+    ) {
+        val list = bankService.getAccountDepositInfos(
+            address,
+            pageSize,
+            (pageNumber - 1) * pageSize
+        )
+        onSuccess.invoke(list, null)
     }
 
-    private fun fakeData(): List<CurrDepositDTO> {
+    private fun fakeData(): List<AccountDepositInfoDTO> {
         return mutableListOf(
-            CurrDepositDTO(
+            AccountDepositInfoDTO(
+                "1",
                 "VLSUSD",
-                "VLSUSD",
-                "00000000000000000000000000000000",
                 "",
+                "5.123",
                 "1001110000",
                 "23400000",
-                "5.123"
+                "1001110000",
+                1,
+                "VLSUSD",
+                "VLSUSD",
+                "00000000000000000000000000000000"
             ),
-            CurrDepositDTO(
+            AccountDepositInfoDTO(
+                "2",
                 "VLSEUR",
-                "VLSEUR",
-                "00000000000000000000000000000000",
                 "",
-                "1231410000",
-                "33500000",
-                "5.346"
+                "5.254",
+                "2003450000",
+                "12200000",
+                "1001110000",
+                1,
+                "VLSEUR",
+                "VLSEUR",
+                "00000000000000000000000000000000"
             )
         )
     }

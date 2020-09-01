@@ -41,7 +41,7 @@ data class DepositProductSummaryDTO(
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("rate")
-    val depositYield: String         // 收益率
+    val depositYield: String            // 收益率
 )
 
 @Keep
@@ -55,30 +55,9 @@ data class BorrowingProductSummaryDTO(
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("rate")
-    val borrowingRate: String         // 借贷率
+    val borrowingRate: String           // 借贷率
 )
 //endregion
-
-@Keep
-data class CurrDepositDTO(
-    val coinName: String,
-    val coinModule: String,
-    val coinAddress: String = "00000000000000000000000000000000",
-    val coinLogo: String,
-    val principal: String,          // 本金
-    val totalEarnings: String,      // 累计收益
-    val depositYield: String        // 存款收益率
-)
-
-@Keep
-@Parcelize
-data class CurrBorrowingDTO(
-    val coinName: String,
-    val coinModule: String,
-    val coinAddress: String = "00000000000000000000000000000000",
-    val coinLogo: String,
-    val borrowed: String            // 借款金额
-) : Parcelable
 
 @Keep
 data class DepositRecordDTO(
@@ -173,29 +152,31 @@ data class QuestionDTO(
 
 //region /1.0/violas/bank/deposit/orders DTO
 @Keep
-data class DepositOrderInfoDTO(
-    @SerializedName("available_quantity")
-    val availableQuantity: Int,
-    @SerializedName("currency")
-    val currency: String,
-    @SerializedName("earnings")
-    val earnings: Int,
+data class AccountDepositInfoDTO(
     @SerializedName("id")
-    val id: String,
+    val productId: String,
+    @SerializedName("token_show_name")
+    val productName: String,
     @SerializedName("logo")
-    val logo: String,
-    @SerializedName("principal")
-    val principal: Int,
+    val productLogo: String,
     @SerializedName("rate")
-    val rate: Double,
+    val depositYield: String,           // 收益率
+
+    @SerializedName("principal")
+    val principal: String,              // 本金
+    @SerializedName("earnings")
+    val totalEarnings: String,          // 累计收益
+    @SerializedName("available_quantity")
+    val availableAmount: String,        // 可用金额(本金 - 被清算)
     @SerializedName("status")
     val status: Int,
-    @SerializedName("token_address")
-    val tokenAddress: String,
+
     @SerializedName("token_name")
-    val tokenName: String,
-    @SerializedName("token_show_name")
-    val tokenShowName: String
+    val coinName: String,
+    @SerializedName("currency")
+    val coinModule: String,
+    @SerializedName("token_address")
+    val coinAddress: String = "00000000000000000000000000000000"
 )
 //endregion
 
@@ -251,16 +232,17 @@ data class BorrowProductDetailsDTO(
 
 //region /1.0/violas/bank/borrow/orders DTO
 @Keep
-data class BorrowOrderInfoDTO(
-    @SerializedName("amount")
-    val amount: Int,
+@Parcelize
+data class AccountBorrowingInfoDTO(
     @SerializedName("id")
-    val id: String,
-    @SerializedName("logo")
-    val logo: String,
+    val productId: String,
     @SerializedName("name")
-    val name: String
-)
+    val productName: String,
+    @SerializedName("logo")
+    val productLogo: String,
+    @SerializedName("amount")
+    val borrowedAmount: String          // 已借贷金额
+) : Parcelable
 //endregion
 
 //region /1.0/violas/bank/borrow/order/list DTO

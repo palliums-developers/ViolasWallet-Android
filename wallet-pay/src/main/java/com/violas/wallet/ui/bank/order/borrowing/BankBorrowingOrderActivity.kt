@@ -7,12 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewHolder
-import com.palliums.listing.ListingViewAdapter
-import com.palliums.listing.ListingViewModel
+import com.palliums.paging.PagingViewAdapter
+import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
+import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
-import com.violas.wallet.repository.http.bank.CurrBorrowingDTO
+import com.violas.wallet.repository.http.bank.AccountBorrowingInfoDTO
 import com.violas.wallet.ui.bank.details.borrowing.BankBorrowingDetailsActivity
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.ui.bank.record.borrowing.BankBorrowingRecordActivity
@@ -28,22 +29,22 @@ import kotlinx.coroutines.launch
  * <p>
  * desc: 银行借款订单页面
  */
-class BankBorrowingOrderActivity : BaseBankOrderActivity<CurrBorrowingDTO>() {
+class BankBorrowingOrderActivity : BaseBankOrderActivity<AccountBorrowingInfoDTO>() {
 
     private val viewModel by lazy {
         ViewModelProvider(this).get(BankBorrowingOrderViewModel::class.java)
     }
     private val viewAdapter by lazy {
-        CurrBorrowingViewAdapter { currBorrowing, position ->
-            BankBorrowingDetailsActivity.start(this, currBorrowing)
+        ViewAdapter { borrowingInfo, position ->
+            BankBorrowingDetailsActivity.start(this, borrowingInfo)
         }
     }
 
-    override fun getViewModel(): ListingViewModel<CurrBorrowingDTO> {
+    override fun getViewModel(): PagingViewModel<AccountBorrowingInfoDTO> {
         return viewModel
     }
 
-    override fun getViewAdapter(): ListingViewAdapter<CurrBorrowingDTO> {
+    override fun getViewAdapter(): PagingViewAdapter<AccountBorrowingInfoDTO> {
         return viewAdapter
     }
 
@@ -59,25 +60,25 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<CurrBorrowingDTO>() {
         tvLabel.setText(R.string.current_borrowing)
 
         launch {
-            val initResult = viewModel.initAddress()
-            if (!initResult) {
-                close()
-                return@launch
+            val hasAccount = viewModel.initAddress()
+            if (hasAccount) {
+                viewModel.start()
+            } else {
+                refreshLayout.setEnableRefresh(false)
+                statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
             }
-
-            viewModel.execute()
         }
     }
 
-    class CurrBorrowingViewAdapter(
-        private val itemClickCallback: (CurrBorrowingDTO, Int) -> Unit
-    ) : ListingViewAdapter<CurrBorrowingDTO>() {
+    class ViewAdapter(
+        private val itemClickCallback: (AccountBorrowingInfoDTO, Int) -> Unit
+    ) : PagingViewAdapter<AccountBorrowingInfoDTO>() {
 
-        override fun onCreateViewHolder(
+        override fun onCreateViewHolderSupport(
             parent: ViewGroup,
             viewType: Int
-        ): BaseViewHolder<CurrBorrowingDTO> {
-            return CurrBorrowingViewHolder(
+        ): BaseViewHolder<out Any> {
+            return ViewHolder(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_bank_curr_borrowing, parent, false
                 ),
@@ -86,27 +87,32 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<CurrBorrowingDTO>() {
         }
     }
 
-    class CurrBorrowingViewHolder(
+    class ViewHolder(
         view: View,
-        private val itemClickCallback: (CurrBorrowingDTO, Int) -> Unit
-    ) : BaseViewHolder<CurrBorrowingDTO>(view) {
+        private val itemClickCallback: (AccountBorrowingInfoDTO, Int) -> Unit
+    ) : BaseViewHolder<AccountBorrowingInfoDTO>(view) {
 
         init {
             itemView.setOnClickListener(this)
         }
 
-        override fun onViewBind(itemPosition: Int, itemData: CurrBorrowingDTO?) {
+        override fun onViewBind(itemPosition: Int, itemData: AccountBorrowingInfoDTO?) {
             itemData?.let {
                 itemView.ivCoinLogo.loadCircleImage(
-                    it.coinLogo,
+                    it.productLogo,
                     getResourceId(R.attr.iconCoinDefLogo, itemView.context)
                 )
-                itemView.tvCoinName.text = it.coinName
-                itemView.tvAmountToBeRepaid.text = convertAmountToDisplayAmountStr(it.borrowed)
+                itemView.tvCoinName.text = it.productName
+                itemView.tvAmountToBeRepaid.text =
+                    convertAmountToDisplayAmountStr(it.borrowedAmount)
             }
         }
 
-        override fun onViewClick(view: View, itemPosition: Int, itemData: CurrBorrowingDTO?) {
+        override fun onViewClick(
+            view: View,
+            itemPosition: Int,
+            itemData: AccountBorrowingInfoDTO?
+        ) {
             itemData?.let {
                 when (view) {
                     itemView -> {

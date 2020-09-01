@@ -8,7 +8,7 @@ import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
-import com.violas.wallet.base.BaseListingActivity
+import com.violas.wallet.base.BasePagingActivity
 import kotlinx.android.synthetic.main.activity_bank_order.*
 
 /**
@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_bank_order.*
  * <p>
  * desc: 银行存款/借款订单公共页面
  */
-abstract class BaseBankOrderActivity<VO> : BaseListingActivity<VO>() {
+abstract class BaseBankOrderActivity<VO> : BasePagingActivity<VO>() {
 
     override fun getTitleStyle(): Int {
         return PAGE_STYLE_CUSTOM
@@ -25,10 +25,6 @@ abstract class BaseBankOrderActivity<VO> : BaseListingActivity<VO>() {
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_bank_order
-    }
-
-    override fun enableRefresh(): Boolean {
-        return true
     }
 
     override fun getRecyclerView(): RecyclerView {
@@ -49,7 +45,7 @@ abstract class BaseBankOrderActivity<VO> : BaseListingActivity<VO>() {
         setTitleLeftImageResource(getResourceId(R.attr.iconBackTertiary, this))
         setTitleRightImageResource(getResourceId(R.attr.iconRecordPrimary, this))
 
-        mListingHandler.init()
+        mPagingHandler.init()
         recyclerView.addItemDecoration(
             RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(this, 5),
@@ -58,8 +54,5 @@ abstract class BaseBankOrderActivity<VO> : BaseListingActivity<VO>() {
                 right = DensityUtility.dp2px(this, 15)
             )
         )
-        refreshLayout.setOnRefreshListener {
-            getViewModel().execute()
-        }
     }
 }

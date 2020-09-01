@@ -25,15 +25,14 @@ class BankRepository(private val api: BankApi) {
 
 
     /**
-     * 获取存款订单信息
+     * 获取账户存款信息列表
      */
-    suspend fun getDepositOrderInfos(
+    suspend fun getAccountDepositInfos(
         address: String,
-        offset: Int,
-        limit: Int
-    ): List<DepositOrderInfoDTO>? {
-        return api.getDepositOrderInfos(address, offset, limit).await().data
-    }
+        limit: Int,
+        offset: Int
+    ) =
+        api.getAccountDepositInfos(address, limit, offset).await().data ?: emptyList()
 
     /**
      * 获取存款订单列表
@@ -60,15 +59,14 @@ class BankRepository(private val api: BankApi) {
         api.getBorrowProductDetails(id, address).await()
 
     /**
-     * 获取借贷订单信息
+     * 获取账户借贷信息
      */
-    suspend fun getBorrowOrderInfos(
+    suspend fun getAccountBorrowingInfos(
         address: String,
-        offset: Int,
-        limit: Int
-    ): List<BorrowOrderInfoDTO>? {
-        return api.getBorrowOrderInfos(address, offset, limit).await().data
-    }
+        limit: Int,
+        offset: Int
+    ) =
+        api.getAccountBorrowingInfos(address, limit, offset).await().data ?: emptyList()
 
     /**
      * 获取借贷订单列表
