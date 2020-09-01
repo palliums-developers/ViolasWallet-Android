@@ -9,6 +9,7 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
+import com.palliums.utils.isNetworkConnected
 import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
@@ -65,25 +66,28 @@ abstract class BaseBankMarketFragment<VO> : BaseFragment() {
         recyclerView.adapter = viewAdapter
     }
 
-    fun setData(data: List<VO>) {
+    fun setData(data: List<VO>?) {
+        if (data == null) {
+            statusLayout.showStatus(
+                when {
+                    !viewAdapter.getDataList().isNullOrEmpty() ->
+                        IStatusLayout.Status.STATUS_NONE
+                    isNetworkConnected() ->
+                        IStatusLayout.Status.STATUS_FAILURE
+                    else ->
+                        IStatusLayout.Status.STATUS_NO_NETWORK
+                }
+            )
+            return
+        }
+
         statusLayout.showStatus(
-            if (data.isEmpty())
-                IStatusLayout.Status.STATUS_EMPTY
-            else
+            if (data.isNotEmpty())
                 IStatusLayout.Status.STATUS_NONE
+            else
+                IStatusLayout.Status.STATUS_EMPTY
         )
         viewAdapter.setDataList(data)
-    }
-
-    fun loadError(noNetwork: Boolean) {
-        if (viewAdapter.getDataList().isNullOrEmpty()) {
-            statusLayout.showStatus(
-                if (noNetwork)
-                    IStatusLayout.Status.STATUS_NO_NETWORK
-                else
-                    IStatusLayout.Status.STATUS_FAILURE
-            )
-        }
     }
 
     abstract fun onBindView(itemData: VO, itemView: View)

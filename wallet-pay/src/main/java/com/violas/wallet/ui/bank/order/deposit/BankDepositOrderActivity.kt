@@ -13,7 +13,7 @@ import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
-import com.violas.wallet.repository.http.bank.AccountDepositInfoDTO
+import com.violas.wallet.repository.http.bank.DepositInfoDTO
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.ui.bank.record.deposit.BankDepositRecordActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
  * <p>
  * desc: 银行存款订单页面
  */
-class BankDepositOrderActivity : BaseBankOrderActivity<AccountDepositInfoDTO>() {
+class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
 
     private val viewModel by lazy {
         ViewModelProvider(this).get(BankDepositOrderViewModel::class.java)
@@ -41,11 +41,11 @@ class BankDepositOrderActivity : BaseBankOrderActivity<AccountDepositInfoDTO>() 
         }
     }
 
-    override fun getViewModel(): PagingViewModel<AccountDepositInfoDTO> {
+    override fun getViewModel(): PagingViewModel<DepositInfoDTO> {
         return viewModel
     }
 
-    override fun getViewAdapter(): PagingViewAdapter<AccountDepositInfoDTO> {
+    override fun getViewAdapter(): PagingViewAdapter<DepositInfoDTO> {
         return viewAdapter
     }
 
@@ -72,8 +72,8 @@ class BankDepositOrderActivity : BaseBankOrderActivity<AccountDepositInfoDTO>() 
     }
 
     class ViewAdapter(
-        private val withdrawalCallback: (AccountDepositInfoDTO, Int) -> Unit
-    ) : PagingViewAdapter<AccountDepositInfoDTO>() {
+        private val withdrawalCallback: (DepositInfoDTO, Int) -> Unit
+    ) : PagingViewAdapter<DepositInfoDTO>() {
 
         override fun onCreateViewHolderSupport(
             parent: ViewGroup,
@@ -90,14 +90,14 @@ class BankDepositOrderActivity : BaseBankOrderActivity<AccountDepositInfoDTO>() 
 
     class ViewHolder(
         view: View,
-        private val withdrawalCallback: (AccountDepositInfoDTO, Int) -> Unit
-    ) : BaseViewHolder<AccountDepositInfoDTO>(view) {
+        private val withdrawalCallback: (DepositInfoDTO, Int) -> Unit
+    ) : BaseViewHolder<DepositInfoDTO>(view) {
 
         init {
             itemView.tvWithdrawal.setOnClickListener(this)
         }
 
-        override fun onViewBind(itemPosition: Int, itemData: AccountDepositInfoDTO?) {
+        override fun onViewBind(itemPosition: Int, itemData: DepositInfoDTO?) {
             itemData?.let {
                 itemView.ivCoinLogo.loadCircleImage(
                     it.productLogo,
@@ -110,7 +110,7 @@ class BankDepositOrderActivity : BaseBankOrderActivity<AccountDepositInfoDTO>() 
             }
         }
 
-        override fun onViewClick(view: View, itemPosition: Int, itemData: AccountDepositInfoDTO?) {
+        override fun onViewClick(view: View, itemPosition: Int, itemData: DepositInfoDTO?) {
             itemData?.let {
                 when (view) {
                     itemView.tvWithdrawal -> {

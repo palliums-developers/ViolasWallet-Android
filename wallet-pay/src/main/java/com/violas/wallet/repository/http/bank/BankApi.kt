@@ -16,12 +16,24 @@ import retrofit2.http.Query
 interface BankApi {
 
     /**
-     * 账户信息
+     * 获取账户信息
      */
     @GET("/1.0/violas/bank/account/info")
-    fun getUserBankInfo(
+    fun getAccountInfo(
         @Query("address") address: String
-    ): Observable<Response<UserBankInfoDTO>>
+    ): Observable<Response<AccountInfoDTO>>
+
+    /**
+     * 获取存款产品列表
+     */
+    @GET("/1.0/violas/bank/product/deposit")
+    fun getDepositProducts(): Observable<ListResponse<DepositProductSummaryDTO>>
+
+    /**
+     * 获取借贷产品列表
+     */
+    @GET("/1.0/violas/bank/product/borrow")
+    fun getBorrowingProducts(): Observable<ListResponse<BorrowingProductSummaryDTO>>
 
     /**
      * 获取存款产品信息
@@ -35,14 +47,14 @@ interface BankApi {
     ): Observable<DepositProductDetailsDTO>
 
     /**
-     * 获取账户存款信息
+     * 获取存款信息
      */
     @GET("/1.0/violas/bank/deposit/orders")
-    fun getAccountDepositInfos(
+    fun getDepositInfos(
         @Query("address") address: String,
         @Query("limit") limit: Int,
         @Query("offset") offset: Int
-    ): Observable<ListResponse<AccountDepositInfoDTO>>
+    ): Observable<ListResponse<DepositInfoDTO>>
 
     /**
      * 获取存款订单列表
@@ -68,14 +80,14 @@ interface BankApi {
     ): Observable<BorrowProductDetailsDTO>
 
     /**
-     * 获取账户借贷信息
+     * 获取借贷信息
      */
     @GET("/1.0/violas/bank/borrow/orders")
-    fun getAccountBorrowingInfos(
+    fun getBorrowingInfos(
         @Query("address") address: String,
         @Query("limit") limit: Int,
         @Query("offset") offset: Int
-    ): Observable<ListResponse<AccountBorrowingInfoDTO>>
+    ): Observable<ListResponse<BorrowingInfoDTO>>
 
     /**
      * 获取借贷订单列表

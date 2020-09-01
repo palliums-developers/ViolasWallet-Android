@@ -13,7 +13,7 @@ import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
-import com.violas.wallet.repository.http.bank.AccountBorrowingInfoDTO
+import com.violas.wallet.repository.http.bank.BorrowingInfoDTO
 import com.violas.wallet.ui.bank.details.borrowing.BankBorrowingDetailsActivity
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.ui.bank.record.borrowing.BankBorrowingRecordActivity
@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
  * <p>
  * desc: 银行借款订单页面
  */
-class BankBorrowingOrderActivity : BaseBankOrderActivity<AccountBorrowingInfoDTO>() {
+class BankBorrowingOrderActivity : BaseBankOrderActivity<BorrowingInfoDTO>() {
 
     private val viewModel by lazy {
         ViewModelProvider(this).get(BankBorrowingOrderViewModel::class.java)
@@ -40,11 +40,11 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<AccountBorrowingInfoDTO
         }
     }
 
-    override fun getViewModel(): PagingViewModel<AccountBorrowingInfoDTO> {
+    override fun getViewModel(): PagingViewModel<BorrowingInfoDTO> {
         return viewModel
     }
 
-    override fun getViewAdapter(): PagingViewAdapter<AccountBorrowingInfoDTO> {
+    override fun getViewAdapter(): PagingViewAdapter<BorrowingInfoDTO> {
         return viewAdapter
     }
 
@@ -71,8 +71,8 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<AccountBorrowingInfoDTO
     }
 
     class ViewAdapter(
-        private val itemClickCallback: (AccountBorrowingInfoDTO, Int) -> Unit
-    ) : PagingViewAdapter<AccountBorrowingInfoDTO>() {
+        private val itemClickCallback: (BorrowingInfoDTO, Int) -> Unit
+    ) : PagingViewAdapter<BorrowingInfoDTO>() {
 
         override fun onCreateViewHolderSupport(
             parent: ViewGroup,
@@ -89,14 +89,14 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<AccountBorrowingInfoDTO
 
     class ViewHolder(
         view: View,
-        private val itemClickCallback: (AccountBorrowingInfoDTO, Int) -> Unit
-    ) : BaseViewHolder<AccountBorrowingInfoDTO>(view) {
+        private val itemClickCallback: (BorrowingInfoDTO, Int) -> Unit
+    ) : BaseViewHolder<BorrowingInfoDTO>(view) {
 
         init {
             itemView.setOnClickListener(this)
         }
 
-        override fun onViewBind(itemPosition: Int, itemData: AccountBorrowingInfoDTO?) {
+        override fun onViewBind(itemPosition: Int, itemData: BorrowingInfoDTO?) {
             itemData?.let {
                 itemView.ivCoinLogo.loadCircleImage(
                     it.productLogo,
@@ -111,7 +111,7 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<AccountBorrowingInfoDTO
         override fun onViewClick(
             view: View,
             itemPosition: Int,
-            itemData: AccountBorrowingInfoDTO?
+            itemData: BorrowingInfoDTO?
         ) {
             itemData?.let {
                 when (view) {

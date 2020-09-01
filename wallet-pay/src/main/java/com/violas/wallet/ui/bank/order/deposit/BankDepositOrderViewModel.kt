@@ -4,7 +4,7 @@ import com.palliums.paging.PagingViewModel
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.http.bank.AccountDepositInfoDTO
+import com.violas.wallet.repository.http.bank.DepositInfoDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
  * <p>
  * desc:
  */
-class BankDepositOrderViewModel : PagingViewModel<AccountDepositInfoDTO>() {
+class BankDepositOrderViewModel : PagingViewModel<DepositInfoDTO>() {
 
     private lateinit var address: String
 
@@ -33,9 +33,9 @@ class BankDepositOrderViewModel : PagingViewModel<AccountDepositInfoDTO>() {
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<AccountDepositInfoDTO>, Any?) -> Unit
+        onSuccess: (List<DepositInfoDTO>, Any?) -> Unit
     ) {
-        val list = bankService.getAccountDepositInfos(
+        val list = bankService.getDepositInfos(
             address,
             pageSize,
             (pageNumber - 1) * pageSize
@@ -43,9 +43,9 @@ class BankDepositOrderViewModel : PagingViewModel<AccountDepositInfoDTO>() {
         onSuccess.invoke(list, null)
     }
 
-    private fun fakeData(): List<AccountDepositInfoDTO> {
+    private fun fakeData(): List<DepositInfoDTO> {
         return mutableListOf(
-            AccountDepositInfoDTO(
+            DepositInfoDTO(
                 "1",
                 "VLSUSD",
                 "",
@@ -58,7 +58,7 @@ class BankDepositOrderViewModel : PagingViewModel<AccountDepositInfoDTO>() {
                 "VLSUSD",
                 "00000000000000000000000000000000"
             ),
-            AccountDepositInfoDTO(
+            DepositInfoDTO(
                 "2",
                 "VLSEUR",
                 "",

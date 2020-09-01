@@ -15,7 +15,7 @@ import kotlinx.android.parcel.Parcelize
 
 //region /1.0/violas/bank/account/info DTO
 @Keep
-data class UserBankInfoDTO(
+data class AccountInfoDTO(
     @SerializedName("amount")
     var totalDeposit: String,
     @SerializedName("borrow")
@@ -23,13 +23,11 @@ data class UserBankInfoDTO(
     @SerializedName("total")
     var totalEarnings: String,
     @SerializedName("yesterday")
-    var yesterdayEarnings: String,
-    @SerializedName("deposits")
-    val depositProducts: List<DepositProductSummaryDTO>?,
-    @SerializedName("borrows")
-    val borrowingProducts: List<BorrowingProductSummaryDTO>?
+    var yesterdayEarnings: String
 )
+//endregion
 
+//region /1.0/violas/bank/product/deposit DTO
 @Keep
 data class DepositProductSummaryDTO(
     @SerializedName("id")
@@ -43,7 +41,9 @@ data class DepositProductSummaryDTO(
     @SerializedName("rate")
     val depositYield: String            // 收益率
 )
+//endregion
 
+//region /1.0/violas/bank/product/borrow DTO
 @Keep
 data class BorrowingProductSummaryDTO(
     @SerializedName("id")
@@ -152,7 +152,7 @@ data class QuestionDTO(
 
 //region /1.0/violas/bank/deposit/orders DTO
 @Keep
-data class AccountDepositInfoDTO(
+data class DepositInfoDTO(
     @SerializedName("id")
     val productId: String,
     @SerializedName("token_show_name")
@@ -233,7 +233,7 @@ data class BorrowProductDetailsDTO(
 //region /1.0/violas/bank/borrow/orders DTO
 @Keep
 @Parcelize
-data class AccountBorrowingInfoDTO(
+data class BorrowingInfoDTO(
     @SerializedName("id")
     val productId: String,
     @SerializedName("name")

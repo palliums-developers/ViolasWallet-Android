@@ -3,7 +3,6 @@ package com.violas.wallet.ui.main.bank
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -21,6 +20,8 @@ import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.ui.bank.order.borrowing.BankBorrowingOrderActivity
 import com.violas.wallet.ui.bank.order.deposit.BankDepositOrderActivity
+import com.violas.wallet.ui.main.bank.BankViewModel.Companion.ACTION_LOAD_ACCOUNT_INFO
+import com.violas.wallet.ui.main.bank.BankViewModel.Companion.ACTION_LOAD_ALL
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.widget.popup.MenuPopup
 import kotlinx.android.synthetic.main.fragment_bank.*
@@ -62,9 +63,10 @@ class BankFragment : BaseFragment() {
         ivTopBg.layoutParams = (ivTopBg.layoutParams as ConstraintLayout.LayoutParams).apply {
             height = StatusBarUtil.getStatusBarHeight() + DensityUtility.dp2px(context, 210)
         }
-        refreshLayout.layoutParams = (refreshLayout.layoutParams as ConstraintLayout.LayoutParams).apply {
-            topMargin = StatusBarUtil.getStatusBarHeight()
-        }
+        refreshLayout.layoutParams =
+            (refreshLayout.layoutParams as ConstraintLayout.LayoutParams).apply {
+                topMargin = StatusBarUtil.getStatusBarHeight()
+            }
 
         ivShowHideAmount.expandTouchArea(30)
     }
@@ -82,22 +84,21 @@ class BankFragment : BaseFragment() {
         bankViewModel.totalDepositLiveData.observe(viewLifecycleOwner, Observer {
             tvTotalDeposit.text = it
         })
-
         bankViewModel.totalBorrowableLiveData.observe(viewLifecycleOwner, Observer {
             tvTotalBorrowable.text = it
         })
-
         bankViewModel.totalEarningsLiveData.observe(viewLifecycleOwner, Observer {
             tvTotalEarnings.text = it
         })
-
         bankViewModel.yesterdayEarningsLiveData.observe(viewLifecycleOwner, Observer {
             tvYesterdayEarnings.text = it
         })
 
-        bankViewModel.userBankInfoLiveData.observe(viewLifecycleOwner, Observer {
-            depositMarketFragment.setData(it.depositProducts ?: emptyList())
-            borrowingMarketFragment.setData(it.borrowingProducts ?: emptyList())
+        bankViewModel.depositProductsLiveData.observe(viewLifecycleOwner, Observer {
+            depositMarketFragment.setData(it)
+        })
+        bankViewModel.borrowingProductsLiveData.observe(viewLifecycleOwner, Observer {
+            borrowingMarketFragment.setData(it)
         })
 
         bankViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
@@ -123,32 +124,26 @@ class BankFragment : BaseFragment() {
             viewLifecycleOwner,
             Observer {
                 launch {
-                    val hasAccount = bankViewModel.initAddress()
-
-                    // 钱包账户存在时，且本地不存在用户银行信息时才请求
-                    if (hasAccount && bankViewModel.userBankInfoLiveData.value == null) {
-                        loadUserBankInfo()
+                    bankViewModel.initAddress()
+                    if (bankViewModel.depositProductsLiveData.value.isNullOrEmpty()
+                        || bankViewModel.borrowingProductsLiveData.value.isNullOrEmpty()
+                    ) {
+                        loadData(ACTION_LOAD_ALL)
+                    } else if (it) {
+                        loadData(ACTION_LOAD_ACCOUNT_INFO)
                     }
                 }
             }
         )
     }
 
-    private fun loadUserBankInfo() {
-        bankViewModel.execute(failureCallback = {
-            if (it.isNoNetwork()) {
-                depositMarketFragment.loadError(true)
-                borrowingMarketFragment.loadError(true)
-            } else {
-                depositMarketFragment.loadError(false)
-                borrowingMarketFragment.loadError(false)
-            }
-        })
+    private fun loadData(action: Int) {
+        bankViewModel.execute(action = action)
     }
 
     private fun initEvent() {
         refreshLayout.setOnRefreshListener {
-            loadUserBankInfo()
+            loadData(ACTION_LOAD_ALL)
         }
 
         ivMenu.setOnClickListener {
