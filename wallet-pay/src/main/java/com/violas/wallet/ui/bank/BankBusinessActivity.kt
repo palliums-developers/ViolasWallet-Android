@@ -14,6 +14,8 @@ import com.palliums.utils.getResourceId
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
+import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.utils.loadRoundedImage
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
@@ -21,8 +23,6 @@ import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.android.synthetic.main.view_bank_business_parameter.view.*
-import kotlinx.android.synthetic.main.view_bank_business_parameter.view.tvContent
-import kotlinx.android.synthetic.main.view_bank_business_parameter.view.tvTitle
 import kotlinx.coroutines.launch
 
 /**
@@ -35,7 +35,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
     AssetsVoTokenSelectTokenDialog.AssetsDataResourcesBridge {
     companion object {
         const val EXT_BUSINESS_ID = "key1"
-        const val EXT_BUSINESS_LIST = "key2"
+        const val EXT_BUSINESS_DTO = "key2"
     }
 
     protected val mBankBusinessViewModel by lazy {
@@ -46,9 +46,17 @@ abstract class BankBusinessActivity : BaseAppActivity(),
         WalletAppViewModel.getViewModelInstance(this)
     }
 
+    protected val mCurrentAssertsAmountSubscriber = object : BalanceSubscriber(null) {
+        override fun onNotice(assets: AssetsVo?) {
+            onCoinAmountNotice(assets)
+        }
+    }
+
     override fun getLayoutResId() = R.layout.activity_bank_business
 
     override fun getTitleStyle() = PAGE_STYLE_SECONDARY
+
+    open fun onCoinAmountNotice(assetsVo: AssetsVo?) {}
 
     private fun handleBusinessUserView(
         viewGroup: ViewGroup,
@@ -75,9 +83,6 @@ abstract class BankBusinessActivity : BaseAppActivity(),
         super.onCreate(savedInstanceState)
 
         val businessId = intent.getStringExtra(EXT_BUSINESS_ID)
-        businessId.ifEmpty {
-            loadBusiness(businessId)
-        }
         if (businessId != null) {
             loadBusiness(businessId)
         } else {
@@ -87,17 +92,19 @@ abstract class BankBusinessActivity : BaseAppActivity(),
         mBankBusinessViewModel.mPageTitleLiveData.observe(this, Observer {
             title = it
         })
-        mBankBusinessViewModel.mBusinessUserInfoLiveData.observe(this, Observer { businessInfo ->
-            tvBusinessName.text = businessInfo.businessName
-            editBusinessValue.hint = businessInfo.businessInputHint
-
+        mBankBusinessViewModel.mBusinessUsableAmount.observe(this, Observer {
             handleBusinessUserView(
                 viewGroupBusinessUsableAmount,
                 ivBusinessUsableAmount,
                 tvBusinessUsableAmountTitle,
                 tvBusinessUsableAmount,
-                businessInfo.businessUsableAmount
+                it
             )
+        })
+        mBankBusinessViewModel.mBusinessUserInfoLiveData.observe(this, Observer { businessInfo ->
+            tvBusinessName.text = businessInfo.businessName
+            editBusinessValue.hint = businessInfo.businessInputHint
+
             handleBusinessUserView(
                 viewGroupBusinessLimitAmount,
                 ivBusinessLimitAmount,
@@ -223,10 +230,12 @@ abstract class BankBusinessActivity : BaseAppActivity(),
         })
 
         tvAllValue.setOnClickListener { clickSendAll() }
-        viewGroupCurrentAssets.setOnClickListener { showSelectTokenDialog() }
+        btnOperationAction.setOnClickListener { clickExecBusiness() }
+
+        BalanceSubscribeHub.observe(this, mCurrentAssertsAmountSubscriber)
     }
 
-    protected fun selectCurrentCoin(
+    protected fun setCurrentCoin(
         module: String,
         address: String,
         name: String,
@@ -286,4 +295,5 @@ abstract class BankBusinessActivity : BaseAppActivity(),
     //</editor-fold>
 
     abstract fun clickSendAll()
+    abstract fun clickExecBusiness()
 }

@@ -145,12 +145,14 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     }
 
     private fun initEvent() {
+        //region Description
         btnGoRepayment.setOnClickListener {
             RepayBorrowActivity.start(
                 this,
                 borrowingInfo.productId
             )
         }
+        //endregion
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
 

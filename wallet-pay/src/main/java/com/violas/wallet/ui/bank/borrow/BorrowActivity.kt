@@ -45,7 +45,7 @@ class BorrowActivity : BankBusinessActivity() {
         ) {
             Intent(context, BorrowActivity::class.java).run {
                 putExtra(EXT_BUSINESS_ID, businessId)
-                putExtra(EXT_BUSINESS_LIST, businessList)
+                putExtra(EXT_BUSINESS_DTO, businessList)
             }.start(context)
         }
     }
@@ -148,6 +148,10 @@ class BorrowActivity : BankBusinessActivity() {
         }
 
     override fun clickSendAll() {
+
+    }
+
+    override fun clickExecBusiness() {
         launch(Dispatchers.IO) {
             val amountStr = editBusinessValue.text.toString()
             val assets = mBankBusinessViewModel.mCurrentAssetsLiveData.value

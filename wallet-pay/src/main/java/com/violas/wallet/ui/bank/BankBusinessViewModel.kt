@@ -5,7 +5,6 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.viewModel.bean.AssetsVo
 
 data class BusinessParameter(
@@ -30,15 +29,14 @@ data class BusinessUserAmountInfo(
     @DrawableRes
     val icon: Int,
     val title: String,
-    val value1: String,
-    val unit: String,
-    val value2: String? = null
+    var value1: String,
+    var unit: String,
+    var value2: String? = null
 )
 
 data class BusinessUserInfo(
     val businessName: String,
     val businessInputHint: String,
-    val businessUsableAmount: BusinessUserAmountInfo,
     val businessLimitAmount: BusinessUserAmountInfo? = null
 )
 
@@ -52,6 +50,8 @@ class BankBusinessViewModel : ViewModel() {
      * 我要存款框里面的数据
      */
     val mBusinessUserInfoLiveData = MutableLiveData<BusinessUserInfo>()
+
+    val mBusinessUsableAmount= MutableLiveData<BusinessUserAmountInfo>()
 
     /**
      * 当前选中的币种
