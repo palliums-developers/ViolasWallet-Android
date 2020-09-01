@@ -13,7 +13,7 @@ import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.repository.http.bank.BorrowProductDetailsDTO
+import com.violas.wallet.repository.http.bank.DepositProductDetailsDTO
 import com.violas.wallet.ui.bank.*
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
@@ -59,13 +59,13 @@ class DepositActivity : BankBusinessActivity() {
         AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
     }
 
-    private var mBorrowProductDetails: BorrowProductDetailsDTO? = null
+    private var mDepositProductDetails: DepositProductDetailsDTO? = null
 
     override fun loadBusiness(businessId: String) {
         launch(Dispatchers.IO) {
             showProgress()
             mAccountDO?.address?.let {
-                mBorrowProductDetails = mBankRepository.getBorrowProductDetails(businessId, it)
+                mDepositProductDetails = mBankRepository.getDepositProductDetails(businessId, it)
                 refreshTryingView()
             }
             dismissProgress()
@@ -73,10 +73,10 @@ class DepositActivity : BankBusinessActivity() {
     }
 
     private fun refreshTryingView() {
-        if (mBorrowProductDetails == null) {
+        if (mDepositProductDetails == null) {
 
         }
-        mBorrowProductDetails?.run {
+        mDepositProductDetails?.run {
             mBankBusinessViewModel.mBusinessUserInfoLiveData.postValue(
                 BusinessUserInfo(
                     getString(R.string.hint_bank_deposit_business_name),
@@ -171,19 +171,19 @@ class DepositActivity : BankBusinessActivity() {
             val amount =
                 convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
 
-            if (amount < mBorrowProductDetails?.minimumAmount ?: 0) {
+            if (amount < mDepositProductDetails?.minimumAmount ?: 0) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
                     getString(
                         R.string.hint_deposit_amount_too_small,
-                        convertAmountToDisplayAmountStr(mBorrowProductDetails?.minimumAmount ?: 0),
-                        mBorrowProductDetails?.tokenShowName ?: ""
+                        convertAmountToDisplayAmountStr(mDepositProductDetails?.minimumAmount ?: 0),
+                        mDepositProductDetails?.tokenShowName ?: ""
                     )
                 )
                 return@launch
             }
 
             val limitAmount =
-                (mBorrowProductDetails?.quotaLimit ?: 0) - (mBorrowProductDetails?.quotaUsed ?: 0)
+                (mDepositProductDetails?.quotaLimit ?: 0) - (mDepositProductDetails?.quotaUsed ?: 0)
             if (amount > limitAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
                     getString(R.string.hint_not_exceed_quota_today)
@@ -191,13 +191,13 @@ class DepositActivity : BankBusinessActivity() {
                 return@launch
             }
 
-            val maxAmount = (mBorrowProductDetails?.quotaLimit ?: 0)
+            val maxAmount = (mDepositProductDetails?.quotaLimit ?: 0)
             if (amount > maxAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
                     getString(
                         R.string.hint_deposit_amount_too_big,
                         convertAmountToDisplayAmountStr(maxAmount),
-                        mBorrowProductDetails?.tokenShowName ?: ""
+                        mDepositProductDetails?.tokenShowName ?: ""
                     )
                 )
                 return@launch

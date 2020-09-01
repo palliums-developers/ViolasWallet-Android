@@ -82,7 +82,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val businessId = intent.getStringExtra(EXT_BUSINESS_ID)
+        val businessId = intent.getStringExtra(EXT_BUSINESS_ID) ?: "0"
         if (businessId != null) {
             loadBusiness(businessId)
         } else {
