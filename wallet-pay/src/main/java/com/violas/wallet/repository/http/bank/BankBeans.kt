@@ -172,6 +172,7 @@ data class QuestionDTO(
 
 
 //region /1.0/violas/bank/deposit/orders DTO
+@Keep
 data class DepositOrderInfoDTO(
     @SerializedName("available_quantity")
     val availableQuantity: Int,
@@ -199,6 +200,7 @@ data class DepositOrderInfoDTO(
 //endregion
 
 //region /1.0/violas/bank/deposit/order/list DTO
+@Keep
 data class DepositOrderDTO(
     @SerializedName("currency")
     val currency: String,
@@ -216,6 +218,7 @@ data class DepositOrderDTO(
 //endregion
 
 //region /1.0/violas/bank/borrow/info DTO
+@Keep
 data class BorrowProductDetailsDTO(
     @SerializedName("id")
     val id: String,
@@ -247,6 +250,7 @@ data class BorrowProductDetailsDTO(
 //endregion
 
 //region /1.0/violas/bank/borrow/orders DTO
+@Keep
 data class BorrowOrderInfoDTO(
     @SerializedName("amount")
     val amount: Int,
@@ -260,6 +264,7 @@ data class BorrowOrderInfoDTO(
 //endregion
 
 //region /1.0/violas/bank/borrow/order/list DTO
+@Keep
 data class BorrowOrderDTO(
     @SerializedName("currency")
     val currency: String,
@@ -277,6 +282,7 @@ data class BorrowOrderDTO(
 //endregion
 
 //region /1.0/violas/bank/borrow/order/detail DTO
+@Keep
 data class BorrowOrderDetailDTO(
     @SerializedName("balance")
     val balance: Int,
@@ -298,6 +304,7 @@ data class BorrowOrderDetailDTO(
     val tokenShowName: String
 )
 
+@Keep
 data class BorrowRecordDTO(
     @SerializedName("cleared")
     val cleared: Int,
