@@ -34,7 +34,7 @@ class BankRepository(private val api: BankApi) {
         id: String,
         address: String
     ) =
-        api.getDepositProductDetails(id, address).await()
+        api.getDepositProductDetails(id, address).await().data
 
 
     /**
@@ -69,7 +69,7 @@ class BankRepository(private val api: BankApi) {
         id: String,
         address: String
     ) =
-        api.getBorrowProductDetails(id, address).await()
+        api.getBorrowProductDetails(id, address).await().data
 
     /**
      * 获取借贷信息
@@ -103,7 +103,7 @@ class BankRepository(private val api: BankApi) {
         q: Int,
         offset: Int,
         limit: Int
-    ): BorrowOrderDetailDTO {
-        return api.getBorrowDetail(address, id, q, offset, limit).await()
+    ): BorrowOrderDetailDTO? {
+        return api.getBorrowDetail(address, id, q, offset, limit).await().data
     }
 }

@@ -109,19 +109,21 @@ data class DepositProductDetailsDTO(
     @SerializedName("intor")
     val intor: List<IntorDTO>,
     @SerializedName("minimum_amount")
-    val minimumAmount: Int,
+    val minimumAmount: Long,
+    @SerializedName("minimum_amount")
+    val minimumStep: Long,
     @SerializedName("name")
     val name: String,
     @SerializedName("pledge_rate")
-    val pledgeRate: Int,
+    val pledgeRate: Double,
     @SerializedName("question")
     val question: List<QuestionDTO>,
     @SerializedName("quota_limit")
-    val quotaLimit: Int,
+    val quotaLimit: Long,
     @SerializedName("quota_used")
-    val quotaUsed: Int,
+    val quotaUsed: Long,
     @SerializedName("rate")
-    val rate: Int,
+    val rate: Double,
     @SerializedName("token_address")
     val tokenAddress: String,
     @SerializedName("token_module")
@@ -206,19 +208,21 @@ data class BorrowProductDetailsDTO(
     @SerializedName("intor")
     val intor: List<IntorDTO>,
     @SerializedName("minimum_amount")
-    val minimumAmount: Int,
+    val minimumAmount: Long,
+    @SerializedName("minimum_step")
+    val minimumStep: Long = 1000,
     @SerializedName("name")
     val name: String,
     @SerializedName("pledge_rate")
-    val pledgeRate: Int,
+    val pledgeRate: Double,
     @SerializedName("question")
     val question: List<QuestionDTO>,
     @SerializedName("quota_limit")
-    val quotaLimit: Int,
+    val quotaLimit: Long,
     @SerializedName("quota_used")
-    val quotaUsed: Int,
+    val quotaUsed: Long,
     @SerializedName("rate")
-    val rate: Int,
+    val rate: Double,
     @SerializedName("token_address")
     val tokenAddress: String,
     @SerializedName("token_module")

@@ -4,6 +4,7 @@ import android.view.View
 import com.palliums.utils.getResourceId
 import com.violas.wallet.R
 import com.violas.wallet.repository.http.bank.DepositProductSummaryDTO
+
 import com.violas.wallet.ui.bank.deposit.DepositActivity
 import com.violas.wallet.utils.keepTwoDecimals
 import com.violas.wallet.utils.loadCircleImage
@@ -29,6 +30,6 @@ class DepositMarketFragment : BaseBankMarketFragment<DepositProductSummaryDTO>()
     }
 
     override fun onItemClick(itemData: DepositProductSummaryDTO, itemPosition: Int) {
-        DepositActivity.start(requireContext(), itemData.productId)
+        this.context?.let { DepositActivity.start(it, itemData.productId) }
     }
 }

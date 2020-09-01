@@ -19,11 +19,14 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.bank.BorrowProductDetailsDTO
 import com.violas.wallet.ui.bank.*
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayUnitToAmount
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +48,7 @@ class BorrowActivity : BankBusinessActivity() {
         ) {
             Intent(context, BorrowActivity::class.java).run {
                 putExtra(EXT_BUSINESS_ID, businessId)
-                putExtra(EXT_BUSINESS_LIST, businessList)
+                putExtra(EXT_BUSINESS_DTO, businessList)
             }.start(context)
         }
     }
@@ -58,55 +61,93 @@ class BorrowActivity : BankBusinessActivity() {
         BankManager()
     }
 
-    override fun loadBusiness(businessId: String) {
+    private val mBankRepository by lazy {
+        DataRepository.getBankService()
+    }
 
+    private val mAccountDO by lazy {
+        AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+    }
+
+    private var mBorrowProductDetails: BorrowProductDetailsDTO? = null
+    override fun loadBusiness(businessId: String) {
+        launch(Dispatchers.IO) {
+            showProgress()
+            mAccountDO?.address?.let {
+                mBorrowProductDetails = mBankRepository.getBorrowProductDetails(businessId, it)
+                refreshTryingView()
+            }
+            dismissProgress()
+        }
+    }
+
+    private fun refreshTryingView() {
+        if (mBorrowProductDetails == null) {
+
+        }
+        mBorrowProductDetails?.run {
+//            setCurrentCoin(tokenModule, tokenAddress, tokenName, CoinTypes.Violas.coinType())
+            mBankBusinessViewModel.mBusinessUsableAmount.postValue(
+                BusinessUserAmountInfo(
+                    R.drawable.icon_bank_user_amount_info,
+                    getString(R.string.hint_can_borrow_lines),
+                    convertAmountToDisplayAmountStr(quotaUsed),
+                    tokenShowName,
+                    convertAmountToDisplayAmountStr(quotaLimit)
+                )
+            )
+            mBankBusinessViewModel.mBusinessUserInfoLiveData.postValue(
+                BusinessUserInfo(
+                    getString(R.string.hint_bank_borrow_business_name),
+                    getString(
+                        R.string.hint_bank_limit_amount,
+                        convertAmountToDisplayAmountStr(minimumAmount),
+                        tokenShowName,
+                        convertAmountToDisplayAmountStr(minimumStep),
+                        tokenShowName
+                    )
+                )
+            )
+            mBankBusinessViewModel.mProductExplanationListLiveData.postValue(intor.map {
+                ProductExplanation(it.tital, it.text)
+            })
+
+            mBankBusinessViewModel.mFAQListLiveData.postValue(question.map {
+                FAQ(it.tital, it.text)
+            })
+            mBankBusinessViewModel.mBusinessParameterListLiveData.postValue(
+                arrayListOf(
+                    BusinessParameter(
+                        "借款利率",
+                        "${rate * 100}%/日",
+                        contentColor = Color.parseColor("#13B788")
+                    ),
+                    BusinessParameter("质押率", "${pledgeRate * 100}%%", "质押率=借贷数量/存款数量"),
+                    BusinessParameter("质押账户", "银行余额", "清算部分将从存款账户扣除")
+                )
+            )
+
+            mCurrentAssertsAmountSubscriber.changeSubscriber(
+                LibraTokenAssetsMark(
+                    CoinTypes.Violas,
+                    tokenModule,
+                    tokenAddress,
+                    tokenName
+                )
+            )
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBankBusinessViewModel.mPageTitleLiveData.value = getString(R.string.title_borrow)
-        mBankBusinessViewModel.mBusinessUserInfoLiveData.value = BusinessUserInfo(
-            getString(R.string.hint_bank_borrow_business_name), "500 V-AAA起，每1V-AAA递增",
-            BusinessUserAmountInfo(
-                R.drawable.icon_bank_user_amount_info,
-                getString(R.string.hint_can_borrow_lines),
-                "800",
-                "VLSUSD",
-                "1000"
-            )
-        )
+
         mBankBusinessViewModel.mBusinessActionLiveData.value =
             getString(R.string.action_borrowing_immediately)
-        mBankBusinessViewModel.mBusinessParameterListLiveData.value = arrayListOf(
-            BusinessParameter("借款利率", "0.50%/日", contentColor = Color.parseColor("#13B788")),
-            BusinessParameter("质押率", "50%", "质押率=借贷数量/存款数量"),
-            BusinessParameter("质押账户", "银行余额", "清算部分将从存款账户扣除")
-        )
-        mBankBusinessViewModel.mProductExplanationListLiveData.value = arrayListOf(
-            ProductExplanation(
-                "清算率",
-                "清算率是指***************************************************************"
-            ),
-            ProductExplanation(
-                "清算罚金",
-                "清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金"
-            )
-        )
-        mBankBusinessViewModel.mFAQListLiveData.value = arrayListOf(
-            FAQ(
-                "清算率",
-                "清算率是指***************************************************************"
-            ),
-            FAQ(
-                "清算罚金",
-                "清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金"
-            )
-        )
+
         launch {
             mBankBusinessViewModel.mBusinessPolicyLiveData.value = buildUseBehaviorSpan()
         }
-        mBankBusinessViewModel.mBusinessActionHintLiveData.value =
-            getString(R.string.hint_please_enter_the_amount_borrowed)
     }
 
     private fun openWebPage(url: String) {
@@ -148,6 +189,10 @@ class BorrowActivity : BankBusinessActivity() {
         }
 
     override fun clickSendAll() {
+
+    }
+
+    override fun clickExecBusiness() {
         launch(Dispatchers.IO) {
             val amountStr = editBusinessValue.text.toString()
             val assets = mBankBusinessViewModel.mCurrentAssetsLiveData.value
@@ -160,8 +205,48 @@ class BorrowActivity : BankBusinessActivity() {
                 showToast(getString(R.string.hint_bank_business_account_error))
                 return@launch
             }
+            if (amountStr.isEmpty()) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(getString(R.string.hint_please_enter_the_amount_borrowed))
+                return@launch
+            }
+            if (!btnHasAgreePolicy.isChecked) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(getString(R.string.hint_please_read_and_agree_pledge_service_agreement))
+                return@launch
+            }
             val amount =
                 convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
+
+            if (amount < mBorrowProductDetails?.minimumAmount ?: 0) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(
+                        R.string.hint_borrow_amount_too_small,
+                        convertAmountToDisplayAmountStr(mBorrowProductDetails?.minimumAmount ?: 0),
+                        mBorrowProductDetails?.tokenShowName ?: ""
+                    )
+                )
+                return@launch
+            }
+
+            val limitAmount =
+                (mBorrowProductDetails?.quotaLimit ?: 0) - (mBorrowProductDetails?.quotaUsed ?: 0)
+            if (amount > limitAmount) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(R.string.hint_not_exceed_quota_today)
+                )
+                return@launch
+            }
+
+            val maxAmount = (mBorrowProductDetails?.quotaLimit ?: 0)
+            if (amount > maxAmount) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(
+                        R.string.hint_borrow_amount_too_big,
+                        convertAmountToDisplayAmountStr(maxAmount),
+                        mBorrowProductDetails?.tokenShowName ?: ""
+                    )
+                )
+                return@launch
+            }
 
             val market = IAssetsMark.convert(assets)
 

@@ -521,4 +521,13 @@
     <string name="action_repay_borrowing_immediately">立即还款</string>
     <string name="hint_please_enter_the_amount_repay_borrowed">请输入还款数量</string>
     <string name="hint_bank_business_repay_borrow_success">还款成功</string>
+    <string name="hint_bank_limit_amount">%1$s %2$s起，每%3$s %4$s递增</string>
+    <string name="hint_please_enter_deposit_quantity">请输入存款数量</string>
+    <string name="hint_deposit_amount_too_small">存款金额不得低于%1$s%2$s</string>
+    <string name="hint_deposit_amount_too_big">存款金额不得高于%1$s%2$s</string>
+    <string name="hint_not_exceed_quota_today">不可大于当日限额</string>
+    <string name="hint_please_enter_borrow_quantity">请输入存款数量</string>
+    <string name="hint_borrow_amount_too_small">存款金额不得低于%1$s%2$s</string>
+    <string name="hint_borrow_amount_too_big">存款金额不得高于%1$s%2$s</string>
+    <string name="hint_please_read_and_agree_pledge_service_agreement">请阅读并同意质押借款服务协议</string>
 </resources>

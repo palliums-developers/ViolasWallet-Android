@@ -2,16 +2,8 @@ package com.violas.wallet.ui.bank.repayBorrow
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.TextPaint
-import android.text.style.ClickableSpan
-import android.view.View
-import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -20,8 +12,10 @@ import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.ui.bank.*
-import com.violas.wallet.ui.bank.deposit.DepositActivity
+import com.violas.wallet.ui.bank.BankBusinessActivity
+import com.violas.wallet.ui.bank.BusinessParameter
+import com.violas.wallet.ui.bank.BusinessUserAmountInfo
+import com.violas.wallet.ui.bank.BusinessUserInfo
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.utils.authenticateAccount
@@ -29,7 +23,6 @@ import com.violas.wallet.utils.convertDisplayUnitToAmount
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * Created by elephant on 2020/8/19 15:38.
@@ -46,7 +39,7 @@ class RepayBorrowActivity : BankBusinessActivity() {
         ) {
             Intent(context, RepayBorrowActivity::class.java).run {
                 putExtra(EXT_BUSINESS_ID, businessId)
-                putExtra(EXT_BUSINESS_LIST, businessList)
+                putExtra(EXT_BUSINESS_DTO, businessList)
             }.start(context)
         }
     }
@@ -88,6 +81,10 @@ class RepayBorrowActivity : BankBusinessActivity() {
     }
 
     override fun clickSendAll() {
+
+    }
+
+    override fun clickExecBusiness() {
         launch(Dispatchers.IO) {
             val amountStr = editBusinessValue.text.toString()
             val assets = mBankBusinessViewModel.mCurrentAssetsLiveData.value

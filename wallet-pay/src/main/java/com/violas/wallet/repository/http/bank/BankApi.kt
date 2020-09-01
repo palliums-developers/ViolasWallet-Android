@@ -44,7 +44,7 @@ interface BankApi {
     fun getDepositProductDetails(
         @Query("id") id: String,
         @Query("address") address: String
-    ): Observable<DepositProductDetailsDTO>
+    ): Observable<Response<DepositProductDetailsDTO>>
 
     /**
      * 获取存款信息
@@ -77,7 +77,7 @@ interface BankApi {
     fun getBorrowProductDetails(
         @Query("id") id: String,
         @Query("address") address: String
-    ): Observable<BorrowProductDetailsDTO>
+    ): Observable<Response<BorrowProductDetailsDTO>>
 
     /**
      * 获取借贷信息
@@ -111,5 +111,5 @@ interface BankApi {
         @Query("q") q: Int,
         @Query("offset") offset: Int,
         @Query("limit") limit: Int
-    ): Observable<BorrowOrderDetailDTO>
+    ): Observable<Response<BorrowOrderDetailDTO>>
 }

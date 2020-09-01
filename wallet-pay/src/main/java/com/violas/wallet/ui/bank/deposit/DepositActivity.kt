@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Parcelable
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -12,13 +11,16 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.bank.DepositProductDetailsDTO
 import com.violas.wallet.ui.bank.*
-import com.violas.wallet.ui.bank.borrow.BorrowActivity
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayUnitToAmount
+import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,12 +35,10 @@ class DepositActivity : BankBusinessActivity() {
     companion object {
         fun start(
             context: Context,
-            businessId: String,
-            businessList: Array<Parcelable>? = null
+            businessId: String
         ) {
             Intent(context, DepositActivity::class.java).run {
                 putExtra(EXT_BUSINESS_ID, businessId)
-                putExtra(EXT_BUSINESS_LIST, businessList)
             }.start(context)
         }
     }
@@ -51,63 +51,116 @@ class DepositActivity : BankBusinessActivity() {
         BankManager()
     }
 
+    private val mBankRepository by lazy {
+        DataRepository.getBankService()
+    }
+
+    private val mAccountDO by lazy {
+        AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+    }
+
+    private var mDepositProductDetails: DepositProductDetailsDTO? = null
+
     override fun loadBusiness(businessId: String) {
-        
+        launch(Dispatchers.IO) {
+            showProgress()
+            mAccountDO?.address?.let {
+                mDepositProductDetails = mBankRepository.getDepositProductDetails(businessId, it)
+                refreshTryingView()
+            }
+            dismissProgress()
+        }
+    }
+
+    private fun refreshTryingView() {
+        if (mDepositProductDetails == null) {
+
+        }
+        mDepositProductDetails?.run {
+            mBankBusinessViewModel.mBusinessUserInfoLiveData.postValue(
+                BusinessUserInfo(
+                    getString(R.string.hint_bank_deposit_business_name),
+                    getString(
+                        R.string.hint_bank_limit_amount,
+                        convertAmountToDisplayAmountStr(minimumAmount),
+                        tokenShowName,
+                        convertAmountToDisplayAmountStr(minimumStep),
+                        tokenShowName
+                    ),
+                    BusinessUserAmountInfo(
+                        R.drawable.icon_bank_user_amount_limit,
+                        getString(R.string.hint_bank_deposit_daily_limit),
+                        convertAmountToDisplayAmountStr(quotaUsed),
+                        tokenShowName,
+                        convertAmountToDisplayAmountStr(quotaLimit)
+                    )
+                )
+            )
+            mBankBusinessViewModel.mProductExplanationListLiveData.postValue(intor.map {
+                ProductExplanation(it.tital, it.text)
+            })
+
+            mBankBusinessViewModel.mFAQListLiveData.postValue(question.map {
+                FAQ(it.tital, it.text)
+            })
+            mBankBusinessViewModel.mBusinessParameterListLiveData.postValue(
+                arrayListOf(
+                    BusinessParameter(
+                        "存款年利率",
+                        "${rate * 100}%",
+                        contentColor = Color.parseColor("#13B788")
+                    ),
+                    BusinessParameter("质押率", "${pledgeRate * 100}%", "质押率=借贷数量/存款数量")
+                )
+            )
+
+            mCurrentAssertsAmountSubscriber.changeSubscriber(
+                LibraTokenAssetsMark(
+                    CoinTypes.Violas,
+                    tokenModule,
+                    tokenAddress,
+                    tokenName
+                )
+            )
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBankBusinessViewModel.mPageTitleLiveData.value = getString(R.string.title_deposit)
-        mBankBusinessViewModel.mBusinessUserInfoLiveData.value = BusinessUserInfo(
-            getString(R.string.hint_bank_deposit_business_name), "500 V-AAA起，每1V-AAA递增",
-            BusinessUserAmountInfo(
-                R.drawable.icon_bank_user_amount_info,
-                getString(R.string.hint_bank_deposit_available_balance),
-                "0",
-                "VLSUSD"
-            ),
-            BusinessUserAmountInfo(
-                R.drawable.icon_bank_user_amount_limit,
-                getString(R.string.hint_bank_deposit_daily_limit),
-                "1000",
-                "VLSUSD",
-                "1000"
-            )
-        )
+
         mBankBusinessViewModel.mBusinessActionLiveData.value =
             getString(R.string.action_deposit_immediately)
-        mBankBusinessViewModel.mBusinessParameterListLiveData.value = arrayListOf(
-            BusinessParameter("存款年利率", "0.50%", contentColor = Color.parseColor("#13B788")),
-            BusinessParameter("质押率", "50%", "质押率=借贷数量/存款数量")
-        )
-        mBankBusinessViewModel.mProductExplanationListLiveData.value = arrayListOf(
-            ProductExplanation(
-                "清算率",
-                "清算率是指***************************************************************"
-            ),
-            ProductExplanation(
-                "清算罚金",
-                "清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金"
+    }
+
+    override fun onCoinAmountNotice(assetsVo: AssetsVo?) {
+        assetsVo?.let {
+            mBankBusinessViewModel.mCurrentAssetsLiveData.postValue(it)
+            mBankBusinessViewModel.mBusinessUsableAmount.postValue(
+                BusinessUserAmountInfo(
+                    R.drawable.icon_bank_user_amount_info,
+                    getString(R.string.hint_bank_deposit_available_balance),
+                    assetsVo.amountWithUnit.amount,
+                    assetsVo.amountWithUnit.unit
+                )
             )
-        )
-        mBankBusinessViewModel.mFAQListLiveData.value = arrayListOf(
-            FAQ(
-                "清算率",
-                "清算率是指***************************************************************"
-            ),
-            FAQ(
-                "清算罚金",
-                "清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金清算发生时，对借贷债务额外收取的罚金"
-            )
-        )
+        }
     }
 
     override fun clickSendAll() {
+
+    }
+
+    override fun clickExecBusiness() {
         launch(Dispatchers.IO) {
             val amountStr = editBusinessValue.text.toString()
             val assets = mBankBusinessViewModel.mCurrentAssetsLiveData.value
             if (assets == null) {
                 showToast(getString(R.string.hint_bank_business_select_assets))
+                return@launch
+            }
+            if (amountStr.isEmpty()) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(getString(R.string.hint_please_enter_deposit_quantity))
                 return@launch
             }
             val account = mAccountManager.getIdentityByCoinType(assets.getCoinNumber())
@@ -117,6 +170,38 @@ class DepositActivity : BankBusinessActivity() {
             }
             val amount =
                 convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
+
+            if (amount < mDepositProductDetails?.minimumAmount ?: 0) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(
+                        R.string.hint_deposit_amount_too_small,
+                        convertAmountToDisplayAmountStr(mDepositProductDetails?.minimumAmount ?: 0),
+                        mDepositProductDetails?.tokenShowName ?: ""
+                    )
+                )
+                return@launch
+            }
+
+            val limitAmount =
+                (mDepositProductDetails?.quotaLimit ?: 0) - (mDepositProductDetails?.quotaUsed ?: 0)
+            if (amount > limitAmount) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(R.string.hint_not_exceed_quota_today)
+                )
+                return@launch
+            }
+
+            val maxAmount = (mDepositProductDetails?.quotaLimit ?: 0)
+            if (amount > maxAmount) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(
+                        R.string.hint_deposit_amount_too_big,
+                        convertAmountToDisplayAmountStr(maxAmount),
+                        mDepositProductDetails?.tokenShowName ?: ""
+                    )
+                )
+                return@launch
+            }
 
             val market = IAssetsMark.convert(assets)
 
