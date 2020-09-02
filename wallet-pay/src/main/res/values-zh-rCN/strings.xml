@@ -530,4 +530,10 @@
     <string name="hint_borrow_amount_too_small">存款金额不得低于%1$s%2$s</string>
     <string name="hint_borrow_amount_too_big">存款金额不得高于%1$s%2$s</string>
     <string name="hint_please_read_and_agree_pledge_service_agreement">请阅读并同意质押借款服务协议</string>
+    <string name="hint_borrowing_rates">借款利率</string>
+    <string name="hint_pledge_rate">质押率</string>
+    <string name="hint_pledge_account">质押账户</string>
+    <string name="hint_bank_balance">银行余额</string>
+    <string name="hint_borrow_liquidation">清算部分将从存款账户扣除</string>
+    <string name="hint_borrow_pledge_algorithm">质押率=借贷数量/存款数量</string>
 </resources>

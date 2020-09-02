@@ -118,12 +118,22 @@ class BorrowActivity : BankBusinessActivity() {
             mBankBusinessViewModel.mBusinessParameterListLiveData.postValue(
                 arrayListOf(
                     BusinessParameter(
-                        "借款利率",
+                        getString(R.string.hint_borrowing_rates),
                         "${rate * 100}%/日",
                         contentColor = Color.parseColor("#13B788")
                     ),
-                    BusinessParameter("质押率", "${pledgeRate * 100}%%", "质押率=借贷数量/存款数量"),
-                    BusinessParameter("质押账户", "银行余额", "清算部分将从存款账户扣除")
+                    BusinessParameter(
+                        getString(R.string.hint_pledge_rate),
+                        "${pledgeRate * 100}%",
+                        getString(R.string.hint_borrow_pledge_algorithm)
+                    ),
+                    BusinessParameter(
+                        getString(R.string.hint_pledge_account),
+                        getString(R.string.hint_bank_balance),
+                        getString(
+                            R.string.hint_borrow_liquidation
+                        )
+                    )
                 )
             )
 
