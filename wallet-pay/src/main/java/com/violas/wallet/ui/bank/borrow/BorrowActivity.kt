@@ -91,7 +91,7 @@ class BorrowActivity : BankBusinessActivity() {
                 BusinessUserAmountInfo(
                     R.drawable.icon_bank_user_amount_info,
                     getString(R.string.hint_can_borrow_lines),
-                    convertAmountToDisplayAmountStr(quotaUsed),
+                    convertAmountToDisplayAmountStr(quotaLimit - quotaUsed),
                     tokenShowName,
                     convertAmountToDisplayAmountStr(quotaLimit)
                 )
@@ -199,7 +199,11 @@ class BorrowActivity : BankBusinessActivity() {
         }
 
     override fun clickSendAll() {
-
+        mBorrowProductDetails?.run {
+            val convertAmountToDisplayAmountStr =
+                convertAmountToDisplayAmountStr(quotaLimit - quotaUsed)
+            editBusinessValue.setText(convertAmountToDisplayAmountStr)
+        }
     }
 
     override fun clickExecBusiness() {

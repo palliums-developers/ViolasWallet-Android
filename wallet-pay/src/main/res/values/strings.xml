@@ -538,4 +538,5 @@
     <string name="hint_bank_balance">银行余额</string>
     <string name="hint_borrow_liquidation">清算部分将从存款账户扣除</string>
     <string name="hint_borrow_pledge_algorithm">质押率=借贷数量/存款数量</string>
+    <string name="hint_annual_deposit_rate">存款年利率</string>
 </resources>
