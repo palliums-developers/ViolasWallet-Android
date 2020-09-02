@@ -539,4 +539,8 @@
     <string name="hint_borrow_liquidation">清算部分将从存款账户扣除</string>
     <string name="hint_borrow_pledge_algorithm">质押率=借贷数量/存款数量</string>
     <string name="hint_annual_deposit_rate">存款年利率</string>
+    <string name="hint_enter_repayment_amount">输入还款金额</string>
+    <string name="hint_repayment_account">还款账户</string>
+    <string name="hint_borrow_wallet_balance">钱包余额</string>
+    <string name="hint_repay_borrow_insufficient_balance">当前可用余额不足</string>
 </resources>

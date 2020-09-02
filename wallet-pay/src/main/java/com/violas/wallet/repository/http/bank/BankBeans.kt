@@ -271,7 +271,7 @@ data class BorrowOrderDTO(
 @Keep
 data class BorrowOrderDetailDTO(
     @SerializedName("balance")
-    val balance: Int,
+    val balance: Long,
     @SerializedName("id")
     val id: String,
     @SerializedName("list")

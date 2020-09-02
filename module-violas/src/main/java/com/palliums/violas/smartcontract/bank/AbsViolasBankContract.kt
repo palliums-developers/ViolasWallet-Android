@@ -1,6 +1,5 @@
 package com.palliums.violas.smartcontract.bank
 
-import com.palliums.violas.smartcontract.violasExchange.AbsViolasExchangeContract
 import org.palliums.violascore.move.Move
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.transaction.TransactionArgument
@@ -9,7 +8,8 @@ import org.palliums.violascore.transaction.storage.TypeTag
 
 abstract class AbsViolasBankContract {
     companion object {
-
+        private const val mRegisterContract =
+            "a11ceb0b0100000005010002030205050706070d130820100000000100010002060c0a02000a56696f6c617342616e6b077075626c69736800000000000000000000000000000001000001040b000b01110002"
         private const val mBorrow2Contract =
             "a11ceb0b010000000601000203020c040e0405120e07201c083c1000000001000101010002020101010003010303060c030a020002060c030109000a56696f6c617342616e6b06626f72726f7709657869745f62616e6b0000000000000000000000000000000101010001080a000a010b0238000b000a01380102"
         private const val mLock2Contract =
@@ -29,6 +29,22 @@ abstract class AbsViolasBankContract {
             contract.hexToBytes(),
             getContractAddress().hexToBytes(),
             getContractDefaultAddress()
+        )
+    }
+
+    fun optionRegisterTransactionPayload(
+        userdata: ByteArray = byteArrayOf(0, 0)
+    ): TransactionPayload {
+        val moveEncode = replaceContractAddress(mRegisterContract)
+
+        return TransactionPayload(
+            TransactionPayload.Script(
+                moveEncode,
+                arrayListOf(),
+                arrayListOf(
+                    TransactionArgument.newByteArray(userdata)
+                )
+            )
         )
     }
 

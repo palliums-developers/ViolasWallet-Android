@@ -109,10 +109,10 @@ data class GetTransactionDTO(
     @SerializedName("version")
     val version: Int,
     @SerializedName("vm_status")
-    val vmStatus: String
+    val vmStatus: VmStatus
 ) {
     fun isSuccessExecuted(): Boolean {
-        return vmStatus.equals(VmStatus.SUCCESS, true)
+        return vmStatus.type.equals(VmStatus.SUCCESS, true)
     }
 }
 

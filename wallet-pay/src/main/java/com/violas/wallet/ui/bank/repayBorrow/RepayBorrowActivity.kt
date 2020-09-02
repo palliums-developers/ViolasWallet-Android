@@ -11,7 +11,9 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.bank.BorrowOrderDetailDTO
 import com.violas.wallet.ui.bank.BankBusinessActivity
 import com.violas.wallet.ui.bank.BusinessParameter
 import com.violas.wallet.ui.bank.BusinessUserAmountInfo
@@ -19,7 +21,9 @@ import com.violas.wallet.ui.bank.BusinessUserInfo
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.utils.authenticateAccount
+import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayUnitToAmount
+import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,36 +56,81 @@ class RepayBorrowActivity : BankBusinessActivity() {
         BankManager()
     }
 
-    override fun loadBusiness(businessId: String) {
+    private val mBankRepository by lazy {
+        DataRepository.getBankService()
+    }
 
+    private val mAccountDO by lazy {
+        AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+    }
+
+    private var mBorrowOrderDetail: BorrowOrderDetailDTO? = null
+
+    override fun loadBusiness(businessId: String) {
+        launch(Dispatchers.IO) {
+            showProgress()
+            mAccountDO?.address?.let {
+                mBorrowOrderDetail = mBankRepository.getBorrowDetail(it, businessId, 0, 0, 0)
+                refreshTryingView()
+            }
+            dismissProgress()
+        }
+    }
+
+    private fun refreshTryingView() {
+        if (mBorrowOrderDetail == null) {
+
+        }
+        mBorrowOrderDetail?.run {
+            mBankBusinessViewModel.mBusinessUsableAmount.postValue(
+                BusinessUserAmountInfo(
+                    R.drawable.icon_bank_user_amount_info,
+                    getString(R.string.hint_can_repay_borrow_lines),
+                    convertAmountToDisplayAmountStr(balance),
+                    tokenShowName
+                )
+            )
+            mBankBusinessViewModel.mBusinessUserInfoLiveData.postValue(
+                BusinessUserInfo(
+                    getString(R.string.hint_bank_repay_borrow_business_name),
+                    getString(R.string.hint_enter_repayment_amount)
+                )
+            )
+            mBankBusinessViewModel.mBusinessParameterListLiveData.postValue(
+                arrayListOf(
+                    BusinessParameter(getString(R.string.borrowing_rate), "${rate * 100}%"),
+                    BusinessParameter(
+                        getString(R.string.label_miner_fees),
+                        "0.00 ${tokenShowName}"
+                    ),
+                    BusinessParameter(
+                        getString(R.string.hint_repayment_account),
+                        getString(R.string.hint_borrow_wallet_balance)
+                    )
+                )
+            )
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBankBusinessViewModel.mPageTitleLiveData.value = getString(R.string.title_repay_borrow)
-        mBankBusinessViewModel.mBusinessUserInfoLiveData.value = BusinessUserInfo(
-            getString(R.string.hint_bank_repay_borrow_business_name), "500 V-AAA起，每1V-AAA递增",
-            BusinessUserAmountInfo(
-                R.drawable.icon_bank_user_amount_info,
-                getString(R.string.hint_can_repay_borrow_lines),
-                "800",
-                "VLSUSD"
-            )
-        )
         mBankBusinessViewModel.mBusinessActionLiveData.value =
             getString(R.string.action_repay_borrowing_immediately)
-        mBankBusinessViewModel.mBusinessParameterListLiveData.value = arrayListOf(
-            BusinessParameter("借贷率", "5%"),
-            BusinessParameter("矿工费用", "0.00VLS"),
-            BusinessParameter("还款账户", "钱包余额")
-        )
+    }
 
-        mBankBusinessViewModel.mBusinessActionHintLiveData.value =
-            getString(R.string.hint_please_enter_the_amount_repay_borrowed)
+    override fun onCoinAmountNotice(assetsVo: AssetsVo?) {
+        assetsVo?.let {
+            mBankBusinessViewModel.mCurrentAssetsLiveData.postValue(it)
+        }
     }
 
     override fun clickSendAll() {
-
+        mBorrowOrderDetail?.run {
+            val convertAmountToDisplayAmountStr =
+                convertAmountToDisplayAmountStr(balance)
+            editBusinessValue.setText(convertAmountToDisplayAmountStr)
+        }
     }
 
     override fun clickExecBusiness() {
@@ -92,6 +141,10 @@ class RepayBorrowActivity : BankBusinessActivity() {
                 showToast(getString(R.string.hint_bank_business_select_assets))
                 return@launch
             }
+            if (amountStr.isEmpty()) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(getString(R.string.hint_please_enter_the_amount_repay_borrowed))
+                return@launch
+            }
             val account = mAccountManager.getIdentityByCoinType(assets.getCoinNumber())
             if (account == null) {
                 showToast(getString(R.string.hint_bank_business_account_error))
@@ -99,6 +152,11 @@ class RepayBorrowActivity : BankBusinessActivity() {
             }
             val amount =
                 convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
+
+            if (amount > mBankBusinessViewModel.mCurrentAssetsLiveData.value?.getAmount() ?: 0) {
+                showToast(getString(R.string.hint_repay_borrow_insufficient_balance))
+                return@launch
+            }
 
             val market = IAssetsMark.convert(assets)
 
