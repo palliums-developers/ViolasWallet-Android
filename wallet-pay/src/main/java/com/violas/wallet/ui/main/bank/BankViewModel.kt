@@ -107,14 +107,14 @@ class BankViewModel : BaseViewModel() {
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
         coroutineScope {
-            val address: String?
+            val syncStartAddress: String?
             synchronized(lock) {
-                address = this@BankViewModel.address
+                syncStartAddress = this@BankViewModel.address
             }
 
             val accountInfoDeferred =
-                if (address != null && action.and(ACTION_LOAD_ACCOUNT_INFO) != 0)
-                    exceptionAsync { bankService.getAccountInfo(address) }
+                if (syncStartAddress != null && action.and(ACTION_LOAD_ACCOUNT_INFO) != 0)
+                    exceptionAsync { bankService.getAccountInfo(syncStartAddress) }
                 else
                     null
 
@@ -133,7 +133,14 @@ class BankViewModel : BaseViewModel() {
             try {
                 val accountInfo = accountInfoDeferred?.await()
                 accountInfo?.let {
-                    accountInfoLiveData.postValue(accountInfo)
+                    val syncEndAddress: String?
+                    synchronized(lock) {
+                        syncEndAddress = this@BankViewModel.address
+                    }
+
+                    if (syncStartAddress == syncEndAddress) {
+                        accountInfoLiveData.postValue(accountInfo)
+                    }
                 }
             } catch (e: Exception) {
 
