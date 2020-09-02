@@ -30,13 +30,7 @@ interface BankApi {
     fun getDepositProducts(): Observable<ListResponse<DepositProductSummaryDTO>>
 
     /**
-     * 获取借贷产品列表
-     */
-    @GET("/1.0/violas/bank/product/borrow")
-    fun getBorrowingProducts(): Observable<ListResponse<BorrowingProductSummaryDTO>>
-
-    /**
-     * 获取存款产品信息
+     * 获取存款产品详情
      * @param id 业务 ID
      * @param address
      */
@@ -47,7 +41,7 @@ interface BankApi {
     ): Observable<Response<DepositProductDetailsDTO>>
 
     /**
-     * 获取存款信息
+     * 分页获取存款信息
      */
     @GET("/1.0/violas/bank/deposit/orders")
     fun getDepositInfos(
@@ -57,19 +51,25 @@ interface BankApi {
     ): Observable<ListResponse<DepositInfoDTO>>
 
     /**
-     * 获取存款订单列表
+     * 分页获取存款记录
      */
     @GET("/1.0/violas/bank/deposit/order/list")
-    fun getDepositOrderList(
+    fun getDepositRecords(
         @Query("address") address: String,
-        @Query("currency") currency: String,
-        @Query("status") status: Int,
-        @Query("offset") offset: Int,
-        @Query("limit") limit: Int
-    ): Observable<ListResponse<DepositOrderDTO>>
+        @Query("currency") currency: String?,
+        @Query("status") state: Int?,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
+    ): Observable<ListResponse<DepositRecordDTO>>
 
     /**
-     * 获取借贷产品信息
+     * 获取借贷产品列表
+     */
+    @GET("/1.0/violas/bank/product/borrow")
+    fun getBorrowingProducts(): Observable<ListResponse<BorrowingProductSummaryDTO>>
+
+    /**
+     * 获取借贷产品详情
      * @param id
      * @param address
      */
@@ -80,7 +80,7 @@ interface BankApi {
     ): Observable<Response<BorrowProductDetailsDTO>>
 
     /**
-     * 获取借贷信息
+     * 分页获取借贷信息
      */
     @GET("/1.0/violas/bank/borrow/orders")
     fun getBorrowingInfos(
@@ -90,26 +90,26 @@ interface BankApi {
     ): Observable<ListResponse<BorrowingInfoDTO>>
 
     /**
-     * 获取借贷订单列表
+     * 分页获取借贷记录
      */
     @GET("/1.0/violas/bank/borrow/order/list")
-    fun getBorrowOrderList(
+    fun getBorrowingRecords(
         @Query("address") address: String,
-        @Query("currency") currency: String,
-        @Query("status") status: Int,
-        @Query("offset") offset: Int,
-        @Query("limit") limit: Int
-    ): Observable<ListResponse<BorrowOrderDTO>>
+        @Query("currency") currency: String?,
+        @Query("status") state: Int?,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
+    ): Observable<ListResponse<BorrowingRecordDTO>>
 
     /**
-     * 获取借贷订单详情
+     * 分页获取借贷明细
      */
     @GET("/1.0/violas/bank/borrow/order/detail")
-    fun getBorrowDetail(
+    fun getBorrowingDetails(
         @Query("address") address: String,
         @Query("id") id: String,
-        @Query("q") q: Int,
-        @Query("offset") offset: Int,
-        @Query("limit") limit: Int
+        @Query("q") type: Int,                  // 0:借贷明细, 1:还款明细, 2: 清算明细
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
     ): Observable<Response<BorrowOrderDetailDTO>>
 }

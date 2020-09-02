@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.bank.order.borrowing
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -31,6 +32,14 @@ import kotlinx.coroutines.launch
  */
 class BankBorrowingOrderActivity : BaseBankOrderActivity<BorrowingInfoDTO>() {
 
+    companion object {
+
+        fun start(context: Context) {
+            Intent(context, BankBorrowingOrderActivity::class.java).start(context)
+        }
+    }
+
+
     private val viewModel by lazy {
         ViewModelProvider(this).get(BankBorrowingOrderViewModel::class.java)
     }
@@ -49,7 +58,7 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<BorrowingInfoDTO>() {
     }
 
     override fun onTitleRightViewClick() {
-        Intent(this, BankBorrowingRecordActivity::class.java).start(this)
+        BankBorrowingRecordActivity.start(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,11 +69,9 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<BorrowingInfoDTO>() {
         tvLabel.setText(R.string.current_borrowing)
 
         launch {
-            val hasAccount = viewModel.initAddress()
-            if (hasAccount) {
+            if (viewModel.initAddress()) {
                 viewModel.start()
             } else {
-                refreshLayout.setEnableRefresh(false)
                 statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
             }
         }

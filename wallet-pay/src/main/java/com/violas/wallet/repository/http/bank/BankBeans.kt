@@ -1,5 +1,6 @@
 package com.violas.wallet.repository.http.bank
 
+import android.icu.util.Currency
 import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
@@ -39,43 +40,11 @@ data class DepositProductSummaryDTO(
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("rate")
-    val depositYield: String            // 收益率
+    val depositYield: String,           // 收益率
+    @SerializedName("token_module")
+    val tokenModule: String
 )
 //endregion
-
-//region /1.0/violas/bank/product/borrow DTO
-@Keep
-data class BorrowingProductSummaryDTO(
-    @SerializedName("id")
-    val productId: String,
-    @SerializedName("name")
-    val productName: String,
-    @SerializedName("desc")
-    val productDesc: String,
-    @SerializedName("logo")
-    val productLogo: String,
-    @SerializedName("rate")
-    val borrowingRate: String           // 借贷率
-)
-//endregion
-
-@Keep
-data class DepositRecordDTO(
-    val coinName: String,
-    val coinLogo: String,
-    val amount: String,
-    val time: Long,
-    val state: Int
-)
-
-@Keep
-data class BorrowingRecordDTO(
-    val coinName: String,
-    val coinLogo: String,
-    val amount: String,
-    val time: Long,
-    val state: Int
-)
 
 @Keep
 data class BorrowingDetailDTO(
@@ -184,19 +153,37 @@ data class DepositInfoDTO(
 
 //region /1.0/violas/bank/deposit/order/list DTO
 @Keep
-data class DepositOrderDTO(
-    @SerializedName("currency")
-    val currency: String,
-    @SerializedName("date")
-    val date: Int,
+data class DepositRecordDTO(
     @SerializedName("id")
     val id: String,
+    @SerializedName("currency")
+    val coinName: String,
     @SerializedName("logo")
-    val logo: String,
-    @SerializedName("status")
-    val status: Int,
+    val coinLogo: String,
     @SerializedName("value")
-    val value: Double
+    val amount: String,
+    @SerializedName("date")
+    val time: Long,
+    @SerializedName("status")
+    val state: Int
+)
+//endregion
+
+//region /1.0/violas/bank/product/borrow DTO
+@Keep
+data class BorrowingProductSummaryDTO(
+    @SerializedName("id")
+    val productId: String,
+    @SerializedName("name")
+    val productName: String,
+    @SerializedName("desc")
+    val productDesc: String,
+    @SerializedName("logo")
+    val productLogo: String,
+    @SerializedName("rate")
+    val borrowingRate: String,          // 借贷率
+    @SerializedName("token_module")
+    val tokenModule: String
 )
 //endregion
 
@@ -250,20 +237,21 @@ data class BorrowingInfoDTO(
 //endregion
 
 //region /1.0/violas/bank/borrow/order/list DTO
+
 @Keep
-data class BorrowOrderDTO(
-    @SerializedName("currency")
-    val currency: String,
-    @SerializedName("date")
-    val date: Int,
+data class BorrowingRecordDTO(
     @SerializedName("id")
     val id: String,
+    @SerializedName("currency")
+    val coinName: String,
     @SerializedName("logo")
-    val logo: String,
-    @SerializedName("status")
-    val status: Int,
+    val coinLogo: String,
     @SerializedName("value")
-    val value: Double
+    val amount: String,
+    @SerializedName("date")
+    val time: Long,
+    @SerializedName("status")
+    val state: Int
 )
 //endregion
 

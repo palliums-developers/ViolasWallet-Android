@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.bank.order.deposit
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -31,6 +32,13 @@ import kotlinx.coroutines.launch
  */
 class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
 
+    companion object {
+
+        fun start(context: Context) {
+            Intent(context, BankDepositOrderActivity::class.java).start(context)
+        }
+    }
+
     private val viewModel by lazy {
         ViewModelProvider(this).get(BankDepositOrderViewModel::class.java)
     }
@@ -50,7 +58,7 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
     }
 
     override fun onTitleRightViewClick() {
-        Intent(this, BankDepositRecordActivity::class.java).start(this)
+        BankDepositRecordActivity.start(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,11 +69,9 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
         tvLabel.setText(R.string.current_deposit)
 
         launch {
-            val hasAccount = viewModel.initAddress()
-            if (hasAccount) {
-                viewModel.start()
+            if (viewModel.initAddress()) {
+                mPagingHandler.start()
             } else {
-                refreshLayout.setEnableRefresh(false)
                 statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
             }
         }

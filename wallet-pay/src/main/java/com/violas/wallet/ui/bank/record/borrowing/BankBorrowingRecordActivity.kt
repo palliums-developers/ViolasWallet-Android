@@ -1,5 +1,7 @@
 package com.violas.wallet.ui.bank.record.borrowing
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,18 +9,19 @@ import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewHolder
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
-import com.palliums.utils.formatDate
-import com.palliums.utils.getColorByAttrId
-import com.palliums.utils.getResourceId
-import com.palliums.utils.getString
+import com.palliums.utils.*
+import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.repository.http.bank.BorrowingRecordDTO
 import com.violas.wallet.ui.bank.record.BaseBankRecordActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.loadCircleImage
+import kotlinx.android.synthetic.main.activity_bank_record.*
 import kotlinx.android.synthetic.main.item_bank_transaction_record.view.*
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,6 +32,13 @@ import java.util.*
  * desc: 银行借款记录页面
  */
 class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>() {
+
+    companion object {
+
+        fun start(context: Context) {
+            Intent(context, BankBorrowingRecordActivity::class.java).start(context)
+        }
+    }
 
     private val viewModel by lazy {
         ViewModelProvider(this).get(BankBorrowingRecordViewModel::class.java)
@@ -49,38 +59,48 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.borrowing_record)
-        mPagingHandler.start()
+        launch {
+            if (viewModel.initAddress()) {
+                mPagingHandler.start()
+            } else {
+                statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
+            }
+        }
     }
 
-    override fun getCurrFilterLiveData(coinFilter: Boolean): MutableLiveData<Pair<Int, String?>> {
+    override fun getCurrFilterLiveData(coinFilter: Boolean): MutableLiveData<Pair<Int, String>?> {
         return if (coinFilter)
             viewModel.currCoinFilterLiveData
         else
             viewModel.currStateFilterLiveData
     }
 
-    override fun getFilterData(coinFilter: Boolean): MutableList<String> {
+    override fun getFilterDataLiveData(coinFilter: Boolean): MutableLiveData<MutableList<String>> {
         return if (coinFilter)
-            mutableListOf(
-                getString(R.string.label_all),
-                "VLS",
-                "BTC",
-                "USD",
-                "EUR",
-                "GBP",
-                "SGD",
-                "VLSUSD",
-                "VLSEUR",
-                "VLSGBP",
-                "VLSSGD"
-            )
+            viewModel.coinFilterDataLiveData
         else
-            mutableListOf(
-                getString(R.string.label_all),
-                getString(R.string.bank_borrowing_state_borrowed),
-                getString(R.string.bank_borrowing_state_repaid),
-                getString(R.string.bank_borrowing_state_liquidated)
-            )
+            viewModel.stateFilterDataLiveData
+    }
+
+    override fun getFilterData(coinFilter: Boolean) {
+        if (coinFilter) {
+            val currData = viewModel.coinFilterDataLiveData.value
+            if (currData.isNullOrEmpty()) {
+                launch {
+                    showProgress()
+                    try {
+                        viewModel.loadCoinFilterData()
+                    } catch (e: Exception) {
+                        showToast(e.getShowErrorMessage(true))
+                    }
+                    dismissProgress()
+                }
+            } else {
+                viewModel.coinFilterDataLiveData.value = currData
+            }
+        } else {
+            viewModel.loadStateFilterData()
+        }
     }
 
     class ViewAdapter : PagingViewAdapter<BorrowingRecordDTO>() {

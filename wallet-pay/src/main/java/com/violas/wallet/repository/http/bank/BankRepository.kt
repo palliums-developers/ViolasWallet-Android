@@ -5,7 +5,7 @@ import com.palliums.net.await
 class BankRepository(private val api: BankApi) {
 
     /**
-     * 获取账户银行信息
+     * 获取账户信息
      */
     suspend fun getAccountInfo(
         address: String
@@ -20,13 +20,7 @@ class BankRepository(private val api: BankApi) {
         api.getDepositProducts().await().data ?: emptyList()
 
     /**
-     * 获取借贷产品列表
-     */
-    suspend fun getBorrowingProducts() =
-        api.getBorrowingProducts().await().data ?: emptyList()
-
-    /**
-     * 获取存款产品信息
+     * 获取存款产品详情
      * @param id 业务 ID
      * @param address
      */
@@ -38,7 +32,7 @@ class BankRepository(private val api: BankApi) {
 
 
     /**
-     * 获取存款信息列表
+     * 分页获取存款信息
      */
     suspend fun getDepositInfos(
         address: String,
@@ -48,22 +42,26 @@ class BankRepository(private val api: BankApi) {
         api.getDepositInfos(address, limit, offset).await().data ?: emptyList()
 
     /**
-     * 获取存款订单列表
+     * 分页获取存款记录
      */
-    suspend fun getDepositOrderList(
+    suspend fun getDepositRecords(
         address: String,
-        currency: String,
-        status: Int,
-        offset: Int,
-        limit: Int
-    ): List<DepositOrderDTO>? {
-        return api.getDepositOrderList(address, currency, status, offset, limit).await().data
-    }
+        currency: String?,
+        state: Int?,
+        limit: Int,
+        offset: Int
+    ) =
+        api.getDepositRecords(address, currency, state, limit, offset).await().data
+            ?: emptyList()
 
     /**
-     * 获取借贷产品信息
-     * @param id
-     * @param address
+     * 获取借贷产品列表
+     */
+    suspend fun getBorrowingProducts() =
+        api.getBorrowingProducts().await().data ?: emptyList()
+
+    /**
+     * 获取借贷产品详情
      */
     suspend fun getBorrowProductDetails(
         id: String,
@@ -72,7 +70,7 @@ class BankRepository(private val api: BankApi) {
         api.getBorrowProductDetails(id, address).await().data
 
     /**
-     * 获取借贷信息
+     * 分页获取借贷信息
      */
     suspend fun getBorrowingInfos(
         address: String,
@@ -82,28 +80,27 @@ class BankRepository(private val api: BankApi) {
         api.getBorrowingInfos(address, limit, offset).await().data ?: emptyList()
 
     /**
-     * 获取借贷订单列表
+     * 分页获取借贷记录
      */
-    suspend fun getBorrowOrderList(
+    suspend fun getBorrowingRecords(
         address: String,
-        currency: String,
-        status: Int,
-        offset: Int,
-        limit: Int
-    ): List<BorrowOrderDTO>? {
-        return api.getBorrowOrderList(address, currency, status, offset, limit).await().data
-    }
+        currency: String?,
+        state: Int?,
+        limit: Int,
+        offset: Int
+    ) =
+        api.getBorrowingRecords(address, currency, state, limit, offset).await().data
+            ?: emptyList()
 
     /**
-     * 获取借贷订单详情
+     * 分页获取借贷明细
      */
-    suspend fun getBorrowDetail(
+    suspend fun getBorrowingDetails(
         address: String,
         id: String,
-        q: Int,
+        type: Int,
         offset: Int,
         limit: Int
-    ): BorrowOrderDetailDTO? {
-        return api.getBorrowDetail(address, id, q, offset, limit).await().data
-    }
+    ) =
+        api.getBorrowingDetails(address, id, type, limit, offset).await().data
 }

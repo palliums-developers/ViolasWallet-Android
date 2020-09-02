@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.main.bank
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -14,7 +13,10 @@ import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
 import com.palliums.extensions.expandTouchArea
 import com.palliums.net.LoadState
-import com.palliums.utils.*
+import com.palliums.utils.DensityUtility
+import com.palliums.utils.StatusBarUtil
+import com.palliums.utils.getColorByAttrId
+import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.ui.bank.order.borrowing.BankBorrowingOrderActivity
@@ -248,9 +250,9 @@ class BankFragment : BaseFragment() {
     private fun delayStartBankOrderPage(context: Context, depositOrder: Boolean) {
         ivMenu.postDelayed({
             if (depositOrder) {
-                Intent(context, BankDepositOrderActivity::class.java).start(context)
+                BankDepositOrderActivity.start(context)
             } else {
-                Intent(context, BankBorrowingOrderActivity::class.java).start(context)
+                BankBorrowingOrderActivity.start(context)
             }
         }, 300)
     }

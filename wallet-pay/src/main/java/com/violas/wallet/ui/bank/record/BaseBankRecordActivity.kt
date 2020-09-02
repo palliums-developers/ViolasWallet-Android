@@ -13,6 +13,7 @@ import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
+import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_bank_record.*
 
 /**
@@ -59,27 +60,28 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
         mPagingHandler.init()
 
         llCoinFilter.setOnClickListener {
-            showFilterPopup(true)
+            getFilterData(true)
         }
         llStateFilter.setOnClickListener {
-            showFilterPopup(false)
+            getFilterData(false)
         }
 
         getCurrFilterLiveData(true).observe(this, Observer {
-            tvCoinFilterText.text = if (it.second.isNullOrBlank())
-                getString(R.string.all_currencies)
-            else
-                it.second
+            tvCoinFilterText.text = it?.second ?: getString(R.string.all_currencies)
         })
         getCurrFilterLiveData(false).observe(this, Observer {
-            tvStateFilterText.text = if (it.second.isNullOrBlank())
-                getString(R.string.all_state)
-            else
-                it.second
+            tvStateFilterText.text = it?.second ?: getString(R.string.all_state)
         })
 
-        getCurrFilterLiveData(true).value = Pair(0, null)
-        getCurrFilterLiveData(false).value = Pair(0, null)
+        getFilterDataLiveData(true).observe(this, Observer {
+            showFilterPopup(true, it)
+        })
+        getFilterDataLiveData(false).observe(this, Observer {
+            showFilterPopup(false, it)
+        })
+
+        getCurrFilterLiveData(true).value = null
+        getCurrFilterLiveData(false).value = null
         setStatusLayout(false)
     }
 
@@ -97,13 +99,12 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
         )
     }
 
-    private fun showFilterPopup(coinFilter: Boolean) {
+    private fun showFilterPopup(coinFilter: Boolean, filterData: MutableList<String>) {
         if (coinFilter)
             coinFilterArrowAnimator.start()
         else
             stateFilterArrowAnimator.start()
 
-        val filterData = getFilterData(coinFilter)
         val currPosition = getCurrFilterLiveData(coinFilter).value?.first ?: 0
 
         XPopup.Builder(this)
@@ -138,7 +139,7 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
 
                         onChangeFilter(
                             coinFilter,
-                            Pair(position, if (position == 0) null else text)
+                            if (position != 0) Pair(position, text) else null
                         )
                     }
                 }
@@ -146,12 +147,16 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
             .show()
     }
 
-    abstract fun getCurrFilterLiveData(coinFilter: Boolean): MutableLiveData<Pair<Int, String?>>
+    abstract fun getCurrFilterLiveData(coinFilter: Boolean): MutableLiveData<Pair<Int, String>?>
 
-    abstract fun getFilterData(coinFilter: Boolean): MutableList<String>
+    abstract fun getFilterDataLiveData(coinFilter: Boolean): MutableLiveData<MutableList<String>>
 
-    private fun onChangeFilter(coinFilter: Boolean, filter: Pair<Int, String?>) {
+    abstract fun getFilterData(coinFilter: Boolean)
+
+    private fun onChangeFilter(coinFilter: Boolean, filter: Pair<Int, String>?) {
         getCurrFilterLiveData(coinFilter).value = filter
-        mPagingHandler.restart()
+        if (WalletAppViewModel.getViewModelInstance().isExistsAccount()) {
+            mPagingHandler.restart()
+        }
     }
 }
