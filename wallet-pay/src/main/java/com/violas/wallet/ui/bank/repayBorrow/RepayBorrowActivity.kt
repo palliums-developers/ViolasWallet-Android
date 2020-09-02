@@ -70,7 +70,7 @@ class RepayBorrowActivity : BankBusinessActivity() {
         launch(Dispatchers.IO) {
             showProgress()
             mAccountDO?.address?.let {
-                mBorrowOrderDetail = mBankRepository.getBorrowDetail(it, businessId, 0, 0, 0)
+                mBorrowOrderDetail = mBankRepository.getBorrowingDetails(it, businessId, 0, 0, 0)
                 refreshTryingView()
             }
             dismissProgress()
