@@ -13,7 +13,6 @@ import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
 import com.palliums.extensions.expandTouchArea
-import com.palliums.extensions.isNoNetwork
 import com.palliums.net.LoadState
 import com.palliums.utils.*
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
@@ -21,7 +20,8 @@ import com.violas.wallet.R
 import com.violas.wallet.ui.bank.order.borrowing.BankBorrowingOrderActivity
 import com.violas.wallet.ui.bank.order.deposit.BankDepositOrderActivity
 import com.violas.wallet.ui.main.bank.BankViewModel.Companion.ACTION_LOAD_ACCOUNT_INFO
-import com.violas.wallet.ui.main.bank.BankViewModel.Companion.ACTION_LOAD_ALL
+import com.violas.wallet.ui.main.bank.BankViewModel.Companion.ACTION_LOAD_BORROWING_PRODUCTS
+import com.violas.wallet.ui.main.bank.BankViewModel.Companion.ACTION_LOAD_DEPOSIT_PRODUCTS
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.widget.popup.MenuPopup
 import kotlinx.android.synthetic.main.fragment_bank.*
@@ -54,9 +54,9 @@ class BankFragment : BaseFragment() {
         super.onLazyInitViewByResume(savedInstanceState)
 
         initView()
-        initObserver()
-        initEvent()
         initTab()
+        initEvent()
+        initObserver()
     }
 
     private fun initView() {
@@ -125,12 +125,15 @@ class BankFragment : BaseFragment() {
             Observer {
                 launch {
                     bankViewModel.initAddress()
-                    if (bankViewModel.depositProductsLiveData.value.isNullOrEmpty()
-                        || bankViewModel.borrowingProductsLiveData.value.isNullOrEmpty()
-                    ) {
-                        loadData(ACTION_LOAD_ALL)
-                    } else if (it) {
-                        loadData(ACTION_LOAD_ACCOUNT_INFO)
+
+                    var action = if (it) ACTION_LOAD_ACCOUNT_INFO else 0
+                    if (bankViewModel.depositProductsLiveData.value.isNullOrEmpty())
+                        action = action.or(ACTION_LOAD_DEPOSIT_PRODUCTS)
+                    if (bankViewModel.borrowingProductsLiveData.value.isNullOrEmpty())
+                        action = action.or(ACTION_LOAD_BORROWING_PRODUCTS)
+
+                    if (action != 0) {
+                        loadData(action)
                     }
                 }
             }
@@ -143,7 +146,11 @@ class BankFragment : BaseFragment() {
 
     private fun initEvent() {
         refreshLayout.setOnRefreshListener {
-            loadData(ACTION_LOAD_ALL)
+            val action = if (viewPager.currentItem == 0)
+                ACTION_LOAD_ACCOUNT_INFO.or(ACTION_LOAD_DEPOSIT_PRODUCTS)
+            else
+                ACTION_LOAD_ACCOUNT_INFO.or(ACTION_LOAD_BORROWING_PRODUCTS)
+            loadData(action)
         }
 
         ivMenu.setOnClickListener {

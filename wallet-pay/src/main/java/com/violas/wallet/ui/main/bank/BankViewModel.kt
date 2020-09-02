@@ -24,8 +24,9 @@ import kotlinx.coroutines.withContext
 class BankViewModel : BaseViewModel() {
 
     companion object {
-        const val ACTION_LOAD_ALL = 0x01
-        const val ACTION_LOAD_ACCOUNT_INFO = 0x02
+        const val ACTION_LOAD_ACCOUNT_INFO = 0x01
+        const val ACTION_LOAD_DEPOSIT_PRODUCTS = 0x02
+        const val ACTION_LOAD_BORROWING_PRODUCTS = 0x04
     }
 
     // 银行账户信息
@@ -112,19 +113,19 @@ class BankViewModel : BaseViewModel() {
             }
 
             val accountInfoDeferred =
-                if (address != null)
+                if (address != null && action.and(ACTION_LOAD_ACCOUNT_INFO) != 0)
                     exceptionAsync { bankService.getAccountInfo(address) }
                 else
                     null
 
             val depositProductsDeferred =
-                if (action == ACTION_LOAD_ALL)
+                if (action.and(ACTION_LOAD_DEPOSIT_PRODUCTS) != 0)
                     exceptionAsync { bankService.getDepositProducts() }
                 else
                     null
 
             val borrowingProductsDeferred =
-                if (action == ACTION_LOAD_ALL)
+                if (action.and(ACTION_LOAD_BORROWING_PRODUCTS) != 0)
                     exceptionAsync { bankService.getBorrowingProducts() }
                 else
                     null
