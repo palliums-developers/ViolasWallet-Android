@@ -24,6 +24,7 @@ import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 /**
  * Created by elephant on 2020/8/19 15:38.
@@ -90,7 +91,7 @@ class DepositActivity : BankBusinessActivity() {
                     BusinessUserAmountInfo(
                         R.drawable.icon_bank_user_amount_limit,
                         getString(R.string.hint_bank_deposit_daily_limit),
-                        convertAmountToDisplayAmountStr(quotaUsed),
+                        convertAmountToDisplayAmountStr(quotaLimit - quotaUsed),
                         tokenShowName,
                         convertAmountToDisplayAmountStr(quotaLimit)
                     )
@@ -106,11 +107,15 @@ class DepositActivity : BankBusinessActivity() {
             mBankBusinessViewModel.mBusinessParameterListLiveData.postValue(
                 arrayListOf(
                     BusinessParameter(
-                        "存款年利率",
+                        getString(R.string.hint_annual_deposit_rate),
                         "${rate * 100}%",
                         contentColor = Color.parseColor("#13B788")
                     ),
-                    BusinessParameter("质押率", "${pledgeRate * 100}%", "质押率=借贷数量/存款数量")
+                    BusinessParameter(
+                        getString(R.string.hint_pledge_rate),
+                        "${pledgeRate * 100}%",
+                        getString(R.string.hint_borrow_pledge_algorithm)
+                    )
                 )
             )
 
@@ -148,7 +153,19 @@ class DepositActivity : BankBusinessActivity() {
     }
 
     override fun clickSendAll() {
+        mDepositProductDetails?.run {
+            val balance =
+                BigDecimal(mBankBusinessViewModel.mBusinessUsableAmount.value?.value1 ?: "0")
+            val useAmount = BigDecimal(convertAmountToDisplayAmountStr(quotaLimit - quotaUsed))
 
+            val inputAmount = if (balance > useAmount) {
+                useAmount
+            } else {
+                balance
+            }
+
+            editBusinessValue.setText(inputAmount.toPlainString())
+        }
     }
 
     override fun clickExecBusiness() {

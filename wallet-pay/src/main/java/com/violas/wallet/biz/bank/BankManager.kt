@@ -7,20 +7,30 @@ import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.AccountAddress
-import org.palliums.violascore.transaction.TransactionPayload
-import org.palliums.violascore.transaction.optionTransactionPayload
 import org.palliums.violascore.transaction.storage.StructTag
 import org.palliums.violascore.transaction.storage.TypeTagStructTag
 import org.palliums.violascore.wallet.Account
 
 class BankManager {
-    private val mViolasService by lazy { DataRepository.getViolasService() }
+    private val mViolasService by lazy { DataRepository.getViolasChainRpcService() }
     private val mViolasBankContract by lazy { ViolasBankContract(Vm.TestNet) }
+
+    private suspend fun register(password: ByteArray, payerAccountDO: AccountDO): String {
+        val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
+            .decrypt(password, payerAccountDO.privateKey)!!
+
+        val optionBorrowTransactionPayload = mViolasBankContract.optionRegisterTransactionPayload()
+
+        return mViolasService.sendTransaction(
+            optionBorrowTransactionPayload,
+            Account(KeyPair.fromSecretKey(payerPrivateKey)),
+            chainId = Vm.ViolasChainId
+        ).sequenceNumber.toString()
+    }
 
     @Throws(ViolasException::class)
     suspend fun borrow(
@@ -94,6 +104,7 @@ class BankManager {
         assetsMark: LibraTokenAssetsMark,
         amount: Long
     ): String {
+        register(password, payerAccountDO)
         val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
             .decrypt(password, payerAccountDO.privateKey)!!
 

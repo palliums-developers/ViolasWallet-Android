@@ -79,7 +79,7 @@ data class DepositProductDetailsDTO(
     val intor: List<IntorDTO>,
     @SerializedName("minimum_amount")
     val minimumAmount: Long,
-    @SerializedName("minimum_amount")
+    @SerializedName("minimum_step")
     val minimumStep: Long,
     @SerializedName("name")
     val name: String,
@@ -259,7 +259,7 @@ data class BorrowingRecordDTO(
 @Keep
 data class BorrowOrderDetailDTO(
     @SerializedName("balance")
-    val balance: Int,
+    val balance: Long,
     @SerializedName("id")
     val id: String,
     @SerializedName("list")
