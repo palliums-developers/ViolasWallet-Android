@@ -30,7 +30,6 @@ class BankRepository(private val api: BankApi) {
     ) =
         api.getDepositProductDetails(id, address).await().data
 
-
     /**
      * 分页获取存款信息
      */
@@ -40,6 +39,17 @@ class BankRepository(private val api: BankApi) {
         offset: Int
     ) =
         api.getDepositInfos(address, limit, offset).await().data ?: emptyList()
+
+    /**
+     * 获取存款详情
+     * @param id 业务 ID
+     * @param address
+     */
+    suspend fun getDepositDetails(
+        id: String,
+        address: String
+    ) =
+        api.getDepositDetails(id, address).await(dataNullableOnSuccess = false).data!!
 
     /**
      * 分页获取存款记录

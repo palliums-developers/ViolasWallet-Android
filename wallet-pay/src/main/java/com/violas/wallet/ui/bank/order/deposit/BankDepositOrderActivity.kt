@@ -105,11 +105,11 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
 
         override fun onViewBind(itemPosition: Int, itemData: DepositInfoDTO?) {
             itemData?.let {
-                itemView.ivCoinLogo.loadCircleImage(
+                itemView.ivLogo.loadCircleImage(
                     it.productLogo,
                     getResourceId(R.attr.iconCoinDefLogo, itemView.context)
                 )
-                itemView.tvCoinName.text = it.coinName
+                itemView.tvName.text = it.productName
                 itemView.tvPrincipal.text = convertAmountToDisplayAmountStr(it.principal)
                 itemView.tvEarnings.text = convertAmountToDisplayAmountStr(it.totalEarnings)
                 itemView.tvDepositYield.text = "${keepTwoDecimals(it.depositYield)}%"

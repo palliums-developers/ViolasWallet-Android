@@ -51,6 +51,15 @@ interface BankApi {
     ): Observable<ListResponse<DepositInfoDTO>>
 
     /**
+     * 获取存款详情
+     */
+    @GET("/1.0/violas/bank/deposit/withdrawal")
+    fun getDepositDetails(
+        @Query("id") id: String,
+        @Query("address") address: String
+    ): Observable<Response<DepositDetailsDTO>>
+
+    /**
      * 分页获取存款记录
      */
     @GET("/1.0/violas/bank/deposit/order/list")

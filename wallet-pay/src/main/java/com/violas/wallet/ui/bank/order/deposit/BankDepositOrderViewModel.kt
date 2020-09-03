@@ -52,11 +52,7 @@ class BankDepositOrderViewModel : PagingViewModel<DepositInfoDTO>() {
                 "5.123",
                 "1001110000",
                 "23400000",
-                "1001110000",
-                1,
-                "VLSUSD",
-                "VLSUSD",
-                "00000000000000000000000000000000"
+                1
             ),
             DepositInfoDTO(
                 "2",
@@ -65,11 +61,7 @@ class BankDepositOrderViewModel : PagingViewModel<DepositInfoDTO>() {
                 "5.254",
                 "2003450000",
                 "12200000",
-                "1001110000",
-                1,
-                "VLSEUR",
-                "VLSEUR",
-                "00000000000000000000000000000000"
+                1
             )
         )
     }

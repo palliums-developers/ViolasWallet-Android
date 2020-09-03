@@ -126,7 +126,7 @@ data class QuestionDTO(
 data class DepositInfoDTO(
     @SerializedName("id")
     val productId: String,
-    @SerializedName("token_show_name")
+    @SerializedName("currency")
     val productName: String,
     @SerializedName("logo")
     val productLogo: String,
@@ -137,17 +137,22 @@ data class DepositInfoDTO(
     val principal: String,              // 本金
     @SerializedName("earnings")
     val totalEarnings: String,          // 累计收益
+    @SerializedName("status")
+    val status: Int
+)
+//endregion
+
+//region /1.0/violas/bank/deposit/withdrawal DTO
+@Keep
+data class DepositDetailsDTO(
     @SerializedName("available_quantity")
     val availableAmount: String,        // 可用金额(本金 - 被清算)
-    @SerializedName("status")
-    val status: Int,
-
     @SerializedName("token_name")
-    val coinName: String,
-    @SerializedName("currency")
-    val coinModule: String,
+    val tokenName: String,
+    @SerializedName("token_module")
+    val tokenModule: String,
     @SerializedName("token_address")
-    val coinAddress: String = "00000000000000000000000000000000"
+    val tokenAddress: String
 )
 //endregion
 
