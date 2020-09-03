@@ -1,6 +1,5 @@
 package com.violas.wallet.repository.http.bank
 
-import android.icu.util.Currency
 import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
@@ -146,7 +145,7 @@ data class DepositInfoDTO(
 @Keep
 data class DepositDetailsDTO(
     @SerializedName("available_quantity")
-    val availableAmount: String,        // 可用金额(本金 - 被清算)
+    val availableAmount: String,        // 可用数量(本金 - 被清算)
     @SerializedName("token_name")
     val tokenName: String,
     @SerializedName("token_module")
@@ -237,12 +236,11 @@ data class BorrowingInfoDTO(
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("amount")
-    val borrowedAmount: String          // 已借贷金额
+    var borrowedAmount: String          // 已借贷数量
 ) : Parcelable
 //endregion
 
 //region /1.0/violas/bank/borrow/order/list DTO
-
 @Keep
 data class BorrowingRecordDTO(
     @SerializedName("id")
@@ -257,6 +255,55 @@ data class BorrowingRecordDTO(
     val time: Long,
     @SerializedName("status")
     val state: Int                      // 订单状态，0（已借款），1（已还款），2（已清算），-1（借款失败），-2（还款失败）
+)
+//endregion
+
+//region /1.0/violas/bank/borrow/order/detail DTO
+@Keep
+data class CoinBorrowingInfoDTO<T>(
+    @SerializedName("id")
+    val productId: String,
+    @SerializedName("name")
+    val productName: String,
+    @SerializedName("balance")
+    val borrowedAmount: String,         // 已借贷数量
+
+    @SerializedName("list")
+    val records: List<T>
+)
+
+@Keep
+data class CoinBorrowingRecordDTO(
+    @SerializedName("amount")
+    val amount: String,
+    @SerializedName("date")
+    val time: Long,
+    @SerializedName("status")
+    val state: Int
+)
+
+@Keep
+data class CoinRepaymentRecordDTO(
+    @SerializedName("amount")
+    val amount: String,
+    @SerializedName("date")
+    val time: Long,
+    @SerializedName("status")
+    val state: Int
+)
+
+@Keep
+data class CoinLiquidationRecordDTO(
+    @SerializedName("cleared")
+    val liquidatedAmount: String,       // 被清算数量
+    @SerializedName("deductioned")
+    val deductedAmount: String,         // 已抵扣数量
+    @SerializedName("deductioned_currency")
+    val deductedCurrency: String,       // 已抵扣币种
+    @SerializedName("date")
+    val time: Long,
+    @SerializedName("statue")
+    val state: Int
 )
 //endregion
 

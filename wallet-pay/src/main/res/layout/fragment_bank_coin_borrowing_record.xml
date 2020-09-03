@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.bank.details.borrowing.BorrowingDetailFragment">
+    tools:context=".ui.bank.details.borrowing.CoinBorrowingRecordFragment">
 
     <TextView
         android:id="@+id/tvTimeLabel"
@@ -67,7 +67,7 @@
                 android:layout_height="match_parent"
                 android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_bank_borrowing_detail" />
+                tools:listitem="@layout/item_bank_coin_borrowing_record" />
 
             <com.palliums.widget.status.DefaultStatusLayout
                 android:id="@+id/vStatusLayout"

@@ -115,6 +115,42 @@ interface BankApi {
     ): Observable<ListResponse<BorrowingRecordDTO>>
 
     /**
+     * 分页获取借贷产品的借款记录
+     */
+    @GET("/1.0/violas/bank/borrow/order/detail")
+    fun getCoinBorrowingRecords(
+        @Query("address") address: String,
+        @Query("id") id: String,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int,
+        @Query("q") type: Int = 0
+    ): Observable<Response<CoinBorrowingInfoDTO<CoinBorrowingRecordDTO>>>
+
+    /**
+     * 分页获取借贷产品的还款记录
+     */
+    @GET("/1.0/violas/bank/borrow/order/detail")
+    fun getCoinRepaymentRecords(
+        @Query("address") address: String,
+        @Query("id") id: String,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int,
+        @Query("q") type: Int = 1
+    ): Observable<Response<CoinBorrowingInfoDTO<CoinRepaymentRecordDTO>>>
+
+    /**
+     * 分页获取借贷产品的清算记录
+     */
+    @GET("/1.0/violas/bank/borrow/order/detail")
+    fun getCoinLiquidationRecords(
+        @Query("address") address: String,
+        @Query("id") id: String,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int,
+        @Query("q") type: Int = 2
+    ): Observable<Response<CoinBorrowingInfoDTO<CoinLiquidationRecordDTO>>>
+
+    /**
      * 分页获取借贷明细
      */
     @GET("/1.0/violas/bank/borrow/order/detail")

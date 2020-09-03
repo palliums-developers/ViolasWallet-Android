@@ -13,6 +13,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.event.UpdateBankBorrowedAmountEvent
 import com.violas.wallet.repository.http.bank.BorrowingInfoDTO
 import com.violas.wallet.ui.bank.repayBorrow.RepayBorrowActivity
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
@@ -20,6 +21,8 @@ import kotlinx.android.synthetic.main.activity_bank_borrowing_details.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 /**
  * Created by elephant on 2020/8/27 16:39.
@@ -72,6 +75,24 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         outState.putParcelable(KEY_ONE, borrowingInfo)
     }
 
+    override fun onDestroy() {
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this)
+        }
+        super.onDestroy()
+    }
+
+    @Subscribe
+    fun onUpdateBankBorrowedAmountEvent(event: UpdateBankBorrowedAmountEvent) {
+        launch {
+            if (borrowingInfo.productId == event.productId) {
+                borrowingInfo.borrowedAmount = event.borrowedAmount
+                tvAmountToBeRepaid.text =
+                    convertAmountToDisplayAmountStr(borrowingInfo.borrowedAmount)
+            }
+        }
+    }
+
     private fun initData(savedInstanceState: Bundle?): Boolean {
         if (savedInstanceState != null) {
             borrowingInfo = savedInstanceState.getParcelable(KEY_ONE) ?: return false
@@ -106,9 +127,20 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         viewPager.adapter = FragmentPagerAdapterSupport(supportFragmentManager).apply {
             setFragments(
                 mutableListOf<Fragment>(
-                    BorrowingDetailFragment.newInstance(borrowingInfo.productId, violasAddress),
-                    RepaymentDetailFragment.newInstance(borrowingInfo.productId, violasAddress),
-                    LiquidationDetailFragment.newInstance(borrowingInfo.productId, violasAddress)
+                    CoinBorrowingRecordFragment.newInstance(
+                        borrowingInfo.productId,
+                        violasAddress,
+                        borrowingInfo.productName
+                    ),
+                    CoinRepaymentRecordFragment.newInstance(
+                        borrowingInfo.productId, violasAddress,
+                        borrowingInfo.productName
+                    ),
+                    CoinLiquidationRecordFragment.newInstance(
+                        borrowingInfo.productId,
+                        violasAddress,
+                        borrowingInfo.productName
+                    )
                 )
             )
             setTitles(
@@ -145,14 +177,14 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     }
 
     private fun initEvent() {
-        //region Description
+        EventBus.getDefault().register(this)
+
         btnGoRepayment.setOnClickListener {
             RepayBorrowActivity.start(
                 this,
                 borrowingInfo.productId
             )
         }
-        //endregion
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
 
