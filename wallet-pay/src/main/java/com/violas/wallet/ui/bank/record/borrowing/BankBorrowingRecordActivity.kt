@@ -82,21 +82,16 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
             viewModel.stateFilterDataLiveData
     }
 
-    override fun getFilterData(coinFilter: Boolean) {
+    override fun loadFilterData(coinFilter: Boolean) {
         if (coinFilter) {
-            val currData = viewModel.coinFilterDataLiveData.value
-            if (currData.isNullOrEmpty()) {
-                launch {
-                    showProgress()
-                    try {
-                        viewModel.loadCoinFilterData()
-                    } catch (e: Exception) {
-                        showToast(e.getShowErrorMessage(true))
-                    }
-                    dismissProgress()
+            launch {
+                showProgress()
+                try {
+                    viewModel.loadCoinFilterData()
+                } catch (e: Exception) {
+                    showToast(e.getShowErrorMessage(true))
                 }
-            } else {
-                viewModel.coinFilterDataLiveData.value = currData
+                dismissProgress()
             }
         } else {
             viewModel.loadStateFilterData()

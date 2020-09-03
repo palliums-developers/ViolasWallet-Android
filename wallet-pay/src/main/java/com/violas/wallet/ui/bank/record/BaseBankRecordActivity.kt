@@ -58,20 +58,14 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
 
         setTitleLeftImageResource(getResourceId(R.attr.iconBackTertiary, this))
         mPagingHandler.init()
+        setStatusLayout(false)
 
         llCoinFilter.setOnClickListener {
-            getFilterData(true)
+            loadFilterDataOrShowFilterPopup(true)
         }
         llStateFilter.setOnClickListener {
-            getFilterData(false)
+            loadFilterDataOrShowFilterPopup(false)
         }
-
-        getCurrFilterLiveData(true).observe(this, Observer {
-            tvCoinFilterText.text = it?.second ?: getString(R.string.all_currencies)
-        })
-        getCurrFilterLiveData(false).observe(this, Observer {
-            tvStateFilterText.text = it?.second ?: getString(R.string.all_state)
-        })
 
         getFilterDataLiveData(true).observe(this, Observer {
             showFilterPopup(true, it)
@@ -80,9 +74,15 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
             showFilterPopup(false, it)
         })
 
+        getCurrFilterLiveData(true).observe(this, Observer {
+            tvCoinFilterText.text = it?.second ?: getString(R.string.all_currencies)
+        })
+        getCurrFilterLiveData(false).observe(this, Observer {
+            tvStateFilterText.text = it?.second ?: getString(R.string.all_state)
+        })
+
         getCurrFilterLiveData(true).value = null
         getCurrFilterLiveData(false).value = null
-        setStatusLayout(false)
     }
 
     private fun setStatusLayout(search: Boolean) {
@@ -97,6 +97,15 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
                 this
             )
         )
+    }
+
+    private fun loadFilterDataOrShowFilterPopup(coinFilter: Boolean) {
+        val filterData = getFilterDataLiveData(coinFilter).value
+        if (filterData.isNullOrEmpty()) {
+            loadFilterData(coinFilter)
+        } else {
+            showFilterPopup(coinFilter, filterData)
+        }
     }
 
     private fun showFilterPopup(coinFilter: Boolean, filterData: MutableList<String>) {
@@ -151,7 +160,7 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
 
     abstract fun getFilterDataLiveData(coinFilter: Boolean): MutableLiveData<MutableList<String>>
 
-    abstract fun getFilterData(coinFilter: Boolean)
+    abstract fun loadFilterData(coinFilter: Boolean)
 
     private fun onChangeFilter(coinFilter: Boolean, filter: Pair<Int, String>?) {
         getCurrFilterLiveData(coinFilter).value = filter

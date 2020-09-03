@@ -46,22 +46,18 @@ class BankDepositRecordViewModel : PagingViewModel<DepositRecordDTO>() {
 
     suspend fun loadCoinFilterData() = withContext(Dispatchers.IO) {
         val depositProducts = bankService.getDepositProducts()
-        val data = depositProducts.map { it.tokenModule } as MutableList
-        data.add(0, getString(R.string.label_all))
-        coinFilterDataLiveData.postValue(data)
+        val coinFilterData = depositProducts.map { it.tokenModule } as MutableList
+        coinFilterData.add(0, getString(R.string.label_all))
+        coinFilterDataLiveData.postValue(coinFilterData)
     }
 
     fun loadStateFilterData() {
-        var data = stateFilterDataLiveData.value
-        if (data.isNullOrEmpty()) {
-            val newData = mutableListOf(
-                getString(R.string.label_all),
-                getString(R.string.bank_deposit_state_deposited),
-                getString(R.string.bank_deposit_state_withdrew)
-            )
-            data = newData
-        }
-        stateFilterDataLiveData.postValue(data)
+        val stateFilterData = mutableListOf(
+            getString(R.string.label_all),
+            getString(R.string.bank_deposit_state_deposited),
+            getString(R.string.bank_deposit_state_withdrew)
+        )
+        stateFilterDataLiveData.postValue(stateFilterData)
     }
 
     override suspend fun loadData(
