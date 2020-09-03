@@ -136,14 +136,11 @@ class BankRepository(private val api: BankApi) {
         api.getCoinLiquidationRecords(address, id, limit, offset).await().data
 
     /**
-     * 分页获取借贷明细
+     * 获取借贷详情
      */
     suspend fun getBorrowingDetails(
         address: String,
-        id: String,
-        type: Int,
-        offset: Int,
-        limit: Int
+        id: String
     ) =
-        api.getBorrowingDetails(address, id, type, limit, offset).await().data
+        api.getBorrowingDetails(address, id).await().data
 }

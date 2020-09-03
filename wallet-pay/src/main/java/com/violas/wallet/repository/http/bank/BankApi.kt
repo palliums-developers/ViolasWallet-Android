@@ -153,12 +153,9 @@ interface BankApi {
     /**
      * 分页获取借贷明细
      */
-    @GET("/1.0/violas/bank/borrow/order/detail")
+    @GET("/1.0/violas/bank/borrow/repayment")
     fun getBorrowingDetails(
         @Query("address") address: String,
-        @Query("id") id: String,
-        @Query("q") type: Int,                  // 0:借贷明细, 1:还款明细, 2: 清算明细
-        @Query("limit") limit: Int,
-        @Query("offset") offset: Int
-    ): Observable<Response<BorrowOrderDetailDTO>>
+        @Query("id") id: String
+    ): Observable<Response<BorrowDetailsDTO>>
 }

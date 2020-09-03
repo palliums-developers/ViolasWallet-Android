@@ -45,30 +45,6 @@ data class DepositProductSummaryDTO(
 )
 //endregion
 
-@Keep
-data class BorrowingDetailDTO(
-    val amount: String,
-    val time: Long,
-    val state: Int
-)
-
-@Keep
-data class RepaymentDetailDTO(
-    val amount: String,
-    val time: Long,
-    val state: Int
-)
-
-@Keep
-data class LiquidationDetailDTO(
-    val liquidateCoin: String,
-    val liquidateAmount: String,
-    val deductCoin: String,
-    val deductAmount: String,
-    val time: Long,
-    val state: Int
-)
-
 //region /1.0/violas/bank/deposit/info DTO
 @Keep
 data class DepositProductDetailsDTO(
@@ -307,19 +283,18 @@ data class CoinLiquidationRecordDTO(
 )
 //endregion
 
-//region /1.0/violas/bank/borrow/order/detail DTO
+//region /1.0/violas/bank/borrow/repayment DTO
 @Keep
-data class BorrowOrderDetailDTO(
-    @SerializedName("balance")
-    val balance: Long,
+data class BorrowDetailsDTO(
     @SerializedName("id")
-    val id: String,
-    @SerializedName("list")
-    val list: List<BorrowRecordDTO>,
+    val productId: String,
     @SerializedName("name")
-    val name: String,
+    val productName: String,
     @SerializedName("rate")
-    val rate: Double,
+    val borrowingRate: Double,
+    @SerializedName("balance")
+    val borrowedAmount: Long,           // 已借贷数量
+
     @SerializedName("token_address")
     val tokenAddress: String,
     @SerializedName("token_module")
@@ -328,17 +303,5 @@ data class BorrowOrderDetailDTO(
     val tokenName: String,
     @SerializedName("token_show_name")
     val tokenShowName: String
-)
-
-@Keep
-data class BorrowRecordDTO(
-    @SerializedName("cleared")
-    val cleared: Int,
-    @SerializedName("date")
-    val date: Int,
-    @SerializedName("deductioned")
-    val deductioned: Int,
-    @SerializedName("status")
-    val status: Int
 )
 //endregion

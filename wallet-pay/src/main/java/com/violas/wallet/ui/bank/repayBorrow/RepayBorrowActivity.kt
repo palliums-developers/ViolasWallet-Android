@@ -13,7 +13,7 @@ import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.repository.http.bank.BorrowOrderDetailDTO
+import com.violas.wallet.repository.http.bank.BorrowDetailsDTO
 import com.violas.wallet.ui.bank.BankBusinessActivity
 import com.violas.wallet.ui.bank.BusinessParameter
 import com.violas.wallet.ui.bank.BusinessUserAmountInfo
@@ -64,13 +64,13 @@ class RepayBorrowActivity : BankBusinessActivity() {
         AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
     }
 
-    private var mBorrowOrderDetail: BorrowOrderDetailDTO? = null
+    private var mBorrowingDetails: BorrowDetailsDTO? = null
 
     override fun loadBusiness(businessId: String) {
         launch(Dispatchers.IO) {
             showProgress()
             mAccountDO?.address?.let {
-                mBorrowOrderDetail = mBankRepository.getBorrowingDetails(it, businessId, 0, 0, 0)
+                mBorrowingDetails = mBankRepository.getBorrowingDetails(it, businessId)
                 refreshTryingView()
             }
             dismissProgress()
@@ -78,15 +78,15 @@ class RepayBorrowActivity : BankBusinessActivity() {
     }
 
     private fun refreshTryingView() {
-        if (mBorrowOrderDetail == null) {
+        if (mBorrowingDetails == null) {
 
         }
-        mBorrowOrderDetail?.run {
+        mBorrowingDetails?.run {
             mBankBusinessViewModel.mBusinessUsableAmount.postValue(
                 BusinessUserAmountInfo(
                     R.drawable.icon_bank_user_amount_info,
                     getString(R.string.hint_can_repay_borrow_lines),
-                    convertAmountToDisplayAmountStr(balance),
+                    convertAmountToDisplayAmountStr(borrowedAmount),
                     tokenShowName
                 )
             )
@@ -98,7 +98,7 @@ class RepayBorrowActivity : BankBusinessActivity() {
             )
             mBankBusinessViewModel.mBusinessParameterListLiveData.postValue(
                 arrayListOf(
-                    BusinessParameter(getString(R.string.borrowing_rate), "${rate * 100}%"),
+                    BusinessParameter(getString(R.string.borrowing_rate), "${borrowingRate * 100}%"),
                     BusinessParameter(
                         getString(R.string.label_miner_fees),
                         "0.00 ${tokenShowName}"
@@ -126,9 +126,9 @@ class RepayBorrowActivity : BankBusinessActivity() {
     }
 
     override fun clickSendAll() {
-        mBorrowOrderDetail?.run {
+        mBorrowingDetails?.run {
             val convertAmountToDisplayAmountStr =
-                convertAmountToDisplayAmountStr(balance)
+                convertAmountToDisplayAmountStr(borrowedAmount)
             editBusinessValue.setText(convertAmountToDisplayAmountStr)
         }
     }
