@@ -61,7 +61,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     private val mGsonBuilder = GsonBuilder()
     private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
-            .pingInterval(3, TimeUnit.MINUTES)
+            .pingInterval(90, TimeUnit.SECONDS)
             .build()
     }
     private val mWCClient: WCClient = WCClient(httpClient, mGsonBuilder)
@@ -89,9 +89,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
 
     fun restore() {
         launch(Dispatchers.IO) {
-            Log.e("Wallet Connwct", "Restore Connect")
             mWCSessionStoreType
                 .session?.let {
+                    Log.e("WalletConnect", "Restore Connect")
                     mWCClient.connect(it.session, it.remotePeerMeta, it.peerId, it.remotePeerId)
                 }
         }
@@ -100,6 +100,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     fun connect(
         msg: String
     ): Boolean {
+        Log.e("WalletConnect", "Connect")
         val from = WCSession.from(msg) ?: return false
         val wcPeerMeta = WCPeerMeta(
             "violasPay", "https://www.violas.io"
@@ -123,6 +124,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
 //            WalletConnectAuthorizationActivity.startActivity(context, id, peer)
         }
         mWCClient.onFailure = { throwable ->
+            restore()
             throwable.printStackTrace()
         }
         mWCClient.onDisconnect = { _, _ ->
@@ -160,11 +162,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                 result = result
             )
             val toJson = Gson().toJson(response)
-            mWCClient.encryptAndSend(toJson).also {
-                if (!it) {
-                    restore()
-                }
-            }
+            mWCClient.encryptAndSend(toJson)
         } catch (e: Exception) {
             e.printStackTrace()
             Crashes.trackError(e)
@@ -179,11 +177,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
                 error = result
             )
             val toJson = Gson().toJson(response)
-            mWCClient.encryptAndSend(toJson).also {
-                if (!it) {
-                    restore()
-                }
-            }
+            mWCClient.encryptAndSend(toJson)
         } catch (e: Exception) {
             Crashes.trackError(e)
             e.printStackTrace()
@@ -193,11 +187,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
 
     fun approveSession(accounts: List<String>, chainId: String): Boolean {
         return try {
-            mWCClient.approveSession(accounts, chainId).also {
-                if (!it) {
-                    restore()
-                }
-            }
+            mWCClient.approveSession(accounts, chainId)
         } catch (e: Exception) {
             Crashes.trackError(e)
             e.printStackTrace()
@@ -207,11 +197,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
 
     fun rejectSession(message: String = "Session rejected"): Boolean {
         return try {
-            mWCClient.rejectSession(message).also {
-                if (!it) {
-                    restore()
-                }
-            }
+            mWCClient.rejectSession(message)
         } catch (e: Exception) {
             Crashes.trackError(e)
             e.printStackTrace()
@@ -225,14 +211,10 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
 
     fun disconnect(): Boolean {
         try {
-            return if (mWCSessionStoreType.session != null) {
-                val killSession = mWCClient.killSession()
-                disconnectAndReset()
-                killSession
-            } else {
-                disconnectAndReset()
-                true
+            if (mWCSessionStoreType.session != null) {
+                mWCClient.killSession()
             }
+            disconnectAndReset()
         } catch (e: IllegalStateException) {
             disconnectAndReset()
         }
