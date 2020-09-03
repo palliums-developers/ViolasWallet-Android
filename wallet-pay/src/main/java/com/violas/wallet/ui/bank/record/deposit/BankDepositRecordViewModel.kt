@@ -69,11 +69,19 @@ class BankDepositRecordViewModel : PagingViewModel<DepositRecordDTO>() {
         val list = bankService.getDepositRecords(
             address,
             currCoinFilterLiveData.value?.second,
-            currStateFilterLiveData.value?.first,
+            statePositionToStateValue(),
             pageSize,
             (pageNumber - 1) * pageSize
         )
         onSuccess.invoke(list, null)
+    }
+
+    private fun statePositionToStateValue(): Int? {
+        return when (currStateFilterLiveData.value?.first) {
+            1 -> 0
+            2 -> 1
+            else -> null
+        }
     }
 
     private fun fakeData(): List<DepositRecordDTO> {

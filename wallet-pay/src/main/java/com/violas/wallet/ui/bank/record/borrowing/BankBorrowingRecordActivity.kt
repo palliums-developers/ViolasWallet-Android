@@ -135,19 +135,16 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
                 itemView.tvAmount.text = convertAmountToDisplayAmountStr(it.amount)
                 itemView.tvDesc.text = getString(
                     when (it.state) {
-                        0 -> R.string.bank_borrowing_state_borrowing
-                        1 -> R.string.bank_borrowing_state_borrowed
-                        2 -> R.string.bank_borrowing_state_repaid
-                        3 -> R.string.bank_borrowing_state_liquidated
-                        else -> R.string.bank_borrowing_state_repaying
+                        0 -> R.string.bank_borrowing_state_borrowed
+                        1 -> R.string.bank_borrowing_state_repaid
+                        2 -> R.string.bank_borrowing_state_liquidated
+                        -1 -> R.string.bank_borrowing_state_borrowing_failed
+                        else -> R.string.bank_borrowing_state_repayment_failed
                     }
                 )
                 itemView.tvDesc.setTextColor(
                     getColorByAttrId(
-                        when (it.state) {
-                            0, 4 -> R.attr.textColorProcessing
-                            else -> android.R.attr.textColorTertiary
-                        },
+                        android.R.attr.textColorTertiary,
                         itemView.context
                     )
                 )

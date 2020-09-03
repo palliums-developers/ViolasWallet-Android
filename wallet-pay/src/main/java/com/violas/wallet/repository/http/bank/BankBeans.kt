@@ -170,7 +170,7 @@ data class DepositRecordDTO(
     @SerializedName("date")
     val time: Long,
     @SerializedName("status")
-    val state: Int
+    val state: Int                      // 订单状态，0（已存款），1（已提取），-1（提取失败），-2（存款失败）
 )
 //endregion
 
@@ -256,7 +256,7 @@ data class BorrowingRecordDTO(
     @SerializedName("date")
     val time: Long,
     @SerializedName("status")
-    val state: Int
+    val state: Int                      // 订单状态，0（已借款），1（已还款），2（已清算），-1（借款失败），-2（还款失败）
 )
 //endregion
 

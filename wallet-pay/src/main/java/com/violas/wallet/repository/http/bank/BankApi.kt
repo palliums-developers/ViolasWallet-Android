@@ -61,6 +61,8 @@ interface BankApi {
 
     /**
      * 分页获取存款记录
+     * @param currency  不填查全部
+     * @param state     不填查全部，0（已存款），1（已提取），-1（提取失败），-2（存款失败）
      */
     @GET("/1.0/violas/bank/deposit/order/list")
     fun getDepositRecords(
@@ -100,6 +102,8 @@ interface BankApi {
 
     /**
      * 分页获取借贷记录
+     * @param currency  不填查全部
+     * @param state     不填查全部，0（已借款），1（已还款），2（已清算），-1（借款失败），-2（还款失败）
      */
     @GET("/1.0/violas/bank/borrow/order/list")
     fun getBorrowingRecords(
