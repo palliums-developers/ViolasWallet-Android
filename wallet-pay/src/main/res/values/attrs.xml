@@ -55,6 +55,8 @@
     <attr name="iconRecordPrimary" format="reference" />
     <attr name="iconRecordSecondary" format="reference" />
     <attr name="iconTriangleArrow" format="reference" />
+    <attr name="iconAmount" format="reference" />
+    <attr name="iconInfo" format="reference" />
 
     <!--首页资源属性-->
     <attr name="homeBottomTabSelectedTextColor" format="color" />
@@ -158,7 +160,6 @@
     <attr name="marketDetailsUncompletedLineBgColor" format="color" />
 
     <!--映射相关页面资源属性-->
-    <attr name="mappingBalanceIcon" format="reference" />
     <attr name="mappingDividerIcon" format="reference" />
 
     <!--数字银行相关页面资源属性-->

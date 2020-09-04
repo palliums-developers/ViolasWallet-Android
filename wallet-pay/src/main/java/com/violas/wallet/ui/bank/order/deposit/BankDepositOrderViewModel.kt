@@ -4,6 +4,7 @@ import com.palliums.paging.PagingViewModel
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.bank.DepositDetailsDTO
 import com.violas.wallet.repository.http.bank.DepositInfoDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -27,6 +28,14 @@ class BankDepositOrderViewModel : PagingViewModel<DepositInfoDTO>() {
 
         address = violasAccount.address
         return@withContext true
+    }
+
+    suspend fun getDepositDetails(
+        depositInfo: DepositInfoDTO
+    ): DepositDetailsDTO = withContext(Dispatchers.IO) {
+        val depositDetails =
+            bankService.getDepositDetails(depositInfo.productId, address)
+        depositDetails
     }
 
     override suspend fun loadData(

@@ -98,6 +98,7 @@ data class QuestionDTO(
 
 //region /1.0/violas/bank/deposit/orders DTO
 @Keep
+@Parcelize
 data class DepositInfoDTO(
     @SerializedName("id")
     val productId: String,
@@ -114,11 +115,12 @@ data class DepositInfoDTO(
     val totalEarnings: String,          // 累计收益
     @SerializedName("status")
     val status: Int
-)
+) : Parcelable
 //endregion
 
 //region /1.0/violas/bank/deposit/withdrawal DTO
 @Keep
+@Parcelize
 data class DepositDetailsDTO(
     @SerializedName("available_quantity")
     val availableAmount: String,        // 可用数量(本金 - 被清算)
@@ -128,7 +130,7 @@ data class DepositDetailsDTO(
     val tokenModule: String,
     @SerializedName("token_address")
     val tokenAddress: String
-)
+) : Parcelable
 //endregion
 
 //region /1.0/violas/bank/deposit/order/list DTO

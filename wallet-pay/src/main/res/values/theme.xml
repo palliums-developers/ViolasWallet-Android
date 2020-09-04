@@ -141,6 +141,8 @@
         <item name="iconRecordPrimary">@mipmap/ic_record_primary</item>
         <item name="iconRecordSecondary">@mipmap/ic_record_secondary</item>
         <item name="iconTriangleArrow">@mipmap/ic_triangle_arrow</item>
+        <item name="iconAmount">@mipmap/ic_amount</item>
+        <item name="iconInfo">@mipmap/ic_info</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
@@ -244,7 +246,6 @@
         <item name="marketDetailsUncompletedLineBgColor">@color/color_C2C2C2</item>
 
         <!--映射相关页面资源属性-->
-        <item name="mappingBalanceIcon">@mipmap/ic_mapping_balance</item>
         <item name="mappingDividerIcon">@mipmap/ic_mapping_divider</item>
 
         <!--数字银行相关页面资源属性-->

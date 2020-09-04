@@ -487,7 +487,14 @@
     <string name="liquidated">被清算</string>
     <string name="deducted">已抵扣</string>
 
-    <string name="borrow_order">借款订单</string>
+    <string name="extraction">提取</string>
+    <string name="extraction_nbsp">提&#160;取</string>
+    <string name="bank_withdrawal_label_extractable_amount">可提数量 :</string>
+    <string name="bank_withdrawal_desc">如果您当前有借贷操作，则需将部分存款作为质押金。提取质押金需还对应数量的借款金额。</string>
+    <string name="bank_withdrawal_hint_no_input">请输入提取数量</string>
+    <string name="bank_withdrawal_hint_insufficient_extractable_amount">可提取数量不足</string>
+    <string name="tips_withdrawal_success">提取成功</string>
+    <string name="all">全部</string>
 
     <string name="bank_borrow_agreement_read_and_agree">我已阅读并同意《质押借款服务协议》</string>
     <string name="bank_borrow_policy">《质押借款服务协议》</string>

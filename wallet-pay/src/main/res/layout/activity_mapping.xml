@@ -22,7 +22,7 @@
             android:id="@+id/vBalanceIcon"
             android:layout_width="@dimen/dp_12"
             android:layout_height="@dimen/dp_12"
-            android:background="?attr/mappingBalanceIcon"
+            android:background="?attr/iconAmount"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
