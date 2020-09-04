@@ -39,7 +39,7 @@ data class DepositProductSummaryDTO(
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("rate")
-    val depositYield: String,           // 收益率
+    val depositYield: Double,           // 收益率
     @SerializedName("token_module")
     val tokenModule: String
 )
@@ -106,7 +106,7 @@ data class DepositInfoDTO(
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("rate")
-    val depositYield: String,           // 收益率
+    val depositYield: Double,           // 收益率
 
     @SerializedName("principal")
     val principal: String,              // 本金
@@ -161,7 +161,7 @@ data class BorrowingProductSummaryDTO(
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("rate")
-    val borrowingRate: String,          // 借贷率
+    val borrowingRate: Double,          // 借贷率
     @SerializedName("token_module")
     val tokenModule: String
 )

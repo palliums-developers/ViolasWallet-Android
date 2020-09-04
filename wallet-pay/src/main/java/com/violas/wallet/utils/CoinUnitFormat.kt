@@ -232,3 +232,9 @@ fun keepTwoDecimals(amountStr: String): String {
         .setScale(2, RoundingMode.DOWN)
         .toPlainString()
 }
+
+fun convertRateToPercentage(rate: Double): String {
+    return "${BigDecimal(rate * 100)
+        .setScale(2, RoundingMode.DOWN)
+        .toPlainString()}%"
+}

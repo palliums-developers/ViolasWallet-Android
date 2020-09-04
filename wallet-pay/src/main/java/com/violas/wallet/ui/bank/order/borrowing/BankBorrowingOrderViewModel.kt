@@ -42,21 +42,4 @@ class BankBorrowingOrderViewModel : PagingViewModel<BorrowingInfoDTO>() {
         )
         onSuccess.invoke(list, null)
     }
-
-    private fun fakeData(): List<BorrowingInfoDTO> {
-        return mutableListOf(
-            BorrowingInfoDTO(
-                "1",
-                "VLSUSD",
-                "00000000000000000000000000000000",
-                "1001110000"
-            ),
-            BorrowingInfoDTO(
-                "2",
-                "VLSEUR",
-                "00000000000000000000000000000000",
-                "1231410000"
-            )
-        )
-    }
 }

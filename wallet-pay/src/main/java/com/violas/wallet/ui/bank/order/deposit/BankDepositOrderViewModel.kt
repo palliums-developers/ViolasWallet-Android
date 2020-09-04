@@ -42,27 +42,4 @@ class BankDepositOrderViewModel : PagingViewModel<DepositInfoDTO>() {
         )
         onSuccess.invoke(list, null)
     }
-
-    private fun fakeData(): List<DepositInfoDTO> {
-        return mutableListOf(
-            DepositInfoDTO(
-                "1",
-                "VLSUSD",
-                "",
-                "5.123",
-                "1001110000",
-                "23400000",
-                1
-            ),
-            DepositInfoDTO(
-                "2",
-                "VLSEUR",
-                "",
-                "5.254",
-                "2003450000",
-                "12200000",
-                1
-            )
-        )
-    }
 }
