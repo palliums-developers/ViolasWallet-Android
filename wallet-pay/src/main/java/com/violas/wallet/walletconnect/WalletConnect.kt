@@ -2,6 +2,8 @@ package com.violas.wallet.walletconnect
 
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -58,6 +60,9 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     var mWalletConnectListener: WalletConnectListener? = null
     var mWalletConnectSessionListener: WalletConnectSessionListener? = null
 
+    private var mRetryTime = 0L
+    private val mHandler = Handler(Looper.getMainLooper())
+
     private val mGsonBuilder = GsonBuilder()
     private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
@@ -88,6 +93,21 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     }
 
     fun restore() {
+        if (System.currentTimeMillis() - mRetryTime > 3000) {
+            mRetryTime = System.currentTimeMillis()
+            mHandler.post {
+                restoreConnect()
+            }
+        } else {
+            mHandler.removeCallbacksAndMessages(null)
+            mHandler.postDelayed({
+                mRetryTime = System.currentTimeMillis()
+                restoreConnect()
+            }, 3000)
+        }
+    }
+
+    private fun restoreConnect() {
         Log.d("WalletConnect", "Ready restore connect")
         launch(Dispatchers.IO) {
             mWCSessionStoreType
