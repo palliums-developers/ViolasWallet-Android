@@ -166,6 +166,8 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
         getCurrFilterLiveData(coinFilter).value = filter
         if (WalletAppViewModel.getViewModelInstance().isExistsAccount()) {
             mPagingHandler.restart()
+        } else {
+            statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
         }
     }
 }

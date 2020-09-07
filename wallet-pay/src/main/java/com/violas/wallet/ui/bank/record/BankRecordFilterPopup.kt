@@ -12,6 +12,7 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColorByAttrId
+import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.popup.EnhancedAttachPopupView
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.item_bank_record_filter_popup.view.*
@@ -56,6 +57,14 @@ class BankRecordFilterPopup(
                 )
             }
         }
+        recyclerView.addItemDecoration(
+            RecyclerViewItemDividers(
+                top = DensityUtility.dp2px(context, 8),
+                bottom = DensityUtility.dp2px(context, 8),
+                onlyShowFirstTop = true,
+                onlyShowLastBottom = true
+            )
+        )
         recyclerView.adapter = ViewAdapter(dataList, checkedPosition) { position, text ->
             dismiss()
             selectCallback.invoke(position, text)

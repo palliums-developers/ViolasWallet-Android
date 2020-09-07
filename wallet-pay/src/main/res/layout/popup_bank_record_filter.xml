@@ -5,7 +5,7 @@
     android:layout_width="@dimen/dp_132"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_style_1_solid_corners_2_normal"
-    android:maxHeight="@dimen/dp_120"
+    android:maxHeight="@dimen/dp_209"
     android:overScrollMode="never"
     android:scrollbars="vertical"
     tools:listitem="@layout/item_bank_record_filter_popup" />
