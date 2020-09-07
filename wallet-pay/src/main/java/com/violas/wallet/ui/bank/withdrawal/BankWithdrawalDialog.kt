@@ -7,12 +7,12 @@ import android.os.Bundle
 import android.view.*
 import androidx.annotation.StringRes
 import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.DialogFragment
 import com.palliums.base.BaseActivity
 import com.palliums.base.ViewController
 import com.palliums.extensions.close
 import com.palliums.extensions.getShowErrorMessage
+import com.palliums.extensions.lazyLogError
 import com.palliums.utils.CustomMainScope
 import com.palliums.utils.DensityUtility
 import com.quincysx.crypto.CoinTypes
@@ -33,6 +33,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.palliums.violascore.http.ViolasException
 import java.math.BigDecimal
 
 /**
@@ -44,6 +45,8 @@ import java.math.BigDecimal
 class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by CustomMainScope() {
 
     companion object {
+        private const val TAG = "BankWithdrawalDialog"
+
         fun newInstance(
             depositDetails: DepositDetailsDTO
         ): BankWithdrawalDialog {
@@ -96,11 +99,10 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
         )} ${depositDetails.tokenModule}"
 
         etInputBox.post {
-            val paddingRight = tvCurrency.width + DensityUtility.dp2px(requireContext(), 15)
             etInputBox.setPadding(
                 etInputBox.paddingLeft,
                 etInputBox.paddingTop,
-                paddingRight,
+                tvCurrency.width + DensityUtility.dp2px(requireContext(), 15),
                 etInputBox.paddingBottom
             )
         }
@@ -112,7 +114,10 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
         }
 
         tvAll.setOnClickListener {
-            etInputBox.setText(convertAmountToDisplayAmountStr(depositDetails.availableAmount))
+            convertAmountToDisplayAmountStr(depositDetails.availableAmount).let {
+                etInputBox.setText(it)
+                etInputBox.setSelection(it.length)
+            }
         }
 
         btnExtraction.setOnClickListener {
@@ -165,7 +170,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
                         depositDetails.tokenAddress,
                         depositDetails.tokenName
                     ),
-                    it,
+                    it.toByteArray(),
                     amount.toLong()
                 )
             })
@@ -175,20 +180,27 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
     private fun sendTransfer(
         account: AccountDO,
         mark: LibraTokenAssetsMark,
-        pwd: String,
+        pwd: ByteArray,
         amount: Long
     ) {
         launch {
             try {
                 showProgress()
-                bankManager.redeem(pwd.toByteArray(), account, mark, amount)
+                bankManager.redeem(pwd, account, mark, amount)
                 dismissProgress()
                 showToast(getString(R.string.tips_withdrawal_success))
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 close()
             } catch (e: Exception) {
-                showToast(e.getShowErrorMessage(false))
+                lazyLogError(e, TAG) { "withdrawal failed" }
                 dismissProgress()
+                showToast(
+                    if (e is ViolasException.AccountNoActivation) {
+                        getString(R.string.exception_account_no_activation)
+                    } else {
+                        e.getShowErrorMessage(false)
+                    }
+                )
             }
         }
     }
@@ -204,11 +216,12 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
             it.windowManager.defaultDisplay.getSize(point)
 
             val attributes = it.attributes
-            attributes.y = (point.y * 0.15).toInt()
+            attributes.y = (point.y * 0.16).toInt()
             it.attributes = attributes
 
             it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             it.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL)
+            it.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         }
 
         dialog?.setCancelable(true)

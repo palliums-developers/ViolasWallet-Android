@@ -16,7 +16,6 @@ import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
-import com.violas.wallet.repository.http.bank.DepositDetailsDTO
 import com.violas.wallet.repository.http.bank.DepositInfoDTO
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.ui.bank.record.deposit.BankDepositRecordActivity
@@ -47,8 +46,19 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
         ViewModelProvider(this).get(BankDepositOrderViewModel::class.java)
     }
     private val viewAdapter by lazy {
-        ViewAdapter { depositInfo, position ->
-            onClickWithdrawal(depositInfo, position)
+        ViewAdapter(withdrawalCallback)
+    }
+    private val withdrawalCallback: (DepositInfoDTO, Int) -> Unit = { depositInfo, position ->
+        launch {
+            try {
+                showProgress()
+                val depositDetails = viewModel.getDepositDetails(depositInfo)
+                dismissProgress()
+                BankWithdrawalDialog.newInstance(depositDetails).show(supportFragmentManager)
+            } catch (e: Exception) {
+                showToast(e.getShowErrorMessage(false))
+                dismissProgress()
+            }
         }
     }
 
@@ -78,25 +88,6 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
                 statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
             }
         }
-    }
-
-    private fun onClickWithdrawal(depositInfo: DepositInfoDTO, position: Int) {
-        launch {
-            try {
-                showProgress()
-                val depositDetails = viewModel.getDepositDetails(depositInfo)
-                dismissProgress()
-                showWithdrawalDialog(depositDetails, position)
-            } catch (e: Exception) {
-                showToast(e.getShowErrorMessage(false))
-                dismissProgress()
-            }
-        }
-    }
-
-    private fun showWithdrawalDialog(depositDetails: DepositDetailsDTO, position: Int) {
-        BankWithdrawalDialog.newInstance(depositDetails)
-            .show(supportFragmentManager)
     }
 
     class ViewAdapter(
