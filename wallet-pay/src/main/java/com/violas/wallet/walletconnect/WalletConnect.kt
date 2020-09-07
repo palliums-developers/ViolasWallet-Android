@@ -88,10 +88,11 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     }
 
     fun restore() {
+        Log.d("WalletConnect", "Ready restore connect")
         launch(Dispatchers.IO) {
             mWCSessionStoreType
                 .session?.let {
-                    Log.e("WalletConnect", "Restore Connect")
+                    Log.d("WalletConnect", "Restore connect")
                     mWCClient.connect(it.session, it.remotePeerMeta, it.peerId, it.remotePeerId)
                 }
         }
@@ -100,7 +101,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     fun connect(
         msg: String
     ): Boolean {
-        Log.e("WalletConnect", "Connect")
+        Log.d("WalletConnect", "Connect")
         val from = WCSession.from(msg) ?: return false
         val wcPeerMeta = WCPeerMeta(
             "violasPay", "https://www.violas.io"
