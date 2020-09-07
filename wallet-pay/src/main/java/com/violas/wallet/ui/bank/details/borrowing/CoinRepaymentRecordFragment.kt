@@ -16,13 +16,13 @@ import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.KEY_THREE
 import com.violas.wallet.common.KEY_TWO
-import com.violas.wallet.repository.http.bank.LiquidationDetailDTO
-import com.violas.wallet.ui.bank.details.BaseBankDetailFragment
+import com.violas.wallet.repository.http.bank.CoinRepaymentRecordDTO
+import com.violas.wallet.ui.bank.details.BaseCoinTxRecordFragment
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
-import kotlinx.android.synthetic.main.fragment_bank_liquidation_detail.*
-import kotlinx.android.synthetic.main.item_bank_liquidation_detail.view.*
-import kotlinx.coroutines.delay
+import kotlinx.android.synthetic.main.fragment_bank_coin_repayment_record.*
+import kotlinx.android.synthetic.main.item_bank_coin_repayment_record.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -30,16 +30,21 @@ import java.util.*
  * Created by elephant on 2020/8/28 15:33.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 清算明细视图
+ * desc: 币种还款记录视图
  */
-class LiquidationDetailFragment : BaseBankDetailFragment<LiquidationDetailDTO>() {
+class CoinRepaymentRecordFragment : BaseCoinTxRecordFragment<CoinRepaymentRecordDTO>() {
 
     companion object {
-        fun newInstance(productId: String, walletAddress: String): LiquidationDetailFragment {
-            return LiquidationDetailFragment().apply {
+        fun newInstance(
+            productId: String,
+            walletAddress: String,
+            currency: String
+        ): CoinRepaymentRecordFragment {
+            return CoinRepaymentRecordFragment().apply {
                 arguments = Bundle().apply {
                     putString(KEY_ONE, productId)
                     putString(KEY_TWO, walletAddress)
+                    putString(KEY_THREE, currency)
                 }
             }
         }
@@ -55,12 +60,12 @@ class LiquidationDetailFragment : BaseBankDetailFragment<LiquidationDetailDTO>()
                         .newInstance(mProductId, mWalletAddress)
                 }
             }
-        ).get(LiquidationDetailViewModel::class.java)
+        ).get(CoinRepaymentRecordViewModel::class.java)
     }
     private val viewAdapter by lazy { ViewAdapter() }
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_bank_liquidation_detail
+        return R.layout.fragment_bank_coin_repayment_record
     }
 
     override fun getRecyclerView(): RecyclerView {
@@ -75,15 +80,15 @@ class LiquidationDetailFragment : BaseBankDetailFragment<LiquidationDetailDTO>()
         return vStatusLayout
     }
 
-    override fun getViewModel(): PagingViewModel<LiquidationDetailDTO> {
+    override fun getViewModel(): PagingViewModel<CoinRepaymentRecordDTO> {
         return viewModel
     }
 
-    override fun getViewAdapter(): PagingViewAdapter<LiquidationDetailDTO> {
+    override fun getViewAdapter(): PagingViewAdapter<CoinRepaymentRecordDTO> {
         return viewAdapter
     }
 
-    class ViewAdapter : PagingViewAdapter<LiquidationDetailDTO>() {
+    class ViewAdapter : PagingViewAdapter<CoinRepaymentRecordDTO>() {
 
         private val simpleDateFormat by lazy {
             SimpleDateFormat("HH:mm:ss MM/dd", Locale.ENGLISH)
@@ -95,7 +100,7 @@ class LiquidationDetailFragment : BaseBankDetailFragment<LiquidationDetailDTO>()
         ): BaseViewHolder<out Any> {
             return ViewHolder(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_bank_liquidation_detail,
+                    R.layout.item_bank_coin_repayment_record,
                     parent,
                     false
                 ),
@@ -107,78 +112,25 @@ class LiquidationDetailFragment : BaseBankDetailFragment<LiquidationDetailDTO>()
     class ViewHolder(
         view: View,
         private val simpleDateFormat: SimpleDateFormat
-    ) : BaseViewHolder<LiquidationDetailDTO>(view) {
+    ) : BaseViewHolder<CoinRepaymentRecordDTO>(view) {
 
-        override fun onViewBind(itemPosition: Int, itemData: LiquidationDetailDTO?) {
+        override fun onViewBind(itemPosition: Int, itemData: CoinRepaymentRecordDTO?) {
             itemData?.let {
                 itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
-                itemView.tvLiquidated.text =
-                    "${convertAmountToDisplayAmountStr(it.liquidateAmount)} ${it.liquidateCoin}"
-                itemView.tvDeducted.text =
-                    "${convertAmountToDisplayAmountStr(it.deductAmount)} ${it.deductCoin}"
+                itemView.tvAmount.text = convertAmountToDisplayAmountStr(it.amount)
                 itemView.tvState.setText(
                     when (it.state) {
-                        0 -> R.string.bank_borrowing_state_liquidating
-                        1 -> R.string.bank_borrowing_state_liquidated
-                        else -> R.string.bank_borrowing_state_liquidation_failed
+                        1 -> R.string.bank_borrowing_state_repaid
+                        else -> R.string.bank_borrowing_state_repayment_failed
                     }
                 )
                 itemView.tvState.setTextColor(
                     getColorByAttrId(
-                        when (it.state) {
-                            0 -> R.attr.textColorProcessing
-                            else -> android.R.attr.textColor
-                        },
+                        android.R.attr.textColor,
                         itemView.context
                     )
                 )
             }
         }
-    }
-}
-
-class LiquidationDetailViewModel(
-    private val productId: String,
-    private val walletAddress: String
-) : PagingViewModel<LiquidationDetailDTO>() {
-
-    override suspend fun loadData(
-        pageSize: Int,
-        pageNumber: Int,
-        pageKey: Any?,
-        onSuccess: (List<LiquidationDetailDTO>, Any?) -> Unit
-    ) {
-        // TODO 对接接口
-        delay(2000)
-        onSuccess.invoke(fakeData(), null)
-    }
-
-    private fun fakeData(): List<LiquidationDetailDTO> {
-        return mutableListOf(
-            LiquidationDetailDTO(
-                "VLS",
-                "111010110",
-                "VLS",
-                "111010110",
-                System.currentTimeMillis(),
-                0
-            ),
-            LiquidationDetailDTO(
-                "USD",
-                "222020220",
-                "USD",
-                "222020220",
-                System.currentTimeMillis(),
-                1
-            ),
-            LiquidationDetailDTO(
-                "EUR",
-                "333030333",
-                "EUR",
-                "222020220",
-                System.currentTimeMillis(),
-                2
-            )
-        )
     }
 }

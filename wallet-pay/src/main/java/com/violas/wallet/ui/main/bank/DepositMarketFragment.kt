@@ -4,9 +4,8 @@ import android.view.View
 import com.palliums.utils.getResourceId
 import com.violas.wallet.R
 import com.violas.wallet.repository.http.bank.DepositProductSummaryDTO
-
 import com.violas.wallet.ui.bank.deposit.DepositActivity
-import com.violas.wallet.utils.keepTwoDecimals
+import com.violas.wallet.utils.convertRateToPercentage
 import com.violas.wallet.utils.loadCircleImage
 import kotlinx.android.synthetic.main.item_home_bank_product.view.*
 
@@ -25,7 +24,7 @@ class DepositMarketFragment : BaseBankMarketFragment<DepositProductSummaryDTO>()
         )
         itemView.tvName.text = itemData.productName
         itemView.tvDesc.text = itemData.productDesc
-        itemView.tvRate.text = "${keepTwoDecimals(itemData.depositYield)}%"
+        itemView.tvRate.text = convertRateToPercentage(itemData.depositYield)
         itemView.tvRateLabel.setText(R.string.deposit_yield)
     }
 

@@ -165,12 +165,14 @@ abstract class PagingViewModel<VO> : ViewModel() {
                 val currentRefreshState = refreshState.value?.peekData()
                 if (currentRefreshState?.status == LoadState.Status.RUNNING) {
                     // 处于刷新中时，不需要再次刷新操作
+                    lazyLogError(TAG) { "refresh data => end" }
                     return
                 }
 
                 val currentLoadMoreState = loadMoreState.value?.peekData()
                 if (currentLoadMoreState?.status == LoadState.Status.RUNNING) {
                     // 处于加载更多中时，不处理刷新操作
+                    lazyLogError(TAG) { "refresh data => end" }
                     return
                 }
 
@@ -185,6 +187,8 @@ abstract class PagingViewModel<VO> : ViewModel() {
                         loadData(params.requestedLoadSize, 1, null,
 
                             onSuccess = { listData, pageKey ->
+
+                                lazyLogError(TAG) { "refresh data => success" }
 
                                 synchronized(lock) {
 
@@ -252,6 +256,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                     && currentRefreshState.status != LoadState.Status.SUCCESS
                 ) {
                     // 处于刷新中、刷新失败、刷新没有更多时，不处理加载更多操作
+                    lazyLogError(TAG) { "load more data => end" }
                     return
                 }
 
@@ -261,6 +266,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                             || currentLoadMoreState.status == LoadState.Status.SUCCESS_NO_MORE)
                 ) {
                     // 处于加载更多中时，不需要再次加载更多操作；处于加载更多没有更多时，不处理加载更多
+                    lazyLogError(TAG) { "load more data => end" }
                     return
                 }
 
@@ -275,6 +281,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                         loadData(params.requestedLoadSize, pageNumber, nextPageKey,
 
                             onSuccess = { listData, pageKey ->
+                                lazyLogError(TAG) { "load more data => success" }
 
                                 synchronized(lock) {
 

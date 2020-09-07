@@ -1,8 +1,10 @@
 package com.violas.wallet.utils
 
 import androidx.biometric.BiometricManager
+import androidx.fragment.app.Fragment
 import com.palliums.base.BaseActivity
 import com.palliums.base.BaseFragment
+import com.palliums.base.ViewController
 import com.palliums.biometric.BiometricCompat
 import com.palliums.utils.*
 import com.violas.wallet.R
@@ -11,10 +13,7 @@ import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.biometric.CustomFingerprintDialog
 import com.violas.wallet.widget.dialog.PasswordInputDialog
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.palliums.violascore.wallet.Account
 
 /**
@@ -72,10 +71,10 @@ fun BaseActivity.authenticateAccount(
  * 验证账户，开启生物验证且生物识别可用时优先使用生物特征验证，反之则输入密码进行验证
  *
  * @param useFingerprintWhenBiometric 生物验证时使用指纹
- * @see BaseFragment.authenticateAccountByBiometric
- * @see BaseFragment.authenticateAccountByPassword
+ * @see Fragment.authenticateAccountByBiometric
+ * @see Fragment.authenticateAccountByPassword
  */
-fun BaseFragment.authenticateAccount(
+fun Fragment.authenticateAccount(
     accountDO: AccountDO,
     accountManager: AccountManager,
     retryWhenPwdInputError: Boolean = true,
@@ -197,9 +196,9 @@ fun BaseActivity.authenticateAccountByBiometric(
  * @param useFingerprint            使用指纹进行生物识别
  * @param cancelCallback            取消回调
  * @param biometricErrorCallback    生物识别 error 回调
- * @see BaseFragment.decryptAccount
+ * @see Fragment.decryptAccount
  */
-fun BaseFragment.authenticateAccountByBiometric(
+fun Fragment.authenticateAccountByBiometric(
     accountDO: AccountDO,
     accountManager: AccountManager,
     showLoadingWhenDecryptStart: Boolean = true,
@@ -324,9 +323,9 @@ fun BaseActivity.authenticateAccountByPassword(
  * 通过密码验证账号
  *
  * @param cancelCallback            取消回调
- * @see BaseFragment.decryptAccount
+ * @see Fragment.decryptAccount
  */
-fun BaseFragment.authenticateAccountByPassword(
+fun Fragment.authenticateAccountByPassword(
     accountDO: AccountDO,
     retryWhenPwdInputError: Boolean = true,
     showLoadingWhenDecryptStart: Boolean = true,
@@ -536,7 +535,7 @@ fun BaseActivity.decryptAccount(
  * @param privateKeyCallback            私钥回调，解密 [AccountDO.privateKey] 成功时回调，
  *                                      用于验证账户后返回私钥（如转账交易）
  */
-fun BaseFragment.decryptAccount(
+fun Fragment.decryptAccount(
     accountDO: AccountDO,
     password: String?,
     showLoadingWhenDecryptStart: Boolean = true,
@@ -557,7 +556,7 @@ fun BaseFragment.decryptAccount(
 
     if (password.isNullOrBlank()) {
         if (passwordFromUserInput) {
-            showToast(getString(R.string.hint_please_input_password))
+            (this as? ViewController)?.showToast(getString(R.string.hint_please_input_password))
         }
         return
     }
@@ -566,7 +565,7 @@ fun BaseFragment.decryptAccount(
         PasswordCheckUtil.check(password)
     } catch (e: Throwable) {
         if (passwordFromUserInput) {
-            showToast(
+            (this as? ViewController)?.showToast(
                 when (e) {
                     is PasswordLengthShortException ->
                         R.string.hint_please_minimum_password_length
@@ -588,9 +587,9 @@ fun BaseFragment.decryptAccount(
         return
     }
 
-    launch(Dispatchers.Main) {
+    (this as? CoroutineScope)?.launch(Dispatchers.Main) {
         if (showLoadingWhenDecryptStart) {
-            showProgress()
+            (this as? ViewController)?.showProgress()
         }
 
         var privateKey: ByteArray? = null
@@ -636,30 +635,30 @@ fun BaseFragment.decryptAccount(
             && privateKey != null
         ) {
             if (showLoadingWhenDecryptStart && dismissLoadingWhenDecryptEnd) {
-                dismissProgress()
+                (this as? ViewController)?.dismissProgress()
             }
             passwordCallback.invoke(password)
         } else if (mnemonicCallback != null
             && !mnemonics.isNullOrEmpty()
         ) {
             if (showLoadingWhenDecryptStart && dismissLoadingWhenDecryptEnd) {
-                dismissProgress()
+                (this as? ViewController)?.dismissProgress()
             }
             mnemonicCallback.invoke(mnemonics!!)
         } else if (privateKeyCallback != null
             && privateKey != null
         ) {
             if (showLoadingWhenDecryptStart && dismissLoadingWhenDecryptEnd) {
-                dismissProgress()
+                (this as? ViewController)?.dismissProgress()
             }
             privateKeyCallback.invoke(privateKey!!)
         } else {
             if (showLoadingWhenDecryptStart) {
-                dismissProgress()
+                (this as? ViewController)?.dismissProgress()
             }
 
             if (passwordFromUserInput) {
-                showToast(getString(R.string.hint_password_error))
+                (this as? ViewController)?.showToast(getString(R.string.hint_password_error))
             }
             passwordErrorCallback?.invoke()
         }

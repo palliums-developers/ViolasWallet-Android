@@ -69,66 +69,18 @@ class BankDepositRecordViewModel : PagingViewModel<DepositRecordDTO>() {
         val list = bankService.getDepositRecords(
             address,
             currCoinFilterLiveData.value?.second,
-            currStateFilterLiveData.value?.first,
+            statePositionToStateValue(),
             pageSize,
             (pageNumber - 1) * pageSize
         )
         onSuccess.invoke(list, null)
     }
 
-    private fun fakeData(): List<DepositRecordDTO> {
-        val coinName = currCoinFilterLiveData.value?.second
-        val state = currStateFilterLiveData.value?.first ?: 0
-
-        return mutableListOf(
-            DepositRecordDTO(
-                "1",
-                if (coinName.isNullOrBlank()) "VLSUSD" else coinName,
-                "",
-                "1001110000",
-                System.currentTimeMillis(),
-                if (state == 0) 0 else state
-            ),
-            DepositRecordDTO(
-                "2",
-                if (coinName.isNullOrBlank()) "VLSEUR" else coinName,
-                "",
-                "1231410000",
-                System.currentTimeMillis(),
-                if (state == 0) 1 else state
-            ),
-            DepositRecordDTO(
-                "3",
-                if (coinName.isNullOrBlank()) "VLSUSD" else coinName,
-                "",
-                "1001110000",
-                System.currentTimeMillis(),
-                if (state == 0) 2 else state
-            ),
-            DepositRecordDTO(
-                "4",
-                if (coinName.isNullOrBlank()) "VLSEUR" else coinName,
-                "",
-                "1231410000",
-                System.currentTimeMillis(),
-                if (state == 0) 3 else state
-            ),
-            DepositRecordDTO(
-                "5",
-                if (coinName.isNullOrBlank()) "VLSUSD" else coinName,
-                "",
-                "1001110000",
-                System.currentTimeMillis(),
-                if (state == 0) 4 else state
-            ),
-            DepositRecordDTO(
-                "6",
-                if (coinName.isNullOrBlank()) "VLSEUR" else coinName,
-                "",
-                "1231410000",
-                System.currentTimeMillis(),
-                if (state == 0) 5 else state
-            )
-        )
+    private fun statePositionToStateValue(): Int? {
+        return when (currStateFilterLiveData.value?.first) {
+            1 -> 0
+            2 -> 1
+            else -> null
+        }
     }
 }

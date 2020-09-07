@@ -135,20 +135,15 @@ class BankDepositRecordActivity : BaseBankRecordActivity<DepositRecordDTO>() {
                 itemView.tvAmount.text = convertAmountToDisplayAmountStr(it.amount)
                 itemView.tvDesc.text = getString(
                     when (it.state) {
-                        0 -> R.string.bank_deposit_state_depositing
-                        1 -> R.string.bank_deposit_state_deposited
-                        2 -> R.string.bank_deposit_state_withdrew
-                        3 -> R.string.bank_deposit_state_withdrawing
-                        4 -> R.string.bank_deposit_state_deposit_failed
-                        else -> R.string.bank_deposit_state_withdrawal_failed
+                        0 -> R.string.bank_deposit_state_deposited
+                        1 -> R.string.bank_deposit_state_withdrew
+                        -1 -> R.string.bank_deposit_state_withdrawal_failed
+                        else -> R.string.bank_deposit_state_deposit_failed
                     }
                 )
                 itemView.tvDesc.setTextColor(
                     getColorByAttrId(
-                        when (it.state) {
-                            0, 3 -> R.attr.textColorProcessing
-                            else -> android.R.attr.textColorTertiary
-                        },
+                        android.R.attr.textColorTertiary,
                         itemView.context
                     )
                 )

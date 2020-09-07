@@ -8,17 +8,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewHolder
+import com.palliums.extensions.getShowErrorMessage
+import com.palliums.extensions.show
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
+import com.violas.wallet.repository.http.bank.DepositDetailsDTO
 import com.violas.wallet.repository.http.bank.DepositInfoDTO
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.ui.bank.record.deposit.BankDepositRecordActivity
+import com.violas.wallet.ui.bank.withdrawal.BankWithdrawalDialog
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
-import com.violas.wallet.utils.keepTwoDecimals
+import com.violas.wallet.utils.convertRateToPercentage
 import com.violas.wallet.utils.loadCircleImage
 import kotlinx.android.synthetic.main.activity_bank_order.*
 import kotlinx.android.synthetic.main.item_bank_curr_deposit.view.*
@@ -44,8 +48,7 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
     }
     private val viewAdapter by lazy {
         ViewAdapter { depositInfo, position ->
-            // TODO 提取操作
-            showToast("提取操作")
+            onClickWithdrawal(depositInfo, position)
         }
     }
 
@@ -75,6 +78,25 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
                 statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
             }
         }
+    }
+
+    private fun onClickWithdrawal(depositInfo: DepositInfoDTO, position: Int) {
+        launch {
+            try {
+                showProgress()
+                val depositDetails = viewModel.getDepositDetails(depositInfo)
+                dismissProgress()
+                showWithdrawalDialog(depositDetails, position)
+            } catch (e: Exception) {
+                showToast(e.getShowErrorMessage(false))
+                dismissProgress()
+            }
+        }
+    }
+
+    private fun showWithdrawalDialog(depositDetails: DepositDetailsDTO, position: Int) {
+        BankWithdrawalDialog.newInstance(depositDetails)
+            .show(supportFragmentManager)
     }
 
     class ViewAdapter(
@@ -112,7 +134,7 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
                 itemView.tvName.text = it.productName
                 itemView.tvPrincipal.text = convertAmountToDisplayAmountStr(it.principal)
                 itemView.tvEarnings.text = convertAmountToDisplayAmountStr(it.totalEarnings)
-                itemView.tvDepositYield.text = "${keepTwoDecimals(it.depositYield)}%"
+                itemView.tvDepositYield.text = convertRateToPercentage(it.depositYield)
             }
         }
 

@@ -1,6 +1,5 @@
 package com.violas.wallet.repository.http.bank
 
-import android.icu.util.Currency
 import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
@@ -40,35 +39,11 @@ data class DepositProductSummaryDTO(
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("rate")
-    val depositYield: String,           // 收益率
+    val depositYield: Double,           // 收益率
     @SerializedName("token_module")
     val tokenModule: String
 )
 //endregion
-
-@Keep
-data class BorrowingDetailDTO(
-    val amount: String,
-    val time: Long,
-    val state: Int
-)
-
-@Keep
-data class RepaymentDetailDTO(
-    val amount: String,
-    val time: Long,
-    val state: Int
-)
-
-@Keep
-data class LiquidationDetailDTO(
-    val liquidateCoin: String,
-    val liquidateAmount: String,
-    val deductCoin: String,
-    val deductAmount: String,
-    val time: Long,
-    val state: Int
-)
 
 //region /1.0/violas/bank/deposit/info DTO
 @Keep
@@ -123,6 +98,7 @@ data class QuestionDTO(
 
 //region /1.0/violas/bank/deposit/orders DTO
 @Keep
+@Parcelize
 data class DepositInfoDTO(
     @SerializedName("id")
     val productId: String,
@@ -131,7 +107,7 @@ data class DepositInfoDTO(
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("rate")
-    val depositYield: String,           // 收益率
+    val depositYield: Double,           // 收益率
 
     @SerializedName("principal")
     val principal: String,              // 本金
@@ -139,21 +115,22 @@ data class DepositInfoDTO(
     val totalEarnings: String,          // 累计收益
     @SerializedName("status")
     val status: Int
-)
+) : Parcelable
 //endregion
 
 //region /1.0/violas/bank/deposit/withdrawal DTO
 @Keep
+@Parcelize
 data class DepositDetailsDTO(
     @SerializedName("available_quantity")
-    val availableAmount: String,        // 可用金额(本金 - 被清算)
+    val availableAmount: String,        // 可用数量(本金 - 被清算)
     @SerializedName("token_name")
     val tokenName: String,
     @SerializedName("token_module")
     val tokenModule: String,
     @SerializedName("token_address")
     val tokenAddress: String
-)
+) : Parcelable
 //endregion
 
 //region /1.0/violas/bank/deposit/order/list DTO
@@ -170,7 +147,7 @@ data class DepositRecordDTO(
     @SerializedName("date")
     val time: Long,
     @SerializedName("status")
-    val state: Int
+    val state: Int                      // 订单状态，0（已存款），1（已提取），-1（提取失败），-2（存款失败）
 )
 //endregion
 
@@ -186,7 +163,7 @@ data class BorrowingProductSummaryDTO(
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("rate")
-    val borrowingRate: String,          // 借贷率
+    val borrowingRate: Double,          // 借贷率
     @SerializedName("token_module")
     val tokenModule: String
 )
@@ -237,12 +214,11 @@ data class BorrowingInfoDTO(
     @SerializedName("logo")
     val productLogo: String,
     @SerializedName("amount")
-    val borrowedAmount: String          // 已借贷金额
+    var borrowedAmount: String          // 已借贷数量
 ) : Parcelable
 //endregion
 
 //region /1.0/violas/bank/borrow/order/list DTO
-
 @Keep
 data class BorrowingRecordDTO(
     @SerializedName("id")
@@ -256,23 +232,71 @@ data class BorrowingRecordDTO(
     @SerializedName("date")
     val time: Long,
     @SerializedName("status")
-    val state: Int
+    val state: Int                      // 订单状态，0（已借款），1（已还款），2（已清算），-1（借款失败），-2（还款失败）
 )
 //endregion
 
 //region /1.0/violas/bank/borrow/order/detail DTO
 @Keep
-data class BorrowOrderDetailDTO(
-    @SerializedName("balance")
-    val balance: Long,
+data class CoinBorrowingInfoDTO<T>(
     @SerializedName("id")
-    val id: String,
-    @SerializedName("list")
-    val list: List<BorrowRecordDTO>,
+    val productId: String,
     @SerializedName("name")
-    val name: String,
+    val productName: String,
+    @SerializedName("balance")
+    val borrowedAmount: String,         // 已借贷数量
+
+    @SerializedName("list")
+    val records: List<T>
+)
+
+@Keep
+data class CoinBorrowingRecordDTO(
+    @SerializedName("amount")
+    val amount: String,
+    @SerializedName("date")
+    val time: Long,
+    @SerializedName("status")
+    val state: Int
+)
+
+@Keep
+data class CoinRepaymentRecordDTO(
+    @SerializedName("amount")
+    val amount: String,
+    @SerializedName("date")
+    val time: Long,
+    @SerializedName("status")
+    val state: Int
+)
+
+@Keep
+data class CoinLiquidationRecordDTO(
+    @SerializedName("cleared")
+    val liquidatedAmount: String,       // 被清算数量
+    @SerializedName("deductioned")
+    val deductedAmount: String,         // 已抵扣数量
+    @SerializedName("deductioned_currency")
+    val deductedCurrency: String,       // 已抵扣币种
+    @SerializedName("date")
+    val time: Long,
+    @SerializedName("statue")
+    val state: Int
+)
+//endregion
+
+//region /1.0/violas/bank/borrow/repayment DTO
+@Keep
+data class BorrowDetailsDTO(
+    @SerializedName("id")
+    val productId: String,
+    @SerializedName("name")
+    val productName: String,
     @SerializedName("rate")
-    val rate: Double,
+    val borrowingRate: Double,
+    @SerializedName("balance")
+    val borrowedAmount: Long,           // 已借贷数量
+
     @SerializedName("token_address")
     val tokenAddress: String,
     @SerializedName("token_module")
@@ -281,17 +305,5 @@ data class BorrowOrderDetailDTO(
     val tokenName: String,
     @SerializedName("token_show_name")
     val tokenShowName: String
-)
-
-@Keep
-data class BorrowRecordDTO(
-    @SerializedName("cleared")
-    val cleared: Int,
-    @SerializedName("date")
-    val date: Int,
-    @SerializedName("deductioned")
-    val deductioned: Int,
-    @SerializedName("status")
-    val status: Int
 )
 //endregion
