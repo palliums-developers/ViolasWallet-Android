@@ -117,7 +117,7 @@
             android:layout_marginTop="@dimen/dp_23"
             android:background="@drawable/bg_style_1_color_surfaces_radius_3"
             android:orientation="horizontal"
-            android:paddingVertical="@dimen/dp_10"
+            android:paddingVertical="@dimen/dp_8"
             android:paddingStart="@dimen/dp_9"
             android:paddingEnd="@dimen/dp_7"
             app:layout_constraintEnd_toEndOf="@id/etInputBox"
@@ -133,9 +133,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_6"
+                android:layout_marginStart="@dimen/dp_5"
+                android:includeFontPadding="false"
                 android:text="@string/bank_withdrawal_desc"
-                android:textColor="?android:attr/textColorSecondary" />
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/sp_10" />
 
         </LinearLayout>
 
