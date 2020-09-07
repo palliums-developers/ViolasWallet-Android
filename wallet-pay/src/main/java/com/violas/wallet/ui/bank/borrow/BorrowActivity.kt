@@ -73,11 +73,21 @@ class BorrowActivity : BankBusinessActivity() {
     override fun loadBusiness(businessId: String) {
         launch(Dispatchers.IO) {
             showProgress()
-            mAccountDO?.address?.let {
-                mBorrowProductDetails = mBankRepository.getBorrowProductDetails(businessId, it)
-                refreshTryingView()
+            try {
+                mAccountDO?.address?.let {
+                    mBorrowProductDetails = mBankRepository.getBorrowProductDetails(businessId, it)
+                    refreshTryingView()
+                    if (mBorrowProductDetails == null) {
+                        loadedFailure()
+                    } else {
+                        loadedSuccess()
+                    }
+                }
+            } catch (e: Exception) {
+                loadedFailure()
+            } finally {
+                dismissProgress()
             }
-            dismissProgress()
         }
     }
 

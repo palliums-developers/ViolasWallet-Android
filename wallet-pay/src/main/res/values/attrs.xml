@@ -57,6 +57,7 @@
     <attr name="iconTriangleArrow" format="reference" />
     <attr name="iconAmount" format="reference" />
     <attr name="iconInfo" format="reference" />
+    <attr name="pageFailureDataBg" format="reference" />
 
     <!--首页资源属性-->
     <attr name="homeBottomTabSelectedTextColor" format="color" />

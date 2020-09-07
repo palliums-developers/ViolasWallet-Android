@@ -143,6 +143,7 @@
         <item name="iconTriangleArrow">@mipmap/ic_triangle_arrow</item>
         <item name="iconAmount">@mipmap/ic_amount</item>
         <item name="iconInfo">@mipmap/ic_info</item>
+        <item name="pageFailureDataBg">@drawable/bg_status_layout_net_work_error</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
