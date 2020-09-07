@@ -68,12 +68,22 @@ class RepayBorrowActivity : BankBusinessActivity() {
 
     override fun loadBusiness(businessId: String) {
         launch(Dispatchers.IO) {
-            showProgress()
-            mAccountDO?.address?.let {
-                mBorrowingDetails = mBankRepository.getBorrowingDetails(it, businessId)
-                refreshTryingView()
+            try {
+                showProgress()
+                mAccountDO?.address?.let {
+                    mBorrowingDetails = mBankRepository.getBorrowingDetails(it, businessId)
+                    refreshTryingView()
+                    if (mBorrowingDetails == null) {
+                        loadedFailure()
+                    } else {
+                        loadedSuccess()
+                    }
+                }
+            } catch (e: Exception) {
+                loadedFailure()
+            } finally {
+                dismissProgress()
             }
-            dismissProgress()
         }
     }
 
@@ -98,7 +108,10 @@ class RepayBorrowActivity : BankBusinessActivity() {
             )
             mBankBusinessViewModel.mBusinessParameterListLiveData.postValue(
                 arrayListOf(
-                    BusinessParameter(getString(R.string.borrowing_rate), "${borrowingRate * 100}%"),
+                    BusinessParameter(
+                        getString(R.string.borrowing_rate),
+                        "${borrowingRate * 100}%"
+                    ),
                     BusinessParameter(
                         getString(R.string.label_miner_fees),
                         "0.00 ${tokenShowName}"

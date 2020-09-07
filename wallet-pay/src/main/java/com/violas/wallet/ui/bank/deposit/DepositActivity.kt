@@ -65,11 +65,22 @@ class DepositActivity : BankBusinessActivity() {
     override fun loadBusiness(businessId: String) {
         launch(Dispatchers.IO) {
             showProgress()
-            mAccountDO?.address?.let {
-                mDepositProductDetails = mBankRepository.getDepositProductDetails(businessId, it)
-                refreshTryingView()
+            try {
+                mAccountDO?.address?.let {
+                    mDepositProductDetails =
+                        mBankRepository.getDepositProductDetails(businessId, it)
+                    refreshTryingView()
+                    if (mDepositProductDetails == null) {
+                        loadedFailure()
+                    } else {
+                        loadedSuccess()
+                    }
+                }
+            } catch (e: Exception) {
+                loadedFailure()
+            } finally {
+                dismissProgress()
             }
-            dismissProgress()
         }
     }
 

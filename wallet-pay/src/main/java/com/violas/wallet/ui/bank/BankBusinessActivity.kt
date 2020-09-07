@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.utils.getResourceId
+import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -79,14 +80,29 @@ abstract class BankBusinessActivity : BaseAppActivity(),
 
     abstract fun loadBusiness(businessId: String)
 
+    protected fun loadedSuccess() {
+        launch {
+            statusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
+        }
+    }
+    protected fun loadedFailure() {
+        launch {
+            statusLayout.showStatus(IStatusLayout.Status.STATUS_FAILURE)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        statusLayout.setReloadText(R.string.hint_click_retry)
         val businessId = intent.getStringExtra(EXT_BUSINESS_ID) ?: "0"
         if (businessId != null) {
             loadBusiness(businessId)
         } else {
             throw Exception("BankBusinessActivity Param EXT_BUSINESS_ID is null.")
+        }
+        statusLayout.setReloadCallback {
+            loadBusiness(businessId)
         }
 
         mBankBusinessViewModel.mPageTitleLiveData.observe(this, Observer {
