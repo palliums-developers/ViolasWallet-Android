@@ -43,8 +43,7 @@
             android:id="@+id/statusLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:slShowReloadOnFailed="true"
-            tools:lsStatus="loading" />
+            app:slShowReloadOnFailed="true" />
 
     </FrameLayout>
 

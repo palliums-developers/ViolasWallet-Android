@@ -57,7 +57,9 @@
     <attr name="iconTriangleArrow" format="reference" />
     <attr name="iconAmount" format="reference" />
     <attr name="iconInfo" format="reference" />
-    <attr name="pageFailureDataBg" format="reference" />
+    <attr name="bgLoadFailure" format="reference" />
+    <attr name="bgLoadEmptyData" format="reference" />
+    <attr name="bgSearchEmptyData" format="reference" />
 
     <!--首页资源属性-->
     <attr name="homeBottomTabSelectedTextColor" format="color" />
@@ -166,8 +168,6 @@
     <!--数字银行相关页面资源属性-->
     <attr name="bankDepositOrderIcon" format="reference" />
     <attr name="bankBorrowingOrderIcon" format="reference" />
-    <attr name="bankListEmptyDataBg" format="reference" />
-    <attr name="bankSearchEmptyDataBg" format="reference" />
     <attr name="bankProductRateTextColor" format="color" />
     <attr name="bankDepositEarningTextColor" format="color" />
     <attr name="bankDepositEarningBgColor" format="color" />

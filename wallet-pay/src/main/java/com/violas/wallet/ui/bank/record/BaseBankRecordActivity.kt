@@ -93,7 +93,7 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
         statusLayout.setImageWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             getResourceId(
-                if (search) R.attr.bankSearchEmptyDataBg else R.attr.bankListEmptyDataBg,
+                if (search) R.attr.bgSearchEmptyData else R.attr.bgLoadEmptyData,
                 this
             )
         )

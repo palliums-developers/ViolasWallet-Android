@@ -90,6 +90,11 @@
         <!--Library attrs-->
         <item name="slTipsTextColor">@color/color_BABABA</item>
         <item name="slTipsTextSize">@dimen/sp_14</item>
+        <item name="slReloadTextColor">@color/color_BABABA</item>
+        <item name="slReloadTextSize">@dimen/sp_14</item>
+        <item name="slEmptyIcon">?attr/bgLoadEmptyData</item>
+        <item name="slFailureIcon">?attr/bgLoadFailure</item>
+        <item name="slNoNetworkIcon">?attr/bgLoadFailure</item>
 
         <!--App custom attrs-->
         <!--App通用资源属性-->
@@ -143,7 +148,9 @@
         <item name="iconTriangleArrow">@mipmap/ic_triangle_arrow</item>
         <item name="iconAmount">@mipmap/ic_amount</item>
         <item name="iconInfo">@mipmap/ic_info</item>
-        <item name="pageFailureDataBg">@drawable/bg_status_layout_net_work_error</item>
+        <item name="bgLoadFailure">@mipmap/bg_load_failure</item>
+        <item name="bgLoadEmptyData">@mipmap/bg_load_empty_data</item>
+        <item name="bgSearchEmptyData">@mipmap/bg_search_empty_data</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
@@ -252,8 +259,6 @@
         <!--数字银行相关页面资源属性-->
         <item name="bankDepositOrderIcon">@mipmap/ic_bank_deposit_order</item>
         <item name="bankBorrowingOrderIcon">@mipmap/ic_bank_borrow_order</item>
-        <item name="bankListEmptyDataBg">@mipmap/bg_bank_list_empty_data</item>
-        <item name="bankSearchEmptyDataBg">@mipmap/bg_bank_search_empty_data</item>
         <item name="bankProductRateTextColor">@color/color_13B788</item>
         <item name="bankDepositEarningTextColor">@color/color_13B788</item>
         <item name="bankDepositEarningBgColor">@color/color_13B788_06</item>

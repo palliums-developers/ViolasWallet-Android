@@ -47,6 +47,7 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
     private var displayTokens: List<ITokenVo>? = null
     private var currCoin: ITokenVo? = null
     private var job: Job? = null
+    private var lastSearchEmptyData = false
 
     private val tokenAdapter by lazy {
         TokenAdapter()
@@ -234,8 +235,24 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
     }
 
     private fun handleEmptyData(searchText: String?) {
-        tokenAdapter.submitList(null)
-        recyclerView.visibility = View.GONE
+        if (recyclerView.visibility != View.GONE) {
+            tokenAdapter.submitList(null)
+            recyclerView.visibility = View.GONE
+        }
+
+        if (lastSearchEmptyData && searchText.isNullOrEmpty()) {
+            statusLayout.setImageWithStatus(
+                IStatusLayout.Status.STATUS_EMPTY,
+                getResourceId(R.attr.bgLoadEmptyData, requireContext())
+            )
+        } else if (!lastSearchEmptyData && !searchText.isNullOrEmpty()) {
+            statusLayout.setImageWithStatus(
+                IStatusLayout.Status.STATUS_EMPTY,
+                getResourceId(R.attr.bgSearchEmptyData, requireContext())
+            )
+        }
+        lastSearchEmptyData = !searchText.isNullOrEmpty()
+
         statusLayout.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             if (searchText.isNullOrEmpty())

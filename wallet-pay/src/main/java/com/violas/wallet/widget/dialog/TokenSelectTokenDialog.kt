@@ -48,6 +48,7 @@ abstract class TokenSelectTokenDialog<VO> : DialogFragment(), CoroutineScope by 
     private var mDisplayTokens: List<VO>? = null
     private var mTokenCallback: ((VO) -> Unit)? = null
     private var mJob: Job? = null
+    private var lastSearchEmptyData = false
 
     private val mTokenAdapter by lazy {
         TokenAdapter()
@@ -226,8 +227,24 @@ abstract class TokenSelectTokenDialog<VO> : DialogFragment(), CoroutineScope by 
     }
 
     private fun handleEmptyData(searchText: String?) {
-        mTokenAdapter.submitList(null)
-        recyclerView.visibility = View.GONE
+        if (recyclerView.visibility != View.GONE) {
+            mTokenAdapter.submitList(null)
+            recyclerView.visibility = View.GONE
+        }
+
+        if (lastSearchEmptyData && searchText.isNullOrEmpty()) {
+            statusLayout.setImageWithStatus(
+                IStatusLayout.Status.STATUS_EMPTY,
+                getResourceId(R.attr.bgLoadEmptyData, requireContext())
+            )
+        } else if (!lastSearchEmptyData && !searchText.isNullOrEmpty()) {
+            statusLayout.setImageWithStatus(
+                IStatusLayout.Status.STATUS_EMPTY,
+                getResourceId(R.attr.bgSearchEmptyData, requireContext())
+            )
+        }
+        lastSearchEmptyData = !searchText.isNullOrEmpty()
+
         statusLayout.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             if (searchText.isNullOrEmpty())

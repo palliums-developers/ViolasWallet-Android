@@ -16,7 +16,6 @@
     <com.palliums.widget.status.DefaultStatusLayout
         android:id="@+id/statusLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:lsStatus="none" />
+        android:layout_height="match_parent" />
 
 </FrameLayout>

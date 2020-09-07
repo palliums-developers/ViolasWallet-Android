@@ -212,6 +212,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
 
                 val tips: CharSequence? = mTipsArr[IStatusLayout.Status.STATUS_FAILURE]
                 val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_FAILURE]
+                    ?: mImageArr[IStatusLayout.Status.STATUS_NO_NETWORK]
                     ?: mImageArr[IStatusLayout.Status.STATUS_EMPTY]
                 setStatusData(tips, image)
 
@@ -226,6 +227,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
 
                 val tips: CharSequence? = mTipsArr[IStatusLayout.Status.STATUS_NO_NETWORK]
                 val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_NO_NETWORK]
+                    ?: mImageArr[IStatusLayout.Status.STATUS_FAILURE]
                     ?: mImageArr[IStatusLayout.Status.STATUS_EMPTY]
                 setStatusData(tips, image)
 

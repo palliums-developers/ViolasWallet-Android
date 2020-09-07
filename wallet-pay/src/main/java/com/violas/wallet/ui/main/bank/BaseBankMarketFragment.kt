@@ -8,7 +8,6 @@ import com.palliums.base.BaseFragment
 import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.utils.DensityUtility
-import com.palliums.utils.getResourceId
 import com.palliums.utils.isNetworkConnected
 import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.status.IStatusLayout
@@ -49,10 +48,6 @@ abstract class BaseBankMarketFragment<VO> : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        statusLayout.setImageWithStatus(
-            IStatusLayout.Status.STATUS_EMPTY,
-            getResourceId(R.attr.bankListEmptyDataBg, requireContext())
-        )
         statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
 
         recyclerView.addItemDecoration(

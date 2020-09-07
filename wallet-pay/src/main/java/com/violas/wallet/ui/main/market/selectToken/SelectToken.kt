@@ -54,6 +54,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     private var displayCoins: List<ITokenVo>? = null
     private var currCoin: ITokenVo? = null
     private var job: Job? = null
+    private var lastSearchEmptyData = false
 
     private val coinAdapter by lazy { CoinAdapter() }
 
@@ -256,8 +257,24 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     private fun handleEmptyData(searchText: String?) {
-        coinAdapter.submitList(null)
-        recyclerView.visibility = View.GONE
+        if (recyclerView.visibility != View.GONE) {
+            coinAdapter.submitList(null)
+            recyclerView.visibility = View.GONE
+        }
+
+        if (lastSearchEmptyData && searchText.isNullOrEmpty()) {
+            statusLayout.setImageWithStatus(
+                IStatusLayout.Status.STATUS_EMPTY,
+                getResourceId(R.attr.bgLoadEmptyData, requireContext())
+            )
+        } else if (!lastSearchEmptyData && !searchText.isNullOrEmpty()) {
+            statusLayout.setImageWithStatus(
+                IStatusLayout.Status.STATUS_EMPTY,
+                getResourceId(R.attr.bgSearchEmptyData, requireContext())
+            )
+        }
+        lastSearchEmptyData = !searchText.isNullOrEmpty()
+
         statusLayout.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             if (searchText.isNullOrEmpty())

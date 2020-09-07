@@ -2,9 +2,6 @@ package com.violas.wallet.ui.bank.details
 
 import android.os.Bundle
 import android.view.View
-import com.palliums.utils.getResourceId
-import com.palliums.widget.status.IStatusLayout
-import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_THREE
@@ -53,10 +50,6 @@ abstract class BaseCoinTxRecordFragment<VO> : BasePagingFragment<VO>() {
         super.onLazyInitViewByResume(savedInstanceState)
 
         mPagingHandler.init()
-        getStatusLayout()?.setImageWithStatus(
-            IStatusLayout.Status.STATUS_EMPTY,
-            getResourceId(R.attr.bankListEmptyDataBg, requireContext())
-        )
         mPagingHandler.start()
     }
 }

@@ -39,9 +39,10 @@ class ListingHandler<VO>(
                     if (mListingController.loadingUseDialog()) {
                         mViewController.dismissProgress()
                     } else {
-                        mListingController.getRefreshLayout()?.finishRefresh(true)
-                        if (mListingController.enableRefresh())
-                            mListingController.getRefreshLayout()?.setEnableRefresh(true)
+                        mListingController.getRefreshLayout()?.run {
+                            finishRefresh(true)
+                            setEnableRefresh(mListingController.enableRefresh())
+                        }
                     }
 
                     mListingController.getStatusLayout()?.showStatus(
@@ -53,9 +54,10 @@ class ListingHandler<VO>(
                     if (mListingController.loadingUseDialog()) {
                         mViewController.dismissProgress()
                     } else {
-                        mListingController.getRefreshLayout()?.finishRefresh(true)
-                        if (mListingController.enableRefresh())
-                            mListingController.getRefreshLayout()?.setEnableRefresh(true)
+                        mListingController.getRefreshLayout()?.run {
+                            finishRefresh(true)
+                            setEnableRefresh(mListingController.enableRefresh())
+                        }
                     }
 
                     mListingController.getStatusLayout()?.showStatus(
@@ -67,8 +69,10 @@ class ListingHandler<VO>(
                     if (mListingController.loadingUseDialog()) {
                         mViewController.dismissProgress()
                     } else {
-                        mListingController.getRefreshLayout()?.finishRefresh(false)
-                        mListingController.getRefreshLayout()?.setEnableRefresh(true)
+                        mListingController.getRefreshLayout()?.run {
+                            finishRefresh(false)
+                            setEnableRefresh(true)
+                        }
                     }
 
                     when {
@@ -80,13 +84,15 @@ class ListingHandler<VO>(
 
                         it.peekData().isNoNetwork() -> {
                             mListingController.getStatusLayout()?.showStatus(
-                                IStatusLayout.Status.STATUS_NO_NETWORK, it.peekData().getErrorMsg()
+                                IStatusLayout.Status.STATUS_NO_NETWORK,
+                                it.peekData().getErrorMsg()
                             )
                         }
 
                         else -> {
                             mListingController.getStatusLayout()?.showStatus(
-                                IStatusLayout.Status.STATUS_FAILURE, it.peekData().getErrorMsg()
+                                IStatusLayout.Status.STATUS_FAILURE,
+                                it.peekData().getErrorMsg()
                             )
                         }
                     }

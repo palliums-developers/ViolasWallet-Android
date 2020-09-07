@@ -120,9 +120,7 @@
             <com.palliums.widget.status.DefaultStatusLayout
                 android:id="@+id/statusLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:slEmptyIcon="?attr/bankListEmptyDataBg"
-                tools:lsStatus="empty" />
+                android:layout_height="match_parent" />
 
         </FrameLayout>
 
