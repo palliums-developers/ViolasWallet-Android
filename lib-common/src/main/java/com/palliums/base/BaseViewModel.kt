@@ -6,8 +6,7 @@ import androidx.lifecycle.EnhancedMutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palliums.exceptions.RequestException
-import com.palliums.extensions.getShowErrorMessage
-import com.palliums.extensions.isNoNetwork
+import com.palliums.extensions.*
 import com.palliums.net.LoadState
 import com.palliums.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +21,10 @@ import kotlinx.coroutines.withContext
  * desc:
  */
 abstract class BaseViewModel : ViewModel() {
+
+    companion object {
+        private const val TAG = "ViewModel"
+    }
 
     protected val lock: Any = Any()
     private var retry: (() -> Any)? = null
@@ -50,73 +53,101 @@ abstract class BaseViewModel : ViewModel() {
     ): Boolean {
         synchronized(lock) {
             if (loadState.value?.peekData()?.status == LoadState.Status.RUNNING) {
+                lazyLogWarn(TAG) {
+                    "execute(action = $action, param = ${
+                    params.contentToString()}) => executing"
+                }
                 return false
             } else if (checkParamBeforeExecute && !checkParams(action, *params)) {
-                return false
-            } else if (checkNetworkBeforeExecute && !isNetworkConnected()) {
-                retry = {
-                    execute(
-                        params = *params,
-                        action = action,
-                        checkParamBeforeExecute = checkParamBeforeExecute,
-                        checkNetworkBeforeExecute = checkNetworkBeforeExecute,
-                        failureCallback = failureCallback,
-                        successCallback = successCallback
-                    )
+                lazyLogError(TAG) {
+                    "execute(action = $action, param = ${
+                    params.contentToString()}) => params abnormal"
                 }
-
-                val exception = RequestException.networkUnavailable()
-                loadState.setValueSupport(
-                    LoadState.failure(exception).apply { this.action = action })
-                tipsMessage.setValueSupport(exception.getShowErrorMessage(isLoadAction(action)))
-
-                failureCallback?.invoke(exception)
                 return false
             }
 
+            lazyLogInfo(TAG) {
+                "execute(action = $action, param = ${
+                params.contentToString()}) => start"
+            }
             loadState.setValueSupport(LoadState.RUNNING.apply { this.action = action })
         }
 
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch(Dispatchers.Main) {
             try {
+                if (checkNetworkBeforeExecute && !isNetworkConnected()) {
+                    throw RequestException.networkUnavailable()
+                }
 
                 withContext(Dispatchers.IO) { realExecute(action, *params) }
+                lazyLogInfo(TAG) {
+                    "execute(action = $action, param = ${
+                    params.contentToString()}) => success(${
+                    System.currentTimeMillis() - startTime}ms)"
+                }
 
                 synchronized(lock) {
                     retry = null
-
-                    loadState.setValueSupport(LoadState.SUCCESS.apply { this.action = action })
+                    loadState.setValueSupport(
+                        LoadState.SUCCESS.apply { this.action = action }
+                    )
                 }
-
                 successCallback?.invoke()
             } catch (e: Exception) {
-                e.printStackTrace()
+                lazyLogError(e, TAG) {
+                    "execute(action = $action, param = ${
+                    params.contentToString()}) => failure(${
+                    System.currentTimeMillis() - startTime}ms)"
+                }
 
-                if (e.isNoNetwork()) {
-                    // 没有网络时返回很快，加载视图一闪而过效果不好
-                    delay(500)
+                val activeCancellation = e.isActiveCancellation()
+                if (!activeCancellation) {
+                    delayOnError(startTime)
                 }
 
                 synchronized(lock) {
-                    retry = {
-                        execute(
-                            params = *params,
-                            action = action,
-                            checkParamBeforeExecute = checkParamBeforeExecute,
-                            checkNetworkBeforeExecute = checkNetworkBeforeExecute,
-                            failureCallback = failureCallback,
-                            successCallback = successCallback
+                    if (activeCancellation) {
+                        loadState.setValueSupport(
+                            LoadState.IDLE.apply { this.action = action }
+                        )
+                    } else {
+                        retry = {
+                            execute(
+                                params = *params,
+                                action = action,
+                                checkParamBeforeExecute = checkParamBeforeExecute,
+                                checkNetworkBeforeExecute = checkNetworkBeforeExecute,
+                                failureCallback = failureCallback,
+                                successCallback = successCallback
+                            )
+                        }
+
+                        loadState.setValueSupport(
+                            LoadState.failure(e).apply { this.action = action }
+                        )
+                        tipsMessage.setValueSupport(
+                            e.getShowErrorMessage(isLoadAction(action))
                         )
                     }
-
-                    loadState.setValueSupport(LoadState.failure(e).apply { this.action = action })
-                    tipsMessage.setValueSupport(e.getShowErrorMessage(isLoadAction(action)))
                 }
 
-                failureCallback?.invoke(e)
+                if (!activeCancellation) {
+                    failureCallback?.invoke(e)
+                }
             }
         }
         return true
+    }
+
+    private suspend fun delayOnError(startTime: Long) {
+        val spentTime = System.currentTimeMillis() - startTime
+        if (spentTime < 1000) {
+            try {
+                delay(1000 - spentTime)
+            } catch (ignore: Exception) {
+            }
+        }
     }
 
     @MainThread
