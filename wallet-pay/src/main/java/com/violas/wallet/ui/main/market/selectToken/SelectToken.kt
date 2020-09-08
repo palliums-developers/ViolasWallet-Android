@@ -137,20 +137,21 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
         recyclerView.adapter = coinAdapter
         recyclerView.visibility = View.GONE
 
-        statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         statusLayout.setReloadCallback {
-            statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
             getMarketSupportCoins()
         }
 
         currCoin = coinsBridge?.getCurrCoin(action)
-        coinsBridge?.getTipsMessageLiveData()?.observe(viewLifecycleOwner, Observer {
-            it.getDataIfNotHandled()?.let { msg ->
-                if (msg.isNotEmpty()) {
-                    showToast(msg)
+        coinsBridge?.getTipsMessageLiveData()?.run {
+            setValueSupport("")
+            observe(viewLifecycleOwner, Observer {
+                it.getDataIfNotHandled()?.let { msg ->
+                    if (msg.isNotEmpty()) {
+                        showToast(msg)
+                    }
                 }
-            }
-        })
+            })
+        }
         coinsBridge?.getMarketSupportCoinsLiveData()?.observe(viewLifecycleOwner, Observer {
             cancelJob()
 
@@ -160,10 +161,12 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                 filterData(it)
             }
         })
+
         getMarketSupportCoins()
     }
 
     private fun getMarketSupportCoins() {
+        statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         coinsBridge?.getMarketSupportCoins {
             handleLoadFailure()
         }
