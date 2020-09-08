@@ -3,7 +3,6 @@ package com.violas.wallet.ui.main.market.swap
 import android.os.Bundle
 import android.text.AmountInputFilter
 import android.text.TextWatcher
-import android.util.Log
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.LiveData
@@ -181,7 +180,10 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                 showToast(getString(R.string.hint_swap_input_assets_amount_input))
                 return@setOnClickListener
             }
-            if (mCurrFromAssetsAmount < BigDecimal(etFromInputBox.text?.trim()?.toString() ?: "0")) {
+            if (mCurrFromAssetsAmount < BigDecimal(
+                    etFromInputBox.text?.trim()?.toString() ?: "0"
+                )
+            ) {
                 showToast(R.string.market_swap_amount_insufficient)
                 return@setOnClickListener
             }
@@ -541,11 +543,12 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
             .show(childFragmentManager)
     }
 
-    override suspend fun getMarketSupportFromTokens(): LiveData<List<ITokenVo>?> {
-        withContext(Dispatchers.Main) {
-            marketViewModel.execute()
-        }
+    override fun getMarketSupportFromTokensLiveData(): LiveData<List<ITokenVo>?> {
         return swapViewModel.getSupportTokensLiveData()
+    }
+
+    override fun loadMarketSupportFromTokens(failureCallback: (error: Throwable) -> Unit) {
+        marketViewModel.execute(failureCallback = failureCallback)
     }
 
     override suspend fun getMarketSupportToTokens(): List<ITokenVo>? {

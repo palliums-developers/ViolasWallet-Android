@@ -132,17 +132,15 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
         recyclerView.visibility = View.GONE
 
         currCoin = swapTokensDataResourcesBridge?.getCurrCoin(action)
+        swapTokensDataResourcesBridge?.getMarketSupportFromTokensLiveData()?.observe(
+            viewLifecycleOwner,
+            Observer { handleSwapTokens(it) }
+        )
 
-        statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         statusLayout.setReloadCallback {
-            statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
-            launch(Dispatchers.IO) {
-                loadSwapTokens()
-            }
-        }
-        launch(Dispatchers.IO) {
             loadSwapTokens()
         }
+        loadSwapTokens()
     }
 
     private fun handleSwapTokens(tokens: List<ITokenVo>?) {
@@ -165,17 +163,15 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
         }
     }
 
-    private suspend fun loadSwapTokens() {
+    private fun loadSwapTokens() {
+        statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         if (action == ACTION_SWAP_SELECT_FROM) {
-            withContext(Dispatchers.Main) {
-                swapTokensDataResourcesBridge?.getMarketSupportFromTokens()
-                    ?.observe(this@SwapSelectTokenDialog, Observer {
-                        handleSwapTokens(it)
-                    })
+            swapTokensDataResourcesBridge?.loadMarketSupportFromTokens {
+                handleLoadFailure()
             }
         } else {
-            swapTokensDataResourcesBridge?.getMarketSupportToTokens().let {
-                handleSwapTokens(it)
+            launch(Dispatchers.IO) {
+                handleSwapTokens(swapTokensDataResourcesBridge?.getMarketSupportToTokens())
             }
         }
     }
@@ -325,7 +321,10 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
 }
 
 interface SwapTokensDataResourcesBridge {
-    suspend fun getMarketSupportFromTokens(): LiveData<List<ITokenVo>?>
+
+    fun getMarketSupportFromTokensLiveData(): LiveData<List<ITokenVo>?>
+
+    fun loadMarketSupportFromTokens(failureCallback: (error: Throwable) -> Unit)
 
     suspend fun getMarketSupportToTokens(): List<ITokenVo>?
 
