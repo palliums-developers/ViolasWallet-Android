@@ -78,11 +78,11 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener, ViewContr
     }
 
     override fun showProgress(msg: String?) {
-        (activity as? BaseActivity)?.showProgress(msg)
+        (activity as? ViewController)?.showProgress(msg)
     }
 
     override fun dismissProgress() {
-        (activity as? BaseActivity)?.dismissProgress()
+        (activity as? ViewController)?.dismissProgress()
     }
 
     override fun showToast(@StringRes msgId: Int, duration: Int) {
@@ -90,7 +90,7 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener, ViewContr
     }
 
     override fun showToast(msg: String, duration: Int) {
-        (activity as? BaseActivity)?.showToast(msg, duration)
+        (activity as? ViewController)?.showToast(msg, duration)
     }
 
     fun close() {
