@@ -40,8 +40,7 @@ class BankFragment : BaseFragment() {
     private val bankViewModel by lazy {
         ViewModelProvider(this).get(BankViewModel::class.java)
     }
-    private val depositMarketFragment by lazy { DepositMarketFragment() }
-    private val borrowingMarketFragment by lazy { BorrowingMarketFragment() }
+    private lateinit var fragmentPagerAdapter: FragmentPagerAdapterSupport
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_bank
@@ -97,10 +96,10 @@ class BankFragment : BaseFragment() {
         })
 
         bankViewModel.depositProductsLiveData.observe(viewLifecycleOwner, Observer {
-            depositMarketFragment.setData(it)
+            getDepositMarketFragment()?.setData(it)
         })
         bankViewModel.borrowingProductsLiveData.observe(viewLifecycleOwner, Observer {
-            borrowingMarketFragment.setData(it)
+            getBorrowingMarketFragment()?.setData(it)
         })
 
         bankViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
@@ -178,14 +177,36 @@ class BankFragment : BaseFragment() {
         })
     }
 
+    private fun getDepositMarketFragment(): DepositMarketFragment? {
+        return if (this::fragmentPagerAdapter.isInitialized)
+            fragmentPagerAdapter.getItem(0) as DepositMarketFragment?
+        else
+            null
+    }
+
+    private fun getBorrowingMarketFragment(): BorrowingMarketFragment? {
+        return if (this::fragmentPagerAdapter.isInitialized)
+            fragmentPagerAdapter.getItem(1) as BorrowingMarketFragment?
+        else
+            null
+    }
+
     private fun initTab() {
-        viewPager.adapter = FragmentPagerAdapterSupport(childFragmentManager).apply {
-            setFragments(
-                mutableListOf<Fragment>(
-                    depositMarketFragment,
-                    borrowingMarketFragment
-                )
-            )
+        val fragments = mutableListOf<Fragment>()
+        childFragmentManager.fragments.forEach {
+            if (it is DepositMarketFragment) {
+                fragments.add(it)
+            } else if (it is BorrowingMarketFragment) {
+                fragments.add(it)
+            }
+        }
+        if (fragments.isEmpty()) {
+            fragments.add(DepositMarketFragment())
+            fragments.add(BorrowingMarketFragment())
+        }
+
+        fragmentPagerAdapter = FragmentPagerAdapterSupport(childFragmentManager).apply {
+            setFragments(fragments)
             setTitles(
                 mutableListOf(
                     getString(R.string.deposit_market),
@@ -194,6 +215,7 @@ class BankFragment : BaseFragment() {
             )
         }
 
+        viewPager.adapter = fragmentPagerAdapter
         tabLayout.setupWithViewPager(viewPager)
         val count = viewPager.adapter!!.count
         for (i in 0 until count) {

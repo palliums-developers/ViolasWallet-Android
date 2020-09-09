@@ -24,16 +24,13 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener, ViewContr
     private var lazyInitTag = false
     private var savedInstanceState: Bundle? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        this.savedInstanceState = savedInstanceState
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        lazyInitTag = false
+        this.savedInstanceState = savedInstanceState
         return inflater.inflate(getLayoutResId(), container, false)
     }
 
@@ -44,6 +41,12 @@ abstract class BaseFragment : SupportFragment(), View.OnClickListener, ViewContr
             savedInstanceState = null
         }
         super.onResume()
+    }
+
+    override fun onDestroyView() {
+        lazyInitTag = false
+        savedInstanceState = null
+        super.onDestroyView()
     }
 
     @LayoutRes
