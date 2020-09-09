@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
@@ -82,14 +83,29 @@ class MainActivity : BaseAppActivity() {
         }
         bottom_navigation.selectedItemId = bottom_navigation.menu.findItem(R.id.tab_wallet).itemId
 
-        viewPagerAdapter = FragmentPagerAdapterSupport(supportFragmentManager)
-        viewPagerAdapter.addFragment(WalletFragment())
-        viewPagerAdapter.addFragment(MarketFragment())
-        viewPagerAdapter.addFragment(BankFragment())
-        viewPagerAdapter.addFragment(MeFragment())
+        val fragments = mutableListOf<Fragment>()
+        supportFragmentManager.fragments.forEach {
+            if (it is WalletFragment
+                || it is MarketFragment
+                || it is BankFragment
+                || it is MeFragment
+            ) {
+                fragments.add(it)
+            }
+        }
+        if (fragments.isEmpty()) {
+            fragments.add(WalletFragment())
+            fragments.add(MarketFragment())
+            fragments.add(BankFragment())
+            fragments.add(MeFragment())
+        }
 
+        viewPagerAdapter = FragmentPagerAdapterSupport(supportFragmentManager).apply {
+            setFragments(fragments)
+        }
+
+        view_pager.offscreenPageLimit = 3
         view_pager.adapter = viewPagerAdapter
-        view_pager.offscreenPageLimit = 4
         bottom_navigation.setupWithViewPager(view_pager)
     }
 
