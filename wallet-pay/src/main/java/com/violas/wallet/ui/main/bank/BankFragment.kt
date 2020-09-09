@@ -12,6 +12,7 @@ import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.lazyLogError
 import com.palliums.net.LoadState
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
@@ -54,22 +55,148 @@ class BankFragment : BaseFragment() {
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
 
-        initView()
-        initTab()
+        initTopView()
+        initFragmentPager()
         initEvent()
         initObserver()
     }
 
-    private fun initView() {
-        ivTopBg.layoutParams = (ivTopBg.layoutParams as ConstraintLayout.LayoutParams).apply {
-            height = StatusBarUtil.getStatusBarHeight() + DensityUtility.dp2px(context, 210)
-        }
+    private fun initTopView() {
+        val statusBarHeight = StatusBarUtil.getStatusBarHeight()
+        ivTopBg.layoutParams =
+            (ivTopBg.layoutParams as ConstraintLayout.LayoutParams).apply {
+                height = statusBarHeight + DensityUtility.dp2px(context, 210)
+            }
         refreshLayout.layoutParams =
             (refreshLayout.layoutParams as ConstraintLayout.LayoutParams).apply {
-                topMargin = StatusBarUtil.getStatusBarHeight()
+                topMargin = statusBarHeight
+            }
+    }
+
+    private fun initFragmentPager() {
+        val fragments = mutableListOf<Fragment>()
+        childFragmentManager.fragments.forEach {
+            if (it is DepositMarketFragment || it is BorrowingMarketFragment) {
+                fragments.add(it)
+            }
+        }
+        if (fragments.isEmpty()) {
+            fragments.add(DepositMarketFragment())
+            fragments.add(BorrowingMarketFragment())
+        }
+
+        fragmentPagerAdapter = FragmentPagerAdapterSupport(childFragmentManager).apply {
+            setFragments(fragments)
+            setTitles(
+                mutableListOf(
+                    getString(R.string.deposit_market),
+                    getString(R.string.borrowing_market)
+                )
+            )
+        }
+
+        viewPager.offscreenPageLimit = 1
+        viewPager.adapter = fragmentPagerAdapter
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
             }
 
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                updateTab(tab, false)
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                updateTab(tab, true)
+            }
+        })
+        tabLayout.setupWithViewPager(viewPager)
+        tabLayout.post {
+            val count = viewPager.adapter!!.count
+            for (i in 0 until count) {
+                tabLayout.getTabAt(i)?.let { tab ->
+                    tab.setCustomView(R.layout.item_home_bank_market_tab_layout)
+                    updateTab(tab, i == viewPager.currentItem)?.let {
+                        it.text = tab.text
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateTab(tab: TabLayout.Tab, select: Boolean): TextView? {
+        return tab.customView?.findViewById<TextView>(R.id.textView)?.also {
+            it.textSize = if (select) 14f else 12f
+            it.setTextColor(
+                getColorByAttrId(
+                    if (select) android.R.attr.textColor else android.R.attr.textColorTertiary,
+                    requireContext()
+                )
+            )
+        }
+    }
+
+    private fun initEvent() {
+        refreshLayout.setOnRefreshListener {
+            val action = if (viewPager.currentItem == 0)
+                ACTION_LOAD_ACCOUNT_INFO.or(ACTION_LOAD_DEPOSIT_PRODUCTS)
+            else
+                ACTION_LOAD_ACCOUNT_INFO.or(ACTION_LOAD_BORROWING_PRODUCTS)
+            loadData(action)
+        }
+
+        ivMenu.setOnClickListener {
+            showMenuPopup()
+        }
+
         ivShowHideAmount.expandTouchArea(30)
+        ivShowHideAmount.setOnClickListener {
+            bankViewModel.toggleAmountShowHide()
+        }
+    }
+
+    private fun loadData(action: Int) {
+        bankViewModel.execute(action = action)
+    }
+
+    private fun showMenuPopup() {
+        XPopup.Builder(requireContext())
+            .hasShadowBg(false)
+            .popupAnimation(PopupAnimation.ScaleAlphaFromRightTop)
+            .atView(ivMenu)
+            .offsetX(DensityUtility.dp2px(context, 12))
+            .offsetY(DensityUtility.dp2px(context, -10))
+            .asCustom(
+                MenuPopup(
+                    requireContext(),
+                    mutableListOf(
+                        Pair(
+                            getResourceId(R.attr.bankDepositOrderIcon, context!!),
+                            R.string.deposit_order
+                        ),
+                        Pair(
+                            getResourceId(R.attr.bankBorrowingOrderIcon, context!!),
+                            R.string.borrowing_order
+                        )
+                    )
+                ) { position ->
+                    context?.let {
+                        delayStartBankOrderPage(it, position == 0)
+                    }
+                }
+            )
+            .show()
+    }
+
+    private fun delayStartBankOrderPage(context: Context, depositOrder: Boolean) {
+        ivMenu.postDelayed({
+            if (depositOrder) {
+                BankDepositOrderActivity.start(context)
+            } else {
+                BankBorrowingOrderActivity.start(context)
+            }
+        }, 300)
     }
 
     private fun initObserver() {
@@ -141,42 +268,6 @@ class BankFragment : BaseFragment() {
         )
     }
 
-    private fun loadData(action: Int) {
-        bankViewModel.execute(action = action)
-    }
-
-    private fun initEvent() {
-        refreshLayout.setOnRefreshListener {
-            val action = if (viewPager.currentItem == 0)
-                ACTION_LOAD_ACCOUNT_INFO.or(ACTION_LOAD_DEPOSIT_PRODUCTS)
-            else
-                ACTION_LOAD_ACCOUNT_INFO.or(ACTION_LOAD_BORROWING_PRODUCTS)
-            loadData(action)
-        }
-
-        ivMenu.setOnClickListener {
-            showMenuPopup()
-        }
-
-        ivShowHideAmount.setOnClickListener {
-            bankViewModel.toggleAmountShowHide()
-        }
-
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {
-                updateTabView(tab, false)
-            }
-
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                updateTabView(tab, true)
-            }
-        })
-    }
-
     private fun getDepositMarketFragment(): DepositMarketFragment? {
         return if (this::fragmentPagerAdapter.isInitialized)
             fragmentPagerAdapter.getItem(0) as DepositMarketFragment?
@@ -189,93 +280,5 @@ class BankFragment : BaseFragment() {
             fragmentPagerAdapter.getItem(1) as BorrowingMarketFragment?
         else
             null
-    }
-
-    private fun initTab() {
-        val fragments = mutableListOf<Fragment>()
-        childFragmentManager.fragments.forEach {
-            if (it is DepositMarketFragment) {
-                fragments.add(it)
-            } else if (it is BorrowingMarketFragment) {
-                fragments.add(it)
-            }
-        }
-        if (fragments.isEmpty()) {
-            fragments.add(DepositMarketFragment())
-            fragments.add(BorrowingMarketFragment())
-        }
-
-        fragmentPagerAdapter = FragmentPagerAdapterSupport(childFragmentManager).apply {
-            setFragments(fragments)
-            setTitles(
-                mutableListOf(
-                    getString(R.string.deposit_market),
-                    getString(R.string.borrowing_market)
-                )
-            )
-        }
-
-        viewPager.adapter = fragmentPagerAdapter
-        tabLayout.setupWithViewPager(viewPager)
-        val count = viewPager.adapter!!.count
-        for (i in 0 until count) {
-            tabLayout.getTabAt(i)?.let { tab ->
-                tab.setCustomView(R.layout.item_home_bank_market_tab_layout)
-                updateTabView(tab, i == 0)?.let {
-                    it.text = tab.text
-                }
-            }
-        }
-    }
-
-    private fun updateTabView(tab: TabLayout.Tab, select: Boolean): TextView? {
-        return tab.customView?.findViewById<TextView>(R.id.textView)?.also {
-            it.textSize = if (select) 14f else 12f
-            it.setTextColor(
-                getColorByAttrId(
-                    if (select) android.R.attr.textColor else android.R.attr.textColorTertiary,
-                    requireContext()
-                )
-            )
-        }
-    }
-
-    private fun showMenuPopup() {
-        XPopup.Builder(requireContext())
-            .hasShadowBg(false)
-            .popupAnimation(PopupAnimation.ScaleAlphaFromRightTop)
-            .atView(ivMenu)
-            .offsetX(DensityUtility.dp2px(context, 12))
-            .offsetY(DensityUtility.dp2px(context, -10))
-            .asCustom(
-                MenuPopup(
-                    requireContext(),
-                    mutableListOf(
-                        Pair(
-                            getResourceId(R.attr.bankDepositOrderIcon, context!!),
-                            R.string.deposit_order
-                        ),
-                        Pair(
-                            getResourceId(R.attr.bankBorrowingOrderIcon, context!!),
-                            R.string.borrowing_order
-                        )
-                    )
-                ) { position ->
-                    context?.let {
-                        delayStartBankOrderPage(it, position == 0)
-                    }
-                }
-            )
-            .show()
-    }
-
-    private fun delayStartBankOrderPage(context: Context, depositOrder: Boolean) {
-        ivMenu.postDelayed({
-            if (depositOrder) {
-                BankDepositOrderActivity.start(context)
-            } else {
-                BankBorrowingOrderActivity.start(context)
-            }
-        }, 300)
     }
 }
