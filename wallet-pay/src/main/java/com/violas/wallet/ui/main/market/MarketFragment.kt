@@ -6,11 +6,15 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.palliums.base.BaseFragment
 import com.palliums.utils.StatusBarUtil
+import com.palliums.utils.getColorByAttrId
+import com.palliums.utils.getDrawableCompat
 import com.palliums.utils.start
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
@@ -47,6 +51,11 @@ class MarketFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         EventBus.getDefault().register(this)
 
+        initToolbar()
+        initFragmentPager()
+    }
+
+    private fun initToolbar() {
         (activity as? AppCompatActivity)?.let {
             it.setSupportActionBar(toolbar)
             it.supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -60,11 +69,23 @@ class MarketFragment : BaseFragment() {
                 Intent(it, MyPoolActivity::class.java).start(it)
             }
         }
+    }
+
+    private fun initFragmentPager() {
+        val fragments = mutableListOf<Fragment>()
+        childFragmentManager.fragments.forEach {
+            if (it is SwapFragment || it is MarketPoolFragment) {
+                fragments.add(it)
+            }
+        }
+        if (fragments.isEmpty()) {
+            fragments.add(SwapFragment())
+            fragments.add(MarketPoolFragment())
+        }
 
         viewPager.offscreenPageLimit = 1
         viewPager.adapter = FragmentPagerAdapterSupport(childFragmentManager).apply {
-            addFragment(SwapFragment())
-            addFragment(MarketPoolFragment())
+            setFragments(fragments)
             addTitle(getString(R.string.title_market_swap))
             addTitle(getString(R.string.title_market_pool))
         }
@@ -74,15 +95,51 @@ class MarketFragment : BaseFragment() {
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
-                tab.view.background = null
+                updateTab(tab, false)
             }
 
             override fun onTabSelected(tab: TabLayout.Tab) {
-                tab.view.setBackgroundResource(R.drawable.shape_bg_market_tab_item_selected)
+                updateTab(tab, true)
             }
         })
         tabLayout.setupWithViewPager(viewPager)
-        tabLayout.getTabAt(0)?.select()
+        tabLayout.post {
+            val count = viewPager.adapter!!.count
+            for (i in 0 until count) {
+                tabLayout.getTabAt(i)?.let { tab ->
+                    updateTab(tab, i == viewPager.currentItem)?.let {
+                        it.text = tab.text
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateTab(tab: TabLayout.Tab, select: Boolean): TextView? {
+        return getTabTextView(tab)?.also {
+            tab.view.background = if (select)
+                getDrawableCompat(R.drawable.shape_bg_market_tab_item_selected, requireContext())
+            else
+                null
+            it.setTextColor(
+                getColorByAttrId(
+                    if (select) R.attr.colorOnPrimary else R.attr.colorPrimary,
+                    requireContext()
+                )
+            )
+        }
+    }
+
+    private fun getTabTextView(tab: TabLayout.Tab): TextView? {
+        return try {
+            val textViewField = tab.view.javaClass.getDeclaredField("textView")
+            textViewField.isAccessible = true
+            val textView = textViewField.get(tab.view) as TextView
+            textViewField.isAccessible = false
+            textView
+        } catch (e: Exception) {
+            null
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
