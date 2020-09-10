@@ -55,15 +55,11 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
 
         launch {
-            val initResult = withContext(Dispatchers.IO) {
-                initData(savedInstanceState)
-            }
-
-            if (initResult) {
-                initTitleBar()
-                initCurrBorrowingInfo()
+            if (initData(savedInstanceState)) {
+                initTopView()
+                initBorrowingInfoView()
                 initEvent()
-                initTab()
+                initFragmentPager()
             } else {
                 close()
             }
@@ -93,21 +89,26 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         }
     }
 
-    private fun initData(savedInstanceState: Bundle?): Boolean {
+    private suspend fun initData(savedInstanceState: Bundle?): Boolean {
         if (savedInstanceState != null) {
             borrowingInfo = savedInstanceState.getParcelable(KEY_ONE) ?: return false
         } else if (intent != null) {
             borrowingInfo = intent.getParcelableExtra(KEY_ONE) ?: return false
         }
 
-        violasAddress =
-            AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())?.address
-                ?: return false
+        val accountDO = withContext(Dispatchers.IO) {
+            AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+        }
 
-        return true
+        return if (accountDO != null) {
+            violasAddress = accountDO.address
+            true
+        } else {
+            false
+        }
     }
 
-    private fun initTitleBar() {
+    private fun initTopView() {
         setTitleLeftImageResource(getResourceId(R.attr.iconBackTertiary, this))
         setTopBackgroundResource(getResourceId(R.attr.bankDetailsTopBg, this))
         setTopBackgroundHeight(
@@ -116,64 +117,10 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         )
     }
 
-    private fun initCurrBorrowingInfo() {
+    private fun initBorrowingInfoView() {
         title = borrowingInfo.productName
         tvAmountToBeRepaid.text = convertAmountToDisplayAmountStr(borrowingInfo.borrowedAmount)
         tvCoinUnit.text = borrowingInfo.productName
-    }
-
-    private fun initTab() {
-        viewPager.offscreenPageLimit = 2
-        viewPager.adapter = FragmentPagerAdapterSupport(supportFragmentManager).apply {
-            setFragments(
-                mutableListOf<Fragment>(
-                    CoinBorrowingRecordFragment.newInstance(
-                        borrowingInfo.productId,
-                        violasAddress,
-                        borrowingInfo.productName
-                    ),
-                    CoinRepaymentRecordFragment.newInstance(
-                        borrowingInfo.productId, violasAddress,
-                        borrowingInfo.productName
-                    ),
-                    CoinLiquidationRecordFragment.newInstance(
-                        borrowingInfo.productId,
-                        violasAddress,
-                        borrowingInfo.productName
-                    )
-                )
-            )
-            setTitles(
-                mutableListOf(
-                    getString(R.string.borrowing_details),
-                    getString(R.string.repayment_details),
-                    getString(R.string.liquidation_details)
-                )
-            )
-        }
-
-        tabLayout.setupWithViewPager(viewPager)
-        val count = viewPager.adapter!!.count
-        for (i in 0 until count) {
-            tabLayout.getTabAt(i)?.let { tab ->
-                tab.setCustomView(R.layout.item_bank_borrowing_details_tab_layout)
-                updateTabView(tab, i == 0)?.let {
-                    it.text = tab.text
-                }
-            }
-        }
-    }
-
-    private fun updateTabView(tab: TabLayout.Tab, select: Boolean): TextView? {
-        return tab.customView?.findViewById<TextView>(R.id.textView)?.also {
-            it.textSize = if (select) 16f else 10f
-            it.setTextColor(
-                getColorByAttrId(
-                    if (select) android.R.attr.textColor else android.R.attr.textColorTertiary,
-                    this
-                )
-            )
-        }
     }
 
     private fun initEvent() {
@@ -185,6 +132,53 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
                 borrowingInfo.productId
             )
         }
+    }
+
+    private fun initFragmentPager() {
+        val fragments = mutableListOf<Fragment>()
+        supportFragmentManager.fragments.forEach {
+            if (it is CoinBorrowingRecordFragment
+                || it is CoinRepaymentRecordFragment
+                || it is CoinLiquidationRecordFragment
+            ) {
+                fragments.add(it)
+            }
+        }
+        if (fragments.isEmpty()) {
+            fragments.add(
+                CoinBorrowingRecordFragment.newInstance(
+                    borrowingInfo.productId,
+                    violasAddress,
+                    borrowingInfo.productName
+                )
+            )
+            fragments.add(
+                CoinRepaymentRecordFragment.newInstance(
+                    borrowingInfo.productId,
+                    violasAddress,
+                    borrowingInfo.productName
+                )
+            )
+            fragments.add(
+                CoinLiquidationRecordFragment.newInstance(
+                    borrowingInfo.productId,
+                    violasAddress,
+                    borrowingInfo.productName
+                )
+            )
+        }
+
+        viewPager.offscreenPageLimit = 2
+        viewPager.adapter = FragmentPagerAdapterSupport(supportFragmentManager).apply {
+            setFragments(fragments)
+            setTitles(
+                mutableListOf(
+                    getString(R.string.borrowing_details),
+                    getString(R.string.repayment_details),
+                    getString(R.string.liquidation_details)
+                )
+            )
+        }
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
 
@@ -192,12 +186,36 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
-                updateTabView(tab, false)
+                updateTab(tab, false)
             }
 
             override fun onTabSelected(tab: TabLayout.Tab) {
-                updateTabView(tab, true)
+                updateTab(tab, true)
             }
         })
+        tabLayout.setupWithViewPager(viewPager)
+        tabLayout.post {
+            val count = viewPager.adapter!!.count
+            for (i in 0 until count) {
+                tabLayout.getTabAt(i)?.let { tab ->
+                    tab.setCustomView(R.layout.item_bank_borrowing_details_tab_layout)
+                    updateTab(tab, i == viewPager.currentItem)?.let {
+                        it.text = tab.text
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateTab(tab: TabLayout.Tab, select: Boolean): TextView? {
+        return tab.customView?.findViewById<TextView>(R.id.textView)?.also {
+            it.textSize = if (select) 16f else 10f
+            it.setTextColor(
+                getColorByAttrId(
+                    if (select) android.R.attr.textColor else android.R.attr.textColorTertiary,
+                    this
+                )
+            )
+        }
     }
 }
