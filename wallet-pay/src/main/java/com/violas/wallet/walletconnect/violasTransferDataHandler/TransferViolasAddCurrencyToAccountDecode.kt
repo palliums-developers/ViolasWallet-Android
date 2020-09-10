@@ -1,8 +1,8 @@
 package com.violas.wallet.walletconnect.violasTransferDataHandler
 
 import com.palliums.content.ContextProvider
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.PublishDataType
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
+import com.violas.wallet.walletconnect.PublishDataType
+import com.violas.wallet.walletconnect.TransactionDataType
 import org.palliums.libracore.move.Move
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionPayload

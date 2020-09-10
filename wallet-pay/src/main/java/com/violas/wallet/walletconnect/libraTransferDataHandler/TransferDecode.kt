@@ -1,6 +1,6 @@
 package com.violas.wallet.walletconnect.libraTransferDataHandler
 
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
+import com.violas.wallet.walletconnect.TransactionDataType
 
 interface TransferDecode {
     fun isHandle(): Boolean

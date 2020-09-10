@@ -1,32 +1,43 @@
-package com.violas.wallet.walletconnect.walletConnectMessageHandler
+package com.violas.wallet.walletconnect.messageHandler
 
+import com.github.salomonbrys.kotson.fromJson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonArray
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.walletconnect.violasTransferDataHandler.ViolasTransferDecodeEngine
+import com.violas.wallet.walletconnect.TransactionSwapVo
+import com.violas.walletconnect.exceptions.InvalidJsonRpcParamsException
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.jsonrpc.JsonRpcError
+import com.violas.walletconnect.models.WCMethod
 import com.violas.walletconnect.models.violas.WCViolasSignRawTransaction
 import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.RawTransaction
 
-class ViolasSignRawTransactionMessageHandler(private val iWalletConnectMessage: IWalletConnectMessage) :
-    MessageHandler(iWalletConnectMessage) {
+class ViolasSignRawTransactionMessageHandler : IMessageHandler<JsonArray> {
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
+    private val mBuilder = GsonBuilder()
+    private val mGson = mBuilder
+        .serializeNulls()
+        .create()
 
-    override suspend fun handler(
-        requestID: Long,
-        tx: Any
-    ): TransactionSwapVo? {
-        tx as WCViolasSignRawTransaction
+    override fun canHandle(method: WCMethod): Boolean {
+        return method == WCMethod.VIOLAS_SIGN_TRANSACTION
+    }
+
+    override fun decodeMessage(requestID: Long, param: JsonArray): TransactionSwapVo {
+        val tx = mGson.fromJson<List<WCViolasSignRawTransaction>>(param).firstOrNull()
+            ?: throw InvalidJsonRpcParamsException(requestID)
+
         val account = mAccountStorage.findByCoinTypeAndCoinAddress(
             CoinTypes.Violas.coinType(),
             tx.address
         )
 
         if (account == null) {
-            sendInvalidParameterErrorMessage(requestID, "Account does not exist.")
-            return null
+            throw InvalidParameterErrorMessage(requestID, "Account does not exist.")
         }
 
         val rawTransaction =
@@ -35,11 +46,10 @@ class ViolasSignRawTransactionMessageHandler(private val iWalletConnectMessage: 
         val decode = try {
             ViolasTransferDecodeEngine(rawTransaction).decode()
         } catch (e: ProcessedRuntimeException) {
-            iWalletConnectMessage.sendErrorMessage(
+            throw WalletConnectErrorMessage(
                 requestID,
                 JsonRpcError.invalidParams("Invalid Parameter:${e.message}")
             )
-            throw ProcessedRuntimeException()
         }
 
         return TransactionSwapVo(

@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -14,7 +13,6 @@ import com.google.gson.JsonParser
 import com.palliums.content.App
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bitcoin.script.Script
-import com.quincysx.crypto.utils.Base64
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
@@ -24,13 +22,12 @@ import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
-import com.violas.wallet.biz.exchange.processor.ViolasOutputScript
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.walletconnect.WalletConnect
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.*
+import com.violas.wallet.walletconnect.*
+import com.violas.wallet.walletconnect.messageHandler.TransferBitcoinDataType
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import com.violas.walletconnect.jsonrpc.JsonRpcError

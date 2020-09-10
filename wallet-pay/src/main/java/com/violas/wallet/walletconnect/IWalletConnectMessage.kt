@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.walletConnectMessageHandler
+package com.violas.wallet.walletconnect
 
 import com.violas.walletconnect.jsonrpc.JsonRpcError
 
