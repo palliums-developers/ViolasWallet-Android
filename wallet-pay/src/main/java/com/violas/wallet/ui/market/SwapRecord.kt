@@ -8,7 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewHolder
 import com.palliums.extensions.expandTouchArea
-import com.palliums.extensions.lazyLogError
+import com.palliums.extensions.logInfo
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.*
@@ -135,7 +135,7 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
             lbrCrossChainHasMoreData = true
             btcCrossChainHasMoreData = true
         }
-        lazyLogError("SwapRecord") {
+        logInfo("SwapRecord") {
             "loadData. vlsHasMoreData($vlsHasMoreData), vlsCrossChainHasMoreData($vlsCrossChainHasMoreData), " +
                     "lbrCrossChainHasMoreData($lbrCrossChainHasMoreData), btcCrossChainHasMoreData($btcCrossChainHasMoreData)"
         }

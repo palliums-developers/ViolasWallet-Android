@@ -7,7 +7,8 @@ import androidx.paging.PageKeyedDataSource
 import androidx.paging.toLiveData
 import com.palliums.extensions.getShowErrorMessage
 import com.palliums.extensions.isActiveCancellation
-import com.palliums.extensions.lazyLogError
+import com.palliums.extensions.logError
+import com.palliums.extensions.logInfo
 import com.palliums.net.LoadState
 import com.palliums.utils.coroutineExceptionHandler
 import kotlinx.coroutines.*
@@ -23,7 +24,7 @@ import java.util.concurrent.Executors
 abstract class PagingViewModel<VO> : ViewModel() {
 
     companion object {
-        private const val TAG = "Paging"
+        private const val TAG = "PagingViewModel"
 
         const val PAGE_SIZE = 10
     }
@@ -99,7 +100,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
         val sourceLiveData = MutableLiveData<PagingDataSource>()
 
         override fun create(): DataSource<Int, VO> {
-            lazyLogError(TAG) { "create PagingDataSource" }
+            logInfo(TAG) { "create PagingDataSource" }
             sourceLiveData.value?.cancel()
 
             val source = PagingDataSource(retryExecutor, pageSize)
@@ -160,19 +161,19 @@ abstract class PagingViewModel<VO> : ViewModel() {
             params: LoadInitialParams<Int>,
             callback: LoadInitialCallback<Int, VO>
         ) {
-            lazyLogError(TAG) { "refresh data => start" }
+            logInfo(TAG) { "refresh data => start" }
             synchronized(lock) {
                 val currentRefreshState = refreshState.value?.peekData()
                 if (currentRefreshState?.status == LoadState.Status.RUNNING) {
                     // 处于刷新中时，不需要再次刷新操作
-                    lazyLogError(TAG) { "refresh data => end" }
+                    logInfo(TAG) { "refresh data => end" }
                     return
                 }
 
                 val currentLoadMoreState = loadMoreState.value?.peekData()
                 if (currentLoadMoreState?.status == LoadState.Status.RUNNING) {
                     // 处于加载更多中时，不处理刷新操作
-                    lazyLogError(TAG) { "refresh data => end" }
+                    logInfo(TAG) { "refresh data => end" }
                     return
                 }
 
@@ -188,7 +189,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
 
                             onSuccess = { listData, pageKey ->
 
-                                lazyLogError(TAG) { "refresh data => success" }
+                                logInfo(TAG) { "refresh data => success" }
 
                                 synchronized(lock) {
 
@@ -219,7 +220,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                             })
 
                     } catch (e: Exception) {
-                        lazyLogError(e, TAG) { "refresh data => failed" }
+                        logError(e, TAG) { "refresh data => failure" }
 
                         val activeCancellation = e.isActiveCancellation()
                         if (!activeCancellation) {
@@ -248,7 +249,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
             params: LoadParams<Int>,
             callback: LoadCallback<Int, VO>
         ) {
-            lazyLogError(TAG) { "load more data => start" }
+            logInfo(TAG) { "load more data => start" }
             synchronized(lock) {
                 val currentRefreshState = refreshState.value?.peekData()
                 if (currentRefreshState != null
@@ -256,7 +257,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                     && currentRefreshState.status != LoadState.Status.SUCCESS
                 ) {
                     // 处于刷新中、刷新失败、刷新没有更多时，不处理加载更多操作
-                    lazyLogError(TAG) { "load more data => end" }
+                    logInfo(TAG) { "load more data => end" }
                     return
                 }
 
@@ -266,7 +267,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                             || currentLoadMoreState.status == LoadState.Status.SUCCESS_NO_MORE)
                 ) {
                     // 处于加载更多中时，不需要再次加载更多操作；处于加载更多没有更多时，不处理加载更多
-                    lazyLogError(TAG) { "load more data => end" }
+                    logInfo(TAG) { "load more data => end" }
                     return
                 }
 
@@ -281,7 +282,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                         loadData(params.requestedLoadSize, pageNumber, nextPageKey,
 
                             onSuccess = { listData, pageKey ->
-                                lazyLogError(TAG) { "load more data => success" }
+                                logInfo(TAG) { "load more data => success" }
 
                                 synchronized(lock) {
 
@@ -304,7 +305,7 @@ abstract class PagingViewModel<VO> : ViewModel() {
                             })
 
                     } catch (e: Exception) {
-                        lazyLogError(e, TAG) { "load more data => failed" }
+                        logError(e, TAG) { "load more data => failure" }
 
                         val activeCancellation = e.isActiveCancellation()
                         if (!activeCancellation) {

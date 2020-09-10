@@ -8,11 +8,10 @@ import android.view.*
 import androidx.annotation.StringRes
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
-import com.palliums.base.BaseActivity
 import com.palliums.base.ViewController
 import com.palliums.extensions.close
 import com.palliums.extensions.getShowErrorMessage
-import com.palliums.extensions.lazyLogError
+import com.palliums.extensions.logError
 import com.palliums.utils.CustomMainScope
 import com.palliums.utils.DensityUtility
 import com.quincysx.crypto.CoinTypes
@@ -192,7 +191,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 close()
             } catch (e: Exception) {
-                lazyLogError(e, TAG) { "withdrawal failed" }
+                logError(e, TAG) { "withdrawal failure" }
                 dismissProgress()
                 showToast(
                     if (e is ViolasException.AccountNoActivation) {

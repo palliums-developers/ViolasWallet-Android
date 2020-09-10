@@ -9,10 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
-import com.palliums.extensions.getShowErrorMessage
-import com.palliums.extensions.isActiveCancellation
-import com.palliums.extensions.isNoNetwork
-import com.palliums.extensions.lazyLogError
+import com.palliums.extensions.*
 import com.palliums.net.LoadState
 import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
@@ -252,7 +249,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         coinAModule: String?,
         liquidityReserve: PoolLiquidityReserveInfoDTO? = liquidityReserveLiveData.value
     ) {
-        lazyLogError(TAG) {
+        logInfo(TAG) {
             "calculateExchangeRate. coin a module => $coinAModule" +
                     ", liquidity reserve => $liquidityReserve"
         }
@@ -332,7 +329,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                     ).toPlainString()
                 }
             }
-            lazyLogError(TAG) {
+            logInfo(TAG) {
                 "estimateTransferIntoAmount. is input a => $isInputA" +
                         ", input amount => $inputAmountStr, output amount => $result"
             }
@@ -370,7 +367,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                             "\n${amounts.second.toPlainString()} ${liquidity.coinB.displayName}"
                 }
             }
-            lazyLogError(TAG) {
+            logInfo(TAG) {
                 "estimateTransferOutAmount. input amount => $inputAmountStr" +
                         ", output amount => $result"
             }
@@ -420,7 +417,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             }
         }
 
-        lazyLogError(TAG) {
+        logInfo(TAG) {
             "startSyncLiquidityReserveWork. coin a module => $coinAModule" +
                     ", coin b module => $coinBModule"
         }
@@ -437,7 +434,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     fun stopSyncLiquidityReserveWork() {
         if (!syncLiquidityReserveFlag.get()) return
 
-        lazyLogError(TAG) { "stopSyncLiquidityReserveWork" }
+        logInfo(TAG) { "stopSyncLiquidityReserveWork" }
         syncLiquidityReserveFlag.set(false)
         handler.removeMessages(ACTION_SYNC_LIQUIDITY_RESERVE)
         syncLiquidityReserveJob?.let {
@@ -450,7 +447,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     }
 
     override fun handleMessage(msg: Message): Boolean {
-        lazyLogError(TAG) { "handleMessage. msg => $msg, msg.data => ${msg.data}" }
+        logInfo(TAG) { "handleMessage. msg => $msg, msg.data => ${msg.data}" }
         when (msg.what) {
             ACTION_SYNC_LIQUIDITY_RESERVE -> {
                 if (!syncLiquidityReserveFlag.get()) return true
@@ -489,13 +486,13 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                     exchangeManager.mViolasService.getPoolLiquidityReserve(
                         coinAModule, coinBModule
                     )
-                lazyLogError(TAG) { "syncLiquidityReserve. liquidity reserve => $liquidityReserve" }
+                logInfo(TAG) { "syncLiquidityReserve. liquidity reserve => $liquidityReserve" }
 
                 val syncWorkUnstopped = syncLiquidityReserveFlag.get()
-                lazyLogError(TAG) { "syncLiquidityReserve. sync work unstopped => $syncWorkUnstopped" }
+                logInfo(TAG) { "syncLiquidityReserve. sync work unstopped => $syncWorkUnstopped" }
 
                 val coinPairUnchanged = coinPairUnchanged(coinAModule, coinBModule)
-                lazyLogError(TAG) { "syncLiquidityReserve. coin pair unchanged => $coinPairUnchanged" }
+                logInfo(TAG) { "syncLiquidityReserve. coin pair unchanged => $coinPairUnchanged" }
 
                 if (syncWorkUnstopped && coinPairUnchanged) {
                     liquidityReserveLiveData.value = liquidityReserve
@@ -507,7 +504,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                     })
                 }
             } catch (e: Exception) {
-                lazyLogError(e, TAG) { "syncLiquidityReserve. sync failed" }
+                logError(e, TAG) { "syncLiquidityReserve. sync failure" }
 
                 if (showLoadingAndTips) {
                     if (e.isActiveCancellation()) {

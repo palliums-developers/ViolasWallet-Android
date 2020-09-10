@@ -12,7 +12,6 @@ import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
 import com.palliums.extensions.expandTouchArea
-import com.palliums.extensions.lazyLogError
 import com.palliums.net.LoadState
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil

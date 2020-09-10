@@ -10,7 +10,7 @@ import com.palliums.BuildConfig
  * desc:
  */
 
-inline fun Any.lazyLogVerbose(
+inline fun Any.logVerbose(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
@@ -21,7 +21,7 @@ inline fun Any.lazyLogVerbose(
     )
 }
 
-inline fun Any.lazyLogVerbose(
+inline fun Any.logVerbose(
     tr: Throwable,
     tag: String? = null,
     lazyMsg: () -> String
@@ -34,7 +34,7 @@ inline fun Any.lazyLogVerbose(
     )
 }
 
-inline fun Any.lazyLogDebug(
+inline fun Any.logDebug(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
@@ -45,7 +45,7 @@ inline fun Any.lazyLogDebug(
     )
 }
 
-inline fun Any.lazyLogDebug(
+inline fun Any.logDebug(
     tr: Throwable,
     tag: String? = null,
     lazyMsg: () -> String
@@ -58,7 +58,7 @@ inline fun Any.lazyLogDebug(
     )
 }
 
-inline fun Any.lazyLogInfo(
+inline fun Any.logInfo(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
@@ -69,7 +69,7 @@ inline fun Any.lazyLogInfo(
     )
 }
 
-inline fun Any.lazyLogInfo(
+inline fun Any.logInfo(
     tr: Throwable,
     tag: String? = null,
     lazyMsg: () -> String
@@ -82,7 +82,7 @@ inline fun Any.lazyLogInfo(
     )
 }
 
-inline fun Any.lazyLogWarn(
+inline fun Any.logWarn(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
@@ -93,7 +93,7 @@ inline fun Any.lazyLogWarn(
     )
 }
 
-inline fun Any.lazyLogWarn(
+inline fun Any.logWarn(
     tr: Throwable,
     tag: String? = null,
     lazyMsg: () -> String
@@ -106,7 +106,7 @@ inline fun Any.lazyLogWarn(
     )
 }
 
-inline fun Any.lazyLogError(
+inline fun Any.logError(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
@@ -117,7 +117,7 @@ inline fun Any.lazyLogError(
     )
 }
 
-inline fun Any.lazyLogError(
+inline fun Any.logError(
     tr: Throwable,
     tag: String? = null,
     lazyMsg: () -> String

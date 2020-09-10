@@ -1,7 +1,8 @@
 package com.palliums.net
 
 import com.palliums.exceptions.RequestException
-import com.palliums.extensions.lazyLogError
+import com.palliums.extensions.logError
+import com.palliums.extensions.logInfo
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -59,7 +60,7 @@ suspend inline fun <T> Observable<T>.await(
 
         val disposable = subscribeOn(Schedulers.io())
             .subscribe({ response ->
-                lazyLogError("ObservableConverter") {
+                logInfo("ObservableConverter") {
                     "onResponse. is cancelled => ${continuation.isCancelled}"
                 }
                 if (continuation.isCancelled) return@subscribe
@@ -84,7 +85,7 @@ suspend inline fun <T> Observable<T>.await(
                     return@runCatching response
                 })
             }, {
-                lazyLogError("ObservableConverter") {
+                logError("ObservableConverter") {
                     "onFailure. is cancelled => ${continuation.isCancelled}, $it"
                 }
                 if (continuation.isCancelled) return@subscribe
@@ -93,7 +94,7 @@ suspend inline fun <T> Observable<T>.await(
             })
 
         continuation.invokeOnCancellation {
-            lazyLogError("ObservableConverter") {
+            logInfo("ObservableConverter") {
                 "invokeOnCancellation. cancel the request"
             }
             try {

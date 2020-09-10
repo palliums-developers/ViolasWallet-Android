@@ -53,20 +53,20 @@ abstract class BaseViewModel : ViewModel() {
     ): Boolean {
         synchronized(lock) {
             if (loadState.value?.peekData()?.status == LoadState.Status.RUNNING) {
-                lazyLogWarn(TAG) {
+                logWarn(TAG) {
                     "execute(action = $action, param = ${
                     params.contentToString()}) => executing"
                 }
                 return false
             } else if (checkParamBeforeExecute && !checkParams(action, *params)) {
-                lazyLogError(TAG) {
+                logError(TAG) {
                     "execute(action = $action, param = ${
                     params.contentToString()}) => params abnormal"
                 }
                 return false
             }
 
-            lazyLogInfo(TAG) {
+            logInfo(TAG) {
                 "execute(action = $action, param = ${
                 params.contentToString()}) => start"
             }
@@ -81,7 +81,7 @@ abstract class BaseViewModel : ViewModel() {
                 }
 
                 withContext(Dispatchers.IO) { realExecute(action, *params) }
-                lazyLogInfo(TAG) {
+                logInfo(TAG) {
                     "execute(action = $action, param = ${
                     params.contentToString()}) => success(${
                     System.currentTimeMillis() - startTime}ms)"
@@ -95,7 +95,7 @@ abstract class BaseViewModel : ViewModel() {
                 }
                 successCallback?.invoke()
             } catch (e: Exception) {
-                lazyLogError(e, TAG) {
+                logError(e, TAG) {
                     "execute(action = $action, param = ${
                     params.contentToString()}) => failure(${
                     System.currentTimeMillis() - startTime}ms)"
