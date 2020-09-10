@@ -47,13 +47,26 @@ class CollectionActivity : BaseAppActivity() {
         return PAGE_STYLE_SECONDARY
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(EXT_IS_TOKEN, isToken)
+        outState.putLong(EXT_TOKEN_ID, mTokenId)
+        outState.putLong(EXT_ACCOUNT_ID, mAccountId)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_colletction)
 
-        isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
-        mTokenId = intent.getLongExtra(EXT_TOKEN_ID, 0L)
-        mAccountId = intent.getLongExtra(EXT_ACCOUNT_ID, -1L)
+        if (savedInstanceState != null) {
+            isToken = savedInstanceState.getBoolean(EXT_IS_TOKEN, false)
+            mTokenId = savedInstanceState.getLong(EXT_TOKEN_ID, 0L)
+            mAccountId = savedInstanceState.getLong(EXT_ACCOUNT_ID, -1L)
+        } else if (intent != null) {
+            isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
+            mTokenId = intent.getLongExtra(EXT_TOKEN_ID, 0L)
+            mAccountId = intent.getLongExtra(EXT_ACCOUNT_ID, -1L)
+        }
 
         if (mAccountId == -1L) {
             finish()

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import cn.bertsir.zbar.utils.QRUtils
 import com.palliums.extensions.expandTouchArea
@@ -54,6 +55,10 @@ class MultiCollectionActivity : BaseAppActivity(),
         }
     }
 
+    private var initTag = false
+    private var assetsName: String? = ""
+    private var coinNumber: Int = CoinTypes.Violas.coinType()
+
     private val mWalletAppViewModel by lazy {
         WalletAppViewModel.getViewModelInstance(this@MultiCollectionActivity)
     }
@@ -75,18 +80,27 @@ class MultiCollectionActivity : BaseAppActivity(),
         return PAGE_STYLE_SECONDARY
     }
 
-    private fun initViewData() = launch(Dispatchers.IO) {
-        val assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
-        val coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
-
-        changeCurrAssets(coinNumber, assetsName)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        assetsName?.let { outState.putString(EXT_ASSETS_NAME, it) }
+        outState.putInt(EXT_COIN_NUMBER, coinNumber)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_colletction)
 
-        initViewData()
+        mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
+            if (!initTag) {
+                initTag = true
+                init(savedInstanceState)
+            }
+        })
+    }
+
+    private fun init(savedInstanceState: Bundle?) {
+        initData(savedInstanceState)
+        changeCurrAssets(coinNumber, assetsName)
 
         // 选择币种的点击事件
         llToSelectGroup.setOnClickListener {
@@ -95,7 +109,10 @@ class MultiCollectionActivity : BaseAppActivity(),
         llToSelectGroup.expandTouchArea(12)
 
         // 订阅当前需要转账的币种变化
-        mMultiCollectionViewModel.mCurrAssets.observe(this, androidx.lifecycle.Observer { assets ->
+        mMultiCollectionViewModel.mCurrAssets.observe(this, Observer { assets ->
+            assetsName = assets.getAssetsName()
+            coinNumber = assets.getCoinNumber()
+
             tvToSelectText.text = assets.getAssetsName()
             mJob?.cancel()
             mJob = launch(Dispatchers.IO) {
@@ -128,8 +145,8 @@ class MultiCollectionActivity : BaseAppActivity(),
 
                 val collectionAddress =
                     "${
-                        CoinTypes.parseCoinType(currentAccount.coinNumber).fullName()
-                            .toLowerCase(Locale.CHINA)
+                    CoinTypes.parseCoinType(currentAccount.coinNumber).fullName()
+                        .toLowerCase(Locale.CHINA)
                     }${prefix}:${currentAccount.address}"
                 val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
                     collectionAddress,
@@ -141,6 +158,16 @@ class MultiCollectionActivity : BaseAppActivity(),
                 }
             }
         })
+    }
+
+    private fun initData(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            assetsName = savedInstanceState.getString(EXT_ASSETS_NAME)
+            coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+        } else if (intent != null) {
+            assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
+            coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+        }
     }
 
     private fun showSelectTokenDialog() {
