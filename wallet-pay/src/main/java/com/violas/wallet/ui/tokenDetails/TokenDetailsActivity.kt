@@ -212,7 +212,7 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
     }
 
     private fun initFragmentPager() {
-        val tokenId = (mAssetsVo as AssetsTokenVo?)?.module
+        val tokenId = (mAssetsVo as? AssetsTokenVo)?.module
         val tokenDisplayName = mAssetsVo.getAssetsName()
 
         val fragments = mutableListOf<Fragment>()
