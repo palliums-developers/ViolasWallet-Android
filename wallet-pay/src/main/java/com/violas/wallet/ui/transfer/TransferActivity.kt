@@ -2,8 +2,10 @@ package com.violas.wallet.ui.transfer
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.*
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -15,12 +17,12 @@ import kotlinx.coroutines.launch
 
 abstract class TransferActivity : BaseAppActivity() {
     companion object {
-        const val EXT_ACCOUNT_ID = "0"
-        const val EXT_ADDRESS = "1"
-        const val EXT_AMOUNT = "2"
-        const val EXT_IS_TOKEN = "3"
-        const val EXT_ASSETS_NAME = "4"
-        const val EXT_COIN_NUMBER = "5"
+        private const val EXT_ACCOUNT_ID = "0"
+        private const val EXT_ADDRESS = "1"
+        private const val EXT_AMOUNT = "2"
+        private const val EXT_IS_TOKEN = "3"
+        private const val EXT_ASSETS_NAME = "4"
+        private const val EXT_COIN_NUMBER = "5"
 
         const val REQUEST_SELECTOR_ADDRESS = 1
         const val REQUEST_SCAN_QR_CODE = 2
@@ -68,8 +70,10 @@ abstract class TransferActivity : BaseAppActivity() {
 
     var isToken = false
     var assetsName: String? = ""
-    var account: AccountDO? = null
     var coinNumber: Int = CoinTypes.Violas.coinType()
+    var transferAmount = 0L
+    var toAddress: String? = ""
+    var account: AccountDO? = null
 
     val mAccountManager by lazy {
         AccountManager()
@@ -81,6 +85,34 @@ abstract class TransferActivity : BaseAppActivity() {
 
     abstract fun onSelectAddress(address: String)
     abstract fun onScanAddressQr(address: String)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        title = getString(R.string.title_transfer)
+        if (savedInstanceState != null) {
+            isToken = savedInstanceState.getBoolean(EXT_IS_TOKEN, false)
+            assetsName = savedInstanceState.getString(EXT_ASSETS_NAME)
+            coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+            transferAmount = savedInstanceState.getLong(EXT_AMOUNT, 0)
+            toAddress = savedInstanceState.getString(EXT_ADDRESS)
+        } else if (intent != null) {
+            isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
+            assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
+            coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+            transferAmount = intent.getLongExtra(EXT_AMOUNT, 0)
+            toAddress = intent.getStringExtra(EXT_ADDRESS)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(EXT_IS_TOKEN, isToken)
+        assetsName?.let { outState.putString(EXT_ASSETS_NAME, it) }
+        outState.putInt(EXT_COIN_NUMBER, coinNumber)
+        outState.putLong(EXT_AMOUNT, transferAmount)
+        toAddress?.let { outState.putString(EXT_ADDRESS, it) }
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.logError
 import com.palliums.extensions.show
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
@@ -28,38 +29,29 @@ import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.convertAmountToDisplayAmount
-import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.utils.convertDisplayUnitToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
-import com.violas.wallet.widget.dialog.TokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_multi_transfer.*
-import kotlinx.android.synthetic.main.activity_multi_transfer.btnConfirm
-import kotlinx.android.synthetic.main.activity_multi_transfer.editAddressInput
-import kotlinx.android.synthetic.main.activity_multi_transfer.editAmountInput
-import kotlinx.android.synthetic.main.activity_multi_transfer.ivAddressBook
-import kotlinx.android.synthetic.main.activity_multi_transfer.ivScan
-import kotlinx.android.synthetic.main.activity_multi_transfer.sbQuota
-import kotlinx.android.synthetic.main.activity_multi_transfer.tvCoinAmount
-import kotlinx.android.synthetic.main.activity_multi_transfer.tvFee
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 
-class MultiTransferActivity : BaseAppActivity(), AssetsVoTokenSelectTokenDialog.AssetsDataResourcesBridge {
+class MultiTransferActivity : BaseAppActivity(),
+    AssetsVoTokenSelectTokenDialog.AssetsDataResourcesBridge {
     companion object {
-        const val REQUEST_SELECTOR_ADDRESS = 1
-        const val REQUEST_SCAN_QR_CODE = 2
+        private const val REQUEST_SELECTOR_ADDRESS = 1
+        private const val REQUEST_SCAN_QR_CODE = 2
 
-        const val EXT_ADDRESS = "1"
-        const val EXT_AMOUNT = "2"
-        const val EXT_ASSETS_NAME = "3"
-        const val EXT_COIN_NUMBER = "4"
+        private const val EXT_ADDRESS = "1"
+        private const val EXT_AMOUNT = "2"
+        private const val EXT_ASSETS_NAME = "3"
+        private const val EXT_COIN_NUMBER = "4"
 
         fun start(
             context: Context,
@@ -86,6 +78,11 @@ class MultiTransferActivity : BaseAppActivity(), AssetsVoTokenSelectTokenDialog.
         }
     }
 
+    private var initTag = false
+    private var assetsName: String? = ""
+    private var coinNumber: Int = CoinTypes.Violas.coinType()
+    private var transferAmount = 0L
+    private var toAddress: String? = ""
     private val mAccountManager by lazy { AccountManager() }
     private var mCurrAssetsAmount = BigDecimal("0")
 
@@ -113,16 +110,38 @@ class MultiTransferActivity : BaseAppActivity(), AssetsVoTokenSelectTokenDialog.
 
     override fun getLayoutResId() = R.layout.activity_multi_transfer
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        assetsName?.let { outState.putString(EXT_ASSETS_NAME, it) }
+        outState.putInt(EXT_COIN_NUMBER, coinNumber)
+        outState.putLong(
+            EXT_AMOUNT,
+            convertDisplayUnitToAmount(
+                editAmountInput.text.toString().trim(),
+                CoinTypes.parseCoinType(coinNumber)
+            )
+        )
+        outState.putString(EXT_ADDRESS, editAddressInput.text.toString().trim())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.title_transfer)
 
-        sbQuota.progress =
-            mMultiTransferViewModel.mFeeProgressAmount.value
-                ?: MultiTransferViewModel.DEF_FEE_PROGRESS
+        mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
+            if (!initTag) {
+                initTag = true
+                init(savedInstanceState)
+            }
+        })
+    }
 
-        initViewData()
+    private fun init(savedInstanceState: Bundle?) {
+        initData(savedInstanceState)
+        initView()
 
+        sbQuota.progress = mMultiTransferViewModel.mFeeProgressAmount.value
+            ?: MultiTransferViewModel.DEF_FEE_PROGRESS
         // 监听进度条变化通知 ViewModel
         sbQuota.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -160,18 +179,21 @@ class MultiTransferActivity : BaseAppActivity(), AssetsVoTokenSelectTokenDialog.
             AddressBookActivity.start(
                 this@MultiTransferActivity,
                 isSelector = true,
-                requestCode = MultiTransferActivity.REQUEST_SELECTOR_ADDRESS
+                requestCode = REQUEST_SELECTOR_ADDRESS
             )
         }
         ivAddressBook.expandTouchArea(8)
         // 扫码点击事件
         ivScan.setOnClickListener {
-            ScanActivity.start(this, MultiTransferActivity.REQUEST_SCAN_QR_CODE)
+            ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
         }
 
         // 订阅当前需要转账的币种变化
         mMultiTransferViewModel.mCurrAssets.observe(this, Observer {
             launch {
+                assetsName = it.getAssetsName()
+                coinNumber = it.getCoinNumber()
+
                 tvToSelectText.text = it.getAssetsName()
                 withContext(Dispatchers.IO) {
                     mCurrAssertsAmountSubscriber.changeSubscriber(IAssetsMark.convert(it))
@@ -186,18 +208,30 @@ class MultiTransferActivity : BaseAppActivity(), AssetsVoTokenSelectTokenDialog.
         })
     }
 
-    private fun initViewData() = launch(Dispatchers.IO) {
-        val assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
-        val coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
-        val toAddress = intent.getStringExtra(EXT_ADDRESS)
-        val amount = intent.getLongExtra(EXT_AMOUNT, 0)
+    private fun initData(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            assetsName = savedInstanceState.getString(EXT_ASSETS_NAME)
+            coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+            transferAmount = savedInstanceState.getLong(EXT_AMOUNT, 0)
+            toAddress = savedInstanceState.getString(EXT_ADDRESS)
+        } else if (intent != null) {
+            assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
+            coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+            transferAmount = intent.getLongExtra(EXT_AMOUNT, 0)
+            toAddress = intent.getStringExtra(EXT_ADDRESS)
+        }
+    }
 
-        changeCurrAssets(coinNumber, assetsName)
-        val convertAmountToDisplayAmount =
-            convertAmountToDisplayUnit(amount, CoinTypes.parseCoinType(coinNumber))
-        launch {
-            editAddressInput.setText(toAddress)
-            editAmountInput.setText(convertAmountToDisplayAmount.first)
+    private fun initView() {
+        if (transferAmount > 0) {
+            val displayAmount =
+                convertAmountToDisplayUnit(transferAmount, CoinTypes.parseCoinType(coinNumber))
+            editAmountInput.setText(displayAmount.first)
+        }
+        editAddressInput.setText(toAddress)
+
+        launch(Dispatchers.IO) {
+            changeCurrAssets(coinNumber, assetsName)
         }
     }
 
@@ -265,7 +299,7 @@ class MultiTransferActivity : BaseAppActivity(), AssetsVoTokenSelectTokenDialog.
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            TransferActivity.REQUEST_SELECTOR_ADDRESS -> {
+            REQUEST_SELECTOR_ADDRESS -> {
                 data?.apply {
                     val address = getStringExtra(AddressBookActivity.RESULT_SELECT_ADDRESS) ?: ""
                     launch {
@@ -273,7 +307,7 @@ class MultiTransferActivity : BaseAppActivity(), AssetsVoTokenSelectTokenDialog.
                     }
                 }
             }
-            TransferActivity.REQUEST_SCAN_QR_CODE -> {
+            REQUEST_SCAN_QR_CODE -> {
                 data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
                     decodeScanQRCode(msg) { scanType, scanBean ->
                         if (scanType == ScanCodeType.Address) {
@@ -298,7 +332,9 @@ class MultiTransferActivity : BaseAppActivity(), AssetsVoTokenSelectTokenDialog.
     }
 
     private fun changeCurrAssets(coinType: Int, tokenModule: String?) {
-        mWalletAppViewModel.mAssetsListLiveData.value?.forEach { assets ->
+        val assetsList = mWalletAppViewModel.mAssetsListLiveData.value
+        logError { "assetsList size = ${assetsList?.size ?: 0}" }
+        assetsList?.forEach { assets ->
             if (coinType == CoinTypes.BitcoinTest.coinType()
                 || coinType == CoinTypes.Bitcoin.coinType()
             ) {
