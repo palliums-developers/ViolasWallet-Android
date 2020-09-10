@@ -17,6 +17,7 @@ import com.palliums.extensions.close
 import com.palliums.extensions.setTitleToCenter
 import com.palliums.extensions.show
 import com.palliums.utils.CustomMainScope
+import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
@@ -88,9 +89,8 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_token_details)
-        initView()
-        initEvent()
-        initData(savedInstanceState)
+        initTopView()
+        init(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -98,10 +98,12 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
         if (mCoinNumber != Int.MIN_VALUE) {
             outState.putInt(KEY_ONE, mCoinNumber)
         }
-        mTokenModule?.let { outState.putString(KEY_TWO, it) }
+        mTokenAddress?.let { outState.putString(KEY_TWO, it) }
+        mTokenModule?.let { outState.putString(KEY_THREE, it) }
+        mTokenName?.let { outState.putString(KEY_FOUR, it) }
     }
 
-    private fun initData(savedInstanceState: Bundle?) {
+    private fun init(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             mCoinNumber = savedInstanceState.getInt(KEY_ONE, mCoinNumber)
             mTokenAddress = savedInstanceState.getString(KEY_TWO)
@@ -135,13 +137,13 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                 }
             }
 
-            if (!exists) {
-                close()
+            if (exists && this::mAccountDO.isInitialized) {
+                updateTokenInfoView()
                 return@Observer
-            }
-
-            if (viewPager.adapter != null) {
-                initTokenInfoView()
+            } else if (!exists) {
+                if (!this::mAccountDO.isInitialized) {
+                    close()
+                }
                 return@Observer
             }
 
@@ -159,82 +161,15 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                     close()
                 } else {
                     mAccountDO = accountDO
-                    initTokenInfoView()
-                    initTransactionRecordsView()
+                    updateTokenInfoView()
+                    initFragmentPager()
+                    initEvent()
                 }
             }
         })
     }
 
-    private fun initTokenInfoView() {
-        tvTitle.text = mAssetsVo.getAssetsName()
-
-        ivTokenLogo.loadCircleImage(
-            mAssetsVo.getLogoUrl(),
-            getResourceId(R.attr.iconCoinDefLogo, this)
-        )
-
-        tvTokenName.text = mAssetsVo.getAssetsName()
-        tvTokenAmount.text = mAssetsVo.amountWithUnit.amount
-        tvFiatAmount.text =
-            "≈${mAssetsVo.fiatAmountWithUnit.symbol}${mAssetsVo.fiatAmountWithUnit.amount}"
-        tvTokenAddress.text = mAccountDO.address
-    }
-
-    private fun initTransactionRecordsView() {
-        val tokenId =
-            if (mAssetsVo is AssetsTokenVo) (mAssetsVo as AssetsTokenVo).module else null
-        val tokenDisplayName = mAssetsVo.getAssetsName()
-
-        val fragments: MutableList<Fragment> = mutableListOf(
-            TransactionRecordFragment.newInstance(
-                walletAddress = mAccountDO.address,
-                coinNumber = mCoinNumber,
-                transactionType = TransactionType.ALL,
-                tokenId = tokenId,
-                tokenDisplayName = tokenDisplayName
-            )
-        )
-        val titles = mutableListOf(getString(R.string.label_all))
-
-        if (mCoinNumber == CoinTypes.Libra.coinType()
-            || mCoinNumber == CoinTypes.Violas.coinType()
-        ) {
-            fragments.add(
-                TransactionRecordFragment.newInstance(
-                    walletAddress = mAccountDO.address,
-                    coinNumber = mCoinNumber,
-                    transactionType = TransactionType.COLLECTION,
-                    tokenId = tokenId,
-                    tokenDisplayName = tokenDisplayName
-                )
-            )
-            titles.add(getString(R.string.label_transfer_in))
-
-            fragments.add(
-                TransactionRecordFragment.newInstance(
-                    walletAddress = mAccountDO.address,
-                    coinNumber = mCoinNumber,
-                    transactionType = TransactionType.TRANSFER,
-                    tokenId = tokenId,
-                    tokenDisplayName = tokenDisplayName
-                )
-            )
-            titles.add(getString(R.string.label_transfer_out))
-        }
-
-        viewPager.offscreenPageLimit = 2
-        viewPager.adapter = FragmentPagerAdapterSupport(supportFragmentManager)
-            .apply {
-                setFragments(fragments)
-                setTitles(titles)
-            }
-
-        tabLayout.setupWithViewPager(viewPager)
-        tabLayout.getTabAt(0)?.select()
-    }
-
-    private fun initView() {
+    private fun initTopView() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.setNavigationOnClickListener {
@@ -259,40 +194,132 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                 }
             }
         })
-
-        tabLayout.setTabTextColors(
-            com.palliums.utils.getColor(getResourceId(R.attr.tokenDetailsTabNormalTextColor, this)),
-            com.palliums.utils.getColor(getResourceId(R.attr.colorPrimary, this))
-        )
     }
 
-    private fun initEvent() {
+    private fun updateTokenInfoView() {
+        tvTitle.text = mAssetsVo.getAssetsName()
+
+        ivTokenLogo.loadCircleImage(
+            mAssetsVo.getLogoUrl(),
+            getResourceId(R.attr.iconCoinDefLogo, this)
+        )
+
+        tvTokenName.text = mAssetsVo.getAssetsName()
+        tvTokenAmount.text = mAssetsVo.amountWithUnit.amount
+        tvFiatAmount.text =
+            "≈${mAssetsVo.fiatAmountWithUnit.symbol}${mAssetsVo.fiatAmountWithUnit.amount}"
+        tvTokenAddress.text = mAccountDO.address
+    }
+
+    private fun initFragmentPager() {
+        val tokenId = (mAssetsVo as AssetsTokenVo?)?.module
+        val tokenDisplayName = mAssetsVo.getAssetsName()
+
+        val fragments = mutableListOf<Fragment>()
+        supportFragmentManager.fragments.forEach {
+            if (it is TransactionRecordFragment) {
+                fragments.add(it)
+            }
+        }
+        if (fragments.isEmpty()) {
+            fragments.add(
+                TransactionRecordFragment.newInstance(
+                    walletAddress = mAccountDO.address,
+                    coinNumber = mCoinNumber,
+                    transactionType = TransactionType.ALL,
+                    tokenId = tokenId,
+                    tokenDisplayName = tokenDisplayName
+                )
+            )
+            if (mCoinNumber == CoinTypes.Libra.coinType()
+                || mCoinNumber == CoinTypes.Violas.coinType()
+            ) {
+                fragments.add(
+                    TransactionRecordFragment.newInstance(
+                        walletAddress = mAccountDO.address,
+                        coinNumber = mCoinNumber,
+                        transactionType = TransactionType.COLLECTION,
+                        tokenId = tokenId,
+                        tokenDisplayName = tokenDisplayName
+                    )
+                )
+                fragments.add(
+                    TransactionRecordFragment.newInstance(
+                        walletAddress = mAccountDO.address,
+                        coinNumber = mCoinNumber,
+                        transactionType = TransactionType.TRANSFER,
+                        tokenId = tokenId,
+                        tokenDisplayName = tokenDisplayName
+                    )
+                )
+            }
+        }
+
+        val titles = mutableListOf(getString(R.string.label_all))
+        if (mCoinNumber == CoinTypes.Libra.coinType()
+            || mCoinNumber == CoinTypes.Violas.coinType()
+        ) {
+            titles.add(getString(R.string.label_transfer_in))
+            titles.add(getString(R.string.label_transfer_out))
+        }
+
+        viewPager.offscreenPageLimit = 2
+        viewPager.adapter = FragmentPagerAdapterSupport(supportFragmentManager).apply {
+            setFragments(fragments)
+            setTitles(titles)
+        }
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
-                getTextView(tab)?.setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
+                updateTab(tab, false)
             }
 
             override fun onTabSelected(tab: TabLayout.Tab) {
-                getTextView(tab)?.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
-            }
-
-            private fun getTextView(tab: TabLayout.Tab): TextView? {
-                return try {
-                    val textViewField = tab.view.javaClass.getDeclaredField("textView")
-                    textViewField.isAccessible = true
-                    val textView = textViewField.get(tab.view) as TextView
-                    textViewField.isAccessible = false
-                    textView
-                } catch (e: Exception) {
-                    null
-                }
+                updateTab(tab, true)
             }
         })
+        tabLayout.setupWithViewPager(viewPager)
+        tabLayout.post {
+            val count = viewPager.adapter!!.count
+            for (i in 0 until count) {
+                tabLayout.getTabAt(i)?.let { tab ->
+                    updateTab(tab, i == viewPager.currentItem)?.let {
+                        it.text = tab.text
+                    }
+                }
+            }
+        }
+    }
 
+    private fun updateTab(tab: TabLayout.Tab, select: Boolean): TextView? {
+        return getTabTextView(tab)?.also {
+            it.setTypeface(Typeface.DEFAULT, if (select) Typeface.BOLD else Typeface.NORMAL)
+            it.setTextColor(
+                getColorByAttrId(
+                    if (select) R.attr.colorPrimary else R.attr.tokenDetailsTabNormalTextColor,
+                    this
+                )
+            )
+        }
+    }
+
+    private fun getTabTextView(tab: TabLayout.Tab): TextView? {
+        return try {
+            val textViewField = tab.view.javaClass.getDeclaredField("textView")
+            textViewField.isAccessible = true
+            val textView = textViewField.get(tab.view) as TextView
+            textViewField.isAccessible = false
+            textView
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private fun initEvent() {
         tvTokenAddress.setOnClickListener {
             ClipboardUtils.copy(this, mAccountDO.address)
         }
