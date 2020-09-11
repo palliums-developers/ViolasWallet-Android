@@ -2,9 +2,9 @@ package com.violas.wallet.walletconnect.libraTransferDataHandler
 
 import com.palliums.content.ContextProvider
 import com.quincysx.crypto.utils.Base64
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.ProcessedRuntimeException
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransferDataType
+import com.violas.wallet.walletconnect.messageHandler.ProcessedRuntimeException
+import com.violas.wallet.walletconnect.TransactionDataType
+import com.violas.wallet.walletconnect.TransferDataType
 import org.palliums.libracore.move.Move
 import org.palliums.libracore.transaction.RawTransaction
 import org.palliums.libracore.transaction.TransactionPayload

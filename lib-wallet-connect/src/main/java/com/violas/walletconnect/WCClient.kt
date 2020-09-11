@@ -30,9 +30,14 @@ import java.util.*
 const val JSONRPC_VERSION = "2.0"
 const val WS_CLOSE_NORMAL = 1000
 
+interface OnMessageHandler {
+    fun onHandler(id: Long, method: WCMethod?, param: JsonArray): Boolean
+}
+
 open class WCClient(
     private val httpClient: OkHttpClient,
-    builder: GsonBuilder = GsonBuilder()
+    builder: GsonBuilder = GsonBuilder(),
+    val messageHandler: OnMessageHandler
 ) : WebSocketListener() {
     private val TAG = "WCClient"
 
@@ -65,17 +70,6 @@ open class WCClient(
     var onDisconnect: (code: Int, reason: String) -> Unit = { _, _ -> Unit }
     var onSessionRequest: (id: Long, peer: WCPeerMeta) -> Unit = { _, _ -> Unit }
     var onCustomRequest: (id: Long, payload: String) -> Unit = { _, _ -> Unit }
-    var onGetAccounts: (id: Long) -> Unit = { _ -> Unit }
-    var onViolasSendTransaction: (id: Long, transaction: WCViolasSendTransaction) -> Unit =
-        { _, _ -> Unit }
-    var onViolasSendRawTransaction: (id: Long, transaction: WCViolasSendRawTransaction) -> Unit =
-        { _, _ -> Unit }
-    var onViolasSignTransaction: (id: Long, transaction: WCViolasSignRawTransaction) -> Unit =
-        { _, _ -> Unit }
-    var onLibraSendTransaction: (id: Long, transaction: WCLibraSendTransaction) -> Unit =
-        { _, _ -> Unit }
-    var onBitcoinSendTransaction: (id: Long, transaction: WCBitcoinSendTransaction) -> Unit =
-        { _, _ -> Unit }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         Log.d(TAG, "<< websocket opened >>")
@@ -291,47 +285,14 @@ open class WCClient(
                     killSession()
                 }
             }
-            WCMethod.VIOLAS_SIGN_TRANSACTION -> {
-                val params =
-                    gson.fromJson<List<WCViolasSignRawTransaction>>(request.params).firstOrNull()
-                        ?: throw InvalidJsonRpcParamsException(request.id)
-                onViolasSignTransaction(request.id, params)
-            }
-            WCMethod.VIOLAS_SEND_TRANSACTION -> {
-                val params =
-                    gson.fromJson<List<WCViolasSendTransaction>>(request.params).firstOrNull()
-                        ?: throw InvalidJsonRpcParamsException(request.id)
-                onViolasSendTransaction(request.id, params)
-            }
-            WCMethod.VIOLAS_SEND_RAW_TRANSACTION -> {
-                val params =
-                    gson.fromJson<List<WCViolasSendRawTransaction>>(request.params).firstOrNull()
-                        ?: throw InvalidJsonRpcParamsException(request.id)
-                onViolasSendRawTransaction(request.id, params)
-            }
-            WCMethod.GET_ACCOUNTS -> {
-                onGetAccounts(request.id)
-            }
-            WCMethod.LIBRA_SEND_TRANSACTION -> {
-                val params =
-                    gson.fromJson<List<WCLibraSendTransaction>>(request.params).firstOrNull()
-                        ?: throw InvalidJsonRpcParamsException(request.id)
-                onLibraSendTransaction(request.id, params)
-            }
-            WCMethod.BITCOIN_SEND_TRANSACTION -> {
-                val params =
-                    gson.fromJson<List<WCBitcoinSendTransaction>>(request.params).firstOrNull()
-                        ?: throw InvalidJsonRpcParamsException(request.id)
-                onBitcoinSendTransaction(request.id, params)
-            }
-            else -> {
-                val response = JsonRpcErrorResponse(
-                    id = request.id,
-                    error = JsonRpcError.methodNotFound("'${request.method}' Method doesn't exist.")
-                )
-                val toJson = Gson().toJson(response)
-                encryptAndSend(toJson)
-            }
+        }
+        if (!messageHandler.onHandler(request.id, request.method, request.params)) {
+            val response = JsonRpcErrorResponse(
+                id = request.id,
+                error = JsonRpcError.methodNotFound("'${request.method}' Method doesn't exist.")
+            )
+            val toJson = Gson().toJson(response)
+            encryptAndSend(toJson)
         }
     }
 
