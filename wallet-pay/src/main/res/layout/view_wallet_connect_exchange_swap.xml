@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="@string/wallet_connect_transfer_sender_address"
             android:textColor="?android:attr/textColorTertiary"
-            android:textSize="14sp"
+            android:textSize="@dimen/dp_14"
             app:layout_constraintEnd_toStartOf="@+id/guideline1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="middle"
             android:singleLine="true"
-            android:textSize="14sp"
+            android:textSize="@dimen/dp_14"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/tvTitleSender"
             app:layout_constraintEnd_toEndOf="parent"
@@ -93,7 +93,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/color_333333"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/dp_20"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/inputCoin"
                     tools:text="输入" />
@@ -104,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:textColor="@color/color_333333"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/dp_16"
                     app:layout_constraintBottom_toBottomOf="@+id/inputCoinAmount"
                     app:layout_constraintStart_toEndOf="@+id/inputCoinAmount"
                     tools:text="Violas" />
@@ -130,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
                     android:textColor="@color/color_333333"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/dp_20"
                     app:layout_constraintEnd_toStartOf="@+id/outputCoinUnit"
                     app:layout_constraintTop_toBottomOf="@+id/outputCoin"
                     tools:text="输入" />
@@ -141,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:textColor="@color/color_333333"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/dp_16"
                     app:layout_constraintBottom_toBottomOf="@+id/outputCoinAmount"
                     app:layout_constraintEnd_toEndOf="parent"
                     tools:text="Violas" />
@@ -177,7 +177,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/hint_exchange_swap_path"
                 android:textColor="?android:attr/textColorTertiary"
-                android:textSize="14sp"
+                android:textSize="@dimen/dp_14"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -186,7 +186,7 @@
                 android:id="@+id/tvDescribePath"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="@dimen/dp_16"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/tvTitlePath"
                 app:layout_constraintEnd_toEndOf="parent"
