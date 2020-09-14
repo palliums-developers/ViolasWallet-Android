@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.walletConnectMessageHandler
+package com.violas.wallet.walletconnect
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -48,13 +48,7 @@ enum class TransactionDataType(val value: Int) {
     }
 }
 
-data class TransferBitcoinDataType(
-    val form: String,
-    val to: String,
-    val amount: Long,
-    val changeForm: String,
-    val data: String
-)
+
 
 data class TransferDataType(
     val form: String,

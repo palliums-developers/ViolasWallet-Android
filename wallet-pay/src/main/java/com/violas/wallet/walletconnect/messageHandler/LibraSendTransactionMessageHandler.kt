@@ -1,38 +1,51 @@
-package com.violas.wallet.walletconnect.walletConnectMessageHandler
+package com.violas.wallet.walletconnect.messageHandler
 
 import android.util.Log
+import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonArray
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.walletconnect.violasTransferDataHandler.ViolasTransferDecodeEngine
+import com.violas.wallet.walletconnect.libraTransferDataHandler.LibraTransferDecodeEngine
+import com.violas.wallet.walletconnect.TransactionSwapVo
+import com.violas.walletconnect.exceptions.InvalidJsonRpcParamsException
 import com.violas.walletconnect.jsonrpc.JsonRpcError
-import com.violas.walletconnect.models.violas.WCViolasSendTransaction
-import org.palliums.violascore.serialization.LCSInputStream
-import org.palliums.violascore.serialization.hexToBytes
-import org.palliums.violascore.serialization.toHex
-import org.palliums.violascore.transaction.TransactionArgument
-import org.palliums.violascore.transaction.TransactionPayload
-import org.palliums.violascore.transaction.lbrStructTagType
-import org.palliums.violascore.transaction.storage.TypeTag
+import com.violas.walletconnect.models.WCMethod
+import com.violas.walletconnect.models.violasprivate.WCLibraSendTransaction
+import kotlinx.coroutines.runBlocking
+import org.palliums.libracore.serialization.hexToBytes
+import org.palliums.libracore.serialization.toHex
+import org.palliums.libracore.transaction.AccountAddress
+import org.palliums.libracore.transaction.TransactionArgument
+import org.palliums.libracore.transaction.TransactionPayload
+import org.palliums.libracore.transaction.lbrStructTagType
+import org.palliums.libracore.transaction.storage.StructTag
+import org.palliums.libracore.transaction.storage.TypeTag
 
-class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWalletConnectMessage) :
-    MessageHandler(iWalletConnectMessage) {
+class LibraSendTransactionMessageHandler : IMessageHandler<JsonArray> {
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
-    private val mViolasService by lazy { DataRepository.getViolasService() }
+    private val mLibraService by lazy { DataRepository.getLibraService() }
 
-    override suspend fun handler(
-        requestID: Long,
-        tx: Any
-    ): TransactionSwapVo? {
-        tx as WCViolasSendTransaction
+    private val mBuilder = GsonBuilder()
+    private val mGson = mBuilder
+        .serializeNulls()
+        .create()
+
+    override fun canHandle(method: WCMethod): Boolean {
+        return method == WCMethod.LIBRA_SEND_TRANSACTION
+    }
+
+    override fun decodeMessage(requestID: Long, param: JsonArray): TransactionSwapVo {
+        val tx = mGson.fromJson<List<WCLibraSendTransaction>>(param).firstOrNull()
+            ?: throw InvalidJsonRpcParamsException(requestID)
         val account = mAccountStorage.findByCoinTypeAndCoinAddress(
-            CoinTypes.Violas.coinType(),
+            CoinTypes.Libra.coinType(),
             tx.from
         )
 
         if (account == null) {
-            sendInvalidParameterErrorMessage(requestID, "Account does not exist.")
-            return null
+            throw InvalidParameterErrorMessage(requestID, "Account does not exist.")
         }
 
         val gasUnitPrice = tx.gasUnitPrice ?: 0
@@ -46,20 +59,27 @@ class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWa
             try {
                 tx.payload.code.hexToBytes()
             } catch (e: Exception) {
-                sendInvalidParameterErrorMessage(
+                throw InvalidParameterErrorMessage(
                     requestID,
                     "Payload code parameter error in transaction."
                 )
-                throw ProcessedRuntimeException()
             },
             try {
-                tx.payload.tyArgs.map { TypeTag.decode(LCSInputStream(it.hexToBytes())) }
+                tx.payload.tyArgs.map {
+                    TypeTag.newStructTag(
+                        StructTag(
+                            AccountAddress(it.address.hexToBytes()),
+                            it.module,
+                            it.name,
+                            arrayListOf()
+                        )
+                    )
+                }
             } catch (e: Exception) {
-                sendInvalidParameterErrorMessage(
+                throw InvalidParameterErrorMessage(
                     requestID,
                     "Payload tyArgs parameter error in transaction."
                 )
-                throw ProcessedRuntimeException()
             },
             tx.payload.args.map {
                 when (it.type.toLowerCase()) {
@@ -67,71 +87,64 @@ class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWa
                         try {
                             TransactionArgument.newAddress(it.value)
                         } catch (e: Exception) {
-                            sendInvalidParameterErrorMessage(
+                            throw InvalidParameterErrorMessage(
                                 requestID,
                                 "Payload args Address parameter type error in transaction."
                             )
-                            throw ProcessedRuntimeException()
                         }
                     }
                     "bool" -> {
                         try {
                             TransactionArgument.newBool(it.value.toBoolean())
                         } catch (e: Exception) {
-                            sendInvalidParameterErrorMessage(
+                            throw InvalidParameterErrorMessage(
                                 requestID, "Payload args Bool parameter type error in transaction."
                             )
-                            throw ProcessedRuntimeException()
                         }
                     }
                     "u8" -> {
                         try {
                             TransactionArgument.newU8(it.value.toInt())
                         } catch (e: Exception) {
-                            sendInvalidParameterErrorMessage(
+                            throw InvalidParameterErrorMessage(
                                 requestID,
                                 "Payload args U8 parameter type error in transaction. is positive integer."
                             )
-                            throw ProcessedRuntimeException()
                         }
                     }
                     "u64" -> {
                         try {
                             TransactionArgument.newU64(it.value.toLong())
                         } catch (e: Exception) {
-                            sendInvalidParameterErrorMessage(
+                            throw InvalidParameterErrorMessage(
                                 requestID,
                                 "Payload args U64 parameter type error in transaction. is positive integer."
                             )
-                            throw ProcessedRuntimeException()
                         }
                     }
                     "u128" -> {
                         try {
                             TransactionArgument.newU128(it.value.toBigInteger())
                         } catch (e: Exception) {
-                            sendInvalidParameterErrorMessage(
+                            throw InvalidParameterErrorMessage(
                                 requestID,
                                 "Payload args U128 parameter type error in transaction. is positive integer."
                             )
-                            throw ProcessedRuntimeException()
                         }
                     }
                     "vector" -> {
                         try {
                             TransactionArgument.newByteArray(it.value.hexToBytes())
                         } catch (e: Exception) {
-                            sendInvalidParameterErrorMessage(
+                            throw InvalidParameterErrorMessage(
                                 requestID, "Payload args Bytes parameter type error in transaction."
                             )
-                            throw ProcessedRuntimeException()
                         }
                     }
                     else -> {
-                        sendInvalidParameterErrorMessage(
+                        throw InvalidParameterErrorMessage(
                             requestID, "Payload args Unknown type in transaction."
                         )
-                        throw ProcessedRuntimeException()
                     }
                 }
             }
@@ -139,25 +152,26 @@ class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWa
 
         Log.e("WalletConnect", Gson().toJson(payload))
 
-        val generateRawTransaction = mViolasService.generateRawTransaction(
-            TransactionPayload(payload),
-            tx.from,
-            sequenceNumber,
-            gasCurrencyCode,
-            maxGasAmount,
-            gasUnitPrice,
-            expirationTime - System.currentTimeMillis(),
-            chainId
-        )
+        val generateRawTransaction = runBlocking {
+            mLibraService.generateRawTransaction(
+                TransactionPayload(payload),
+                tx.from,
+                sequenceNumber,
+                gasCurrencyCode,
+                maxGasAmount,
+                gasUnitPrice,
+                expirationTime - System.currentTimeMillis(),
+                chainId
+            )
+        }
 
         val decode = try {
-            ViolasTransferDecodeEngine(generateRawTransaction).decode()
+            LibraTransferDecodeEngine(generateRawTransaction).decode()
         } catch (e: ProcessedRuntimeException) {
-            iWalletConnectMessage.sendErrorMessage(
+            throw WalletConnectErrorMessage(
                 requestID,
                 JsonRpcError.invalidParams("Invalid Parameter:${e.message}")
             )
-            throw ProcessedRuntimeException()
         }
 
         return TransactionSwapVo(
@@ -165,7 +179,7 @@ class ViolasSendTransactionMessageHandler(private val iWalletConnectMessage: IWa
             generateRawTransaction.toByteArray().toHex(),
             false,
             account.id,
-            CoinTypes.Violas,
+            CoinTypes.Libra,
             decode.first.value,
             decode.second
         )
