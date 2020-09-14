@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.palliums.extensions.clearLongPressToast
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
@@ -102,6 +103,14 @@ class MainActivity : BaseAppActivity() {
         view_pager.offscreenPageLimit = 3
         view_pager.adapter = viewPagerAdapter
         bottom_navigation.setupWithViewPager(view_pager)
+        bottom_navigation.clearLongPressToast(
+            mutableListOf(
+                R.id.tab_wallet,
+                R.id.tab_market,
+                R.id.tab_bank,
+                R.id.tab_me
+            )
+        )
     }
 
     private fun resetToDefaultIcon() {

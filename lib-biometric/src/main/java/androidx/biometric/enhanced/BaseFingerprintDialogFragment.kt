@@ -89,7 +89,7 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
                 MSG_SHOW_ERROR ->
                     onShowError(msg.obj as CharSequence, msg.arg1)
                 MSG_DISMISS_DIALOG_ERROR ->
-                    handleDismissDialogError(msg.obj as CharSequence?)
+                    handleDismissDialogError(msg.obj as? CharSequence)
                 MSG_DISMISS_DIALOG_AUTHENTICATED ->
                     dismissSafely()
                 MSG_RESET_MESSAGE ->
@@ -189,7 +189,7 @@ abstract class BaseFingerprintDialogFragment : DialogFragment() {
 
     private fun getFingerprintHelperFragment(): FingerprintHelperFragment? {
         return fragmentManager?.findFragmentByTag(BiometricPrompt.FINGERPRINT_HELPER_FRAGMENT_TAG)
-                as FingerprintHelperFragment?
+                as? FingerprintHelperFragment
     }
 
     protected fun handleDeviceCredentialResult(resultCode: Int) {
