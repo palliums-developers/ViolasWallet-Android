@@ -19,19 +19,6 @@ class BankManager {
     private val mViolasService by lazy { DataRepository.getViolasChainRpcService() }
     private val mViolasBankContract by lazy { ViolasBankContract(Vm.TestNet) }
 
-    private suspend fun register(password: ByteArray, payerAccountDO: AccountDO): String {
-        val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
-            .decrypt(password, payerAccountDO.privateKey)!!
-
-        val optionBorrowTransactionPayload = mViolasBankContract.optionRegisterTransactionPayload()
-
-        return mViolasService.sendTransaction(
-            optionBorrowTransactionPayload,
-            Account(KeyPair.fromSecretKey(payerPrivateKey)),
-            chainId = Vm.ViolasChainId
-        ).sequenceNumber.toString()
-    }
-
     @Throws(ViolasException::class)
     suspend fun borrow(
         password: ByteArray,
@@ -104,7 +91,6 @@ class BankManager {
         assetsMark: LibraTokenAssetsMark,
         amount: Long
     ): String {
-        register(password, payerAccountDO)
         val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
             .decrypt(password, payerAccountDO.privateKey)!!
 
