@@ -109,11 +109,11 @@ class DepositActivity : BankBusinessActivity() {
                 )
             )
             mBankBusinessViewModel.mProductExplanationListLiveData.postValue(intor.map {
-                ProductExplanation(it.tital, it.text)
+                ProductExplanation(it.title, it.text)
             })
 
             mBankBusinessViewModel.mFAQListLiveData.postValue(question.map {
-                FAQ(it.tital, it.text)
+                FAQ(it.title, it.text)
             })
             mBankBusinessViewModel.mBusinessParameterListLiveData.postValue(
                 arrayListOf(

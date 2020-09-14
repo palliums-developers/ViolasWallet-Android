@@ -82,16 +82,16 @@ data class DepositProductDetailsDTO(
 data class IntorDTO(
     @SerializedName("text")
     val text: String,
-    @SerializedName("tital")
-    val tital: String
+    @SerializedName("title")
+    val title: String
 )
 
 @Keep
 data class QuestionDTO(
     @SerializedName("text")
     val text: String,
-    @SerializedName("tital")
-    val tital: String
+    @SerializedName("title")
+    val title: String
 )
 //endregion
 
