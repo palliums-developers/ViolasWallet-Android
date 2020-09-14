@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/hint_output_back"
                 android:textColor="@color/def_text_color"
-                android:textSize="16sp"
+                android:textSize="@dimen/fs_16"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_fingerprint_verification"
                 android:textColor="@color/def_text_color"
-                android:textSize="16sp"
+                android:textSize="@dimen/fs_16"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

@@ -22,7 +22,7 @@
         android:layout_height="@dimen/dp_16"
         android:layout_marginStart="@dimen/dp_8"
         android:includeFontPadding="false"
-        android:textSize="@dimen/sp_16"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintStart_toEndOf="@id/ivCoinLogo"
         app:layout_constraintTop_toTopOf="@id/ivCoinLogo"
         tools:text="VLSUSD" />
@@ -33,7 +33,7 @@
         android:layout_height="@dimen/dp_12"
         android:includeFontPadding="false"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintBottom_toBottomOf="@id/ivCoinLogo"
         app:layout_constraintStart_toStartOf="@id/tvCoinName"
         tools:text="2020/05/13 18:22:22" />
@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_18"
         android:includeFontPadding="false"
-        android:textSize="@dimen/sp_18"
+        android:textSize="@dimen/fs_18"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/ivCoinLogo"
@@ -55,7 +55,7 @@
         android:layout_height="@dimen/dp_12"
         android:includeFontPadding="false"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintBottom_toBottomOf="@id/ivCoinLogo"
         app:layout_constraintEnd_toEndOf="@id/tvAmount"
         tools:text="@string/bank_deposit_state_depositing" />

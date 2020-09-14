@@ -27,7 +27,7 @@
         android:fadingEdge="horizontal"
         android:includeFontPadding="false"
         android:singleLine="true"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         tools:text="@string/deposit_order" />
 
 </LinearLayout>

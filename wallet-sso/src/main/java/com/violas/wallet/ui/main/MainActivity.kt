@@ -136,15 +136,15 @@ class MainActivity : BaseAppActivity() {
     }
 
     private fun initViewListener() {
-        bottom_navigation.setIconsMarginTop(DensityUtility.dp2px(this, 5f))
+        bottom_navigation.setIconsMarginTop(DensityUtility.dp2px(this, 5))
         bottom_navigation.enableAnimation(false)
         bottom_navigation.enableShiftingMode(false)
         bottom_navigation.enableItemShiftingMode(false)
         bottom_navigation.setTextSize(
             DensityUtility.px2sp(
                 this,
-                (DensityUtility.dp2px(this, 10f).toFloat())
-            ).toFloat()
+                DensityUtility.dp2px(this, 10f)
+            )
         )
         bottom_navigation.setIconSize(26F, 26F)
         bottom_navigation.itemIconTintList = null

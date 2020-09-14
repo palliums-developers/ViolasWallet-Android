@@ -22,7 +22,7 @@
             android:id="@+id/tvHintCoinName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="BTC" />
@@ -31,7 +31,7 @@
             android:id="@+id/tvCoinAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/hint_transfer_amount" />
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:text="@string/hint_collection_address"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editAmountInput" />
 
@@ -100,7 +100,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:text="@string/hint_fee"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editAddressInput" />
 
@@ -109,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
             android:text="@string/hint_slow"
-            android:textSize="12sp"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintBottom_toTopOf="@+id/sbQuota"
             app:layout_constraintStart_toStartOf="@+id/sbQuota" />
 
@@ -118,7 +118,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="18dp"
             android:text="@string/hint_fast"
-            android:textSize="12sp"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintBottom_toTopOf="@+id/sbQuota"
             app:layout_constraintEnd_toEndOf="@+id/sbQuota" />
 
@@ -145,7 +145,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
-            android:textSize="10sp"
+            android:textSize="@dimen/fs_10"
             app:layout_constraintStart_toStartOf="@+id/sbQuota"
             app:layout_constraintTop_toBottomOf="@+id/sbQuota" />
 

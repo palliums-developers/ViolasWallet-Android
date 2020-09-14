@@ -23,7 +23,7 @@
         android:layout_height="@dimen/dp_16"
         android:layout_marginStart="@dimen/dp_8"
         android:includeFontPadding="false"
-        android:textSize="@dimen/sp_16"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintBottom_toBottomOf="@id/ivCoinLogo"
         app:layout_constraintStart_toEndOf="@id/ivCoinLogo"
         app:layout_constraintTop_toTopOf="@id/ivCoinLogo"
@@ -48,7 +48,7 @@
         android:includeFontPadding="false"
         android:text="@string/amount_to_be_repaid"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintEnd_toStartOf="@id/ivArrow"
         app:layout_constraintTop_toTopOf="@id/ivCoinLogo" />
 
@@ -59,7 +59,7 @@
         android:layout_marginEnd="@dimen/dp_10"
         android:gravity="end"
         android:includeFontPadding="false"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/fs_20"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/ivCoinLogo"
         app:layout_constraintEnd_toStartOf="@id/ivArrow"

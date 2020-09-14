@@ -444,7 +444,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                     )
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
+                setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16F)
                 setTextColor(Color.parseColor("#3C3848"))
                 //setTypeface(Typeface.DEFAULT, Typeface.BOLD)
                 //setBackgroundColor(Color.WHITE)

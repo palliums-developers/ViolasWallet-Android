@@ -32,7 +32,7 @@
         app:layout_constraintTop_toBottomOf="@id/vStatusIcon"
         tools:text="@string/common_status_empty"
         tools:textColor="@color/black_30"
-        tools:textSize="@dimen/sp_14"
+        tools:textSize="@dimen/fs_14"
         tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -49,7 +49,7 @@
         app:layout_constraintVertical_bias="0.2"
         tools:text="@string/common_status_empty"
         tools:textColor="@color/black_30"
-        tools:textSize="@dimen/sp_14"
+        tools:textSize="@dimen/fs_14"
         tools:visibility="visible" />
 
     <androidx.constraintlayout.widget.Barrier
@@ -73,7 +73,7 @@
         app:layout_constraintTop_toBottomOf="@id/barrier"
         tools:text="@string/common_status_click_reload"
         tools:textColor="@color/black"
-        tools:textSize="@dimen/sp_14"
+        tools:textSize="@dimen/fs_14"
         tools:visibility="visible" />
 
     <include

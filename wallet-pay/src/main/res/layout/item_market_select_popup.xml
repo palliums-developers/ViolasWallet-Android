@@ -7,6 +7,6 @@
     android:layout_marginVertical="@dimen/dp_4"
     android:paddingHorizontal="@dimen/dp_10"
     android:paddingVertical="@dimen/dp_5"
-    android:textSize="@dimen/sp_12"
+    android:textSize="@dimen/fs_12"
     tools:background="@drawable/sel_bg_market_select_popup_item_checked"
     tools:text="@string/transfer_in" />

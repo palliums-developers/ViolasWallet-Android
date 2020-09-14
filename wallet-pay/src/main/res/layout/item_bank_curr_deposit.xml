@@ -23,7 +23,7 @@
         android:layout_height="@dimen/dp_16"
         android:layout_marginStart="@dimen/dp_8"
         android:includeFontPadding="false"
-        android:textSize="@dimen/sp_16"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintBottom_toBottomOf="@id/ivLogo"
         app:layout_constraintStart_toEndOf="@id/ivLogo"
         app:layout_constraintTop_toTopOf="@id/ivLogo"
@@ -39,7 +39,7 @@
         android:paddingEnd="@dimen/dp_5"
         android:text="@string/earning"
         android:textColor="?attr/bankDepositEarningTextColor"
-        android:textSize="@dimen/sp_9"
+        android:textSize="@dimen/fs_9"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/ivLogo"
         app:layout_constraintStart_toEndOf="@id/tvName"
@@ -56,7 +56,7 @@
         android:paddingVertical="@dimen/dp_5"
         android:text="@string/withdrawal_nbsp"
         android:textColor="@color/sel_text_color_btn2"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintBottom_toBottomOf="@id/ivLogo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/ivLogo" />
@@ -69,7 +69,7 @@
         android:includeFontPadding="false"
         android:text="@string/principal"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivLogo" />
 
@@ -79,7 +79,7 @@
         android:layout_height="@dimen/dp_14"
         android:layout_marginTop="@dimen/dp_12"
         android:includeFontPadding="false"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintStart_toStartOf="@id/tvPrincipalLabel"
         app:layout_constraintTop_toBottomOf="@id/tvPrincipalLabel"
         tools:text="3828.00" />
@@ -91,7 +91,7 @@
         android:includeFontPadding="false"
         android:text="@string/earnings"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintBaseline_toBaselineOf="@id/tvPrincipalLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.4"
@@ -102,7 +102,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_14"
         android:includeFontPadding="false"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintTop_toTopOf="@id/tvPrincipal"
         app:layout_constraintStart_toStartOf="@id/tvEarningsLabel"
         tools:text="3828.00" />
@@ -114,7 +114,7 @@
         android:includeFontPadding="false"
         android:text="@string/deposit_yield"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintBaseline_toBaselineOf="@id/tvPrincipalLabel"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -124,7 +124,7 @@
         android:layout_height="@dimen/dp_14"
         android:includeFontPadding="false"
         android:textColor="?attr/bankProductRateTextColor"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintTop_toTopOf="@id/tvPrincipal"
         app:layout_constraintEnd_toEndOf="@id/tvDepositYieldLabel"
         tools:text="5.00%" />

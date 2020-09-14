@@ -34,7 +34,7 @@
             android:includeFontPadding="false"
             android:text="@string/label_available_balance"
             android:textColor="?android:attr/textColorSecondary"
-            android:textSize="@dimen/sp_10"
+            android:textSize="@dimen/fs_10"
             app:layout_constraintBottom_toBottomOf="@id/vBalanceIcon"
             app:layout_constraintStart_toEndOf="@id/vBalanceIcon"
             app:layout_constraintTop_toTopOf="@id/vBalanceIcon" />
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:textColor="?android:attr/textColorSecondary"
-            android:textSize="@dimen/sp_10"
+            android:textSize="@dimen/fs_10"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/vBalanceIcon"
             app:layout_constraintStart_toEndOf="@id/tvBalanceLabel"
@@ -63,7 +63,7 @@
             android:inputType="numberDecimal"
             android:paddingStart="@dimen/dp_16"
             android:paddingEnd="@dimen/dp_85"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/vBalanceIcon" />
@@ -86,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/select_mapping_coin"
                 android:textColor="@color/sel_text_color_btn2"
-                android:textSize="@dimen/sp_12" />
+                android:textSize="@dimen/fs_12" />
 
             <ImageView
                 android:layout_width="@dimen/dp_10"
@@ -119,7 +119,7 @@
             android:paddingStart="@dimen/dp_16"
             android:paddingEnd="@dimen/dp_85"
             android:text="0"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/vMiddleIcon" />
@@ -130,7 +130,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_16"
             android:includeFontPadding="false"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintBottom_toBottomOf="@id/etToInputBox"
             app:layout_constraintEnd_toEndOf="@id/etToInputBox"
             app:layout_constraintTop_toTopOf="@id/etToInputBox"
@@ -155,7 +155,7 @@
             android:includeFontPadding="false"
             android:text="@string/label_mapping_exchange_rate"
             android:textColor="?android:attr/textColorTertiary"
-            android:textSize="@dimen/sp_10"
+            android:textSize="@dimen/fs_10"
             app:layout_constraintStart_toStartOf="@id/vDivider"
             app:layout_constraintTop_toBottomOf="@id/vDivider" />
 
@@ -165,7 +165,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_2"
             android:includeFontPadding="false"
-            android:textSize="@dimen/sp_10"
+            android:textSize="@dimen/fs_10"
             app:layout_constraintBaseline_toBaselineOf="@id/tvExchangeRateLabel"
             app:layout_constraintEnd_toEndOf="@id/vDivider"
             app:layout_constraintStart_toEndOf="@id/tvExchangeRateLabel"
@@ -179,7 +179,7 @@
             android:includeFontPadding="false"
             android:text="@string/label_miner_fees"
             android:textColor="?android:attr/textColorTertiary"
-            android:textSize="@dimen/sp_10"
+            android:textSize="@dimen/fs_10"
             app:layout_constraintStart_toStartOf="@id/vDivider"
             app:layout_constraintTop_toBottomOf="@id/tvExchangeRateLabel" />
 
@@ -189,7 +189,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_2"
             android:includeFontPadding="false"
-            android:textSize="@dimen/sp_10"
+            android:textSize="@dimen/fs_10"
             app:layout_constraintBaseline_toBaselineOf="@id/tvMinerFeesLabel"
             app:layout_constraintEnd_toEndOf="@id/vDivider"
             app:layout_constraintStart_toEndOf="@id/tvMinerFeesLabel"

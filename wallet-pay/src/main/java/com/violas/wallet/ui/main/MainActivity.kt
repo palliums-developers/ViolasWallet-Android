@@ -8,20 +8,15 @@ import androidx.fragment.app.Fragment
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
-import com.violas.wallet.ui.bank.borrow.BorrowActivity
-import com.violas.wallet.ui.bank.repayBorrow.RepayBorrowActivity
 import com.violas.wallet.ui.main.bank.BankFragment
 import com.violas.wallet.ui.main.market.MarketFragment
 import com.violas.wallet.ui.main.me.MeFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -51,15 +46,15 @@ class MainActivity : BaseAppActivity() {
 
         EventBus.getDefault().register(this)
 
-        bottom_navigation.setIconsMarginTop(DensityUtility.dp2px(this, 5f))
+        bottom_navigation.setIconsMarginTop(DensityUtility.dp2px(this, 5))
         bottom_navigation.enableAnimation(false)
         bottom_navigation.enableShiftingMode(false)
         bottom_navigation.enableItemShiftingMode(false)
         bottom_navigation.setTextSize(
             DensityUtility.px2sp(
                 this,
-                (DensityUtility.dp2px(this, 10f).toFloat())
-            ).toFloat()
+                DensityUtility.dp2px(this, 10f)
+            )
         )
         bottom_navigation.setIconSize(26F, 26F)
         bottom_navigation.itemIconTintList = null

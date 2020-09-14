@@ -14,7 +14,7 @@
         android:layout_marginStart="@dimen/dp_8"
         android:layout_marginTop="@dimen/dp_12"
         android:includeFontPadding="false"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/market_swap_state_succeeded"
@@ -27,7 +27,7 @@
         android:layout_marginTop="@dimen/dp_13"
         android:includeFontPadding="false"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="01.18 15:42" />
@@ -39,7 +39,7 @@
         android:layout_marginTop="@dimen/dp_12"
         android:includeFontPadding="false"
         android:textColor="?colorOnSurface"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintStart_toStartOf="@id/tvState"
         app:layout_constraintTop_toBottomOf="@id/tvState"
         tools:text="999ETH" />
@@ -61,7 +61,7 @@
         android:layout_marginStart="@dimen/dp_8"
         android:includeFontPadding="false"
         android:textColor="?colorOnSurface"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintBaseline_toBaselineOf="@id/tvInputCoin"
         app:layout_constraintStart_toEndOf="@id/ivIcon"
         tools:text="99900VLS" />
@@ -74,7 +74,7 @@
         android:includeFontPadding="false"
         android:text="@string/gas_fee_format"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintStart_toStartOf="@id/tvState"
         app:layout_constraintTop_toBottomOf="@id/tvInputCoin" />
 

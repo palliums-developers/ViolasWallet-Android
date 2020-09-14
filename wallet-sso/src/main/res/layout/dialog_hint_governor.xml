@@ -21,7 +21,7 @@
         android:gravity="center"
         android:text="@string/hint_has_been_transferred"
         android:textColor="#7F7F7F"
-        android:textSize="14sp" />
+        android:textSize="@dimen/fs_14" />
 
     <TextView
         android:layout_width="290dp"
@@ -30,7 +30,7 @@
         android:gravity="center"
         android:text="100 BTC"
         android:textColor="#000000"
-        android:textSize="30sp"
+        android:textSize="@dimen/fs_30"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -45,7 +45,7 @@
             android:text="到"
             android:textColor="@color/def_text_color"
             android:textColorHint="@color/def_text_color_50"
-            android:textSize="16sp" />
+            android:textSize="@dimen/fs_16" />
 
         <TextView
             android:id="@+id/tvLinkViolasAssociation"
@@ -56,7 +56,7 @@
             android:text="Violas协会地址"
             android:textColor="#0085E4"
             android:textColorHint="@color/def_text_color_50"
-            android:textSize="16sp"
+            android:textSize="@dimen/fs_16"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -72,7 +72,7 @@
         android:paddingRight="36dp"
         android:text="@string/action_confirm_Transfer"
         android:textColor="#0085E4"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -88,7 +88,7 @@
         android:background="@null"
         android:text="@string/action_cancel"
         android:textColor="@color/def_text_color_50"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

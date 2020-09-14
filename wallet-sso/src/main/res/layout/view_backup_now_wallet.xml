@@ -37,7 +37,7 @@
             android:layout_marginStart="10dp"
             android:text="@string/backup_mnemonic_warn_title"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="@dimen/fs_20"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -51,7 +51,7 @@
         android:lineHeight="24dp"
         android:text="@string/hint_back_up_mnemonic_words"
         android:textColor="#3D3949"
-        android:textSize="14sp"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivDialogTitle" />
@@ -66,7 +66,7 @@
         android:lineHeight="24dp"
         android:text="@string/hint_back_up_mnemonic_words_content"
         android:textColor="#3D3949"
-        android:textSize="14sp"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvHint" />
@@ -80,7 +80,7 @@
         android:layout_marginBottom="@dimen/dp_25"
         android:text="@string/hint_backup_now"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

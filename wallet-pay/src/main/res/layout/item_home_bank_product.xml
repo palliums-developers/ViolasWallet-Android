@@ -22,7 +22,7 @@
         android:layout_height="@dimen/dp_16"
         android:layout_marginStart="@dimen/dp_8"
         android:includeFontPadding="false"
-        android:textSize="@dimen/sp_16"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintStart_toEndOf="@id/ivLogo"
         app:layout_constraintTop_toTopOf="@id/ivLogo"
         tools:text="VLSUSD" />
@@ -33,7 +33,7 @@
         android:layout_height="@dimen/dp_10"
         android:includeFontPadding="false"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintBottom_toBottomOf="@id/ivLogo"
         app:layout_constraintStart_toStartOf="@id/tvName"
         tools:text="存/借生息，支持17个币种" />
@@ -44,7 +44,7 @@
         android:layout_height="@dimen/dp_18"
         android:includeFontPadding="false"
         android:textColor="?attr/bankProductRateTextColor"
-        android:textSize="@dimen/sp_18"
+        android:textSize="@dimen/fs_18"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/ivLogo"
@@ -56,7 +56,7 @@
         android:layout_height="@dimen/dp_10"
         android:includeFontPadding="false"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintBottom_toBottomOf="@id/ivLogo"
         app:layout_constraintEnd_toEndOf="@id/tvRate"
         tools:text="@string/deposit_yield" />

@@ -31,7 +31,7 @@
                 android:includeFontPadding="false"
                 android:text="@string/all_currencies"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/sp_12" />
+                android:textSize="@dimen/fs_12" />
 
             <ImageView
                 android:id="@+id/ivCoinFilterArrow"
@@ -69,7 +69,7 @@
                 android:includeFontPadding="false"
                 android:text="@string/all_state"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/sp_12" />
+                android:textSize="@dimen/fs_12" />
 
             <ImageView
                 android:id="@+id/ivStateFilterArrow"

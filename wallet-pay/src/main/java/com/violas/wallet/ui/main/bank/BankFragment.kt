@@ -2,6 +2,7 @@ package com.violas.wallet.ui.main.bank
 
 import android.content.Context
 import android.os.Bundle
+import android.util.TypedValue
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -126,7 +127,7 @@ class BankFragment : BaseFragment() {
 
     private fun updateTab(tab: TabLayout.Tab, select: Boolean): TextView? {
         return tab.customView?.findViewById<TextView>(R.id.textView)?.also {
-            it.textSize = if (select) 14f else 12f
+            it.setTextSize(TypedValue.COMPLEX_UNIT_DIP, if (select) 14f else 12f)
             it.setTextColor(
                 getColorByAttrId(
                     if (select) android.R.attr.textColor else android.R.attr.textColorTertiary,

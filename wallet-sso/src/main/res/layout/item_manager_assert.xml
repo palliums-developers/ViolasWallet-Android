@@ -24,7 +24,7 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
         android:textColor="#0E0051"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/ivCoinLogo"
         app:layout_constraintTop_toTopOf="parent"
@@ -35,6 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="11dp"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/name"
         tools:text="asdfsdfsdf" />

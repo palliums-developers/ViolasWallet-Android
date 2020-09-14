@@ -3,6 +3,7 @@ package com.violas.wallet.ui.bank.details.borrowing
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.TypedValue
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
@@ -209,7 +210,7 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
 
     private fun updateTab(tab: TabLayout.Tab, select: Boolean): TextView? {
         return tab.customView?.findViewById<TextView>(R.id.textView)?.also {
-            it.textSize = if (select) 16f else 10f
+            it.setTextSize(TypedValue.COMPLEX_UNIT_DIP, if (select) 16f else 10f)
             it.setTextColor(
                 getColorByAttrId(
                     if (select) android.R.attr.textColor else android.R.attr.textColorTertiary,

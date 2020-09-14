@@ -61,7 +61,7 @@
                 android:includeFontPadding="false"
                 android:text="@string/total_deposit_label"
                 android:textColor="?attr/colorOnPrimary"
-                android:textSize="@dimen/sp_10"
+                android:textSize="@dimen/fs_10"
                 app:layout_constraintBottom_toBottomOf="@id/toolbar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/toolbar" />
@@ -82,7 +82,7 @@
                 android:layout_marginTop="@dimen/dp_24"
                 android:includeFontPadding="false"
                 android:textColor="?attr/colorOnPrimary"
-                android:textSize="@dimen/sp_20"
+                android:textSize="@dimen/fs_20"
                 app:layout_constraintStart_toStartOf="@id/tvTotalDepositLabel"
                 app:layout_constraintTop_toBottomOf="@id/tvTotalDepositLabel"
                 tools:text="≈2041.76" />
@@ -104,7 +104,7 @@
                 android:includeFontPadding="false"
                 android:text="@string/total_borrowable_label"
                 android:textColor="?attr/colorOnPrimary"
-                android:textSize="@dimen/sp_10"
+                android:textSize="@dimen/fs_10"
                 app:layout_constraintBottom_toBottomOf="@id/ivTotalBorrowableIcon"
                 app:layout_constraintStart_toEndOf="@id/ivTotalBorrowableIcon"
                 app:layout_constraintTop_toTopOf="@id/ivTotalBorrowableIcon" />
@@ -116,7 +116,7 @@
                 android:layout_marginStart="@dimen/dp_10"
                 android:includeFontPadding="false"
                 android:textColor="?attr/colorOnPrimary"
-                android:textSize="@dimen/sp_10"
+                android:textSize="@dimen/fs_10"
                 app:layout_constraintBottom_toBottomOf="@id/ivTotalBorrowableIcon"
                 app:layout_constraintStart_toEndOf="@id/tvTotalBorrowableLabel"
                 app:layout_constraintTop_toTopOf="@id/ivTotalBorrowableIcon"
@@ -139,7 +139,7 @@
                 android:includeFontPadding="false"
                 android:text="@string/total_earnings_label"
                 android:textColor="?attr/colorOnPrimary"
-                android:textSize="@dimen/sp_10"
+                android:textSize="@dimen/fs_10"
                 app:layout_constraintBottom_toBottomOf="@id/ivTotalEarningsIcon"
                 app:layout_constraintStart_toEndOf="@id/ivTotalEarningsIcon"
                 app:layout_constraintTop_toTopOf="@id/ivTotalEarningsIcon" />
@@ -151,7 +151,7 @@
                 android:layout_marginStart="@dimen/dp_10"
                 android:includeFontPadding="false"
                 android:textColor="?attr/colorOnPrimary"
-                android:textSize="@dimen/sp_10"
+                android:textSize="@dimen/fs_10"
                 app:layout_constraintBottom_toBottomOf="@id/ivTotalEarningsIcon"
                 app:layout_constraintStart_toEndOf="@id/tvTotalEarningsLabel"
                 app:layout_constraintTop_toTopOf="@id/ivTotalEarningsIcon"
@@ -182,7 +182,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/yesterday_earnings_label"
                     android:textColor="?attr/homeBankYesterdayEarningsTextColor"
-                    android:textSize="@dimen/sp_10" />
+                    android:textSize="@dimen/fs_10" />
 
                 <NumberTextView
                     android:id="@+id/tvYesterdayEarnings"
@@ -190,7 +190,7 @@
                     android:layout_height="@dimen/dp_10"
                     android:includeFontPadding="false"
                     android:textColor="?attr/homeBankYesterdayEarningsTextColor"
-                    android:textSize="@dimen/sp_10"
+                    android:textSize="@dimen/fs_10"
                     tools:text="0.01 $" />
 
             </LinearLayout>

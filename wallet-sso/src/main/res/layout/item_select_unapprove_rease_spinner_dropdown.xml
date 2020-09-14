@@ -8,5 +8,5 @@
     android:paddingHorizontal="@dimen/dp_11"
     android:paddingVertical="@dimen/dp_9"
     android:textColor="@color/def_text_title"
-    android:textSize="@dimen/sp_14"
+    android:textSize="@dimen/fs_14"
     tools:text="other" />

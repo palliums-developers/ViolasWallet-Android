@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- ==================尺寸表规范 start ================== -->
-    <dimen name="sp_9">9sp</dimen>
-    <dimen name="sp_10">10sp</dimen>
-    <dimen name="sp_11">11sp</dimen>
-    <dimen name="sp_12">12sp</dimen>
-    <dimen name="sp_13">13sp</dimen>
-    <dimen name="sp_14">14sp</dimen>
-    <dimen name="sp_15">15sp</dimen>
-    <dimen name="sp_16">16sp</dimen>
-    <dimen name="sp_17">17sp</dimen>
-    <dimen name="sp_18">18sp</dimen>
-    <dimen name="sp_20">20sp</dimen>
-    <dimen name="sp_21">21sp</dimen>
-    <dimen name="sp_22">22sp</dimen>
-    <dimen name="sp_24">24sp</dimen>
-    <dimen name="sp_24.5" tools:ignore="MissingDefaultResource">24.5sp</dimen>
-    <dimen name="sp_28">28sp</dimen>
-    <dimen name="sp_30">30sp</dimen>
-    <dimen name="sp_36">36sp</dimen>
-    <dimen name="sp_56">56sp</dimen>
+    <!-- ================== 字号表规范 end ================== -->
+    <!--单位使用dp，不跟随系统字体大小变化，统一使用下面定义的字体大小，方便管理修改，没有请先添加在引用-->
+    <dimen name="fs_9">9dp</dimen>
+    <dimen name="fs_10">10dp</dimen>
+    <dimen name="fs_11">11dp</dimen>
+    <dimen name="fs_12">12dp</dimen>
+    <dimen name="fs_13">13dp</dimen>
+    <dimen name="fs_14">14dp</dimen>
+    <dimen name="fs_15">15dp</dimen>
+    <dimen name="fs_16">16dp</dimen>
+    <dimen name="fs_17">17dp</dimen>
+    <dimen name="fs_18">18dp</dimen>
+    <dimen name="fs_20">20dp</dimen>
+    <dimen name="fs_21">21dp</dimen>
+    <dimen name="fs_22">22dp</dimen>
+    <dimen name="fs_24">24dp</dimen>
+    <dimen name="fs_27">27dp</dimen>
+    <dimen name="fs_28">28dp</dimen>
+    <dimen name="fs_30">30dp</dimen>
+    <dimen name="fs_36">36dp</dimen>
+    <dimen name="fs_56">56dp</dimen>
+    <!-- ================== 字号表规范 end ================== -->
 
+    <!-- ================== 尺寸表规范 start ================== -->
     <dimen name="dp_0">0dp</dimen>
     <dimen name="dp_0.5" tools:ignore="MissingDefaultResource">0.5dp</dimen>
     <dimen name="dp_0.6" tools:ignore="MissingDefaultResource">0.6dp</dimen>
@@ -173,10 +176,16 @@
     <dimen name="dp_346">346dp</dimen>
     <dimen name="dp_436">436dp</dimen>
     <dimen name="dp_468">468dp</dimen>
-    <!-- ==================尺寸表规范 end ================== -->
+    <!-- ================== 尺寸表规范 end ================== -->
 
+    <!-- ================== 控件宽高间距 start ================== -->
     <dimen name="height_status_bar">@dimen/dp_24</dimen>
     <dimen name="height_title_bar">@dimen/dp_48</dimen>
     <dimen name="height_top_bar">@dimen/dp_72</dimen>
+
+    <dimen name="spacing_page_start">@dimen/dp_15</dimen>
+    <dimen name="spacing_page_end">@dimen/dp_15</dimen>
+    <dimen name="spacing_item">10dp</dimen>
+    <!-- ================== 控件宽高间距 end ================== -->
 
 </resources>

@@ -140,7 +140,7 @@ class AccountSelectionFragment : BaseFragment() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
+            setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16F)
             setTextColor(getColor(R.color.account_group_title, context))
         }
 

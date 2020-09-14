@@ -23,7 +23,7 @@
         android:paddingVertical="@dimen/dp_8"
         android:singleLine="true"
         android:textColorHint="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_14" />
+        android:textSize="@dimen/fs_14" />
 
     <FrameLayout
         android:layout_width="match_parent"

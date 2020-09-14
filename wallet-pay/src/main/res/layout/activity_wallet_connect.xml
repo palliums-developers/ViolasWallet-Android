@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_27"
             android:text="@string/wallet_connect_transaction"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -33,7 +33,7 @@
             android:gravity="center"
             android:text="@string/action_exchange"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="@dimen/fs_20"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -46,7 +46,7 @@
             android:singleLine="true"
             android:text="@string/action_view_orders"
             android:textColor="@color/white"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="@+id/layoutTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/layoutTitle" />
@@ -108,7 +108,7 @@
                                 android:layout_marginStart="7dp"
                                 android:gravity="center|start"
                                 android:textColor="#3C3848"
-                                android:textSize="20sp"
+                                android:textSize="@dimen/fs_20"
                                 tools:text="BTC" />
 
                             <ImageView
@@ -138,7 +138,7 @@
                                 android:layout_marginStart="7dp"
                                 android:gravity="center|start"
                                 android:textColor="#3C3848"
-                                android:textSize="20sp"
+                                android:textSize="@dimen/fs_20"
                                 tools:text="Violas" />
 
                         </LinearLayout>
@@ -180,7 +180,7 @@
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp"
                         android:textColorHint="@color/def_text_color_30"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/fs_14"
                         app:layout_constraintEnd_toStartOf="@+id/editToCoin"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/viewConversionDivision" />
@@ -197,7 +197,7 @@
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp"
                         android:textColorHint="@color/def_text_color_30"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/fs_14"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/editFromCoin"
                         app:layout_constraintTop_toTopOf="@+id/editFromCoin" />
@@ -221,7 +221,7 @@
                         android:layout_marginTop="13dp"
                         android:text="@string/hint_collection_address"
                         android:textColor="@color/def_text_color"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/fs_12"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/viewConversionCountDivision" />
 
@@ -244,7 +244,7 @@
                         android:layout_marginEnd="6dp"
                         android:padding="2dp"
                         android:textColor="@color/def_text_color"
-                        android:textSize="16sp"
+                        android:textSize="@dimen/fs_16"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvHintReceiveAddress"
@@ -269,7 +269,7 @@
                         android:layout_marginTop="13dp"
                         android:text="@string/hint_parities"
                         android:textColor="@color/def_text_color"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/fs_12"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/viewAddressDivision" />
 
@@ -282,7 +282,7 @@
                         android:layout_marginEnd="6dp"
                         android:padding="2dp"
                         android:textColor="@color/def_text_color"
-                        android:textSize="16sp"
+                        android:textSize="@dimen/fs_16"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvParities"

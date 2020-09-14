@@ -65,6 +65,7 @@
         <item name="android:textColorHint">@color/color_BABABA</item>
         <item name="android:textColorHighlight">@color/color_504ACB</item>
         <item name="android:textColorLink">@color/color_504ACB</item>
+        <item name="android:textSize">@dimen/fs_14</item>
 
         <item name="android:windowBackground">?android:colorBackground</item>
         <item name="android:windowTranslucentStatus">false</item>
@@ -88,13 +89,18 @@
         <item name="android:actionBarSize">@dimen/dp_48</item>
 
         <!--Library attrs-->
+        <!--StatusLayout 资源属性-->
         <item name="slTipsTextColor">@color/color_BABABA</item>
-        <item name="slTipsTextSize">@dimen/sp_14</item>
+        <item name="slTipsTextSize">@dimen/fs_14</item>
         <item name="slReloadTextColor">@color/color_BABABA</item>
-        <item name="slReloadTextSize">@dimen/sp_14</item>
+        <item name="slReloadTextSize">@dimen/fs_14</item>
         <item name="slEmptyIcon">?attr/bgLoadEmptyData</item>
         <item name="slFailureIcon">?attr/bgLoadFailure</item>
         <item name="slNoNetworkIcon">?attr/bgLoadFailure</item>
+
+        <!--SmartRefreshLayout 资源属性-->
+        <item name="srlTextSizeTitle">@dimen/fs_14</item>
+        <item name="srlTextSizeTime">@dimen/fs_12</item>
 
         <!--App custom attrs-->
         <!--App通用资源属性-->
@@ -234,7 +240,6 @@
         <item name="mnemonicBackupBoxSelectedColor">@color/color_504ACB</item>
 
         <!--添加币种页面资源属性-->
-        <item name="addCurrencyTextColor">@color/color_0E0051</item>
         <item name="addCurrencyWarningIcon">@drawable/ic_warning_red</item>
 
         <!--市场相关页面资源属性-->

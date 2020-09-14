@@ -29,7 +29,7 @@
             android:layout_marginTop="@dimen/dp_26"
             android:gravity="center_horizontal"
             android:text="@string/desc_fingerprint_authenticate_title_start"
-            android:textSize="@dimen/sp_18"
+            android:textSize="@dimen/fs_18"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,7 +42,7 @@
             android:layout_marginHorizontal="@dimen/dp_28"
             android:layout_marginTop="@dimen/dp_8"
             android:gravity="center_horizontal"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvFingerprintTitle"
@@ -76,6 +76,7 @@
                 android:gravity="center"
                 android:text="@string/action_cancel_nbsp"
                 android:textColor="?android:attr/textColorTertiary"
+                android:textSize="@dimen/fs_16"
                 android:textStyle="bold" />
 
             <View
@@ -94,6 +95,7 @@
                 android:gravity="center"
                 android:text="@string/action_use_password"
                 android:textColor="?attr/colorPrimary"
+                android:textSize="@dimen/fs_16"
                 android:textStyle="bold"
                 android:visibility="visible" />
 
@@ -119,6 +121,7 @@
             android:gravity="center"
             android:text="@string/action_retry_fingerprint"
             android:textColor="?attr/colorPrimary"
+            android:textSize="@dimen/fs_16"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/vHorizontalLine1"

@@ -9,8 +9,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/page_spacing_start"
-        android:paddingEnd="@dimen/page_spacing_end">
+        android:paddingStart="@dimen/spacing_page_start"
+        android:paddingEnd="@dimen/spacing_page_end">
 
         <TextView
             android:id="@+id/tv_backup_prompt_desc_1"
@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_32"
             android:text="@string/backup_mnemonic_prompt_content_01"
-            android:textSize="@dimen/sp_20"
+            android:textSize="@dimen/fs_20"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_2"
             android:text="@string/backup_mnemonic_prompt_content_06"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_1" />
@@ -53,7 +53,7 @@
             android:layout_marginTop="@dimen/dp_6"
             android:layout_marginEnd="@dimen/dp_51"
             android:text="@string/backup_mnemonic_prompt_content_02"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_backup_prompt_image" />
@@ -65,7 +65,7 @@
             android:layout_marginTop="@dimen/dp_8"
             android:lineSpacingExtra="@dimen/dp_10"
             android:text="@string/backup_mnemonic_prompt_content_03"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintEnd_toEndOf="@id/tv_backup_prompt_desc_2"
             app:layout_constraintStart_toStartOf="@id/tv_backup_prompt_desc_2"
             app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_2" />
@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_21"
             android:text="@string/backup_mnemonic_prompt_content_04"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintEnd_toEndOf="@id/tv_backup_prompt_desc_2"
             app:layout_constraintStart_toStartOf="@id/tv_backup_prompt_desc_2"
             app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_3" />
@@ -97,7 +97,7 @@
             android:layout_marginTop="@dimen/dp_8"
             android:lineSpacingExtra="@dimen/dp_10"
             android:text="@string/backup_mnemonic_prompt_content_05"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintEnd_toEndOf="@id/tv_backup_prompt_desc_2"
             app:layout_constraintStart_toStartOf="@id/tv_backup_prompt_desc_2"
             app:layout_constraintTop_toBottomOf="@id/tv_backup_prompt_desc_4" />
@@ -131,7 +131,7 @@
             android:gravity="center"
             android:text="@string/backup_mnemonic_prompt_btn_later"
             android:textColor="@color/selector_text_gray"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.IntDef
+import androidx.annotation.Px
 import androidx.annotation.StringRes
 
 /**
@@ -68,7 +69,7 @@ interface IStatusLayout {
     /**
      * 设置提示文本的字体大小
      */
-    fun setTipsTextSize(size: Int): IStatusLayout
+    fun setTipsTextSize(@Px size: Int): IStatusLayout
 
     /**
      * 设置提示文本的字体颜色
@@ -88,7 +89,7 @@ interface IStatusLayout {
     /**
      * 设置重试文本的字体大小
      */
-    fun setReloadTextSize(size: Int): IStatusLayout
+    fun setReloadTextSize(@Px size: Int): IStatusLayout
 
     /**
      * 设置重试文本的字体颜色

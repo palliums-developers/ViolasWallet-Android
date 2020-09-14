@@ -25,7 +25,7 @@
         android:layout_marginTop="18dp"
         android:text="@string/hint_create_any_wallet"
         android:textColor="#3C3848"
-        android:textSize="21sp"
+        android:textSize="@dimen/fs_21"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,7 @@
         android:background="@drawable/selector_edit_bg_line"
         android:hint="@string/hint_input_nickname"
         android:maxLength="20"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvCreateHint" />
@@ -52,7 +52,7 @@
         android:background="@drawable/selector_edit_bg_line"
         android:hint="@string/hint_wallet_password"
         android:inputType="textPassword"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editName" />
@@ -65,7 +65,7 @@
         android:background="@drawable/selector_edit_bg_line"
         android:hint="@string/hint_input_confirm_password"
         android:inputType="textPassword"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editPassword" />

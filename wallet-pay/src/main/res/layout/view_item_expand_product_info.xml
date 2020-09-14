@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/color_5C5C5C"
-        android:textSize="12sp" />
+        android:textSize="@dimen/fs_12" />
 
     <TextView
         android:id="@+id/tvContent"
@@ -20,5 +20,5 @@
         android:layout_marginTop="7dp"
         android:lineSpacingExtra="8dp"
         android:textColor="@color/color_999999"
-        android:textSize="9sp" />
+        android:textSize="@dimen/fs_9" />
 </LinearLayout>

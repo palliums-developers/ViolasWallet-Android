@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:text="@string/transfer_in"
             android:textColor="@color/sel_text_color_btn2"
-            android:textSize="@dimen/sp_12" />
+            android:textSize="@dimen/fs_12" />
 
         <ImageView
             android:id="@+id/ivSwitchOpModeArrow"
@@ -47,7 +47,7 @@
         android:singleLine="true"
         android:text="@string/market_pool_earnings_desc"
         android:textColor="?android:textColorSecondary"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintBottom_toBottomOf="@id/llSwitchOpModeGroup"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/llSwitchOpModeGroup" />
@@ -64,7 +64,7 @@
         android:paddingTop="@dimen/dp_48"
         android:paddingEnd="@dimen/dp_85"
         android:paddingBottom="@dimen/dp_12"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/fs_20"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +78,7 @@
         android:layout_marginStart="@dimen/dp_11"
         android:layout_marginTop="@dimen/dp_16"
         android:text="@string/transfer_in"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="@id/etInputBoxA"
         app:layout_constraintTop_toTopOf="@id/etInputBoxA" />
 
@@ -91,7 +91,7 @@
         android:drawableStart="?attr/marketTokenAmountIcon"
         android:drawablePadding="@dimen/dp_2"
         android:text="@string/market_token_balance_format"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintEnd_toEndOf="@id/etInputBoxA"
         app:layout_constraintTop_toTopOf="@id/etInputBoxA" />
 
@@ -113,7 +113,7 @@
             android:layout_height="wrap_content"
             android:text="@string/select_token"
             android:textColor="@color/sel_text_color_btn2"
-            android:textSize="@dimen/sp_12" />
+            android:textSize="@dimen/fs_12" />
 
         <ImageView
             android:id="@+id/ivSelectArrowA"
@@ -147,7 +147,7 @@
         android:paddingTop="@dimen/dp_48"
         android:paddingEnd="@dimen/dp_85"
         android:paddingBottom="@dimen/dp_12"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/fs_20"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -161,7 +161,7 @@
         android:layout_marginStart="@dimen/dp_11"
         android:layout_marginTop="@dimen/dp_16"
         android:text="@string/transfer_in"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="@id/etInputBoxB"
         app:layout_constraintTop_toTopOf="@id/etInputBoxB" />
 
@@ -174,7 +174,7 @@
         android:drawableStart="?attr/marketTokenAmountIcon"
         android:drawablePadding="@dimen/dp_2"
         android:text="@string/market_token_balance_format"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintEnd_toEndOf="@id/etInputBoxB"
         app:layout_constraintTop_toTopOf="@id/etInputBoxB" />
 
@@ -196,7 +196,7 @@
             android:layout_height="wrap_content"
             android:text="@string/select_token"
             android:textColor="@color/sel_text_color_btn2"
-            android:textSize="@dimen/sp_12" />
+            android:textSize="@dimen/fs_12" />
 
         <ImageView
             android:id="@+id/ivSelectArrowB"
@@ -215,7 +215,7 @@
         android:layout_marginHorizontal="@dimen/dp_41"
         android:layout_marginTop="@dimen/dp_10"
         android:textColor="?android:textColorSecondary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etInputBoxB"
@@ -228,7 +228,7 @@
         android:layout_marginHorizontal="@dimen/dp_41"
         android:layout_marginTop="@dimen/dp_6"
         android:textColor="?android:textColorSecondary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

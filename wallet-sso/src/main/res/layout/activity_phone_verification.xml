@@ -28,7 +28,7 @@
         android:paddingStart="@dimen/dp_10"
         android:paddingEnd="@dimen/dp_5"
         android:textColor="@color/def_text_body"
-        android:textSize="@dimen/sp_16"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintBottom_toBottomOf="@id/etPhoneNumber"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/etPhoneNumber"

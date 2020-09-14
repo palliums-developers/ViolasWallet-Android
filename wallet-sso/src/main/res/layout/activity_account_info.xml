@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:text="@string/hint_change_wallet_name"
             android:textColor="@color/def_text_title"
-            android:textSize="16sp"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

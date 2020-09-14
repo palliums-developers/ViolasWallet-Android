@@ -15,7 +15,7 @@
         android:includeFontPadding="false"
         android:text="@string/label_time"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -27,7 +27,7 @@
         android:includeFontPadding="false"
         android:text="@string/amount"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintBottom_toBottomOf="@id/tvTimeLabel"
         app:layout_constraintStart_toStartOf="@id/tvTimeLabel" />
 
@@ -39,7 +39,7 @@
         android:includeFontPadding="false"
         android:text="@string/state"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintBottom_toBottomOf="@id/tvTimeLabel"
         app:layout_constraintEnd_toEndOf="parent" />
 

@@ -34,7 +34,7 @@
                     android:gravity="start|center_vertical"
                     android:singleLine="true"
                     android:textColor="@color/def_text_title"
-                    android:textSize="@dimen/sp_16"
+                    android:textSize="@dimen/fs_16"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/tvApplicationStatus"
@@ -48,7 +48,7 @@
                     android:layout_height="@dimen/dp_0"
                     android:gravity="center_vertical"
                     android:textColor="@color/def_text_title"
-                    android:textSize="@dimen/sp_16"
+                    android:textSize="@dimen/fs_16"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -84,7 +84,7 @@
                     android:text="@string/action_approval_not_pass"
                     android:textAllCaps="true"
                     android:textColor="@color/selector_text_gray"
-                    android:textSize="@dimen/sp_16" />
+                    android:textSize="@dimen/fs_16" />
 
             </LinearLayout>
 

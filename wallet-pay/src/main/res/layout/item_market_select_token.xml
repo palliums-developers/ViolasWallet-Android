@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_1"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintStart_toEndOf="@id/vLogoGroup"
         app:layout_constraintTop_toTopOf="@id/vLogoGroup"
         tools:text="USD" />
@@ -42,7 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintBottom_toBottomOf="@id/vLogoGroup"
         app:layout_constraintStart_toStartOf="@id/tvTokenName"
         tools:text="@string/market_select_token_balance_format" />

@@ -14,7 +14,7 @@
         android:layout_marginTop="@dimen/dp_29"
         android:includeFontPadding="false"
         android:text="@string/amount_to_be_repaid"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,7 +26,7 @@
         android:layout_marginTop="@dimen/dp_14"
         android:includeFontPadding="false"
         android:textColor="?attr/colorPrimary"
-        android:textSize="@dimen/sp_24"
+        android:textSize="@dimen/fs_24"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvAmountToBeRepaidLabel"
@@ -38,7 +38,7 @@
         android:layout_height="@dimen/dp_14"
         android:layout_marginStart="@dimen/dp_8"
         android:includeFontPadding="false"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintBottom_toBottomOf="@id/tvAmountToBeRepaid"
         app:layout_constraintStart_toEndOf="@id/tvAmountToBeRepaid"
         tools:text="VLSUSD" />

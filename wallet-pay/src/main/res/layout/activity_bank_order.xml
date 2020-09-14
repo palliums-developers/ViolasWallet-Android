@@ -23,7 +23,7 @@
         android:layout_height="@dimen/dp_14"
         android:layout_marginStart="@dimen/dp_6"
         android:includeFontPadding="false"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintBottom_toBottomOf="@id/ivIcon"
         app:layout_constraintStart_toEndOf="@id/ivIcon"
         app:layout_constraintTop_toTopOf="@id/ivIcon"

@@ -35,7 +35,7 @@
         android:layout_marginTop="@dimen/dp_8"
         android:text="@string/app_name"
         android:textColor="?attr/colorOnPrimary"
-        android:textSize="@dimen/sp_15"
+        android:textSize="@dimen/fs_15"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
@@ -54,7 +54,7 @@
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivAddressBook"
         style="@style/MenuItemView"
-        android:layout_marginTop="@dimen/item_spacing"
+        android:layout_marginTop="@dimen/spacing_item"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivWalletManagement"
@@ -65,7 +65,7 @@
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivSettings"
         style="@style/MenuItemView"
-        android:layout_marginTop="@dimen/item_spacing"
+        android:layout_marginTop="@dimen/spacing_item"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivAddressBook"

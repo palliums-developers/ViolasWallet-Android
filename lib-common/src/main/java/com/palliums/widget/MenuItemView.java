@@ -19,6 +19,7 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -39,7 +40,7 @@ public class MenuItemView extends FrameLayout {
     private ImageView mStartIcon, mEndIcon, mEndArrow;
     private TextView mStartTitle, mStartDesc, mEndDesc;
     private Switch mEndSwitch;
-    private View   mTopLine, mBottomLine;
+    private View mTopLine, mBottomLine;
 
     public MenuItemView(@NonNull Context context) {
         this(context, null);
@@ -82,21 +83,21 @@ public class MenuItemView extends FrameLayout {
         // 头部标题
         String startTitleText = null;
         // 头部标题的字体大小
-        int startTitleTextSize = (int) DensityUtility.sp2px(context, 16);
+        int startTitleTextSize = (int) DensityUtility.dp2px(context, 16);
         // 头部标题的文本颜色
         int startTitleTextColor = ResourcesUtilKt.getColor(R.color.black, context);
 
         // 头部描述
         String startDescText = null;
         // 头部描述的字体大小
-        int startDescTextSize = (int) DensityUtility.sp2px(getContext(), 12);
+        int startDescTextSize = (int) DensityUtility.dp2px(getContext(), 12);
         // 头部描述的文本颜色
         int startDescTextColor = ResourcesUtilKt.getColor(R.color.black_50, context);
 
         // 尾部描述
         String endDescText = null;
         // 尾部描述的字体大小
-        int endDescTextSize = (int) DensityUtility.sp2px(getContext(), 16);
+        int endDescTextSize = (int) DensityUtility.dp2px(getContext(), 16);
         // 尾部描述的文本颜色
         int endDescTextColor = ResourcesUtilKt.getColor(R.color.blue_50, context);
         // 尾部描述的文本对齐方式
@@ -278,7 +279,7 @@ public class MenuItemView extends FrameLayout {
      *
      * @param size
      */
-    public void setStartTitleTextSize(int size) {
+    public void setStartTitleTextSize(@Px int size) {
         mStartTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
     }
 
@@ -326,7 +327,7 @@ public class MenuItemView extends FrameLayout {
      *
      * @param size
      */
-    public void setStartDescTextSize(int size) {
+    public void setStartDescTextSize(@Px int size) {
         mStartDesc.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
     }
 
@@ -341,9 +342,10 @@ public class MenuItemView extends FrameLayout {
 
     /**
      * 获取头部描述的文本
+     *
      * @return
      */
-    public String getStartDescText(){
+    public String getStartDescText() {
         return mStartDesc.getText().toString();
     }
 
@@ -386,7 +388,7 @@ public class MenuItemView extends FrameLayout {
      *
      * @param size
      */
-    public void setEndDescTextSize(int size) {
+    public void setEndDescTextSize(@Px int size) {
         mEndDesc.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
     }
 
@@ -439,9 +441,10 @@ public class MenuItemView extends FrameLayout {
 
     /**
      * 获取尾部描述的文本
+     *
      * @return
      */
-    public String getEndDescText(){
+    public String getEndDescText() {
         return mEndDesc.getText().toString();
     }
 

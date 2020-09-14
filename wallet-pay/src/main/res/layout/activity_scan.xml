@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:text="@string/action_scan_address"
         android:textColor="@color/white"
-        android:textSize="12dp"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

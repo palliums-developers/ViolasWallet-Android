@@ -22,7 +22,7 @@
         android:gravity="center"
         android:text="@string/hint_kyc_content"
         android:textColor="#C8C7CA"
-        android:textSize="14sp" />
+        android:textSize="@dimen/fs_14" />
 
     <Button
         android:id="@+id/btnGo"

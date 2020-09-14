@@ -18,7 +18,7 @@
             android:paddingStart="24dp"
             android:paddingEnd="11dp"
             android:text="@string/hint_note"
-            android:textSize="16sp" />
+            android:textSize="@dimen/fs_16" />
 
         <EditText
             android:id="@+id/editNote"
@@ -28,7 +28,7 @@
             android:background="@drawable/selector_edit_bg_line"
             android:hint="@string/label_address_book_note"
             android:maxLength="20"
-            android:textSize="16sp" />
+            android:textSize="@dimen/fs_16" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,7 +42,7 @@
             android:paddingStart="24dp"
             android:paddingEnd="11dp"
             android:text="@string/label_address"
-            android:textSize="16sp"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -59,7 +59,7 @@
             android:paddingTop="12dp"
             android:paddingEnd="30dp"
             android:paddingBottom="12dp"
-            android:textSize="16sp"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvHintAddress"
             app:layout_constraintTop_toTopOf="parent" />
@@ -86,7 +86,7 @@
             android:paddingStart="24dp"
             android:paddingEnd="11dp"
             android:text="@string/hint_type"
-            android:textSize="16sp" />
+            android:textSize="@dimen/fs_16" />
 
         <RadioGroup
             android:id="@+id/coinTypeGroup"
@@ -107,7 +107,7 @@
                 android:gravity="center"
                 android:text="Violas"
                 android:textColor="@color/selector_address_switch_type_text_color"
-                android:textSize="12sp" />
+                android:textSize="@dimen/fs_12" />
 
             <RadioButton
                 android:id="@+id/coinTypeLibra"
@@ -121,7 +121,7 @@
                 android:gravity="center"
                 android:text="Libra"
                 android:textColor="@color/selector_address_switch_type_text_color"
-                android:textSize="12sp" />
+                android:textSize="@dimen/fs_12" />
 
             <RadioButton
                 android:id="@+id/coinTypeBitcoin"
@@ -134,7 +134,7 @@
                 android:gravity="center"
                 android:text="Bitcoin"
                 android:textColor="@color/selector_address_switch_type_text_color"
-                android:textSize="12sp" />
+                android:textSize="@dimen/fs_12" />
         </RadioGroup>
     </LinearLayout>
 

@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/hint_collection_address"
-            android:textSize="20sp"
+            android:textSize="@dimen/fs_20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/select_token"
                 android:textColor="@color/sel_text_color_btn2"
-                android:textSize="@dimen/sp_12" />
+                android:textSize="@dimen/fs_12" />
 
             <ImageView
                 android:layout_width="@dimen/dp_10"
@@ -73,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:textSize="16sp"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivQRCode"
@@ -89,7 +89,7 @@
             android:layout_marginBottom="33dp"
             android:gravity="center"
             android:maxWidth="268dp"
-            android:textSize="12sp"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnCopy"
             app:layout_constraintHorizontal_chainStyle="packed"

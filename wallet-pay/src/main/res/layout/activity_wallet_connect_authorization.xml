@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_27"
         android:text="@string/desc_scan_wallet_connect_login"
-        android:textSize="@dimen/sp_16"
+        android:textSize="@dimen/fs_16"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +43,7 @@
         android:paddingEnd="22dp"
         android:paddingBottom="8dp"
         android:text="@string/hint_wallet_connect_prompt"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,7 +58,7 @@
         android:layout_marginEnd="20dp"
         android:gravity="center"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="12sp"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvScanLoginDescribe"
@@ -87,7 +87,7 @@
             android:layout_marginStart="10dp"
             android:text="@string/hint_wallet_connect_repeated_connection"
             android:textColor="?attr/textColorWarn"
-            android:textSize="12sp" />
+            android:textSize="@dimen/fs_12" />
     </LinearLayout>
 
     <Button
@@ -110,7 +110,7 @@
         android:gravity="center"
         android:text="@string/action_cancel_login"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnConfirmLogin" />

@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:text="@string/feedback_title"
             android:textColor="@color/white"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="@id/vHeader"
             app:layout_constraintEnd_toEndOf="@id/vHeader"
             app:layout_constraintStart_toStartOf="@id/vHeader"
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dp_5"
             android:textColor="@color/def_text_hint"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="@id/vContent"
             app:layout_constraintEnd_toEndOf="@id/vContent"
             tools:text="0/200" />

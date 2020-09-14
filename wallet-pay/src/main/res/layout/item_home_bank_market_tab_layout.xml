@@ -15,6 +15,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="@string/borrowing_details"
-        tools:textSize="@dimen/sp_14" />
+        tools:textSize="@dimen/fs_14" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

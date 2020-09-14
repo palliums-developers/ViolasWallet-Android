@@ -23,6 +23,6 @@
         android:layout_marginBottom="@dimen/dp_8"
         android:text="@string/desc_save_into_album"
         android:textColor="?android:textColorTertiary"
-        android:textSize="@dimen/sp_12" />
+        android:textSize="@dimen/fs_12" />
 
 </LinearLayout>

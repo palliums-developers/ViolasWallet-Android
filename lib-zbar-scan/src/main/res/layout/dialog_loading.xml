@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:textSize="14sp"
+            android:textSize="14dp"
             android:textColor="#fff"
             android:text="请稍后..."
             android:layout_marginTop="10dp"
