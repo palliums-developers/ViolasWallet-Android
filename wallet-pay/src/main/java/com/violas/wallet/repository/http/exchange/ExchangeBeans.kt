@@ -53,37 +53,6 @@ data class PoolRecordDTO(
 @Keep
 @Parcelize
 data class SwapRecordDTO(
-    @SerializedName(value = "input_name")
-    val inputCoinName: String?,
-    @SerializedName(value = "input_amount")
-    val inputCoinAmount: String?,
-    @SerializedName(value = "output_name")
-    val outputCoinName: String?,
-    @SerializedName(value = "output_amount")
-    val outputCoinAmount: String?,
-    @SerializedName(value = "gas_currency")
-    val gasCoinName: String?,
-    @SerializedName(value = "gas_used")
-    val gasCoinAmount: String?,
-    @SerializedName(value = "date")
-    val time: Long,
-    @SerializedName(value = "confirmed_time")
-    val confirmedTime: Long,
-    val version: Long,
-    val status: Int,
-    var inputCoinType: Int = CoinTypes.Violas.coinType(),
-    var outputCoinType: Int = CoinTypes.Violas.coinType(),
-    var customStatus: Status = Status.FAILED
-) : Parcelable {
-
-    @Keep
-    enum class Status {
-        SUCCEEDED, FAILED, PROCESSING, CANCELLED
-    }
-}
-
-@Keep
-data class CrossChainSwapRecordDTO(
     @SerializedName(value = "from_chain")
     val inputChainName: String?,
     @SerializedName(value = "input_name")
@@ -92,6 +61,7 @@ data class CrossChainSwapRecordDTO(
     val inputCoinAmount: String?,
     @SerializedName(value = "input_shown_name")
     val inputCoinDisplayName: String?,
+
     @SerializedName(value = "to_chain")
     val outputChainName: String?,
     @SerializedName(value = "output_name")
@@ -100,10 +70,16 @@ data class CrossChainSwapRecordDTO(
     val outputCoinAmount: String?,
     @SerializedName(value = "output_shown_name")
     val outputCoinDisplayName: String?,
+
+    @SerializedName(value = "gas_currency")
+    val gasCoinName: String?,
+    @SerializedName(value = "gas_used")
+    val gasCoinAmount: String?,
+
     @SerializedName(value = "data")
     val time: Long,
-    @SerializedName(value = "confirmed_time")
-    val confirmedTime: Long,
+    @SerializedName(value = "version")
     val version: Long,
+    @SerializedName(value = "status")
     val status: Int
-)
+) : Parcelable

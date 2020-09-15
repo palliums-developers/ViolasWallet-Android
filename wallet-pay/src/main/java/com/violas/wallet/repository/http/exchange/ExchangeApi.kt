@@ -27,30 +27,16 @@ interface ExchangeApi {
     ): Observable<ListResponse<PoolRecordDTO>>
 
     /**
-     * 获取交易市场兑换记录
-     * @param walletAddress 地址
-     * @param pageSize      分页大小
-     * @param offset        偏移量，从0开始
+     * 获取交易市场兑换记录(包含Violas链内稳定币兑换记录，和跨链兑换记录)
+     * @param walletAddresses   地址
+     * @param pageSize          分页大小
+     * @param offset            偏移量，从0开始
      */
-    @GET("/1.0/market/exchange/transaction")
+    @GET("/1.0/market/crosschain/transaction")
     fun getSwapRecords(
-        @Query("address") walletAddress: String,
+        @Query("addresses") walletAddresses: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
     ): Observable<ListResponse<SwapRecordDTO>>
 
-    /**
-     * 获取交易市场跨链兑换记录
-     * @param walletAddress 地址
-     * @param chainName     libra、btc、violas
-     * @param pageSize      分页大小
-     * @param offset        偏移量，从0开始
-     */
-    @GET("/1.0/market/crosschain/transaction")
-    fun getCrossChainSwapRecords(
-        @Query("address") walletAddress: String,
-        @Query("chain") chainName: String,
-        @Query("limit") pageSize: Int,
-        @Query("offset") offset: Int
-    ): Observable<ListResponse<CrossChainSwapRecordDTO>>
 }

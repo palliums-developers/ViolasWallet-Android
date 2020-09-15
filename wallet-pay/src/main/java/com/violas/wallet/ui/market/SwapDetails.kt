@@ -10,14 +10,13 @@ import com.palliums.utils.formatDate
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
-import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.repository.http.exchange.SwapRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertAmountToExchangeRate
+import com.violas.wallet.utils.str2CoinType
 import kotlinx.android.synthetic.main.activity_swap_details.*
 
 /**
@@ -81,7 +80,7 @@ class SwapDetailsActivity : BaseAppActivity() {
             else
                 "${convertAmountToDisplayAmountStr(
                     record.inputCoinAmount,
-                    CoinTypes.parseCoinType(record.inputCoinType)
+                    str2CoinType(record.inputChainName)
                 )} ${record.inputCoinName}"
 
         tvOutputCoin.text =
@@ -90,7 +89,7 @@ class SwapDetailsActivity : BaseAppActivity() {
             else
                 "${convertAmountToDisplayAmountStr(
                     record.outputCoinAmount,
-                    CoinTypes.parseCoinType(record.outputCoinType)
+                    str2CoinType(record.outputChainName)
                 )} ${record.outputCoinName}"
 
         tvExchangeRate.text =
@@ -113,19 +112,11 @@ class SwapDetailsActivity : BaseAppActivity() {
                 "${convertAmountToDisplayAmountStr(record.gasCoinAmount)} ${record.gasCoinName}"
 
         val pattern = "yyyy-MM-dd HH:mm:ss"
-        if (record.inputCoinType == record.outputCoinType) {
-            tvOrderTime.text = formatDate(
-                correctDateLength(record.confirmedTime) - 1000,
-                pattern = pattern
-            )
-            tvDealTime.text = formatDate(record.confirmedTime, pattern = pattern)
-        } else {
-            tvOrderTime.text = formatDate(record.time, pattern = pattern)
-            tvDealTime.text = getString(R.string.value_null)
-        }
+        tvOrderTime.text = formatDate(record.time, pattern = pattern)
+        tvDealTime.text = getString(R.string.value_null)
 
         // 兑换中
-        if (record.customStatus == SwapRecordDTO.Status.PROCESSING) {
+        if (record.status == 4002) {
             tvProcessingDesc.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
             tvProcessingDesc.setTextColor(
                 getColorByAttrId(android.R.attr.textColor, this)
@@ -154,8 +145,8 @@ class SwapDetailsActivity : BaseAppActivity() {
         tvResultDesc.visibility = View.VISIBLE
         tvRetry.visibility = View.GONE
 
-        when (record.customStatus) {
-            SwapRecordDTO.Status.SUCCEEDED -> {
+        when (record.status) {
+            4001 -> {
                 tvResultDesc.setText(R.string.market_swap_state_succeeded)
                 tvResultDesc.setTextColor(
                     getColorByAttrId(android.R.attr.textColor, this)
@@ -165,7 +156,7 @@ class SwapDetailsActivity : BaseAppActivity() {
                 )
             }
 
-            SwapRecordDTO.Status.CANCELLED -> {
+            4004 -> {
                 tvResultDesc.setText(R.string.market_swap_state_cancelled)
                 tvResultDesc.setTextColor(
                     getColorByAttrId(android.R.attr.textColorTertiary, this)
