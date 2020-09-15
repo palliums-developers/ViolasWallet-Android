@@ -24,7 +24,7 @@ class ViolasSignRawTransactionMessageHandler : IMessageHandler<JsonArray> {
         .create()
 
     override fun canHandle(method: WCMethod): Boolean {
-        return method == WCMethod.VIOLAS_SIGN_TRANSACTION
+        return method == WCMethod.VIOLAS_SIGN_RAW_TRANSACTION
     }
 
     override fun decodeMessage(requestID: Long, param: JsonArray): TransactionSwapVo {
@@ -55,6 +55,7 @@ class ViolasSignRawTransactionMessageHandler : IMessageHandler<JsonArray> {
         return TransactionSwapVo(
             requestID,
             rawTransaction.toByteArray().toHex(),
+            false,
             false,
             account.id,
             CoinTypes.Libra,

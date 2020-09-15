@@ -65,6 +65,7 @@ class BitcoinSendTransactionMessageHandler :
         return TransactionSwapVo(
             id,
             "",
+            true,
             false,
             account.id,
             if (Vm.TestNet) {

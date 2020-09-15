@@ -20,9 +20,10 @@ class MessageHandlerChain(
         mHandlerChain.add(ViolasGetAccountsMessageHandler(iMessageHandler))
         mHandlerChain.add(ViolasSendTransactionMessageHandler())
         mHandlerChain.add(LibraSendTransactionMessageHandler())
-        mHandlerChain.add(BitcoinSendTransactionMessageHandler())
         mHandlerChain.add(ViolasSendRawTransactionMessageHandler())
+        mHandlerChain.add(ViolasSignTransactionMessageHandler())
         mHandlerChain.add(ViolasSignRawTransactionMessageHandler())
+        mHandlerChain.add(BitcoinSendTransactionMessageHandler())
     }
 
     fun tryDecodeMessage(id: Long, method: WCMethod, param: JsonArray): Boolean {

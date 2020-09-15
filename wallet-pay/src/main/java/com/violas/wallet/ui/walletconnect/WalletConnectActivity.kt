@@ -266,7 +266,7 @@ class WalletConnectActivity : BaseAppActivity() {
                 } else {
                     signedTx = transactionSwapVo.hexTx
                 }
-                if (signedTx != null) {
+                if (signedTx != null && transactionSwapVo.isSend) {
                     when (transactionSwapVo.coinType) {
                         CoinTypes.Violas -> {
                             DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
@@ -276,8 +276,19 @@ class WalletConnectActivity : BaseAppActivity() {
                         }
                     }
                 }
+                if (!transactionSwapVo.isSend) {
+                    if (signedTx == null) {
+                        mWalletConnect.sendErrorMessage(
+                            transactionSwapVo.requestID,
+                            JsonRpcError.invalidParams("sign")
+                        )
+                    } else {
+                        mWalletConnect.sendSuccessMessage(transactionSwapVo.requestID, signedTx)
+                    }
+                } else {
+                    mWalletConnect.sendSuccessMessage(transactionSwapVo.requestID, "success")
+                }
 
-                mWalletConnect.sendSuccessMessage(transactionSwapVo.requestID, "success")
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 mRequestHandle = true
                 finish()
