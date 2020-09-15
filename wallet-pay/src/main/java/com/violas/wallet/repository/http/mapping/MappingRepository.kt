@@ -21,7 +21,7 @@ class MappingRepository(private val api: MappingApi) {
         offset: Int
     ) =
         api.getMappingRecords(
-            "$violasWalletAddress,$libraWalletAddress,$bitcoinWalletAddress",
+            "${violasWalletAddress}_violas,${libraWalletAddress}_libra,${bitcoinWalletAddress}_btc",
             pageSize,
             offset
         ).await().data

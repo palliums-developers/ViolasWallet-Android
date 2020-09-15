@@ -96,51 +96,51 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
 
         override fun onViewBind(itemPosition: Int, itemData: MappingRecordDTO?) {
             itemData?.let {
-                itemView.tvTime.text = formatDate(it.confirmedTime, simpleDateFormat)
+                itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
 
                 itemView.tvInputCoin.text =
-                    if (it.inputCoin.displayName.isNullOrBlank()
-                        || it.inputCoin.amount.isNullOrBlank()
+                    if (it.inputCoinDisplayName.isNullOrBlank()
+                        || it.inputCoinAmount.isNullOrBlank()
                     ) {
                         getString(R.string.value_null)
                     } else {
                         "${convertAmountToDisplayAmountStr(
-                            it.inputCoin.amount,
-                            str2CoinType(it.inputCoin.chainName)
-                        )} ${it.inputCoin.displayName}"
+                            it.inputCoinAmount,
+                            str2CoinType(it.inputChainName)
+                        )} ${it.inputCoinDisplayName}"
                     }
 
                 itemView.tvOutputCoin.text =
-                    if (it.outputCoin.displayName.isNullOrBlank()
-                        || it.outputCoin.amount.isNullOrBlank()
+                    if (it.outputCoinDisplayName.isNullOrBlank()
+                        || it.outputCoinAmount.isNullOrBlank()
                     ) {
                         getString(R.string.value_null)
                     } else {
                         "${convertAmountToDisplayAmountStr(
-                            it.outputCoin.amount,
-                            str2CoinType(it.outputCoin.chainName)
-                        )} ${it.outputCoin.displayName}"
+                            it.outputCoinAmount,
+                            str2CoinType(it.outputChainName)
+                        )} ${it.outputCoinDisplayName}"
                     }
 
                 itemView.tvMinerFees.text =
                     getString(R.string.gas_fee_format, getString(R.string.value_null))
 
-                when (it.status) {
-                    4001 -> {
+                when {
+                    it.state?.equals("end", true) == true -> {
                         itemView.tvState.setText(R.string.mapping_state_succeeded)
                         itemView.tvState.setTextColor(
                             getColorByAttrId(R.attr.textColorSuccess, itemView.context)
                         )
                     }
 
-                    4002 -> {
+                    it.state?.equals("start", true) == true -> {
                         itemView.tvState.setText(R.string.mapping_state_processing)
                         itemView.tvState.setTextColor(
                             getColorByAttrId(R.attr.textColorProcessing, itemView.context)
                         )
                     }
 
-                    4004 -> {
+                    it.state?.equals("cancel", true) == true -> {
                         itemView.tvState.setText(R.string.mapping_state_cancelled)
                         itemView.tvState.setTextColor(
                             getColorByAttrId(android.R.attr.textColorTertiary, itemView.context)

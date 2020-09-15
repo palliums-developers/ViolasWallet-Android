@@ -44,25 +44,30 @@ data class MappingCoinPairDTO(
 
 @Keep
 data class MappingRecordDTO(
-    @SerializedName(value = "amount_from")
-    val inputCoin: Coin,
-    @SerializedName(value = "amount_to")
-    val outputCoin: Coin,
-    @SerializedName(value = "version_or_block_height")
-    val transactionId: String,          // btc块的高度或者libra和violas的version
-    @SerializedName(value = "confirmed_time")
-    val confirmedTime: Long,
-    @SerializedName(value = "status")
-    val status: Int
-) {
-    data class Coin(
-        @SerializedName("name")
-        val name: String,
-        @SerializedName("amount")
-        val amount: String?,
-        @SerializedName("chain")
-        val chainName: String?,
-        @SerializedName("show_name")
-        val displayName: String?
-    )
-}
+    @SerializedName(value = "in_token")
+    val inputCoinName: String,
+    @SerializedName(value = "in_amount")
+    val inputCoinAmount: String?,
+    @SerializedName(value = "from_chain")
+    val inputChainName: String?,
+    @SerializedName(value = "in_show_name")
+    val inputCoinDisplayName: String?,
+
+    @SerializedName(value = "out_token")
+    val outputCoinName: String,
+    @SerializedName(value = "out_amount")
+    val outputCoinAmount: String?,
+    @SerializedName(value = "to_chain")
+    val outputChainName: String?,
+    @SerializedName(value = "out_show_name")
+    val outputCoinDisplayName: String?,
+
+    @SerializedName(value = "version")
+    val version: String?,
+    @SerializedName(value = "tran_id")
+    val txId: String?,
+    @SerializedName(value = "state")
+    val state: String?,
+    @SerializedName(value = "expiration_time")
+    val time: Long
+)
