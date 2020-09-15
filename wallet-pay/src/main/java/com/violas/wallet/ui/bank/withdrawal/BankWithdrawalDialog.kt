@@ -53,7 +53,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
         ): BankWithdrawalDialog {
             return BankWithdrawalDialog().apply {
                 arguments = Bundle().apply {
-                    putParcelable(KEY_ONE, depositDetails)
+                    putString(KEY_ONE, productId)
                     putParcelable(KEY_TWO, depositDetails)
                 }
             }
@@ -88,8 +88,8 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
     private fun initData(savedInstanceState: Bundle?): Boolean {
         try {
             val bundle = savedInstanceState ?: arguments ?: return false
-            depositDetails = bundle.getParcelable(KEY_ONE) ?: return false
-            productId = bundle.getString(KEY_TWO) ?: return false
+            productId = bundle.getString(KEY_ONE) ?: return false
+            depositDetails = bundle.getParcelable(KEY_TWO) ?: return false
             return true
         } catch (e: Exception) {
             return false
