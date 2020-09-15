@@ -21,6 +21,7 @@ import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bank.DepositDetailsDTO
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
@@ -47,17 +48,20 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
         private const val TAG = "BankWithdrawalDialog"
 
         fun newInstance(
+            productId: String,
             depositDetails: DepositDetailsDTO
         ): BankWithdrawalDialog {
             return BankWithdrawalDialog().apply {
                 arguments = Bundle().apply {
                     putParcelable(KEY_ONE, depositDetails)
+                    putParcelable(KEY_TWO, depositDetails)
                 }
             }
         }
     }
 
     private lateinit var depositDetails: DepositDetailsDTO
+    private lateinit var productId: String
 
     private val accountManager by lazy { AccountManager() }
     private val bankManager by lazy { BankManager() }
@@ -85,6 +89,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
         try {
             val bundle = savedInstanceState ?: arguments ?: return false
             depositDetails = bundle.getParcelable(KEY_ONE) ?: return false
+            productId = bundle.getString(KEY_TWO) ?: return false
             return true
         } catch (e: Exception) {
             return false
@@ -185,7 +190,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
         launch {
             try {
                 showProgress()
-                bankManager.redeem(pwd, account, mark, amount)
+                bankManager.redeem(pwd, account, productId, mark, amount)
                 dismissProgress()
                 showToast(getString(R.string.tips_withdrawal_success))
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)

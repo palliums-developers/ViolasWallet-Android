@@ -26,6 +26,12 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
         val sequenceNumber: Long
     )
 
+    data class GenerateTransactionResult(
+        val signTxn: String,
+        val sender: String,
+        val sequenceNumber: Long
+    )
+
     /**
      * 发起一笔交易，建议用法
      * 适用于有私钥的情况下使用该方法
@@ -38,7 +44,7 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
      * @param delayed 交易超时时间：当前时间的延迟，单位秒。例如当前时间延迟 1000 秒。
      */
     @Throws(ViolasException::class)
-    suspend fun sendTransaction(
+    suspend fun generateTransaction(
         payload: TransactionPayload,
         account: Account,
         sequenceNumber: Long = -1,
@@ -47,7 +53,7 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
         gasUnitPrice: Long = 0,
         delayed: Long = 600,
         chainId: Int
-    ): TransactionResult {
+    ): GenerateTransactionResult {
         var sequenceNumber = sequenceNumber
         val keyPair = account.keyPair
         val senderAddress = account.getAddress()
@@ -71,12 +77,16 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
             delayed,
             chainId = chainId
         )
-        sendTransaction(
+        val signTransactionHex = generateTransaction(
             rawTransaction.toByteArray().toHex(),
             keyPair.getPublicKey(),
             keyPair.signMessage(rawTransaction.toHashByteArray())
         )
-        return TransactionResult(senderAddress.toHex(), sequenceNumber)
+        return GenerateTransactionResult(
+            signTransactionHex,
+            senderAddress.toHex(),
+            sequenceNumber
+        )
     }
 
     /**
@@ -89,11 +99,11 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
      * @param signature 签名，单签使用 {@link Ed25519Signature}，多签使用{@link MultiEd25519Signature}
      */
     @Throws(ViolasException::class)
-    suspend fun sendTransaction(
+    suspend fun generateTransaction(
         rawTransactionHex: String,
         publicKey: KeyPair.PublicKey,
         signature: Signature
-    ) {
+    ): String {
         val transactionAuthenticator = when {
             publicKey is Ed25519PublicKey && signature is Ed25519Signature -> {
                 TransactionSignAuthenticator(
@@ -118,6 +128,61 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
             Log.i(this.javaClass.name, "SignTransaction: $hexSignedTransaction")
         }
 
+        return hexSignedTransaction
+    }
+
+    /**
+     * 发起一笔交易，建议用法
+     * 适用于有私钥的情况下使用该方法
+     *
+     * @param payload 交易内容，通常情况下一般使用 @{link TransactionPayload.Script}
+     * @param account 公钥，单签使用 {@link Ed25519KeyPair}，多签使用{@link MultiEd25519KeyPair}
+     * @param sequenceNumber 账户 sequenceNumber
+     * @param maxGasAmount 该交易可使用的最大 gas 数量
+     * @param gasUnitPrice gas 的价格
+     * @param delayed 交易超时时间：当前时间的延迟，单位秒。例如当前时间延迟 1000 秒。
+     */
+    @Throws(ViolasException::class)
+    suspend fun sendTransaction(
+        payload: TransactionPayload,
+        account: Account,
+        sequenceNumber: Long = -1,
+        gasCurrencyCode: String = lbrStructTagType(),
+        maxGasAmount: Long = 1_000_000,
+        gasUnitPrice: Long = 0,
+        delayed: Long = 600,
+        chainId: Int
+    ): TransactionResult {
+        val generateTransaction = generateTransaction(
+            payload,
+            account,
+            sequenceNumber,
+            gasCurrencyCode,
+            maxGasAmount,
+            gasUnitPrice,
+            delayed,
+            chainId
+        )
+        mViolasRpcRepository.submitTransaction(generateTransaction.signTxn)
+        return TransactionResult(generateTransaction.sender, generateTransaction.sequenceNumber)
+    }
+
+    /**
+     * 高端用法，不建议基础业务使用
+     * 适用于没有私钥的情况下使用该方法
+     * publicKey 与 signature 需要配套使用
+     *
+     * @param rawTransactionHex 未签名交易序列化后的 16 进制字符串
+     * @param publicKey 公钥，单签使用 {@link Ed25519PublicKey}，多签使用{@link MultiEd25519PublicKey}
+     * @param signature 签名，单签使用 {@link Ed25519Signature}，多签使用{@link MultiEd25519Signature}
+     */
+    @Throws(ViolasException::class)
+    suspend fun sendTransaction(
+        rawTransactionHex: String,
+        publicKey: KeyPair.PublicKey,
+        signature: Signature
+    ) {
+        val hexSignedTransaction = generateTransaction(rawTransactionHex, publicKey, signature)
         mViolasRpcRepository.submitTransaction(hexSignedTransaction)
     }
 

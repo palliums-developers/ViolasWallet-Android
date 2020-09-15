@@ -193,12 +193,19 @@ class RepayBorrowActivity : BankBusinessActivity() {
         launch(Dispatchers.IO) {
             try {
                 showProgress()
-                mBankManager.repayBorrow(pwd.toByteArray(), account, mark, amount)
+                mBankManager.repayBorrow(
+                    pwd.toByteArray(),
+                    account,
+                    mBorrowingDetails!!.productId,
+                    mark,
+                    amount
+                )
                 dismissProgress()
                 showToast(getString(R.string.hint_bank_business_borrow_success))
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 finish()
             } catch (e: Exception) {
+                e.printStackTrace()
                 e.message?.let { showToast(it) }
                 dismissProgress()
             }

@@ -54,7 +54,8 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
                 showProgress()
                 val depositDetails = viewModel.getDepositDetails(depositInfo)
                 dismissProgress()
-                BankWithdrawalDialog.newInstance(depositDetails).show(supportFragmentManager)
+                BankWithdrawalDialog.newInstance(depositInfo.productId, depositDetails)
+                    .show(supportFragmentManager)
             } catch (e: Exception) {
                 showToast(e.getShowErrorMessage(false))
                 dismissProgress()

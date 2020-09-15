@@ -239,13 +239,14 @@ class DepositActivity : BankBusinessActivity() {
             }
 
             authenticateAccount(account, mAccountManager, passwordCallback = {
-                sendTransfer(account, market, it, amount)
+                sendTransfer(account, mDepositProductDetails!!.id, market, it, amount)
             })
         }
     }
 
     private fun sendTransfer(
         account: AccountDO,
+        productId: String,
         mark: LibraTokenAssetsMark,
         pwd: String,
         amount: Long
@@ -253,12 +254,13 @@ class DepositActivity : BankBusinessActivity() {
         launch(Dispatchers.IO) {
             try {
                 showProgress()
-                mBankManager.lock(pwd.toByteArray(), account, mark, amount)
+                mBankManager.lock(pwd.toByteArray(), account,productId, mark, amount)
                 dismissProgress()
                 showToast(getString(R.string.hint_bank_business_deposit_success))
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 finish()
             } catch (e: Exception) {
+                e.printStackTrace()
                 e.message?.let { showToast(it) }
                 dismissProgress()
             }
