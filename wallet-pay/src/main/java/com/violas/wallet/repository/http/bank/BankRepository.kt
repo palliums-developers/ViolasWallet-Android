@@ -1,6 +1,15 @@
 package com.violas.wallet.repository.http.bank
 
+import androidx.annotation.Keep
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.palliums.net.await
+import com.palliums.violas.http.LoginWebDTO
+import com.palliums.violas.http.Response
+import io.reactivex.Observable
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.http.Field
 
 class BankRepository(private val api: BankApi) {
 
@@ -143,4 +152,73 @@ class BankRepository(private val api: BankApi) {
         id: String
     ) =
         api.getBorrowingDetails(address, id).await().data
+
+    @Keep
+    data class SubmitTransaction(
+        val address: String,
+        @SerializedName(value = "product_id")
+        val productId: String,
+        val value: Long,
+        val sigtxn: String
+    )
+
+    /**
+     * 存款交易上链
+     */
+    suspend fun submitDepositTransaction(
+        address: String,
+        productId: String,
+        value: Long,
+        sigtxn: String
+    ) {
+        val requestBody = Gson()
+            .toJson(SubmitTransaction(address, productId, value, sigtxn))
+            .toRequestBody("application/json".toMediaTypeOrNull())
+        api.submitDepositTransaction(requestBody).await().data
+    }
+
+    /**
+     * 取款交易上链
+     */
+    suspend fun submitRedeemTransaction(
+        address: String,
+        productId: String,
+        value: Long,
+        sigtxn: String
+    ) {
+        val requestBody = Gson()
+            .toJson(SubmitTransaction(address, productId, value, sigtxn))
+            .toRequestBody("application/json".toMediaTypeOrNull())
+        api.submitRedeemTransaction(requestBody).await().data
+    }
+
+    /**
+     * 借款交易上链
+     */
+    suspend fun submitBorrowTransaction(
+        address: String,
+        productId: String,
+        value: Long,
+        sigtxn: String
+    ) {
+        val requestBody = Gson()
+            .toJson(SubmitTransaction(address, productId, value, sigtxn))
+            .toRequestBody("application/json".toMediaTypeOrNull())
+        api.submitBorrowTransaction(requestBody).await().data
+    }
+
+    /**
+     * 还款交易上链
+     */
+    suspend fun submitRepayBorrowTransaction(
+        address: String,
+        productId: String,
+        value: Long,
+        sigtxn: String
+    ) {
+        val requestBody = Gson()
+            .toJson(SubmitTransaction(address, productId, value, sigtxn))
+            .toRequestBody("application/json".toMediaTypeOrNull())
+        api.submitRepayBorrowTransaction(requestBody).await().data
+    }
 }

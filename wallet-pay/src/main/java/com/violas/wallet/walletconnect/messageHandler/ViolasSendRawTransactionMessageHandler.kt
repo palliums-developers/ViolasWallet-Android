@@ -30,6 +30,7 @@ class ViolasSendRawTransactionMessageHandler : IMessageHandler<JsonArray> {
             requestID,
             tx.tx,
             true,
+            true,
             -1L,
             CoinTypes.Violas,
             TransactionDataType.None.value,

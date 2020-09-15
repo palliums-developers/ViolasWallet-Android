@@ -10,33 +10,36 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.walletconnect.violasTransferDataHandler.ViolasTransferDecodeEngine
 import com.violas.wallet.walletconnect.TransactionSwapVo
 import com.violas.walletconnect.exceptions.InvalidJsonRpcParamsException
+import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.jsonrpc.JsonRpcError
 import com.violas.walletconnect.models.WCMethod
 import com.violas.walletconnect.models.violas.WCViolasSendTransaction
+import com.violas.walletconnect.models.violas.WCViolasSignRawTransaction
+import com.violas.walletconnect.models.violas.WCViolasSignTransaction
 import kotlinx.coroutines.runBlocking
 import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
+import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionArgument
 import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.transaction.lbrStructTagType
 import org.palliums.violascore.transaction.storage.TypeTag
 
-class ViolasSendTransactionMessageHandler : IMessageHandler<JsonArray> {
+class ViolasSignTransactionMessageHandler : IMessageHandler<JsonArray> {
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
     private val mViolasService by lazy { DataRepository.getViolasService() }
-
     private val mBuilder = GsonBuilder()
     private val mGson = mBuilder
         .serializeNulls()
         .create()
 
     override fun canHandle(method: WCMethod): Boolean {
-        return method == WCMethod.VIOLAS_SEND_TRANSACTION
+        return method == WCMethod.VIOLAS_SIGN_TRANSACTION
     }
 
     override fun decodeMessage(requestID: Long, param: JsonArray): TransactionSwapVo {
-        val tx = mGson.fromJson<List<WCViolasSendTransaction>>(param).firstOrNull()
+        val tx = mGson.fromJson<List<WCViolasSignTransaction>>(param).firstOrNull()
             ?: throw InvalidJsonRpcParamsException(requestID)
 
         val account = mAccountStorage.findByCoinTypeAndCoinAddress(
@@ -164,7 +167,7 @@ class ViolasSendTransactionMessageHandler : IMessageHandler<JsonArray> {
         return TransactionSwapVo(
             requestID,
             generateRawTransaction.toByteArray().toHex(),
-            true,
+            false,
             false,
             account.id,
             CoinTypes.Violas,

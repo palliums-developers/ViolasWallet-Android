@@ -3,8 +3,8 @@ package com.violas.wallet.repository.http.bank
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
 import io.reactivex.Observable
-import retrofit2.http.GET
-import retrofit2.http.Query
+import okhttp3.RequestBody
+import retrofit2.http.*
 
 /**
  * Created by elephant on 2020/8/24 11:23.
@@ -158,4 +158,35 @@ interface BankApi {
         @Query("address") address: String,
         @Query("id") id: String
     ): Observable<Response<BorrowDetailsDTO>>
+
+    /**
+     * 存款交易上链
+     */
+    @POST("/1.0/violas/bank/deposit")
+    fun submitDepositTransaction(
+        @Body body:RequestBody
+    ): Observable<Response<Any>>
+
+    /**
+     * 取款交易上链
+     */
+    @POST("/1.0/violas/bank/deposit/withdrawal")
+    fun submitRedeemTransaction(
+        @Body body:RequestBody
+    ): Observable<Response<Any>>
+
+    /**
+     * 借款交易上链
+     */
+    @POST("/1.0/violas/bank/borrow")
+    fun submitBorrowTransaction(
+        @Body body:RequestBody
+    ): Observable<Response<Any>>
+
+    /**
+     * 还款交易上链
+     */
+    @POST("/1.0/violas/bank/borrow/repayment")
+    fun submitRepayBorrowTransaction(@Body body:RequestBody
+    ): Observable<Response<Any>>
 }

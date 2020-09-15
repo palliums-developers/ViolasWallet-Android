@@ -101,6 +101,7 @@ data class ExchangeRemoveLiquidityDataType(
 data class TransactionSwapVo(
     val requestID: Long,
     val hexTx: String,
+    val isSend: Boolean = true,
     val isSigned: Boolean = true,
     val accountId: Long = -1,
     val coinType: CoinTypes,
@@ -110,6 +111,7 @@ data class TransactionSwapVo(
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
         parcel.readString() ?: "",
+        parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte(),
         parcel.readLong(),
         CoinTypes.parseCoinType(parcel.readInt()),
@@ -121,6 +123,7 @@ data class TransactionSwapVo(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(requestID)
         parcel.writeString(hexTx)
+        parcel.writeByte(if (isSend) 1 else 0)
         parcel.writeByte(if (isSigned) 1 else 0)
         parcel.writeLong(accountId)
         parcel.writeInt(coinType.coinType())

@@ -295,12 +295,16 @@ class BorrowActivity : BankBusinessActivity() {
         launch(Dispatchers.IO) {
             try {
                 showProgress()
-                mBankManager.borrow(pwd.toByteArray(), account, mark, amount)
+                mBankManager.borrow(
+                    pwd.toByteArray(), account,
+                    mBorrowProductDetails!!.id, mark, amount
+                )
                 dismissProgress()
                 showToast(getString(R.string.hint_bank_business_borrow_success))
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 finish()
             } catch (e: Exception) {
+                e.printStackTrace()
                 e.message?.let { showToast(it) }
                 dismissProgress()
             }

@@ -16,13 +16,18 @@ import org.palliums.violascore.transaction.storage.TypeTagStructTag
 import org.palliums.violascore.wallet.Account
 
 class BankManager {
-    private val mViolasService by lazy { DataRepository.getViolasChainRpcService() }
+    private val mViolasRPCService by lazy { DataRepository.getViolasChainRpcService() }
+    private val mBankService by lazy { DataRepository.getBankService() }
     private val mViolasBankContract by lazy { ViolasBankContract(Vm.TestNet) }
 
+    /**
+     * 借款
+     */
     @Throws(ViolasException::class)
     suspend fun borrow(
         password: ByteArray,
         payerAccountDO: AccountDO,
+        productId: String,
         assetsMark: LibraTokenAssetsMark,
         amount: Long
     ): String {
@@ -43,18 +48,29 @@ class BankManager {
             amount
         )
 
-        return mViolasService.sendTransaction(
+        val generateTransaction = mViolasRPCService.generateTransaction(
             optionBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
             gasCurrencyCode = typeTagFrom.value.module,
             chainId = Vm.ViolasChainId
-        ).sequenceNumber.toString()
+        )
+        mBankService.submitBorrowTransaction(
+            generateTransaction.sender,
+            productId,
+            amount,
+            generateTransaction.signTxn
+        )
+        return generateTransaction.sequenceNumber.toString()
     }
 
+    /**
+     * 还款
+     */
     @Throws(ViolasException::class)
     suspend fun repayBorrow(
         password: ByteArray,
         payerAccountDO: AccountDO,
+        productId: String,
         assetsMark: LibraTokenAssetsMark,
         amount: Long
     ): String {
@@ -76,18 +92,29 @@ class BankManager {
                 amount
             )
 
-        return mViolasService.sendTransaction(
+        val generateTransaction = mViolasRPCService.generateTransaction(
             optionRepayBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
             gasCurrencyCode = typeTagFrom.value.module,
             chainId = Vm.ViolasChainId
-        ).sequenceNumber.toString()
+        )
+        mBankService.submitRepayBorrowTransaction(
+            generateTransaction.sender,
+            productId,
+            amount,
+            generateTransaction.signTxn
+        )
+        return generateTransaction.sequenceNumber.toString()
     }
 
+    /**
+     * 存款
+     */
     @Throws(ViolasException::class)
     suspend fun lock(
         password: ByteArray,
         payerAccountDO: AccountDO,
+        productId: String,
         assetsMark: LibraTokenAssetsMark,
         amount: Long
     ): String {
@@ -109,18 +136,29 @@ class BankManager {
                 amount
             )
 
-        return mViolasService.sendTransaction(
+        val generateTransaction = mViolasRPCService.generateTransaction(
             optionLockBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
             gasCurrencyCode = typeTagFrom.value.module,
             chainId = Vm.ViolasChainId
-        ).sequenceNumber.toString()
+        )
+        mBankService.submitDepositTransaction(
+            generateTransaction.sender,
+            productId,
+            amount,
+            generateTransaction.signTxn
+        )
+        return generateTransaction.sequenceNumber.toString()
     }
 
+    /**
+     * 提款
+     */
     @Throws(ViolasException::class)
     suspend fun redeem(
         password: ByteArray,
         payerAccountDO: AccountDO,
+        productId: String,
         assetsMark: LibraTokenAssetsMark,
         amount: Long
     ): String {
@@ -142,11 +180,18 @@ class BankManager {
                 amount
             )
 
-        return mViolasService.sendTransaction(
+        val generateTransaction = mViolasRPCService.generateTransaction(
             optionRedeemBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
             gasCurrencyCode = typeTagFrom.value.module,
             chainId = Vm.ViolasChainId
-        ).sequenceNumber.toString()
+        )
+        mBankService.submitRedeemTransaction(
+            generateTransaction.sender,
+            productId,
+            amount,
+            generateTransaction.signTxn
+        )
+        return generateTransaction.sequenceNumber.toString()
     }
 }

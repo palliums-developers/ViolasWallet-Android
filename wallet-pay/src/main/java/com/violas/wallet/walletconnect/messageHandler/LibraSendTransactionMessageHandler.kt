@@ -177,6 +177,7 @@ class LibraSendTransactionMessageHandler : IMessageHandler<JsonArray> {
         return TransactionSwapVo(
             requestID,
             generateRawTransaction.toByteArray().toHex(),
+            true,
             false,
             account.id,
             CoinTypes.Libra,
