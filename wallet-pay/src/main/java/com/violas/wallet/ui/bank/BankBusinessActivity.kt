@@ -157,8 +157,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
             }
         })
 
-        ivProductInfo.expandTouchArea(20)
-        ivProductInfo.setOnClickListener {
+        viewGroupProductInfo.setOnClickListener {
             expandLayoutProductInfo.toggleExpand()
             val resId = if (expandLayoutProductInfo.isExpand) {
                 R.drawable.icon_bank_info_expand
@@ -190,8 +189,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
             }
         })
 
-        ivProductIssue.expandTouchArea(20)
-        ivProductIssue.setOnClickListener {
+        viewGroupProductIssue.setOnClickListener {
             expandLayoutProductIssue.toggleExpand()
             val resId = if (expandLayoutProductIssue.isExpand) {
                 R.drawable.icon_bank_info_expand
