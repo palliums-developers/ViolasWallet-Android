@@ -97,10 +97,10 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
     }
 
     private fun initView() {
-        tvCurrency.text = depositDetails.tokenModule
+        tvCurrency.text = depositDetails.tokenDisplayName
         tvAmount.text = "${convertAmountToDisplayAmountStr(
             depositDetails.availableAmount
-        )} ${depositDetails.tokenModule}"
+        )} ${depositDetails.tokenDisplayName}"
 
         etInputBox.post {
             etInputBox.setPadding(

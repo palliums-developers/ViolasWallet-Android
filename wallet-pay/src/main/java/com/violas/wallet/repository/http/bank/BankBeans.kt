@@ -129,7 +129,9 @@ data class DepositDetailsDTO(
     @SerializedName("token_module")
     val tokenModule: String,
     @SerializedName("token_address")
-    val tokenAddress: String
+    val tokenAddress: String,
+    @SerializedName("token_show_name")
+    val tokenDisplayName: String
 ) : Parcelable
 //endregion
 
