@@ -150,8 +150,7 @@ class BankRepository(private val api: BankApi) {
     suspend fun getBorrowingDetails(
         address: String,
         id: String
-    ) =
-        api.getBorrowingDetails(address, id).await().data
+    ) = api.getBorrowingDetails(address, id).await().data
 
     @Keep
     data class SubmitTransaction(
