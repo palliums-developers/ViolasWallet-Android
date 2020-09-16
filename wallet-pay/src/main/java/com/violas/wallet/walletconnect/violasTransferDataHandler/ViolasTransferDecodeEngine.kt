@@ -16,7 +16,11 @@ class ViolasTransferDecodeEngine(
             TransferViolasAddCurrencyToAccountDecode(mRawTransaction),
             TransferExchangeSwapDecode(mRawTransaction),
             TransferExchangeAddLiquidityDecode(mRawTransaction),
-            TransferExchangeRemoveLiquidityDecode(mRawTransaction)
+            TransferExchangeRemoveLiquidityDecode(mRawTransaction),
+            TransferBankDepositDecode(mRawTransaction),
+            TransferBankRedeemDecode(mRawTransaction),
+            TransferBankRepayBorrowDecode(mRawTransaction),
+            TransferBankBorrowDecode(mRawTransaction)
         )
 
     fun decode(): Pair<TransactionDataType, String> {

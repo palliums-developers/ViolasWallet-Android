@@ -1,5 +1,6 @@
 package com.palliums.violas.smartcontract.bank
 
+import com.palliums.violas.smartcontract.violasExchange.AbsViolasExchangeContract
 import org.palliums.violascore.move.Move
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.transaction.TransactionArgument
@@ -30,6 +31,10 @@ abstract class AbsViolasBankContract {
         )
     }
 
+    fun getBorrow2Contract() = replaceContractAddress(AbsViolasBankContract.mBorrow2Contract)
+    fun getLock2Contract() = replaceContractAddress(AbsViolasBankContract.mLock2Contract)
+    fun getRedeem2Contract() = replaceContractAddress(AbsViolasBankContract.mRedeem2Contract)
+    fun getRepayBorrow2Contract() = replaceContractAddress(AbsViolasBankContract.mRepayBorrow2Contract)
 
     /**
      * 往银行存钱
