@@ -41,6 +41,8 @@ import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import org.palliums.libracore.http.LibraException
 import org.palliums.violascore.http.ViolasException
 import java.math.BigDecimal

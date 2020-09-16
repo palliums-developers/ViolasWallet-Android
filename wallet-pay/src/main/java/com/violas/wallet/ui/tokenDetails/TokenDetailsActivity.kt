@@ -28,6 +28,10 @@ import com.violas.wallet.common.KEY_FOUR
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_THREE
 import com.violas.wallet.common.KEY_TWO
+import com.violas.wallet.event.HomePageType
+import com.violas.wallet.event.MarketPageType
+import com.violas.wallet.event.SwitchHomePageEvent
+import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.ui.collection.CollectionActivity
@@ -46,6 +50,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.yokeyword.fragmentation.SupportActivity
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 2020/6/3 15:27.
@@ -346,9 +351,9 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
         }
 
         flExchange.setOnClickListener {
-            // TODO 跳转到闪兑页面
-            Log.d("dddddddddd", "click")
-            showToast(R.string.hint_quotes_not_open)
+            EventBus.getDefault().post(SwitchHomePageEvent(HomePageType.Market))
+            EventBus.getDefault().post(SwitchMarketPageEvent(MarketPageType.Swap))
+            finish()
         }
     }
 
