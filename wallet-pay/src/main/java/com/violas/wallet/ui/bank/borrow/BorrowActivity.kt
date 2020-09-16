@@ -28,6 +28,7 @@ import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayUnitToAmount
+import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -93,9 +94,6 @@ class BorrowActivity : BankBusinessActivity() {
     }
 
     private fun refreshTryingView() {
-        if (mBorrowProductDetails == null) {
-
-        }
         mBorrowProductDetails?.run {
 //            setCurrentCoin(tokenModule, tokenAddress, tokenName, CoinTypes.Violas.coinType())
             mBankBusinessViewModel.mBusinessUsableAmount.postValue(
@@ -214,6 +212,12 @@ class BorrowActivity : BankBusinessActivity() {
             val convertAmountToDisplayAmountStr =
                 convertAmountToDisplayAmountStr(quotaLimit - quotaUsed)
             editBusinessValue.setText(convertAmountToDisplayAmountStr)
+        }
+    }
+
+    override fun onCoinAmountNotice(assetsVo: AssetsVo?) {
+        assetsVo?.let {
+            mBankBusinessViewModel.mCurrentAssetsLiveData.postValue(it)
         }
     }
 

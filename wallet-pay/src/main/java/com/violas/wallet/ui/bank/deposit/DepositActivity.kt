@@ -85,9 +85,6 @@ class DepositActivity : BankBusinessActivity() {
     }
 
     private fun refreshTryingView() {
-        if (mDepositProductDetails == null) {
-
-        }
         mDepositProductDetails?.run {
             mBankBusinessViewModel.mBusinessUserInfoLiveData.postValue(
                 BusinessUserInfo(
