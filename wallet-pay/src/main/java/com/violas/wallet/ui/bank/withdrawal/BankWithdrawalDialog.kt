@@ -60,8 +60,8 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
         }
     }
 
-    private lateinit var depositDetails: DepositDetailsDTO
     private lateinit var productId: String
+    private lateinit var depositDetails: DepositDetailsDTO
 
     private val accountManager by lazy { AccountManager() }
     private val bankManager by lazy { BankManager() }
@@ -211,7 +211,8 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_ONE, depositDetails)
+        outState.putString(KEY_ONE, productId)
+        outState.putParcelable(KEY_TWO, depositDetails)
     }
 
     override fun onStart() {
