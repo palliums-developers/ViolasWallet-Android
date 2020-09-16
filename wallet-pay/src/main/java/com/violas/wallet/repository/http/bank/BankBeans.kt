@@ -290,15 +290,12 @@ data class CoinLiquidationRecordDTO(
 //region /1.0/violas/bank/borrow/repayment DTO
 @Keep
 data class BorrowDetailsDTO(
-    @SerializedName("id")
-    val productId: String,
-    @SerializedName("name")
-    val productName: String,
     @SerializedName("rate")
     val borrowingRate: Double,
     @SerializedName("balance")
     val borrowedAmount: Long,           // 已借贷数量
-
+    @SerializedName("logo")
+    val logo: String,
     @SerializedName("token_address")
     val tokenAddress: String,
     @SerializedName("token_module")

@@ -28,7 +28,7 @@ class TransferBankRepayBorrowDecode(private val transaction: RawTransaction) : T
     }
 
     override fun getTransactionDataType(): TransactionDataType {
-        return TransactionDataType.Transfer
+        return TransactionDataType.VIOLAS_BANK_REPAY_BORROW
     }
 
     override fun handle(): BankRepayBorrowDatatype {
@@ -38,8 +38,6 @@ class TransferBankRepayBorrowDecode(private val transaction: RawTransaction) : T
                 0,
                 payload
             )
-
-            val data = decodeWithData(2, payload)
 
             BankRepayBorrowDatatype(
                 transaction.sender.toHex(),

@@ -80,6 +80,7 @@ class RepayBorrowActivity : BankBusinessActivity() {
                     }
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 loadedFailure()
             } finally {
                 dismissProgress()
@@ -88,9 +89,6 @@ class RepayBorrowActivity : BankBusinessActivity() {
     }
 
     private fun refreshTryingView() {
-        if (mBorrowingDetails == null) {
-
-        }
         mBorrowingDetails?.run {
             mBankBusinessViewModel.mBusinessUsableAmount.postValue(
                 BusinessUserAmountInfo(
@@ -120,6 +118,15 @@ class RepayBorrowActivity : BankBusinessActivity() {
                         getString(R.string.hint_repayment_account),
                         getString(R.string.hint_borrow_wallet_balance)
                     )
+                )
+            )
+
+            mCurrentAssertsAmountSubscriber.changeSubscriber(
+                LibraTokenAssetsMark(
+                    CoinTypes.Violas,
+                    tokenModule,
+                    tokenAddress,
+                    tokenName
                 )
             )
         }
@@ -194,10 +201,11 @@ class RepayBorrowActivity : BankBusinessActivity() {
         launch(Dispatchers.IO) {
             try {
                 showProgress()
+                val productId = intent.getStringExtra(EXT_BUSINESS_ID) ?: "0"
                 mBankManager.repayBorrow(
                     pwd.toByteArray(),
                     account,
-                    mBorrowingDetails!!.productId,
+                    productId,
                     mark,
                     amount
                 )
