@@ -17,14 +17,11 @@ import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.exchange.PoolRecordDTO
-import com.violas.wallet.repository.http.exchange.PoolRecordDTO.Companion.TYPE_ADD_LIQUIDITY
-import com.violas.wallet.repository.http.exchange.PoolRecordDTO.Companion.TYPE_REMOVE_LIQUIDITY
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.getAmountPrefix
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_pool_record.view.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
@@ -113,69 +110,6 @@ class PoolRecordViewModel : PagingViewModel<PoolRecordDTO>() {
                 address, pageSize, (pageNumber - 1) * pageSize
             )
         onSuccess.invoke(swapRecords ?: emptyList(), null)
-        //onSuccess.invoke(mockData(), null)
-    }
-
-    private suspend fun mockData(): List<PoolRecordDTO> {
-        delay(2000)
-        return mutableListOf(
-            PoolRecordDTO(
-                coinAName = "VLSUSD",
-                coinAAmount = "10000000",
-                coinBName = "VLSSGD",
-                coinBAmount = "13909000",
-                liquidityAmount = "1.001",
-                gasCoinAmount = "",
-                gasCoinName = "",
-                type = TYPE_ADD_LIQUIDITY,
-                time = System.currentTimeMillis(),
-                confirmedTime = System.currentTimeMillis() + 1000,
-                version = 1,
-                status = 4001
-            ),
-            PoolRecordDTO(
-                coinAName = "VLSUSD",
-                coinAAmount = "100000",
-                coinBName = "VLSEUR",
-                coinBAmount = "87770",
-                liquidityAmount = "0.781",
-                gasCoinAmount = "",
-                gasCoinName = "",
-                type = TYPE_ADD_LIQUIDITY,
-                time = System.currentTimeMillis(),
-                confirmedTime = System.currentTimeMillis() + 1000,
-                version = 2,
-                status = 4002
-            ),
-            PoolRecordDTO(
-                coinAName = "VLSUSD",
-                coinAAmount = "10000000",
-                coinBName = "VLSSGD",
-                coinBAmount = "13909000",
-                liquidityAmount = "1.001",
-                gasCoinAmount = "",
-                gasCoinName = "",
-                type = TYPE_REMOVE_LIQUIDITY,
-                time = System.currentTimeMillis(),
-                confirmedTime = System.currentTimeMillis() + 1000,
-                version = 3,
-                status = 4001
-            ),
-            PoolRecordDTO(
-                coinAName = "VLSUSD",
-                coinAAmount = "100000",
-                coinBName = "VLSEUR",
-                coinBAmount = "87770",
-                liquidityAmount = "0.781",
-                gasCoinAmount = "",
-                gasCoinName = "",
-                type = TYPE_REMOVE_LIQUIDITY,
-                time = System.currentTimeMillis(),
-                confirmedTime = System.currentTimeMillis() + 1000,
-                version = 4,
-                status = 4002
-            )
-        )
     }
 }
 
@@ -256,7 +190,7 @@ class PoolRecordViewHolder(
                     )
                 }
 
-            if (it.status == 4001) {
+            if (it.isSuccess()) {
                 itemView.tvState.setText(
                     if (it.isAddLiquidity())
                         R.string.market_pool_add_state_succeeded

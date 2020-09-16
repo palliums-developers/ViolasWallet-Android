@@ -127,7 +127,7 @@ class PoolDetailsActivity : BaseAppActivity() {
         tvResultDesc.visibility = View.VISIBLE
 
         // 转入转出成功
-        if (record.status == 4001) {
+        if (record.isSuccess()) {
             tvResultDesc.setText(
                 if (record.isAddLiquidity())
                     R.string.market_pool_add_state_succeeded

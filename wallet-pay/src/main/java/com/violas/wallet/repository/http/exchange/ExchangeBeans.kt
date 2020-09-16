@@ -20,24 +20,30 @@ data class PoolRecordDTO(
     val coinAName: String?,
     @SerializedName(value = "amounta")
     val coinAAmount: String?,
+
     @SerializedName(value = "coinb")
     val coinBName: String?,
     @SerializedName(value = "amountb")
     val coinBAmount: String?,
-    @SerializedName(value = "token")
-    val liquidityAmount: String?,
+
     @SerializedName(value = "gas_currency")
     val gasCoinName: String?,
     @SerializedName(value = "gas_used")
     val gasCoinAmount: String?,
+
+    @SerializedName(value = "token")
+    val liquidityAmount: String?,
     @SerializedName(value = "transaction_type")
     val type: String,
+    @SerializedName(value = "status")
+    val status: String?,
+
     @SerializedName(value = "date")
     val time: Long,
     @SerializedName(value = "confirmed_time")
     val confirmedTime: Long,
-    val version: Long,
-    val status: Int
+    @SerializedName(value = "version")
+    val version: Long
 ) : Parcelable {
 
     companion object {
@@ -47,6 +53,10 @@ data class PoolRecordDTO(
 
     fun isAddLiquidity(): Boolean {
         return type.equals(TYPE_ADD_LIQUIDITY, true)
+    }
+
+    fun isSuccess(): Boolean {
+        return status?.equals("Executed", true) == true
     }
 }
 
