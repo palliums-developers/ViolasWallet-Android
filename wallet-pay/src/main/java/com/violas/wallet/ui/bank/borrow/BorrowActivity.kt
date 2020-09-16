@@ -223,10 +223,11 @@ class BorrowActivity : BankBusinessActivity() {
 
     override fun clickExecBusiness() {
         launch(Dispatchers.IO) {
+            mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(null)
             val amountStr = editBusinessValue.text.toString()
             val assets = mBankBusinessViewModel.mCurrentAssetsLiveData.value
             if (assets == null) {
-                showToast(getString(R.string.hint_bank_business_select_assets))
+                showToast(getString(R.string.hint_bank_load_assets_error))
                 return@launch
             }
             val account = mAccountManager.getIdentityByCoinType(assets.getCoinNumber())
