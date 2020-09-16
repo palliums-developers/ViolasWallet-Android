@@ -28,7 +28,7 @@ class TransferBankRedeemDecode(private val transaction: RawTransaction) : Transf
     }
 
     override fun getTransactionDataType(): TransactionDataType {
-        return TransactionDataType.Transfer
+        return TransactionDataType.VIOLAS_BANK_REDEEM
     }
 
     override fun handle(): BankRedeemDatatype {
@@ -38,8 +38,6 @@ class TransferBankRedeemDecode(private val transaction: RawTransaction) : Transf
                 0,
                 payload
             )
-
-            val data = decodeWithData(2, payload)
 
             BankRedeemDatatype(
                 transaction.sender.toHex(),

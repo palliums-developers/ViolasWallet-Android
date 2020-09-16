@@ -27,7 +27,7 @@ class TransferBankDepositDecode(private val transaction: RawTransaction) : Trans
     }
 
     override fun getTransactionDataType(): TransactionDataType {
-        return TransactionDataType.Transfer
+        return TransactionDataType.VIOLAS_BANK_DEPOSIT
     }
 
     override fun handle(): BankDepositDatatype {
@@ -37,8 +37,6 @@ class TransferBankDepositDecode(private val transaction: RawTransaction) : Trans
                 0,
                 payload
             )
-
-            val data = decodeWithData(2, payload)
 
             BankDepositDatatype(
                 transaction.sender.toHex(),
