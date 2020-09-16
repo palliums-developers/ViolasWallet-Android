@@ -551,4 +551,9 @@
     <string name="hint_borrow_wallet_balance">钱包余额</string>
     <string name="hint_repay_borrow_insufficient_balance">当前可用余额不足</string>
     <string name="hint_click_retry">点击重试</string>
+    <string name="wallet_connect_bank_deposit">我要存</string>
+    <string name="wallet_connect_bank_redeem">提取数量</string>
+    <string name="wallet_connect_bank_borrow">我要借</string>
+    <string name="wallet_connect_bank_repay_borrow">我要还</string>
+    <string name="hint_bank_load_assets_error">币种信息加载异常</string>
 </resources>

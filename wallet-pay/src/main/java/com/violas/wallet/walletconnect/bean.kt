@@ -14,7 +14,11 @@ enum class TransactionDataType(val value: Int) {
     BITCOIN_TRANSFER(3),
     VIOLAS_EXCHANGE_SWAP(4),
     VIOLAS_EXCHANGE_ADD_LIQUIDITY(5),
-    VIOLAS_EXCHANGE_REMOVE_LIQUIDITY(6);
+    VIOLAS_EXCHANGE_REMOVE_LIQUIDITY(6),
+    VIOLAS_BANK_DEPOSIT(7),
+    VIOLAS_BANK_REDEEM(8),
+    VIOLAS_BANK_BORROW(9),
+    VIOLAS_BANK_REPAY_BORROW(10);
 
     companion object {
         fun decode(value: Int): TransactionDataType {
@@ -40,6 +44,10 @@ enum class TransactionDataType(val value: Int) {
                 VIOLAS_EXCHANGE_REMOVE_LIQUIDITY.value -> {
                     VIOLAS_EXCHANGE_REMOVE_LIQUIDITY
                 }
+                VIOLAS_BANK_DEPOSIT.value -> VIOLAS_BANK_DEPOSIT
+                VIOLAS_BANK_REDEEM.value -> VIOLAS_BANK_REDEEM
+                VIOLAS_BANK_BORROW.value -> VIOLAS_BANK_BORROW
+                VIOLAS_BANK_REPAY_BORROW.value -> VIOLAS_BANK_REPAY_BORROW
                 else -> {
                     None
                 }
@@ -48,7 +56,29 @@ enum class TransactionDataType(val value: Int) {
     }
 }
 
+data class BankDepositDatatype(
+    val form: String,
+    val amount: Long,
+    val coinName: String
+)
 
+data class BankRedeemDatatype(
+    val form: String,
+    val amount: Long,
+    val coinName: String
+)
+
+data class BankBorrowDatatype(
+    val form: String,
+    val amount: Long,
+    val coinName: String
+)
+
+data class BankRepayBorrowDatatype(
+    val form: String,
+    val amount: Long,
+    val coinName: String
+)
 
 data class TransferDataType(
     val form: String,

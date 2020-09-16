@@ -85,9 +85,6 @@ class DepositActivity : BankBusinessActivity() {
     }
 
     private fun refreshTryingView() {
-        if (mDepositProductDetails == null) {
-
-        }
         mDepositProductDetails?.run {
             mBankBusinessViewModel.mBusinessUserInfoLiveData.postValue(
                 BusinessUserInfo(
@@ -181,10 +178,11 @@ class DepositActivity : BankBusinessActivity() {
 
     override fun clickExecBusiness() {
         launch(Dispatchers.IO) {
+            mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(null)
             val amountStr = editBusinessValue.text.toString()
             val assets = mBankBusinessViewModel.mCurrentAssetsLiveData.value
             if (assets == null) {
-                showToast(getString(R.string.hint_bank_business_select_assets))
+                showToast(getString(R.string.hint_bank_load_assets_error))
                 return@launch
             }
             if (amountStr.isEmpty()) {

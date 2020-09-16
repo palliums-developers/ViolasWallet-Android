@@ -177,6 +177,82 @@ class ViewFillers {
                 }
                 view
             }
+            TransactionDataType.VIOLAS_BANK_DEPOSIT.value -> {
+                println("transfer data: $viewData")
+                val mTransferDataType = Gson().fromJson(
+                    viewData,
+                    BankDepositDatatype::class.java
+                )
+
+                val amount = BigDecimal(mTransferDataType.amount).divide(
+                    BigDecimal("1000000"), 6, RoundingMode.DOWN
+                ).stripTrailingZeros().toPlainString()
+
+                val view = LayoutInflater.from(context)
+                    .inflate(R.layout.view_wallet_connect_bank_deposit, viewGroupContent, false)
+                withContext(Dispatchers.Main) {
+                    view.tvDescribeAmount.text = "$amount ${mTransferDataType.coinName}"
+                    view.tvDescribeFee.text = "0.00 ${mTransferDataType.coinName}"
+                }
+                view
+            }
+            TransactionDataType.VIOLAS_BANK_REDEEM.value -> {
+                println("transfer data: $viewData")
+                val mTransferDataType = Gson().fromJson(
+                    viewData,
+                    BankDepositDatatype::class.java
+                )
+
+                val amount = BigDecimal(mTransferDataType.amount).divide(
+                    BigDecimal("1000000"), 6, RoundingMode.DOWN
+                ).stripTrailingZeros().toPlainString()
+
+                val view = LayoutInflater.from(context)
+                    .inflate(R.layout.view_wallet_connect_bank_redeem, viewGroupContent, false)
+                withContext(Dispatchers.Main) {
+                    view.tvDescribeAmount.text = "$amount ${mTransferDataType.coinName}"
+                    view.tvDescribeFee.text = "0.00 ${mTransferDataType.coinName}"
+                }
+                view
+            }
+            TransactionDataType.VIOLAS_BANK_BORROW.value -> {
+                println("transfer data: $viewData")
+                val mTransferDataType = Gson().fromJson(
+                    viewData,
+                    BankDepositDatatype::class.java
+                )
+
+                val amount = BigDecimal(mTransferDataType.amount).divide(
+                    BigDecimal("1000000"), 6, RoundingMode.DOWN
+                ).stripTrailingZeros().toPlainString()
+
+                val view = LayoutInflater.from(context)
+                    .inflate(R.layout.view_wallet_connect_bank_borrow, viewGroupContent, false)
+                withContext(Dispatchers.Main) {
+                    view.tvDescribeAmount.text = "$amount ${mTransferDataType.coinName}"
+                    view.tvDescribeFee.text = "0.00 ${mTransferDataType.coinName}"
+                }
+                view
+            }
+            TransactionDataType.VIOLAS_BANK_REPAY_BORROW.value -> {
+                println("transfer data: $viewData")
+                val mTransferDataType = Gson().fromJson(
+                    viewData,
+                    BankDepositDatatype::class.java
+                )
+
+                val amount = BigDecimal(mTransferDataType.amount).divide(
+                    BigDecimal("1000000"), 6, RoundingMode.DOWN
+                ).stripTrailingZeros().toPlainString()
+
+                val view = LayoutInflater.from(context)
+                    .inflate(R.layout.view_wallet_connect_bank_repay_borrow, viewGroupContent, false)
+                withContext(Dispatchers.Main) {
+                    view.tvDescribeAmount.text = "$amount ${mTransferDataType.coinName}"
+                    view.tvDescribeFee.text = "0.00 ${mTransferDataType.coinName}"
+                }
+                view
+            }
             else -> {
                 null
             }
