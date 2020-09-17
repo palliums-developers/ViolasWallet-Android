@@ -75,22 +75,22 @@ class SwapDetailsActivity : BaseAppActivity() {
 
     private fun initView(record: SwapRecordDTO) {
         tvInputCoin.text =
-            if (record.inputCoinName.isNullOrBlank() || record.inputCoinAmount.isNullOrBlank())
+            if (record.inputCoinDisplayName.isNullOrBlank() || record.inputCoinAmount.isNullOrBlank())
                 getString(R.string.value_null)
             else
                 "${convertAmountToDisplayAmountStr(
                     record.inputCoinAmount,
                     str2CoinType(record.inputChainName)
-                )} ${record.inputCoinName}"
+                )} ${record.inputCoinDisplayName}"
 
         tvOutputCoin.text =
-            if (record.outputCoinName.isNullOrBlank() || record.outputCoinAmount.isNullOrBlank())
+            if (record.outputCoinDisplayName.isNullOrBlank() || record.outputCoinAmount.isNullOrBlank())
                 getString(R.string.value_null)
             else
                 "${convertAmountToDisplayAmountStr(
                     record.outputCoinAmount,
                     str2CoinType(record.outputChainName)
-                )} ${record.outputCoinName}"
+                )} ${record.outputCoinDisplayName}"
 
         tvExchangeRate.text =
             if (record.inputCoinAmount.isNullOrBlank() || record.outputCoinAmount.isNullOrBlank())

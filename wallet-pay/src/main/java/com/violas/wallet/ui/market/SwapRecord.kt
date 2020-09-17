@@ -178,23 +178,23 @@ class SwapRecordViewHolder(
             itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
 
             itemView.tvInputCoin.text =
-                if (it.inputCoinName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
+                if (it.inputCoinDisplayName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
                     getString(R.string.value_null)
                 } else {
                     "${convertAmountToDisplayAmountStr(
                         it.inputCoinAmount,
                         str2CoinType(it.inputChainName)
-                    )} ${it.inputCoinName}"
+                    )} ${it.inputCoinDisplayName}"
                 }
 
             itemView.tvOutputCoin.text =
-                if (it.outputCoinName.isNullOrBlank() || it.outputCoinAmount.isNullOrBlank()) {
+                if (it.outputCoinDisplayName.isNullOrBlank() || it.outputCoinAmount.isNullOrBlank()) {
                     getString(R.string.value_null)
                 } else {
                     "${convertAmountToDisplayAmountStr(
                         it.outputCoinAmount,
                         str2CoinType(it.outputChainName)
-                    )} ${it.outputCoinName}"
+                    )} ${it.outputCoinDisplayName}"
                 }
 
             when (it.status) {
