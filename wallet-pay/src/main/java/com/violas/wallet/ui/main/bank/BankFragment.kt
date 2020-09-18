@@ -212,8 +212,8 @@ class BankFragment : BaseFragment() {
         bankViewModel.totalDepositLiveData.observe(viewLifecycleOwner, Observer {
             tvTotalDeposit.text = it
         })
-        bankViewModel.totalBorrowableLiveData.observe(viewLifecycleOwner, Observer {
-            tvTotalBorrowable.text = it
+        bankViewModel.borrowableLiveData.observe(viewLifecycleOwner, Observer {
+            tvBorrowable.text = it
         })
         bankViewModel.totalEarningsLiveData.observe(viewLifecycleOwner, Observer {
             tvTotalEarnings.text = it

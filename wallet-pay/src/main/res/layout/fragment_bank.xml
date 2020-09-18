@@ -110,7 +110,7 @@
                 app:layout_constraintTop_toTopOf="@id/ivTotalBorrowableIcon" />
 
             <NumberTextView
-                android:id="@+id/tvTotalBorrowable"
+                android:id="@+id/tvBorrowable"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dp_10"
                 android:layout_marginStart="@dimen/dp_10"

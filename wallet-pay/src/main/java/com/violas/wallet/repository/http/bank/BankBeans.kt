@@ -19,7 +19,9 @@ data class AccountInfoDTO(
     @SerializedName("amount")
     var totalDeposit: String,
     @SerializedName("borrow")
-    var totalBorrowable: String,
+    var borrowable: String,
+    @SerializedName("borrow_limit")
+    var borrowableLimit: String,
     @SerializedName("total")
     var totalEarnings: String,
     @SerializedName("yesterday")

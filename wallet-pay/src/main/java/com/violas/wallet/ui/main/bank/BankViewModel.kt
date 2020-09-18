@@ -38,8 +38,8 @@ class BankViewModel : BaseViewModel() {
     // 存款总额
     val totalDepositLiveData = MediatorLiveData<String>()
 
-    // 可借总额
-    val totalBorrowableLiveData = MediatorLiveData<String>()
+    // 可借额度
+    val borrowableLiveData = MediatorLiveData<String>()
 
     // 累计收益
     val totalEarningsLiveData = MediatorLiveData<String>()
@@ -61,15 +61,19 @@ class BankViewModel : BaseViewModel() {
             if (showAmount) {
                 totalDepositLiveData.value =
                     "≈ ${keepTwoDecimals(accountInfo?.totalDeposit ?: "0")}"
-                totalBorrowableLiveData.value =
-                    "≈ ${keepTwoDecimals(accountInfo?.totalBorrowable ?: "0")}"
+                borrowableLiveData.value =
+                    "≈ ${keepTwoDecimals(
+                        accountInfo?.borrowable ?: "0"
+                    )}/${keepTwoDecimals(
+                        accountInfo?.borrowableLimit ?: "0"
+                    )}"
                 totalEarningsLiveData.value =
                     "≈ ${keepTwoDecimals(accountInfo?.totalEarnings ?: "0")}"
                 yesterdayEarningsLiveData.value =
                     "${keepTwoDecimals(accountInfo?.yesterdayEarnings ?: "0")} $"
             } else {
                 totalDepositLiveData.value = "≈ ******"
-                totalBorrowableLiveData.value = "≈ ******"
+                borrowableLiveData.value = "≈ ******"
                 totalEarningsLiveData.value = "≈ ******"
                 yesterdayEarningsLiveData.value = "***"
             }
@@ -131,22 +135,6 @@ class BankViewModel : BaseViewModel() {
                     null
 
             try {
-                val accountInfo = accountInfoDeferred?.await()
-                accountInfo?.let {
-                    val syncEndAddress: String?
-                    synchronized(lock) {
-                        syncEndAddress = this@BankViewModel.address
-                    }
-
-                    if (syncStartAddress == syncEndAddress) {
-                        accountInfoLiveData.postValue(accountInfo)
-                    }
-                }
-            } catch (e: Exception) {
-
-            }
-
-            try {
                 val depositProducts =
                     depositProductsDeferred?.await()
                 depositProducts?.let {
@@ -164,6 +152,18 @@ class BankViewModel : BaseViewModel() {
                 }
             } catch (e: Exception) {
                 borrowingProductsLiveData.postValue(null)
+            }
+
+            val accountInfo = accountInfoDeferred?.await()
+            accountInfo?.let {
+                val syncEndAddress: String?
+                synchronized(lock) {
+                    syncEndAddress = this@BankViewModel.address
+                }
+
+                if (syncStartAddress == syncEndAddress) {
+                    accountInfoLiveData.postValue(accountInfo)
+                }
             }
         }
     }
