@@ -132,10 +132,12 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
         recyclerView.visibility = View.GONE
 
         currCoin = swapTokensDataResourcesBridge?.getCurrCoin(action)
-        swapTokensDataResourcesBridge?.getMarketSupportFromTokensLiveData()?.observe(
-            viewLifecycleOwner,
-            Observer { handleSwapTokens(it) }
-        )
+        if (action == ACTION_SWAP_SELECT_FROM) {
+            swapTokensDataResourcesBridge?.getMarketSupportFromTokensLiveData()?.observe(
+                viewLifecycleOwner,
+                Observer { handleSwapTokens(it) }
+            )
+        }
 
         statusLayout.setReloadCallback {
             loadSwapTokens()

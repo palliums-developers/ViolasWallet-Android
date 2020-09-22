@@ -92,8 +92,8 @@
 
     <ImageView
         android:id="@+id/ivConversion"
-        android:layout_width="12dp"
-        android:layout_height="16dp"
+        android:layout_width="@dimen/dp_20"
+        android:layout_height="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_7"
         android:background="?attr/marketCoinConversionIcon"
         app:layout_constraintEnd_toEndOf="parent"
