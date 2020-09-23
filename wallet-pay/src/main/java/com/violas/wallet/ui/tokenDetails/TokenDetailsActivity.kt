@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -16,10 +15,7 @@ import com.palliums.base.ViewController
 import com.palliums.extensions.close
 import com.palliums.extensions.setTitleToCenter
 import com.palliums.extensions.show
-import com.palliums.utils.CustomMainScope
-import com.palliums.utils.getColorByAttrId
-import com.palliums.utils.getResourceId
-import com.palliums.utils.start
+import com.palliums.utils.*
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.palliums.widget.loading.LoadingDialog
 import com.quincysx.crypto.CoinTypes
@@ -193,7 +189,7 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                 oldRight: Int,
                 oldBottom: Int
             ) {
-                if (oldBottom == bottom) {
+                if (oldBottom != 0 && oldBottom <= bottom) {
                     collapsingToolbarLayout.removeOnLayoutChangeListener(this)
                     toolbar.setTitleToCenter(tvTitle)
                 }
