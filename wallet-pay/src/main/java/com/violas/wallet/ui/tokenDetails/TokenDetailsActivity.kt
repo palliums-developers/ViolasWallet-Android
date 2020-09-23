@@ -199,6 +199,11 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                 }
             }
         })
+
+        tvTokenAddress.post {
+            tvTokenAddress?.maxWidth =
+                clTokenInfo.width - DensityUtility.dp2px(this, 28)
+        }
     }
 
     private fun updateTokenInfoView() {
