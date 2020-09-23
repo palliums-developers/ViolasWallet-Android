@@ -10,7 +10,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.LibraTokenManager
 import com.violas.wallet.utils.ClipboardUtils
 import kotlinx.android.synthetic.main.activity_collection.*
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +38,7 @@ class CollectionActivity : BaseAppActivity() {
     private var mAccountId = 0L
 
     private val mTokenManager by lazy {
-        TokenManager()
+        LibraTokenManager()
     }
 
     override fun getLayoutResId() = R.layout.activity_collection

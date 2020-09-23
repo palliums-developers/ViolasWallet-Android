@@ -10,7 +10,7 @@ import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.LibraTokenManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.event.HomePageType
@@ -207,7 +207,7 @@ class WalletManagerActivity : BaseAppActivity() {
             withContext(Dispatchers.IO) {
                 // 删除本地所有的account和token
                 mAccountManager.deleteAllAccount()
-                TokenManager().deleteAllToken()
+                LibraTokenManager().deleteAllToken()
                 // 清除 WalletConnect 链接状态
                 WalletConnect.getInstance(this@WalletManagerActivity).disconnect()
                 // 清除本地配置

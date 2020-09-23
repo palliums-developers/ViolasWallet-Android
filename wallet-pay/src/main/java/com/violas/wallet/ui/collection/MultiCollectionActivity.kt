@@ -15,7 +15,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.LibraTokenManager
 import com.violas.wallet.common.Vm
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.viewModel.WalletAppViewModel
@@ -67,7 +67,7 @@ class MultiCollectionActivity : BaseAppActivity(),
     }
 
     private val mTokenManager by lazy {
-        TokenManager()
+        LibraTokenManager()
     }
     private val mAccountManager by lazy {
         AccountManager()

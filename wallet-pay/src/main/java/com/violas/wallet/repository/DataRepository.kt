@@ -8,6 +8,7 @@ import com.palliums.violas.smartcontract.multitoken.MultiContractRpcApi
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.BaseBizUrl.getViolasBaseUrl
+import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.database.AppDatabase
 import com.violas.wallet.repository.http.bank.BankApi
 import com.violas.wallet.repository.http.bank.BankRepository
@@ -17,6 +18,7 @@ import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorService
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.repository.http.dex.DexApi
 import com.violas.wallet.repository.http.dex.DexRepository
+import com.violas.wallet.repository.http.ethereum.EtherscanRepository
 import com.violas.wallet.repository.http.exchange.ExchangeApi
 import com.violas.wallet.repository.http.exchange.ExchangeRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
@@ -123,6 +125,9 @@ object DataRepository {
 
     fun getBankService() =
         BankRepository(retrofit.create(BankApi::class.java))
+
+    fun getEtherscanService() =
+        EtherscanRepository(okHttpClient, Vm.TestNet)
 
     fun getMultiTokenContractService(): MultiContractRpcApi {
         return retrofit.create(MultiContractRpcApi::class.java)

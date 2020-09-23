@@ -10,7 +10,9 @@ import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip32.ExtendedKey
 import com.quincysx.crypto.bip44.BIP44
 import com.quincysx.crypto.bip44.CoinPairDerive
+import com.quincysx.crypto.bip44.CoinType
 import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
+import com.quincysx.crypto.ethereum.EthECKeyPair
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.biz.command.SaveAssetsFiatBalanceCommand
@@ -255,6 +257,14 @@ class AccountManager {
                     password
                 )
             }
+            CoinTypes.Ethereum -> {
+                AccountManager().importEthWallet(
+                    context,
+                    wordList,
+                    walletName,
+                    password
+                )
+            }
         }
     }
 
@@ -344,6 +354,33 @@ class AccountManager {
     }
 
     /**
+     * 导入 EthWallet 钱包（非身份钱包）
+     */
+    @Throws(MnemonicException::class)
+    private fun importEthWallet(
+        context: Context,
+        wordList: List<String>,
+        walletName: String,
+        password: ByteArray
+    ): Long {
+        val seed = Mnemonic.English()
+            .toByteArray(wordList) ?: throw MnemonicException()
+
+        val deriveBitcoin = deriveEthereum(seed)
+        val security = SimpleSecurity.instance(context)
+
+        return mAccountStorage.insert(
+            AccountDO(
+                privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
+                publicKey = deriveBitcoin.publicKey,
+                address = deriveBitcoin.address,
+                coinNumber = CoinTypes.Ethereum.coinType(),
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
+            )
+        )
+    }
+
+    /**
      * 创建身份
      */
     fun createIdentity(context: Context, password: ByteArray): List<String> {
@@ -378,6 +415,8 @@ class AccountManager {
             .toByteArray(wordList) ?: throw MnemonicException()
 
         val deriveBitcoin = deriveBitcoin(seed)
+        val deriveEthereum = deriveEthereum(seed)
+
         val deriveLibra = deriveLibra(wordList)
         val deriveViolas = deriveViolas(wordList)
 
@@ -419,12 +458,16 @@ class AccountManager {
                 },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 logo = "file:///android_asset/logo/ic_bitcoin_logo.png"
+            ),
+            AccountDO(
+                privateKey = security.encrypt(password, deriveEthereum.rawPrivateKey),
+                publicKey = deriveEthereum.publicKey,
+                address = deriveEthereum.address,
+                coinNumber = CoinTypes.Ethereum.coinType(),
+                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
+                logo = "file:///android_asset/logo/ic_bitcoin_logo.png"
             )
         )
-        if (insertIds.isNotEmpty()) {
-            switchCurrentAccount(insertIds[0])
-            CommandActuator.post(RefreshAssetsAllListCommand(true))
-        }
         if (insertIds.size > 1) {
             mAccountTokenStorage.insert(
                 TokenDo(
@@ -445,6 +488,10 @@ class AccountManager {
                 )
             )
         }
+        if (insertIds.isNotEmpty()) {
+            switchCurrentAccount(insertIds[0])
+            CommandActuator.post(RefreshAssetsAllListCommand(true))
+        }
     }
 
     private fun deriveViolas(wordList: List<String>): org.palliums.violascore.wallet.Account {
@@ -459,6 +506,14 @@ class AccountManager {
             Seed.fromMnemonic(wordList)
         )
         return Account(keyFactory.generateKey(0))
+    }
+
+    private fun deriveEthereum(seed: ByteArray): EthECKeyPair {
+        val extendedKey = ExtendedKey.create(seed)
+        val bip44Path =
+            BIP44.m().purpose44().coinType(CoinTypes.Ethereum).account(0).external().address(0)
+        val derive = CoinPairDerive(extendedKey).derive(bip44Path)
+        return derive as EthECKeyPair
     }
 
     private fun deriveBitcoin(seed: ByteArray): BitCoinECKeyPair {
@@ -591,11 +646,12 @@ class AccountManager {
                             it.accountType,
                             it.logo
                         ).also { coin ->
-                            coin.setAssetsName(CoinTypes.Bitcoin.coinName())
+                            val parseCoinType = CoinTypes.parseCoinType(coin.getCoinNumber())
+                            coin.setAssetsName(parseCoinType.coinName())
 
                             val convertDisplayUnitToAmount = convertAmountToDisplayUnit(
                                 it.amount,
-                                CoinTypes.parseCoinType(coin.getCoinNumber())
+                                parseCoinType
                             )
 
                             coin.amountWithUnit.amount = convertDisplayUnitToAmount.first
@@ -610,7 +666,8 @@ class AccountManager {
                             coin.fiatAmountWithUnit.amount =
                                 BigDecimal(coin.amountWithUnit.amount).multiply(
                                     BigDecimal(rateAmount)
-                                ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+                                ).setScale(2, RoundingMode.DOWN).stripTrailingZeros()
+                                    .toPlainString()
                         }
                     )
                 }
@@ -651,7 +708,7 @@ class AccountManager {
                         tokenVo.fiatAmountWithUnit.amount =
                             BigDecimal(tokenVo.amountWithUnit.amount).multiply(
                                 BigDecimal(rateAmount)
-                            ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+                            ).setScale(2, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
                     }
                 )
             }
@@ -741,7 +798,8 @@ class AccountManager {
                                     tokenVo.fiatAmountWithUnit.amount =
                                         BigDecimal(tokenVo.amountWithUnit.amount).multiply(
                                             BigDecimal(rateAmount)
-                                        ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+                                        ).setScale(2, RoundingMode.DOWN).stripTrailingZeros()
+                                            .toPlainString()
                                 })
                             } else {
                                 assetsVo.apply {
@@ -812,7 +870,8 @@ class AccountManager {
                                     tokenVo.fiatAmountWithUnit.amount =
                                         BigDecimal(tokenVo.amountWithUnit.amount).multiply(
                                             BigDecimal(rateAmount)
-                                        ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+                                        ).setScale(2, RoundingMode.DOWN).stripTrailingZeros()
+                                            .toPlainString()
                                 })
                             } else {
                                 assetsVo.apply {

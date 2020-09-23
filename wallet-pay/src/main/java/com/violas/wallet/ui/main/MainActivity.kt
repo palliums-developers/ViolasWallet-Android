@@ -3,23 +3,40 @@ package com.violas.wallet.ui.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.palliums.extensions.clearLongPressToast
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
+import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.Transaction
+import com.quincysx.crypto.bip32.ExtendedKey
+import com.quincysx.crypto.bip44.BIP44
+import com.quincysx.crypto.bip44.CoinPairDerive
+import com.quincysx.crypto.ethereum.EthECKeyPair
+import com.quincysx.crypto.ethereum.EthTransaction
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.biz.MnemonicException
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.bank.BankFragment
 import com.violas.wallet.ui.main.market.MarketFragment
 import com.violas.wallet.ui.main.me.MeFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
+import com.violas.walletconnect.extensions.toHex
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import org.palliums.libracore.mnemonic.Mnemonic
+import java.math.BigDecimal
+import java.math.BigInteger
 
 class MainActivity : BaseAppActivity() {
 

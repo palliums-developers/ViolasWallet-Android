@@ -42,7 +42,7 @@ class ExchangeManager {
         AccountManager()
     }
     private val mTokenManager by lazy {
-        TokenManager()
+        LibraTokenManager()
     }
 
     private val mViolasExchangeContract by lazy {

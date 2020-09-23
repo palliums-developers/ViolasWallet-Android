@@ -15,7 +15,7 @@ import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.wallet.Account
 
-class TokenManager {
+class LibraTokenManager {
 
     private val mTokenStorage by lazy { DataRepository.getTokenStorage() }
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
@@ -30,9 +30,6 @@ class TokenManager {
             ViolasMultiTokenContract(Vm.TestNet)
         )
     }
-
-    fun getViolasMultiTokenContract() =
-        mViolasMultiTokenService.getMultiTokenContract()
 
     /**
      * 本地兼容的币种
@@ -187,23 +184,6 @@ class TokenManager {
     @WorkerThread
     fun deleteAllToken() {
         mTokenStorage.deleteAll()
-    }
-
-    suspend fun getTokenBalance(
-        address: String,
-        tokenIdx: Long
-    ): Long {
-        val tokens =
-            mViolasMultiTokenService.getBalance(address, arrayListOf(tokenIdx))?.modules
-
-        var amount = 0L
-        tokens?.forEach { token ->
-            if (token.id == tokenIdx) {
-                amount = token.balance
-                return@forEach
-            }
-        }
-        return amount
     }
 
     @Throws(RuntimeException::class)

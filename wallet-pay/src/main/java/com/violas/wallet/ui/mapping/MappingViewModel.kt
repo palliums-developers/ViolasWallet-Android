@@ -11,7 +11,7 @@ import com.palliums.utils.toMap
 import com.palliums.violas.bean.TokenMark
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.LibraTokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.biz.mapping.MappingManager
 import com.violas.wallet.common.SimpleSecurity
@@ -51,7 +51,7 @@ class MappingViewModel : BaseViewModel() {
     private val mappingService by lazy { DataRepository.getMappingService() }
     private val appViewModel by lazy { WalletAppViewModel.getViewModelInstance() }
     private val mappingManager by lazy { MappingManager() }
-    private val tokenManager by lazy { TokenManager() }
+    private val tokenManager by lazy { LibraTokenManager() }
 
     val accountManager by lazy { AccountManager() }
     val coinsLoadState by lazy { EnhancedMutableLiveData<LoadState>() }

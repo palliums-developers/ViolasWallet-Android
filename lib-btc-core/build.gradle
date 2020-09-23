@@ -38,4 +38,5 @@ dependencies {
     api libraries.jackson_databind
     api libraries.spongycastle_core
     api libraries.spongycastle_prov
+    api 'com.lambdaworks:scrypt:1.4.0'
 }

@@ -8,7 +8,7 @@ import com.palliums.content.ContextProvider
 import com.palliums.violas.bean.TokenMark
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.LibraTokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.biz.exchange.AssetsSwapManager
 import com.violas.wallet.biz.exchange.SupportMappingSwapPairManager
@@ -246,7 +246,7 @@ class SwapViewModel() : BaseViewModel() {
             AccountManager().getIdentityByCoinType(coinTypes.coinType()) ?: throw RuntimeException()
 
         assetsMark as StableTokenVo
-        val tokenManager = TokenManager()
+        val tokenManager = LibraTokenManager()
 
         val simpleSecurity =
             SimpleSecurity.instance(ContextProvider.getContext())

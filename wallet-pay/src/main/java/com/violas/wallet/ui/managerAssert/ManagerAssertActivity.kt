@@ -22,7 +22,7 @@ import com.smallraw.support.switchcompat.SwitchButton
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseListingActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.LibraTokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -61,7 +61,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
     }
 
     private val mTokenManager by lazy {
-        TokenManager()
+        LibraTokenManager()
     }
 
     private val mWalletAppViewModel by lazy {
@@ -74,7 +74,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
             object : ViewModelProvider.Factory {
                 override fun <T : androidx.lifecycle.ViewModel?> create(modelClass: Class<T>): T {
                     return modelClass
-                        .getConstructor(TokenManager::class.java)
+                        .getConstructor(LibraTokenManager::class.java)
                         .newInstance(mTokenManager)
                 }
             }
@@ -255,11 +255,11 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
     }
 
     class ViewModel(
-        private val tokenManager: TokenManager
+        private val libraTokenManager: LibraTokenManager
     ) : ListingViewModel<AssertOriginateToken>() {
 
         override suspend fun loadData(vararg params: Any): List<AssertOriginateToken> {
-            return tokenManager.loadSupportToken()
+            return libraTokenManager.loadSupportToken()
         }
 
         override fun checkNetworkBeforeExecute(): Boolean {
