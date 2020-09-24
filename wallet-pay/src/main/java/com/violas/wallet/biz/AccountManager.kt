@@ -415,7 +415,7 @@ class AccountManager {
             .toByteArray(wordList) ?: throw MnemonicException()
 
         val deriveBitcoin = deriveBitcoin(seed)
-        val deriveEthereum = deriveEthereum(seed)
+//        val deriveEthereum = deriveEthereum(seed)
 
         val deriveLibra = deriveLibra(wordList)
         val deriveViolas = deriveViolas(wordList)
@@ -458,15 +458,16 @@ class AccountManager {
                 },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 logo = "file:///android_asset/logo/ic_bitcoin_logo.png"
-            ),
-            AccountDO(
-                privateKey = security.encrypt(password, deriveEthereum.rawPrivateKey),
-                publicKey = deriveEthereum.publicKey,
-                address = deriveEthereum.address,
-                coinNumber = CoinTypes.Ethereum.coinType(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
-                logo = "file:///android_asset/logo/ic_bitcoin_logo.png"
             )
+//            ,
+//            AccountDO(
+//                privateKey = security.encrypt(password, deriveEthereum.rawPrivateKey),
+//                publicKey = deriveEthereum.publicKey,
+//                address = deriveEthereum.address,
+//                coinNumber = CoinTypes.Ethereum.coinType(),
+//                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
+//                logo = "file:///android_asset/logo/ic_bitcoin_logo.png"
+//            )
         )
         if (insertIds.size > 1) {
             mAccountTokenStorage.insert(
