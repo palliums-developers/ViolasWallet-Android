@@ -24,6 +24,9 @@ import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.android.synthetic.main.view_bank_business_parameter.view.*
+import kotlinx.android.synthetic.main.view_bank_business_parameter.view.tvContent
+import kotlinx.android.synthetic.main.view_bank_business_parameter.view.tvTitle
+import kotlinx.android.synthetic.main.view_item_expand_problem_info.view.*
 import kotlinx.coroutines.launch
 
 /**
@@ -209,7 +212,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
                 expandLayoutProductIssue.removeAllViews()
                 it.forEach { productIssue ->
                     val inflate = layoutInflater.inflate(
-                        R.layout.view_item_expand_product_info,
+                        R.layout.view_item_expand_problem_info,
                         null
                     )
                     inflate.tvTitle.text = productIssue.q
