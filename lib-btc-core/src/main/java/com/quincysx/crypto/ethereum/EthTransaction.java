@@ -610,4 +610,18 @@ public class EthTransaction implements Transaction {
                 null,
                 chainId);
     }
+
+    public static EthTransaction create(String to, BigInteger amount, BigInteger nonce,
+                                        BigInteger gasPrice,
+                                        BigInteger gasLimit,
+                                        byte[] data,
+                                        Integer chainId) {
+        return new EthTransaction(BigIntegers.asUnsignedByteArray(nonce),
+                BigIntegers.asUnsignedByteArray(gasPrice),
+                BigIntegers.asUnsignedByteArray(gasLimit),
+                Hex.decode(to),
+                BigIntegers.asUnsignedByteArray(amount),
+                data,
+                chainId);
+    }
 }

@@ -8,9 +8,11 @@ import com.violas.wallet.repository.http.jsonRpc.JsonRPCRequestDTO
 import com.violas.wallet.repository.http.jsonRpc.RPCService
 import okhttp3.OkHttpClient
 import okhttp3.internal.toHexString
+import org.palliums.libracore.serialization.toHex
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.math.BigInteger
 
 class EtherscanRepository(private val okHttpClient: OkHttpClient, testNet: Boolean) {
 
@@ -29,12 +31,8 @@ class EtherscanRepository(private val okHttpClient: OkHttpClient, testNet: Boole
         Gson()
     }
 
-    private fun String.hex2Long(): Long {
-        return this.replace("0x", "").toLong(16)
-    }
-
     private fun String.addHexPrefix(): String {
-        return if (this[0] == '0' && this[1] == 'x') {
+        return if (this.length >= 2 && (this[0] == '0' && this[1] == 'x')) {
             this
         } else {
             "0x$this"
@@ -55,7 +53,7 @@ class EtherscanRepository(private val okHttpClient: OkHttpClient, testNet: Boole
 
     suspend fun getBalance(
         address: String
-    ): Long {
+    ): BigInteger {
         return mService.call<String>(
             JsonRPCRequestDTO(
                 "eth_getBalance",
@@ -64,21 +62,21 @@ class EtherscanRepository(private val okHttpClient: OkHttpClient, testNet: Boole
                     "latest"
                 )
             ).toJson()
-        )?.hex2Long() ?: 0L
+        )?.removeHexPrefix()?.toBigInteger(16) ?: BigInteger.ZERO
     }
 
-    suspend fun getGasPrice(): Long {
+    suspend fun getGasPrice(): BigInteger {
         return mService.call<String>(
             JsonRPCRequestDTO(
                 "eth_gasPrice",
                 arrayListOf()
             ).toJson()
-        )?.hex2Long() ?: 0L
+        )?.removeHexPrefix()?.toBigInteger(16) ?: BigInteger.ZERO
     }
 
     suspend fun getNonce(
         address: String
-    ): Long {
+    ): BigInteger {
         return mService.call<String>(
             JsonRPCRequestDTO(
                 "eth_getTransactionCount",
@@ -87,7 +85,7 @@ class EtherscanRepository(private val okHttpClient: OkHttpClient, testNet: Boole
                     "latest"
                 )
             ).toJson()
-        )?.hex2Long() ?: 0L
+        )?.removeHexPrefix()?.toBigInteger(16) ?: BigInteger.ZERO
     }
 
     suspend fun sendRawTransaction(
@@ -115,18 +113,18 @@ class EtherscanRepository(private val okHttpClient: OkHttpClient, testNet: Boole
     suspend fun contractCall(
         to: String,
         from: String? = null,
-        gas: Long? = null,
-        gasPrice: Long? = null,
-        value: Long? = null,
-        data: String? = null
+        gas: BigInteger? = null,
+        gasPrice: BigInteger? = null,
+        value: BigInteger? = null,
+        data: ByteArray? = null
     ): String? {
         val contractDTO = ContractDTO(
             from = from?.addHexPrefix(),
             to = to.addHexPrefix(),
-            gas = gas?.toHexString()?.addHexPrefix(),
-            gasPrice = gasPrice?.toHexString()?.addHexPrefix(),
-            value = value?.toHexString()?.addHexPrefix(),
-            data = data?.addHexPrefix()
+            gas = gas?.toString(16)?.addHexPrefix(),
+            gasPrice = gasPrice?.toString(16)?.addHexPrefix(),
+            value = value?.toString(16)?.addHexPrefix(),
+            data = data?.toHex()?.addHexPrefix()
         )
 
         return mService.call<String>(
@@ -141,20 +139,20 @@ class EtherscanRepository(private val okHttpClient: OkHttpClient, testNet: Boole
     }
 
     suspend fun estimateGas(
-        contractAddress: String,
+        to: String,
         from: String? = null,
-        gas: Long? = null,
-        gasPrice: Long? = null,
-        value: Long? = null,
-        data: String? = null
-    ): Long {
+        gas: BigInteger? = null,
+        gasPrice: BigInteger? = null,
+        value: BigInteger? = null,
+        data: ByteArray? = null
+    ): BigInteger {
         val contractDTO = ContractDTO(
-            to = contractAddress,
+            to = to.addHexPrefix(),
             from = from?.addHexPrefix(),
-            gas = gas?.toHexString()?.addHexPrefix(),
-            gasPrice = gasPrice?.toHexString()?.addHexPrefix(),
-            value = value?.toHexString()?.addHexPrefix(),
-            data = data?.addHexPrefix()
+            gas = gas?.toString(16)?.addHexPrefix(),
+            gasPrice = gasPrice?.toString(16)?.addHexPrefix(),
+            value = value?.toString(16)?.addHexPrefix(),
+            data = data?.toHex()?.addHexPrefix()
         )
         return mService.call<String>(
             JsonRPCRequestDTO(
@@ -163,6 +161,6 @@ class EtherscanRepository(private val okHttpClient: OkHttpClient, testNet: Boole
                     contractDTO
                 )
             ).toJson()
-        )?.hex2Long() ?: 0L
+        )?.removeHexPrefix()?.toBigInteger(16) ?: BigInteger.ZERO
     }
 }

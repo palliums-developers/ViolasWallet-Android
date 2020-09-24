@@ -7,11 +7,11 @@ import com.quincysx.crypto.Transaction
 import com.quincysx.crypto.bip32.ExtendedKey
 import com.quincysx.crypto.bip44.BIP44
 import com.quincysx.crypto.bip44.CoinPairDerive
-import com.quincysx.crypto.ethereum.CallTransaction
 import com.quincysx.crypto.ethereum.EthECKeyPair
 import com.quincysx.crypto.ethereum.EthTransaction
 import com.quincysx.crypto.utils.HexUtils
 import com.violas.wallet.biz.MnemonicException
+import com.violas.wallet.biz.eth.ERC20Contract
 import com.violas.wallet.repository.DataRepository
 import com.violas.walletconnect.extensions.toHex
 import kotlinx.coroutines.runBlocking
@@ -125,11 +125,19 @@ class TransactionUnitTest {
             val to = "4181376Fb691Ed8550eA444bce5E04a993B39B27"
             val amount =
                 BigDecimal("0.001").multiply(BigDecimal("1000000000000000000")).toBigInteger()
-            val nonce = BigInteger(etherscanService.getNonce(from).toString())
+            val nonce = etherscanService.getNonce(from)
             Log.d("send transaction nonce", nonce.toString())
-            val gasPrice = BigInteger(etherscanService.getGasPrice().toString())
+            val gasPrice = etherscanService.getGasPrice()
             Log.d("send transaction gasPrice", gasPrice.toString())
-            val gasLimit = BigInteger("21000")
+
+            // 估算 gas 费
+            val gasLimit = etherscanService.estimateGas(
+                to,
+                from = from,
+                value = amount
+            )
+            Log.d("send transaction gasLimit", gasLimit.toString())
+
             val chainId = 3
             val transaction: Transaction = EthTransaction
                 .create(
@@ -152,32 +160,40 @@ class TransactionUnitTest {
     fun call_eth_erc20_transfer() {
         runBlocking {
             val etherscanService = DataRepository.getEtherscanService()
+            val erc20Contract = ERC20Contract("972c041a3044da600a5b087b1488cbe7665b38b1")
             val key = getKey()
 
             val from = "1A5DDDf83BCeE2360C966Ac23Ef220C7534772d5"
-            val to = "4181376Fb691Ed8550eA444bce5E04a993B39B27"
+            val to = "0x4181376Fb691Ed8550eA444bce5E04a993B39B27"
+
             val amount =
-                BigDecimal("0.001").multiply(BigDecimal("1000000000000000000")).toBigInteger()
-            val nonce = BigInteger(etherscanService.getNonce(from).toString())
+                BigDecimal("0").multiply(BigDecimal("1000000000000000000")).toBigInteger()
+            val nonce = etherscanService.getNonce(from)
             Log.d("send transaction nonce", nonce.toString())
-            val gasPrice = BigInteger(etherscanService.getGasPrice().toString())
+            val gasPrice = etherscanService.getGasPrice()
             Log.d("send transaction gasPrice", gasPrice.toString())
-            val gasLimit = BigInteger("42000")
             val chainId = 3
 
-            //第一个参数是方法名，第二个参数是合约方法的参数类型(可以有多个)
-            val function = CallTransaction.Function.fromSignature("transfer", "address", "uint256")
+            // 生成交易 Code
+            val contractCallResult = erc20Contract.transfer(to, BigInteger("1000000000000000000"))
 
-            val transaction: Transaction = CallTransaction
-                .createCallTransaction(
+            // 估算 gas 费
+            val gasLimit = etherscanService.estimateGas(
+                erc20Contract.contractAddress,
+                from = from,
+                data = contractCallResult.getData()
+            )
+            Log.d("send transaction gasLimit", gasLimit.toString())
+
+            val transaction: Transaction = EthTransaction
+                .create(
+                    erc20Contract.contractAddress,  //合约地址
+                    amount,  //转账金额
                     nonce,
                     gasPrice,
                     gasLimit,
-                    "972c041a3044da600a5b087b1488cbe7665b38b1",  //合约地址
-                    BigInteger.valueOf(0), // 转账金额
-                    function,
-                    "1A5DDDf83BCeE2360C966Ac23Ef220C7534772d5",
-                    1 * 1000000000000000000L//合约参数，可传很多参数(具体参数要和上述类型数量一致)
+                    contractCallResult.getData(),
+                    chainId
                 )
 
             val sign = transaction.sign(key)
@@ -188,21 +204,21 @@ class TransactionUnitTest {
     }
 
     @Test
-    fun call_eth_erc20_balance() {
+    fun test_erc20_contract() {
         runBlocking {
-            val etherscanService = DataRepository.getEtherscanService()
+            val erC20Contract = ERC20Contract("972c041a3044da600a5b087b1488cbe7665b38b1")
+            val name = erC20Contract.name()
+            val symbol = erC20Contract.symbol()
+            val decimals = erC20Contract.decimals()
+            val totalSupply = erC20Contract.totalSupply()
+            val balanceOf = erC20Contract.balanceOf("0x1A5DDDf83BCeE2360C966Ac23Ef220C7534772d5")
 
-            //第一个参数是方法名，第二个参数是合约方法的参数类型(可以有多个)
-            val function = CallTransaction.Function.fromSignature("balanceOf", "address")
-            val encode = function.encode("0x1A5DDDf83BCeE2360C966Ac23Ef220C7534772d5")
 
-            val result = etherscanService.contractCall(
-                "972c041a3044da600a5b087b1488cbe7665b38b1",
-                data = encode.toHex()
-            )
-
-            val balance = BigInteger(result?.replace("0x", "") ?: "0", 16)
-            Log.d("get balance", "${balance}")
+            Log.e("contract name", "$name")
+            Log.e("contract symbol", "$symbol")
+            Log.e("contract decimals", "${decimals}")
+            Log.e("contract totalSupply", "${totalSupply}")
+            Log.e("contract balanceOf", "${balanceOf}")
         }
     }
 }
