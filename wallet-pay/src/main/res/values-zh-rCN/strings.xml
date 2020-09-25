@@ -219,6 +219,10 @@
     <string name="tips_revoke_success">撤销成功</string>
     <string name="tips_revoke_failure">撤销失败</string>
     <string name="hint_transfer_failed">转账失败</string>
+    <string name="hint_transfer_account_no_activation">当前账户没有激活</string>
+    <string name="hint_transfer_receive_account_no_activation">收款账户没有激活</string>
+    <string name="hint_transfer_account_no_control">没有当前账户的控制权</string>
+    <string name="hint_transfer_node_not_response">节点请求失败</string>
 
     <string name="hint_back_up_mnemonic_words">您的身份助记词未备份，请务必备份助记词</string>
     <string name="hint_back_up_mnemonic_words_content">助记词可用于恢复身份下钱包资产，防止忘记密码、应用删除、手机丢失等情况导致资产损失</string>

@@ -178,6 +178,7 @@ class MultiTransferActivity : BaseAppActivity(),
         ivAddressBook.setOnClickListener {
             AddressBookActivity.start(
                 this@MultiTransferActivity,
+                coinNumber,
                 isSelector = true,
                 requestCode = REQUEST_SELECTOR_ADDRESS
             )

@@ -10,7 +10,6 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
-import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
@@ -24,7 +23,6 @@ import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.greenrobot.eventbus.EventBus
 import java.math.BigDecimal
 
 class LibraTransferActivity : TransferActivity() {
@@ -191,7 +189,6 @@ class LibraTransferActivity : TransferActivity() {
                     mAssetsVo.getId(),
                     {
                         showToast(getString(R.string.hint_transfer_broadcast_success))
-                        EventBus.getDefault().post(RefreshBalanceEvent())
                         CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                         dismissProgress()
                         print(it)

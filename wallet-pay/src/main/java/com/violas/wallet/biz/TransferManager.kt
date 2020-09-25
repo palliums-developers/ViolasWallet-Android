@@ -30,6 +30,19 @@ class TransferUnknownException : RuntimeException(getString(R.string.hint_transf
 class LackOfBalanceException :
     RuntimeException(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
 
+class AccountNoActivationException :
+    RuntimeException(getString(R.string.hint_transfer_account_no_activation))
+
+class ReceiveAccountNoActivationException :
+    RuntimeException(getString(R.string.hint_transfer_receive_account_no_activation))
+
+class AccountNoControlException :
+    RuntimeException(getString(R.string.hint_transfer_account_no_control))
+
+class NodeNotResponseException :
+    RuntimeException(getString(R.string.hint_transfer_account_no_control))
+
+
 class TransferManager {
     private fun convertViolasTransferException(e: Exception): Exception {
         e.printStackTrace()
@@ -37,8 +50,17 @@ class TransferManager {
             is ViolasException.LackOfBalanceException -> {
                 LackOfBalanceException()
             }
+            is ViolasException.AccountNoActivation -> {
+                AccountNoActivationException()
+            }
+            is ViolasException.AccountNoControl -> {
+                AccountNoControlException()
+            }
+            is ViolasException.ReceiveAccountNoActivation -> {
+                ReceiveAccountNoActivationException()
+            }
             is ViolasException.NodeResponseException -> {
-                LackOfBalanceException()
+                NodeNotResponseException()
             }
             else -> TransferUnknownException()
         }
@@ -50,8 +72,17 @@ class TransferManager {
             is LibraException.LackOfBalanceException -> {
                 LackOfBalanceException()
             }
+            is LibraException.AccountNoActivation -> {
+                AccountNoActivationException()
+            }
+            is LibraException.AccountNoControl -> {
+                AccountNoControlException()
+            }
+            is LibraException.ReceiveAccountNoActivation -> {
+                ReceiveAccountNoActivationException()
+            }
             is LibraException.NodeResponseException -> {
-                LackOfBalanceException()
+                NodeNotResponseException()
             }
             else -> TransferUnknownException()
         }

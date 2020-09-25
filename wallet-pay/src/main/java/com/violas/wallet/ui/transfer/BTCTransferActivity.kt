@@ -161,18 +161,6 @@ class BTCTransferActivity : TransferActivity() {
         }
     }
 
-    private suspend fun refreshCurrentAmount() {
-        CommandActuator.post(RefreshAssetsAllListCommand())
-        withContext(Dispatchers.Main) {
-            mAssetsVo.amountWithUnit
-            tvCoinAmount.text = String.format(
-                getString(R.string.hint_transfer_amount),
-                mAssetsVo.amountWithUnit.amount,
-                mAssetsVo.amountWithUnit.unit
-            )
-        }
-    }
-
     private fun send() {
         val amount = editAmountInput.text.toString()
         val address = editAddressInput.text.toString()

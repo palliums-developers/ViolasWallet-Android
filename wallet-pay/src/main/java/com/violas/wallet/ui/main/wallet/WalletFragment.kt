@@ -356,9 +356,6 @@ class WalletFragment : BaseFragment() {
                             ScanCodeType.WalletConnectSocket -> {
                                 context?.let {
                                     WalletConnectAuthorizationActivity.startActivity(it, msg)
-//                                    WalletConnect.getInstance(it.applicationContext).connect(
-//                                        msg
-//                                    )
                                 }
                             }
 

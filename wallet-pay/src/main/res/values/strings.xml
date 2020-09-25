@@ -218,6 +218,10 @@
     <string name="tips_revoke_success">Revoke Success</string>
     <string name="tips_revoke_failure">Revoke Failed</string>
     <string name="hint_transfer_failed">Transfer Failed</string>
+    <string name="hint_transfer_account_no_activation">当前账户没有激活</string>
+    <string name="hint_transfer_receive_account_no_activation">收款账户没有激活</string>
+    <string name="hint_transfer_account_no_control">没有当前账户的控制权</string>
+    <string name="hint_transfer_node_not_response">节点请求失败</string>
 
     <string name="hint_back_up_mnemonic_words">Your identity mnemonic is not backed up. Be sure to back up the mnemonic</string>
     <string name="hint_back_up_mnemonic_words_content">Mnemonic words can be used to recover the wallet assets under the identity, to prevent the asset loss caused by forgotten password, application deletion, mobile phone loss, etc</string>
