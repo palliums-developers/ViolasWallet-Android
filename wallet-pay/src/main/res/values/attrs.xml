@@ -85,11 +85,12 @@
     <attr name="walletHomeWalletConnectTextColor" format="color" />
     <attr name="walletHomeWalletConnectIcon" format="reference" />
     <attr name="walletHomeWalletConnectBgColor" format="color" />
-    <attr name="walletHomeBackupTopBg" format="color|reference" />
-    <attr name="walletHomeBackupTopIcon" format="reference" />
     <attr name="walletHomeTransferIcon" format="reference" />
     <attr name="walletHomeCollectionIcon" format="reference" />
     <attr name="walletHomeMappingIcon" format="reference" />
+    <attr name="walletBackupNowHintBg" format="reference" />
+    <attr name="walletBackupNowBtnBg" format="reference" />
+    <attr name="walletBackupNowTitleTextColor" format="color" />
 
     <!--我的首页资源属性-->
     <attr name="meHomeDefAvatarIcon" format="reference" />

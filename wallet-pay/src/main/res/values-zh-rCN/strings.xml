@@ -225,7 +225,7 @@
     <string name="hint_transfer_node_not_response">节点请求失败</string>
 
     <string name="hint_back_up_mnemonic_words">您的身份助记词未备份，请务必备份助记词</string>
-    <string name="hint_back_up_mnemonic_words_content">助记词可用于恢复身份下钱包资产，防止忘记密码、应用删除、手机丢失等情况导致资产损失</string>
+    <string name="hint_back_up_mnemonic_words_content">您的身份助记词未备份，请务必备份! 助记词可用于恢复身份下钱包资产，防止忘记密码、应用删除、手机丢失等情况导致资产损失</string>
     <string name="tab_wallet">钱包</string>
     <string name="tab_market">市场</string>
     <string name="tab_me">我的</string>

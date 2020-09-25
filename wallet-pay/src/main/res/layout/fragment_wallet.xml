@@ -331,13 +331,4 @@
 
     </LinearLayout>
 
-    <include
-        layout="@layout/view_backup_now_wallet"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -24,6 +24,7 @@ import com.violas.wallet.biz.*
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.event.BackupIdentityMnemonicEvent
+import com.violas.wallet.event.BackupWalletViewStatusEvent
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
@@ -200,14 +201,12 @@ class WalletFragment : BaseFragment() {
 
     private fun handleBackupMnemonicWarn(existsAccount: Boolean) {
         if (!existsAccount) {
-            layoutBackupNow.visibility = View.GONE
+            EventBus.getDefault().post(BackupWalletViewStatusEvent(false))
             return
         }
 
         if (!mAccountManager.isIdentityMnemonicBackup()) {
-            layoutBackupNow.visibility = View.VISIBLE
-            btnConfirm.setOnClickListener(this)
-
+            EventBus.getDefault().post(BackupWalletViewStatusEvent(true))
         }
     }
 
@@ -292,33 +291,12 @@ class WalletFragment : BaseFragment() {
             R.id.viewImportAccount -> {
                 activity?.let { ImportIdentityActivity.start(it) }
             }
-
-            R.id.btnConfirm -> {
-                launch {
-                    try {
-                        val accountDO = mAccountManager.getDefaultAccount()
-                        authenticateAccount(
-                            accountDO,
-                            mAccountManager,
-                            dismissLoadingWhenDecryptEnd = true,
-                            mnemonicCallback = {
-                                BackupPromptActivity.start(
-                                    requireContext(),
-                                    it,
-                                    BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
-                                )
-                            }
-                        )
-                    } catch (e: Exception) {
-                    }
-                }
-            }
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onBackupIdentityMnemonicEvent(event: BackupIdentityMnemonicEvent) {
-        layoutBackupNow.visibility = View.GONE
+        EventBus.getDefault().post(BackupWalletViewStatusEvent(false))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
