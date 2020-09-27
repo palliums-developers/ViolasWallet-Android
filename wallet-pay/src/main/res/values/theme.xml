@@ -173,8 +173,6 @@
         <item name="homeFragmentTopBg">@drawable/bg_wallet_main</item>
 
         <!--钱包首页资源属性-->
-        <item name="walletHomeTotalAssetsTextColor">@color/color_9A91BE</item>
-        <item name="walletHomeAssetsTextColor">@color/color_7D71AA</item>
         <item name="walletHomeAddAssetsIcon">@drawable/icon_add_assert</item>
         <item name="walletHomeInitWalletTextColor">@color/color_261372</item>
         <item name="walletHomeCreateWalletIcon">@drawable/ic_create_account</item>

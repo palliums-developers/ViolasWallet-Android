@@ -76,8 +76,6 @@
     <attr name="homeFragmentTopBg" format="color|reference" />
 
     <!--钱包首页资源属性-->
-    <attr name="walletHomeTotalAssetsTextColor" format="color" />
-    <attr name="walletHomeAssetsTextColor" format="color" />
     <attr name="walletHomeAddAssetsIcon" format="reference" />
     <attr name="walletHomeInitWalletTextColor" format="color" />
     <attr name="walletHomeCreateWalletIcon" format="reference" />
