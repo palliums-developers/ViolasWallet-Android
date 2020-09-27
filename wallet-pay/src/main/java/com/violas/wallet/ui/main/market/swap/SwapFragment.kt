@@ -35,6 +35,7 @@ import com.violas.wallet.ui.main.market.selectToken.SwapTokensDataResourcesBridg
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertDisplayUnitToAmount
+import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.fragment_swap.*
@@ -162,6 +163,13 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
 
         btnSwap.setOnClickListener {
             clearInputBoxFocusAndHideSoftInput()
+
+            if (!WalletAppViewModel.getViewModelInstance().isExistsAccount()) {
+                // 没有钱包账户
+                showToast(R.string.tips_create_or_import_wallet)
+                return@setOnClickListener
+            }
+
             if (swapViewModel.getCurrFromTokenLiveData().value == null) {
                 // 输入币种没有选择
                 showToast(getString(R.string.hint_swap_input_assets_not_select))
