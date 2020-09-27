@@ -161,14 +161,14 @@
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
         <item name="homeBottomTabNormalTextColor">@color/color_3D3949</item>
-        <item name="homeBottomWalletTabSelectedIcon">@drawable/table_wallet_selected</item>
-        <item name="homeBottomWalletTabNormalIcon">@drawable/table_wallet_normal</item>
-        <item name="homeBottomMarketTabSelectedIcon">@drawable/table_market_selected</item>
-        <item name="homeBottomMarketTabNormalIcon">@drawable/table_market_normal</item>
-        <item name="homeBottomMeTabSelectedIcon">@drawable/table_me_selected</item>
-        <item name="homeBottomMeTabNormalIcon">@drawable/table_me_normal</item>
-        <item name="homeBottomBankTabSelectedIcon">@drawable/table_bank_selected</item>
-        <item name="homeBottomBankTabNormalIcon">@drawable/table_bank_normal</item>
+        <item name="homeBottomWalletTabSelectedIcon">@drawable/ic_home_table_wallet_selected</item>
+        <item name="homeBottomWalletTabNormalIcon">@drawable/ic_home_table_wallet_normal</item>
+        <item name="homeBottomMarketTabSelectedIcon">@drawable/ic_home_table_market_selected</item>
+        <item name="homeBottomMarketTabNormalIcon">@drawable/ic_home_table_market_normal</item>
+        <item name="homeBottomMeTabSelectedIcon">@drawable/ic_home_table_me_selected</item>
+        <item name="homeBottomMeTabNormalIcon">@drawable/ic_home_table_me_normal</item>
+        <item name="homeBottomBankTabSelectedIcon">@drawable/ic_home_table_bank_selected</item>
+        <item name="homeBottomBankTabNormalIcon">@drawable/ic_home_table_bank_normal</item>
         <item name="homeBottomNavigationBg">@color/white</item>
         <item name="homeFragmentTopBg">@drawable/bg_wallet_main</item>
 
