@@ -48,10 +48,6 @@ class MainActivity : BaseAppActivity() {
         return R.layout.activity_main
     }
 
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
-
     private lateinit var viewPagerAdapter: FragmentPagerAdapterSupport
     private var mQuitTimePoint: Long = 0
 
@@ -169,39 +165,6 @@ class MainActivity : BaseAppActivity() {
             } catch (ex: IllegalStateException) {
                 super.supportFinishAfterTransition()
                 ex.printStackTrace()
-            }
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onBackupWalletViewStatusEvent(event: BackupWalletViewStatusEvent) {
-        layoutBackupNow.visibility = if (event.show) {
-            btnConfirm.setOnClickListener {
-                backupWallet()
-            }
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-    }
-
-    private fun backupWallet() {
-        launch {
-            try {
-                val accountDO = mAccountManager.getDefaultAccount()
-                authenticateAccount(
-                    accountDO,
-                    mAccountManager,
-                    dismissLoadingWhenDecryptEnd = true,
-                    mnemonicCallback = {
-                        BackupPromptActivity.start(
-                            this@MainActivity,
-                            it,
-                            BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
-                        )
-                    }
-                )
-            } catch (e: Exception) {
             }
         }
     }
