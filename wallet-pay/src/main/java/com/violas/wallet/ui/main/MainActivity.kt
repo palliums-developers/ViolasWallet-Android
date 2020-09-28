@@ -12,8 +12,6 @@ import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.event.BackupWalletViewStatusEvent
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
 import com.violas.wallet.ui.backup.BackupMnemonicFrom

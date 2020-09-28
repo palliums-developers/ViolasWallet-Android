@@ -24,7 +24,6 @@ import com.violas.wallet.biz.*
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.event.BackupIdentityMnemonicEvent
-import com.violas.wallet.event.BackupWalletViewStatusEvent
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
