@@ -2,6 +2,7 @@ package com.palliums.violas.smartcontract.multitoken
 
 import com.google.gson.annotations.SerializedName
 import com.palliums.violas.http.Response
+import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -12,16 +13,18 @@ interface MultiContractRpcApi {
      * @param tokenAddressArr 稳定币地址，多个稳定币地址以逗号分开，为空时只返回平台币的余额
      */
     @GET("/1.0/violas/balance")
-    suspend fun getBalance(
+    fun getBalance(
         @Query("addr") address: String,
         @Query("modu") tokenIdxs: String
-    ): Response<BalanceDTO>
+    ): Observable<Response<BalanceDTO>>
 
     @GET("/1.0/violas/currency")
-    suspend fun getSupportCurrency(): Response<SupportCurrencyListDTO>
+    fun getSupportCurrency(): Observable<Response<SupportCurrencyListDTO>>
 
     @GET("/1.0/violas/module")
-    suspend fun getRegisterToken(@Query("addr") address: String): Response<PublishDTO>
+    fun getRegisterToken(
+        @Query("addr") address: String
+    ): Observable<Response<PublishDTO>>
 }
 
 data class SupportCurrencyListDTO(

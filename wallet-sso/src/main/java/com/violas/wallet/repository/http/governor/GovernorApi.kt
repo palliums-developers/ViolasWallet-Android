@@ -2,6 +2,7 @@ package com.violas.wallet.repository.http.governor
 
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
+import io.reactivex.Observable
 import okhttp3.RequestBody
 import retrofit2.http.*
 
@@ -17,60 +18,73 @@ interface GovernorApi {
      * 注册州长
      */
     @POST("/1.1/violas/governor")
-    suspend fun signUpGovernor(@Body body: RequestBody): Response<Any>
+    fun signUpGovernor(
+        @Body body: RequestBody
+    ): Observable<Response<Any>>
 
     /**
      * 获取州长信息
      */
     @GET("/1.0/violas/governor/{walletAddress}")
-    suspend fun getGovernorInfo(@Path("walletAddress") walletAddress: String): Response<GovernorInfoDTO>
+    fun getGovernorInfo(
+        @Path("walletAddress") walletAddress: String
+    ): Observable<Response<GovernorInfoDTO>>
 
     /**
      * 修改州长信息
      */
     @PUT("/1.0/violas/governor")
-    suspend fun updateGovernorInfo(@Body body: RequestBody): Response<Any>
+    fun updateGovernorInfo(
+        @Body body: RequestBody
+    ): Observable<Response<Any>>
 
     /**
      * 更改申请州长的状态为 published
      */
     @PUT("/1.0/violas/governor/status/published")
-    suspend fun changeApplyForGovernorToPublished(@Body body: RequestBody): Response<Any>
+    fun changeApplyForGovernorToPublished(
+        @Body body: RequestBody
+    ): Observable<Response<Any>>
 
     /**
      * 获取SSO申请消息
      */
     @GET("/1.0/violas/governor/token/status")
-    suspend fun getSSOApplicationMsgs(
+    fun getSSOApplicationMsgs(
         @Query("address") walletAddress: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
-    ): ListResponse<SSOApplicationMsgDTO>
+    ): Observable<ListResponse<SSOApplicationMsgDTO>>
 
     /**
      * 获取SSO申请详情
      */
     @GET("/1.0/violas/governor/token")
-    suspend fun getSSOApplicationDetails(
+    fun getSSOApplicationDetails(
         @Query("address") walletAddress: String,
         @Query("id") ssoApplicationId: String
-    ): Response<SSOApplicationDetailsDTO>
+    ): Observable<Response<SSOApplicationDetailsDTO>>
 
     /**
      * 获取审核不通过SSO申请原因列表
      */
     @GET("/1.0/violas/governor/reason")
-    suspend fun getUnapproveReasons(): Response<Map<Int, String>>
+    fun getUnapproveReasons(): Observable<Response<Map<Int, String>>>
 
     /**
      * 提交SSO申请审批结果
      */
     @PUT("/1.0/violas/governor/token/status")
-    suspend fun submitSSOApplicationApprovalResults(@Body body: RequestBody): Response<Any>
+    fun submitSSOApplicationApprovalResults(
+        @Body body: RequestBody
+    ): Observable<Response<Any>>
 
     /**
      * 登录桌面端钱包
      */
     @POST("/1.0/violas/governor/singin")
-    suspend fun loginDesktop(@Body body: RequestBody): Response<Any>
+    fun loginDesktop(
+        @Body body: RequestBody
+    ): Observable<Response<Any>>
+
 }

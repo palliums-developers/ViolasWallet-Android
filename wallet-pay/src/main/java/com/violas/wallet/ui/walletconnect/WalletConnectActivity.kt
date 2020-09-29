@@ -4,12 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
-import com.google.gson.JsonParser
 import com.palliums.content.App
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bitcoin.script.Script
@@ -32,19 +28,12 @@ import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import com.violas.walletconnect.jsonrpc.JsonRpcError
 import kotlinx.android.synthetic.main.activity_wallet_connect.*
-import kotlinx.android.synthetic.main.view_wallet_connect_exchange_swap.view.*
-import kotlinx.android.synthetic.main.view_wallet_connect_none.view.*
-import kotlinx.android.synthetic.main.view_wallet_connect_publish.view.*
-import kotlinx.android.synthetic.main.view_wallet_connect_publish.view.tvDescribeSender
-import kotlinx.android.synthetic.main.view_wallet_connect_transfer.view.*
 import kotlinx.coroutines.*
 import org.palliums.violascore.crypto.Ed25519PublicKey
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.SignedTransactionHex
 import org.palliums.violascore.transaction.TransactionSignAuthenticator
-import java.math.BigDecimal
-import java.math.RoundingMode
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -272,7 +261,7 @@ class WalletConnectActivity : BaseAppActivity() {
                             DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
                         }
                         CoinTypes.Libra -> {
-                            DataRepository.getLibraService().submitTransaction(signedTx)
+                            DataRepository.getLibraRpcService().submitTransaction(signedTx)
                         }
                     }
                 }

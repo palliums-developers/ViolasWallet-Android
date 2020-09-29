@@ -35,7 +35,7 @@ class ViolasToAssetsMappingProcessor(
     }
 
     private val mLibraRpcService by lazy {
-        DataRepository.getLibraService()
+        DataRepository.getLibraRpcService()
     }
 
     override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {

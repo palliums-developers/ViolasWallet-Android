@@ -54,7 +54,7 @@ suspend inline fun <T, R> T.checkResponse(
 suspend inline fun <T> Observable<T>.await(
     vararg specialStatusCodes: Any,
     dataNullableOnSuccess: Boolean = true,
-    noinline customError: ((response: T) -> Throwable)? = null
+    noinline customError: ((response: T) -> Unit)? = null
 ): T {
     return suspendCancellableCoroutine { continuation ->
 
@@ -77,7 +77,11 @@ suspend inline fun <T> Observable<T>.await(
                     }
 
                     if (response.getErrorCode() != response.getSuccessCode()) {
-                        throw customError?.invoke(response) ?: RequestException(response)
+                        if (customError != null) {
+                            customError.invoke(response)
+                        } else {
+                            throw RequestException(response)
+                        }
                     } else if (!dataNullableOnSuccess && response.getResponseData() == null) {
                         throw RequestException.responseDataException("Data is null")
                     }

@@ -7,11 +7,11 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.palliums.utils.CustomIOScope
 import com.palliums.utils.exceptionAsync
-import com.palliums.violas.http.MapRelationDTO
-import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.exchange.MapRelationDTO
+import com.violas.wallet.repository.http.exchange.PoolLiquidityReserveInfoDTO
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.str2CoinNumber
@@ -40,8 +40,8 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     private val mMappingRealMap = hashMapOf<String, MapRelationDTO>()
     private var isRun = false
 
-    private val mViolasService by lazy {
-        DataRepository.getViolasService()
+    private val mExchangeService by lazy {
+        DataRepository.getExchangeService()
     }
 
     private val mHandler = Handler(Looper.getMainLooper(), this)
@@ -154,11 +154,11 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     private fun refreshReserve() {
         launch {
             val marketAllReservePairDeferred =
-                exceptionAsync { mViolasService.getMarketAllReservePair() }
+                exceptionAsync { mExchangeService.getMarketAllReservePair() }
 
             if (mMappingRealMap.isEmpty()) {
                 val marketMappingRealCoinDeferred =
-                    exceptionAsync { mViolasService.getMarketPairRelation() }
+                    exceptionAsync { mExchangeService.getMarketPairRelation() }
                 val marketMappingRealCoin = marketMappingRealCoinDeferred.await()
                 marketMappingRealCoin?.forEach { mappingReal ->
                     mMappingRealMap[mappingKey(mappingReal)] =

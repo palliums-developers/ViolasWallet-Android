@@ -485,7 +485,7 @@ class AccountManager {
             }
 
             CoinTypes.Libra.coinType() -> {
-                DataRepository.getLibraService().getBalanceInMicroLibra(account.address)
+                DataRepository.getLibraRpcService().getBalanceInMicroLibra(account.address)
             }
             else -> {
                 suspendCancellableCoroutine { coroutine ->
@@ -701,7 +701,7 @@ class AccountManager {
             .forEach { assets ->
                 try {
                     assets as AssetsLibraCoinVo
-                    DataRepository.getLibraService().getAccountState(assets.address)?.let { it ->
+                    DataRepository.getLibraRpcService().getAccountState(assets.address)?.let { it ->
                         assets.authKey = it.authenticationKey
                         assets.delegatedKeyRotationCapability = it.delegatedKeyRotationCapability
                         assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability

@@ -1,4 +1,4 @@
-package org.palliums.violascore.http
+package org.palliums.libracore.http
 
 import androidx.annotation.StringDef
 import com.palliums.net.await
@@ -9,7 +9,7 @@ import com.palliums.net.await
  * <p>
  * desc:
  */
-class ViolasRpcRepository(private val mViolasRpcApi: ViolasRpcApi) {
+class LibraRpcRepository(private val mLibraRpcApi: LibraRpcApi) {
 
     @StringDef(
         Method.SUBMIT, Method.GET_ACCOUNT_STATE
@@ -26,7 +26,7 @@ class ViolasRpcRepository(private val mViolasRpcApi: ViolasRpcApi) {
     suspend fun getAccountState(
         address: String
     ) =
-        mViolasRpcApi.getAccountState(
+        mLibraRpcApi.getAccountState(
             RequestDTO(
                 method = Method.GET_ACCOUNT_STATE,
                 params = listOf(address)
@@ -34,7 +34,7 @@ class ViolasRpcRepository(private val mViolasRpcApi: ViolasRpcApi) {
         ).await()
 
     suspend fun getCurrencies() =
-        mViolasRpcApi.getCurrencies(
+        mLibraRpcApi.getCurrencies(
             RequestDTO(
                 method = Method.GET_CURRENCIES,
                 params = listOf()
@@ -46,7 +46,7 @@ class ViolasRpcRepository(private val mViolasRpcApi: ViolasRpcApi) {
         sequenceNumber: Long,
         bool: Boolean = true
     ) =
-        mViolasRpcApi.getTransaction(
+        mLibraRpcApi.getTransaction(
             RequestDTO(
                 method = Method.GET_ACCOUNT_TRANSACTION,
                 params = listOf(address, sequenceNumber, bool)
@@ -56,7 +56,7 @@ class ViolasRpcRepository(private val mViolasRpcApi: ViolasRpcApi) {
     suspend fun submitTransaction(
         hexSignedTransaction: String
     ) =
-        mViolasRpcApi.submitTransaction(
+        mLibraRpcApi.submitTransaction(
             RequestDTO(
                 method = Method.SUBMIT,
                 params = listOf(hexSignedTransaction)

@@ -27,9 +27,9 @@ import com.violas.wallet.repository.http.mapping.MappingRepository
 import com.violas.wallet.repository.http.violas.ViolasBizService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.palliums.libracore.http.LibraApi
-import org.palliums.libracore.http.LibraRepository
-import org.palliums.libracore.http.LibraService
+import org.palliums.libracore.http.LibraRpcApi
+import org.palliums.libracore.http.LibraRpcRepository
+import org.palliums.libracore.http.LibraRpcService
 import org.palliums.violascore.http.ViolasRpcApi
 import org.palliums.violascore.http.ViolasRpcRepository
 import org.palliums.violascore.http.ViolasRpcService
@@ -76,8 +76,8 @@ object DataRepository {
 
     fun getBitcoinService() = BitcoinChainApi.get()
 
-    fun getLibraService() =
-        LibraService(LibraRepository(retrofit.create(LibraApi::class.java)))
+    fun getLibraRpcService() =
+        LibraRpcService(LibraRpcRepository(retrofit.create(LibraRpcApi::class.java)))
 
     fun getLibraBizService() =
         LibraViolasService(LibraViolasRepository(retrofit.create(LibraViolasApi::class.java)))

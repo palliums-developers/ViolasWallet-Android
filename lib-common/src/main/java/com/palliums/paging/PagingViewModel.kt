@@ -220,10 +220,9 @@ abstract class PagingViewModel<VO> : ViewModel() {
                             })
 
                     } catch (e: Exception) {
-                        logError(e, TAG) { "refresh data => failure" }
-
                         val activeCancellation = e.isActiveCancellation()
                         if (!activeCancellation) {
+                            logError(e, TAG) { "refresh data => failure" }
                             delayOnError(startTime)
                         }
 
@@ -305,10 +304,9 @@ abstract class PagingViewModel<VO> : ViewModel() {
                             })
 
                     } catch (e: Exception) {
-                        logError(e, TAG) { "load more data => failure" }
-
                         val activeCancellation = e.isActiveCancellation()
                         if (!activeCancellation) {
+                            logError(e, TAG) { "load more data => failure" }
                             delayOnError(startTime)
                         }
 

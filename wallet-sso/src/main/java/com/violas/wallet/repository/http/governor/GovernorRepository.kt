@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.governor
 
 import com.palliums.exceptions.RequestException
-import com.palliums.net.checkResponse
+import com.palliums.net.await
 import com.violas.wallet.biz.SSOApplicationState
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -25,16 +25,15 @@ class GovernorRepository(private val api: GovernorApi) {
         txid: String,
         toxid: String = ""
     ) =
-        checkResponse {
-            val requestBody = """{
+        api.signUpGovernor(
+            """{
     "wallet_address":"$walletAddress",
     "public_key":"$publicKey",
     "name":"$name",
     "txid":"$txid",
     "toxid":"$toxid"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.signUpGovernor(requestBody)
-        }
+        ).await()
 
     /**
      * 获取州长信息
@@ -43,9 +42,7 @@ class GovernorRepository(private val api: GovernorApi) {
         walletAddress: String
     ) =
         // {"code":2011,"message":"Governor info does not exist."}
-        checkResponse(2011) {
-            api.getGovernorInfo(walletAddress)
-        }
+        api.getGovernorInfo(walletAddress).await(2011)
 
     /**
      * 更新州长名称
@@ -54,13 +51,12 @@ class GovernorRepository(private val api: GovernorApi) {
         walletAddress: String,
         name: String
     ) =
-        checkResponse {
-            val requestBody = """{
+        api.updateGovernorInfo(
+            """{
     "wallet_address":"$walletAddress",
     "name":"$name"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.updateGovernorInfo(requestBody)
-        }
+        ).await()
 
     /**
      * 更改申请州长的状态为 published
@@ -68,12 +64,11 @@ class GovernorRepository(private val api: GovernorApi) {
     suspend fun changeApplyForGovernorToPublished(
         walletAddress: String
     ) =
-        checkResponse {
-            val requestBody = """{
+        api.changeApplyForGovernorToPublished(
+            """{
     "wallet_address":"$walletAddress"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.changeApplyForGovernorToPublished(requestBody)
-        }
+        ).await()
 
     /**
      * 获取SSO申请消息
@@ -81,9 +76,10 @@ class GovernorRepository(private val api: GovernorApi) {
     suspend fun getSSOApplicationMsgs(
         walletAddress: String, pageSize: Int, offset: Int
     ): List<SSOApplicationMsgDTO>? {
-        val msgs = checkResponse {
-            api.getSSOApplicationMsgs(walletAddress, pageSize, offset)
-        }.data
+        val msgs =
+            api.getSSOApplicationMsgs(
+                walletAddress, pageSize, offset
+            ).await().data
 
         msgs?.forEach {
             if (it.applicationStatus < SSOApplicationState.CHAIRMAN_UNAPPROVED
@@ -107,9 +103,9 @@ class GovernorRepository(private val api: GovernorApi) {
         ssoApplicationId: String
     ): SSOApplicationDetailsDTO? {
         val details =
-            checkResponse {
-                api.getSSOApplicationDetails(walletAddress, ssoApplicationId)
-            }.data
+            api.getSSOApplicationDetails(
+                walletAddress, ssoApplicationId
+            ).await().data
 
         details?.let {
             if (it.applicationStatus < SSOApplicationState.CHAIRMAN_UNAPPROVED
@@ -144,9 +140,7 @@ class GovernorRepository(private val api: GovernorApi) {
      */
     suspend fun getUnapproveReasons(): List<UnapproveReasonDTO> {
         val remoteReasons =
-            checkResponse(dataNullableOnSuccess = false) {
-                api.getUnapproveReasons()
-            }.data!!
+            api.getUnapproveReasons().await(dataNullableOnSuccess = false).data!!
 
         return remoteReasons.map {
             UnapproveReasonDTO(it.key, it.value)
@@ -162,16 +156,15 @@ class GovernorRepository(private val api: GovernorApi) {
         reasonType: Int,
         reasonRemarks: String = ""
     ) =
-        checkResponse {
-            val requestBody = """{
+        api.submitSSOApplicationApprovalResults(
+            """{
     "id":"$ssoApplicationId",
     "address":"$issuerWalletAddress",
     "status":${SSOApplicationState.GOVERNOR_UNAPPROVED},
     "reason":$reasonType,
     "remarks":"$reasonRemarks"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.submitSSOApplicationApprovalResults(requestBody)
-        }
+        ).await()
 
     /**
      * 提交SSO申请审批结果
@@ -182,14 +175,13 @@ class GovernorRepository(private val api: GovernorApi) {
         @SSOApplicationState
         approvalResults: Int
     ) =
-        checkResponse {
-            val requestBody = """{
+        api.submitSSOApplicationApprovalResults(
+            """{
     "id":"$ssoApplicationId",
     "address":"$issuerWalletAddress",
     "status":$approvalResults
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.submitSSOApplicationApprovalResults(requestBody)
-        }
+        ).await()
 
     /**
      * 登录桌面端钱包
@@ -199,12 +191,12 @@ class GovernorRepository(private val api: GovernorApi) {
         type: Int,
         signedSessionId: String
     ) =
-        checkResponse {
-            val requestBody = """{
+        api.loginDesktop(
+            """{
     "address":"$walletAddress",
     "type":$type,
     "session_id":"$signedSessionId"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            api.loginDesktop(requestBody)
-        }
+        ).await()
+
 }

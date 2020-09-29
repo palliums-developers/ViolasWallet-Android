@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
+import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -25,25 +26,26 @@ interface LibraViolasApi {
      * @param transactionType   交易类型，null：全部；0：转出；1：转入
      */
     @GET("/1.0/libra/transaction")
-    suspend fun getTransactionRecords(
+    fun getTransactionRecords(
         @Query("addr") address: String,
         @Query("currency") tokenId: String?,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int,
         @Query("flows") transactionType: Int?
-    ): ListResponse<TransactionRecordDTO>
+    ): Observable<ListResponse<TransactionRecordDTO>>
 
     /**
      * 获取 Violas 钱包支持的代币列表
      */
     @GET("/1.0/libra/currency")
-    suspend fun getCurrency(): Response<CurrencysDTO>
+    fun getCurrency(): Observable<Response<CurrencysDTO>>
 
     @GET("/1.0/libra/mint")
-    suspend fun activateAccount(
+    fun activateAccount(
         @Query("address") address: String,
         @Query("auth_key_perfix") authKeyPrefix: String
-    ): Response<Any>
+    ): Observable<Response<Any>>
+
 }
 
 data class TransactionRecordDTO(

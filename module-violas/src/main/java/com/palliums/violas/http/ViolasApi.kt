@@ -21,15 +21,15 @@ interface ViolasApi {
      * @param walletAddress 钱包地址
      */
     @GET("/1.0/violas/balance")
-    suspend fun getBalance(
+    fun getBalance(
         @Query("addr") walletAddress: String
-    ): Response<BalanceDTO>
+    ): Observable<Response<BalanceDTO>>
 
     /**
      * 获取 Violas 钱包支持的代币列表
      */
     @GET("/1.0/violas/currency")
-    suspend fun getCurrency(): Response<CurrencysDTO>
+    fun getCurrency(): Observable<Response<CurrencysDTO>>
 
     /**
      * 获取指定地址的交易记录，分页查询
@@ -40,120 +40,47 @@ interface ViolasApi {
      * @param transactionType   交易类型，不填：全部；0：转出；1：转入
      */
     @GET("/1.0/violas/transaction")
-    suspend fun getTransactionRecords(
+    fun getTransactionRecords(
         @Query("addr") address: String,
         @Query("currency") tokenId: String?,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int,
         @Query("flows") transactionType: Int?
-    ): ListResponse<TransactionRecordDTO>
+    ): Observable<ListResponse<TransactionRecordDTO>>
 
     /**
      * 登录网页端钱包
      */
     @POST("/1.0/violas/singin")
-    suspend fun loginWeb(@Body body: RequestBody): Response<Any>
+    fun loginWeb(@Body body: RequestBody): Observable<Response<Any>>
 
     @POST("/1.0/violas/transaction")
-    suspend fun pushTx(@Body requestBody: RequestBody): Response<Any>
+    fun pushTx(@Body requestBody: RequestBody): Observable<Response<Any>>
 
     @GET("/1.0/violas/account/info")
-    suspend fun getAccountState(@Query("address") walletAddress: String): Response<AccountStateDTO>
+    fun getAccountState(
+        @Query("address") walletAddress: String
+    ): Observable<Response<AccountStateDTO>>
 
     @GET("/1.0/violas/mint")
-    suspend fun activateAccount(
+    fun activateAccount(
         @Query("address") address: String,
         @Query("auth_key_perfix") authKeyPrefix: String
-    ): Response<Any>
+    ): Observable<Response<Any>>
 
     @GET("/1.0/violas/value/btc")
-    suspend fun getBTCChainFiatBalance(@Query("address") walletAddress: String): ListResponse<FiatBalanceDTO>
+    fun getBTCChainFiatBalance(
+        @Query("address") walletAddress: String
+    ): Observable<ListResponse<FiatBalanceDTO>>
 
     @GET("/1.0/violas/value/libra")
-    suspend fun getLibraChainFiatBalance(@Query("address") walletAddress: String): ListResponse<FiatBalanceDTO>
+    fun getLibraChainFiatBalance(
+        @Query("address") walletAddress: String
+    ): Observable<ListResponse<FiatBalanceDTO>>
 
     @GET("/1.0/violas/value/violas")
-    suspend fun getViolasChainFiatBalance(@Query("address") walletAddress: String): ListResponse<FiatBalanceDTO>
+    fun getViolasChainFiatBalance(
+        @Query("address") walletAddress: String
+    ): Observable<ListResponse<FiatBalanceDTO>>
 
-    /**
-     * 获取交易市场支持的币种
-     */
-    @GET("/1.0/market/exchange/currency")
-    suspend fun getMarketSupportCurrencies(): Response<MarketCurrenciesDTO>
-
-    /**
-     * 尝试计算兑换价值
-     */
-    @GET("/1.0/market/exchange/trial")
-    suspend fun exchangeSwapTrial(
-        @Query("amount") amount: Long,
-        @Query("currencyIn") currencyIn: String,
-        @Query("currencyOut") currencyOut: String
-    ): Response<SwapTrialSTO>
-
-    /**
-     * 获取指定地址的交易市场资金池信息
-     * @param address       地址
-     */
-    @GET("/1.0/market/pool/info")
-    suspend fun getUserPoolInfo(
-        @Query("address") address: String
-    ): Response<UserPoolInfoDTO>
-
-    /**
-     * 资金池转出试算
-     * @param address           地址
-     * @param tokenAName        token a名称
-     * @param tokenBName        token b名称
-     * @param liquidityAmount   流动性token数量
-     */
-    @GET("/1.0/market/pool/withdrawal/trial")
-    suspend fun removePoolLiquidityEstimate(
-        @Query("address") address: String,
-        @Query("coin_a") tokenAName: String,
-        @Query("coin_b") tokenBName: String,
-        @Query("amount") liquidityAmount: String
-    ): Response<RemovePoolLiquidityEstimateResultDTO>
-
-    /**
-     * 资金池转入估算
-     * @param tokenAName        token a名称
-     * @param tokenBName        token b名称
-     * @param tokenAAmount      token a数量
-     */
-    @GET("/1.0/market/pool/deposit/trial")
-    suspend fun addPoolLiquidityEstimate(
-        @Query("coin_a") tokenAName: String,
-        @Query("coin_b") tokenBName: String,
-        @Query("amount") tokenAAmount: String
-    ): Response<AddPoolLiquidityEstimateResultDTO>
-
-    /**
-     * 获取币种对储备信息
-     * @param coinAModule        Coin A module
-     * @param coinBModule        Coin B module
-     */
-    @GET("/1.0/market/pool/reserve/info")
-    fun getPoolLiquidityReserve(
-        @Query("coin_a") coinAModule: String,
-        @Query("coin_b") coinBModule: String
-    ): Observable<Response<PoolLiquidityReserveInfoDTO>>
-
-    /**
-     * 获取支持的映射币交易对详情
-     */
-    @GET("/1.0/market/exchange/crosschain/address/info")
-    suspend fun getMarketMappingPairInfo(): Response<List<MappingPairInfoDTO>>
-
-    /**
-     * 获取其他链对应的 violas 映射币
-     */
-    @GET("/1.0/market/exchange/crosschain/map/relation")
-    suspend fun getMarketPairRelation(): Response<List<MapRelationDTO>>
-
-    /**
-     * 获取全部币种对储备信息
-     */
-    @GET("/1.0/market/pool/reserve/infos")
-    suspend fun getMarketAllReservePair(): Response<List<PoolLiquidityReserveInfoDTO>>
 }

@@ -12,7 +12,7 @@ import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
 import com.violas.wallet.utils.str2CoinType
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import org.json.JSONObject
-import org.palliums.libracore.http.LibraService
+import org.palliums.libracore.http.LibraRpcService
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.AccountAddress
 import org.palliums.violascore.transaction.TransactionPayload
@@ -28,7 +28,7 @@ import org.palliums.violascore.wallet.Account
  * desc:
  */
 class ViolasToOriginalCoinProcessor(
-    private val libraRpcService: LibraService
+    private val libraRpcService: LibraRpcService
 ) : MappingProcessor {
 
     private val violasService by lazy { DataRepository.getViolasService() }

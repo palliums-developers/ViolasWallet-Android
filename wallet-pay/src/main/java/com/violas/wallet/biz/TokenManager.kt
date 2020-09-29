@@ -233,7 +233,7 @@ class TokenManager {
                 }
             }
             CoinTypes.Libra.coinType() -> {
-                val libraService = DataRepository.getLibraService()
+                val libraService = DataRepository.getLibraRpcService()
                 val addCurrency = libraService
                     .addCurrency(
                         org.palliums.libracore.wallet.Account(
@@ -285,7 +285,7 @@ class TokenManager {
                         }
                 }
                 CoinTypes.Libra.coinType() -> {
-                    DataRepository.getLibraService()
+                    DataRepository.getLibraRpcService()
                         .getAccountState(it.address)?.balances?.forEach { accountBalance ->
                             if (tokenMark.module == accountBalance.currency) {
                                 isPublish = true

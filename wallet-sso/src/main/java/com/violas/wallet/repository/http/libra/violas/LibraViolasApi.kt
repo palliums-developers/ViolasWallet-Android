@@ -2,6 +2,7 @@ package com.violas.wallet.repository.http.libra.violas
 
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
+import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -22,17 +23,18 @@ interface LibraViolasApi {
      * @param offset 稳定币地址，不为空时查询该稳定币的交易记录，为空时查询平台币的交易记录
      */
     @GET("/1.0/libra/transaction")
-    suspend fun getTransactionRecord(
+    fun getTransactionRecord(
         @Query("addr") address: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
-    ): ListResponse<TransactionRecordDTO>
+    ): Observable<ListResponse<TransactionRecordDTO>>
 
     @GET("/1.0/libra/mint")
-    suspend fun activateAccount(
+    fun activateAccount(
         @Query("address") address: String,
         @Query("auth_key_perfix") authKeyPrefix: String
-    ): Response<Any>
+    ): Observable<Response<Any>>
+
 }
 
 data class TransactionRecordDTO(

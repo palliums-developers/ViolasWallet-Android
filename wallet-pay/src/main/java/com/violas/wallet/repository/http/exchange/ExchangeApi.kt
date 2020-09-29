@@ -1,6 +1,7 @@
 package com.violas.wallet.repository.http.exchange
 
 import com.palliums.violas.http.ListResponse
+import com.palliums.violas.http.Response
 import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -12,6 +13,88 @@ import retrofit2.http.Query
  * desc:
  */
 interface ExchangeApi {
+
+    /**
+     * 获取交易市场支持的币种
+     */
+    @GET("/1.0/market/exchange/currency")
+    fun getMarketSupportCurrencies(): Observable<Response<MarketCurrenciesDTO>>
+
+    /**
+     * 尝试计算兑换价值
+     */
+    @GET("/1.0/market/exchange/trial")
+    fun exchangeSwapTrial(
+        @Query("amount") amount: Long,
+        @Query("currencyIn") currencyIn: String,
+        @Query("currencyOut") currencyOut: String
+    ): Observable<Response<SwapTrialSTO>>
+
+    /**
+     * 获取指定地址的交易市场资金池信息
+     * @param address       地址
+     */
+    @GET("/1.0/market/pool/info")
+    fun getUserPoolInfo(
+        @Query("address") address: String
+    ): Observable<Response<UserPoolInfoDTO>>
+
+    /**
+     * 资金池转出试算
+     * @param address           地址
+     * @param tokenAName        token a名称
+     * @param tokenBName        token b名称
+     * @param liquidityAmount   流动性token数量
+     */
+    @GET("/1.0/market/pool/withdrawal/trial")
+    fun removePoolLiquidityEstimate(
+        @Query("address") address: String,
+        @Query("coin_a") tokenAName: String,
+        @Query("coin_b") tokenBName: String,
+        @Query("amount") liquidityAmount: String
+    ): Observable<Response<RemovePoolLiquidityEstimateResultDTO>>
+
+    /**
+     * 资金池转入估算
+     * @param tokenAName        token a名称
+     * @param tokenBName        token b名称
+     * @param tokenAAmount      token a数量
+     */
+    @GET("/1.0/market/pool/deposit/trial")
+    fun addPoolLiquidityEstimate(
+        @Query("coin_a") tokenAName: String,
+        @Query("coin_b") tokenBName: String,
+        @Query("amount") tokenAAmount: String
+    ): Observable<Response<AddPoolLiquidityEstimateResultDTO>>
+
+    /**
+     * 获取币种对储备信息
+     * @param coinAModule        Coin A module
+     * @param coinBModule        Coin B module
+     */
+    @GET("/1.0/market/pool/reserve/info")
+    fun getPoolLiquidityReserve(
+        @Query("coin_a") coinAModule: String,
+        @Query("coin_b") coinBModule: String
+    ): Observable<Response<PoolLiquidityReserveInfoDTO>>
+
+    /**
+     * 获取支持的映射币交易对详情
+     */
+    @GET("/1.0/market/exchange/crosschain/address/info")
+    fun getMarketMappingPairInfo(): Observable<Response<List<MappingPairInfoDTO>>>
+
+    /**
+     * 获取其他链对应的 violas 映射币
+     */
+    @GET("/1.0/market/exchange/crosschain/map/relation")
+    fun getMarketPairRelation(): Observable<Response<List<MapRelationDTO>>>
+
+    /**
+     * 获取全部币种对储备信息
+     */
+    @GET("/1.0/market/pool/reserve/infos")
+    fun getMarketAllReservePair(): Observable<Response<List<PoolLiquidityReserveInfoDTO>>>
 
     /**
      * 获取交易市场资金池记录

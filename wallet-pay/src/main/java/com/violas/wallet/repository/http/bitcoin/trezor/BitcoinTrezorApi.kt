@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URLNAME
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_TREZOR
+import io.reactivex.Observable
 import retrofit2.http.*
 
 /**
@@ -25,12 +26,13 @@ interface BitcoinTrezorApi {
      */
     @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_TREZOR}"])
     @GET("v2/address/{address}")
-    suspend fun getTransactionRecords(
+    fun getTransactionRecords(
         @Path("address") address: String,
         @Query("pageSize") pageSize: Int,
         @Query("page") pageNumber: Int,
         @Query("details") details: String = "txs"
-    ): TransactionRecordResponse
+    ): Observable<TransactionRecordResponse>
+
 }
 
 @Keep

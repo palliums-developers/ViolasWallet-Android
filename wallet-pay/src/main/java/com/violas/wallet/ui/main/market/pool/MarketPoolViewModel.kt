@@ -11,14 +11,14 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.extensions.*
 import com.palliums.net.LoadState
-import com.palliums.violas.http.PoolLiquidityDTO
-import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
+import com.violas.wallet.repository.http.exchange.PoolLiquidityReserveInfoDTO
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToExchangeRate
 import com.violas.wallet.utils.convertDisplayAmountToAmount
@@ -483,7 +483,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
 
             try {
                 val liquidityReserve =
-                    exchangeManager.mViolasService.getPoolLiquidityReserve(
+                    exchangeManager.mExchangeService.getPoolLiquidityReserve(
                         coinAModule, coinBModule
                     )
                 logInfo(TAG) { "syncLiquidityReserve. liquidity reserve => $liquidityReserve" }
@@ -553,7 +553,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         when (action) {
             ACTION_GET_USER_LIQUIDITY_LIST -> {
                 val userPoolInfo =
-                    exchangeManager.mViolasService.getUserPoolInfo(violasAccountDO!!.address)
+                    exchangeManager.mExchangeService.getUserPoolInfo(violasAccountDO!!.address)
                 withContext(Dispatchers.Main) {
                     liquidityListLiveData.value = userPoolInfo?.liquidityList
                 }

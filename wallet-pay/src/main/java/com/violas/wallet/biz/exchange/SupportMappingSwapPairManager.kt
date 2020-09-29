@@ -1,25 +1,21 @@
 package com.violas.wallet.biz.exchange
 
 import com.palliums.utils.CustomIOScope
-import com.palliums.violas.http.MappingPairInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.exchange.MappingPairInfoDTO
 import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.utils.str2CoinNumber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.util.concurrent.CountDownLatch
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-
 
 class SupportMappingSwapPairManager : CoroutineScope by CustomIOScope() {
 
     private val mMappingSwapPair = ArrayList<MappingPairInfoDTO>()
-    val mViolasService by lazy {
-        DataRepository.getViolasService()
+    private val mExchangeService by lazy {
+        DataRepository.getExchangeService()
     }
 
     /**
@@ -34,7 +30,7 @@ class SupportMappingSwapPairManager : CoroutineScope by CustomIOScope() {
                     mMappingSwapPair.clear()
                     val countDownLatch = CountDownLatch(1)
                     launch {
-                        mViolasService.getMarketMappingPairInfo()?.let {
+                        mExchangeService.getMarketMappingPairInfo()?.let {
                             mMappingSwapPair.addAll(it)
                         }
                         countDownLatch.countDown()

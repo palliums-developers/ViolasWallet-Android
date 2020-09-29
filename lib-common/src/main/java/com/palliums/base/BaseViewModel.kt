@@ -95,14 +95,14 @@ abstract class BaseViewModel : ViewModel() {
                 }
                 successCallback?.invoke()
             } catch (e: Exception) {
-                logError(e, TAG) {
-                    "execute(action = $action, param = ${
-                    params.contentToString()}) => failure(${
-                    System.currentTimeMillis() - startTime}ms)"
-                }
-
                 val activeCancellation = e.isActiveCancellation()
                 if (!activeCancellation) {
+                    logError(e, TAG) {
+                        "execute(action = $action, param = ${
+                        params.contentToString()}) => failure(${
+                        System.currentTimeMillis() - startTime}ms)"
+                    }
+
                     delayOnError(startTime)
                 }
 

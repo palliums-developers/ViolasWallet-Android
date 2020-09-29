@@ -25,7 +25,7 @@ import org.palliums.libracore.transaction.storage.TypeTag
 
 class LibraSendTransactionMessageHandler : IMessageHandler<JsonArray> {
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
-    private val mLibraService by lazy { DataRepository.getLibraService() }
+    private val mLibraService by lazy { DataRepository.getLibraRpcService() }
 
     private val mBuilder = GsonBuilder()
     private val mGson = mBuilder

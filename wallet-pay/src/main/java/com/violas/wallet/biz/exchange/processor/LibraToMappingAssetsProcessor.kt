@@ -30,7 +30,7 @@ class LibraToMappingAssetsProcessor(
 ) : IProcessor {
 
     private val mLibraRpcService by lazy {
-        DataRepository.getLibraService()
+        DataRepository.getLibraRpcService()
     }
 
     private val mViolasRpcService by lazy {

@@ -2,6 +2,7 @@ package com.violas.wallet.repository.http.bitcoin.bitmain
 
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URLNAME
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_BITMAIN
+import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Path
@@ -28,10 +29,11 @@ interface BitmainApi {
      */
     @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_BITMAIN}"])
     @GET("address/{address}/tx")
-    suspend fun getTransactionRecords(
+    fun getTransactionRecords(
         @Path("address") address: String,
         @Query("pagesize") pageSize: Int,
         @Query("page") pageNumber: Int,
         @Query("verbose") verbose: Int = 2
-    ): ListResponse<TransactionRecordDTO>
+    ): Observable<ListResponse<TransactionRecordDTO>>
+
 }

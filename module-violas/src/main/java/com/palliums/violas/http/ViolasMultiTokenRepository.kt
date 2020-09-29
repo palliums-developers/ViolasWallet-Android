@@ -1,10 +1,8 @@
 package com.palliums.violas.http
 
-import com.palliums.net.checkResponse
-import com.palliums.violas.smartcontract.multitoken.BalanceDTO
+import com.palliums.net.await
 import com.palliums.violas.smartcontract.multitoken.MultiContractRpcApi
 import com.palliums.violas.smartcontract.multitoken.MultiTokenContract
-import com.palliums.violas.smartcontract.multitoken.SupportCurrencyDTO
 import org.palliums.violascore.transaction.TransactionPayload
 
 /**
@@ -18,24 +16,21 @@ class ViolasMultiTokenRepository(
     private val multiTokenContract: MultiTokenContract
 ) {
 
-    fun getMultiTokenContract() =multiTokenContract
+    fun getMultiTokenContract() = multiTokenContract
 
     suspend fun getBalance(
         address: String,
         tokenIdx: List<Long>
-    ): BalanceDTO? {
-        return checkResponse {
-            val tokenIdxArr: String = tokenIdx.joinToString(",")
-            mMultiContractApi.getBalance(address, tokenIdxArr)
-        }.data
-    }
+    ) =
+        mMultiContractApi.getBalance(
+            address, tokenIdx.joinToString(",")
+        ).await().data
 
-    suspend fun getSupportCurrency(): List<SupportCurrencyDTO>? {
-        return checkResponse { mMultiContractApi.getSupportCurrency() }.data?.currencies
-    }
+    suspend fun getSupportCurrency() =
+        mMultiContractApi.getSupportCurrency().await().data?.currencies
 
     suspend fun getRegisterToken(address: String) =
-        checkResponse { mMultiContractApi.getRegisterToken(address) }.data?.isPublished == 1
+        mMultiContractApi.getRegisterToken(address).await().data?.isPublished == 1
 
     fun publishTokenPayload(data: ByteArray = byteArrayOf()): TransactionPayload {
         return multiTokenContract.optionPublishTransactionPayload(data)

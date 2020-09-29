@@ -12,7 +12,6 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.listing.ListingViewModel
 import com.palliums.utils.getString
-import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
@@ -23,6 +22,7 @@ import com.violas.wallet.event.MarketPageType
 import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
 import com.violas.wallet.ui.main.market.pool.MarketPoolOpMode
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.viewModel.WalletAppViewModel
@@ -141,7 +141,9 @@ class MyPoolViewModel : ListingViewModel<PoolLiquidityDTO>() {
 
     private lateinit var address: String
 
-    private val violasService by lazy { DataRepository.getViolasService() }
+    private val exchangeService by lazy {
+        DataRepository.getExchangeService()
+    }
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
@@ -153,7 +155,7 @@ class MyPoolViewModel : ListingViewModel<PoolLiquidityDTO>() {
     }
 
     override suspend fun loadData(vararg params: Any): List<PoolLiquidityDTO> {
-        val userPoolInfo = violasService.getUserPoolInfo(address)
+        val userPoolInfo = exchangeService.getUserPoolInfo(address)
 
         liquidityTotalAmount.postValue(userPoolInfo?.liquidityTotalAmount ?: "0")
 

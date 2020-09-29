@@ -20,12 +20,12 @@ import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.net.LoadState
 import com.palliums.utils.*
-import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
+import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.MarketSelectPopup

@@ -20,7 +20,7 @@ class MappingManager {
     private val contract = ViolasMultiTokenContract(Vm.TestNet)
     private val engine = MappingEngine()
     private val violasRpcService = DataRepository.getViolasChainRpcService()
-    private val libraRpcService = DataRepository.getLibraService()
+    private val libraRpcService = DataRepository.getLibraRpcService()
 
     init {
         engine.clearProcessors()

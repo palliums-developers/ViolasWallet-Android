@@ -1,12 +1,12 @@
 package com.violas.wallet.biz
 
 import com.palliums.extensions.logInfo
-import com.palliums.violas.http.PoolLiquidityDTO
-import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
+import com.violas.wallet.repository.http.exchange.PoolLiquidityReserveInfoDTO
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
@@ -28,26 +28,28 @@ class ExchangeManager {
         private const val MINIMUM_PRICE_FLUCTUATION = 5 / 1000F
     }
 
-    val mViolasService by lazy {
-        DataRepository.getViolasService()
+    val mExchangeService by lazy {
+        DataRepository.getExchangeService()
     }
 
     val mAccountManager by lazy {
         AccountManager()
     }
 
+    private val mViolasService by lazy {
+        DataRepository.getViolasService()
+    }
+
     private val mViolasExchangeContract by lazy {
         ViolasExchangeContract(Vm.TestNet)
     }
-
-    private val receiveAddress = "c71caa520e123d122c310177c08fa0d2"
 
     /**
      * 获取交易市场支持的币种列表
      */
     suspend fun getMarketSupportTokens(): List<ITokenVo> {
         // 交易市场支持的币种
-        val marketCurrencies = mViolasService.getMarketSupportCurrencies()
+        val marketCurrencies = mExchangeService.getMarketSupportCurrencies()
 
         val marketTokens = mutableListOf<ITokenVo>()
         if (marketCurrencies?.bitcoinCurrencies?.isNotEmpty() == true) {

@@ -5,12 +5,10 @@ import android.util.Log
 import com.palliums.content.ContextProvider
 import org.palliums.libracore.BuildConfig
 import org.palliums.libracore.crypto.*
-import org.palliums.libracore.serialization.hexToBytes
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.*
 import org.palliums.libracore.transaction.storage.StructTag
 import org.palliums.libracore.transaction.storage.TypeTag
-import org.palliums.libracore.transaction.storage.TypeTagStructTag
 import org.palliums.libracore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -21,7 +19,7 @@ import java.math.RoundingMode
  * <p>
  * desc:
  */
-class LibraService(private val mLibraRepository: LibraRepository) {
+class LibraRpcService(private val mLibraRpcRepository: LibraRpcRepository) {
     data class TransactionResult(
         val sender: String,
         val sequenceNumber: Long
@@ -119,7 +117,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
             Log.i(this.javaClass.name, "SignTransaction: $hexSignedTransaction")
         }
 
-        mLibraRepository.submitTransaction(hexSignedTransaction)
+        mLibraRpcRepository.submitTransaction(hexSignedTransaction)
     }
 
     suspend fun sendLibraToken(
@@ -167,18 +165,18 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         return 0
     }
 
-    suspend fun getCurrencies() = mLibraRepository.getCurrencies().data
+    suspend fun getCurrencies() = mLibraRpcRepository.getCurrencies().data
 
     suspend fun getAccountState(
         address: String
     ) =
-        mLibraRepository.getAccountState(address).data
+        mLibraRpcRepository.getAccountState(address).data
 
     suspend fun getTransaction(
         address: String,
         sequenceNumber: Long,
         bool: Boolean = true
-    ) = mLibraRepository.getTransaction(address, sequenceNumber, bool)
+    ) = mLibraRpcRepository.getTransaction(address, sequenceNumber, bool)
 
 
     suspend fun addCurrency(
@@ -202,7 +200,7 @@ class LibraService(private val mLibraRepository: LibraRepository) {
         return sendTransaction(transactionPayload, account, gasCurrencyCode = lbrStructTagType(),chainId = chainId)
     }
 
-    suspend fun submitTransaction(hex: String) = mLibraRepository.submitTransaction(hex)
+    suspend fun submitTransaction(hex: String) = mLibraRpcRepository.submitTransaction(hex)
 
     suspend fun generateRawTransaction(
         payload: TransactionPayload,

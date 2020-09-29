@@ -217,7 +217,7 @@ class TransferManager {
                 error.invoke(LibraException.CurrencyNotExistException())
                 return
             }
-            DataRepository.getLibraService().sendLibraToken(
+            DataRepository.getLibraRpcService().sendLibraToken(
                 context,
                 org.palliums.libracore.wallet.Account(
                     org.palliums.libracore.crypto.Ed25519KeyPair(decryptPrivateKey)
