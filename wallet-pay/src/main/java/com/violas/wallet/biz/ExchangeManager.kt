@@ -7,15 +7,12 @@ import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.http.dex.DexOrderDTO
-import com.violas.wallet.repository.http.dex.DexRepository
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.walletconnect.extensions.hexStringToByteArray
-import org.json.JSONObject
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.AccountAddress
 import org.palliums.violascore.transaction.storage.StructTag
@@ -34,15 +31,9 @@ class ExchangeManager {
     val mViolasService by lazy {
         DataRepository.getViolasService()
     }
-    private val mViolasRpcService by lazy {
-        DataRepository.getViolasChainRpcService()
-    }
 
     val mAccountManager by lazy {
         AccountManager()
-    }
-    private val mTokenManager by lazy {
-        TokenManager()
     }
 
     private val mViolasExchangeContract by lazy {
@@ -267,58 +258,5 @@ class ExchangeManager {
             .divide(liquidityReserve.liquidityTotalAmount, 6, RoundingMode.DOWN)
             .stripTrailingZeros()
         return Pair(coinAAmount, coinBAmount)
-    }
-
-    @Throws(Exception::class)
-    suspend fun revokeOrder(
-        privateKey: ByteArray,
-        dexOrder: DexOrderDTO,
-        dexService: DexRepository
-    ): Boolean {
-        return try {
-            // 1.获取撤销兑换token数据的签名字符
-            val account = Account(KeyPair.fromSecretKey(privateKey))
-
-            val optionUndoExchangePayloadWithData =
-                optionUndoExchangePayloadWithData(dexOrder.version.toLong())
-
-            val optionUndoExchangePayload = mTokenManager.transferTokenPayload(
-                dexOrder.tokenGiveAddress.toLong(),
-                receiveAddress,
-                0,
-                optionUndoExchangePayloadWithData
-            )
-
-            val (signedTxn, _, _) = mViolasService.generateTransaction(
-                optionUndoExchangePayload,
-                account,
-                chainId = Vm.ViolasChainId
-            )
-
-            // 2.通知交易中心撤销订单，交易中心此时只会标记需要撤销订单的状态为CANCELLING并停止兑换，失败会抛异常
-            // 不管通知交易中心撤销订单有没有成功，都要将撤销兑换token数据上链
-            try {
-                dexService.revokeOrder(dexOrder.version, signedTxn)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            // 3.撤销兑换token数据上链，只有上链后，交易中心扫区块扫到解析撤销订单才会更改订单状态为CANCELED
-            mViolasService.sendTransaction(signedTxn)
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-
-    private fun optionUndoExchangePayloadWithData(
-        version: Long
-    ): ByteArray {
-        val subExchangeDate = JSONObject()
-        subExchangeDate.put("type", "wd_ex")
-        subExchangeDate.put("ver", version)
-        return subExchangeDate.toString().toByteArray()
     }
 }

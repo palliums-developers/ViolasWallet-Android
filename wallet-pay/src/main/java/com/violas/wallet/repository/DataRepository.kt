@@ -15,8 +15,6 @@ import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorApi
 import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorRepository
 import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorService
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
-import com.violas.wallet.repository.http.dex.DexApi
-import com.violas.wallet.repository.http.dex.DexRepository
 import com.violas.wallet.repository.http.exchange.ExchangeApi
 import com.violas.wallet.repository.http.exchange.ExchangeRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
@@ -111,9 +109,6 @@ object DataRepository {
                 )
             }
         }
-
-    fun getDexService() =
-        DexRepository(retrofit.create(DexApi::class.java))
 
     fun getMappingService() =
         MappingRepository(retrofit.create(MappingApi::class.java))
