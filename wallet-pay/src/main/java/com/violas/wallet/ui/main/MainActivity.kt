@@ -12,8 +12,6 @@ import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.event.BackupWalletViewStatusEvent
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
@@ -46,10 +44,6 @@ class MainActivity : BaseAppActivity() {
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_main
-    }
-
-    private val mAccountManager by lazy {
-        AccountManager()
     }
 
     private lateinit var viewPagerAdapter: FragmentPagerAdapterSupport
@@ -169,39 +163,6 @@ class MainActivity : BaseAppActivity() {
             } catch (ex: IllegalStateException) {
                 super.supportFinishAfterTransition()
                 ex.printStackTrace()
-            }
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onBackupWalletViewStatusEvent(event: BackupWalletViewStatusEvent) {
-        layoutBackupNow.visibility = if (event.show) {
-            btnConfirm.setOnClickListener {
-                backupWallet()
-            }
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-    }
-
-    private fun backupWallet() {
-        launch {
-            try {
-                val accountDO = mAccountManager.getDefaultAccount()
-                authenticateAccount(
-                    accountDO,
-                    mAccountManager,
-                    dismissLoadingWhenDecryptEnd = true,
-                    mnemonicCallback = {
-                        BackupPromptActivity.start(
-                            this@MainActivity,
-                            it,
-                            BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
-                        )
-                    }
-                )
-            } catch (e: Exception) {
             }
         }
     }
