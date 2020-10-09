@@ -17,9 +17,10 @@ ext {
             androidTest_junit                      : '1.1.1',
             androidTest_runner                     : '1.2.0',
             androidTest_espresso                   : '3.2.0',
+            leakcanary                             : '2.4',
 
             /************************* Kotlin *************************/
-            kotlin_stdlib                          : '1.3.50',
+            kotlin_version                         : '1.3.72',
             kotlin_coroutines                      : '1.3.0',
 
             /************************* Android *************************/
@@ -70,6 +71,8 @@ ext {
             protobuf_protoc_gen_java               : '3.0.0',
             zxing                                  : '3.3.2',
             libphonenumber                         : '8.11.0',
+            firebase_core                          : '17.5.1',
+            firebase_messaging                     : '20.3.0',
 
             /************************* Network *************************/
             okhttp3                                : '4.8.0',
@@ -112,9 +115,11 @@ ext {
             androidTest_junit               : "androidx.test.ext:junit:$versions.androidTest_junit",
             androidTest_runner              : "androidx.test:runner:$versions.androidTest_runner",
             androidTest_espresso            : "androidx.test.espresso:espresso-core:$versions.androidTest_espresso",
+            leakcanary_android              : "com.squareup.leakcanary:leakcanary-android:$versions.leakcanary",
 
             /************************* Kotlin *************************/
-            kotlin_stdlib_jdk8              : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin_stdlib",
+            kotlin_stdlib                   : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin_version",
+            kotlin_stdlib_jdk8              : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin_version",
             kotlinx_coroutines_core         : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlin_coroutines",
             kotlinx_coroutines_android      : "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlin_coroutines",
 
@@ -149,6 +154,8 @@ ext {
             zxing_core                      : "com.google.zxing:core:$versions.zxing",
             // see https://github.com/google/libphonenumber
             libphonenumber                  : "com.googlecode.libphonenumber:libphonenumber:$versions.libphonenumber",
+            firebase_core                   : "com.google.firebase:firebase-core:$versions.firebase_core",
+            firebase_messaging              : "com.google.firebase:firebase-messaging:$versions.firebase_messaging",
 
             /************************* Network *************************/
             // see https://github.com/square/okhttp

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1022148688605",
+    "firebase_url": "https://violas-b93b0.firebaseio.com",
+    "project_id": "violas-b93b0",
+    "storage_bucket": "violas-b93b0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022148688605:android:65a9d110ad7e024fd0b934",
+        "android_client_info": {
+          "package_name": "com.violas.wallet.pay.demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1022148688605-pq0ft4js3k9e5ku0fkbpfish17vn740s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaxvBJXgUAk1_8aI8zspeoZU4nEPfqLU0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1022148688605-pq0ft4js3k9e5ku0fkbpfish17vn740s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
