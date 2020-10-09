@@ -16,6 +16,7 @@
     <attr name="colorTint" format="color" />
     <attr name="colorSwitchBgNormal" format="color" />
     <attr name="colorSwitchBgChecked" format="color" />
+    <attr name="boxStrokeColorSecondary" format="color" />
 
     <attr name="textColorWarn" format="color" />
     <attr name="textColorProcessing" format="color" />

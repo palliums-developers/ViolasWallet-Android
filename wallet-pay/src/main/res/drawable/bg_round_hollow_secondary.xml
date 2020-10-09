@@ -4,6 +4,6 @@
 
     <stroke
         android:width="@dimen/dp_0.5"
-        android:color="?attr/colorDivider" />
+        android:color="?attr/boxStrokeColorSecondary" />
 
 </shape>

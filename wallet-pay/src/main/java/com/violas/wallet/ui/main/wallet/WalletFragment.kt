@@ -43,7 +43,7 @@ import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
 import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.loadRoundedImage
+import com.violas.wallet.utils.loadCircleImage
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
@@ -439,10 +439,9 @@ class AssertAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemData = getItem(position)
 
-        holder.itemView.ivLogo.loadRoundedImage(
+        holder.itemView.ivLogo.loadCircleImage(
             itemData.getLogoUrl(),
-            getResourceId(R.attr.iconCoinDefLogo, holder.itemView.context),
-            14
+            getResourceId(R.attr.iconCoinDefLogo, holder.itemView.context)
         )
 
         holder.itemView.tvName.text = itemData.getAssetsName()
