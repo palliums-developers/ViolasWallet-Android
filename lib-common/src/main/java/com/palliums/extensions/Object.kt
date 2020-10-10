@@ -16,7 +16,7 @@ inline fun Any.logVerbose(
 ) {
     if (!BuildConfig.DEBUG) return
     Log.v(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
     )
 }
@@ -28,7 +28,7 @@ inline fun Any.logVerbose(
 ) {
     if (!BuildConfig.DEBUG) return
     Log.v(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
         tr
     )
@@ -40,7 +40,7 @@ inline fun Any.logDebug(
 ) {
     if (!BuildConfig.DEBUG) return
     Log.d(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
     )
 }
@@ -52,7 +52,7 @@ inline fun Any.logDebug(
 ) {
     if (!BuildConfig.DEBUG) return
     Log.d(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
         tr
     )
@@ -64,7 +64,7 @@ inline fun Any.logInfo(
 ) {
     if (!BuildConfig.DEBUG) return
     Log.i(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
     )
 }
@@ -76,7 +76,7 @@ inline fun Any.logInfo(
 ) {
     if (!BuildConfig.DEBUG) return
     Log.i(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
         tr
     )
@@ -88,7 +88,7 @@ inline fun Any.logWarn(
 ) {
     if (!BuildConfig.DEBUG) return
     Log.w(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
     )
 }
@@ -100,7 +100,7 @@ inline fun Any.logWarn(
 ) {
     if (!BuildConfig.DEBUG) return
     Log.w(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
         tr
     )
@@ -112,7 +112,7 @@ inline fun Any.logError(
 ) {
     if (!BuildConfig.DEBUG) return
     Log.e(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
     )
 }
@@ -124,7 +124,7 @@ inline fun Any.logError(
 ) {
     if (!BuildConfig.DEBUG) return
     Log.e(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
         tr
     )
