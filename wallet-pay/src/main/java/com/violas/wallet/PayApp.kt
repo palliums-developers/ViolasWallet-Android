@@ -4,12 +4,14 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.google.firebase.iid.FirebaseInstanceId
 import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.analytics.Analytics
 import com.microsoft.appcenter.crashes.AbstractCrashesListener
 import com.microsoft.appcenter.crashes.Crashes
 import com.microsoft.appcenter.crashes.CrashesListener
 import com.palliums.content.App
+import com.palliums.extensions.logDebug
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.viewModel.WalletConnectViewModel
 
@@ -21,6 +23,12 @@ class PayApp : App() {
         handlerError()
         handlerAppCenter()
         resetWalletConnect()
+
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
+            logDebug("Firebase") {
+                "onGetInstanceIdComplete. success = ${it.isSuccessful}, token = ${it.result?.token}"
+            }
+        }
     }
 
     private fun handlerAppCenter() {

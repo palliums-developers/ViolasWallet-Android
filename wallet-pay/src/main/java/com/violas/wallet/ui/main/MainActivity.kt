@@ -3,7 +3,6 @@ package com.violas.wallet.ui.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.palliums.extensions.clearLongPressToast
@@ -14,19 +13,13 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
-import com.violas.wallet.ui.backup.BackupMnemonicFrom
-import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.main.bank.BankFragment
 import com.violas.wallet.ui.main.market.MarketFragment
 import com.violas.wallet.ui.main.me.MeFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
-import com.violas.wallet.utils.authenticateAccount
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.view_backup_now_wallet.*
-import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 class MainActivity : BaseAppActivity() {
 

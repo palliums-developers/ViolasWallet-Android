@@ -1,8 +1,19 @@
 package com.violas.wallet.service
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.media.RingtoneManager
+import android.os.Build
+import android.os.Bundle
+import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.palliums.extensions.logDebug
+import com.violas.wallet.R
+import com.violas.wallet.ui.message.MessageCenterActivity
 
 /**
  * Created by elephant on 2020/10/9 17:33.
@@ -35,7 +46,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
-            logDebug { "onMessageReceived. Message data payload: : ${remoteMessage.data}" }
+            logDebug { "onMessageReceived. Message data payload: ${remoteMessage.data}" }
 
             /* Check if data needs to be processed by long running job */
             if (true) {
@@ -45,16 +56,70 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 // Handle message within 10 seconds
                 // handleNow();
             }
-
         }
 
         // Check if message contains a notification payload.
-        if (remoteMessage.notification != null) {
-            logDebug { "onMessageReceived. Message Notification Body: : ${remoteMessage.notification!!.body}" }
+        remoteMessage.notification?.let {
+            logDebug { "onMessageReceived. Message Notification title : ${it.title}" }
+            logDebug { "onMessageReceived. Message Notification body : ${it.body}" }
+            logDebug { "onMessageReceived. Message Notification channelId : ${it.channelId}" }
+
+            if (it.title.isNullOrBlank() || it.body.isNullOrBlank()) return@let
+            sendNotification(it.title!!, it.body!!, remoteMessage.data)
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
+    }
+
+    /**
+     * Create and show a simple notification containing the received FCM message.
+     *
+     * @param messageBody FCM message body received.
+     */
+    private fun sendNotification(
+        messageTitle: CharSequence,
+        messageBody: CharSequence,
+        messageData: Map<String, String>
+    ) {
+        val extras = Bundle()
+        messageData.keys.forEach {
+            extras.putString(it, messageData[it])
+        }
+        val intent = Intent(this, MessageCenterActivity::class.java)
+        intent.putExtras(extras)
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0 /* Request code */,
+            intent,
+            PendingIntent.FLAG_ONE_SHOT
+        )
+
+        val channelId = getString(R.string.default_notification_channel_id)
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(messageTitle)
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setSound(defaultSoundUri)
+            .setContentIntent(pendingIntent)
+
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                getString(R.string.default_notification_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
     }
 
     /**
