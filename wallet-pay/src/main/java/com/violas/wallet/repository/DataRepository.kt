@@ -7,6 +7,7 @@ import com.palliums.violas.http.ViolasService
 import com.palliums.violas.smartcontract.multitoken.MultiContractRpcApi
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
+import com.violas.wallet.common.BaseBizUrl.getLibraBaseUrl
 import com.violas.wallet.common.BaseBizUrl.getViolasBaseUrl
 import com.violas.wallet.repository.database.AppDatabase
 import com.violas.wallet.repository.http.bank.BankApi
@@ -27,10 +28,8 @@ import com.violas.wallet.repository.http.mapping.MappingRepository
 import com.violas.wallet.repository.http.violas.ViolasBizService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.palliums.libracore.http.LibraRpcApi
 import org.palliums.libracore.http.LibraRpcRepository
 import org.palliums.libracore.http.LibraRpcService
-import org.palliums.violascore.http.ViolasRpcApi
 import org.palliums.violascore.http.ViolasRpcRepository
 import org.palliums.violascore.http.ViolasRpcService
 import retrofit2.Retrofit
@@ -77,7 +76,7 @@ object DataRepository {
     fun getBitcoinService() = BitcoinChainApi.get()
 
     fun getLibraRpcService() =
-        LibraRpcService(LibraRpcRepository(retrofit.create(LibraRpcApi::class.java)))
+        LibraRpcService(LibraRpcRepository(okHttpClient, getLibraBaseUrl()))
 
     fun getLibraBizService() =
         LibraViolasService(LibraViolasRepository(retrofit.create(LibraViolasApi::class.java)))
@@ -89,7 +88,7 @@ object DataRepository {
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
     fun getViolasChainRpcService() =
-        ViolasRpcService(ViolasRpcRepository(retrofit.create(ViolasRpcApi::class.java)))
+        ViolasRpcService(ViolasRpcRepository(okHttpClient, getViolasBaseUrl()))
 
     fun getTransactionRecordService(coinTypes: CoinTypes) =
         when (coinTypes) {

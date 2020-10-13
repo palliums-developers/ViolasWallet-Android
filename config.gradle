@@ -20,8 +20,8 @@ ext {
             leakcanary                             : '2.4',
 
             /************************* Kotlin *************************/
-            kotlin_version                         : '1.3.72',
-            kotlin_coroutines                      : '1.3.0',
+            kotlin_version                         : '1.4.10',
+            kotlin_coroutines                      : '1.3.9',
 
             /************************* Android *************************/
             androidx_activity                      : '1.1.0-rc02',

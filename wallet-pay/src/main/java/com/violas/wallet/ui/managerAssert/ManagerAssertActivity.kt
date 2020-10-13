@@ -148,7 +148,6 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                 if (isPublish(assertOriginateToken.account_id, assertOriginateToken.tokenMark)) {
                     mTokenManager.insert(checked, assertOriginateToken)
                     dismissProgress()
-//                    mChange = true
                 } else {
                     val account = mAccountManager.getAccountById(assertOriginateToken.account_id)
                     dismissProgress()
