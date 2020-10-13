@@ -30,7 +30,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.palliums.libracore.http.LibraRpcRepository
 import org.palliums.libracore.http.LibraRpcService
-import org.palliums.violascore.http.ViolasRpcApi
 import org.palliums.violascore.http.ViolasRpcRepository
 import org.palliums.violascore.http.ViolasRpcService
 import retrofit2.Retrofit
@@ -89,7 +88,7 @@ object DataRepository {
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
     fun getViolasChainRpcService() =
-        ViolasRpcService(ViolasRpcRepository(retrofit.create(ViolasRpcApi::class.java)))
+        ViolasRpcService(ViolasRpcRepository(okHttpClient, getViolasBaseUrl()))
 
     fun getTransactionRecordService(coinTypes: CoinTypes) =
         when (coinTypes) {

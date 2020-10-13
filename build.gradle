@@ -28,6 +28,10 @@ buildscript {
 }
 
 allprojects {
+    Properties properties = new Properties()
+    File configFile = project.rootProject.file('local.properties')
+    properties.load(configFile.newDataInputStream())
+
     repositories {
         google()
         jcenter()
@@ -36,6 +40,14 @@ allprojects {
         maven {
             url 'http://www.idescout.com/maven/repo/'
             name 'IDEScout, Inc.'
+        }
+        maven {
+            name = "GithubPackages"
+            url = uri("https://maven.pkg.github.com/palliums-developers/AndroidCommonLib")
+            credentials {
+                username = System.getenv('GITHUB_USER') ?: properties.getProperty('GITHUB_USER')
+                password = System.getenv('GITHUB_PERSONAL_ACCESS_TOKEN') ?: properties.getProperty('GITHUB_PERSONAL_ACCESS_TOKEN')
+            }
         }
     }
 }

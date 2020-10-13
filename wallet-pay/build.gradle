@@ -148,7 +148,7 @@ dependencies {
     implementation project(':lib-core')
     implementation project(':lib-zbar-scan')
     implementation project(':lib-switch-button')
-    implementation project(':lib-libra-core')
+    implementation ('org.palliums.lib:libra-core:0.0.1')
     implementation project(':module-violas')
 //    implementation project(':lib-violas-core')
     implementation project(':lib-btc-core')
