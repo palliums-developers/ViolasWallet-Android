@@ -238,8 +238,9 @@ class TokenManager {
     }
 
     suspend fun publishContract(account: Account) {
+        //todo
         val publishTokenPayload = mViolasMultiTokenService.publishTokenPayload()
-        mViolasService.sendTransaction(publishTokenPayload, account)
+//        mViolasService.sendTransaction(publishTokenPayload, account)
     }
 
     suspend fun isPublishedContract(address: String): Boolean {
@@ -253,9 +254,10 @@ class TokenManager {
         amount: Long,
         data: ByteArray = byteArrayOf()
     ) {
+        //todo
         val publishTokenPayload =
             mViolasMultiTokenService.transferTokenPayload(tokenIdx, address, amount, data)
-        mViolasService.sendTransaction(publishTokenPayload, account)
+//        mViolasService.sendTransaction(publishTokenPayload, account)
     }
 
     /**
@@ -273,8 +275,9 @@ class TokenManager {
         amount: Long,
         data: ByteArray = byteArrayOf()
     ) {
+        //todo
         val mintTokenPayload =
             mViolasMultiTokenService.mintTokenPayload(tokenIdx, address, amount, data)
-        mViolasService.sendTransaction(mintTokenPayload, account)
+//        mViolasService.sendTransaction(mintTokenPayload, account)
     }
 }

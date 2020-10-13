@@ -2,7 +2,6 @@ package org.palliums.libracore.http
 
 import android.content.Context
 import android.util.Log
-import com.palliums.content.ContextProvider
 import org.palliums.libracore.BuildConfig
 import org.palliums.libracore.crypto.*
 import org.palliums.libracore.serialization.toHex
@@ -165,12 +164,11 @@ class LibraRpcService(private val mLibraRpcRepository: LibraRpcRepository) {
         return 0
     }
 
-    suspend fun getCurrencies() = mLibraRpcRepository.getCurrencies().data
+    suspend fun getCurrencies() = mLibraRpcRepository.getCurrencies()
 
     suspend fun getAccountState(
         address: String
-    ) =
-        mLibraRpcRepository.getAccountState(address).data
+    ) = mLibraRpcRepository.getAccountState(address)
 
     suspend fun getTransaction(
         address: String,
@@ -180,6 +178,7 @@ class LibraRpcService(private val mLibraRpcRepository: LibraRpcRepository) {
 
 
     suspend fun addCurrency(
+        context: Context,
         account: Account,
         address: String,
         module: String,
@@ -188,7 +187,7 @@ class LibraRpcService(private val mLibraRpcRepository: LibraRpcRepository) {
     ): TransactionResult {
         val transactionPayload =
             TransactionPayload.optionAddCurrencyPayload(
-                ContextProvider.getContext(),
+                context,
                 TypeTag.newStructTag(
                     StructTag(
                         AccountAddress.DEFAULT, module, name,
@@ -197,7 +196,12 @@ class LibraRpcService(private val mLibraRpcRepository: LibraRpcRepository) {
                     )
                 )
             )
-        return sendTransaction(transactionPayload, account, gasCurrencyCode = lbrStructTagType(),chainId = chainId)
+        return sendTransaction(
+            transactionPayload,
+            account,
+            gasCurrencyCode = lbrStructTagType(),
+            chainId = chainId
+        )
     }
 
     suspend fun submitTransaction(hex: String) = mLibraRpcRepository.submitTransaction(hex)

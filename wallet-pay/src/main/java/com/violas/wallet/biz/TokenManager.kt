@@ -1,6 +1,7 @@
 package com.violas.wallet.biz
 
 import androidx.annotation.WorkerThread
+import com.palliums.content.ContextProvider
 import com.palliums.violas.bean.TokenMark
 import com.palliums.violas.http.ViolasMultiTokenRepository
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
@@ -236,6 +237,7 @@ class TokenManager {
                 val libraService = DataRepository.getLibraRpcService()
                 val addCurrency = libraService
                     .addCurrency(
+                        ContextProvider.getContext(),
                         org.palliums.libracore.wallet.Account(
                             org.palliums.libracore.crypto.KeyPair.fromSecretKey(
                                 privateKey
@@ -248,7 +250,7 @@ class TokenManager {
                         addCurrency.sender,
                         addCurrency.sequenceNumber
                     )
-                    if (transaction.data?.isSuccessExecuted() == true) {
+                    if (transaction?.isSuccessExecuted() == true) {
                         return true
                     }
                 }

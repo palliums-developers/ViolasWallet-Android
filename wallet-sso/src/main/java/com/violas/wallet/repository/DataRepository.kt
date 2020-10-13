@@ -74,8 +74,9 @@ object DataRepository {
 
     fun getBitcoinService() = BitcoinChainApi.get()
 
+    // TODO: 10/12/20 LibraChainNode
     fun getLibraService() =
-        LibraRpcService(LibraRpcRepository(retrofit.create(LibraRpcApi::class.java)))
+        LibraRpcService(LibraRpcRepository(okHttpClient, ""))
 
     fun getViolasService() =
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))

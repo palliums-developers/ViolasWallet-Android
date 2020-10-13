@@ -1,10 +1,6 @@
 package org.palliums.libracore.http
 
-import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
-import com.palliums.net.ApiResponse
-import java.util.*
-import kotlin.math.abs
 
 /**
  * Created by elephant on 2019-03-30 18:29.
@@ -12,57 +8,6 @@ import kotlin.math.abs
  * <p>
  * desc:
  */
-@Keep
-open class Response<T> : ApiResponse {
-
-    var id: String? = null
-
-    @SerializedName("jsonrpc")
-    var jsonRPC: String? = null
-
-    @SerializedName(value = "error")
-    var error: ResponseError? = null
-
-    @SerializedName(value = "result")
-    var data: T? = null
-
-    override fun getSuccessCode(): Any {
-        return true
-    }
-
-    override fun getErrorCode(): Any {
-        return if (error == null) true else error!!.code
-    }
-
-    override fun getErrorMsg(): Any? {
-        return if (error == null) null else error!!.message
-    }
-
-    override fun getResponseData(): Any? {
-        return data
-    }
-}
-
-@Keep
-class ListResponse<T> : Response<List<T>>()
-
-@Keep
-data class ResponseError(
-    var code: String,
-    var data: Any?,
-    var message: String
-)
-
-@Keep
-data class RequestDTO(
-    val method: String,
-    val params: List<Any>,
-    @SerializedName("jsonrpc")
-    val jsonRPC: String = "2.0",
-    val id: String = abs(Random().nextInt()).toString()
-)
-
-@Keep
 data class CurrenciesDTO(
     @SerializedName("code")
     val code: String,
@@ -72,7 +17,6 @@ data class CurrenciesDTO(
     val scalingFactor: Long
 )
 
-@Keep
 data class AccountStateDTO(
     @SerializedName("authentication_key")
     val authenticationKey: String,
@@ -90,13 +34,11 @@ data class AccountStateDTO(
     val delegatedKeyRotationCapability: Boolean
 )
 
-@Keep
 data class AccountBalance(
     val amount: Long,
     val currency: String
 )
 
-@Keep
 data class GetTransactionDTO(
     @SerializedName("events")
     val events: List<Event>,
@@ -110,13 +52,12 @@ data class GetTransactionDTO(
     val version: Int,
     @SerializedName("vm_status")
     val vmStatus: VmStatus
-){
+) {
     fun isSuccessExecuted(): Boolean {
         return vmStatus.type.equals(VmStatus.SUCCESS, true)
     }
 }
 
-@Keep
 data class VmStatus(
     val type: String
 ) {
@@ -125,7 +66,6 @@ data class VmStatus(
     }
 }
 
-@Keep
 data class Event(
     @SerializedName("data")
     val `data`: Data,
@@ -137,7 +77,6 @@ data class Event(
     val transactionVersion: Int
 )
 
-@Keep
 data class Transaction(
     @SerializedName("expiration_time")
     val expirationTime: Int,
@@ -165,7 +104,6 @@ data class Transaction(
     val type: String
 )
 
-@Keep
 data class Data(
     @SerializedName("amount")
     val amount: Amount,
@@ -179,7 +117,6 @@ data class Data(
     val type: String
 )
 
-@Keep
 data class Amount(
     @SerializedName("amount")
     val amount: Int,
@@ -187,7 +124,6 @@ data class Amount(
     val currency: String
 )
 
-@Keep
 data class Script(
     @SerializedName("type")
     val type: String

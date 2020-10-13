@@ -1,7 +1,9 @@
 package org.palliums.libracore.http
 
-import androidx.annotation.StringDef
-import com.palliums.net.await
+import okhttp3.OkHttpClient
+import org.palliums.lib.jsonrpc.JsonRPCRequestDTO
+import org.palliums.lib.jsonrpc.JsonRPCResponseDTO
+import org.palliums.lib.jsonrpc.RPCService
 
 /**
  * Created by elephant on 2020/3/30 22:54.
@@ -9,58 +11,46 @@ import com.palliums.net.await
  * <p>
  * desc:
  */
-class LibraRpcRepository(private val mLibraRpcApi: LibraRpcApi) {
+class LibraRpcRepository(okHttpClient: OkHttpClient, libraChainNode: String) {
 
-    @StringDef(
-        Method.SUBMIT, Method.GET_ACCOUNT_STATE
-    )
-    annotation class Method {
-        companion object {
-            const val SUBMIT = "submit"
-            const val GET_ACCOUNT_TRANSACTION = "get_account_transaction"
-            const val GET_ACCOUNT_STATE = "get_account"
-            const val GET_CURRENCIES = "get_currencies"
-        }
+    private val mService by lazy {
+        RPCService(libraChainNode, okHttpClient)
     }
 
     suspend fun getAccountState(
         address: String
-    ) =
-        mLibraRpcApi.getAccountState(
-            RequestDTO(
-                method = Method.GET_ACCOUNT_STATE,
-                params = listOf(address)
-            )
-        ).await()
+    ) = mService.call<AccountStateDTO>(
+        JsonRPCRequestDTO(
+            "get_account",
+            listOf(address)
+        )
+    )
 
-    suspend fun getCurrencies() =
-        mLibraRpcApi.getCurrencies(
-            RequestDTO(
-                method = Method.GET_CURRENCIES,
-                params = listOf()
-            )
-        ).await()
+    suspend fun getCurrencies() = mService.call<CurrenciesDTO>(
+        JsonRPCRequestDTO(
+            "get_currencies",
+            listOf()
+        )
+    )
 
     suspend fun getTransaction(
         address: String,
         sequenceNumber: Long,
         bool: Boolean = true
-    ) =
-        mLibraRpcApi.getTransaction(
-            RequestDTO(
-                method = Method.GET_ACCOUNT_TRANSACTION,
-                params = listOf(address, sequenceNumber, bool)
-            )
-        ).await()
+    ) = mService.call<GetTransactionDTO>(
+        JsonRPCRequestDTO(
+            "get_account_transaction",
+            listOf(address, sequenceNumber, bool)
+        )
+    )
 
     suspend fun submitTransaction(
         hexSignedTransaction: String
-    ) =
-        mLibraRpcApi.submitTransaction(
-            RequestDTO(
-                method = Method.SUBMIT,
-                params = listOf(hexSignedTransaction)
-            )
-        ).await()
+    ) = mService.call<Any>(
+        JsonRPCRequestDTO(
+            "submit",
+            listOf(hexSignedTransaction)
+        )
+    )
 
 }

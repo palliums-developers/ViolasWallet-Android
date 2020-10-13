@@ -1,3 +1,4 @@
+include ':lib-common-jsonrpc'
 include ':lib-zbar-scan', ':lib-switch-button',
         ':lib-violas-core', ':lib-libra-core', ':lib-btc-core',
         ':lib-common', ':lib-core',
