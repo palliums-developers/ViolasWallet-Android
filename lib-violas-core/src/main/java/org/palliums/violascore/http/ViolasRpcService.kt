@@ -2,7 +2,6 @@ package org.palliums.violascore.http
 
 import android.content.Context
 import android.util.Log
-import com.palliums.content.ContextProvider
 import org.palliums.violascore.BuildConfig
 import org.palliums.violascore.crypto.*
 import org.palliums.violascore.serialization.hexToBytes
@@ -231,7 +230,7 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
         return 0
     }
 
-    suspend fun getCurrencies() = mViolasRpcRepository.getCurrencies().data
+    suspend fun getCurrencies() = mViolasRpcRepository.getCurrencies()
 
     suspend fun getTransaction(
         address: String,
@@ -243,9 +242,10 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
 
     suspend fun getAccountState(
         address: String
-    ) = mViolasRpcRepository.getAccountState(address).data
+    ) = mViolasRpcRepository.getAccountState(address)
 
     suspend fun addCurrency(
+        context: Context,
         account: Account,
         address: String,
         module: String,
@@ -254,7 +254,7 @@ class ViolasRpcService(private val mViolasRpcRepository: ViolasRpcRepository) {
     ): TransactionResult {
         val transactionPayload =
             TransactionPayload.optionAddCurrencyPayload(
-                ContextProvider.getContext(),
+                context,
                 TypeTag.newStructTag(
                     StructTag(
 //                        AccountAddress.DEFAULT, module, name,

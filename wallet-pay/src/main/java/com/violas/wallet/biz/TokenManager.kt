@@ -219,6 +219,7 @@ class TokenManager {
                 val violasChainRpcService = DataRepository.getViolasChainRpcService()
                 val addCurrency = violasChainRpcService
                     .addCurrency(
+                        ContextProvider.getContext(),
                         Account(KeyPair.fromSecretKey(privateKey)),
                         tokenMark.address, tokenMark.module, tokenMark.name, Vm.ViolasChainId
                     )
@@ -228,7 +229,7 @@ class TokenManager {
                         addCurrency.sender,
                         addCurrency.sequenceNumber
                     )
-                    if (transaction.data?.isSuccessExecuted() == true) {
+                    if (transaction?.isSuccessExecuted() == true) {
                         return true
                     }
                 }

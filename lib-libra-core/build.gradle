@@ -43,10 +43,8 @@ dependencies {
     api libraries.spongycastle_core
     api libraries.spongycastle_prov
 
-    api libraries.okhttp3
-    api libraries.retrofit2
-    api libraries.retrofit2_adapter_rxjava2
-    api libraries.retrofit2_converter_gson
+    implementation libraries.gson
+    implementation libraries.okhttp3
 
     implementation libraries.crypto_eddsa
     //implementation libraries.novacrypto_BIP39

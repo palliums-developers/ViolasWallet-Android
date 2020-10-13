@@ -40,20 +40,16 @@ dependencies {
 
     implementation libraries.kotlin_stdlib_jdk8
 
-    implementation libraries.androidx_appcompat
-    implementation libraries.androidx_core_ktx
-
-    implementation project(':lib-common')
+    implementation project(":lib-common-jsonrpc")
 
     api libraries.spongycastle_core
     api libraries.spongycastle_prov
 
+    implementation libraries.gson
+    implementation libraries.okhttp3
+
     implementation libraries.crypto_eddsa
     //implementation libraries.novacrypto_BIP39
-
-    api libraries.okhttp3
-    api libraries.retrofit2
-    api libraries.retrofit2_converter_gson
 }
 
 /*
