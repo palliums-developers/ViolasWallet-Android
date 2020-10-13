@@ -1,6 +1,9 @@
 package com.violas.wallet
 
+import android.app.Notification
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -11,6 +14,8 @@ import com.microsoft.appcenter.crashes.AbstractCrashesListener
 import com.microsoft.appcenter.crashes.Crashes
 import com.microsoft.appcenter.crashes.CrashesListener
 import com.palliums.content.App
+import com.palliums.extensions.createNotificationChannel
+import com.palliums.extensions.getNotificationManager
 import com.palliums.extensions.logDebug
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.viewModel.WalletConnectViewModel
@@ -24,11 +29,47 @@ class PayApp : App() {
         handlerAppCenter()
         resetWalletConnect()
 
+        initNotification()
+    }
+
+    private fun initNotification() {
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
             logDebug("Firebase") {
                 "onGetInstanceIdComplete. success = ${it.isSuccessful}, token = ${it.result?.token}"
             }
         }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+
+        val notificationManager = getNotificationManager()
+        createNotificationChannel(
+            getString(R.string.transaction_notification_channel_id),
+            getString(R.string.transaction_notification_channel_name),
+            NotificationManager.IMPORTANCE_HIGH,
+            lockscreenVisibility = Notification.VISIBILITY_PRIVATE,
+            notificationManager = notificationManager
+        )
+        createNotificationChannel(
+            getString(R.string.events_notification_channel_id),
+            getString(R.string.events_notification_channel_name),
+            NotificationManager.IMPORTANCE_DEFAULT,
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC,
+            notificationManager = notificationManager
+        )
+        createNotificationChannel(
+            getString(R.string.update_notification_channel_id),
+            getString(R.string.update_notification_channel_name),
+            NotificationManager.IMPORTANCE_LOW,
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC,
+            notificationManager = notificationManager
+        )
+        createNotificationChannel(
+            getString(R.string.default_notification_channel_id),
+            getString(R.string.default_notification_channel_name),
+            NotificationManager.IMPORTANCE_LOW,
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC,
+            notificationManager = notificationManager
+        )
     }
 
     private fun handlerAppCenter() {

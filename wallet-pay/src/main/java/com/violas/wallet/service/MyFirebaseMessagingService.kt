@@ -1,12 +1,6 @@
 package com.violas.wallet.service
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
-import android.media.RingtoneManager
-import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -65,7 +59,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             logDebug { "onMessageReceived. Message Notification channelId : ${it.channelId}" }
 
             if (it.title.isNullOrBlank() || it.body.isNullOrBlank()) return@let
-            sendNotification(it.title!!, it.body!!, remoteMessage.data)
+            sendNotification(it.title!!, it.body!!, remoteMessage.data, it.channelId)
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -74,13 +68,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     /**
      * Create and show a simple notification containing the received FCM message.
-     *
-     * @param messageBody FCM message body received.
      */
     private fun sendNotification(
         messageTitle: CharSequence,
         messageBody: CharSequence,
-        messageData: Map<String, String>
+        messageData: Map<String, String>,
+        notificationChannelId: String?
     ) {
         val extras = Bundle()
         messageData.keys.forEach {
@@ -89,37 +82,33 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val intent = Intent(this, MessageCenterActivity::class.java)
         intent.putExtras(extras)
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0 /* Request code */,
-            intent,
-            PendingIntent.FLAG_ONE_SHOT
+
+        val channelId = notificationChannelId ?: getString(R.string.default_notification_channel_id)
+        com.palliums.extensions.sendNotification(
+            channelId = channelId,
+            smallIcon = R.mipmap.ic_notification,
+            contentTitle = messageTitle as String,
+            contentText = messageBody as String,
+            intent = intent,
+            priority = when (channelId) {
+                getString(R.string.transaction_notification_channel_id) -> {
+                    NotificationCompat.PRIORITY_HIGH
+                }
+
+                getString(R.string.events_notification_channel_id) -> {
+                    NotificationCompat.PRIORITY_DEFAULT
+                }
+
+                getString(R.string.update_notification_channel_id) -> {
+                    NotificationCompat.PRIORITY_LOW
+                }
+
+                else -> {
+                    NotificationCompat.PRIORITY_LOW
+                }
+            },
+            number = 11
         )
-
-        val channelId = getString(R.string.default_notification_channel_id)
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(messageTitle)
-            .setContentText(messageBody)
-            .setAutoCancel(true)
-            .setSound(defaultSoundUri)
-            .setContentIntent(pendingIntent)
-
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                getString(R.string.default_notification_channel_name),
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
     }
 
     /**

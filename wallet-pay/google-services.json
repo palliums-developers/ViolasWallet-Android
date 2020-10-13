@@ -8,12 +8,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1022148688605:android:65a9d110ad7e024fd0b934",
+        "mobilesdk_app_id": "1:1022148688605:android:131262b68ec636cfd0b934",
         "android_client_info": {
           "package_name": "com.violas.wallet.pay.demo"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "1022148688605-m14dulrhqdh3842c4qh08e8poba0mr9v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.violas.wallet.pay.demo",
+            "certificate_hash": "43a94b596597ec37c28f1804907e726e975fd23a"
+          }
+        },
         {
           "client_id": "1022148688605-pq0ft4js3k9e5ku0fkbpfish17vn740s.apps.googleusercontent.com",
           "client_type": 3

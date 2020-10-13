@@ -560,5 +560,10 @@
     <string name="wallet_connect_bank_repay_borrow">我要还</string>
     <string name="hint_bank_load_assets_error">币种信息加载异常</string>
 
+    <string name="default_notification_channel_name">其他通知</string>
+    <string name="transaction_notification_channel_name">交易提醒</string>
+    <string name="events_notification_channel_name">公告活动</string>
+    <string name="update_notification_channel_name">版本更新</string>
+
     <string name="message_center">消息中心</string>
 </resources>
