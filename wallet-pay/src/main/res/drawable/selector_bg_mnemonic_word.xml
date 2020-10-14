@@ -11,7 +11,7 @@
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <corners android:radius="@dimen/dp_3" />
-            <stroke android:width="@dimen/dp_1" android:color="?attr/colorOnSurface" />
+            <stroke android:width="?attr/strokeThickness" android:color="?attr/colorOnSurface" />
             <solid android:color="?attr/colorSurface" />
         </shape>
     </item>

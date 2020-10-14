@@ -62,7 +62,7 @@
 
     <View
         android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_0.5"
+        android:layout_height="?attr/dividerThickness"
         android:layout_marginTop="@dimen/dp_21"
         android:background="?attr/colorDivider"
         app:layout_constraintEnd_toEndOf="parent"

@@ -119,6 +119,7 @@
         <item name="android:layout_height">@dimen/dp_60</item>
         <item name="android:paddingStart">@dimen/dp_14</item>
         <item name="android:paddingEnd">@dimen/dp_16</item>
+        <item name="android:background">@drawable/bg_menu_item</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
         <item name="layout_constraintEnd_toEndOf">parent</item>
         <item name="mivStartTitleTextSize">@dimen/fs_16</item>
@@ -127,8 +128,8 @@
         <item name="mivStartDescTextColor">?android:attr/textColorTertiary</item>
         <item name="mivEndDescTextSize">@dimen/fs_16</item>
         <item name="mivEndDescTextColor">?android:attr/textColorHighlight</item>
-        <item name="android:background">@drawable/bg_menu_item</item>
         <item name="mivEndArrow">?attr/iconForward</item>
+        <item name="mivDividingLineColor">?attr/colorDivider</item>
     </style>
 
     <style name="MenuItemView.About">

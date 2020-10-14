@@ -4,7 +4,7 @@
 
     <corners android:radius="@dimen/dp_3" />
     <stroke
-        android:width="@dimen/dp_1"
+        android:width="?attr/strokeThickness"
         android:color="?attr/mnemonicBackupBoxStrokeColor" />
     <solid android:color="?attr/colorSurface" />
 

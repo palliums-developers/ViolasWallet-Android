@@ -4,7 +4,7 @@
     <item android:drawable="@drawable/bg_btn2_pressed" android:state_pressed="true" />
     <item>
         <shape android:shape="rectangle">
-            <stroke android:width="@dimen/dp_0.7" android:color="?attr/colorPrimary" />
+            <stroke android:width="?attr/strokeThickness" android:color="?attr/colorPrimary" />
             <corners android:radius="@dimen/dp_100" />
         </shape>
     </item>

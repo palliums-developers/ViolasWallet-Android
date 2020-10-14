@@ -8,6 +8,8 @@
 
     <!--App通用资源属性-->
     <attr name="statusBarSize" format="dimension" />
+    <attr name="strokeThickness" format="dimension" />
+    <attr name="dividerThickness" format="dimension" />
 
     <attr name="colorSurfaceSecondary" format="color" />
     <attr name="colorItemPressed" format="color" />
