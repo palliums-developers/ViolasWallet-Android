@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.biometric.BiometricManager
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
@@ -16,7 +17,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.logError
 import com.palliums.extensions.show
+import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getResourceId
 import com.violas.wallet.R
@@ -101,7 +104,7 @@ class WalletFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         EventBus.getDefault().register(this)
-
+        actionBar.post { adapterViewHeight() }
         recyclerAssert.adapter = mAssertAdapter
 
         mWalletAppViewModel?.mDataRefreshingLiveData?.observe(viewLifecycleOwner, Observer {
@@ -172,7 +175,7 @@ class WalletFragment : BaseFragment() {
             Observer { status ->
                 when (status) {
                     WalletConnectStatus.None -> {
-                        viewWalletConnect.visibility = View.GONE
+                        viewWalletConnect.visibility = View.INVISIBLE
                     }
                     WalletConnectStatus.Login -> {
                         viewWalletConnect.visibility = View.VISIBLE
@@ -196,6 +199,23 @@ class WalletFragment : BaseFragment() {
             CommandActuator.post(RefreshAssetsAllListCommand())
         }
         swipeRefreshLayout.autoRefresh()
+    }
+
+    private fun adapterViewHeight() {
+        val statusBarHeight = StatusBarUtil.getStatusBarHeight()
+        val topViewHeight = clTopGroup.height
+        clTopGroup.setPadding(0, statusBarHeight, 0, 0)
+
+        val bottomViewTopMargin =
+            topViewHeight + statusBarHeight - DensityUtility.dp2px(requireContext(), 16)
+        viewAssetsGroup.layoutParams =
+            (viewAssetsGroup.layoutParams as ConstraintLayout.LayoutParams).apply {
+                topMargin = bottomViewTopMargin
+            }
+        viewAddAccount.layoutParams =
+            (viewAddAccount.layoutParams as ConstraintLayout.LayoutParams).apply {
+                topMargin = bottomViewTopMargin
+            }
     }
 
     private fun handleBackupMnemonicWarn(existsAccount: Boolean) {
