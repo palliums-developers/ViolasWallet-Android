@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.main.bank
 
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.TypedValue
 import android.widget.TextView
@@ -28,6 +29,7 @@ import com.violas.wallet.ui.main.bank.BankViewModel.Companion.ACTION_LOAD_DEPOSI
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.widget.popup.MenuPopup
 import kotlinx.android.synthetic.main.fragment_bank.*
+import kotlinx.android.synthetic.main.fragment_bank_content.*
 import kotlinx.coroutines.launch
 
 /**
@@ -55,21 +57,27 @@ class BankFragment : BaseFragment() {
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
 
-        initTopView()
+        clTopGroup.post { adapterViewHeight() }
         initFragmentPager()
         initEvent()
         initObserver()
     }
 
-    private fun initTopView() {
+    private fun adapterViewHeight() {
         val statusBarHeight = StatusBarUtil.getStatusBarHeight()
-        ivTopBg.layoutParams =
-            (ivTopBg.layoutParams as ConstraintLayout.LayoutParams).apply {
-                height = statusBarHeight + DensityUtility.dp2px(context, 210)
-            }
-        refreshLayout.layoutParams =
-            (refreshLayout.layoutParams as ConstraintLayout.LayoutParams).apply {
-                topMargin = statusBarHeight
+        val topViewHeight = clTopGroup.measuredHeight
+        val bottomViewTopMargin =
+            topViewHeight + statusBarHeight - DensityUtility.dp2px(requireContext(), 52)
+
+        clTopGroup.setPadding(
+            clTopGroup.paddingLeft,
+            statusBarHeight,
+            clTopGroup.paddingRight,
+            clTopGroup.paddingBottom
+        )
+        llBottomGroup.layoutParams =
+            (llBottomGroup.layoutParams as ConstraintLayout.LayoutParams).apply {
+                topMargin = bottomViewTopMargin
             }
     }
 
@@ -128,6 +136,7 @@ class BankFragment : BaseFragment() {
     private fun updateTab(tab: TabLayout.Tab, select: Boolean): TextView? {
         return tab.customView?.findViewById<TextView>(R.id.textView)?.also {
             it.setTextSize(TypedValue.COMPLEX_UNIT_DIP, if (select) 14f else 12f)
+            it.setTypeface(Typeface.DEFAULT, if (select) Typeface.BOLD else Typeface.NORMAL)
             it.setTextColor(
                 getColorByAttrId(
                     if (select) android.R.attr.textColor else android.R.attr.textColorTertiary,

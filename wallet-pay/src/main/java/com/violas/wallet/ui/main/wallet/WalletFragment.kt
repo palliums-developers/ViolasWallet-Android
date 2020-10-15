@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.expandTouchArea
-import com.palliums.extensions.logError
 import com.palliums.extensions.show
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
@@ -203,11 +202,16 @@ class WalletFragment : BaseFragment() {
 
     private fun adapterViewHeight() {
         val statusBarHeight = StatusBarUtil.getStatusBarHeight()
-        val topViewHeight = clTopGroup.height
-        clTopGroup.setPadding(0, statusBarHeight, 0, 0)
-
+        val topViewHeight = clTopGroup.measuredHeight
         val bottomViewTopMargin =
             topViewHeight + statusBarHeight - DensityUtility.dp2px(requireContext(), 16)
+
+        clTopGroup.setPadding(
+            clTopGroup.paddingLeft,
+            statusBarHeight,
+            clTopGroup.paddingRight,
+            clTopGroup.paddingBottom
+        )
         viewAssetsGroup.layoutParams =
             (viewAssetsGroup.layoutParams as ConstraintLayout.LayoutParams).apply {
                 topMargin = bottomViewTopMargin
