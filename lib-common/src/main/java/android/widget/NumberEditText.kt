@@ -25,25 +25,35 @@ class CustomFontHelper {
     companion object {
         private const val ANDROID_SCHEMA = "http://schemas.android.com/apk/res/android"
 
-        fun getTextStyle(context: Context, attrs: AttributeSet?): Int? {
+        fun getTextStyle(context: Context, attrs: AttributeSet?): Int {
             return attrs?.getAttributeIntValue(
                 ANDROID_SCHEMA,
                 "textStyle",
                 Typeface.NORMAL
-            ) ?: return null
+            ) ?: return Typeface.NORMAL
         }
     }
 
-    fun selectTypeface(context: Context, textStyle: Int?): Typeface? {
+    fun selectTypeface(context: Context, textStyle: Int?, fakeBold: Boolean = false): Typeface? {
         /*
         * information about the TextView textStyle:
         * http://developer.android.com/reference/android/R.styleable.html#TextView_textStyle
         */
         return when (textStyle) {
-            Typeface.BOLD -> getTypeface("font/roboto_medium.ttf", context)
-            Typeface.BOLD_ITALIC -> getTypeface("font/roboto_medium_italic.ttf", context)
+            Typeface.BOLD -> getTypeface(
+                if (fakeBold) "font/roboto_regular.ttf" else "font/roboto_medium.ttf",
+                context
+            )
+
+            Typeface.BOLD_ITALIC -> getTypeface(
+                if (fakeBold) "font/roboto_italic.ttf" else "font/roboto_medium_italic.ttf",
+                context
+            )
+
             Typeface.ITALIC -> getTypeface("font/roboto_italic.ttf", context)
+
             Typeface.NORMAL -> getTypeface("font/roboto_regular.ttf", context)
+
             else -> getTypeface("font/roboto_regular.ttf", context)
         }
     }
