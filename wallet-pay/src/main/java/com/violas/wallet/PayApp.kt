@@ -23,7 +23,9 @@ import com.violas.wallet.viewModel.WalletConnectViewModel
 
 class PayApp : App() {
     override fun onCreate() {
-        System.setProperty("kotlinx.coroutines.debug", "on")
+        if (BuildConfig.DEBUG) {
+            System.setProperty("kotlinx.coroutines.debug", "on")
+        }
         super.onCreate()
         handlerError()
         handlerAppCenter()
@@ -113,7 +115,7 @@ class PayApp : App() {
         MultiLanguageUtility.attachBaseContext(newBase)
     }
 
-    fun resetWalletConnect() {
+    private fun resetWalletConnect() {
         // 暂时不考虑多进程
         WalletConnectViewModel.getViewModelInstance(this)
     }

@@ -9,6 +9,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.BaseBizUrl.getLibraBaseUrl
 import com.violas.wallet.common.BaseBizUrl.getViolasBaseUrl
+import com.violas.wallet.common.BaseBizUrl.getViolasChainUrl
 import com.violas.wallet.repository.database.AppDatabase
 import com.violas.wallet.repository.http.bank.BankApi
 import com.violas.wallet.repository.http.bank.BankRepository
@@ -88,7 +89,7 @@ object DataRepository {
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
     fun getViolasChainRpcService() =
-        ViolasRpcService(ViolasRpcRepository(okHttpClient, getViolasBaseUrl()))
+        ViolasRpcService(ViolasRpcRepository(okHttpClient, getViolasChainUrl()))
 
     fun getTransactionRecordService(coinTypes: CoinTypes) =
         when (coinTypes) {

@@ -389,8 +389,8 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                         )
                     }
                 } else {
-                    if (fromToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
-                        fromToken.coinNumber == CoinTypes.Bitcoin.coinType()
+                    if (toToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
+                        toToken.coinNumber == CoinTypes.Bitcoin.coinType()
                     ) {
                         convertDisplayUnitToAmount(
                             outputAmountStr,
@@ -408,13 +408,14 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                     inputAmount += (inputAmount * SwapViewModel.MINIMUM_PRICE_FLUCTUATION).toLong()
                 }
 
+                val outputEdit = if (isInputFrom) {
+                    etToInputBox
+                } else {
+                    etFromInputBox
+                }
+
                 if (inputAmount == 0L) {
                     withContext(Dispatchers.Main) {
-                        val outputEdit = if (isInputFrom) {
-                            etToInputBox
-                        } else {
-                            etFromInputBox
-                        }
                         withContext(Dispatchers.Main) {
                             handleInputTextWatcher(
                                 "", outputEdit, if (isInputFrom) {
@@ -433,11 +434,6 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                 val tradeExact =
                     mReserveManager.tradeExact(fromToken, toToken, inputAmount, isInputFrom)
                 if (tradeExact == null) {
-                    val outputEdit = if (isInputFrom) {
-                        etToInputBox
-                    } else {
-                        etFromInputBox
-                    }
                     mSwapPath.clear()
                     withContext(Dispatchers.Main) {
                         swapViewModel.getExchangeRateLiveData().value = BigDecimal.valueOf(0)
@@ -452,12 +448,6 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                         )
                     }
                 } else {
-                    // 获取应该输入的输入框
-                    val outputEdit = if (isInputFrom) {
-                        etToInputBox
-                    } else {
-                        etFromInputBox
-                    }
                     // 获取应该输出的币种信息
                     val outputCoin = if (isInputFrom) {
                         toToken
@@ -505,15 +495,19 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                             RoundingMode.HALF_UP
                         )
                     } else {
-                        BigDecimal(outputAmountStr).divide(
-                            BigDecimal(outputAmountByCoin).divide(
-                                BigDecimal(1),
+                        try {
+                            BigDecimal(outputAmountStr).divide(
+                                BigDecimal(outputAmountByCoin).divide(
+                                    BigDecimal(1),
+                                    6,
+                                    RoundingMode.HALF_UP
+                                ),
                                 6,
                                 RoundingMode.HALF_UP
-                            ),
-                            6,
-                            RoundingMode.HALF_UP
-                        )
+                            )
+                        } catch (e: Exception) {
+                            BigDecimal("0")
+                        }
                     }
 
                     mSwapPath.clear()
