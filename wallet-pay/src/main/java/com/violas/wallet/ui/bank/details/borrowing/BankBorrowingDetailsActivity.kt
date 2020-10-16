@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.palliums.utils.*
+import com.palliums.widget.EnhancedTextView
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -200,9 +201,7 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
             for (i in 0 until count) {
                 tabLayout.getTabAt(i)?.let { tab ->
                     tab.setCustomView(R.layout.item_bank_borrowing_details_tab_layout)
-                    updateTab(tab, i == viewPager.currentItem)?.let {
-                        it.text = tab.text
-                    }
+                    updateTab(tab, i == viewPager.currentItem)
                 }
             }
         }
@@ -211,6 +210,7 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     private fun updateTab(tab: TabLayout.Tab, select: Boolean): TextView? {
         return tab.customView?.findViewById<TextView>(R.id.textView)?.also {
             it.setTextSize(TypedValue.COMPLEX_UNIT_DIP, if (select) 16f else 10f)
+            (it as? EnhancedTextView)?.setFakeBold(select, tab.text)
             it.setTextColor(
                 getColorByAttrId(
                     if (select) android.R.attr.textColor else android.R.attr.textColorTertiary,

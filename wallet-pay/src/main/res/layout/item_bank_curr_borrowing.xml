@@ -33,8 +33,8 @@
         android:id="@+id/ivArrow"
         android:layout_width="@dimen/dp_7"
         android:layout_height="@dimen/dp_10"
-        android:src="?attr/iconForward"
         android:scaleType="centerCrop"
+        android:src="?attr/iconForward"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -52,7 +52,7 @@
         app:layout_constraintEnd_toStartOf="@id/ivArrow"
         app:layout_constraintTop_toTopOf="@id/ivCoinLogo" />
 
-    <NumberTextView
+    <com.palliums.widget.EnhancedTextView
         android:id="@+id/tvAmountToBeRepaid"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_19"
@@ -61,6 +61,7 @@
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_20"
         android:textStyle="bold"
+        app:etvUseRoboto="true"
         app:layout_constraintBottom_toBottomOf="@id/ivCoinLogo"
         app:layout_constraintEnd_toStartOf="@id/ivArrow"
         tools:text="1000" />

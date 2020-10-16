@@ -18,13 +18,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <NumberTextView
+    <com.palliums.widget.EnhancedTextView
         android:id="@+id/tvLiquidated"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_12"
         android:layout_marginTop="@dimen/dp_16"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_12"
+        app:etvUseRoboto="true"
         app:layout_constraintStart_toStartOf="@id/tvLiquidatedLabel"
         app:layout_constraintTop_toBottomOf="@id/tvLiquidatedLabel"
         tools:text="20020000.00VLS" />
@@ -41,13 +42,14 @@
         app:layout_constraintBottom_toBottomOf="@id/tvLiquidatedLabel"
         app:layout_constraintStart_toStartOf="@id/tvLiquidatedLabel" />
 
-    <NumberTextView
+    <com.palliums.widget.EnhancedTextView
         android:id="@+id/tvDeducted"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_12"
         android:layout_marginTop="@dimen/dp_16"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_12"
+        app:etvUseRoboto="true"
         app:layout_constraintBottom_toBottomOf="@id/tvLiquidated"
         app:layout_constraintStart_toStartOf="@id/tvDeductedLabel"
         tools:text="20020000.00LBR" />

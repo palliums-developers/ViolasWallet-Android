@@ -3,6 +3,9 @@ package com.violas.wallet.ui.main.bank
 import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.FakeBoldSpan
 import android.util.TypedValue
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -19,6 +22,7 @@ import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
+import com.palliums.widget.EnhancedTextView
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.ui.bank.order.borrowing.BankBorrowingOrderActivity
@@ -125,9 +129,7 @@ class BankFragment : BaseFragment() {
             for (i in 0 until count) {
                 tabLayout.getTabAt(i)?.let { tab ->
                     tab.setCustomView(R.layout.item_home_bank_market_tab_layout)
-                    updateTab(tab, i == viewPager.currentItem)?.let {
-                        it.text = tab.text
-                    }
+                    updateTab(tab, i == viewPager.currentItem)
                 }
             }
         }
@@ -136,7 +138,7 @@ class BankFragment : BaseFragment() {
     private fun updateTab(tab: TabLayout.Tab, select: Boolean): TextView? {
         return tab.customView?.findViewById<TextView>(R.id.textView)?.also {
             it.setTextSize(TypedValue.COMPLEX_UNIT_DIP, if (select) 14f else 12f)
-            it.setTypeface(Typeface.DEFAULT, if (select) Typeface.BOLD else Typeface.NORMAL)
+            (it as? EnhancedTextView)?.setFakeBold(select, tab.text)
             it.setTextColor(
                 getColorByAttrId(
                     if (select) android.R.attr.textColor else android.R.attr.textColorTertiary,

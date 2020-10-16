@@ -33,7 +33,7 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         tools:menu="@menu/menu_transaction_details">
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
             android:text="@string/title_transaction_details_nbsp"
             android:textColor="?android:textColorPrimary"
             android:textSize="@dimen/fs_16"
-            android:textStyle="bold" />
+            app:etvFakeBold="true" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -70,13 +70,13 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:src="?attr/iconRecordStateProcessing" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvDesc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_14"
             android:textSize="@dimen/fs_16"
-            android:textStyle="bold"
+            app:etvFakeBold="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivState"
@@ -95,7 +95,7 @@
             app:layout_constraintTop_toBottomOf="@id/tvDesc"
             tools:text="2018-11-06  16:30:44" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvAmount"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
@@ -104,6 +104,8 @@
             android:paddingVertical="@dimen/dp_5"
             android:textColor="?android:textColorPrimary"
             android:textSize="@dimen/fs_12"
+            android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTime"
@@ -121,13 +123,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvAmount" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvGas"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_5"
             android:textColor="?android:textColorTertiary"
             android:textSize="@dimen/fs_12"
+            android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvAmount"
             app:layout_constraintTop_toBottomOf="@id/tvAmount"

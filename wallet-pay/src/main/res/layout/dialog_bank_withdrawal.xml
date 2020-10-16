@@ -33,7 +33,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
+        <com.palliums.widget.EnhancedEditView
             android:id="@+id/etInputBox"
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_50"
@@ -46,6 +46,7 @@
             android:inputType="numberDecimal"
             android:paddingHorizontal="@dimen/dp_8"
             android:textSize="@dimen/fs_16"
+            app:eevUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTitle" />
@@ -84,7 +85,7 @@
             app:layout_constraintStart_toEndOf="@id/ivAmountIcon"
             app:layout_constraintTop_toTopOf="@id/ivAmountIcon" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_12"
@@ -92,6 +93,7 @@
             android:includeFontPadding="false"
             android:textSize="@dimen/fs_12"
             android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintBottom_toBottomOf="@id/ivAmountIcon"
             app:layout_constraintStart_toEndOf="@id/tvAmountDesc"
             app:layout_constraintTop_toTopOf="@id/ivAmountIcon"
@@ -135,6 +137,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_5"
                 android:includeFontPadding="false"
+                android:lineHeight="@dimen/dp_18"
                 android:text="@string/bank_withdrawal_desc"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="@dimen/fs_10" />

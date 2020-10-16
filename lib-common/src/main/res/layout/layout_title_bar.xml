@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/height_status_bar"
     tools:background="@color/white">
 
-    <com.palliums.widget.MarqueTextView
+    <com.palliums.widget.EnhancedTextView
         android:id="@+id/vTitleMiddleText"
         android:layout_width="@dimen/dp_0"
         android:layout_height="match_parent"
@@ -23,7 +23,8 @@
         android:singleLine="true"
         android:textColor="@color/black"
         android:textSize="@dimen/fs_16"
-        android:textStyle="bold"
+        app:etvFakeBold="true"
+        app:etvForceFocused="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -49,8 +50,8 @@
         android:id="@+id/vTitleRightTextBtn"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:ellipsize="end"
         android:background="?attr/actionBarItemBackground"
+        android:ellipsize="end"
         android:gravity="center"
         android:maxWidth="@dimen/dp_120"
         android:paddingStart="@dimen/dp_15"

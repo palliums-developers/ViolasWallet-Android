@@ -11,12 +11,13 @@
         android:paddingHorizontal="@dimen/dp_35"
         android:paddingVertical="@dimen/dp_22">
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvTokenA"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/fs_16"
             android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -32,13 +33,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTokenA" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvTokenB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_11"
             android:textSize="@dimen/fs_16"
             android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iivAndIcon"
@@ -54,7 +56,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTokenB" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvLiquidity"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
@@ -62,6 +64,8 @@
             android:layout_marginTop="@dimen/dp_31"
             android:paddingVertical="@dimen/dp_5"
             android:textSize="@dimen/fs_14"
+            android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/vHorizontalDivider"
@@ -79,12 +83,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvLiquidity" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvExchangeRate"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_5"
             android:textSize="@dimen/fs_14"
+            android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvLiquidity"
             app:layout_constraintTop_toBottomOf="@id/tvLiquidity"
@@ -102,12 +108,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvExchangeRate" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvGasFee"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_5"
             android:textSize="@dimen/fs_14"
+            android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvLiquidity"
             app:layout_constraintTop_toBottomOf="@id/tvExchangeRate"
@@ -125,12 +133,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvGasFee" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvOrderTime"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_5"
             android:textSize="@dimen/fs_14"
+            android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvLiquidity"
             app:layout_constraintTop_toBottomOf="@id/tvGasFee"
@@ -148,12 +158,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvOrderTime" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvDealTime"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_5"
             android:textSize="@dimen/fs_14"
+            android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvLiquidity"
             app:layout_constraintTop_toBottomOf="@id/tvOrderTime"
@@ -180,7 +192,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvDealTime" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvStartDesc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -211,7 +223,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/vVerticalLine1" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvProcessingDesc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -246,14 +258,14 @@
             tools:background="?attr/iconRecordStateFailed"
             tools:visibility="visible" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvResultDesc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_5"
             android:textSize="@dimen/fs_14"
-            android:textStyle="bold"
             android:visibility="gone"
+            app:etvFakeBold="true"
             app:layout_constraintBottom_toBottomOf="@id/ivResultIcon"
             app:layout_constraintStart_toEndOf="@id/ivResultIcon"
             app:layout_constraintTop_toTopOf="@id/ivResultIcon"

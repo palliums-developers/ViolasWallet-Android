@@ -22,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.palliums.widget.EnhancedTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="83dp"
@@ -30,7 +30,7 @@
         android:text="@string/backup_mnemonic_warn_title"
         android:textColor="?attr/walletBackupNowTitleTextColor"
         android:textSize="@dimen/fs_14"
-        android:textStyle="bold"
+        app:etvFakeBold="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

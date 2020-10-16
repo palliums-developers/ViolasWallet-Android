@@ -59,7 +59,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/actionBar" />
 
-        <NumberTextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
             android:includeFontPadding="false"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/fs_24"
-            android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintStart_toStartOf="@+id/tvTotalAssetsTitle"
             app:layout_constraintTop_toBottomOf="@+id/tvTotalAssetsTitle"
             tools:text="120.00000000" />
@@ -104,10 +104,10 @@
             android:id="@+id/llTransferGroup"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_26"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingVertical="@dimen/dp_10"
-            android:layout_marginBottom="@dimen/dp_26"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/vVerticalLine1"
             app:layout_constraintStart_toStartOf="parent"
@@ -121,7 +121,7 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/dp_12"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_8"
                 android:includeFontPadding="false"
                 android:text="@string/transfer"
@@ -158,7 +158,7 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/dp_12"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_8"
                 android:includeFontPadding="false"
                 android:text="@string/collection"
@@ -195,7 +195,7 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/dp_12"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_8"
                 android:layout_marginEnd="@dimen/dp_27"
                 android:includeFontPadding="false"
@@ -216,7 +216,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_marginTop="@dimen/dp_173">
+        tools:layout_marginTop="@dimen/dp_181">
 
         <TextView
             android:id="@+id/tvAssert"
@@ -279,12 +279,12 @@
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/dp_15"
         android:paddingTop="@dimen/dp_13"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_marginTop="@dimen/dp_173">
+        tools:layout_marginTop="@dimen/dp_181">
 
         <LinearLayout
             android:id="@+id/viewCreateAccount"
@@ -301,14 +301,14 @@
                 android:layout_marginStart="@dimen/dp_24"
                 android:src="?attr/walletHomeCreateWalletIcon" />
 
-            <TextView
+            <com.palliums.widget.EnhancedTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_22"
                 android:text="@string/create_account"
                 android:textColor="?attr/walletHomeInitWalletTextColor"
                 android:textSize="@dimen/fs_16"
-                android:textStyle="bold" />
+                app:etvFakeBold="true" />
 
         </LinearLayout>
 
@@ -327,14 +327,14 @@
                 android:layout_marginStart="@dimen/dp_24"
                 android:src="?attr/walletHomeImportWalletIcon" />
 
-            <TextView
+            <com.palliums.widget.EnhancedTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_22"
                 android:text="@string/import_account"
                 android:textColor="?attr/walletHomeInitWalletTextColor"
                 android:textSize="@dimen/fs_16"
-                android:textStyle="bold" />
+                app:etvFakeBold="true" />
 
         </LinearLayout>
 

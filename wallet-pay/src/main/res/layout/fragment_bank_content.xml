@@ -60,7 +60,7 @@
             app:layout_constraintTop_toTopOf="@+id/tvTotalDepositLabel"
             tools:src="?attr/iconShowPrimary" />
 
-        <NumberTextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvTotalDeposit"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_19"
@@ -68,6 +68,8 @@
             android:includeFontPadding="false"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/fs_20"
+            android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintStart_toStartOf="@id/tvTotalDepositLabel"
             app:layout_constraintTop_toBottomOf="@id/tvTotalDepositLabel"
             tools:text="≈2041.76" />
@@ -94,7 +96,7 @@
             app:layout_constraintStart_toEndOf="@id/ivTotalBorrowableIcon"
             app:layout_constraintTop_toTopOf="@id/ivTotalBorrowableIcon" />
 
-        <NumberTextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvBorrowable"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_10"
@@ -102,6 +104,8 @@
             android:includeFontPadding="false"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/fs_10"
+            android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintBottom_toBottomOf="@id/ivTotalBorrowableIcon"
             app:layout_constraintStart_toEndOf="@id/tvTotalBorrowableLabel"
             app:layout_constraintTop_toTopOf="@id/ivTotalBorrowableIcon"
@@ -131,7 +135,7 @@
             app:layout_constraintStart_toEndOf="@id/ivTotalEarningsIcon"
             app:layout_constraintTop_toTopOf="@id/ivTotalEarningsIcon" />
 
-        <NumberTextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvTotalEarnings"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_10"
@@ -139,6 +143,8 @@
             android:includeFontPadding="false"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/fs_10"
+            android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintBottom_toBottomOf="@id/ivTotalEarningsIcon"
             app:layout_constraintStart_toEndOf="@id/tvTotalEarningsLabel"
             app:layout_constraintTop_toTopOf="@id/ivTotalEarningsIcon"
@@ -171,13 +177,15 @@
                 android:textColor="?attr/homeBankYesterdayEarningsTextColor"
                 android:textSize="@dimen/fs_10" />
 
-            <NumberTextView
+            <com.palliums.widget.EnhancedTextView
                 android:id="@+id/tvYesterdayEarnings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:textColor="?attr/homeBankYesterdayEarningsTextColor"
                 android:textSize="@dimen/fs_10"
+                android:textStyle="bold"
+                app:etvUseRoboto="true"
                 tools:text="0.01 $" />
 
         </LinearLayout>

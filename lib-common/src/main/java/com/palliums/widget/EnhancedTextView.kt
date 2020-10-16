@@ -72,6 +72,13 @@ class EnhancedTextView : AppCompatTextView {
         }
     }
 
+    fun setFakeBold(fakeBold: Boolean, fakeBoldText: CharSequence? = null) {
+        if (fakeBold != this.fakeBold) {
+            this.fakeBold = fakeBold
+            text = fakeBoldText ?: text
+        }
+    }
+
     override fun setText(text: CharSequence?, type: BufferType?) {
         super.setText(
             if (text.isNullOrBlank() || text is Spanned || !fakeBold)

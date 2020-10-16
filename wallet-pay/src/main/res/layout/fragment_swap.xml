@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <com.palliums.widget.EnhancedTextView
         android:id="@+id/tvHandlingFeeRate"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
@@ -14,12 +14,13 @@
         android:gravity="end"
         android:textColor="?android:textColorSecondary"
         android:textSize="@dimen/fs_12"
+        app:etvUseRoboto="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/handling_fee_rate_format" />
 
-    <NumberEditText
+    <com.palliums.widget.EnhancedEditView
         android:id="@+id/etFromInputBox"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
@@ -33,6 +34,7 @@
         android:paddingBottom="@dimen/dp_12"
         android:textSize="@dimen/fs_20"
         android:textStyle="bold"
+        app:eevUseRoboto="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvHandlingFeeRate"
@@ -48,7 +50,7 @@
         app:layout_constraintStart_toStartOf="@id/etFromInputBox"
         app:layout_constraintTop_toTopOf="@id/etFromInputBox" />
 
-    <TextView
+    <com.palliums.widget.EnhancedTextView
         android:id="@+id/tvFromBalance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -100,7 +102,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etFromInputBox" />
 
-    <NumberEditText
+    <com.palliums.widget.EnhancedEditView
         android:id="@+id/etToInputBox"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
@@ -114,6 +116,7 @@
         android:paddingBottom="@dimen/dp_12"
         android:textSize="@dimen/fs_20"
         android:textStyle="bold"
+        app:eevUseRoboto="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivConversion"
@@ -129,7 +132,7 @@
         app:layout_constraintStart_toStartOf="@id/etToInputBox"
         app:layout_constraintTop_toTopOf="@id/etToInputBox" />
 
-    <TextView
+    <com.palliums.widget.EnhancedTextView
         android:id="@+id/tvToBalance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -171,7 +174,7 @@
 
     </LinearLayout>
 
-    <TextView
+    <com.palliums.widget.EnhancedTextView
         android:id="@+id/tvExchangeRate"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
@@ -184,7 +187,7 @@
         app:layout_constraintTop_toBottomOf="@id/etToInputBox"
         tools:text="@string/exchange_rate_format" />
 
-    <TextView
+    <com.palliums.widget.EnhancedTextView
         android:id="@+id/tvGasFee"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"

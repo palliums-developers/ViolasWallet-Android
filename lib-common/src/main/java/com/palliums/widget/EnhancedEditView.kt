@@ -2,6 +2,7 @@ package com.palliums.widget
 
 import android.content.Context
 import android.graphics.Typeface
+import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -65,6 +66,13 @@ class EnhancedEditView : AppCompatEditText {
         if (fakeBold) {
             setTypeface(typeface, textStyle)
             text = text
+        }
+    }
+
+    fun setFakeBold(fakeBold: Boolean, fakeBoldText: Editable? = null) {
+        if (fakeBold != this.fakeBold) {
+            this.fakeBold = fakeBold
+            text = fakeBoldText ?: text
         }
     }
 

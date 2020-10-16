@@ -39,7 +39,7 @@
             app:layout_constraintStart_toEndOf="@id/vBalanceIcon"
             app:layout_constraintTop_toTopOf="@id/vBalanceIcon" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvBalance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,12 +47,13 @@
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="@dimen/fs_10"
             android:textStyle="bold"
+            app:etvUseRoboto="true"
             app:layout_constraintBottom_toBottomOf="@id/vBalanceIcon"
             app:layout_constraintStart_toEndOf="@id/tvBalanceLabel"
             app:layout_constraintTop_toTopOf="@id/vBalanceIcon"
             tools:text="10 BTC" />
 
-        <EditText
+        <com.palliums.widget.EnhancedEditView
             android:id="@+id/etFromInputBox"
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_48"
@@ -64,6 +65,7 @@
             android:paddingStart="@dimen/dp_16"
             android:paddingEnd="@dimen/dp_85"
             android:textSize="@dimen/fs_14"
+            app:eevUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/vBalanceIcon" />
@@ -107,7 +109,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etFromInputBox" />
 
-        <EditText
+        <com.palliums.widget.EnhancedEditView
             android:id="@+id/etToInputBox"
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_48"
@@ -120,6 +122,7 @@
             android:paddingEnd="@dimen/dp_85"
             android:text="0"
             android:textSize="@dimen/fs_14"
+            app:eevUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/vMiddleIcon" />
@@ -159,13 +162,14 @@
             app:layout_constraintStart_toStartOf="@id/vDivider"
             app:layout_constraintTop_toBottomOf="@id/vDivider" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvExchangeRate"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_2"
             android:includeFontPadding="false"
             android:textSize="@dimen/fs_10"
+            app:etvUseRoboto="true"
             app:layout_constraintBaseline_toBaselineOf="@id/tvExchangeRateLabel"
             app:layout_constraintEnd_toEndOf="@id/vDivider"
             app:layout_constraintStart_toEndOf="@id/tvExchangeRateLabel"
@@ -183,13 +187,14 @@
             app:layout_constraintStart_toStartOf="@id/vDivider"
             app:layout_constraintTop_toBottomOf="@id/tvExchangeRateLabel" />
 
-        <TextView
+        <com.palliums.widget.EnhancedTextView
             android:id="@+id/tvMinerFees"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_2"
             android:includeFontPadding="false"
             android:textSize="@dimen/fs_10"
+            app:etvUseRoboto="true"
             app:layout_constraintBaseline_toBaselineOf="@id/tvMinerFeesLabel"
             app:layout_constraintEnd_toEndOf="@id/vDivider"
             app:layout_constraintStart_toEndOf="@id/tvMinerFeesLabel"
