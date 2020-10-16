@@ -16,6 +16,7 @@ import com.palliums.R
  * Copyright © 2019-2020. All rights reserved.
  * <p>
  * desc: 加强版的TextView
+ * fakeBold 与 roboto 效果不会叠加，使用 fakeBold 时，自动忽略系统的 bold textStyle
  */
 class EnhancedTextView : AppCompatTextView {
 
@@ -63,7 +64,7 @@ class EnhancedTextView : AppCompatTextView {
 
         val textStyle = CustomFontHelper.getTextStyle(context, attrs)
         if (useRoboto) {
-            typeface = mCustomFontHelper.selectTypeface(context, textStyle, fakeBold)
+            typeface = mCustomFontHelper.selectTypeface(context, textStyle)
         }
         if (fakeBold) {
             setTypeface(typeface, textStyle)
@@ -90,7 +91,10 @@ class EnhancedTextView : AppCompatTextView {
 
     override fun setTypeface(tf: Typeface?, style: Int) {
         super.setTypeface(
-            tf,
+            when {
+                fakeBold && tf == Typeface.DEFAULT_BOLD -> Typeface.DEFAULT
+                else -> tf
+            },
             when {
                 fakeBold && style == Typeface.BOLD -> Typeface.NORMAL
                 fakeBold && style == Typeface.BOLD_ITALIC -> Typeface.ITALIC

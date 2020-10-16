@@ -16,6 +16,7 @@ import com.palliums.R
  * Copyright © 2019-2020. All rights reserved.
  * <p>
  * desc: 加强版的EditText
+ * fakeBold 与 roboto 效果不会叠加，使用 fakeBold 时，自动忽略系统的 bold textStyle
  */
 class EnhancedEditView : AppCompatEditText {
 
@@ -31,7 +32,7 @@ class EnhancedEditView : AppCompatEditText {
     constructor(context: Context, attrs: AttributeSet?) : this(
         context,
         attrs,
-        android.R.attr.textViewStyle
+        android.R.attr.editTextStyle
     )
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
@@ -59,7 +60,7 @@ class EnhancedEditView : AppCompatEditText {
 
         val textStyle = CustomFontHelper.getTextStyle(context, attrs)
         if (useRoboto) {
-            typeface = mCustomFontHelper.selectTypeface(context, textStyle, fakeBold)
+            typeface = mCustomFontHelper.selectTypeface(context, textStyle)
         }
         if (fakeBold) {
             setTypeface(typeface, textStyle)
@@ -86,7 +87,10 @@ class EnhancedEditView : AppCompatEditText {
 
     override fun setTypeface(tf: Typeface?, style: Int) {
         super.setTypeface(
-            tf,
+            when {
+                fakeBold && tf == Typeface.DEFAULT_BOLD -> Typeface.DEFAULT
+                else -> tf
+            },
             when {
                 fakeBold && style == Typeface.BOLD -> Typeface.NORMAL
                 fakeBold && style == Typeface.BOLD_ITALIC -> Typeface.ITALIC
