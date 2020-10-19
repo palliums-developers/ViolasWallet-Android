@@ -39,9 +39,11 @@
                         android:id="@+id/tvBusinessName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorSecondary"
                         android:textSize="@dimen/fs_12"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="@string/hint_bank_deposit_business_name" />
 
                     <LinearLayout
                         android:id="@+id/viewGroupCurrentAssets"
@@ -72,18 +74,18 @@
                             android:src="@drawable/icon_bank_info_fold" />
                     </LinearLayout>
 
-                    <EditText
+                    <com.palliums.widget.NumberEditText
                         android:id="@+id/editBusinessValue"
                         android:layout_width="0dp"
                         android:layout_height="38dp"
                         android:layout_marginTop="16dp"
                         android:background="@drawable/selector_edit_bg_line"
                         android:inputType="numberDecimal"
-                        android:textColorHint="@color/color_DEDEDE"
                         android:textSize="@dimen/fs_16"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvBusinessName" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvBusinessName"
+                        tools:hint="每1V-AAA递增" />
 
                     <TextView
                         android:id="@+id/tvAllValue"
@@ -93,7 +95,7 @@
                         android:paddingTop="12dp"
                         android:paddingBottom="12dp"
                         android:text="@string/action_bank_amount_all"
-                        android:textColor="@color/color_7038FD"
+                        android:textColor="?attr/colorPrimary"
                         android:textSize="@dimen/fs_10"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/editBusinessValue" />
@@ -124,17 +126,18 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
-                                android:textColor="@color/color_5C5C5C"
+                                android:textColor="?android:attr/textColorSecondary"
                                 android:textSize="@dimen/fs_10"
                                 tools:text="可借额度 :" />
 
-                            <TextView
+                            <com.palliums.widget.NumberTextView
                                 android:id="@+id/tvBusinessUsableAmount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
-                                android:textColor="@color/color_5C5C5C"
+                                android:textColor="?android:attr/textColorSecondary"
                                 android:textSize="@dimen/fs_10"
+                                android:textStyle="bold"
                                 tools:text="1000/1000VLS" />
                         </LinearLayout>
 
@@ -144,7 +147,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="9dp"
                             android:orientation="horizontal"
-                            android:visibility="gone">
+                            tools:visibility="visible">
 
                             <ImageView
                                 android:id="@+id/ivBusinessLimitAmount"
@@ -156,17 +159,18 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
-                                android:textColor="@color/color_5C5C5C"
+                                android:textColor="?android:attr/textColorSecondary"
                                 android:textSize="@dimen/fs_10"
                                 tools:text="可借额度 :" />
 
-                            <TextView
+                            <com.palliums.widget.NumberTextView
                                 android:id="@+id/tvBusinessLimitAmount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
-                                android:textColor="@color/color_5C5C5C"
+                                android:textColor="?android:attr/textColorSecondary"
                                 android:textSize="@dimen/fs_10"
+                                android:textStyle="bold"
                                 tools:text="1000/1000VLS" />
                         </LinearLayout>
                     </LinearLayout>
@@ -203,14 +207,16 @@
                     android:paddingTop="18dp"
                     android:paddingEnd="14dp"
                     android:paddingBottom="18dp"
-                    android:visibility="gone">
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
                     <TextView
                         android:id="@+id/tvProductInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@string/font_family_title"
                         android:text="@string/hint_bank_product_description"
-                        android:textColor="@color/color_5C5C5C"
+                        android:textColor="?android:attr/textColorSecondary"
                         android:textSize="@dimen/fs_14"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -247,7 +253,8 @@
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
                     android:paddingBottom="12dp"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    tools:visibility="visible" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/viewGroupProductIssue"
@@ -261,14 +268,16 @@
                     android:paddingTop="18dp"
                     android:paddingEnd="14dp"
                     android:paddingBottom="18dp"
-                    android:visibility="gone">
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
                     <TextView
                         android:id="@+id/tvProductIssue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@string/font_family_title"
                         android:text="@string/hint_bank_common_problem"
-                        android:textColor="@color/color_5C5C5C"
+                        android:textColor="?android:attr/textColorSecondary"
                         android:textSize="@dimen/fs_14"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -305,7 +314,8 @@
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
                     android:paddingBottom="12dp"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    tools:visibility="visible" />
             </LinearLayout>
         </ScrollView>
 
@@ -317,8 +327,8 @@
             android:elevation="1dp"
             android:gravity="center"
             android:orientation="vertical"
-            android:paddingTop="20dp"
-            android:paddingBottom="36dp"
+            android:paddingTop="@dimen/dp_16"
+            android:paddingBottom="@dimen/dp_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -330,7 +340,8 @@
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:paddingBottom="10dp"
-                android:visibility="gone">
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <CheckBox
                     android:id="@+id/btnHasAgreePolicy"

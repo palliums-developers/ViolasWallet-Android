@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:paddingTop="12dp"
-android:paddingBottom="4dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="12dp"
+    android:paddingBottom="4dp">
 
-<TextView
-    android:id="@+id/tvTitle"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textColor="@color/color_5C5C5C"
-    android:textSize="@dimen/fs_12" />
+    <TextView
+        android:id="@+id/tvFAQTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="@dimen/fs_12" />
 
-<TextView
-    android:id="@+id/tvContent"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="7dp"
-    android:lineSpacingExtra="8dp"
-    android:textColor="@color/color_999999"
-    android:textSize="@dimen/fs_9" />
+    <TextView
+        android:id="@+id/tvFAQContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:lineSpacingExtra="8dp"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_9" />
 </LinearLayout>

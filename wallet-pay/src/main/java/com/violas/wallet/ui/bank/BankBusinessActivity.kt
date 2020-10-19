@@ -24,9 +24,8 @@ import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.android.synthetic.main.view_bank_business_parameter.view.*
-import kotlinx.android.synthetic.main.view_bank_business_parameter.view.tvContent
-import kotlinx.android.synthetic.main.view_bank_business_parameter.view.tvTitle
 import kotlinx.android.synthetic.main.view_item_expand_problem_info.view.*
+import kotlinx.android.synthetic.main.view_item_expand_product_info.view.*
 import kotlinx.coroutines.launch
 
 /**
@@ -88,6 +87,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
             statusLayout.showStatus(IStatusLayout.Status.STATUS_NONE)
         }
     }
+
     protected fun loadedFailure() {
         launch {
             statusLayout.showStatus(IStatusLayout.Status.STATUS_FAILURE)
@@ -147,14 +147,14 @@ abstract class BankBusinessActivity : BaseAppActivity(),
                     R.layout.view_bank_business_parameter,
                     null
                 )
-                inflate.tvTitle.text = businessParameter.title
-                inflate.tvContent.text = businessParameter.content
+                inflate.tvBusinessParameterTitle.text = businessParameter.title
+                inflate.tvBusinessParameterContent.text = businessParameter.content
                 businessParameter.declare?.let {
-                    inflate.tvDeclare.visibility = View.VISIBLE
-                    inflate.tvDeclare.text = businessParameter.declare
+                    inflate.tvBusinessParameterDeclare.visibility = View.VISIBLE
+                    inflate.tvBusinessParameterDeclare.text = businessParameter.declare
                 }
                 businessParameter.contentColor?.let {
-                    inflate.tvContent.setTextColor(it)
+                    inflate.tvBusinessParameterContent.setTextColor(it)
                 }
                 viewGroupBusinessParameter.addView(inflate)
             }
@@ -183,8 +183,8 @@ abstract class BankBusinessActivity : BaseAppActivity(),
                         R.layout.view_item_expand_product_info,
                         null
                     )
-                    inflate.tvTitle.text = productInfo.title
-                    inflate.tvContent.text = productInfo.content
+                    inflate.tvProductExplanationTitle.text = productInfo.title
+                    inflate.tvProductExplanationContent.text = productInfo.content
                     expandLayoutProductInfo.addView(inflate)
                 }
                 expandLayoutProductInfo.initExpand(true)
@@ -215,8 +215,8 @@ abstract class BankBusinessActivity : BaseAppActivity(),
                         R.layout.view_item_expand_problem_info,
                         null
                     )
-                    inflate.tvTitle.text = productIssue.q
-                    inflate.tvContent.text = productIssue.a
+                    inflate.tvFAQTitle.text = productIssue.q
+                    inflate.tvFAQContent.text = productIssue.a
                     expandLayoutProductIssue.addView(inflate)
                 }
                 expandLayoutProductIssue.reSetViewDimensions()
