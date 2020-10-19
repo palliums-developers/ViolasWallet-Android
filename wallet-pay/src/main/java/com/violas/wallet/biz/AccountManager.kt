@@ -8,6 +8,9 @@ import com.palliums.utils.exceptionAsync
 import com.palliums.utils.toMap
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip32.ExtendedKey
+import com.quincysx.crypto.bip39.MnemonicGenerator
+import com.quincysx.crypto.bip39.SeedCalculator
+import com.quincysx.crypto.bip39.wordlists.English
 import com.quincysx.crypto.bip44.BIP44
 import com.quincysx.crypto.bip44.CoinPairDerive
 import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
@@ -322,8 +325,9 @@ class AccountManager {
         walletName: String,
         password: ByteArray
     ): Long {
-        val seed = Mnemonic.English()
-            .toByteArray(wordList) ?: throw MnemonicException()
+        val seed = SeedCalculator()
+            .withWordsFromWordList(English.INSTANCE)
+            .calculateSeed(wordList, "") ?: throw MnemonicException()
 
         val deriveBitcoin = deriveBitcoin(seed)
         val security = SimpleSecurity.instance(context)
@@ -374,8 +378,9 @@ class AccountManager {
     ) {
         checkMnemonicCount(wordList)
 
-        val seed = Mnemonic.English()
-            .toByteArray(wordList) ?: throw MnemonicException()
+        val seed = SeedCalculator()
+            .withWordsFromWordList(English.INSTANCE)
+            .calculateSeed(wordList, "") ?: throw MnemonicException()
 
         val deriveBitcoin = deriveBitcoin(seed)
         val deriveLibra = deriveLibra(wordList)
@@ -610,7 +615,8 @@ class AccountManager {
                             coin.fiatAmountWithUnit.amount =
                                 BigDecimal(coin.amountWithUnit.amount).multiply(
                                     BigDecimal(rateAmount)
-                                ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+                                ).setScale(2, RoundingMode.DOWN).stripTrailingZeros()
+                                    .toPlainString()
                         }
                     )
                 }
@@ -651,7 +657,7 @@ class AccountManager {
                         tokenVo.fiatAmountWithUnit.amount =
                             BigDecimal(tokenVo.amountWithUnit.amount).multiply(
                                 BigDecimal(rateAmount)
-                            ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+                            ).setScale(2, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
                     }
                 )
             }
@@ -741,7 +747,8 @@ class AccountManager {
                                     tokenVo.fiatAmountWithUnit.amount =
                                         BigDecimal(tokenVo.amountWithUnit.amount).multiply(
                                             BigDecimal(rateAmount)
-                                        ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+                                        ).setScale(2, RoundingMode.DOWN).stripTrailingZeros()
+                                            .toPlainString()
                                 })
                             } else {
                                 assetsVo.apply {
@@ -812,7 +819,8 @@ class AccountManager {
                                     tokenVo.fiatAmountWithUnit.amount =
                                         BigDecimal(tokenVo.amountWithUnit.amount).multiply(
                                             BigDecimal(rateAmount)
-                                        ).setScale(2,RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+                                        ).setScale(2, RoundingMode.DOWN).stripTrailingZeros()
+                                            .toPlainString()
                                 })
                             } else {
                                 assetsVo.apply {

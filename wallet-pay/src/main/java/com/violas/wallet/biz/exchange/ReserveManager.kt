@@ -255,6 +255,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
         }
 
         if (BuildConfig.DEBUG) {
+            Log.e("ReserveManager","from: ${fromToken.coinNumber}  to: ${fromToken.coinNumber} input:$inputAmount")
             Log.d("ReserveManager", "route planning start")
             trades?.forEach {
                 Log.d("ReserveManager", it.toString())

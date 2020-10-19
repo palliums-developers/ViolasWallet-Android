@@ -3,14 +3,24 @@ package com.violas.wallet.ui.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.palliums.extensions.clearLongPressToast
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
+import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.bip32.ExtendedKey
+import com.quincysx.crypto.bip39.SeedCalculator
+import com.quincysx.crypto.bip39.wordlists.English
+import com.quincysx.crypto.bip44.BIP44
+import com.quincysx.crypto.bip44.CoinPairDerive
+import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.biz.MnemonicException
+import com.violas.wallet.common.Vm
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
 import com.violas.wallet.ui.main.bank.BankFragment
@@ -18,8 +28,11 @@ import com.violas.wallet.ui.main.market.MarketFragment
 import com.violas.wallet.ui.main.me.MeFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import org.palliums.libracore.mnemonic.Mnemonic
 
 class MainActivity : BaseAppActivity() {
 
@@ -111,6 +124,33 @@ class MainActivity : BaseAppActivity() {
                 R.id.tab_me
             )
         )
+        launch {
+            delay(10000)
+            val wordList = listOf(
+                "velvet",
+                "version", "sea",
+                "near",
+                "truly",
+                "open",
+                "blanket",
+                "exchange",
+                "leaf",
+                "cupboard",
+                "shine",
+                "poem"
+            )
+            val seed = SeedCalculator()
+                .withWordsFromWordList(English.INSTANCE)
+                .calculateSeed(wordList, "") ?: throw MnemonicException()
+            val extendedKey = ExtendedKey.create(seed)
+            val bip44Path =
+                BIP44.m().purpose44().coinType(CoinTypes.BitcoinTest).account(0).external()
+                    .address(0)
+
+            val derive = CoinPairDerive(extendedKey).derive(bip44Path)
+            val deriveBitcoin = derive as BitCoinECKeyPair
+            Log.e("==Bitcoin", deriveBitcoin.address)
+        }
     }
 
     private fun resetToDefaultIcon() {
