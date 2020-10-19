@@ -10,6 +10,8 @@ android {
     compileSdkVersion versions.compileSdk
     buildToolsVersion = versions.buildTools
 
+    ndkVersion "21.1.6352462"
+
     defaultConfig {
         applicationId names.payApplicationId
         minSdkVersion versions.minSdk

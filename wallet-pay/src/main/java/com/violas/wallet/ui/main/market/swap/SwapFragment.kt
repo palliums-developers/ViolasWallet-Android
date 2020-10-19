@@ -456,11 +456,20 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                     }
                     // 获取计算出来的金额
                     var outputAmount = tradeExact.amount
-                    if (toToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
-                        toToken.coinNumber == CoinTypes.Bitcoin.coinType()
-                    ) {
-                        outputAmount *= 100
+                    if(isInputFrom){
+                        if (toToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
+                            toToken.coinNumber == CoinTypes.Bitcoin.coinType()
+                        ) {
+                            outputAmount *= 100
+                        }
+                    }else{
+                        if (fromToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
+                            fromToken.coinNumber == CoinTypes.Bitcoin.coinType()
+                        ) {
+                            outputAmount *= 100
+                        }
                     }
+
 
                     // 根据币种信息转换计算出来的金额单位
                     val outputAmountByCoin = convertAmountToDisplayUnit(
