@@ -1,9 +1,16 @@
-package android.widget
+package android.text.font
 
 import android.content.Context
 import android.graphics.Typeface
+import android.text.font.FontCache.getTypeface
 import android.util.AttributeSet
-import android.widget.FontCache.getTypeface
+
+/**
+ * Created by elephant on 2020/10/19 10:58.
+ * Copyright © 2019-2020. All rights reserved.
+ * <p>
+ * desc:
+ */
 
 object FontCache {
     private val fontCache: HashMap<String, Typeface?> = HashMap()
@@ -46,30 +53,5 @@ class CustomFontHelper {
             Typeface.NORMAL -> getTypeface("font/roboto_regular.ttf", context)
             else -> getTypeface("font/roboto_regular.ttf", context)
         }
-    }
-}
-
-class NumberEditText : androidx.appcompat.widget.AppCompatEditText {
-    private val mCustomFontHelper by lazy {
-        CustomFontHelper()
-    }
-
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        applyCustomFont(context, attrs)
-    }
-
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
-        applyCustomFont(context, attrs)
-    }
-
-    private fun applyCustomFont(context: Context, attrs: AttributeSet?) {
-        val textStyle = CustomFontHelper.getTextStyle(context, attrs)
-        val customFont = mCustomFontHelper.selectTypeface(context, textStyle)
-        typeface = customFont
     }
 }

@@ -17,10 +17,11 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_53"
+            android:fontFamily="@string/font_family_title"
             android:gravity="center_horizontal"
+            android:lineSpacingMultiplier="1.1"
             android:text="@string/title_open_fingerprint_verification_prompt"
             android:textSize="@dimen/fs_16"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

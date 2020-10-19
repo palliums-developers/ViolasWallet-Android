@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.palliums.widget.MarqueTextView
+        <com.palliums.widget.FocusedTextView
             android:id="@+id/tvCountryArea"
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_55"

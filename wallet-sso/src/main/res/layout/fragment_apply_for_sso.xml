@@ -13,7 +13,7 @@
         android:background="@drawable/bg_title_black"
         android:paddingTop="@dimen/height_status_bar">
 
-        <com.palliums.widget.MarqueTextView
+        <com.palliums.widget.FocusedTextView
             android:id="@+id/vTitleMiddleText"
             android:layout_width="@dimen/dp_0"
             android:layout_height="match_parent"

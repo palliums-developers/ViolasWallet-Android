@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/height_status_bar"
     tools:background="@color/white">
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.FocusedTextView
         android:id="@+id/vTitleMiddleText"
         android:layout_width="@dimen/dp_0"
         android:layout_height="match_parent"
@@ -17,14 +17,13 @@
         android:ellipsize="marquee"
         android:focusable="true"
         android:focusableInTouchMode="true"
+        android:fontFamily="@string/font_family_title"
         android:gravity="center"
         android:marqueeRepeatLimit="marquee_forever"
         android:scrollHorizontally="true"
         android:singleLine="true"
         android:textColor="@color/black"
         android:textSize="@dimen/fs_16"
-        app:etvFakeBold="true"
-        app:etvForceFocused="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

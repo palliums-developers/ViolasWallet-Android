@@ -204,7 +204,7 @@ class MultiTransferActivity : BaseAppActivity(),
         // 订阅手续费
         mMultiTransferViewModel.mFeeAmount.observe(this, Observer {
             launch {
-                tvFee.text = "${it.first} ${it.second}"
+                tvFee.setText("${it.first} ${it.second}")
             }
         })
     }

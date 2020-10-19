@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
     <declare-styleable name="EnhancedTextView">
         <attr name="etvFakeBold" format="boolean" />
         <attr name="etvUseRoboto" format="boolean" />

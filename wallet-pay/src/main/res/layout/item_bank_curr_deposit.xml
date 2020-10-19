@@ -29,18 +29,18 @@
         app:layout_constraintTop_toTopOf="@id/ivLogo"
         tools:text="VLSUSD" />
 
-    <com.palliums.widget.EnhancedTextView
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_16"
         android:layout_marginStart="@dimen/dp_6"
         android:background="@drawable/bg_bank_deposit_earning"
+        android:fontFamily="@string/font_family_title"
         android:gravity="center_vertical"
         android:paddingStart="@dimen/dp_6"
         android:paddingEnd="@dimen/dp_5"
         android:text="@string/earning"
         android:textColor="?attr/bankDepositEarningTextColor"
         android:textSize="@dimen/fs_9"
-        app:etvFakeBold="true"
         app:layout_constraintBottom_toBottomOf="@id/ivLogo"
         app:layout_constraintStart_toEndOf="@id/tvName"
         app:layout_constraintTop_toTopOf="@id/ivLogo" />
@@ -73,14 +73,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivLogo" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvPrincipal"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_14"
         android:layout_marginTop="@dimen/dp_12"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_14"
-        app:etvUseRoboto="true"
         app:layout_constraintStart_toStartOf="@id/tvPrincipalLabel"
         app:layout_constraintTop_toBottomOf="@id/tvPrincipalLabel"
         tools:text="3828.00" />
@@ -98,13 +97,12 @@
         app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvEarnings"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_14"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_14"
-        app:etvUseRoboto="true"
         app:layout_constraintStart_toStartOf="@id/tvEarningsLabel"
         app:layout_constraintTop_toTopOf="@id/tvPrincipal"
         tools:text="3828.00" />
@@ -120,7 +118,7 @@
         app:layout_constraintBaseline_toBaselineOf="@id/tvPrincipalLabel"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvDepositYield"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_14"
@@ -128,7 +126,6 @@
         android:textColor="?attr/bankProductRateTextColor"
         android:textSize="@dimen/fs_14"
         android:textStyle="bold"
-        app:etvUseRoboto="true"
         app:layout_constraintEnd_toEndOf="@id/tvDepositYieldLabel"
         app:layout_constraintTop_toTopOf="@id/tvPrincipal"
         tools:text="5.00%" />

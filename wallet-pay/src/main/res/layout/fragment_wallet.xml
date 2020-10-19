@@ -59,7 +59,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/actionBar" />
 
-        <com.palliums.widget.EnhancedTextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,7 +67,6 @@
             android:includeFontPadding="false"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/fs_24"
-            app:etvUseRoboto="true"
             app:layout_constraintStart_toStartOf="@+id/tvTotalAssetsTitle"
             app:layout_constraintTop_toBottomOf="@+id/tvTotalAssetsTitle"
             tools:text="120.00000000" />
@@ -279,7 +278,7 @@
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/dp_15"
         android:paddingTop="@dimen/dp_13"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -301,14 +300,14 @@
                 android:layout_marginStart="@dimen/dp_24"
                 android:src="?attr/walletHomeCreateWalletIcon" />
 
-            <com.palliums.widget.EnhancedTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_22"
+                android:fontFamily="@string/font_family_title"
                 android:text="@string/create_account"
                 android:textColor="?attr/walletHomeInitWalletTextColor"
-                android:textSize="@dimen/fs_16"
-                app:etvFakeBold="true" />
+                android:textSize="@dimen/fs_16" />
 
         </LinearLayout>
 
@@ -327,14 +326,14 @@
                 android:layout_marginStart="@dimen/dp_24"
                 android:src="?attr/walletHomeImportWalletIcon" />
 
-            <com.palliums.widget.EnhancedTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_22"
+                android:fontFamily="@string/font_family_title"
                 android:text="@string/import_account"
                 android:textColor="?attr/walletHomeInitWalletTextColor"
-                android:textSize="@dimen/fs_16"
-                app:etvFakeBold="true" />
+                android:textSize="@dimen/fs_16" />
 
         </LinearLayout>
 

@@ -17,14 +17,13 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="18:22:11 05/21" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvAmount"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_12"
         android:layout_marginStart="@dimen/dp_122"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_12"
-        app:etvUseRoboto="true"
         app:layout_constraintBottom_toBottomOf="@id/tvTime"
         app:layout_constraintStart_toStartOf="@id/tvTime"
         tools:text="3828.00" />

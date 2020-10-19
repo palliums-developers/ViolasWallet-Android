@@ -1,17 +1,21 @@
-package android.widget
+package com.palliums.widget
 
 import android.content.Context
+import android.text.font.CustomFontHelper
 import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatEditText
 
-class NumberTextView : androidx.appcompat.widget.AppCompatTextView {
+class NumberEditText : AppCompatEditText {
     private val mCustomFontHelper by lazy {
         CustomFontHelper()
     }
 
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        applyCustomFont(context, attrs)
-    }
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(
+        context,
+        attrs,
+        android.R.attr.editTextStyle
+    )
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,

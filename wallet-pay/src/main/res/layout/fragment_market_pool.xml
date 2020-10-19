@@ -52,7 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/llSwitchOpModeGroup" />
 
-    <com.palliums.widget.EnhancedEditView
+    <com.palliums.widget.NumberEditText
         android:id="@+id/etInputBoxA"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
@@ -66,7 +66,6 @@
         android:paddingBottom="@dimen/dp_12"
         android:textSize="@dimen/fs_20"
         android:textStyle="bold"
-        app:eevUseRoboto="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/llSwitchOpModeGroup"
@@ -83,7 +82,7 @@
         app:layout_constraintStart_toStartOf="@id/etInputBoxA"
         app:layout_constraintTop_toTopOf="@id/etInputBoxA" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvBalanceA"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -136,7 +135,7 @@
         app:layout_constraintTop_toBottomOf="@id/etInputBoxA"
         tools:src="?attr/marketPoolAndIcon" />
 
-    <com.palliums.widget.EnhancedEditView
+    <com.palliums.widget.NumberEditText
         android:id="@+id/etInputBoxB"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
@@ -150,7 +149,6 @@
         android:paddingBottom="@dimen/dp_12"
         android:textSize="@dimen/fs_20"
         android:textStyle="bold"
-        app:eevUseRoboto="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivModeIcon"
@@ -167,7 +165,7 @@
         app:layout_constraintStart_toStartOf="@id/etInputBoxB"
         app:layout_constraintTop_toTopOf="@id/etInputBoxB" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvBalanceB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -210,7 +208,7 @@
 
     </LinearLayout>
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvExchangeRate"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"

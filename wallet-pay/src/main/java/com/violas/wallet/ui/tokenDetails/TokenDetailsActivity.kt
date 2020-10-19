@@ -2,10 +2,8 @@ package com.violas.wallet.ui.tokenDetails
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.style.FakeBoldSpan
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -295,7 +293,9 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
             val count = viewPager.adapter!!.count
             for (i in 0 until count) {
                 tabLayout.getTabAt(i)?.let { tab ->
-                    updateTab(tab, i == viewPager.currentItem)
+                    updateTab(tab, i == viewPager.currentItem)?.let {
+                        it.text = tab.text
+                    }
                 }
             }
         }
@@ -303,19 +303,10 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
 
     private fun updateTab(tab: TabLayout.Tab, select: Boolean): TextView? {
         return getTabTextView(tab)?.also {
-            val text = tab.text.toString()
-            it.text = if (select)
-                SpannableStringBuilder(text).apply {
-                    setSpan(
-                        FakeBoldSpan(),
-                        0,
-                        text.length,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                }
-            else
-                text
-
+            it.typeface = Typeface.create(
+                getString(if (select) R.string.font_family_title else R.string.font_family_normal),
+                Typeface.NORMAL
+            )
             it.setTextColor(
                 getColorByAttrId(
                     if (select) R.attr.colorPrimary else R.attr.tokenDetailsTabNormalTextColor,

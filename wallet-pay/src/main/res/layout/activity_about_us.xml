@@ -19,13 +19,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.palliums.widget.EnhancedTextView
+        <TextView
             android:id="@+id/tvAppNameVersion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_5"
+            android:fontFamily="@string/font_family_title"
             android:textSize="@dimen/fs_16"
-            app:etvFakeBold="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivLogo"

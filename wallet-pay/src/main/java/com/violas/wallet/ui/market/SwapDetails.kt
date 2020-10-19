@@ -117,7 +117,8 @@ class SwapDetailsActivity : BaseAppActivity() {
 
         // 兑换中
         if (record.status == 4002) {
-            tvProcessingDesc.setFakeBold(true)
+            tvProcessingDesc.typeface =
+                Typeface.create(getString(R.string.font_family_title), Typeface.NORMAL)
             tvProcessingDesc.setTextColor(
                 getColorByAttrId(android.R.attr.textColor, this)
             )
@@ -134,7 +135,9 @@ class SwapDetailsActivity : BaseAppActivity() {
             return
         }
 
-        tvProcessingDesc.setFakeBold(false)
+
+        tvProcessingDesc.typeface =
+            Typeface.create(getString(R.string.font_family_normal), Typeface.NORMAL)
         tvProcessingDesc.setTextColor(
             getColorByAttrId(R.attr.marketDetailsCompletedStateTextColor, this)
         )

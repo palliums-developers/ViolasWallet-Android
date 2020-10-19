@@ -29,13 +29,13 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:src="?attr/iconRecordStateProcessing" />
 
-        <com.palliums.widget.EnhancedTextView
+        <TextView
             android:id="@+id/tvDesc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_14"
+            android:fontFamily="@string/font_family_title"
             android:textSize="@dimen/fs_16"
-            app:etvFakeBold="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivState"
@@ -54,7 +54,7 @@
             app:layout_constraintTop_toBottomOf="@id/tvDesc"
             tools:text="2018-11-06  16:30:44" />
 
-        <com.palliums.widget.EnhancedTextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvAmount"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
@@ -64,7 +64,6 @@
             android:textColor="?android:textColorPrimary"
             android:textSize="@dimen/fs_12"
             android:textStyle="bold"
-            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTime"
@@ -82,15 +81,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvAmount" />
 
-        <com.palliums.widget.EnhancedTextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvGas"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_5"
             android:textColor="?android:textColorTertiary"
             android:textSize="@dimen/fs_12"
-            android:textStyle="bold"
-            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvAmount"
             app:layout_constraintTop_toBottomOf="@id/tvAmount"

@@ -9,21 +9,23 @@
     <TextView
         android:id="@+id/tvAmountToBeRepaidLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_34"
         android:layout_marginTop="@dimen/dp_29"
+        android:height="@dimen/dp_10"
         android:includeFontPadding="false"
         android:text="@string/amount_to_be_repaid"
         android:textSize="@dimen/fs_10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <NumberTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvAmountToBeRepaid"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_24"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_33"
         android:layout_marginTop="@dimen/dp_14"
+        android:height="@dimen/dp_24"
         android:includeFontPadding="false"
         android:textColor="?attr/colorPrimary"
         android:textSize="@dimen/fs_24"
@@ -35,8 +37,9 @@
     <TextView
         android:id="@+id/tvCoinUnit"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_14"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_8"
+        android:height="@dimen/dp_14"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_14"
         app:layout_constraintBottom_toBottomOf="@id/tvAmountToBeRepaid"

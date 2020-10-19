@@ -50,26 +50,24 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="vtoken" />
 
-                <com.palliums.widget.EnhancedTextView
+                <com.palliums.widget.NumberTextView
                     android:id="@+id/tvTokenAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_12"
                     android:textSize="@dimen/fs_18"
                     android:textStyle="bold"
-                    app:etvUseRoboto="true"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ivTokenLogo"
                     tools:text="102333.99" />
 
-                <com.palliums.widget.EnhancedTextView
+                <com.palliums.widget.NumberTextView
                     android:id="@+id/tvFiatAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_3"
                     android:textColor="?android:attr/textColorTertiary"
                     android:textSize="@dimen/fs_14"
-                    app:etvUseRoboto="true"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvTokenAmount"
                     tools:text="≈$0.00" />
@@ -103,17 +101,16 @@
                 app:navigationIcon="?attr/iconBackPrimary"
                 app:popupTheme="@style/AppTheme.PopupOverlay">
 
-                <com.palliums.widget.EnhancedTextView
+                <com.palliums.widget.FocusedTextView
                     android:id="@+id/tvTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:ellipsize="end"
+                    android:fontFamily="@string/font_family_title"
                     android:gravity="center"
                     android:singleLine="true"
                     android:textSize="@dimen/fs_16"
-                    app:etvFakeBold="true"
-                    app:etvForceFocused="true"
                     tools:text="vtoken" />
 
             </androidx.appcompat.widget.Toolbar>

@@ -46,14 +46,13 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="01.18 15:42" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvInputCoin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
         android:textColor="?colorOnSurface"
         android:textSize="@dimen/fs_14"
-        app:etvUseRoboto="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvState"
         tools:text="999ETH" />
@@ -68,14 +67,13 @@
         app:layout_constraintStart_toEndOf="@id/tvInputCoin"
         app:layout_constraintTop_toTopOf="@id/tvInputCoin" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvOutputCoin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_37"
         android:textColor="?colorOnSurface"
         android:textSize="@dimen/fs_14"
-        app:etvUseRoboto="true"
         app:layout_constraintBaseline_toBaselineOf="@id/tvInputCoin"
         app:layout_constraintStart_toEndOf="@id/vSwapIcon"
         tools:text="99900VLS" />

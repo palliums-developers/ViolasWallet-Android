@@ -72,12 +72,12 @@
                 android:layout_width="@dimen/dp_0"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:fontFamily="@string/font_family_title"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:text="@string/action_cancel_nbsp"
                 android:textColor="?android:attr/textColorTertiary"
-                android:textSize="@dimen/fs_16"
-                android:textStyle="bold" />
+                android:textSize="@dimen/fs_16" />
 
             <View
                 android:id="@+id/vVerticalLine1"
@@ -91,12 +91,12 @@
                 android:layout_width="@dimen/dp_0"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:fontFamily="@string/font_family_title"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:gravity="center"
                 android:text="@string/action_use_password"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="@dimen/fs_16"
-                android:textStyle="bold"
                 android:visibility="visible" />
 
         </LinearLayout>
@@ -117,12 +117,12 @@
             android:id="@+id/tvNeutralBtn"
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_0"
+            android:fontFamily="@string/font_family_title"
             android:foreground="?android:attr/selectableItemBackground"
             android:gravity="center"
             android:text="@string/action_retry_fingerprint"
             android:textColor="?attr/colorPrimary"
             android:textSize="@dimen/fs_16"
-            android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/vHorizontalLine1"
             app:layout_constraintEnd_toEndOf="parent"

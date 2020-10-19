@@ -37,13 +37,12 @@
         app:layout_constraintTop_toTopOf="@id/vLogoGroup"
         tools:text="USD" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvTokenBalance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_12"
-        app:etvUseRoboto="true"
         app:layout_constraintBottom_toBottomOf="@id/vLogoGroup"
         app:layout_constraintStart_toStartOf="@id/tvTokenName"
         tools:text="@string/market_select_token_balance_format" />

@@ -21,6 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_16"
         android:layout_marginStart="@dimen/dp_8"
+        android:fontFamily="@string/font_family_title"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_16"
         app:layout_constraintStart_toEndOf="@id/ivLogo"
@@ -38,7 +39,7 @@
         app:layout_constraintStart_toStartOf="@id/tvName"
         tools:text="存/借生息，支持17个币种" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvRate"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_18"
@@ -46,7 +47,6 @@
         android:textColor="?attr/bankProductRateTextColor"
         android:textSize="@dimen/fs_18"
         android:textStyle="bold"
-        app:etvUseRoboto="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/ivLogo"
         tools:text="3.7%" />

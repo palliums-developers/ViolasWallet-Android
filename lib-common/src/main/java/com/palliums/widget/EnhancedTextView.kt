@@ -5,9 +5,9 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
+import android.text.font.CustomFontHelper
 import android.text.style.FakeBoldSpan
 import android.util.AttributeSet
-import android.widget.CustomFontHelper
 import androidx.appcompat.widget.AppCompatTextView
 import com.palliums.R
 

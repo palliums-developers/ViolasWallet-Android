@@ -10,7 +10,7 @@ import androidx.appcompat.widget.AppCompatTextView
  * <p>
  * desc:
  */
-class MarqueTextView : AppCompatTextView {
+class FocusedTextView : AppCompatTextView {
 
     constructor(context: Context?) : super(context)
 

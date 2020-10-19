@@ -39,14 +39,13 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="01.18 15:42" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvAToken"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
         android:textColor="?colorOnSurface"
         android:textSize="@dimen/fs_14"
-        app:etvUseRoboto="true"
         app:layout_constraintStart_toStartOf="@id/tvState"
         app:layout_constraintTop_toBottomOf="@id/tvState"
         tools:text="999ETH" />
@@ -61,19 +60,18 @@
         app:layout_constraintStart_toEndOf="@id/tvAToken"
         app:layout_constraintTop_toTopOf="@id/tvAToken" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvBToken"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_8"
         android:textColor="?colorOnSurface"
         android:textSize="@dimen/fs_14"
-        app:etvUseRoboto="true"
         app:layout_constraintBaseline_toBaselineOf="@id/tvAToken"
         app:layout_constraintStart_toEndOf="@id/iivAndIcon"
         tools:text="99900VLS" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvLiquidity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -81,7 +79,6 @@
         android:text="@string/market_liquidity_token_amount_format"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_10"
-        app:etvUseRoboto="true"
         app:layout_constraintStart_toStartOf="@id/tvState"
         app:layout_constraintTop_toBottomOf="@id/tvAToken" />
 

@@ -27,17 +27,16 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="BTC" />
 
-        <com.palliums.widget.EnhancedTextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvCoinAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/fs_14"
-            app:etvUseRoboto="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/hint_transfer_amount" />
 
-        <com.palliums.widget.EnhancedEditView
+        <com.palliums.widget.NumberEditText
             android:id="@+id/editAmountInput"
             android:layout_width="match_parent"
             android:layout_height="48dp"
@@ -46,7 +45,6 @@
             android:hint="@string/hint_input_amount"
             android:inputType="numberDecimal"
             android:padding="7dp"
-            app:eevUseRoboto="true"
             app:layout_constraintTop_toBottomOf="@+id/tvHintCoinName" />
 
         <LinearLayout
@@ -171,13 +169,12 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvHintFee" />
 
-        <com.palliums.widget.EnhancedTextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvFee"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
             android:textSize="@dimen/fs_10"
-            app:etvUseRoboto="true"
             app:layout_constraintStart_toStartOf="@+id/sbQuota"
             app:layout_constraintTop_toBottomOf="@+id/sbQuota" />
 

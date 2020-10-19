@@ -27,33 +27,31 @@
         app:layout_constraintTop_toTopOf="@id/vLogoGroup"
         tools:background="@drawable/ic_label_btc" />
 
-    <com.palliums.widget.EnhancedTextView
+    <TextView
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
+        android:fontFamily="@string/font_family_title"
         android:textSize="@dimen/fs_16"
-        android:typeface="sans"
-        app:etvFakeBold="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/ivLogo"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="VToken" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_12"
         android:textSize="@dimen/fs_16"
-        app:etvUseRoboto="true"
         app:layout_constraintBottom_toTopOf="@+id/tvFiatAmount"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="0.00001" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvFiatAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,7 +59,6 @@
         android:layout_marginEnd="@dimen/dp_12"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_12"
-        app:etvUseRoboto="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvAmount"

@@ -46,4 +46,7 @@
     <string name="hint_please_cannot_contain_special_characters">@string/hint_please_minimum_password_length</string>
     <string name="hint_please_password_rules_are_wrong">@string/hint_please_minimum_password_length</string>
     <string name="hint_please_password_not_empty">The password cannot be empty</string>
+
+    <string name="font_family_normal" translatable="false">sans-serif</string>
+    <string name="font_family_title" translatable="false">sans-serif-medium</string>
 </resources>

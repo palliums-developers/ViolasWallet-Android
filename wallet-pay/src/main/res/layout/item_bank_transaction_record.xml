@@ -38,14 +38,13 @@
         app:layout_constraintStart_toStartOf="@id/tvCoinName"
         tools:text="2020/05/13 18:22:22" />
 
-    <com.palliums.widget.EnhancedTextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvAmount"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_18"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_18"
         android:textStyle="bold"
-        app:etvUseRoboto="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/ivCoinLogo"
         tools:text="1020.88" />
