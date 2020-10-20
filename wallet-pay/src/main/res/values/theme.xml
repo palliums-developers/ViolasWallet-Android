@@ -226,7 +226,7 @@
         <!--转账收款页面资源属性-->
         <item name="transferInfoBg">@drawable/bg_transfer_white</item>
         <item name="transferSeekBarThumb">@drawable/icon_transfer_thumb</item>
-        <item name="transferSeekBarBgColor">@color/color_BABABA</item>
+        <item name="transferSeekBarBgColor">@color/color_F7F7F9</item>
         <item name="collectionInfoBg">@drawable/bg_collection_address</item>
 
         <!--WalletConnect相关页面资源属性-->
