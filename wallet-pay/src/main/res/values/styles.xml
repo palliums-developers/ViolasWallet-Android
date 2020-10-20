@@ -108,10 +108,10 @@
     <style name="BaseSwitchButton">
         <item name="BackDrawable">@drawable/selector_bg_switch</item>
         <item name="ThumbDrawable">@drawable/shape_bg_switch_thumb</item>
-        <item name="ThumbMarginBottom">0dp</item>
-        <item name="ThumbMarginLeft">0dp</item>
-        <item name="ThumbMarginRight">0dp</item>
-        <item name="ThumbMarginTop">0dp</item>
+        <item name="ThumbMarginBottom">1dp</item>
+        <item name="ThumbMarginLeft">1dp</item>
+        <item name="ThumbMarginRight">1dp</item>
+        <item name="ThumbMarginTop">1dp</item>
     </style>
 
     <style name="MenuItemView">

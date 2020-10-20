@@ -28,7 +28,7 @@ import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.web.WebCommonActivity
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.loadRoundedImage
+import com.violas.wallet.utils.loadCircleImage
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
@@ -306,10 +306,9 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                     itemView.checkBox.visibility = View.GONE
                 }
 
-                itemView.ivCoinLogo.loadRoundedImage(
+                itemView.ivCoinLogo.loadCircleImage(
                     itemData.logo,
-                    getResourceId(R.attr.iconCoinDefLogo, itemView.context),
-                    14
+                    getResourceId(R.attr.iconCoinDefLogo, itemView.context)
                 )
             }
         }
