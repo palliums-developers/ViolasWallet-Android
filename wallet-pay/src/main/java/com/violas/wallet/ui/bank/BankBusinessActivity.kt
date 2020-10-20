@@ -57,7 +57,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
 
     override fun getLayoutResId() = R.layout.activity_bank_business
 
-    override fun getTitleStyle() = PAGE_STYLE_SECONDARY
+    override fun getTitleStyle() = PAGE_STYLE_CUSTOM
 
     open fun onCoinAmountNotice(assetsVo: AssetsVo?) {}
 
@@ -68,7 +68,11 @@ abstract class BankBusinessActivity : BaseAppActivity(),
         amountView: TextView,
         userAmountInfo: BusinessUserAmountInfo?
     ) {
-        if (userAmountInfo == null) return
+        if (userAmountInfo == null) {
+            viewGroup.visibility = View.GONE
+            return
+        }
+
         viewGroup.visibility = View.VISIBLE
         iconView.setBackgroundResource(userAmountInfo.icon)
         titleView.text = userAmountInfo.title
@@ -96,6 +100,9 @@ abstract class BankBusinessActivity : BaseAppActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setTitleLeftImageResource(getResourceId(R.attr.iconBackTertiary, this))
+        titleColor = getResourceId(android.R.attr.textColor, this)
 
         statusLayout.setReloadText(R.string.hint_click_retry)
         val businessId = intent.getStringExtra(EXT_BUSINESS_ID) ?: "0"
