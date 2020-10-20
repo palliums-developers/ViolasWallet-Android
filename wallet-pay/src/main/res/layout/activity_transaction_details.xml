@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="?attr/iconBackTertiary"
+        app:navigationIcon="?attr/iconBackPrimary"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         tools:menu="@menu/menu_transaction_details">
 

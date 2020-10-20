@@ -67,7 +67,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
     }
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_CUSTOM
+        return PAGE_STYLE_TERTIARY
     }
 
     override fun onTitleRightViewClick() {
@@ -81,9 +81,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         // 设置页面
         StatusBarUtil.setLightStatusBarMode(window, false)
         setTopBackgroundResource(getResourceId(R.attr.homeFragmentTopBg, this))
-        setTitleLeftImageResource(getResourceId(R.attr.iconBackSecondary, this))
         setTitleRightImageResource(getResourceId(R.attr.iconRecordSecondary, this))
-        titleColor = getResourceId(R.attr.colorOnPrimary, this)
         setTitle(R.string.mapping)
 
         // 设置View初始值

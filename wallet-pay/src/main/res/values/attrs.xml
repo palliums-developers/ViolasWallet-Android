@@ -27,7 +27,6 @@
 
     <attr name="iconBackPrimary" format="reference" />
     <attr name="iconBackSecondary" format="reference" />
-    <attr name="iconBackTertiary" format="reference" />
     <attr name="iconClosePrimary" format="reference" />
     <attr name="iconCloseSecondary" format="reference" />
     <attr name="iconShare" format="reference" />

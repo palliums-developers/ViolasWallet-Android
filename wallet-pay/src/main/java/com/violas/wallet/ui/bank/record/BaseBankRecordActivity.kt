@@ -33,10 +33,6 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
             .setDuration(360)
     }
 
-    override fun getTitleStyle(): Int {
-        return PAGE_STYLE_CUSTOM
-    }
-
     override fun getLayoutResId(): Int {
         return R.layout.activity_bank_record
     }
@@ -56,7 +52,6 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitleLeftImageResource(getResourceId(R.attr.iconBackTertiary, this))
         mPagingHandler.init()
         setStatusLayout(false)
 

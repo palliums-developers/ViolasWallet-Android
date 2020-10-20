@@ -19,10 +19,6 @@ import kotlinx.android.synthetic.main.activity_bank_order.*
  */
 abstract class BaseBankOrderActivity<VO> : BasePagingActivity<VO>() {
 
-    override fun getTitleStyle(): Int {
-        return PAGE_STYLE_CUSTOM
-    }
-
     override fun getLayoutResId(): Int {
         return R.layout.activity_bank_order
     }
@@ -42,7 +38,6 @@ abstract class BaseBankOrderActivity<VO> : BasePagingActivity<VO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitleLeftImageResource(getResourceId(R.attr.iconBackTertiary, this))
         setTitleRightImageResource(getResourceId(R.attr.iconRecordPrimary, this))
 
         mPagingHandler.init()

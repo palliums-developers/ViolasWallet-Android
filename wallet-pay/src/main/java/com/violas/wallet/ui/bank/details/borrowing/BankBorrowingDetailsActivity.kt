@@ -45,10 +45,6 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     private lateinit var violasAddress: String
     private lateinit var borrowingInfo: BorrowingInfoDTO
 
-    override fun getTitleStyle(): Int {
-        return PAGE_STYLE_CUSTOM
-    }
-
     override fun getLayoutResId(): Int {
         return R.layout.activity_bank_borrowing_details
     }
@@ -111,7 +107,6 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     }
 
     private fun initTopView() {
-        setTitleLeftImageResource(getResourceId(R.attr.iconBackTertiary, this))
         setTopBackgroundResource(getResourceId(R.attr.bankDetailsTopBg, this))
         setTopBackgroundHeight(
             StatusBarUtil.getStatusBarHeight(this) +

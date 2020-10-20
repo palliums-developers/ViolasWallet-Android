@@ -81,6 +81,7 @@
         <item name="android:windowAnimationStyle">@style/AppWindowAnimation</item>
         <item name="actionOverflowButtonStyle">@style/ActionOverflowButtonStyle</item>
         <item name="actionOverflowMenuStyle">@style/ActionOverflowMenuStyle</item>
+        <item name="toolbarNavigationButtonStyle">@style/ToolbarNavigationButtonStyle</item>
         <item name="buttonStyle">@style/ButtonStyle</item>
 
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
@@ -122,9 +123,8 @@
         <item name="textColorSuccess">@color/color_13B788</item>
         <item name="textColorFailure">@color/color_E54040</item>
 
-        <item name="iconBackPrimary">@drawable/ic_back_dark</item>
+        <item name="iconBackPrimary">@drawable/ic_back_gray</item>
         <item name="iconBackSecondary">@drawable/ic_back_light</item>
-        <item name="iconBackTertiary">@drawable/ic_back_gray</item>
         <item name="iconClosePrimary">@mipmap/ic_close_primary</item>
         <item name="iconCloseSecondary">@mipmap/ic_close_secondary</item>
         <item name="iconShare">@mipmap/ic_share</item>
@@ -270,6 +270,10 @@
         <item name="bankDepositEarningTextColor">@color/color_13B788</item>
         <item name="bankDepositEarningBgColor">@color/color_13B788_06</item>
         <item name="bankDetailsTopBg">@mipmap/bg_bank_details_top</item>
+    </style>
+
+    <style name="ToolbarNavigationButtonStyle" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:minWidth">?attr/actionBarSize</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">
