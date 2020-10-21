@@ -128,7 +128,7 @@ class AccountOperationsActivity : BaseAppActivity() {
         if (operationMode == AccountOperationMode.MANAGEMENT) {
             EventBus.getDefault().register(this)
             setTitle(R.string.account_management_title)
-            setTitleRightImageResource(R.drawable.icon_add_address)
+            setTitleRightImageResource(R.mipmap.ic_add)
         } else {
             setTitle(R.string.account_selection_title)
         }

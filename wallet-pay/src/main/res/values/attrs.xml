@@ -122,8 +122,6 @@
     <attr name="languageNormalIcon" format="reference" />
 
     <!--地址相关页面资源属性-->
-    <attr name="addressLabelBg" format="color|reference" />
-    <attr name="addressLabelTextColor" format="color" />
     <attr name="addressTypeSelectedBg" format="color" />
 
     <!--转账收款页面资源属性-->

@@ -128,7 +128,7 @@
         <item name="iconClosePrimary">@mipmap/ic_close_primary</item>
         <item name="iconCloseSecondary">@mipmap/ic_close_secondary</item>
         <item name="iconShare">@mipmap/ic_share</item>
-        <item name="iconAdd">@drawable/icon_add_address</item>
+        <item name="iconAdd">@mipmap/ic_add</item>
         <item name="iconLogo">@drawable/ic_logo_corner</item>
         <item name="iconAppName">@drawable/ic_violas</item>
         <item name="iconForward">@drawable/ic_right_arrow_gray</item>
@@ -220,8 +220,6 @@
         <item name="languageNormalIcon">@drawable/icon_check_normal</item>
 
         <!--地址相关页面资源属性-->
-        <item name="addressLabelBg">@color/black_06</item>
-        <item name="addressLabelTextColor">@color/color_C2C2C2</item>
         <item name="addressTypeSelectedBg">@color/color_4730A7</item>
 
         <!--转账收款页面资源属性-->
