@@ -53,7 +53,7 @@ class MeFragment : BaseFragment() {
     }
 
     override fun onResume() {
-        StatusBarUtil.setLightStatusBarMode(requireActivity().window, false)
+        StatusBarUtil.setLightStatusBarMode(requireActivity().window, true)
         super.onResume()
     }
 }

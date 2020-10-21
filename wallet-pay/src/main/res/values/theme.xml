@@ -195,6 +195,7 @@
         <item name="meHomeWalletMenuIcon">@mipmap/ic_me_wallet_management</item>
         <item name="meHomeAddressMenuIcon">@mipmap/ic_me_address_book</item>
         <item name="meHomeSettingsMenuIcon">@mipmap/ic_me_settings</item>
+        <item name="meHomeTopBg">@drawable/bg_me_home_top</item>
 
         <!--首页-数字银行资源属性-->
         <item name="homeBankTopBgIcon">@mipmap/bg_home_bank_top</item>

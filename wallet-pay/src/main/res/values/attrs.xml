@@ -97,6 +97,7 @@
     <attr name="meHomeWalletMenuIcon" format="reference" />
     <attr name="meHomeAddressMenuIcon" format="reference" />
     <attr name="meHomeSettingsMenuIcon" format="reference" />
+    <attr name="meHomeTopBg" format="reference" />
 
     <!--首页-数字银行资源属性-->
     <attr name="homeBankTopBgIcon" format="reference"/>
