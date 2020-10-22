@@ -13,6 +13,8 @@ class RecyclerViewItemDividers(
     val right: Int = 0,
     val onlyShowFirstTop: Boolean = false,
     val onlyShowLastBottom: Boolean = false,
+    val showFirstTop: Boolean = true,
+    val showLastBottom: Boolean = true,
     val context: Context = ContextProvider.getContext()
 ) : RecyclerView.ItemDecoration() {
 
@@ -25,11 +27,25 @@ class RecyclerViewItemDividers(
         super.getItemOffsets(outRect, view, parent, state)
         outRect.left = left
         outRect.right = right
-        if (!onlyShowFirstTop || parent.getChildAdapterPosition(view) == 0) {
-            outRect.top = top
+
+        if (onlyShowFirstTop) {
+            if (parent.getChildAdapterPosition(view) == 0) {
+                outRect.top = top
+            }
+        } else {
+            if (parent.getChildAdapterPosition(view) != 0 || showFirstTop) {
+                outRect.top = top
+            }
         }
-        if (!onlyShowLastBottom || parent.getChildAdapterPosition(view) == (parent.adapter!!.itemCount - 1)) {
-            outRect.bottom = bottom
+
+        if (onlyShowLastBottom) {
+            if (parent.getChildAdapterPosition(view) == parent.adapter!!.itemCount - 1) {
+                outRect.bottom = bottom
+            }
+        } else {
+            if (parent.getChildAdapterPosition(view) != parent.adapter!!.itemCount - 1 || showLastBottom) {
+                outRect.bottom = bottom
+            }
         }
     }
 }

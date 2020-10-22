@@ -11,4 +11,4 @@
     android:paddingEnd="@dimen/dp_6"
     android:scrollbars="vertical"
     tools:itemCount="2"
-    tools:listitem="@layout/item_market_select_popup" />
+    tools:listitem="@layout/item_market_pool_op_mode_select" />

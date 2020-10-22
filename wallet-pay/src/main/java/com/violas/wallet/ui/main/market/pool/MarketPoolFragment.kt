@@ -28,7 +28,6 @@ import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
-import com.violas.wallet.ui.main.market.MarketSelectPopup
 import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -310,7 +309,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     }
                 })
             .asCustom(
-                MarketSelectPopup(
+                MarketPoolOpModeSelectPopup(
                     requireContext(),
                     poolViewModel.getCurrOpModelPosition(),
                     mutableListOf(
@@ -388,11 +387,12 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     }
 
     private fun showSelectLiquidityPopup(displayTokenPairs: MutableList<String>) {
+        val list = mutableListOf<String>()
+        list.addAll(displayTokenPairs)
+        list.addAll(displayTokenPairs)
+        list.addAll(displayTokenPairs)
         selectLiquidityArrowAnimator.start()
         XPopup.Builder(requireContext())
-            .hasShadowBg(false)
-            .popupAnimation(PopupAnimation.ScrollAlphaFromTop)
-            .atView(llSelectGroupA)
             .setPopupCallback(
                 object : EnhancedPopupCallback() {
                     override fun onDismissBefore() {
@@ -400,10 +400,10 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     }
                 })
             .asCustom(
-                MarketSelectPopup(
+                MarketPoolLiquiditySelectPopup(
                     requireContext(),
                     poolViewModel.getCurrLiquidityPosition(),
-                    displayTokenPairs
+                    list
                 ) {
                     poolViewModel.selectLiquidity(it)
                 }
