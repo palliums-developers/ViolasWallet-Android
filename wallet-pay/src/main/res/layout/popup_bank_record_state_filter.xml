@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="?attr/colorSurface"
-    android:layout_height="wrap_content">
+    android:layout_height="@dimen/dp_406"
+    android:background="?attr/colorSurface">
 
     <View
         android:id="@+id/vTopView"
@@ -18,10 +18,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:maxHeight="@dimen/dp_400"
-        android:overScrollMode="never"
+        android:layout_height="@dimen/dp_0"
         android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/vTopView"

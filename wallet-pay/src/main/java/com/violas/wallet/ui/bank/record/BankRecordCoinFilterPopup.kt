@@ -58,7 +58,8 @@ class BankRecordCoinFilterPopup(
 
     override fun onCreate() {
         super.onCreate()
-        recyclerView.layoutManager = object : LinearLayoutManager(context) {
+        // 设置 recyclerView 最大高度
+        /*recyclerView.layoutManager = object : LinearLayoutManager(context) {
             override fun setMeasuredDimension(childrenBounds: Rect?, wSpec: Int, hSpec: Int) {
                 super.setMeasuredDimension(
                     childrenBounds,
@@ -69,7 +70,8 @@ class BankRecordCoinFilterPopup(
                     )
                 )
             }
-        }
+        }*/
+        recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter =
             ViewAdapter(dataList, checkedPosition) { position, text ->
                 dismiss()
