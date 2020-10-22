@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.View
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -49,6 +50,12 @@ class BankFragment : BaseFragment() {
         return R.layout.fragment_bank
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        clTopGroup.post { adapterViewHeight() }
+        initFragmentPager()
+    }
+
     override fun onResume() {
         StatusBarUtil.setLightStatusBarMode(requireActivity().window, false)
         super.onResume()
@@ -57,8 +64,6 @@ class BankFragment : BaseFragment() {
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
 
-        clTopGroup.post { adapterViewHeight() }
-        initFragmentPager()
         initEvent()
         initObserver()
     }
