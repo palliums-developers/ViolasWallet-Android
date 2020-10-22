@@ -171,5 +171,7 @@
     <attr name="bankDepositEarningTextColor" format="color" />
     <attr name="bankDepositEarningBgColor" format="color" />
     <attr name="bankDetailsTopBg" format="reference" />
+    <attr name="bankRecordCoinFilterTopBg" format="reference" />
+    <attr name="bankRecordStateFilterTopBg" format="reference" />
 
 </resources>

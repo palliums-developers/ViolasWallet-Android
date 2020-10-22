@@ -4,83 +4,87 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.bank.order.deposit.BankDepositOrderActivity">
+    tools:context=".ui.bank.record.BaseBankRecordActivity">
 
-    <RelativeLayout
-        android:id="@+id/rlCoinFilterWrapper"
-        android:layout_width="@dimen/dp_0"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBegin"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@id/rlStateFilterWrapper"
-        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/dp_89" />
+
+    <LinearLayout
+        android:id="@+id/llCoinFilter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/dp_25"
+        android:paddingTop="@dimen/dp_3"
+        android:paddingEnd="@dimen/dp_10"
+        android:paddingBottom="@dimen/dp_9"
+        app:layout_constraintEnd_toEndOf="@id/guidelineBegin"
+        app:layout_constraintStart_toStartOf="@id/guidelineBegin"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/llCoinFilter"
-            android:layout_width="@dimen/dp_132"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingTop="@dimen/dp_3"
-            android:paddingBottom="@dimen/dp_9">
+        <TextView
+            android:id="@+id/tvCoinFilterText"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_12"
+            android:includeFontPadding="false"
+            android:text="@string/all_currencies"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="@dimen/fs_12" />
 
-            <TextView
-                android:id="@+id/tvCoinFilterText"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/dp_12"
-                android:includeFontPadding="false"
-                android:text="@string/all_currencies"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/fs_12" />
+        <ImageView
+            android:id="@+id/ivCoinFilterArrow"
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_5"
+            android:src="?attr/iconTriangleArrow" />
 
-            <ImageView
-                android:id="@+id/ivCoinFilterArrow"
-                android:layout_width="@dimen/dp_10"
-                android:layout_height="@dimen/dp_10"
-                android:layout_marginStart="@dimen/dp_5"
-                android:src="?attr/iconTriangleArrow" />
+    </LinearLayout>
 
-        </LinearLayout>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rlStateFilterWrapper"
-        android:layout_width="@dimen/dp_0"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineEnd"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/rlCoinFilterWrapper"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/dp_116" />
+
+    <LinearLayout
+        android:id="@+id/llStateFilter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/dp_25"
+        android:paddingTop="@dimen/dp_3"
+        android:paddingEnd="@dimen/dp_10"
+        android:paddingBottom="@dimen/dp_9"
+        app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+        app:layout_constraintStart_toStartOf="@id/guidelineEnd"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/llStateFilter"
-            android:layout_width="@dimen/dp_132"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingTop="@dimen/dp_3"
-            android:paddingBottom="@dimen/dp_9">
+        <TextView
+            android:id="@+id/tvStateFilterText"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_12"
+            android:includeFontPadding="false"
+            android:text="@string/all_state"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="@dimen/fs_12" />
 
-            <TextView
-                android:id="@+id/tvStateFilterText"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/dp_12"
-                android:includeFontPadding="false"
-                android:text="@string/all_state"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/fs_12" />
+        <ImageView
+            android:id="@+id/ivStateFilterArrow"
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_5"
+            android:src="?attr/iconTriangleArrow" />
 
-            <ImageView
-                android:id="@+id/ivStateFilterArrow"
-                android:layout_width="@dimen/dp_10"
-                android:layout_height="@dimen/dp_10"
-                android:layout_marginStart="@dimen/dp_5"
-                android:src="?attr/iconTriangleArrow" />
-
-        </LinearLayout>
-
-    </RelativeLayout>
+    </LinearLayout>
 
     <View
         android:id="@+id/vDivider"
@@ -89,7 +93,7 @@
         android:background="?attr/colorSurfaceSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rlCoinFilterWrapper" />
+        app:layout_constraintTop_toBottomOf="@id/llCoinFilter" />
 
     <com.palliums.widget.refresh.DefaultRefreshLayout
         android:id="@+id/refreshLayout"

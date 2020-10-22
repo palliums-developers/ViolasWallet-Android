@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.lxj.xpopup.XPopup
-import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.utils.getResourceId
 import com.palliums.widget.popup.EnhancedPopupCallback
 import com.palliums.widget.refresh.IRefreshLayout
@@ -33,6 +32,9 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
             .setDuration(360)
     }
 
+    private var coinFilterPopup: BankRecordCoinFilterPopup? = null
+    private var stateFilterPopup: BankRecordStateFilterPopup? = null
+
     override fun getLayoutResId(): Int {
         return R.layout.activity_bank_record
     }
@@ -56,9 +58,17 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
         setStatusLayout(false)
 
         llCoinFilter.setOnClickListener {
+            if (coinFilterPopup?.isShow == true) {
+                coinFilterPopup?.dismiss()
+                return@setOnClickListener
+            }
             loadFilterDataOrShowFilterPopup(true)
         }
         llStateFilter.setOnClickListener {
+            if (stateFilterPopup?.isShow == true) {
+                stateFilterPopup?.dismiss()
+                return@setOnClickListener
+            }
             loadFilterDataOrShowFilterPopup(false)
         }
 
@@ -111,45 +121,75 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
 
         val currPosition = getCurrFilterLiveData(coinFilter).value?.first ?: 0
 
-        XPopup.Builder(this)
-            .hasShadowBg(false)
-            .popupAnimation(PopupAnimation.ScrollAlphaFromTop)
-            .atView(if (coinFilter) llCoinFilter else llStateFilter)
-            .setPopupCallback(
-                object : EnhancedPopupCallback() {
-                    override fun onDismissBefore() {
-                        if (coinFilter)
+        if (coinFilter) {
+            coinFilterPopup = XPopup.Builder(this)
+                .atView(llCoinFilter)
+                .setPopupCallback(
+                    object : EnhancedPopupCallback() {
+                        override fun onDismissBefore() {
                             coinFilterArrowAnimator.reverse()
-                        else
-                            stateFilterArrowAnimator.reverse()
-                    }
-                }
-            )
-            .asCustom(
-                BankRecordFilterPopup(
-                    this,
-                    filterData,
-                    currPosition
-                ) { position, text ->
-                    // 选择结果处理
-                    if (position != currPosition) {
-                        val currPositionAnother =
-                            getCurrFilterLiveData(!coinFilter).value?.first ?: 0
-                        if (currPosition == 0 && currPositionAnother == 0) {
-                            setStatusLayout(true)
-                        } else if (position == 0 && currPositionAnother == 0) {
-                            setStatusLayout(false)
                         }
 
-                        onChangeFilter(
-                            coinFilter,
-                            if (position != 0) Pair(position, text) else null
-                        )
+                        override fun onDismiss() {
+                            coinFilterPopup = null
+                        }
                     }
-                }
-            )
-            .show()
+                )
+                .asCustom(
+                    BankRecordCoinFilterPopup(
+                        this,
+                        filterData,
+                        currPosition
+                    ) { selPosition, text ->
+                        onSelectCallback(coinFilter, currPosition, selPosition, text)
+                    }
+                )
+                .show() as BankRecordCoinFilterPopup
+        } else {
+            stateFilterPopup = XPopup.Builder(this)
+                .atView(llStateFilter)
+                .setPopupCallback(
+                    object : EnhancedPopupCallback() {
+                        override fun onDismissBefore() {
+                            stateFilterArrowAnimator.reverse()
+                        }
+
+                        override fun onDismiss() {
+                            stateFilterPopup = null
+                        }
+                    }
+                )
+                .asCustom(
+                    BankRecordStateFilterPopup(
+                        this,
+                        filterData,
+                        currPosition
+                    ) { selPosition, text ->
+                        onSelectCallback(coinFilter, currPosition, selPosition, text)
+                    }
+                )
+                .show() as BankRecordStateFilterPopup
+        }
     }
+
+    private val onSelectCallback: (Boolean, Int, Int, String) -> Unit =
+        { coinFilter, currPosition, selPosition, text ->
+            // 选择结果处理
+            if (selPosition != currPosition) {
+                val currPositionAnother =
+                    getCurrFilterLiveData(!coinFilter).value?.first ?: 0
+                if (currPosition == 0 && currPositionAnother == 0) {
+                    setStatusLayout(true)
+                } else if (selPosition == 0 && currPositionAnother == 0) {
+                    setStatusLayout(false)
+                }
+
+                onChangeFilter(
+                    coinFilter,
+                    if (selPosition != 0) Pair(selPosition, text) else null
+                )
+            }
+        }
 
     abstract fun getCurrFilterLiveData(coinFilter: Boolean): MutableLiveData<Pair<Int, String>?>
 

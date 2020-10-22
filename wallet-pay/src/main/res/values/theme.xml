@@ -269,6 +269,8 @@
         <item name="bankDepositEarningTextColor">@color/color_13B788</item>
         <item name="bankDepositEarningBgColor">@color/color_13B788_06</item>
         <item name="bankDetailsTopBg">@mipmap/bg_bank_details_top</item>
+        <item name="bankRecordCoinFilterTopBg">@mipmap/bg_bank_record_coin_filter_top</item>
+        <item name="bankRecordStateFilterTopBg">@mipmap/bg_bank_record_state_filter_top</item>
     </style>
 
     <style name="ToolbarNavigationButtonStyle" parent="Widget.AppCompat.Toolbar.Button.Navigation">
