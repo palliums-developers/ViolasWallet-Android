@@ -387,10 +387,6 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     }
 
     private fun showSelectLiquidityPopup(displayTokenPairs: MutableList<String>) {
-        val list = mutableListOf<String>()
-        list.addAll(displayTokenPairs)
-        list.addAll(displayTokenPairs)
-        list.addAll(displayTokenPairs)
         selectLiquidityArrowAnimator.start()
         XPopup.Builder(requireContext())
             .setPopupCallback(
@@ -403,7 +399,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                 MarketPoolLiquiditySelectPopup(
                     requireContext(),
                     poolViewModel.getCurrLiquidityPosition(),
-                    list
+                    displayTokenPairs
                 ) {
                     poolViewModel.selectLiquidity(it)
                 }
