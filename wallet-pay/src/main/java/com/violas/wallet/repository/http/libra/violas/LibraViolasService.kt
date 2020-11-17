@@ -57,21 +57,23 @@ class LibraViolasService(
         val list = response.data!!.mapIndexed { index, dto ->
 
             // 解析交易状态
-            val transactionState = if (dto.status.equals("Executed", true))
-                TransactionState.SUCCESS
-            else
-                TransactionState.FAILURE
+            val transactionState =
+                if (dto.status.equals("Executed", true))
+                    TransactionState.SUCCESS
+                else
+                    TransactionState.FAILURE
 
             // 解析交易类型
-            val realTransactionType = if (dto.type == 0) {
-                TransactionType.ADD_CURRENCY
-            } else if (dto.sender != walletAddress && dto.receiver == walletAddress) {
-                TransactionType.COLLECTION
-            } else if (dto.sender == walletAddress && !dto.receiver.isNullOrBlank()) {
-                TransactionType.TRANSFER
-            } else {
-                TransactionType.OTHER
-            }
+            val realTransactionType =
+                if (dto.type.equals("ADD_CURRENCY_TO_ACCOUNT", true)) {
+                    TransactionType.ADD_CURRENCY
+                } else if (dto.sender != walletAddress && dto.receiver == walletAddress) {
+                    TransactionType.COLLECTION
+                } else if (dto.sender == walletAddress && dto.receiver.isNotBlank()) {
+                    TransactionType.TRANSFER
+                } else {
+                    TransactionType.OTHER
+                }
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,

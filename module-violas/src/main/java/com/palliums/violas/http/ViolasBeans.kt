@@ -58,18 +58,28 @@ data class CurrencyDTO(
 )
 
 data class TransactionRecordDTO(
-    val sender: String,
-    val receiver: String?,
-    val amount: String,
-    val currency: String,
-    val gas: String,
+    @SerializedName(value = "sender")
+    val sender: String = "",
+    @SerializedName(value = "receiver")
+    val receiver: String = "",
+    @SerializedName(value = "amount")
+    val amount: String = "",
+    @SerializedName(value = "currency")
+    val currency: String = "",
+    @SerializedName(value = "gas")
+    val gas: String = "",
     @SerializedName(value = "gas_currency")
-    val gasCurrency: String,
-    val expiration_time: Long,
-    val sequence_number: Long,
-    val version: Long,
-    val type: Int,
-    val status: String?
+    val gasCurrency: String = "",
+    @SerializedName(value = "expiration_time")
+    val expiration_time: Long = 0,
+    @SerializedName(value = "sequence_number")
+    val sequence_number: Long = 0,
+    @SerializedName(value = "version")
+    val version: Long = 0,
+    @SerializedName(value = "type")
+    val type: String = "",
+    @SerializedName(value = "status")
+    val status: String = ""
 )
 
 data class BalanceDTO(
