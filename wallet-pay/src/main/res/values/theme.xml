@@ -26,11 +26,10 @@
 
     <style name="Theme.APP.DayNight.Tertiary">
         <item name="android:windowBackground">@drawable/shape_win_bg_gradient</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
     </style>
 
     <style name="Theme.APP.DayNight.Secondary">
-        <item name="android:colorBackground">@color/color_F7F7F9</item>
+        <item name="android:windowBackground">?attr/colorSurfaceSecondary</item>
     </style>
 
     <style name="Theme.APP.DayNight" parent="Theme.APP" />
@@ -70,10 +69,7 @@
         <item name="android:windowBackground">?android:colorBackground</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@color/translucent</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
-        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
 
         <item name="android:screenOrientation">portrait</item>
         <item name="android:hyphenationFrequency" tools:ignore="NewApi">none</item>

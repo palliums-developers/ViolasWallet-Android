@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.APP.DayNight.Tertiary">
-        <item name="android:windowBackground">@drawable/shape_win_bg_gradient</item>
-    </style>
-
-    <style name="Theme.APP.DayNight.Secondary">
-<!--        <item name="android:colorBackground">@color/color_121212</item>-->
-        <item name="android:colorBackground">@color/color_F7F7F9</item>
-    </style>
-
     <style name="Theme.APP.DayNight" parent="Theme.APP" />
 
     <style name="Theme.APP.Dark" parent="Theme.APP">
@@ -29,7 +20,6 @@
         <item name="colorOnError">@color/black</item>
 
         <item name="android:windowBackground">?android:colorBackground</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
 
         <item name="actionOverflowButtonStyle">@style/ActionOverflowButtonStyle.Dark</item>
     </style>
