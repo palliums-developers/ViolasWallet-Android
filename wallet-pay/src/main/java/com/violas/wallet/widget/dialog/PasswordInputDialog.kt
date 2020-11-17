@@ -73,6 +73,11 @@ class PasswordInputDialog : DialogFragment() {
         return mRootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        showSoftInput(mRootView.editPassword)
+    }
+
     private fun showToast(msg: String) {
         Toast.makeText(
             context,
