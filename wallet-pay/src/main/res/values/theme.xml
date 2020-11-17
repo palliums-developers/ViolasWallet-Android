@@ -102,7 +102,7 @@
         <!--App custom attrs-->
         <!--App通用资源属性-->
         <item name="statusBarSize">@dimen/dp_24</item>
-        <item name="strokeThickness">@dimen/dp_0.5</item>
+        <item name="strokeThickness">@dimen/dp_0.8</item>
         <item name="dividerThickness">@dimen/dp_0.5</item>
 
         <item name="colorSurfaceSecondary">@color/color_F7F7F9</item>
