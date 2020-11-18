@@ -222,6 +222,8 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
     }
 
     private fun handleLoadFailure() {
+        if (recyclerView == null) return
+
         tokenAdapter.submitList(null)
         recyclerView.visibility = View.GONE
         statusLayout.showStatus(

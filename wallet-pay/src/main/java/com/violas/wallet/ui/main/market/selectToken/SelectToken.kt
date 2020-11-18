@@ -249,6 +249,8 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     private fun handleLoadFailure() {
+        if (recyclerView == null) return
+
         coinAdapter.submitList(null)
         recyclerView.visibility = View.GONE
         statusLayout.showStatus(
