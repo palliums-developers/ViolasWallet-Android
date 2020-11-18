@@ -38,7 +38,7 @@ class BankRecordCoinFilterPopup(
     override fun doAfterShow() {
         popupInfo?.xPopupCallback?.run {
             if (this is EnhancedPopupCallback) {
-                onShowBefore()
+                onShowBefore(this@BankRecordCoinFilterPopup)
             }
         }
 
@@ -48,7 +48,7 @@ class BankRecordCoinFilterPopup(
     override fun doAfterDismiss() {
         popupInfo?.xPopupCallback?.run {
             if (this is EnhancedPopupCallback) {
-                onDismissBefore()
+                onDismissBefore(this@BankRecordCoinFilterPopup)
             }
         }
 
@@ -74,8 +74,9 @@ class BankRecordCoinFilterPopup(
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter =
             ViewAdapter(dataList, checkedPosition) { position, text ->
-                dismiss()
-                selectCallback.invoke(position, text)
+                dismissWith {
+                    selectCallback.invoke(position, text)
+                }
             }
     }
 

@@ -10,6 +10,7 @@ import com.lxj.xpopup.core.BottomPopupView
 import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.utils.DensityUtility
+import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getString
 import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
@@ -42,15 +43,16 @@ class MarketPoolLiquiditySelectPopup(
 
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = ViewAdapter(dataList, checkedPosition) {
-            dismiss()
-            selectCallback.invoke(it)
+            dismissWith {
+                selectCallback.invoke(it)
+            }
         }
     }
 
     override fun doAfterShow() {
         popupInfo?.xPopupCallback?.run {
             if (this is EnhancedPopupCallback) {
-                onShowBefore()
+                onShowBefore(this@MarketPoolLiquiditySelectPopup)
             }
         }
 
@@ -60,7 +62,7 @@ class MarketPoolLiquiditySelectPopup(
     override fun doAfterDismiss() {
         popupInfo?.xPopupCallback?.run {
             if (this is EnhancedPopupCallback) {
-                onDismissBefore()
+                onDismissBefore(this@MarketPoolLiquiditySelectPopup)
             }
         }
 
@@ -101,6 +103,15 @@ class MarketPoolLiquiditySelectPopup(
         override fun onViewBind(itemPosition: Int, itemData: String?) {
             itemData?.let {
                 itemView.tvText.text = it
+                itemView.tvText.setTextColor(
+                    getColorByAttrId(
+                        if (itemPosition == checkedPosition)
+                            android.R.attr.textColor
+                        else
+                            android.R.attr.textColorTertiary,
+                        itemView.context
+                    )
+                )
                 itemView.tvText.typeface = Typeface.create(
                     getString(
                         if (itemPosition == checkedPosition)

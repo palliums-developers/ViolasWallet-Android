@@ -12,6 +12,7 @@ import com.lxj.xpopup.XPopup
 
 fun ImageView.viewImage(uri: Any) {
     XPopup.Builder(context)
+        .navigationBarColor(XPopup.getShadowBgColor())
         .asImageViewer(
             this,
             uri,

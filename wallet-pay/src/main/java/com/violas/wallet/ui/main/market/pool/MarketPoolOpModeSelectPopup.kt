@@ -36,7 +36,6 @@ class MarketPoolOpModeSelectPopup(
     override fun initPopupContent() {
         super.initPopupContent()
         if (!popupInfo.hasShadowBg && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            attachPopupContainer.setBackgroundColor(Color.TRANSPARENT)
             attachPopupContainer.elevation = 0f
         }
     }
@@ -49,8 +48,9 @@ class MarketPoolOpModeSelectPopup(
                 dataList,
                 checkedPosition
             ) {
-                dismiss()
-                selectCallback.invoke(it)
+                dismissWith {
+                    selectCallback.invoke(it)
+                }
             }
     }
 

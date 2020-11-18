@@ -1,5 +1,6 @@
 package com.palliums.widget.popup
 
+import com.lxj.xpopup.core.BasePopupView
 import com.lxj.xpopup.interfaces.SimpleCallback
 
 /**
@@ -10,11 +11,11 @@ import com.lxj.xpopup.interfaces.SimpleCallback
  */
 open class EnhancedPopupCallback: SimpleCallback() {
 
-    open fun onShowBefore() {
+    open fun onShowBefore(popupView: BasePopupView) {
 
     }
 
-    open fun onDismissBefore() {
+    open fun onDismissBefore(popupView: BasePopupView) {
 
     }
 }

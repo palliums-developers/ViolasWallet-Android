@@ -14,7 +14,7 @@ open class EnhancedAttachPopupView(context: Context) : AttachPopupView(context) 
     override fun doAfterShow() {
         popupInfo?.xPopupCallback?.run {
             if (this is EnhancedPopupCallback) {
-                onShowBefore()
+                onShowBefore(this@EnhancedAttachPopupView)
             }
         }
 
@@ -24,7 +24,7 @@ open class EnhancedAttachPopupView(context: Context) : AttachPopupView(context) 
     override fun doAfterDismiss() {
         popupInfo?.xPopupCallback?.run {
             if (this is EnhancedPopupCallback) {
-                onDismissBefore()
+                onDismissBefore(this@EnhancedAttachPopupView)
             }
         }
 

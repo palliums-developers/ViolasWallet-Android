@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.lxj.xpopup.XPopup
+import com.lxj.xpopup.core.BasePopupView
 import com.palliums.utils.getResourceId
 import com.palliums.widget.popup.EnhancedPopupCallback
 import com.palliums.widget.refresh.IRefreshLayout
@@ -123,14 +124,15 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
 
         if (coinFilter) {
             coinFilterPopup = XPopup.Builder(this)
+                .navigationBarColor(XPopup.getShadowBgColor())
                 .atView(llCoinFilter)
                 .setPopupCallback(
                     object : EnhancedPopupCallback() {
-                        override fun onDismissBefore() {
+                        override fun onDismissBefore(popupView: BasePopupView) {
                             coinFilterArrowAnimator.reverse()
                         }
 
-                        override fun onDismiss() {
+                        override fun onDismiss(popupView: BasePopupView) {
                             coinFilterPopup = null
                         }
                     }
@@ -147,14 +149,15 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
                 .show() as BankRecordCoinFilterPopup
         } else {
             stateFilterPopup = XPopup.Builder(this)
+                .navigationBarColor(XPopup.getShadowBgColor())
                 .atView(llStateFilter)
                 .setPopupCallback(
                     object : EnhancedPopupCallback() {
-                        override fun onDismissBefore() {
+                        override fun onDismissBefore(popupView: BasePopupView) {
                             stateFilterArrowAnimator.reverse()
                         }
 
-                        override fun onDismiss() {
+                        override fun onDismiss(popupView: BasePopupView) {
                             stateFilterPopup = null
                         }
                     }

@@ -9,12 +9,16 @@ import com.lxj.xpopup.impl.AttachListPopupView
  * <p>
  * desc: [AttachListPopupView] 加强版，支持在显示前和消失前回调
  */
-open class EnhancedAttachListPopupView(context: Context) : AttachListPopupView(context) {
+open class EnhancedAttachListPopupView(
+    context: Context,
+    bindLayoutId: Int = 0,
+    bindItemLayoutId: Int = 0
+) : AttachListPopupView(context, bindLayoutId, bindItemLayoutId) {
 
     override fun doAfterShow() {
         popupInfo?.xPopupCallback?.run {
             if (this is EnhancedPopupCallback) {
-                onShowBefore()
+                onShowBefore(this@EnhancedAttachListPopupView)
             }
         }
 
@@ -24,7 +28,7 @@ open class EnhancedAttachListPopupView(context: Context) : AttachListPopupView(c
     override fun doAfterDismiss() {
         popupInfo?.xPopupCallback?.run {
             if (this is EnhancedPopupCallback) {
-                onDismissBefore()
+                onDismissBefore(this@EnhancedAttachListPopupView)
             }
         }
 

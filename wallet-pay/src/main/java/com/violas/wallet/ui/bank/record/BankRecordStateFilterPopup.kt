@@ -38,7 +38,7 @@ class BankRecordStateFilterPopup(
     override fun doAfterShow() {
         popupInfo?.xPopupCallback?.run {
             if (this is EnhancedPopupCallback) {
-                onShowBefore()
+                onShowBefore(this@BankRecordStateFilterPopup)
             }
         }
 
@@ -48,7 +48,7 @@ class BankRecordStateFilterPopup(
     override fun doAfterDismiss() {
         popupInfo?.xPopupCallback?.run {
             if (this is EnhancedPopupCallback) {
-                onDismissBefore()
+                onDismissBefore(this@BankRecordStateFilterPopup)
             }
         }
 
@@ -73,8 +73,9 @@ class BankRecordStateFilterPopup(
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter =
             ViewAdapter(dataList, checkedPosition) { position, text ->
-                dismiss()
-                selectCallback.invoke(position, text)
+                dismissWith {
+                    selectCallback.invoke(position, text)
+                }
             }
     }
 

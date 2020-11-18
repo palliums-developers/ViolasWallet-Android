@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.main.market.pool
 
 import android.animation.ObjectAnimator
+import android.graphics.Color
 import android.os.Bundle
 import android.text.AmountInputFilter
 import android.text.InputType
@@ -14,6 +15,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.lxj.xpopup.XPopup
+import com.lxj.xpopup.core.BasePopupView
 import com.lxj.xpopup.enums.PopupAnimation
 import com.palliums.base.BaseFragment
 import com.palliums.extensions.expandTouchArea
@@ -303,7 +305,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             .atView(llSwitchOpModeGroup)
             .setPopupCallback(
                 object : EnhancedPopupCallback() {
-                    override fun onDismissBefore() {
+                    override fun onDismissBefore(popupView: BasePopupView) {
                         //setSwitchOpModeViewBgAndTextColor(false)
                         switchOpModeArrowAnimator.reverse()
                     }
@@ -389,14 +391,10 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     private fun showSelectLiquidityPopup(displayTokenPairs: MutableList<String>) {
         selectLiquidityArrowAnimator.start()
         XPopup.Builder(requireContext())
-            .apply {
-                if (StatusBarUtil.isNavigationBarVisible(requireActivity())) {
-                    offsetY(-StatusBarUtil.getNavigationBarHeight())
-                }
-            }
+            .navigationBarColor(XPopup.getShadowBgColor())
             .setPopupCallback(
                 object : EnhancedPopupCallback() {
-                    override fun onDismissBefore() {
+                    override fun onDismissBefore(popupView: BasePopupView) {
                         selectLiquidityArrowAnimator.reverse()
                     }
                 })

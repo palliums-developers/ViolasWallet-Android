@@ -35,7 +35,6 @@ class MenuPopup(
     override fun initPopupContent() {
         super.initPopupContent()
         if (!popupInfo.hasShadowBg && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            attachPopupContainer.setBackgroundColor(Color.TRANSPARENT)
             attachPopupContainer.elevation = 0f
         }
     }
@@ -44,8 +43,9 @@ class MenuPopup(
         super.onCreate()
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = ViewAdapter(dataList) {
-            dismiss()
-            selectCallback.invoke(it)
+            dismissWith {
+                selectCallback.invoke(it)
+            }
         }
     }
 

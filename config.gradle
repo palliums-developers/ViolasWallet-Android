@@ -84,7 +84,7 @@ ext {
             StatusBarCompat                        : '2.3.3',
             fragmentationx                         : '1.0.1',
             smartrefresh                           : '1.1.0',
-            xpopup                                 : '1.8.8-x',
+            xpopup                                 : '2.2.0',
             android_crop                           : '1.0.1@aar',
             easypermissions                        : '3.0.0',
             autosize                               : '1.1.2',
