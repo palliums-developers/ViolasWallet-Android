@@ -4,14 +4,14 @@ import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Context
 import android.os.Build
+import android.provider.Settings
 import android.text.TextUtils
-import android.view.View
-import android.view.Window
-import android.view.WindowManager
+import android.view.*
 import com.palliums.content.ContextProvider
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.lang.reflect.Method
 
 /**
  * Created by elephant on 2019-11-14 09:50.
@@ -26,6 +26,69 @@ class StatusBarUtil {
         private var mIsMeiZu = false
         private var mIsGet = false
 
+        fun getNavigationBarHeight(context: Context = ContextProvider.getContext()): Int {
+            val resId = context.resources.getIdentifier(
+                "navigation_bar_height", "dimen", "android"
+            )
+            return if (resId != 0)
+                context.resources.getDimensionPixelSize(resId)
+            else
+                0
+        }
+
+        fun isNavigationBarVisible(activity: Activity): Boolean {
+            try {
+                var isVisible: Boolean
+
+                val resId = activity.resources.getIdentifier(
+                    "config_showNavigationBar", "bool", "android"
+                )
+                if (resId != 0) {
+                    isVisible = activity.resources.getBoolean(resId)
+                    try {
+                        val systemPropertiesClass =
+                            Class.forName("android.os.SystemProperties")
+                        val getMethod: Method =
+                            systemPropertiesClass.getMethod("get", String::class.java)
+                        val navBarOverride =
+                            getMethod.invoke(systemPropertiesClass, "qemu.hw.mainkeys") as String
+
+                        isVisible = when (navBarOverride) {
+                            "1" -> false
+                            "0" -> true
+                            else -> isVisible
+                        }
+                    } catch (e: Exception) {
+                    }
+                } else {
+                    isVisible = !ViewConfiguration.get(activity).hasPermanentMenuKey()
+                }
+
+
+                if (isVisible) {
+                    if (isSamsung()
+                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                    ) {
+                        try {
+                            return Settings.Global.getInt(
+                                activity.contentResolver,
+                                "navigationbar_hide_bar_enabled"
+                            ) == 0
+                        } catch (e: Exception) {
+                        }
+                    }
+
+                    isVisible =
+                        activity.window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION == 0
+                }
+
+                return isVisible
+            } catch (e: Exception) {
+                return false
+            }
+        }
+
         /**
          * 获取状态栏高度
          */
@@ -35,8 +98,8 @@ class StatusBarUtil {
             val resId = context.resources.getIdentifier(
                 "status_bar_height", "dimen", "android"
             )
-            if (resId > 0) {
-                result = context.resources.getDimensionPixelOffset(resId)
+            if (resId != 0) {
+                result = context.resources.getDimensionPixelSize(resId)
             }
             return result
         }
@@ -169,6 +232,11 @@ class StatusBarUtil {
             }
 
             return mIsMeiZu
+        }
+
+        private fun isSamsung(): Boolean {
+            return Build.BRAND.equals("samsung", true)
+                    || Build.MANUFACTURER.equals("samsung", true)
         }
 
         private fun getSystemProperty(propName: String): String? {

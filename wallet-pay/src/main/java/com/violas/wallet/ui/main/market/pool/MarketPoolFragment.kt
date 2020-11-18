@@ -389,6 +389,11 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     private fun showSelectLiquidityPopup(displayTokenPairs: MutableList<String>) {
         selectLiquidityArrowAnimator.start()
         XPopup.Builder(requireContext())
+            .apply {
+                if (StatusBarUtil.isNavigationBarVisible(requireActivity())) {
+                    offsetY(-StatusBarUtil.getNavigationBarHeight())
+                }
+            }
             .setPopupCallback(
                 object : EnhancedPopupCallback() {
                     override fun onDismissBefore() {
@@ -714,9 +719,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
                     tvBalanceA.text = getString(
                         R.string.market_token_balance_format,
-                        "${convertAmountToDisplayAmountStr(
-                            coinABalance
-                        )} ${coinA.displayName}"
+                        "${convertAmountToDisplayAmountStr(coinABalance)} ${coinA.displayName}"
                     )
                 }
             }
@@ -735,9 +738,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
                     tvBalanceB.text = getString(
                         R.string.market_token_balance_format,
-                        "${convertAmountToDisplayAmountStr(
-                            coinBBalance
-                        )} ${coinB.displayName}"
+                        "${convertAmountToDisplayAmountStr(coinBBalance)} ${coinB.displayName}"
                     )
                 }
             }
