@@ -302,9 +302,9 @@ abstract class BaseActivity : SupportActivity(), View.OnClickListener, ViewContr
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 window.decorView.systemUiVisibility = if (darkMode)
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                    window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                 else
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
             }
         } catch (e: Exception) {
             e.printStackTrace()

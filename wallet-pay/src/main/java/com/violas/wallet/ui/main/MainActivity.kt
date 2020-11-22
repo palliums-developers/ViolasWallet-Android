@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.palliums.extensions.clearLongPressToast
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
+import com.palliums.utils.setSystemBar
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bip32.ExtendedKey
@@ -20,7 +21,6 @@ import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.MnemonicException
-import com.violas.wallet.common.Vm
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
 import com.violas.wallet.ui.main.bank.BankFragment
@@ -32,7 +32,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import org.palliums.libracore.mnemonic.Mnemonic
 
 class MainActivity : BaseAppActivity() {
 
@@ -56,6 +55,7 @@ class MainActivity : BaseAppActivity() {
     private var mQuitTimePoint: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.setSystemBar(lightModeStatusBar = false, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
 
         EventBus.getDefault().register(this)

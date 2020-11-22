@@ -69,15 +69,18 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
                 WindowManager.LayoutParams.MATCH_PARENT
             )
 
-            it.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-
-            it.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-
             it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            it.setSystemBar(
+                layoutToStatusBar = true,
+                layoutToNavigationBar = true,
+                lightModeStatusBar = false,
+                lightModeNavigationBar = false,
+                statusBarColorBelowM = Color.RED,
+                hideStatusBar = false,
+                hideNavigationBar = true,
+                immersiveStickyMode = true
+            )
         }
 
         dialog?.setCancelable(true)

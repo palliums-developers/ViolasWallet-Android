@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.palliums.content.App
+import com.palliums.utils.setSystemBar
 import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bitcoin.script.Script
 import com.violas.wallet.R
@@ -98,6 +99,7 @@ class WalletConnectActivity : BaseAppActivity() {
     override fun getTitleStyle() = PAGE_STYLE_NOT_TITLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
 
         launch(Dispatchers.IO) {

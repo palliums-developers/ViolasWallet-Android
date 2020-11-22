@@ -13,6 +13,7 @@ import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.View
 import com.palliums.utils.getColorByAttrId
+import com.palliums.utils.setSystemBar
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -63,6 +64,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
     override fun getTitleStyle() = PAGE_STYLE_NOT_TITLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
 
         launch {

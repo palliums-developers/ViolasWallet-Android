@@ -67,7 +67,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
     }
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_TERTIARY
+        return PAGE_STYLE_CUSTOM
     }
 
     override fun onTitleRightViewClick() {
@@ -76,10 +76,13 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
 
     // <editor-fold defaultState="collapsed" desc="初始化View、Event、Observer">
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.setSystemBar(lightModeStatusBar = false, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
 
         // 设置页面
-        StatusBarUtil.setLightStatusBarMode(window, false)
+        setTitleLeftImageResource(getResourceId(R.attr.iconBackSecondary, this))
+        setTitleRightTextColor(getResourceId(R.attr.colorOnPrimary, this))
+        titleColor = getResourceId(R.attr.colorOnPrimary, this)
         setTopBackgroundResource(getResourceId(R.attr.homeFragmentTopBg, this))
         setTitleRightImageResource(getResourceId(R.attr.iconRecordSecondary, this))
         setTitle(R.string.mapping)
@@ -430,9 +433,11 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
                     )
 
                     tvBalance.text =
-                        "${convertAmountToDisplayAmountStr(
-                            coinBalance, coinType
-                        )} ${coinPair.fromCoin.assets.displayName}"
+                        "${
+                            convertAmountToDisplayAmountStr(
+                                coinBalance, coinType
+                            )
+                        } ${coinPair.fromCoin.assets.displayName}"
                 }
             }
         }

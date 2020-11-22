@@ -3,6 +3,7 @@ package com.violas.wallet.ui.identity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import com.palliums.utils.setSystemBar
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
@@ -25,6 +26,7 @@ class IdentityActivity : BaseAppActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.setSystemBar(lightModeStatusBar = false, lightModeNavigationBar = false)
         super.onCreate(savedInstanceState)
 
         btnCreate.setOnClickListener {

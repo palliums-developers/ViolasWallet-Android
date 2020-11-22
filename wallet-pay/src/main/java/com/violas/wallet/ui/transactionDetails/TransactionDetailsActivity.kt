@@ -62,7 +62,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     private var mLoadingDialog: LoadingDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        StatusBarUtil.layoutExtendsToStatusBar(window)
+        window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_transaction_details)

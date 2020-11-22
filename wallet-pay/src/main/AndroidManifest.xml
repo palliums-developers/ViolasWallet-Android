@@ -23,7 +23,7 @@
         <activity
             android:name=".ui.launch.LaunchActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.APP.DayNight.Launcher">
+            android:theme="@style/Theme.APP.DayNight.Tertiary.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -146,21 +146,21 @@
         <activity
             android:name=".ui.webManagement.LoginWebActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.APP.DayNight.WalletConnect" />
+            android:theme="@style/Theme.APP.DayNight.Secondary.WalletConnect" />
         <activity
             android:name=".ui.walletconnect.WalletConnectManagerActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.APP.DayNight.WalletConnect" />
+            android:theme="@style/Theme.APP.DayNight.Secondary.WalletConnect" />
         <activity
             android:name=".ui.walletconnect.WalletConnectActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.APP.DayNight.WalletConnect" />
+            android:theme="@style/Theme.APP.DayNight.Secondary.WalletConnect" />
         <activity
             android:name=".ui.walletconnect.WalletConnectAuthorizationActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.APP.DayNight.WalletConnect" />
+            android:theme="@style/Theme.APP.DayNight.Secondary.WalletConnect" />
         <activity
             android:name=".ui.market.MyPoolActivity"
             android:screenOrientation="portrait" />

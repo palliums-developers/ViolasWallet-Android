@@ -3,6 +3,7 @@ package com.violas.wallet.ui.walletconnect
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import com.palliums.utils.setSystemBar
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.walletconnect.WalletConnect
@@ -25,6 +26,7 @@ class WalletConnectManagerActivity : BaseAppActivity() {
     override fun getTitleStyle() = PAGE_STYLE_NOT_TITLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
 
         btnLogout.setOnClickListener {

@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.IntDef
 import com.palliums.base.BaseActivity
-import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getResourceId
+import com.palliums.utils.setSystemBar
 import com.violas.wallet.R
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 
@@ -21,10 +21,8 @@ abstract class BaseAppActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 布局延伸到状态栏中
-        StatusBarUtil.layoutExtendsToStatusBar(window)
+        setSystemBar(getTitleStyle())
         super.onCreate(savedInstanceState)
-
         setTitleStyle(getTitleStyle())
     }
 
@@ -41,6 +39,14 @@ abstract class BaseAppActivity : BaseActivity() {
         PAGE_STYLE_CUSTOM
     )
     annotation class TitleStyle
+
+    private fun setSystemBar(@TitleStyle style: Int) {
+        if (style == PAGE_STYLE_PRIMARY || style == PAGE_STYLE_SECONDARY) {
+            window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
+        } else if (style == PAGE_STYLE_TERTIARY) {
+            window.setSystemBar(lightModeStatusBar = false, lightModeNavigationBar = false)
+        }
+    }
 
     private fun setTitleStyle(@TitleStyle style: Int) {
         when (style) {

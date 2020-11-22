@@ -87,6 +87,11 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
     private var mLoadingDialog: LoadingDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.setSystemBar(
+            layoutToStatusBar = false,
+            lightModeStatusBar = true,
+            lightModeNavigationBar = true
+        )
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_token_details)

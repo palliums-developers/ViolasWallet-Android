@@ -1,8 +1,8 @@
 package com.violas.wallet.ui.launch
 
 import android.os.Bundle
-import android.view.View
 import com.palliums.content.App
+import com.palliums.utils.setSystemBar
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_MSG_TXID
@@ -37,13 +37,16 @@ class LaunchActivity : BaseAppActivity() {
             return
         }
 
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 
+        window.setSystemBar(
+            layoutToStatusBar = true,
+            layoutToNavigationBar = true,
+            lightModeStatusBar = false,
+            lightModeNavigationBar = false,
+            hideStatusBar = true,
+            hideNavigationBar = true,
+            immersiveStickyMode = true
+        )
         super.onCreate(savedInstanceState)
 
         launch(Dispatchers.Main) {

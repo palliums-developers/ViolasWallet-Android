@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseActivity
 import com.palliums.base.BaseFragment
 import com.palliums.base.BaseViewModel
+import com.palliums.utils.setSystemBar
 import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
@@ -65,7 +66,7 @@ class LoginWebActivity : BaseViewModelActivity() {
     }
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_CUSTOM
+        return PAGE_STYLE_NOT_TITLE
     }
 
     override fun getViewModel(): BaseViewModel {
@@ -80,11 +81,8 @@ class LoginWebActivity : BaseViewModelActivity() {
         }
 
         mSessionId = sessionId
+        window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
-
-        setStatusBarMode(true)
-        setRootBackgroundColor(R.color.def_activity_vice_bg)
-        setTitleLeftViewVisibility(View.GONE)
 
         btnConfirmLogin.setOnClickListener {
             login()
