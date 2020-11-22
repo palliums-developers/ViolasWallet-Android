@@ -394,8 +394,16 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             .navigationBarColor(XPopup.getShadowBgColor())
             .setPopupCallback(
                 object : EnhancedPopupCallback() {
+                    override fun onShowBefore(popupView: BasePopupView) {
+                        activity?.window?.darkModeNavigationBar()
+                    }
+
                     override fun onDismissBefore(popupView: BasePopupView) {
                         selectLiquidityArrowAnimator.reverse()
+                    }
+
+                    override fun onDismiss(popupView: BasePopupView?) {
+                        activity?.window?.lightModeNavigationBar()
                     }
                 })
             .asCustom(

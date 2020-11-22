@@ -7,7 +7,9 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.core.BasePopupView
+import com.palliums.utils.darkModeNavigationBar
 import com.palliums.utils.getResourceId
+import com.palliums.utils.lightModeNavigationBar
 import com.palliums.widget.popup.EnhancedPopupCallback
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
@@ -128,11 +130,16 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
                 .atView(llCoinFilter)
                 .setPopupCallback(
                     object : EnhancedPopupCallback() {
+                        override fun onShowBefore(popupView: BasePopupView) {
+                            window.darkModeNavigationBar()
+                        }
+
                         override fun onDismissBefore(popupView: BasePopupView) {
                             coinFilterArrowAnimator.reverse()
                         }
 
                         override fun onDismiss(popupView: BasePopupView) {
+                            window.lightModeNavigationBar()
                             coinFilterPopup = null
                         }
                     }
@@ -153,11 +160,16 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
                 .atView(llStateFilter)
                 .setPopupCallback(
                     object : EnhancedPopupCallback() {
+                        override fun onShowBefore(popupView: BasePopupView) {
+                            window.darkModeNavigationBar()
+                        }
+
                         override fun onDismissBefore(popupView: BasePopupView) {
                             stateFilterArrowAnimator.reverse()
                         }
 
                         override fun onDismiss(popupView: BasePopupView) {
+                            window.lightModeNavigationBar()
                             stateFilterPopup = null
                         }
                     }
