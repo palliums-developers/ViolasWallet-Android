@@ -11,14 +11,14 @@
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_39"
-        android:layout_marginTop="@dimen/dp_90"
         android:background="?attr/transDetailsTransInfoBg"
         android:paddingHorizontal="@dimen/dp_24"
         android:paddingTop="@dimen/dp_40"
         android:paddingBottom="@dimen/dp_34"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_marginTop="@dimen/dp_78">
 
         <ImageView
             android:id="@+id/ivState"

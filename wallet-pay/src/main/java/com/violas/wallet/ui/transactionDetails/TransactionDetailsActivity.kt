@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.Menu
@@ -87,8 +88,12 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.app_bar_share -> {
+                var marginTop = clTransactionInfo.y
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+                    marginTop -= StatusBarUtil.getStatusBarHeight() + DensityUtility.dp2px(this, 12)
+
                 ShareTransactionDetailsDialog.start(
-                    supportFragmentManager, mTransactionRecord, clTransactionInfo.y
+                    supportFragmentManager, mTransactionRecord, marginTop
                 ) {
                     when (it) {
                         0 -> checkStoragePermission()
