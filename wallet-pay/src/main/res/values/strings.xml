@@ -572,4 +572,6 @@
     <string name="update_notification_channel_name">版本更新</string>
 
     <string name="message_center">消息中心</string>
+    <string name="hint_eth_mapping">如何映射 ETH 代币？</string>
+    <string name="hint_eth_violas_content">将链接复制到以下钱包，即可将ETH代币映射至violas钱包</string>
 </resources>
