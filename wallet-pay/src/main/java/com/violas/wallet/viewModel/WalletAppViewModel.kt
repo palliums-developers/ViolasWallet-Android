@@ -45,6 +45,15 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
     fun isExistsAccount() = mExistsAccountLiveData.value == true
 
     fun refreshAssetsList(isFirst: Boolean = false) = launch(Dispatchers.IO) {
+        val existsAccount = try {
+            mAccountManager.getDefaultAccount()
+            true
+        } catch (e: Exception) {
+            false
+        }
+        if (mExistsAccountLiveData.value != existsAccount)
+            mExistsAccountLiveData.postValue(existsAccount)
+
         if (mDataRefreshingLiveData.value == true) {
             return@launch
         }
@@ -52,17 +61,18 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         mDataRefreshingLiveData.postValue(true)
         var localAssets = mAccountManager.getLocalAssets()
         if (localAssets.isEmpty()) {
-            mExistsAccountLiveData.postValue(false)
             mAssetsListLiveData.postValue(arrayListOf())
         } else {
-            mExistsAccountLiveData.postValue(true)
             if (isFirst) {
                 mAssetsListLiveData.postValue(localAssets)
             }
+
             localAssets = mAccountManager.refreshAssetsAmount(localAssets)
             Log.d("==assets==", "WalletFragment AssetsList Refresh")
             mAssetsListLiveData.postValue(localAssets) // todo 尝试效果再决定是否删除
+
             CommandActuator.post(SaveAssetsAllBalanceCommand())
+
             if (isFirst) {
                 localAssets = mAccountManager.refreshFiatAssetsAmount(localAssets)
                 mAssetsListLiveData.postValue(localAssets)
