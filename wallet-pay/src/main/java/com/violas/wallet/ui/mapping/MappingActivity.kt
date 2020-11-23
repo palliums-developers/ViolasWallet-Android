@@ -31,10 +31,7 @@ import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.ui.main.market.selectToken.CoinsBridge
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_MAPPING_SELECT
-import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.convertAmountToDisplayAmountStr
-import com.violas.wallet.utils.convertDisplayAmountToAmount
-import com.violas.wallet.utils.str2CoinType
+import com.violas.wallet.utils.*
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.activity_mapping.*
@@ -104,6 +101,11 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
             clearInputBoxFocusAndHideSoftInput()
             if (mappingPreconditionsInvalid()) return@setOnClickListener
             authenticateAccount()
+        }
+
+        tvDappUrl.setOnClickListener {
+            ClipboardUtils.copy(this, tvDappUrl.text.toString())
+            showToast(R.string.copy_success)
         }
 
         // 数据观察
