@@ -115,9 +115,6 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
             IStatusLayout.Status.STATUS_EMPTY,
             getString(R.string.tips_no_address)
         )
-        getDrawable(R.mipmap.ic_no_address)?.let {
-            getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
-        }
 
         mViewModel.execute(mCoinType)
     }
