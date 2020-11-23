@@ -76,7 +76,6 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
                 layoutToNavigationBar = true,
                 lightModeStatusBar = false,
                 lightModeNavigationBar = false,
-                statusBarColorBelowM = Color.RED,
                 hideStatusBar = false,
                 hideNavigationBar = true,
                 immersiveStickyMode = true

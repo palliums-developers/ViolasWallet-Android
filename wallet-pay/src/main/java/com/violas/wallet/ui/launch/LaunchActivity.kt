@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.launch
 
+import android.graphics.Color
 import android.os.Bundle
 import com.palliums.content.App
 import com.palliums.utils.setSystemBar
@@ -43,9 +44,8 @@ class LaunchActivity : BaseAppActivity() {
             layoutToNavigationBar = true,
             lightModeStatusBar = false,
             lightModeNavigationBar = false,
-            hideStatusBar = true,
-            hideNavigationBar = true,
-            immersiveStickyMode = true
+            statusBarColorBelowM = Color.TRANSPARENT,
+            navigationBarColorBelowO = Color.TRANSPARENT
         )
         super.onCreate(savedInstanceState)
 
