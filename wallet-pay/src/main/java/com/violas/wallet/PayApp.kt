@@ -3,11 +3,13 @@ package com.violas.wallet
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.google.firebase.iid.FirebaseInstanceId
+import com.lxj.xpopup.XPopup
 import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.analytics.Analytics
 import com.microsoft.appcenter.crashes.AbstractCrashesListener
@@ -17,6 +19,7 @@ import com.palliums.content.App
 import com.palliums.extensions.createNotificationChannel
 import com.palliums.extensions.getNotificationManager
 import com.palliums.extensions.logDebug
+import com.palliums.utils.getColorByAttrId
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.viewModel.WalletConnectViewModel
 
@@ -32,6 +35,12 @@ class PayApp : App() {
         resetWalletConnect()
 
         initNotification()
+        initXPopup()
+    }
+
+    private fun initXPopup() {
+        XPopup.setPrimaryColor(getColorByAttrId(R.attr.colorPrimary, this))
+        XPopup.setShadowBgColor(Color.parseColor("#98000000"))
     }
 
     private fun initNotification() {

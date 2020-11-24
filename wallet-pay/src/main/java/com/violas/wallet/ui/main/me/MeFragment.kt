@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.palliums.base.BaseFragment
-import com.palliums.utils.StatusBarUtil
 import com.violas.wallet.R
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.addressBook.AddressBookActivity
@@ -50,10 +49,5 @@ class MeFragment : BaseFragment() {
                 startActivity(Intent(_mActivity, SettingActivity::class.java))
             }
         }
-    }
-
-    override fun onResume() {
-        StatusBarUtil.setLightStatusBarMode(requireActivity().window, true)
-        super.onResume()
     }
 }

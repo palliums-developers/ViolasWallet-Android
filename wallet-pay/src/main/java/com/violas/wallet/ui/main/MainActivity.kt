@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.palliums.extensions.clearLongPressToast
 import com.palliums.utils.DensityUtility
+import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getResourceId
 import com.palliums.utils.setSystemBar
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
@@ -76,15 +77,19 @@ class MainActivity : BaseAppActivity() {
             resetToDefaultIcon()
             when (it.itemId) {
                 R.id.tab_wallet -> {
+                    StatusBarUtil.setLightStatusBarMode(window, false)
                     it.setIcon(getResourceId(R.attr.homeBottomWalletTabSelectedIcon, this))
                 }
                 R.id.tab_market -> {
+                    StatusBarUtil.setLightStatusBarMode(window, true)
                     it.setIcon(getResourceId(R.attr.homeBottomMarketTabSelectedIcon, this))
                 }
                 R.id.tab_bank -> {
+                    StatusBarUtil.setLightStatusBarMode(window, false)
                     it.setIcon(getResourceId(R.attr.homeBottomBankTabSelectedIcon, this))
                 }
                 R.id.tab_me -> {
+                    StatusBarUtil.setLightStatusBarMode(window, true)
                     it.setIcon(getResourceId(R.attr.homeBottomMeTabSelectedIcon, this))
                 }
             }

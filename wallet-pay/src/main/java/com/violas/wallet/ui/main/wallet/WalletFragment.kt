@@ -403,11 +403,6 @@ class WalletFragment : BaseFragment() {
         cancel()
         super.onDestroy()
     }
-
-    override fun onResume() {
-        StatusBarUtil.setLightStatusBarMode(requireActivity().window, false)
-        super.onResume()
-    }
 }
 
 class AssertAdapter(

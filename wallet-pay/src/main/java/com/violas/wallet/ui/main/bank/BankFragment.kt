@@ -56,11 +56,6 @@ class BankFragment : BaseFragment() {
         initFragmentPager()
     }
 
-    override fun onResume() {
-        StatusBarUtil.setLightStatusBarMode(requireActivity().window, false)
-        super.onResume()
-    }
-
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
 

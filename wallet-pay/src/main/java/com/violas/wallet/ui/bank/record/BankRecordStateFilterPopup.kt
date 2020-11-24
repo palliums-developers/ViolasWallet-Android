@@ -12,7 +12,6 @@ import com.lxj.xpopup.impl.PartShadowPopupView
 import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.utils.DensityUtility
-import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.item_bank_record_state_filter.view.*
 import kotlinx.android.synthetic.main.popup_bank_record_state_filter.view.*
@@ -33,26 +32,6 @@ class BankRecordStateFilterPopup(
 
     override fun getImplLayoutId(): Int {
         return R.layout.popup_bank_record_state_filter
-    }
-
-    override fun doAfterShow() {
-        popupInfo?.xPopupCallback?.run {
-            if (this is EnhancedPopupCallback) {
-                onShowBefore(this@BankRecordStateFilterPopup)
-            }
-        }
-
-        super.doAfterShow()
-    }
-
-    override fun doAfterDismiss() {
-        popupInfo?.xPopupCallback?.run {
-            if (this is EnhancedPopupCallback) {
-                onDismissBefore(this@BankRecordStateFilterPopup)
-            }
-        }
-
-        super.doAfterDismiss()
     }
 
     override fun onCreate() {

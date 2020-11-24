@@ -2,15 +2,14 @@ package com.violas.wallet.widget.popup
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.lxj.xpopup.core.AttachPopupView
 import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
-import com.palliums.widget.popup.EnhancedAttachPopupView
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.item_menu_popup.view.*
 import kotlinx.android.synthetic.main.popup_menu.view.*
@@ -26,7 +25,7 @@ class MenuPopup(
     context: Context,
     private val dataList: MutableList<Pair<Int, Int>>,
     private val selectCallback: (Int) -> Unit
-) : EnhancedAttachPopupView(context) {
+) : AttachPopupView(context) {
 
     override fun getImplLayoutId(): Int {
         return R.layout.popup_menu

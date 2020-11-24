@@ -19,7 +19,7 @@ import android.view.WindowManager
  * @param layoutToStatusBar         拓展布局到状态栏后面
  * @param layoutToNavigationBar     拓展布局到导航栏后面
  * @param lightModeStatusBar        浅色模式状态栏，支持6.0系统及以上，6.0系统以下为深色模式状态栏
- * @param lightModeNavigationBar    浅色模式导航栏，支持8.0系统及以上，8.0系统以下为深色模式状态栏
+ * @param lightModeNavigationBar    浅色模式导航栏，支持8.0系统及以上，8.0系统以下为深色模式导航栏
  * @param statusBarColorAboveM      6.0系统及以上的状态栏的颜色
  * @param navigationBarColorAboveO  8.0系统及以上的导航栏的颜色
  * @param statusBarColorBelowM      6.0系统以下的状态栏的颜色

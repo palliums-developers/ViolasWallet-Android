@@ -184,9 +184,4 @@ class MarketFragment : BaseFragment() {
         EventBus.getDefault().unregister(this)
         super.onDestroyView()
     }
-
-    override fun onResume() {
-        StatusBarUtil.setLightStatusBarMode(requireActivity().window, true)
-        super.onResume()
-    }
 }

@@ -2,15 +2,14 @@ package com.violas.wallet.ui.main.market.pool
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.lxj.xpopup.core.AttachPopupView
 import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
-import com.palliums.widget.popup.EnhancedAttachPopupView
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.item_market_pool_op_mode_select.view.*
 import kotlinx.android.synthetic.main.popup_market_pool_op_mode_select.view.*
@@ -27,7 +26,7 @@ class MarketPoolOpModeSelectPopup(
     private val checkedPosition: Int,
     private val dataList: MutableList<String>,
     private val selectCallback: (Int) -> Unit
-) : EnhancedAttachPopupView(context) {
+) : AttachPopupView(context) {
 
     override fun getImplLayoutId(): Int {
         return R.layout.popup_market_pool_op_mode_select

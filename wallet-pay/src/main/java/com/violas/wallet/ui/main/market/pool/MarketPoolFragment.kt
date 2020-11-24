@@ -1,7 +1,6 @@
 package com.violas.wallet.ui.main.market.pool
 
 import android.animation.ObjectAnimator
-import android.graphics.Color
 import android.os.Bundle
 import android.text.AmountInputFilter
 import android.text.InputType
@@ -17,12 +16,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.core.BasePopupView
 import com.lxj.xpopup.enums.PopupAnimation
+import com.lxj.xpopup.interfaces.SimpleCallback
 import com.palliums.base.BaseFragment
 import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.net.LoadState
 import com.palliums.utils.*
-import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
@@ -297,19 +296,21 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     }
 
     private fun showSwitchOpModePopup() {
-        //setSwitchOpModeViewBgAndTextColor(true)
-        switchOpModeArrowAnimator.start()
         XPopup.Builder(requireContext())
             .hasShadowBg(false)
             .popupAnimation(PopupAnimation.ScrollAlphaFromTop)
             .atView(llSwitchOpModeGroup)
-            .setPopupCallback(
-                object : EnhancedPopupCallback() {
-                    override fun onDismissBefore(popupView: BasePopupView) {
-                        //setSwitchOpModeViewBgAndTextColor(false)
-                        switchOpModeArrowAnimator.reverse()
-                    }
-                })
+            .setPopupCallback(object : SimpleCallback() {
+                override fun beforeShow(popupView: BasePopupView?) {
+                    //setSwitchOpModeViewBgAndTextColor(true)
+                    switchOpModeArrowAnimator.start()
+                }
+
+                override fun beforeDismiss(popupView: BasePopupView?) {
+                    //setSwitchOpModeViewBgAndTextColor(false)
+                    switchOpModeArrowAnimator.reverse()
+                }
+            })
             .asCustom(
                 MarketPoolOpModeSelectPopup(
                     requireContext(),
@@ -389,23 +390,24 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     }
 
     private fun showSelectLiquidityPopup(displayTokenPairs: MutableList<String>) {
-        selectLiquidityArrowAnimator.start()
         XPopup.Builder(requireContext())
             .navigationBarColor(XPopup.getShadowBgColor())
-            .setPopupCallback(
-                object : EnhancedPopupCallback() {
-                    override fun onShowBefore(popupView: BasePopupView) {
-                        activity?.window?.darkModeNavigationBar()
-                    }
+            .setPopupCallback(object : SimpleCallback() {
+                override fun beforeShow(popupView: BasePopupView?) {
+                    selectLiquidityArrowAnimator.start()
+                    activity?.window?.darkModeStatusBar()
+                    activity?.window?.darkModeNavigationBar()
+                }
 
-                    override fun onDismissBefore(popupView: BasePopupView) {
-                        selectLiquidityArrowAnimator.reverse()
-                    }
+                override fun beforeDismiss(popupView: BasePopupView?) {
+                    selectLiquidityArrowAnimator.reverse()
+                }
 
-                    override fun onDismiss(popupView: BasePopupView?) {
-                        activity?.window?.lightModeNavigationBar()
-                    }
-                })
+                override fun onDismiss(popupView: BasePopupView?) {
+                    activity?.window?.lightModeStatusBar()
+                    activity?.window?.lightModeNavigationBar()
+                }
+            })
             .asCustom(
                 MarketPoolLiquiditySelectPopup(
                     requireContext(),

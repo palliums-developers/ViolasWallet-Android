@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.market.pool
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Typeface
 import android.view.LayoutInflater
@@ -12,7 +13,6 @@ import com.palliums.listing.ListingViewAdapter
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getString
-import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.item_market_pool_liquidity_select.view.*
 import kotlinx.android.synthetic.main.popup_market_pool_liquidity_select.view.*
@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.popup_market_pool_liquidity_select.view.*
  * <p>
  * desc: 资金池流动性选择弹窗
  */
+@SuppressLint("ViewConstructor")
 class MarketPoolLiquiditySelectPopup(
     context: Context,
     private val checkedPosition: Int,
@@ -47,26 +48,6 @@ class MarketPoolLiquiditySelectPopup(
                 selectCallback.invoke(it)
             }
         }
-    }
-
-    override fun doAfterShow() {
-        popupInfo?.xPopupCallback?.run {
-            if (this is EnhancedPopupCallback) {
-                onShowBefore(this@MarketPoolLiquiditySelectPopup)
-            }
-        }
-
-        super.doAfterShow()
-    }
-
-    override fun doAfterDismiss() {
-        popupInfo?.xPopupCallback?.run {
-            if (this is EnhancedPopupCallback) {
-                onDismissBefore(this@MarketPoolLiquiditySelectPopup)
-            }
-        }
-
-        super.doAfterDismiss()
     }
 
     class ViewAdapter(

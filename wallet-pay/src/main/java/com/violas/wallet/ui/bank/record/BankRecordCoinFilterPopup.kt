@@ -2,7 +2,6 @@ package com.violas.wallet.ui.bank.record
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Rect
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.lxj.xpopup.impl.PartShadowPopupView
 import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
-import com.palliums.utils.DensityUtility
-import com.palliums.widget.popup.EnhancedPopupCallback
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.item_bank_record_coin_filter.view.*
 import kotlinx.android.synthetic.main.popup_bank_record_coin_filter.view.*
@@ -34,27 +31,6 @@ class BankRecordCoinFilterPopup(
     override fun getImplLayoutId(): Int {
         return R.layout.popup_bank_record_coin_filter
     }
-
-    override fun doAfterShow() {
-        popupInfo?.xPopupCallback?.run {
-            if (this is EnhancedPopupCallback) {
-                onShowBefore(this@BankRecordCoinFilterPopup)
-            }
-        }
-
-        super.doAfterShow()
-    }
-
-    override fun doAfterDismiss() {
-        popupInfo?.xPopupCallback?.run {
-            if (this is EnhancedPopupCallback) {
-                onDismissBefore(this@BankRecordCoinFilterPopup)
-            }
-        }
-
-        super.doAfterDismiss()
-    }
-
 
     override fun onCreate() {
         super.onCreate()

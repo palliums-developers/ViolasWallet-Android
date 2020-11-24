@@ -7,10 +7,10 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.core.BasePopupView
+import com.lxj.xpopup.interfaces.SimpleCallback
 import com.palliums.utils.darkModeNavigationBar
 import com.palliums.utils.getResourceId
 import com.palliums.utils.lightModeNavigationBar
-import com.palliums.widget.popup.EnhancedPopupCallback
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
@@ -117,33 +117,26 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
     }
 
     private fun showFilterPopup(coinFilter: Boolean, filterData: MutableList<String>) {
-        if (coinFilter)
-            coinFilterArrowAnimator.start()
-        else
-            stateFilterArrowAnimator.start()
-
         val currPosition = getCurrFilterLiveData(coinFilter).value?.first ?: 0
-
         if (coinFilter) {
             coinFilterPopup = XPopup.Builder(this)
                 .navigationBarColor(XPopup.getShadowBgColor())
                 .atView(llCoinFilter)
-                .setPopupCallback(
-                    object : EnhancedPopupCallback() {
-                        override fun onShowBefore(popupView: BasePopupView) {
-                            window.darkModeNavigationBar()
-                        }
-
-                        override fun onDismissBefore(popupView: BasePopupView) {
-                            coinFilterArrowAnimator.reverse()
-                        }
-
-                        override fun onDismiss(popupView: BasePopupView) {
-                            window.lightModeNavigationBar()
-                            coinFilterPopup = null
-                        }
+                .setPopupCallback(object : SimpleCallback() {
+                    override fun beforeShow(popupView: BasePopupView?) {
+                        coinFilterArrowAnimator.start()
+                        window.darkModeNavigationBar()
                     }
-                )
+
+                    override fun beforeDismiss(popupView: BasePopupView?) {
+                        coinFilterArrowAnimator.reverse()
+                    }
+
+                    override fun onDismiss(popupView: BasePopupView?) {
+                        window.lightModeNavigationBar()
+                        coinFilterPopup = null
+                    }
+                })
                 .asCustom(
                     BankRecordCoinFilterPopup(
                         this,
@@ -158,22 +151,21 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
             stateFilterPopup = XPopup.Builder(this)
                 .navigationBarColor(XPopup.getShadowBgColor())
                 .atView(llStateFilter)
-                .setPopupCallback(
-                    object : EnhancedPopupCallback() {
-                        override fun onShowBefore(popupView: BasePopupView) {
-                            window.darkModeNavigationBar()
-                        }
-
-                        override fun onDismissBefore(popupView: BasePopupView) {
-                            stateFilterArrowAnimator.reverse()
-                        }
-
-                        override fun onDismiss(popupView: BasePopupView) {
-                            window.lightModeNavigationBar()
-                            stateFilterPopup = null
-                        }
+                .setPopupCallback(object : SimpleCallback() {
+                    override fun beforeShow(popupView: BasePopupView?) {
+                        stateFilterArrowAnimator.start()
+                        window.darkModeNavigationBar()
                     }
-                )
+
+                    override fun beforeDismiss(popupView: BasePopupView?) {
+                        stateFilterArrowAnimator.reverse()
+                    }
+
+                    override fun onDismiss(popupView: BasePopupView?) {
+                        window.lightModeNavigationBar()
+                        stateFilterPopup = null
+                    }
+                })
                 .asCustom(
                     BankRecordStateFilterPopup(
                         this,
