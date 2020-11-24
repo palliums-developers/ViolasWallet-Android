@@ -44,7 +44,7 @@
         android:layout_height="45dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/shape_take_photo_popup_alone"
-        android:text="@string/cancel"
+        android:text="@string/action_cancel"
         android:textColor="#C02222"
         app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
