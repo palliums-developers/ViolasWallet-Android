@@ -97,6 +97,8 @@
     <attr name="meHomeWalletMenuIcon" format="reference" />
     <attr name="meHomeAddressMenuIcon" format="reference" />
     <attr name="meHomeSettingsMenuIcon" format="reference" />
+    <attr name="meHomeInvitationRewardMenuIcon" format="reference" />
+    <attr name="meHomeMiningRewardMenuBg" format="reference" />
     <attr name="meHomeTopBg" format="reference" />
 
     <!--首页-数字银行资源属性-->
