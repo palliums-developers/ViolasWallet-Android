@@ -88,7 +88,7 @@ class SlideBar : View {
 
         val fontMetricsInt = mPaint.fontMetricsInt
         mKeyRect.left = 0
-        mKeyRect.right = (mPaint.measureText("A") * 2.5f).toInt()
+        mKeyRect.right = (mPaint.measureText("A") * 1.5f).toInt()
         mKeyRect.top = 0
         mKeyRect.bottom =
             fontMetricsInt.bottom - fontMetricsInt.top + DensityUtility.dp2px(context, 2)

@@ -10,12 +10,12 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.palliums.utils.DensityUtility
-import com.palliums.utils.getColor
+import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.isFastMultiClick
 import com.palliums.widget.groupList.GroupListLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.common.EXTRA_KEY_COUNTRY_AREA
+import com.violas.wallet.common.KEY_ONE
 import kotlinx.android.synthetic.main.activity_group_list.*
 import kotlinx.android.synthetic.main.item_country_area.view.*
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +40,7 @@ class SelectCountryAreaActivity : BaseAppActivity() {
          * @param requestCode
          * @param selectAreaCode true表示选择电话区号，false表示选择国家或地区
          */
-        fun start(activity: Activity, requestCode: Int, selectAreaCode: Boolean) {
+        fun start(activity: Activity, requestCode: Int, selectAreaCode: Boolean = true) {
             val intent = Intent(activity, SelectCountryAreaActivity::class.java).apply {
                 putExtra(EXTRA_KEY_SELECT_AREA_CODE, selectAreaCode)
             }
@@ -82,15 +82,17 @@ class SelectCountryAreaActivity : BaseAppActivity() {
     }
 
     private fun initView() {
-        vGroupList.slideBar.indexColorNormal = getColor(R.color.def_text_desc, this)
-        vGroupList.slideBar.indexColorSelected = getColor(R.color.colorAccent, this)
+        vGroupList.slideBar.indexColorNormal =
+            getColorByAttrId(android.R.attr.textColorTertiary, this)
+        vGroupList.slideBar.indexColorSelected =
+            getColorByAttrId(android.R.attr.textColorSecondary, this)
 
         vGroupList.showFloatGroup = true
         vGroupList.showSlideBar(true)
 
         vGroupList.itemFactory = GroupListItemFactory(selectAreaCode) {
             val intent = Intent().apply {
-                putExtra(EXTRA_KEY_COUNTRY_AREA, it)
+                putExtra(KEY_ONE, it)
             }
             setResult(Activity.RESULT_OK, intent)
             finish()
@@ -142,10 +144,13 @@ class SelectCountryAreaActivity : BaseAppActivity() {
                 DensityUtility.dp2px(context, 4)
             )
             setTextColor(
-                getColor(if (isFloat) R.color.colorAccent else R.color.def_text_desc, context)
+                getColorByAttrId(
+                    if (isFloat) android.R.attr.textColorSecondary else android.R.attr.textColorSecondary,
+                    context
+                )
             )
             setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
-            setBackgroundColor(getColor(R.color.color_F4F4F4, context))
+            setBackgroundColor(getColorByAttrId(R.attr.colorListGroup, context))
         }
 
         override fun refreshView(itemData: GroupListLayout.ItemData?, lastGroupItem: Boolean?) {
@@ -192,6 +197,10 @@ class SelectCountryAreaActivity : BaseAppActivity() {
                     rootView.tvAreaCode.text = "+${it.areaCode}"
                 }
                 rootView.tvCountryName.text = it.countryName
+            }
+
+            lastGroupItem?.let {
+                rootView.vDivider.visibility = if (it) View.GONE else View.VISIBLE
             }
         }
 

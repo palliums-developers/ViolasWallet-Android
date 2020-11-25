@@ -523,7 +523,7 @@
     <string name="action_deposit_immediately">立即存款</string>
     <string name="hint_currencies_not_supported_in_current_version">当前版本不支持的币种</string>
     <string name="hint_bank_business_select_assets">请先选择币种</string>
-    <string name="hint_bank_business_account_error">账户异常</string>
+    <string name="hint_account_error">账户异常</string>
     <string name="hint_bank_business_assets_error">选择的币种信息异常</string>
     <string name="hint_bank_business_borrow_success">借款成功</string>
     <string name="hint_bank_business_deposit_success">存款成功</string>
@@ -577,4 +577,17 @@
     <string name="invitation_reward">邀请奖励</string>
     <string name="mining_reward_and_rules">挖矿奖励及规则</string>
     <string name="mining_reward">挖矿奖励</string>
+    <string name="united_states">United States</string>
+    <string name="title_select_phone_area_code">Choose phone area code</string>
+    <string name="title_select_country_or_area">Select country or region</string>
+    <string name="title_phone_receive_reward">验证手机号</string>
+    <string name="desc_phone_receive_reward">1. 每个手机号有三次验证机会\n2. 请您放心，手机号不会绑定您的钱包\n3. 验证成功后可获取 10 VLS</string>
+    <string name="hint_input_phone_number">请输入手机号</string>
+    <string name="hint_input_verification_code">请输入验证码</string>
+    <string name="hint_input_inviter_address">邀请人VLS地址（选填）</string>
+    <string name="hint_inviter_address_error">请输入正确的邀请人VLS地址</string>
+    <string name="hint_get_verification_code_success">验证码已发送，请注意查收</string>
+    <string name="hint_phone_receive_reward_success">领取成功</string>
+    <string name="action_get_verification_code">获取验证码</string>
+    <string name="action_receive_right_now">立即领取</string>
 </resources>

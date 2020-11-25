@@ -115,6 +115,7 @@
         <item name="colorTint">@color/color_DEDEDE</item>
         <item name="colorSwitchBgNormal">@color/color_BDBDBD</item>
         <item name="colorSwitchBgChecked">@color/color_4730A7</item>
+        <item name="colorListGroup">@color/color_F4F4F4</item>
         <item name="boxStrokeColorSecondary">@color/color_333333</item>
 
         <item name="textColorWarn">@color/color_FB8F0B</item>

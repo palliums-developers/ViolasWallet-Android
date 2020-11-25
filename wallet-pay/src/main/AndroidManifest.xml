@@ -216,6 +216,12 @@
         <activity
             android:name=".ui.message.MessageCenterActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.selectCountryArea.SelectCountryAreaActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.incentivePlan.phoneReceiveReward.PhoneReceiveRewardActivity"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".service.MyFirebaseMessagingService"

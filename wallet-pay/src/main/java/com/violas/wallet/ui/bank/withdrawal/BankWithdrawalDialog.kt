@@ -161,7 +161,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
                 accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
             }
             if (accountDO == null) {
-                showToast(getString(R.string.hint_bank_business_account_error))
+                showToast(getString(R.string.hint_account_error))
                 return@launch
             }
 

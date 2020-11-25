@@ -183,4 +183,6 @@ dependencies {
     //implementation libraries.firebase_core
     implementation libraries.firebase_messaging
     //implementation platform('com.google.firebase:firebase-bom:25.12.0')
+
+    implementation libraries.jpinyin
 }

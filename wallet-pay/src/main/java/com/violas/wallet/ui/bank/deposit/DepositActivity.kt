@@ -191,7 +191,7 @@ class DepositActivity : BankBusinessActivity() {
             }
             val account = mAccountManager.getIdentityByCoinType(assets.getCoinNumber())
             if (account == null) {
-                showToast(getString(R.string.hint_bank_business_account_error))
+                showToast(getString(R.string.hint_account_error))
                 return@launch
             }
             val amount =

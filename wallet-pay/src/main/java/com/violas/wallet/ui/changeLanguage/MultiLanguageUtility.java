@@ -81,7 +81,7 @@ public class MultiLanguageUtility {
      *
      * @return
      */
-    private Locale getLanguageLocale() {
+    public Locale getLanguageLocale() {
         int languageType = getSaveLanguageType();
         Locale locale;
         LanguageBean languageBean = mLocaleLanguageMap.get(languageType);

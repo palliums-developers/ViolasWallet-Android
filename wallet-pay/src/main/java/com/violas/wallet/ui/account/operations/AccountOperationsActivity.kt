@@ -217,7 +217,7 @@ class AccountOperationsActivity : BaseAppActivity() {
             rootView.setOnClickListener(this)
         }
 
-        override fun refreshView(itemData: GroupListLayout.ItemData?) {
+        override fun refreshView(itemData: GroupListLayout.ItemData?, lastGroupItem: Boolean?) {
             accountVo = itemData as? AccountVo
 
             accountVo?.let {

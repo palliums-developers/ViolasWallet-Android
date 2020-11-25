@@ -144,7 +144,7 @@ class AccountSelectionFragment : BaseFragment() {
             setTextColor(getColor(R.color.account_group_title, context))
         }
 
-        override fun refreshView(itemData: GroupListLayout.ItemData?) {
+        override fun refreshView(itemData: GroupListLayout.ItemData?, lastGroupItem: Boolean?) {
             if (itemData == null || itemData.getGroupName().isNullOrEmpty()) {
                 tvTitle.visibility = View.GONE
             } else {
@@ -196,7 +196,7 @@ class AccountSelectionFragment : BaseFragment() {
             rootView.setOnClickListener(this)
         }
 
-        override fun refreshView(itemData: GroupListLayout.ItemData?) {
+        override fun refreshView(itemData: GroupListLayout.ItemData?, lastGroupItem: Boolean?) {
             accountVo = itemData as? AccountVo
 
             accountVo?.let {
