@@ -222,6 +222,10 @@
         <activity
             android:name=".ui.incentivePlan.phoneReceiveReward.PhoneReceiveRewardActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.incentivePlan.earnings.IncentiveEarningsDetailsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary"/>
 
         <service
             android:name=".service.MyFirebaseMessagingService"

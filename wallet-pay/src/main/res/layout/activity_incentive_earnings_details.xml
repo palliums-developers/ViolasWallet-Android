@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.incentivePlan.earnings.IncentiveEarningsDetailsActivity">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_46"
+        android:layout_marginHorizontal="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_20"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tabBackground="@null"
+        app:tabIndicatorHeight="@dimen/dp_0"
+        app:tabMaxWidth="@dimen/dp_200"
+        app:tabMinWidth="@dimen/dp_30"
+        app:tabMode="scrollable"
+        app:tabPaddingEnd="@dimen/dp_12"
+        app:tabPaddingStart="@dimen/dp_12"
+        app:tabRippleColor="@null"
+        app:tabSelectedTextColor="?android:attr/textColor"
+        app:tabTextColor="?android:attr/textColorTertiary" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0"
+        android:layout_marginTop="@dimen/dp_5"
+        android:background="@drawable/bg_square_solid_top_corners_32_primary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

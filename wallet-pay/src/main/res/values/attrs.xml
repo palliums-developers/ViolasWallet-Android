@@ -63,6 +63,7 @@
     <attr name="bgLoadFailure" format="reference" />
     <attr name="bgLoadEmptyData" format="reference" />
     <attr name="bgSearchEmptyData" format="reference" />
+    <attr name="bgPageTopViewLight" format="reference" />
 
     <!--首页资源属性-->
     <attr name="homeBottomTabSelectedTextColor" format="color" />
@@ -115,7 +116,6 @@
     <attr name="tokenDetailsTabNormalTextColor" format="color" />
 
     <!--交易详情页面资源属性-->
-    <attr name="transDetailsTopBg" format="color|reference" />
     <attr name="transDetailsBottomBg" format="color|reference" />
     <attr name="transDetailsTransInfoBg" format="color|reference" />
     <attr name="transDetailsSaveIcon" format="reference" />
@@ -173,7 +173,6 @@
     <attr name="bankProductRateTextColor" format="color" />
     <attr name="bankDepositEarningTextColor" format="color" />
     <attr name="bankDepositEarningBgColor" format="color" />
-    <attr name="bankDetailsTopBg" format="reference" />
     <attr name="bankRecordCoinFilterTopBg" format="reference" />
     <attr name="bankRecordStateFilterTopBg" format="reference" />
 

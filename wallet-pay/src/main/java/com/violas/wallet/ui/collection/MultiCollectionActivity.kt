@@ -77,7 +77,7 @@ class MultiCollectionActivity : BaseAppActivity(),
     override fun getLayoutResId() = R.layout.activity_multi_collection
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_SECONDARY
+        return PAGE_STYLE_LIGHT_MODE_PRIMARY_TOP_BAR
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

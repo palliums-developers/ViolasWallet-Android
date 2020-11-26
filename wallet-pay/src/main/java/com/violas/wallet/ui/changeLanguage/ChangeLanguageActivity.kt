@@ -24,7 +24,7 @@ class ChangeLanguageActivity : BaseAppActivity() {
     override fun getLayoutResId() = R.layout.activity_change_language
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_SECONDARY
+        return PAGE_STYLE_LIGHT_MODE_PRIMARY_TOP_BAR
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

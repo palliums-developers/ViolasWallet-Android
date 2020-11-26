@@ -584,4 +584,8 @@
     <string name="hint_phone_receive_reward_success">领取成功</string>
     <string name="action_get_verification_code">获取验证码</string>
     <string name="action_receive_right_now">立即领取</string>
+    <string name="title_incentive_earnings_details">收益明细</string>
+    <string name="tab_invite_friends_earnings">邀请好友</string>
+    <string name="tab_pool_mining_earnings">资金池</string>
+    <string name="tab_bank_mining_earnings">数字银行</string>
 </resources>

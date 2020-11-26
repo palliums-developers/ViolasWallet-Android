@@ -160,6 +160,7 @@
         <item name="bgLoadFailure">@mipmap/bg_load_failure</item>
         <item name="bgLoadEmptyData">@mipmap/bg_load_empty_data</item>
         <item name="bgSearchEmptyData">@mipmap/bg_search_empty_data</item>
+        <item name="bgPageTopViewLight">@mipmap/bg_page_top_view_light</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
@@ -212,7 +213,6 @@
         <item name="tokenDetailsTabNormalTextColor">@color/color_C2C2C2</item>
 
         <!--交易详情页资源属性-->
-        <item name="transDetailsTopBg">@mipmap/bg_transaction_details_header</item>
         <item name="transDetailsBottomBg">@mipmap/bg_transaction_details_footer</item>
         <item name="transDetailsTransInfoBg">@mipmap/bg_transaction_details_content</item>
         <item name="transDetailsSaveIcon">@drawable/ic_share_type_download</item>
@@ -270,7 +270,6 @@
         <item name="bankProductRateTextColor">@color/color_13B788</item>
         <item name="bankDepositEarningTextColor">@color/color_13B788</item>
         <item name="bankDepositEarningBgColor">@color/color_13B788_06</item>
-        <item name="bankDetailsTopBg">@mipmap/bg_bank_details_top</item>
         <item name="bankRecordCoinFilterTopBg">@mipmap/bg_bank_record_coin_filter_top</item>
         <item name="bankRecordStateFilterTopBg">@mipmap/bg_bank_record_state_filter_top</item>
     </style>

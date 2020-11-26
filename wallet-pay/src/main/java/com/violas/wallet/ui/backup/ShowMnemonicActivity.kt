@@ -42,7 +42,7 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
     }
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_SECONDARY
+        return PAGE_STYLE_LIGHT_MODE_PRIMARY_TOP_BAR
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
