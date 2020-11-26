@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.biometric.BiometricManager
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -54,6 +53,7 @@ import com.violas.wallet.viewModel.bean.HiddenTokenVo
 import com.violas.wallet.walletconnect.WalletConnectStatus
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
+import kotlinx.android.synthetic.main.fragment_wallet_content.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
 import kotlinx.coroutines.cancel
@@ -106,32 +106,23 @@ class WalletFragment : BaseFragment() {
         actionBar.post { adapterViewHeight() }
         recyclerAssert.adapter = mAssertAdapter
 
-        mWalletAppViewModel?.mDataRefreshingLiveData?.observe(viewLifecycleOwner, Observer {
+        mWalletAppViewModel?.mDataRefreshingLiveData?.observe(viewLifecycleOwner) {
             if (!it) {
-                swipeRefreshLayout.finishRefresh()
+                refreshLayout.finishRefresh()
             }
-        })
-        Log.d("==assets==", "WalletFragment Subscribe to AssetsList")
-        mWalletAppViewModel?.mAssetsListLiveData?.observe(viewLifecycleOwner, Observer {
-            Log.d("==assets==", "WalletFragment AssetsList Observer Update")
-            val filter =
-                it.filter { asset ->
-                    when (asset) {
-                        is HiddenTokenVo -> {
-                            false
-                        }
-                        !is AssetsCoinVo -> {
-                            true
-                        }
-                        else -> {
-                            asset.accountType != AccountType.NoDollars
-                        }
-                    }
+        }
+        mWalletAppViewModel?.mAssetsListLiveData?.observe(viewLifecycleOwner) {
+            val filter = it.filter { asset ->
+                when (asset) {
+                    is HiddenTokenVo -> false
+                    !is AssetsCoinVo -> true
+                    else -> asset.accountType != AccountType.NoDollars
                 }
+            }
             mAssertAdapter.submitList(filter)
             mWalletViewModel.calculateFiat(filter)
-        })
-        mWalletAppViewModel?.mExistsAccountLiveData?.observe(viewLifecycleOwner, Observer {
+        }
+        mWalletAppViewModel?.mExistsAccountLiveData?.observe(viewLifecycleOwner) {
             if (it) {
                 viewAssetsGroup.visibility = View.VISIBLE
                 viewAddAccount.visibility = View.GONE
@@ -141,11 +132,11 @@ class WalletFragment : BaseFragment() {
             }
             handleBackupMnemonicWarn(it)
             handleDialogShow(it)
-        })
-        mWalletViewModel.mTotalFiatBalanceStrLiveData.observe(viewLifecycleOwner, Observer {
+        }
+        mWalletViewModel.mTotalFiatBalanceStrLiveData.observe(viewLifecycleOwner) {
             tvAmount.text = it
-        })
-        mWalletViewModel.mHiddenTotalFiatBalanceLiveData.observe(viewLifecycleOwner, Observer {
+        }
+        mWalletViewModel.mHiddenTotalFiatBalanceLiveData.observe(viewLifecycleOwner) {
             mAssertAdapter.assetsHidden(it)
             if (it) {
                 ivTotalHidden.setImageResource(
@@ -162,31 +153,23 @@ class WalletFragment : BaseFragment() {
                     )
                 )
             }
-        })
-
-        ivTotalHidden.setOnClickListener {
-            mWalletViewModel.taggerTotalDisplay()
         }
-        ivTotalHidden.expandTouchArea(28)
-
-        mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(
-            viewLifecycleOwner,
-            Observer { status ->
-                when (status) {
-                    WalletConnectStatus.None -> {
-                        viewWalletConnect.visibility = View.INVISIBLE
-                    }
-                    WalletConnectStatus.Login -> {
-                        viewWalletConnect.visibility = View.VISIBLE
-                    }
+        mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(viewLifecycleOwner) {
+            when (it) {
+                WalletConnectStatus.Login -> {
+                    viewWalletConnect.visibility = View.VISIBLE
                 }
-            })
-        viewWalletConnect.setOnClickListener {
-            activity?.let { it1 -> WalletConnectManagerActivity.startActivity(it1) }
+                else -> {
+                    viewWalletConnect.visibility = View.INVISIBLE
+                }
+            }
         }
 
+        ivTotalHidden.expandTouchArea(28)
+        ivTotalHidden.setOnClickListener(this)
         ivAddAssert.setOnClickListener(this)
         ivScan.setOnClickListener(this)
+        viewWalletConnect.setOnClickListener(this)
         viewCreateAccount.setOnClickListener(this)
         viewImportAccount.setOnClickListener(this)
         llTransferGroup.setOnClickListener(this)
@@ -194,11 +177,11 @@ class WalletFragment : BaseFragment() {
         llMappingGroup.setOnClickListener(this)
         clMiningRewardGroup.setOnClickListener(this)
 
-        swipeRefreshLayout.setEnableOverScrollDrag(true)
-        swipeRefreshLayout.setOnRefreshListener {
+        refreshLayout.setEnableOverScrollDrag(false)
+        refreshLayout.setOnRefreshListener {
             CommandActuator.post(RefreshAssetsAllListCommand())
         }
-        swipeRefreshLayout.autoRefresh()
+        refreshLayout.autoRefresh()
     }
 
     private fun adapterViewHeight() {
@@ -263,12 +246,17 @@ class WalletFragment : BaseFragment() {
 
     override fun onViewClick(view: View) {
         when (view.id) {
+            R.id.ivTotalHidden -> {
+                mWalletViewModel.taggerTotalDisplay()
+            }
+
             R.id.ivAddAssert -> {
                 ManagerAssertActivity.start(
                     this@WalletFragment,
                     REQUEST_ADD_ASSERT
                 )
             }
+
             R.id.ivScan -> {
                 activity?.let { it1 ->
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
@@ -277,6 +265,10 @@ class WalletFragment : BaseFragment() {
                         showToast(R.string.tips_create_or_import_wallet)
                     }
                 }
+            }
+
+            R.id.viewWalletConnect -> {
+                activity?.let { it1 -> WalletConnectManagerActivity.startActivity(it1) }
             }
 
             R.id.llTransferGroup -> {

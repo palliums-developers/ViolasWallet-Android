@@ -150,6 +150,7 @@ class BankFragment : BaseFragment() {
     }
 
     private fun initEvent() {
+        refreshLayout.setEnableOverScrollDrag(false)
         refreshLayout.setOnRefreshListener {
             val action = if (viewPager.currentItem == 0)
                 ACTION_LOAD_ACCOUNT_INFO.or(ACTION_LOAD_DEPOSIT_PRODUCTS)
