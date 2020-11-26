@@ -48,31 +48,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clMiningReward"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="@dimen/dp_60"
-            android:layout_marginTop="@dimen/dp_20"
-            android:background="@drawable/sel_bg_mining_reward"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivHeader">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/dp_59"
-                android:letterSpacing="0.11"
-                android:text="@string/mining_reward_and_rules"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="@dimen/fs_21"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
         <com.palliums.widget.MenuItemView
             android:id="@+id/mivWalletManagement"
             style="@style/MenuItemView"
@@ -81,7 +56,7 @@
             android:paddingHorizontal="@dimen/dp_12"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/clMiningReward"
+            app:layout_constraintTop_toBottomOf="@id/ivHeader"
             app:mivShowBottomLine="false"
             app:mivStartIcon="?attr/meHomeWalletMenuIcon"
             app:mivStartTitleText="@string/me_wallet_management" />
@@ -100,7 +75,7 @@
             app:mivStartTitleText="@string/me_address_book" />
 
         <com.palliums.widget.MenuItemView
-            android:id="@+id/mivInvitationReward"
+            android:id="@+id/mivMiningReward"
             style="@style/MenuItemView"
             android:layout_marginTop="@dimen/spacing_item"
             android:background="@drawable/sel_bg_style_1_solid_corners_16"
@@ -108,6 +83,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mivAddressBook"
+            app:mivShowBottomLine="false"
+            app:mivStartIcon="?attr/meHomeMiningRewardMenuIcon"
+            app:mivStartTitleText="@string/mining_reward_and_rules" />
+
+        <com.palliums.widget.MenuItemView
+            android:id="@+id/mivInvitationReward"
+            style="@style/MenuItemView"
+            android:layout_marginTop="@dimen/spacing_item"
+            android:background="@drawable/sel_bg_style_1_solid_corners_16"
+            android:paddingHorizontal="@dimen/dp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mivMiningReward"
             app:mivShowBottomLine="false"
             app:mivStartIcon="?attr/meHomeInvitationRewardMenuIcon"
             app:mivStartTitleText="@string/invitation_reward" />

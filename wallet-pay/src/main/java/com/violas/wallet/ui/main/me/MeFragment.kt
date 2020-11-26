@@ -26,20 +26,15 @@ class MeFragment : BaseFragment() {
 
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
-        clMiningReward.setOnClickListener(this)
         mivWalletManagement.setOnClickListener(this)
         mivAddressBook.setOnClickListener(this)
+        mivMiningReward.setOnClickListener(this)
         mivInvitationReward.setOnClickListener(this)
         mivSettings.setOnClickListener(this)
     }
 
     override fun onViewClick(view: View) {
         when (view.id) {
-            R.id.clMiningReward -> {
-                // TODO 进入挖矿激励详情页面
-                showToast(R.string.mining_reward)
-            }
-
             R.id.mivWalletManagement -> {
                 if (mWalletAppViewModel.isExistsAccount()) {
                     WalletManagerActivity.start(requireContext())
@@ -50,6 +45,11 @@ class MeFragment : BaseFragment() {
 
             R.id.mivAddressBook -> {
                 AddressBookActivity.start(_mActivity)
+            }
+
+            R.id.mivMiningReward -> {
+                // TODO 进入挖矿激励详情页面
+                showToast(R.string.mining_reward)
             }
 
             R.id.mivInvitationReward -> {

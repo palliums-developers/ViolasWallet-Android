@@ -90,6 +90,7 @@
     <attr name="walletHomeTransferIcon" format="reference" />
     <attr name="walletHomeCollectionIcon" format="reference" />
     <attr name="walletHomeMappingIcon" format="reference" />
+    <attr name="walletHomeMiningRewardBg" format="reference" />
     <attr name="walletBackupNowHintBg" format="reference" />
     <attr name="walletBackupNowBtnBg" format="reference" />
     <attr name="walletBackupNowTitleTextColor" format="color" />
@@ -99,8 +100,8 @@
     <attr name="meHomeWalletMenuIcon" format="reference" />
     <attr name="meHomeAddressMenuIcon" format="reference" />
     <attr name="meHomeSettingsMenuIcon" format="reference" />
+    <attr name="meHomeMiningRewardMenuIcon" format="reference" />
     <attr name="meHomeInvitationRewardMenuIcon" format="reference" />
-    <attr name="meHomeMiningRewardMenuBg" format="reference" />
     <attr name="meHomeTopBg" format="reference" />
 
     <!--首页-数字银行资源属性-->

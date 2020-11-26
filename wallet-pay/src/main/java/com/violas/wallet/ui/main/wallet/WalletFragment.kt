@@ -192,6 +192,7 @@ class WalletFragment : BaseFragment() {
         llTransferGroup.setOnClickListener(this)
         llCollectionGroup.setOnClickListener(this)
         llMappingGroup.setOnClickListener(this)
+        clMiningRewardGroup.setOnClickListener(this)
 
         swipeRefreshLayout.setEnableOverScrollDrag(true)
         swipeRefreshLayout.setOnRefreshListener {
@@ -315,8 +316,14 @@ class WalletFragment : BaseFragment() {
             R.id.viewImportAccount -> {
                 activity?.let { ImportIdentityActivity.start(it) }
             }
+
             R.id.btnConfirm -> {
                 backupWallet()
+            }
+
+            R.id.clMiningRewardGroup -> {
+                // TODO 进入挖矿激励详情页面
+                showToast(R.string.mining_reward)
             }
         }
     }

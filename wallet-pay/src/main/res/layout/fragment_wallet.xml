@@ -217,18 +217,44 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_marginTop="@dimen/dp_181">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clMiningRewardGroup"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_60"
+            android:layout_marginHorizontal="@dimen/dp_15"
+            android:layout_marginTop="@dimen/dp_18"
+            android:background="?attr/walletHomeMiningRewardBg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_59"
+                android:letterSpacing="0.11"
+                android:text="@string/mining_reward_and_rules"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="@dimen/fs_21"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <TextView
             android:id="@+id/tvAssert"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_29"
-            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_19"
             android:includeFontPadding="false"
             android:text="@string/label_assets"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="@dimen/fs_14"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/clMiningRewardGroup" />
 
         <ImageView
             android:id="@+id/ivAddAssert"

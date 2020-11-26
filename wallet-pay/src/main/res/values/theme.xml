@@ -187,6 +187,7 @@
         <item name="walletHomeTransferIcon">@mipmap/ic_wallet_home_transfer</item>
         <item name="walletHomeCollectionIcon">@mipmap/ic_wallet_home_collection</item>
         <item name="walletHomeMappingIcon">@mipmap/ic_wallet_home_mapping</item>
+        <item name="walletHomeMiningRewardBg">@mipmap/bg_mining_reward</item>
         <item name="walletBackupNowHintBg">@drawable/bg_view_backup_now_wallet</item>
         <item name="walletBackupNowBtnBg">@drawable/bg_btn_backup_now_wallet</item>
         <item name="walletBackupNowTitleTextColor">@color/color_FB8F0B</item>
@@ -196,8 +197,8 @@
         <item name="meHomeWalletMenuIcon">@mipmap/ic_me_wallet_management</item>
         <item name="meHomeAddressMenuIcon">@mipmap/ic_me_address_book</item>
         <item name="meHomeSettingsMenuIcon">@mipmap/ic_me_settings</item>
+        <item name="meHomeMiningRewardMenuIcon">@mipmap/ic_me_mining_reward</item>
         <item name="meHomeInvitationRewardMenuIcon">@mipmap/ic_me_invitation_reward</item>
-        <item name="meHomeMiningRewardMenuBg">@mipmap/bg_mining_reward</item>
         <item name="meHomeTopBg">@drawable/bg_me_home_top</item>
 
         <!--首页-数字银行资源属性-->
