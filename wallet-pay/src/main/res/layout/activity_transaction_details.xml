@@ -8,7 +8,7 @@
 
     <ImageView
         android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/dp_153"
         android:background="?attr/bgPageTopViewLight"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -16,7 +16,7 @@
 
     <ImageView
         android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/dp_360"
         android:background="?attr/transDetailsBottomBg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

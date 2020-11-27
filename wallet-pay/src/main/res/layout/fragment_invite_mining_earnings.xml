@@ -3,17 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.bank.details.borrowing.CoinRepaymentRecordFragment">
+    android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tvTimeLabel"
+        android:id="@+id/tvAddressLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
-        android:layout_marginStart="@dimen/dp_34"
-        android:layout_marginTop="@dimen/dp_19"
-        android:includeFontPadding="false"
-        android:text="@string/label_time"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_22"
+        android:layout_marginTop="@dimen/dp_18"
+        android:text="@string/invited_account"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_10"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,25 +20,34 @@
     <TextView
         android:id="@+id/tvAmountLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
-        android:layout_marginStart="@dimen/dp_122"
-        android:includeFontPadding="false"
-        android:text="@string/amount"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_124"
+        android:text="@string/mining_earnings"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_10"
-        app:layout_constraintBottom_toBottomOf="@id/tvTimeLabel"
-        app:layout_constraintStart_toStartOf="@id/tvTimeLabel" />
+        app:layout_constraintBaseline_toBaselineOf="@id/tvAddressLabel"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTimeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_82"
+        android:text="@string/invitation_time"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_10"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvAddressLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/tvStateLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
-        android:layout_marginEnd="@dimen/dp_34"
-        android:includeFontPadding="false"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_22"
         android:text="@string/state"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_10"
-        app:layout_constraintBottom_toBottomOf="@id/tvTimeLabel"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvAddressLabel"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.palliums.widget.refresh.DefaultRefreshLayout
@@ -51,7 +58,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTimeLabel">
+        app:layout_constraintTop_toBottomOf="@id/tvAddressLabel">
 
         <com.palliums.widget.refresh.RefreshClassicsHeader
             android:layout_width="match_parent"

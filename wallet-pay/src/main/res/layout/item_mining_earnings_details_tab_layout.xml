@@ -15,6 +15,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="@string/tab_invite_friends_earnings" />
+        tools:text="@string/tab_invite_mining_earnings" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -80,9 +80,9 @@ class TransactionRecordViewHolder(
             } else {
                 it.toAddress ?: it.fromAddress
             }
-            itemView.tvAddress.text = if (showAddress.length > 20)
-                "${showAddress.substring(0, 10)}...${showAddress.substring(
-                    showAddress.length - 10,
+            itemView.tvAddress.text = if (showAddress.length > 12)
+                "${showAddress.substring(0, 6)}...${showAddress.substring(
+                    showAddress.length - 6,
                     showAddress.length
                 )}"
             else

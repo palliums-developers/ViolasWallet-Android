@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.incentivePlan.earnings
+package com.violas.wallet.ui.incentivePlan.miningEarnings
 
 import android.content.Context
 import android.content.Intent
@@ -14,7 +14,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
-import kotlinx.android.synthetic.main.activity_incentive_earnings_details.*
+import kotlinx.android.synthetic.main.activity_mining_earnings_details.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -23,13 +23,13 @@ import kotlinx.coroutines.withContext
  * Created by elephant on 11/26/20 11:03 AM.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 激励收益明细页面
+ * desc: 挖矿收益明细页面
  */
-class IncentiveEarningsDetailsActivity : BaseAppActivity() {
+class MiningEarningsDetailsActivity : BaseAppActivity() {
 
     companion object {
         fun start(context: Context) {
-            Intent(context, IncentiveEarningsDetailsActivity::class.java)
+            Intent(context, MiningEarningsDetailsActivity::class.java)
                 .start(context)
         }
     }
@@ -37,7 +37,7 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
     private lateinit var violasAddress: String
 
     override fun getLayoutResId(): Int {
-        return R.layout.activity_incentive_earnings_details
+        return R.layout.activity_mining_earnings_details
     }
 
     override fun getTitleStyle(): Int {
@@ -77,16 +77,13 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
     private fun initTopView() {
         setTitle(R.string.title_incentive_earnings_details)
         setTopBackgroundResource(getResourceId(R.attr.bgPageTopViewLight, this))
-        setTopBackgroundHeight(
-            StatusBarUtil.getStatusBarHeight(this) +
-                    DensityUtility.dp2px(this, 110)
-        )
+        setTopBackgroundHeight(DensityUtility.dp2px(this, 153))
     }
 
     private fun initChildView() {
         val fragments = mutableListOf<Fragment>()
         supportFragmentManager.fragments.forEach {
-            if (it is InviteFriendsEarningsFragment
+            if (it is InviteMiningEarningsFragment
                 || it is PoolMiningEarningsFragment
                 || it is BankMiningEarningsFragment
             ) {
@@ -95,7 +92,7 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
         }
 
         if (fragments.isEmpty()) {
-            fragments.add(InviteFriendsEarningsFragment.newInstance(violasAddress))
+            fragments.add(InviteMiningEarningsFragment.newInstance(violasAddress))
             fragments.add(PoolMiningEarningsFragment.newInstance(violasAddress))
             fragments.add(BankMiningEarningsFragment.newInstance(violasAddress))
         }
@@ -105,7 +102,7 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
             setFragments(fragments)
             setTitles(
                 mutableListOf(
-                    getString(R.string.tab_invite_friends_earnings),
+                    getString(R.string.tab_invite_mining_earnings),
                     getString(R.string.tab_pool_mining_earnings),
                     getString(R.string.tab_bank_mining_earnings),
                 )
@@ -130,7 +127,7 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
             val count = viewPager.adapter!!.count
             for (i in 0 until count) {
                 tabLayout.getTabAt(i)?.let { tab ->
-                    tab.setCustomView(R.layout.item_incentive_earnings_details_tab_layout)
+                    tab.setCustomView(R.layout.item_mining_earnings_details_tab_layout)
                     updateTab(tab, i == viewPager.currentItem)?.let {
                         it.text = tab.text
                     }

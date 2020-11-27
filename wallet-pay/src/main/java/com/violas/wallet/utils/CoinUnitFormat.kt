@@ -134,14 +134,16 @@ fun convertAmountToDisplayAmount(
 
 fun convertAmountToDisplayAmount(
     amountBigDecimal: BigDecimal,
-    coinTypes: CoinTypes = CoinTypes.Violas
+    coinTypes: CoinTypes = CoinTypes.Violas,
+    decimalScale: Int? = null,
+    roundingMode: RoundingMode = RoundingMode.HALF_UP
 ): BigDecimal {
     return if (amountBigDecimal > BigDecimal.ZERO)
         amountBigDecimal
             .divide(
                 BigDecimal(getCoinUnit(coinTypes)),
-                getCoinDecimal(coinTypes),
-                RoundingMode.HALF_UP
+                decimalScale ?: getCoinDecimal(coinTypes),
+                roundingMode
             )
             .stripTrailingZeros()
     else
@@ -234,7 +236,9 @@ fun keepTwoDecimals(amountStr: String): String {
 }
 
 fun convertRateToPercentage(rate: Double): String {
-    return "${BigDecimal(rate * 100)
-        .setScale(2, RoundingMode.DOWN)
-        .toPlainString()}%"
+    return "${
+        BigDecimal(rate * 100)
+            .setScale(2, RoundingMode.DOWN)
+            .toPlainString()
+    }%"
 }
