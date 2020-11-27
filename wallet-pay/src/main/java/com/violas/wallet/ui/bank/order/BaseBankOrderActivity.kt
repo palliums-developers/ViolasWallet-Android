@@ -39,8 +39,7 @@ abstract class BaseBankOrderActivity<VO> : BasePagingActivity<VO>() {
         super.onCreate(savedInstanceState)
 
         setTitleRightImageResource(getResourceId(R.attr.iconRecordPrimary, this))
-
-        mPagingHandler.init()
+        getPagingHandler().init()
         recyclerView.addItemDecoration(
             RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(this, 5),

@@ -19,14 +19,6 @@ import com.violas.wallet.ui.transactionDetails.TransactionDetailsActivity
  */
 class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
-    private var mWalletAddress: String? = null
-    private var mCoinNumber: Int = CoinTypes.Violas.coinType()
-
-    @TransactionType
-    private var mTransactionType: Int = TransactionType.ALL
-    private var mTokenId: String? = null
-    private var mTokenDisplayName: String? = null
-
     companion object {
         fun newInstance(
             walletAddress: String,
@@ -50,8 +42,15 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         }
     }
 
-    private val mViewModel by lazy {
-        TransactionRecordViewModel(
+    private var mWalletAddress: String? = null
+    private var mCoinNumber: Int = CoinTypes.Violas.coinType()
+    @TransactionType
+    private var mTransactionType: Int = TransactionType.ALL
+    private var mTokenId: String? = null
+    private var mTokenDisplayName: String? = null
+
+    override fun lazyInitPagingViewModel(): PagingViewModel<TransactionRecordVO> {
+        return TransactionRecordViewModel(
             mWalletAddress!!,
             mTokenId,
             mTokenDisplayName,
@@ -60,18 +59,10 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         )
     }
 
-    private val mViewAdapter by lazy {
-        TransactionRecordViewAdapter {
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
+        return TransactionRecordViewAdapter {
             TransactionDetailsActivity.start(requireContext(), it)
         }
-    }
-
-    override fun getViewModel(): PagingViewModel<TransactionRecordVO> {
-        return mViewModel
-    }
-
-    override fun getViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
-        return mViewAdapter
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -85,13 +76,12 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
 
-        mPagingHandler.init()
+        getPagingHandler().init()
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             getString(R.string.tips_no_transaction_record)
         )
-
-        mPagingHandler.start()
+        getPagingHandler().start()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

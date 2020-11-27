@@ -49,7 +49,7 @@ abstract class BaseCoinTxRecordFragment<VO> : BasePagingFragment<VO>() {
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
 
-        mPagingHandler.init()
-        mPagingHandler.start()
+        getPagingHandler().init()
+        getPagingHandler().start()
     }
 }

@@ -1,7 +1,6 @@
 package com.palliums.listing
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import com.palliums.base.ViewController
 import com.palliums.net.LoadState
 import com.palliums.widget.status.IStatusLayout
@@ -19,12 +18,11 @@ class ListingHandler<VO>(
 ) {
 
     fun init() {
+        mListingController.getListingViewModel().listData.observe(mLifecycleOwner) {
+            mListingController.getListingViewAdapter().setDataList(it)
+        }
 
-        mListingController.getViewModel().listData.observe(mLifecycleOwner, Observer {
-            mListingController.getViewAdapter().setDataList(it)
-        })
-
-        mListingController.getViewModel().loadState.observe(mLifecycleOwner, Observer {
+        mListingController.getListingViewModel().loadState.observe(mLifecycleOwner) {
             when (it.peekData().status) {
                 LoadState.Status.RUNNING -> {
                     if (mListingController.loadingUseDialog()) {
@@ -76,7 +74,7 @@ class ListingHandler<VO>(
                     }
 
                     when {
-                        mListingController.getViewAdapter().itemCount > 0 -> {
+                        mListingController.getListingViewAdapter().itemCount > 0 -> {
                             mListingController.getStatusLayout()?.showStatus(
                                 IStatusLayout.Status.STATUS_NONE
                             )
@@ -98,15 +96,15 @@ class ListingHandler<VO>(
                     }
                 }
             }
-        })
+        }
 
-        mListingController.getViewModel().tipsMessage.observe(mLifecycleOwner, Observer {
+        mListingController.getListingViewModel().tipsMessage.observe(mLifecycleOwner) {
             it.getDataIfNotHandled()?.let { msg ->
                 if (msg.isNotEmpty()) {
                     mViewController.showToast(msg)
                 }
             }
-        })
+        }
 
         mListingController.getRefreshLayout()?.let {
             it.setEnableRefresh(false)
@@ -121,6 +119,6 @@ class ListingHandler<VO>(
             mListingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
         }
 
-        mListingController.getRecyclerView().adapter = mListingController.getViewAdapter()
+        mListingController.getRecyclerView().adapter = mListingController.getListingViewAdapter()
     }
 }

@@ -38,12 +38,12 @@ interface ListingController<VO> {
     fun getStatusLayout(): IStatusLayout?
 
     /**
-     * 获取ViewModel
+     * 获取ListingViewModel
      */
-    fun getViewModel(): ListingViewModel<VO>
+    fun getListingViewModel(): ListingViewModel<VO>
 
     /**
-     * 获取ViewAdapter
+     * 获取ListingViewAdapter
      */
-    fun getViewAdapter(): ListingViewAdapter<VO>
+    fun getListingViewAdapter(): ListingViewAdapter<VO>
 }

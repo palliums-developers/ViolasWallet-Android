@@ -44,21 +44,6 @@ class PoolMiningEarningsFragment : BasePagingFragment<PoolMiningEarningDTO>() {
 
     private lateinit var mWalletAddress: String
 
-    private val viewModel by lazy {
-        ViewModelProvider(
-            this,
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                    return modelClass
-                        .getConstructor(String::class.java)
-                        .newInstance(mWalletAddress)
-                }
-            }
-        ).get(PoolMiningEarningsViewModel::class.java)
-    }
-    private val viewAdapter by lazy { ViewAdapter() }
-
-
     override fun getLayoutResId(): Int {
         return R.layout.fragment_pool_mining_earnings
     }
@@ -75,12 +60,21 @@ class PoolMiningEarningsFragment : BasePagingFragment<PoolMiningEarningDTO>() {
         return vStatusLayout
     }
 
-    override fun getViewModel(): PagingViewModel<PoolMiningEarningDTO> {
-        return viewModel
+    override fun lazyInitPagingViewModel(): PagingViewModel<PoolMiningEarningDTO> {
+        return ViewModelProvider(
+            this,
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    return modelClass
+                        .getConstructor(String::class.java)
+                        .newInstance(mWalletAddress)
+                }
+            }
+        ).get(PoolMiningEarningsViewModel::class.java)
     }
 
-    override fun getViewAdapter(): PagingViewAdapter<PoolMiningEarningDTO> {
-        return viewAdapter
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<PoolMiningEarningDTO> {
+        return ViewAdapter()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -108,8 +102,8 @@ class PoolMiningEarningsFragment : BasePagingFragment<PoolMiningEarningDTO>() {
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
 
-        mPagingHandler.init()
-        mPagingHandler.start()
+        getPagingHandler().init()
+        getPagingHandler().start()
     }
 
     class ViewAdapter : PagingViewAdapter<PoolMiningEarningDTO>() {

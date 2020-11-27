@@ -64,11 +64,11 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         }
     }
 
-    override fun getViewModel(): PagingViewModel<TransactionRecordVO> {
+    override fun getPagingViewModel(): PagingViewModel<TransactionRecordVO> {
         return mViewModel
     }
 
-    override fun getViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
+    override fun getPagingViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
         return mViewAdapter
     }
 

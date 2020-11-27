@@ -57,7 +57,7 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mPagingHandler.init()
+        getPagingHandler().init()
         setStatusLayout(false)
 
         llCoinFilter.setOnClickListener {
@@ -207,7 +207,7 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
     private fun onChangeFilter(coinFilter: Boolean, filter: Pair<Int, String>?) {
         getCurrFilterLiveData(coinFilter).value = filter
         if (WalletAppViewModel.getViewModelInstance().isExistsAccount()) {
-            mPagingHandler.restart()
+            getPagingHandler().restart()
         } else {
             statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
         }

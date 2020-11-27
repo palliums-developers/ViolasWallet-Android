@@ -92,11 +92,11 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
         )
     }
 
-    override fun getViewModel(): ListingViewModel<AddressBookDo> {
+    override fun getListingViewModel(): ListingViewModel<AddressBookDo> {
         return mViewModel
     }
 
-    override fun getViewAdapter(): ListingViewAdapter<AddressBookDo> {
+    override fun getListingViewAdapter(): ListingViewAdapter<AddressBookDo> {
         return mViewAdapter
     }
 

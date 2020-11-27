@@ -40,19 +40,16 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
         }
     }
 
-    private val viewModel by lazy {
-        ViewModelProvider(this).get(BankBorrowingRecordViewModel::class.java)
-    }
-    private val viewAdapter by lazy {
-        ViewAdapter()
+    override fun lazyInitPagingViewModel(): PagingViewModel<BorrowingRecordDTO> {
+        return ViewModelProvider(this).get(BankBorrowingRecordViewModel::class.java)
     }
 
-    override fun getViewModel(): PagingViewModel<BorrowingRecordDTO> {
-        return viewModel
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<BorrowingRecordDTO> {
+        return ViewAdapter()
     }
 
-    override fun getViewAdapter(): PagingViewAdapter<BorrowingRecordDTO> {
-        return viewAdapter
+    fun getViewModel(): BankBorrowingRecordViewModel {
+        return getPagingViewModel() as BankBorrowingRecordViewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,8 +57,8 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
 
         setTitle(R.string.borrowing_record)
         launch {
-            if (viewModel.initAddress()) {
-                mPagingHandler.start()
+            if (getViewModel().initAddress()) {
+                getPagingHandler().start()
             } else {
                 statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
             }
@@ -70,16 +67,16 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
 
     override fun getCurrFilterLiveData(coinFilter: Boolean): MutableLiveData<Pair<Int, String>?> {
         return if (coinFilter)
-            viewModel.currCoinFilterLiveData
+            getViewModel().currCoinFilterLiveData
         else
-            viewModel.currStateFilterLiveData
+            getViewModel().currStateFilterLiveData
     }
 
     override fun getFilterDataLiveData(coinFilter: Boolean): MutableLiveData<MutableList<String>> {
         return if (coinFilter)
-            viewModel.coinFilterDataLiveData
+            getViewModel().coinFilterDataLiveData
         else
-            viewModel.stateFilterDataLiveData
+            getViewModel().stateFilterDataLiveData
     }
 
     override fun loadFilterData(coinFilter: Boolean) {
@@ -87,14 +84,14 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
             launch {
                 showProgress()
                 try {
-                    viewModel.loadCoinFilterData()
+                    getViewModel().loadCoinFilterData()
                 } catch (e: Exception) {
                     showToast(e.getShowErrorMessage(true))
                 }
                 dismissProgress()
             }
         } else {
-            viewModel.loadStateFilterData()
+            getViewModel().loadStateFilterData()
         }
     }
 

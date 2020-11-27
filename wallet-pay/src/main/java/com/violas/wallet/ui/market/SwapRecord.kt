@@ -39,11 +39,12 @@ import java.util.*
  */
 class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
 
-    private val viewModel by lazy {
-        ViewModelProvider(this).get(SwapRecordViewModel::class.java)
+    override fun lazyInitPagingViewModel(): PagingViewModel<SwapRecordDTO> {
+        return ViewModelProvider(this).get(SwapRecordViewModel::class.java)
     }
-    private val viewAdapter by lazy {
-        SwapRecordViewAdapter(
+
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<SwapRecordDTO> {
+        return ViewAdapter(
             clickItemCallback = {
                 SwapDetailsActivity.start(this, it)
             },
@@ -53,19 +54,15 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
         )
     }
 
-    override fun getViewModel(): PagingViewModel<SwapRecordDTO> {
-        return viewModel
-    }
-
-    override fun getViewAdapter(): PagingViewAdapter<SwapRecordDTO> {
-        return viewAdapter
+    fun getViewModel(): SwapRecordViewModel {
+        return getPagingViewModel() as SwapRecordViewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.title_market_swap_records)
-        mPagingHandler.init()
+        getPagingHandler().init()
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
@@ -74,13 +71,13 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
                 }
 
                 launch {
-                    val initResult = viewModel.initAddress()
+                    val initResult = getViewModel().initAddress()
                     if (!initResult) {
                         initNotLoginView()
                         return@launch
                     }
 
-                    mPagingHandler.start()
+                    getPagingHandler().start()
                 }
             })
     }
@@ -89,6 +86,121 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
         getRefreshLayout()?.setEnableRefresh(false)
         getRefreshLayout()?.setEnableLoadMore(false)
         getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_EMPTY)
+    }
+
+    class ViewAdapter(
+        private val clickItemCallback: ((SwapRecordDTO) -> Unit)? = null,
+        private val clickRetryCallback: ((SwapRecordDTO, Int) -> Unit)? = null
+    ) : PagingViewAdapter<SwapRecordDTO>() {
+
+        private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
+
+        override fun onCreateViewHolderSupport(
+            parent: ViewGroup,
+            viewType: Int
+        ): BaseViewHolder<out Any> {
+            return ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_market_swap_record,
+                    parent,
+                    false
+                ),
+                simpleDateFormat,
+                clickItemCallback,
+                clickRetryCallback
+            )
+        }
+    }
+
+    class ViewHolder(
+        view: View,
+        private val simpleDateFormat: SimpleDateFormat,
+        private val clickItemCallback: ((SwapRecordDTO) -> Unit)? = null,
+        private val clickRetryCallback: ((SwapRecordDTO, Int) -> Unit)? = null
+    ) : BaseViewHolder<SwapRecordDTO>(view) {
+
+        init {
+            itemView.setOnClickListener(this)
+            itemView.tvRetry.setOnClickListener(this)
+        }
+
+        override fun onViewBind(itemPosition: Int, itemData: SwapRecordDTO?) {
+            itemData?.let {
+                itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
+
+                itemView.tvInputCoin.text =
+                    if (it.inputCoinDisplayName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
+                        getString(R.string.value_null)
+                    } else {
+                        "${
+                            convertAmountToDisplayAmountStr(
+                                it.inputCoinAmount,
+                                str2CoinType(it.inputChainName)
+                            )
+                        } ${it.inputCoinDisplayName}"
+                    }
+
+                itemView.tvOutputCoin.text =
+                    if (it.outputCoinDisplayName.isNullOrBlank() || it.outputCoinAmount.isNullOrBlank()) {
+                        getString(R.string.value_null)
+                    } else {
+                        "${
+                            convertAmountToDisplayAmountStr(
+                                it.outputCoinAmount,
+                                str2CoinType(it.outputChainName)
+                            )
+                        } ${it.outputCoinDisplayName}"
+                    }
+
+                when (it.status) {
+                    4001 -> {
+                        itemView.tvRetry.visibility = View.GONE
+                        itemView.tvState.setText(R.string.market_swap_state_succeeded)
+                        itemView.tvState.setTextColor(
+                            getColorByAttrId(R.attr.textColorSuccess, itemView.context)
+                        )
+                    }
+
+                    4002 -> {
+                        // TODO 取消先隐藏
+                        itemView.tvRetry.visibility = View.GONE
+                        itemView.tvRetry.expandTouchArea()
+                        itemView.tvState.setText(R.string.market_swap_state_processing)
+                        itemView.tvState.setTextColor(
+                            getColorByAttrId(R.attr.textColorProcessing, itemView.context)
+                        )
+                    }
+
+                    4004 -> {
+                        itemView.tvRetry.visibility = View.GONE
+                        itemView.tvState.setText(R.string.market_swap_state_cancelled)
+                        itemView.tvState.setTextColor(
+                            getColorByAttrId(android.R.attr.textColorTertiary, itemView.context)
+                        )
+                    }
+
+                    else -> {
+                        itemView.tvRetry.visibility = View.GONE
+                        itemView.tvState.setText(R.string.market_swap_state_failed)
+                        itemView.tvState.setTextColor(
+                            getColorByAttrId(R.attr.textColorFailure, itemView.context)
+                        )
+                    }
+                }
+            }
+        }
+
+        override fun onViewClick(view: View, itemPosition: Int, itemData: SwapRecordDTO?) {
+            itemData?.let {
+                when (view) {
+                    itemView -> clickItemCallback?.invoke(it)
+                    itemView.tvRetry -> clickRetryCallback?.invoke(it, itemPosition)
+                    else -> {
+                        // ignore
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -134,116 +246,5 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
             (pageNumber - 1) * pageSize
         )
         onSuccess.invoke(list, null)
-    }
-}
-
-class SwapRecordViewAdapter(
-    private val clickItemCallback: ((SwapRecordDTO) -> Unit)? = null,
-    private val clickRetryCallback: ((SwapRecordDTO, Int) -> Unit)? = null
-) : PagingViewAdapter<SwapRecordDTO>() {
-
-    private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
-
-    override fun onCreateViewHolderSupport(
-        parent: ViewGroup,
-        viewType: Int
-    ): BaseViewHolder<out Any> {
-        return SwapRecordViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_market_swap_record,
-                parent,
-                false
-            ),
-            simpleDateFormat,
-            clickItemCallback,
-            clickRetryCallback
-        )
-    }
-}
-
-class SwapRecordViewHolder(
-    view: View,
-    private val simpleDateFormat: SimpleDateFormat,
-    private val clickItemCallback: ((SwapRecordDTO) -> Unit)? = null,
-    private val clickRetryCallback: ((SwapRecordDTO, Int) -> Unit)? = null
-) : BaseViewHolder<SwapRecordDTO>(view) {
-
-    init {
-        itemView.setOnClickListener(this)
-        itemView.tvRetry.setOnClickListener(this)
-    }
-
-    override fun onViewBind(itemPosition: Int, itemData: SwapRecordDTO?) {
-        itemData?.let {
-            itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
-
-            itemView.tvInputCoin.text =
-                if (it.inputCoinDisplayName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
-                    getString(R.string.value_null)
-                } else {
-                    "${convertAmountToDisplayAmountStr(
-                        it.inputCoinAmount,
-                        str2CoinType(it.inputChainName)
-                    )} ${it.inputCoinDisplayName}"
-                }
-
-            itemView.tvOutputCoin.text =
-                if (it.outputCoinDisplayName.isNullOrBlank() || it.outputCoinAmount.isNullOrBlank()) {
-                    getString(R.string.value_null)
-                } else {
-                    "${convertAmountToDisplayAmountStr(
-                        it.outputCoinAmount,
-                        str2CoinType(it.outputChainName)
-                    )} ${it.outputCoinDisplayName}"
-                }
-
-            when (it.status) {
-                4001 -> {
-                    itemView.tvRetry.visibility = View.GONE
-                    itemView.tvState.setText(R.string.market_swap_state_succeeded)
-                    itemView.tvState.setTextColor(
-                        getColorByAttrId(R.attr.textColorSuccess, itemView.context)
-                    )
-                }
-
-                4002 -> {
-                    // TODO 取消先隐藏
-                    itemView.tvRetry.visibility = View.GONE
-                    itemView.tvRetry.expandTouchArea()
-                    itemView.tvState.setText(R.string.market_swap_state_processing)
-                    itemView.tvState.setTextColor(
-                        getColorByAttrId(R.attr.textColorProcessing, itemView.context)
-                    )
-                }
-
-                4004 -> {
-                    itemView.tvRetry.visibility = View.GONE
-                    itemView.tvState.setText(R.string.market_swap_state_cancelled)
-                    itemView.tvState.setTextColor(
-                        getColorByAttrId(android.R.attr.textColorTertiary, itemView.context)
-                    )
-                }
-
-                else -> {
-                    itemView.tvRetry.visibility = View.GONE
-                    itemView.tvState.setText(R.string.market_swap_state_failed)
-                    itemView.tvState.setTextColor(
-                        getColorByAttrId(R.attr.textColorFailure, itemView.context)
-                    )
-                }
-            }
-        }
-    }
-
-    override fun onViewClick(view: View, itemPosition: Int, itemData: SwapRecordDTO?) {
-        itemData?.let {
-            when (view) {
-                itemView -> clickItemCallback?.invoke(it)
-                itemView.tvRetry -> clickRetryCallback?.invoke(it, itemPosition)
-                else -> {
-                    // ignore
-                }
-            }
-        }
     }
 }

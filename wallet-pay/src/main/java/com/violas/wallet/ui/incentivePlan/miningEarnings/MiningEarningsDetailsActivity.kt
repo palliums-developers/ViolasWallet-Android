@@ -77,7 +77,9 @@ class MiningEarningsDetailsActivity : BaseAppActivity() {
     private fun initTopView() {
         setTitle(R.string.title_incentive_earnings_details)
         setTopBackgroundResource(getResourceId(R.attr.bgPageTopViewLight, this))
-        setTopBackgroundHeight(DensityUtility.dp2px(this, 153))
+        /*setTopBackgroundHeight(
+            StatusBarUtil.getStatusBarHeight() + DensityUtility.dp2px(this, 110)
+        )*/
     }
 
     private fun initChildView() {

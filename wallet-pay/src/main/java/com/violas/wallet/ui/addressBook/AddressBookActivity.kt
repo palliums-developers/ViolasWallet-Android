@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
+
     companion object {
         private const val EXT_COIN_TYPE = "a1"
         private const val EXT_IS_SELECTOR = "a2"
@@ -56,12 +57,12 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
     private var mCoinType = Int.MIN_VALUE
     private var mSelector = false
 
-    private val mViewModel by lazy {
-        ViewModelProvider(this).get(AddressBookViewModel::class.java)
+    override fun lazyInitListingViewModel(): ListingViewModel<AddressBookDo> {
+        return ViewModelProvider(this).get(AddressBookViewModel::class.java)
     }
 
-    private val mViewAdapter by lazy {
-        MyAdapter(
+    override fun lazyInitListingViewAdapter(): ListingViewAdapter<AddressBookDo> {
+        return ViewAdapter(
             mCallback = {
                 if (mSelector) {
                     setResult(
@@ -81,9 +82,9 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
 
                     showProgress()
                     launch(Dispatchers.IO + coroutineExceptionHandler()) {
-                        mViewModel.removeAddress(addressBook)
+                        getViewModel().removeAddress(addressBook)
                         withContext(Dispatchers.Main) {
-                            mViewModel.execute(mCoinType)
+                            getViewModel().execute(mCoinType)
                             dismissProgress()
                         }
                     }
@@ -93,12 +94,8 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
         )
     }
 
-    override fun getViewModel(): ListingViewModel<AddressBookDo> {
-        return mViewModel
-    }
-
-    override fun getViewAdapter(): ListingViewAdapter<AddressBookDo> {
-        return mViewAdapter
+    fun getViewModel(): AddressBookViewModel {
+        return getListingViewModel() as AddressBookViewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,13 +107,13 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
         mCoinType = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
         mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)
 
-        mListingHandler.init()
+        getListingHandler().init()
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             getString(R.string.tips_no_address)
         )
 
-        mViewModel.execute(mCoinType)
+        getViewModel().execute(mCoinType)
     }
 
     override fun onTitleRightViewClick() {
@@ -127,46 +124,26 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_ADD_COIN && resultCode == Activity.RESULT_OK) {
-            mViewModel.execute(mCoinType)
+            getViewModel().execute(mCoinType)
         }
     }
-}
 
-class AddressBookViewModel : ListingViewModel<AddressBookDo>() {
+    class ViewAdapter(
+        private val mCallback: (AddressBookDo) -> Unit,
+        private val mLongClickCallback: (position: Int, AddressBookDo) -> Unit
+    ) : ListingViewAdapter<AddressBookDo>() {
 
-    private val mAddressBookManager by lazy {
-        AddressBookManager()
-    }
-
-    @WorkerThread
-    fun removeAddress(addressBook: AddressBookDo) {
-        mAddressBookManager.remove(addressBook)
-    }
-
-    override suspend fun loadData(vararg params: Any): List<AddressBookDo> {
-        return mAddressBookManager.loadAddressBook(params[0] as Int)
-    }
-
-    override fun checkNetworkBeforeExecute(): Boolean {
-        return false
-    }
-}
-
-class MyAdapter(
-    private val mCallback: (AddressBookDo) -> Unit,
-    private val mLongClickCallback: (position: Int, AddressBookDo) -> Unit
-) : ListingViewAdapter<AddressBookDo>() {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_address_book,
-                parent,
-                false
-            ),
-            mCallback,
-            mLongClickCallback
-        )
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            return ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_address_book,
+                    parent,
+                    false
+                ),
+                mCallback,
+                mLongClickCallback
+            )
+        }
     }
 
     class ViewHolder(
@@ -201,5 +178,25 @@ class MyAdapter(
                 }
             }
         }
+    }
+}
+
+class AddressBookViewModel : ListingViewModel<AddressBookDo>() {
+
+    private val mAddressBookManager by lazy {
+        AddressBookManager()
+    }
+
+    @WorkerThread
+    fun removeAddress(addressBook: AddressBookDo) {
+        mAddressBookManager.remove(addressBook)
+    }
+
+    override suspend fun loadData(vararg params: Any): List<AddressBookDo> {
+        return mAddressBookManager.loadAddressBook(params[0] as Int)
+    }
+
+    override fun checkNetworkBeforeExecute(): Boolean {
+        return false
     }
 }

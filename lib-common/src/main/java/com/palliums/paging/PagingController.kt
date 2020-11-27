@@ -28,12 +28,12 @@ interface PagingController<VO> {
     fun getStatusLayout(): IStatusLayout?
 
     /**
-     * 获取ViewModel
+     * 获取PagingViewModel
      */
-    fun getViewModel(): PagingViewModel<VO>
+    fun getPagingViewModel(): PagingViewModel<VO>
 
     /**
-     * 获取ViewAdapter
+     * 获取PagingViewAdapter
      */
-    fun getViewAdapter(): PagingViewAdapter<VO>
+    fun getPagingViewAdapter(): PagingViewAdapter<VO>
 }

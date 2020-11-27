@@ -36,28 +36,25 @@ import java.util.*
  */
 class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
 
-    private val viewModel by lazy {
-        ViewModelProvider(this).get(PoolRecordViewModel::class.java)
+    override fun lazyInitPagingViewModel(): PagingViewModel<PoolRecordDTO> {
+        return ViewModelProvider(this).get(PoolRecordViewModel::class.java)
     }
-    private val viewAdapter by lazy {
-        PoolRecordViewAdapter {
+
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<PoolRecordDTO> {
+        return ViewAdapter {
             PoolDetailsActivity.start(this, it)
         }
     }
 
-    override fun getViewModel(): PagingViewModel<PoolRecordDTO> {
-        return viewModel
-    }
-
-    override fun getViewAdapter(): PagingViewAdapter<PoolRecordDTO> {
-        return viewAdapter
+    fun getViewModel(): PoolRecordViewModel {
+        return getPagingViewModel() as PoolRecordViewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.title_market_pool_records)
-        mPagingHandler.init()
+        getPagingHandler().init()
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
@@ -66,13 +63,13 @@ class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
                 }
 
                 launch {
-                    val initResult = viewModel.initAddress()
+                    val initResult = getViewModel().initAddress()
                     if (!initResult) {
                         initNotLoginView()
                         return@launch
                     }
 
-                    mPagingHandler.start()
+                    getPagingHandler().start()
                 }
             })
     }
@@ -81,6 +78,121 @@ class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
         getRefreshLayout()?.setEnableRefresh(false)
         getRefreshLayout()?.setEnableLoadMore(false)
         getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_EMPTY)
+    }
+
+    class ViewAdapter(
+        private val clickItemCallback: ((PoolRecordDTO) -> Unit)? = null
+    ) : PagingViewAdapter<PoolRecordDTO>() {
+
+        private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
+
+        override fun onCreateViewHolderSupport(
+            parent: ViewGroup,
+            viewType: Int
+        ): BaseViewHolder<out Any> {
+            return ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_market_pool_record,
+                    parent,
+                    false
+                ),
+                simpleDateFormat,
+                clickItemCallback
+            )
+        }
+    }
+
+    class ViewHolder(
+        view: View,
+        private val simpleDateFormat: SimpleDateFormat,
+        private val clickItemCallback: ((PoolRecordDTO) -> Unit)? = null
+    ) : BaseViewHolder<PoolRecordDTO>(view) {
+
+        init {
+            itemView.setOnClickListener(this)
+        }
+
+        override fun onViewBind(itemPosition: Int, itemData: PoolRecordDTO?) {
+            itemData?.let {
+                itemView.tvTime.text = formatDate(
+                    correctDateLength(it.confirmedTime) - 1000,
+                    simpleDateFormat
+                )
+
+                itemView.tvAToken.text =
+                    if (it.coinAName.isNullOrBlank() || it.coinAAmount.isNullOrBlank()) {
+                        getString(R.string.value_null)
+                    } else {
+                        "${convertAmountToDisplayAmountStr(it.coinAAmount)} ${it.coinAName}"
+                    }
+
+                itemView.tvBToken.text =
+                    if (it.coinBName.isNullOrBlank() || it.coinBAmount.isNullOrBlank()) {
+                        getString(R.string.value_null)
+                    } else {
+                        "${convertAmountToDisplayAmountStr(it.coinBAmount)} ${it.coinBName}"
+                    }
+
+                itemView.ivIcon.setBackgroundResource(
+                    getResourceId(
+                        if (it.isAddLiquidity())
+                            R.attr.iconRecordTypeInput
+                        else
+                            R.attr.iconRecordTypeOutput,
+                        itemView.context
+                    )
+                )
+
+                itemView.tvLiquidity.text =
+                    if (it.liquidityAmount.isNullOrBlank()) {
+                        getString(R.string.value_null)
+                    } else {
+                        val amount = BigDecimal(it.liquidityAmount)
+                        getString(
+                            R.string.market_liquidity_token_amount_format,
+                            "${
+                                getAmountPrefix(
+                                    amount,
+                                    it.isAddLiquidity()
+                                )
+                            }${convertAmountToDisplayAmountStr(amount)}"
+                        )
+                    }
+
+                if (it.isSuccess()) {
+                    itemView.tvState.setText(
+                        if (it.isAddLiquidity())
+                            R.string.market_pool_add_state_succeeded
+                        else
+                            R.string.market_pool_remove_state_succeeded
+                    )
+                    itemView.tvState.setTextColor(
+                        getColorByAttrId(R.attr.textColorSuccess, itemView.context)
+                    )
+                } else {
+                    itemView.tvState.setText(
+                        if (it.isAddLiquidity())
+                            R.string.market_pool_add_state_failed
+                        else
+                            R.string.market_pool_remove_state_failed
+                    )
+                    itemView.tvState.setTextColor(
+                        getColorByAttrId(R.attr.textColorFailure, itemView.context)
+                    )
+                }
+            }
+        }
+
+        override fun onViewClick(view: View, itemPosition: Int, itemData: PoolRecordDTO?) {
+            itemData?.let {
+                when (view) {
+                    itemView -> clickItemCallback?.invoke(it)
+                    else -> {
+                        // ignore
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -110,118 +222,5 @@ class PoolRecordViewModel : PagingViewModel<PoolRecordDTO>() {
                 address, pageSize, (pageNumber - 1) * pageSize
             )
         onSuccess.invoke(swapRecords ?: emptyList(), null)
-    }
-}
-
-class PoolRecordViewAdapter(
-    private val clickItemCallback: ((PoolRecordDTO) -> Unit)? = null
-) : PagingViewAdapter<PoolRecordDTO>() {
-
-    private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
-
-    override fun onCreateViewHolderSupport(
-        parent: ViewGroup,
-        viewType: Int
-    ): BaseViewHolder<out Any> {
-        return PoolRecordViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_market_pool_record,
-                parent,
-                false
-            ),
-            simpleDateFormat,
-            clickItemCallback
-        )
-    }
-}
-
-class PoolRecordViewHolder(
-    view: View,
-    private val simpleDateFormat: SimpleDateFormat,
-    private val clickItemCallback: ((PoolRecordDTO) -> Unit)? = null
-) : BaseViewHolder<PoolRecordDTO>(view) {
-
-    init {
-        itemView.setOnClickListener(this)
-    }
-
-    override fun onViewBind(itemPosition: Int, itemData: PoolRecordDTO?) {
-        itemData?.let {
-            itemView.tvTime.text = formatDate(
-                correctDateLength(it.confirmedTime) - 1000,
-                simpleDateFormat
-            )
-
-            itemView.tvAToken.text =
-                if (it.coinAName.isNullOrBlank() || it.coinAAmount.isNullOrBlank()) {
-                    getString(R.string.value_null)
-                } else {
-                    "${convertAmountToDisplayAmountStr(it.coinAAmount)} ${it.coinAName}"
-                }
-
-            itemView.tvBToken.text =
-                if (it.coinBName.isNullOrBlank() || it.coinBAmount.isNullOrBlank()) {
-                    getString(R.string.value_null)
-                } else {
-                    "${convertAmountToDisplayAmountStr(it.coinBAmount)} ${it.coinBName}"
-                }
-
-            itemView.ivIcon.setBackgroundResource(
-                getResourceId(
-                    if (it.isAddLiquidity())
-                        R.attr.iconRecordTypeInput
-                    else
-                        R.attr.iconRecordTypeOutput,
-                    itemView.context
-                )
-            )
-
-            itemView.tvLiquidity.text =
-                if (it.liquidityAmount.isNullOrBlank()) {
-                    getString(R.string.value_null)
-                } else {
-                    val amount = BigDecimal(it.liquidityAmount)
-                    getString(
-                        R.string.market_liquidity_token_amount_format,
-                        "${getAmountPrefix(
-                            amount,
-                            it.isAddLiquidity()
-                        )}${convertAmountToDisplayAmountStr(amount)}"
-                    )
-                }
-
-            if (it.isSuccess()) {
-                itemView.tvState.setText(
-                    if (it.isAddLiquidity())
-                        R.string.market_pool_add_state_succeeded
-                    else
-                        R.string.market_pool_remove_state_succeeded
-                )
-                itemView.tvState.setTextColor(
-                    getColorByAttrId(R.attr.textColorSuccess, itemView.context)
-                )
-            } else {
-                itemView.tvState.setText(
-                    if (it.isAddLiquidity())
-                        R.string.market_pool_add_state_failed
-                    else
-                        R.string.market_pool_remove_state_failed
-                )
-                itemView.tvState.setTextColor(
-                    getColorByAttrId(R.attr.textColorFailure, itemView.context)
-                )
-            }
-        }
-    }
-
-    override fun onViewClick(view: View, itemPosition: Int, itemData: PoolRecordDTO?) {
-        itemData?.let {
-            when (view) {
-                itemView -> clickItemCallback?.invoke(it)
-                else -> {
-                    // ignore
-                }
-            }
-        }
     }
 }

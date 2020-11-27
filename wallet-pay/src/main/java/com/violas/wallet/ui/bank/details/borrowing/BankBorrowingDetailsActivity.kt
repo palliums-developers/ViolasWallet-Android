@@ -108,7 +108,9 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
 
     private fun initTopView() {
         setTopBackgroundResource(getResourceId(R.attr.bgPageTopViewLight, this))
-        setTopBackgroundHeight(DensityUtility.dp2px(this, 153))
+        /*setTopBackgroundHeight(
+            StatusBarUtil.getStatusBarHeight() + DensityUtility.dp2px(this, 110)
+        )*/
     }
 
     private fun initBorrowingInfoView() {

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
@@ -68,21 +69,21 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
         WalletAppViewModel.getViewModelInstance(this)
     }
 
-    private val viewModel by lazy {
-        ViewModelProvider(
+    override fun lazyInitListingViewModel(): ListingViewModel<AssertOriginateToken> {
+        return ViewModelProvider(
             this,
             object : ViewModelProvider.Factory {
-                override fun <T : androidx.lifecycle.ViewModel?> create(modelClass: Class<T>): T {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return modelClass
                         .getConstructor(TokenManager::class.java)
                         .newInstance(mTokenManager)
                 }
             }
-        ).get(ViewModel::class.java)
+        ).get(ManagerAssertViewModel::class.java)
     }
 
-    private val viewAdapter by lazy {
-        ViewAdapter { checkbox, checked, assertToken ->
+    override fun lazyInitListingViewAdapter(): ListingViewAdapter<AssertOriginateToken> {
+        return ViewAdapter { checkbox, checked, assertToken ->
             mChange = true
             if (checked) {
                 openToken(checkbox, checked, assertToken)
@@ -92,14 +93,6 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                 }
             }
         }
-    }
-
-    override fun getViewModel(): ListingViewModel<AssertOriginateToken> {
-        return viewModel
-    }
-
-    override fun getViewAdapter(): ListingViewAdapter<AssertOriginateToken> {
-        return viewAdapter
     }
 
     override fun enableRefresh(): Boolean {
@@ -120,11 +113,11 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
             )
         )
 
-        mListingHandler.init()
+        getListingHandler().init()
         getRefreshLayout()?.setOnRefreshListener {
-            viewModel.execute()
+            getListingViewModel().execute()
         }
-        viewModel.execute()
+        getListingViewModel().execute()
     }
 
     private suspend fun isPublish(
@@ -253,19 +246,6 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
         super.onBackPressedSupport()
     }
 
-    class ViewModel(
-        private val tokenManager: TokenManager
-    ) : ListingViewModel<AssertOriginateToken>() {
-
-        override suspend fun loadData(vararg params: Any): List<AssertOriginateToken> {
-            return tokenManager.loadSupportToken()
-        }
-
-        override fun checkNetworkBeforeExecute(): Boolean {
-            return false
-        }
-    }
-
     class ViewAdapter(
         private val callbacks: (SwitchButton, Boolean, AssertOriginateToken) -> Unit
     ) : ListingViewAdapter<AssertOriginateToken>() {
@@ -327,5 +307,18 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                 )
             }
         }
+    }
+}
+
+class ManagerAssertViewModel(
+    private val tokenManager: TokenManager
+) : ListingViewModel<AssertOriginateToken>() {
+
+    override suspend fun loadData(vararg params: Any): List<AssertOriginateToken> {
+        return tokenManager.loadSupportToken()
+    }
+
+    override fun checkNetworkBeforeExecute(): Boolean {
+        return false
     }
 }

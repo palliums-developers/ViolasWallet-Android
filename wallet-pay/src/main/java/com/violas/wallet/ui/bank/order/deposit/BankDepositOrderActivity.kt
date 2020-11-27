@@ -42,17 +42,11 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
         }
     }
 
-    private val viewModel by lazy {
-        ViewModelProvider(this).get(BankDepositOrderViewModel::class.java)
-    }
-    private val viewAdapter by lazy {
-        ViewAdapter(withdrawalCallback)
-    }
     private val withdrawalCallback: (DepositInfoDTO, Int) -> Unit = { depositInfo, position ->
         launch {
             try {
                 showProgress()
-                val depositDetails = viewModel.getDepositDetails(depositInfo)
+                val depositDetails = getViewModel().getDepositDetails(depositInfo)
                 dismissProgress()
                 BankWithdrawalDialog.newInstance(depositInfo.productId, depositDetails)
                     .show(supportFragmentManager)
@@ -63,12 +57,16 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
         }
     }
 
-    override fun getViewModel(): PagingViewModel<DepositInfoDTO> {
-        return viewModel
+    override fun lazyInitPagingViewModel(): PagingViewModel<DepositInfoDTO> {
+        return ViewModelProvider(this).get(BankDepositOrderViewModel::class.java)
     }
 
-    override fun getViewAdapter(): PagingViewAdapter<DepositInfoDTO> {
-        return viewAdapter
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<DepositInfoDTO> {
+        return ViewAdapter(withdrawalCallback)
+    }
+
+    private fun getViewModel(): BankDepositOrderViewModel {
+        return getPagingViewModel() as BankDepositOrderViewModel
     }
 
     override fun onTitleRightViewClick() {
@@ -83,8 +81,8 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
         tvLabel.setText(R.string.current_deposit)
 
         launch {
-            if (viewModel.initAddress()) {
-                mPagingHandler.start()
+            if (getViewModel().initAddress()) {
+                getPagingHandler().start()
             } else {
                 statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
             }

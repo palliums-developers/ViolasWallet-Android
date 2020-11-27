@@ -49,20 +49,6 @@ class CoinLiquidationRecordFragment : BaseCoinTxRecordFragment<CoinLiquidationRe
         }
     }
 
-    private val viewModel by lazy {
-        ViewModelProvider(
-            this,
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                    return modelClass
-                        .getConstructor(String::class.java, String::class.java)
-                        .newInstance(mProductId, mWalletAddress)
-                }
-            }
-        ).get(CoinLiquidationRecordViewModel::class.java)
-    }
-    private val viewAdapter by lazy { ViewAdapter(mCurrency) }
-
     override fun getLayoutResId(): Int {
         return R.layout.fragment_bank_coin_liquidation_record
     }
@@ -79,12 +65,21 @@ class CoinLiquidationRecordFragment : BaseCoinTxRecordFragment<CoinLiquidationRe
         return vStatusLayout
     }
 
-    override fun getViewModel(): PagingViewModel<CoinLiquidationRecordDTO> {
-        return viewModel
+    override fun lazyInitPagingViewModel(): PagingViewModel<CoinLiquidationRecordDTO> {
+        return ViewModelProvider(
+            this,
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    return modelClass
+                        .getConstructor(String::class.java, String::class.java)
+                        .newInstance(mProductId, mWalletAddress)
+                }
+            }
+        ).get(CoinLiquidationRecordViewModel::class.java)
     }
 
-    override fun getViewAdapter(): PagingViewAdapter<CoinLiquidationRecordDTO> {
-        return viewAdapter
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<CoinLiquidationRecordDTO> {
+        return ViewAdapter(mCurrency)
     }
 
     class ViewAdapter(

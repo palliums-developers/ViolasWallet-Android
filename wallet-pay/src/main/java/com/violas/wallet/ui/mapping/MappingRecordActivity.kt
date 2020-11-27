@@ -29,40 +29,37 @@ import java.util.*
  */
 class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
 
-    private val viewModel by lazy {
-        ViewModelProvider(this).get(MappingRecordViewModel::class.java)
+    override fun lazyInitPagingViewModel(): PagingViewModel<MappingRecordDTO> {
+        return ViewModelProvider(this).get(MappingRecordViewModel::class.java)
     }
-    private val viewAdapter by lazy {
-        MappingRecordViewAdapter {
+
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<MappingRecordDTO> {
+        return ViewAdapter {
             // TODO 点击处理
         }
     }
 
-    override fun getViewModel(): PagingViewModel<MappingRecordDTO> {
-        return viewModel
-    }
-
-    override fun getViewAdapter(): PagingViewAdapter<MappingRecordDTO> {
-        return viewAdapter
+    fun getViewModel(): MappingRecordViewModel {
+        return getPagingViewModel() as MappingRecordViewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.mapping_record)
-        mPagingHandler.init()
+        getPagingHandler().init()
 
         launch {
-            val initResult = viewModel.initAddress()
+            val initResult = getViewModel().initAddress()
             if (initResult) {
-                mPagingHandler.start()
+                getPagingHandler().start()
             } else {
                 close()
             }
         }
     }
 
-    class MappingRecordViewAdapter(
+    class ViewAdapter(
         private val clickItemCallback: ((MappingRecordDTO) -> Unit)? = null
     ) : PagingViewAdapter<MappingRecordDTO>() {
 
@@ -72,7 +69,7 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
             parent: ViewGroup,
             viewType: Int
         ): BaseViewHolder<out Any> {
-            return MappingRecordViewHolder(
+            return ViewHolder(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_mapping_record,
                     parent,
@@ -84,7 +81,7 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
         }
     }
 
-    class MappingRecordViewHolder(
+    class ViewHolder(
         view: View,
         private val simpleDateFormat: SimpleDateFormat,
         private val clickItemCallback: ((MappingRecordDTO) -> Unit)? = null
@@ -104,10 +101,12 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
                     ) {
                         getString(R.string.value_null)
                     } else {
-                        "${convertAmountToDisplayAmountStr(
-                            it.inputCoinAmount,
-                            str2CoinType(it.inputChainName)
-                        )} ${it.inputCoinDisplayName}"
+                        "${
+                            convertAmountToDisplayAmountStr(
+                                it.inputCoinAmount,
+                                str2CoinType(it.inputChainName)
+                            )
+                        } ${it.inputCoinDisplayName}"
                     }
 
                 itemView.tvOutputCoin.text =
@@ -116,10 +115,12 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
                     ) {
                         getString(R.string.value_null)
                     } else {
-                        "${convertAmountToDisplayAmountStr(
-                            it.outputCoinAmount,
-                            str2CoinType(it.outputChainName)
-                        )} ${it.outputCoinDisplayName}"
+                        "${
+                            convertAmountToDisplayAmountStr(
+                                it.outputCoinAmount,
+                                str2CoinType(it.outputChainName)
+                            )
+                        } ${it.outputCoinDisplayName}"
                     }
 
                 itemView.tvMinerFees.text =

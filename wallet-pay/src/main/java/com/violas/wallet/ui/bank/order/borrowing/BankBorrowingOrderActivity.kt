@@ -39,22 +39,18 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<BorrowingInfoDTO>() {
         }
     }
 
-
-    private val viewModel by lazy {
-        ViewModelProvider(this).get(BankBorrowingOrderViewModel::class.java)
+    override fun lazyInitPagingViewModel(): PagingViewModel<BorrowingInfoDTO> {
+        return ViewModelProvider(this).get(BankBorrowingOrderViewModel::class.java)
     }
-    private val viewAdapter by lazy {
-        ViewAdapter { borrowingInfo, position ->
+
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<BorrowingInfoDTO> {
+        return ViewAdapter { borrowingInfo, position ->
             BankBorrowingDetailsActivity.start(this, borrowingInfo)
         }
     }
 
-    override fun getViewModel(): PagingViewModel<BorrowingInfoDTO> {
-        return viewModel
-    }
-
-    override fun getViewAdapter(): PagingViewAdapter<BorrowingInfoDTO> {
-        return viewAdapter
+    private fun getViewModel(): BankBorrowingOrderViewModel {
+        return getPagingViewModel() as BankBorrowingOrderViewModel
     }
 
     override fun onTitleRightViewClick() {
@@ -69,8 +65,8 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<BorrowingInfoDTO>() {
         tvLabel.setText(R.string.current_borrowing)
 
         launch {
-            if (viewModel.initAddress()) {
-                viewModel.start()
+            if (getViewModel().initAddress()) {
+                getPagingHandler().start()
             } else {
                 statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
             }

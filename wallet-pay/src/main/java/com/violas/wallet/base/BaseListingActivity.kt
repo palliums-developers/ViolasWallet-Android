@@ -3,6 +3,8 @@ package com.violas.wallet.base
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.listing.ListingController
 import com.palliums.listing.ListingHandler
+import com.palliums.listing.ListingViewAdapter
+import com.palliums.listing.ListingViewModel
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
@@ -16,8 +18,16 @@ import kotlinx.android.synthetic.main.activity_base_list.*
  */
 abstract class BaseListingActivity<VO> : BaseAppActivity(), ListingController<VO> {
 
-    protected val mListingHandler by lazy {
+    private val mListingHandler by lazy {
         ListingHandler(this, this, this)
+    }
+
+    private val mListingViewModel by lazy {
+        lazyInitListingViewModel()
+    }
+
+    private val mListingViewAdapter by lazy {
+        lazyInitListingViewAdapter()
     }
 
     /**
@@ -47,4 +57,20 @@ abstract class BaseListingActivity<VO> : BaseAppActivity(), ListingController<VO
     override fun getStatusLayout(): IStatusLayout? {
         return vStatusLayout
     }
+
+    override fun getListingViewModel(): ListingViewModel<VO> {
+        return mListingViewModel
+    }
+
+    override fun getListingViewAdapter(): ListingViewAdapter<VO> {
+        return mListingViewAdapter
+    }
+
+    fun getListingHandler(): ListingHandler<VO> {
+        return mListingHandler
+    }
+
+    abstract fun lazyInitListingViewModel(): ListingViewModel<VO>
+
+    abstract fun lazyInitListingViewAdapter(): ListingViewAdapter<VO>
 }
