@@ -49,7 +49,7 @@ dependencies {
     androidTestImplementation libraries.androidTest_espresso
 
     implementation project(':lib-common')
-    api ('org.palliums.lib:violas-core:0.0.1')
+    api ('org.palliums.lib:violas-core:0.0.2')
 
     api libraries.okhttp3
     api libraries.okhttp3_logging_interceptor
