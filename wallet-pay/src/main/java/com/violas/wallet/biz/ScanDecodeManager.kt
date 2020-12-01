@@ -9,6 +9,7 @@ import com.violas.wallet.repository.DataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.palliums.violascore.wallet.IntentIdentifier
 import java.util.*
 
 enum class ScanCodeType {
@@ -61,7 +62,16 @@ fun decodeScanQRCode(
             return@launch
         }
 
-        val tranQRCode = decodeTranQRCode(msg)
+        val tranQRCode = try {
+            try {
+                decodeViolasQRCode(msg)
+            } catch (e: Exception) {
+                decodeLibraQRCode(msg)
+            }
+        } catch (e: Exception) {
+            decodeTranQRCode(msg)
+        }
+
         var scanType = ScanCodeType.Address
         val coinType = when (tranQRCode.coinType?.toLowerCase(Locale.CHINA)) {
             CoinTypes.Bitcoin.fullName().toLowerCase(Locale.CHINA) -> {
@@ -127,8 +137,32 @@ private data class TranQRCode(
     val tokenName: String? = null
 )
 
+private fun decodeLibraQRCode(msg: String): TranQRCode {
+    val decode = org.palliums.libracore.wallet.IntentIdentifier.decode(msg)
+
+    return TranQRCode(
+        "libra",
+        decode.getAccountIdentifier().getAccountAddress().toHex(),
+        decode.getAmount(),
+        "",
+        decode.getCurrency()
+    )
+}
+
+private fun decodeViolasQRCode(msg: String): TranQRCode {
+    val decode = IntentIdentifier.decode(msg)
+
+    return TranQRCode(
+        "violas",
+        decode.getAccountIdentifier().getAccountAddress().toHex(),
+        decode.getAmount(),
+        null,
+        decode.getCurrency()
+    )
+}
+
 private fun decodeTranQRCode(msg: String): TranQRCode {
-    if (!msg.contains(":")) {
+    if (!msg.contains(":") || msg.contains("://")) {
         return TranQRCode(null, msg)
     }
     var tokenName: String? = null
@@ -136,14 +170,7 @@ private fun decodeTranQRCode(msg: String): TranQRCode {
     val coinType = if (coinTypeSplit[0].isEmpty()) {
         null
     } else {
-        val prefix = coinTypeSplit[0].toLowerCase(Locale.CHINA)
-        if (prefix.indexOf("-") != -1) {
-            val split = prefix.split("-")
-            tokenName = split[1]
-            split[0]
-        } else {
-            prefix
-        }
+        coinTypeSplit[0].toLowerCase(Locale.CHINA)
     }
     val addressSplit = coinTypeSplit[1].split("?")
     var amount = 0L
@@ -166,7 +193,7 @@ private fun decodeTranQRCode(msg: String): TranQRCode {
                 }
             }
     }
-    return TranQRCode(coinType, addressSplit[0], amount, label, tokenName)
+    return TranQRCode(coinType, addressSplit[0], amount, label)
 }
 
 private data class LoginQRCode(
