@@ -29,6 +29,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.palliums.libracore.transaction.AccountAddress
+import org.palliums.libracore.wallet.AccountIdentifier
+import org.palliums.libracore.wallet.IntentIdentifier
+import org.palliums.violascore.serialization.hexToBytes
 import java.util.*
 
 class MultiCollectionActivity : BaseAppActivity(),
@@ -129,32 +133,52 @@ class MultiCollectionActivity : BaseAppActivity(),
                     }
                 }
 
-                val prefix = if (assets is AssetsTokenVo) {
-                    val tokenDo = mTokenManager.findTokenById(assets.getId())
-                    if (tokenDo != null) {
-                        withContext(Dispatchers.Main) {
-//                        tvWalletName.text = "${currentAccount.walletNickname}-${tokenDo.name}"
-                        }
-                        "-${tokenDo.name.toLowerCase(Locale.CHINA)}"
-                    } else {
-                        ""
+                val collectionAddress = when (currentAccount.coinNumber) {
+                    CoinTypes.Bitcoin.coinType(), CoinTypes.BitcoinTest.coinType() -> {
+                        "${
+                            CoinTypes.parseCoinType(currentAccount.coinNumber).fullName()
+                                .toLowerCase(Locale.CHINA)
+                        }:${currentAccount.address}"
                     }
-                } else {
-                    ""
+                    CoinTypes.Libra.coinType() -> {
+                        val tokenDo = mTokenManager.findTokenById(assets.getId())
+                        val network = if (Vm.TestNet) {
+                            AccountIdentifier.NetworkPrefix.TestnetPrefix
+                        } else {
+                            AccountIdentifier.NetworkPrefix.MainnetPrefix
+                        }
+                        IntentIdentifier(
+                            AccountIdentifier(
+                                network,
+                                AccountAddress(currentAccount.address.hexToBytes())
+                            ), currency = tokenDo?.name
+                        ).encode()
+                    }
+                    CoinTypes.Violas.coinType() -> {
+                        val tokenDo = mTokenManager.findTokenById(assets.getId())
+                        val network = if (Vm.TestNet) {
+                            org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.TestnetPrefix
+                        } else {
+                            org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.MainnetPrefix
+                        }
+                        org.palliums.violascore.wallet.IntentIdentifier(
+                            org.palliums.violascore.wallet.AccountIdentifier(
+                                network,
+                                org.palliums.violascore.transaction.AccountAddress(currentAccount.address.hexToBytes())
+                            ), currency = tokenDo?.name
+                        ).encode()
+                    }
+                    else -> null
                 }
-
-                val collectionAddress =
-                    "${
-                    CoinTypes.parseCoinType(currentAccount.coinNumber).fullName()
-                        .toLowerCase(Locale.CHINA)
-                    }${prefix}:${currentAccount.address}"
-                val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
-                    collectionAddress,
-                    DensityUtility.dp2px(this@MultiCollectionActivity, 164),
-                    null
-                )
-                withContext(Dispatchers.Main) {
-                    ivQRCode.setImageBitmap(createQRCodeBitmap)
+                collectionAddress?.let {
+                    val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
+                        collectionAddress,
+                        DensityUtility.dp2px(this@MultiCollectionActivity, 164),
+                        null
+                    )
+                    withContext(Dispatchers.Main) {
+                        ivQRCode.setImageBitmap(createQRCodeBitmap)
+                    }
                 }
             }
         })

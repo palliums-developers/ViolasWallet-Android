@@ -11,11 +11,16 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.common.Vm
 import com.violas.wallet.utils.ClipboardUtils
 import kotlinx.android.synthetic.main.activity_collection.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.palliums.libracore.transaction.AccountAddress
+import org.palliums.libracore.wallet.AccountIdentifier
+import org.palliums.libracore.wallet.IntentIdentifier
+import org.palliums.violascore.serialization.hexToBytes
 import java.util.*
 
 
@@ -88,30 +93,52 @@ class CollectionActivity : BaseAppActivity() {
                 }
             }
 
-            val prefix = if (isToken) {
-                val tokenDo = mTokenManager.findTokenById(mTokenId)
-                if (tokenDo != null) {
-                    withContext(Dispatchers.Main) {
-//                        tvWalletName.text = "${currentAccount.walletNickname}-${tokenDo.name}"
-                    }
-                    "-${tokenDo.name.toLowerCase(Locale.CHINA)}"
-                } else {
-                    ""
+            val collectionAddress = when (currentAccount.coinNumber) {
+                CoinTypes.Bitcoin.coinType(), CoinTypes.BitcoinTest.coinType() -> {
+                    "${
+                        CoinTypes.parseCoinType(currentAccount.coinNumber).fullName()
+                            .toLowerCase(Locale.CHINA)
+                    }:${currentAccount.address}"
                 }
-            } else {
-                ""
+                CoinTypes.Libra.coinType() -> {
+                    val tokenDo = mTokenManager.findTokenById(mTokenId)
+                    val network = if (Vm.TestNet) {
+                        AccountIdentifier.NetworkPrefix.TestnetPrefix
+                    } else {
+                        AccountIdentifier.NetworkPrefix.MainnetPrefix
+                    }
+                    IntentIdentifier(
+                        AccountIdentifier(
+                            network,
+                            AccountAddress(currentAccount.address.hexToBytes())
+                        ), currency = tokenDo?.name
+                    ).encode()
+                }
+                CoinTypes.Violas.coinType() -> {
+                    val tokenDo = mTokenManager.findTokenById(mTokenId)
+                    val network = if (Vm.TestNet) {
+                        org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.TestnetPrefix
+                    } else {
+                        org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.MainnetPrefix
+                    }
+                    org.palliums.violascore.wallet.IntentIdentifier(
+                        org.palliums.violascore.wallet.AccountIdentifier(
+                            network,
+                            org.palliums.violascore.transaction.AccountAddress(currentAccount.address.hexToBytes())
+                        ), currency = tokenDo?.name
+                    ).encode()
+                }
+                else -> null
             }
-
-            val collectionAddress =
-                "${CoinTypes.parseCoinType(currentAccount.coinNumber).fullName()
-                    .toLowerCase(Locale.CHINA)}${prefix}:${currentAccount.address}"
-            val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
-                collectionAddress,
-                DensityUtility.dp2px(this@CollectionActivity, 164),
-                null
-            )
-            withContext(Dispatchers.Main) {
-                ivQRCode.setImageBitmap(createQRCodeBitmap)
+            collectionAddress?.let {
+                val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
+                    collectionAddress,
+                    DensityUtility.dp2px(this@CollectionActivity, 164),
+                    null
+                )
+                withContext(Dispatchers.Main) {
+                    ivQRCode.setImageBitmap(createQRCodeBitmap)
+                }
             }
         }
     }
