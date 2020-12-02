@@ -360,5 +360,33 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clPhoneReceive"
+        android:layout_width="@dimen/dp_50"
+        android:layout_height="@dimen/dp_55"
+        android:layout_marginEnd="@dimen/dp_22"
+        android:background="?attr/walletHomePhoneReceiveBg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.68">
+
+        <TextView
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_19"
+            android:layout_marginHorizontal="@dimen/dp_5"
+            android:gravity="center"
+            android:text="@string/home_wallet_phone_receive_title"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="@dimen/fs_10"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

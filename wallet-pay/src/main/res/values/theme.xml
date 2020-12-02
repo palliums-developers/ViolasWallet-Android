@@ -191,6 +191,7 @@
         <item name="walletBackupNowHintBg">@drawable/bg_view_backup_now_wallet</item>
         <item name="walletBackupNowBtnBg">@drawable/bg_btn_backup_now_wallet</item>
         <item name="walletBackupNowTitleTextColor">@color/color_FB8F0B</item>
+        <item name="walletHomePhoneReceiveBg">@mipmap/bg_phone_receive</item>
 
         <!--我的首页资源属性-->
         <item name="meHomeDefAvatarIcon">@drawable/ic_avatar_logo</item>

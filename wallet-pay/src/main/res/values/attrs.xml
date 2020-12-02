@@ -94,6 +94,7 @@
     <attr name="walletBackupNowHintBg" format="reference" />
     <attr name="walletBackupNowBtnBg" format="reference" />
     <attr name="walletBackupNowTitleTextColor" format="color" />
+    <attr name="walletHomePhoneReceiveBg" format="reference" />
 
     <!--我的首页资源属性-->
     <attr name="meHomeDefAvatarIcon" format="reference" />

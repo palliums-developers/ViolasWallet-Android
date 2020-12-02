@@ -211,6 +211,7 @@
             android:paddingEnd="@dimen/dp_35"
             android:text="@string/home_bank_mining_title"
             android:textColor="?attr/colorPrimary"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/tabLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tabLayout" />

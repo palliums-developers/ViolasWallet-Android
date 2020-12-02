@@ -33,6 +33,7 @@ import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
 import com.violas.wallet.ui.collection.MultiCollectionActivity
 import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
+import com.violas.wallet.ui.incentivePlan.phoneReceiveReward.PhoneReceiveRewardActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.mapping.MappingActivity
 import com.violas.wallet.ui.scan.ScanActivity
@@ -70,6 +71,7 @@ class WalletFragment : BaseFragment() {
         private const val REQUEST_ADD_ASSERT = 0
         private const val REQUEST_SCAN_QR_CODE = 1
         private const val REQUEST_TOKEN_INFO = 2
+        private const val REQUEST_CODE_PHONE_RECEIVE = 3
     }
 
     private val mWalletAppViewModel by lazy {
@@ -176,6 +178,7 @@ class WalletFragment : BaseFragment() {
         llCollectionGroup.setOnClickListener(this)
         llMappingGroup.setOnClickListener(this)
         clMiningRewardGroup.setOnClickListener(this)
+        clPhoneReceive.setOnClickListener(this)
 
         refreshLayout.setEnableOverScrollDrag(false)
         refreshLayout.setOnRefreshListener {
@@ -317,6 +320,10 @@ class WalletFragment : BaseFragment() {
                 // TODO 进入挖矿激励详情页面
                 showToast(R.string.mining_reward)
             }
+
+            R.id.clPhoneReceive -> {
+                PhoneReceiveRewardActivity.start(this, REQUEST_CODE_PHONE_RECEIVE)
+            }
         }
     }
 
@@ -392,6 +399,12 @@ class WalletFragment : BaseFragment() {
                             }
                         }
                     }
+                }
+            }
+
+            REQUEST_CODE_PHONE_RECEIVE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    clPhoneReceive.visibility = View.GONE
                 }
             }
         }
