@@ -208,6 +208,7 @@
         <item name="homeBankYesterdayEarningsIcon">@mipmap/ic_home_bank_yesterday_earnings</item>
         <item name="homeBankYesterdayEarningsBgColor">@color/color_FB8F0B_10</item>
         <item name="homeBankYesterdayEarningsTextColor">@color/color_FB8F0B</item>
+        <item name="homeBankMiningBg">@mipmap/bg_home_bank_mining</item>
 
         <!--币种详情页资源属性-->
         <item name="tokenDetailsTokenInfoBg">@drawable/bg_token_info_head</item>
@@ -261,6 +262,8 @@
         <item name="marketDetailsCompletedStateTextColor">@color/color_82808A</item>
         <item name="marketDetailsCompletedLineBgColor">@color/color_999999</item>
         <item name="marketDetailsUncompletedLineBgColor">@color/color_C2C2C2</item>
+        <item name="homeMarketMiningArrowIcon">@mipmap/ic_home_market_mining_arrow</item>
+        <item name="homeMarketMiningBg">@mipmap/bg_home_market_mining</item>
 
         <!--映射相关页面资源属性-->
         <item name="mappingDividerIcon">@mipmap/ic_mapping_divider</item>

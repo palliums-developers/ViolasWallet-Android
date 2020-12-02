@@ -111,6 +111,7 @@
     <attr name="homeBankYesterdayEarningsIcon" format="reference"/>
     <attr name="homeBankYesterdayEarningsBgColor" format="color"/>
     <attr name="homeBankYesterdayEarningsTextColor" format="color"/>
+    <attr name="homeBankMiningBg" format="reference"/>
 
     <!--币种详情页面资源属性-->
     <attr name="tokenDetailsTokenInfoBg" format="reference" />
@@ -164,6 +165,8 @@
     <attr name="marketDetailsCompletedStateTextColor" format="color" />
     <attr name="marketDetailsCompletedLineBgColor" format="color" />
     <attr name="marketDetailsUncompletedLineBgColor" format="color" />
+    <attr name="homeMarketMiningArrowIcon" format="reference" />
+    <attr name="homeMarketMiningBg" format="reference" />
 
     <!--映射相关页面资源属性-->
     <attr name="mappingDividerIcon" format="reference" />

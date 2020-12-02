@@ -106,17 +106,14 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         etInputBoxB.addTextChangedListener(inputTextWatcherB)
         etInputBoxA.filters = arrayOf(AmountInputFilter(12, 6))
 
-        // 扩展按钮触摸区域
-        llSwitchOpModeGroup.expandTouchArea(6)
-        llSelectGroupA.expandTouchArea(11)
-        llSelectGroupB.expandTouchArea(11)
-
         // 按钮点击事件
+        llSwitchOpModeGroup.expandTouchArea(6)
         llSwitchOpModeGroup.setOnClickListener {
             clearInputBoxFocusAndHideSoftInput()
             showSwitchOpModePopup()
         }
 
+        llSelectGroupA.expandTouchArea(11)
         llSelectGroupA.setOnClickListener {
             clearInputBoxFocusAndHideSoftInput()
             if (poolViewModel.isTransferInMode()) {
@@ -133,6 +130,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             }
         }
 
+        llSelectGroupB.expandTouchArea(11)
         llSelectGroupB.setOnClickListener {
             clearInputBoxFocusAndHideSoftInput()
             showSelectCoinDialog(false)
@@ -149,6 +147,11 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                 if (transferOutPreconditionsInvalid()) return@setOnClickListener
                 authenticateAccount(false)
             }
+        }
+
+        clMiningGroup.setOnClickListener {
+            // TODO 进入挖矿规则页面
+            showToast(R.string.home_market_mining_title)
         }
 
         // 数据观察

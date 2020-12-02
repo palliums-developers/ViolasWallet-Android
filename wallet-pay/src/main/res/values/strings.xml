@@ -605,4 +605,7 @@
     <string name="mining_earnings_type_extract">提取</string>
     <string name="mining_earnings_type_deposit">存款</string>
     <string name="mining_earnings_type_borrowing">借款</string>
+    <string name="home_market_mining_title">挖矿福利</string>
+    <string name="home_market_mining_desc">现在加入资金池可获得同手续费奖励等价的VLS挖矿福利</string>
+    <string name="home_bank_mining_title">存、借挖矿规则</string>
 </resources>

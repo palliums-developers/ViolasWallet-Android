@@ -7,17 +7,65 @@
     android:focusable="true"
     android:focusableInTouchMode="true">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clMiningGroup"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp_26"
+        android:layout_marginTop="@dimen/dp_13"
+        android:background="?attr/homeMarketMiningBg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvMiningTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_19"
+            android:layout_marginStart="@dimen/dp_52"
+            android:layout_marginTop="@dimen/dp_13"
+            android:gravity="center_vertical"
+            android:text="@string/home_market_mining_title"
+            android:textColor="?attr/textColorProcessing"
+            android:textSize="@dimen/fs_14"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="@dimen/dp_14"
+            android:layout_height="@dimen/dp_8"
+            android:layout_marginEnd="@dimen/dp_22"
+            android:background="?attr/homeMarketMiningArrowIcon"
+            app:layout_constraintBottom_toBottomOf="@id/tvMiningTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvMiningTitle" />
+
+        <TextView
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_6"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_15"
+            android:text="@string/home_market_mining_desc"
+            android:textSize="@dimen/fs_10"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvMiningTitle"
+            app:layout_constraintTop_toBottomOf="@id/tvMiningTitle" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <LinearLayout
         android:id="@+id/llSwitchOpModeGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_35"
-        android:layout_marginTop="@dimen/dp_5"
+        android:layout_marginTop="@dimen/dp_18"
         android:background="@drawable/sel_bg_btn2_secondary"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/clMiningGroup">
 
         <TextView
             android:id="@+id/tvSwitchOpModeText"

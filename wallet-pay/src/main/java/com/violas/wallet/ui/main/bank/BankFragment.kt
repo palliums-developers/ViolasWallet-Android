@@ -167,6 +167,12 @@ class BankFragment : BaseFragment() {
         ivShowHideAmount.setOnClickListener {
             bankViewModel.toggleAmountShowHide()
         }
+
+        tvMiningRule.expandTouchArea(20)
+        tvMiningRule.setOnClickListener {
+            // TODO 进入挖矿规则页面
+            showToast(R.string.home_bank_mining_title)
+        }
     }
 
     private fun loadData(action: Int) {

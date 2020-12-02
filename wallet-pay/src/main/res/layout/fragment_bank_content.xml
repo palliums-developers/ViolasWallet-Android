@@ -187,7 +187,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/llBottomGroup"
         android:layout_width="@dimen/dp_0"
         android:layout_height="@dimen/dp_0"
@@ -200,12 +200,29 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_marginTop="@dimen/dp_190">
 
+        <TextView
+            android:id="@+id/tvMiningRule"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_26"
+            android:layout_marginEnd="@dimen/dp_3"
+            android:background="?attr/homeBankMiningBg"
+            android:gravity="start|center_vertical"
+            android:paddingStart="@dimen/dp_11"
+            android:paddingEnd="@dimen/dp_35"
+            android:text="@string/home_bank_mining_title"
+            android:textColor="?attr/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="@id/tabLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tabLayout" />
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_48"
             android:layout_marginHorizontal="@dimen/dp_10"
             android:layout_marginTop="@dimen/dp_4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:tabBackground="@null"
             app:tabIndicatorHeight="@dimen/dp_0"
             app:tabMaxWidth="@dimen/dp_200"
@@ -219,10 +236,14 @@
 
         <com.palliums.widget.NoSlideViewPager
             android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/dp_10" />
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            android:layout_marginHorizontal="@dimen/dp_10"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tabLayout" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
