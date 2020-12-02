@@ -7,29 +7,39 @@
     android:paddingVertical="@dimen/dp_16">
 
     <TextView
-        android:id="@+id/tvTime"
+        android:id="@+id/tvType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_22"
+        android:text="@string/mining_earnings_type_extract"
         android:textSize="@dimen/fs_12"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="18:22 05/24" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.palliums.widget.NumberTextView
         android:id="@+id/tvAmount"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_168"
+        android:layout_marginStart="@dimen/dp_124"
         android:layout_marginEnd="@dimen/dp_10"
         android:textColor="?attr/textColorSuccess"
         android:textSize="@dimen/fs_12"
         android:textStyle="bold"
-        app:layout_constraintBaseline_toBaselineOf="@id/tvTime"
-        app:layout_constraintEnd_toStartOf="@id/tvState"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvType"
+        app:layout_constraintEnd_toStartOf="@id/tvTime"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="10VLS" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_82"
+        android:textSize="@dimen/fs_12"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvType"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="18:22 05/24" />
 
     <TextView
         android:id="@+id/tvState"
