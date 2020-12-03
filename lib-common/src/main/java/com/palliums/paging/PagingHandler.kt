@@ -123,8 +123,8 @@ class PagingHandler<VO>(
         mPagingController.getRefreshLayout()?.let {
             it.setEnableRefresh(false)          // 首次加载使用[IStatusLayout]的加载效果，要禁用下拉刷新
             it.setEnableLoadMore(false)         // 禁用上拉加载更多功能
-            //it.setEnableOverScrollBounce(true)  // 启用越界回弹
             it.setEnableOverScrollDrag(true)    // 启用越界拖动
+            it.setEnableOverScrollBounce(false) // 关闭越界回弹
             it.setOnRefreshListener {
                 logInfo(TAG) { "onRefresh" }
                 if (autoRefresh) {

@@ -165,8 +165,8 @@ class ApplyMessageFragment : BaseFragment() {
             // 初始化SSO发币申请消息视图的控件设置
             drlSSOMsgRefreshLayout.setEnableRefresh(false)
             drlSSOMsgRefreshLayout.setEnableLoadMore(false)
-            drlSSOMsgRefreshLayout.setEnableOverScrollBounce(true)
             drlSSOMsgRefreshLayout.setEnableOverScrollDrag(true)
+            drlSSOMsgRefreshLayout.setEnableOverScrollBounce(false)
             drlSSOMsgRefreshLayout.setOnRefreshListener {
                 // 刷新时原有数据会被清空，造成短暂的页面闪屏或页面空白
                 // 刷新时先做个标记不更新数据，刷新完成后再做处理

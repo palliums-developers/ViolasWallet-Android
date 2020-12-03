@@ -109,8 +109,8 @@ class ListingHandler<VO>(
         mListingController.getRefreshLayout()?.let {
             it.setEnableRefresh(false)
             it.setEnableLoadMore(false)
-            //it.setEnableOverScrollBounce(true)
             it.setEnableOverScrollDrag(true)
+            it.setEnableOverScrollBounce(false)
         }
 
         if (mListingController.loadingUseDialog()) {

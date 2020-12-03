@@ -209,6 +209,7 @@ class WalletFragment : BaseFragment() {
         clPhoneReceiveGroup.setOnClickListener(this)
 
         refreshLayout.setEnableOverScrollDrag(true)
+        refreshLayout.setEnableOverScrollBounce(false)
         refreshLayout.setOnMultiPurposeListener(object : SimpleMultiPurposeListener() {
             private var hasDragged = false
             override fun onFooterMoving(
