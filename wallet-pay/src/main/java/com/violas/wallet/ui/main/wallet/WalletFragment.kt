@@ -22,6 +22,8 @@ import com.palliums.extensions.show
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getResourceId
+import com.scwang.smartrefresh.layout.api.RefreshFooter
+import com.scwang.smartrefresh.layout.listener.SimpleMultiPurposeListener
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.command.CommandActuator
@@ -117,7 +119,7 @@ class WalletFragment : BaseFragment() {
             private var hasScrolled = false
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                logError("Test") { "onScrolled. dx($dx), dy($dy)" }
+                //logError("Test") { "onScrolled. dx($dx), dy($dy)" }
                 if (dy != 0) {
                     hasScrolled = true
                     phoneReceiveViewAnimators.startAnimators()
@@ -126,7 +128,7 @@ class WalletFragment : BaseFragment() {
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                logError("Test") { "onScrollStateChanged. newState($newState)" }
+                //logError("Test") { "onScrollStateChanged. newState($newState)" }
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && hasScrolled) {
                     hasScrolled = false
                     phoneReceiveViewAnimators.delayReverseAnimators()
@@ -206,7 +208,32 @@ class WalletFragment : BaseFragment() {
         clMiningRewardGroup.setOnClickListener(this)
         clPhoneReceive.setOnClickListener(this)
 
-        refreshLayout.setEnableOverScrollDrag(false)
+        refreshLayout.setEnableOverScrollDrag(true)
+        refreshLayout.setOnMultiPurposeListener(object : SimpleMultiPurposeListener() {
+            private var hasDragged = false
+            override fun onFooterMoving(
+                footer: RefreshFooter?,
+                isDragging: Boolean,
+                percent: Float,
+                offset: Int,
+                footerHeight: Int,
+                maxDragHeight: Int
+            ) {
+                logError("Test") { "onFooterMoving. isDragging($isDragging), percent($percent), offset($offset)" }
+                if (hasDragged) {
+                    if (offset != 0) {
+                        phoneReceiveViewAnimators.startAnimators()
+                    } else {
+                        hasDragged = false
+                        phoneReceiveViewAnimators.delayReverseAnimators()
+                    }
+                } else {
+                    if(isDragging){
+                        hasDragged = true
+                    }
+                }
+            }
+        })
         refreshLayout.setOnRefreshListener {
             CommandActuator.post(RefreshAssetsAllListCommand())
         }
