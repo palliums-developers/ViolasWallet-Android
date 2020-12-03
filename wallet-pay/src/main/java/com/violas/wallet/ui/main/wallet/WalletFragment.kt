@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.wallet
 
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.logError
 import com.palliums.extensions.show
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
@@ -97,6 +99,10 @@ class WalletFragment : BaseFragment() {
         }
     }
 
+    private val phoneReceiveViewAnimators by lazy {
+        PhoneReceiveViewAnimators(clPhoneReceive)
+    }
+
     override fun getLayoutResId(): Int {
         return R.layout.fragment_wallet
     }
@@ -107,6 +113,26 @@ class WalletFragment : BaseFragment() {
         EventBus.getDefault().register(this)
         actionBar.post { adapterViewHeight() }
         recyclerAssert.adapter = mAssertAdapter
+        recyclerAssert.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            private var hasScrolled = false
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                logError("Test") { "onScrolled. dx($dx), dy($dy)" }
+                if (dy != 0) {
+                    hasScrolled = true
+                    phoneReceiveViewAnimators.startAnimators()
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                logError("Test") { "onScrollStateChanged. newState($newState)" }
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && hasScrolled) {
+                    hasScrolled = false
+                    phoneReceiveViewAnimators.delayReverseAnimators()
+                }
+            }
+        })
 
         mWalletAppViewModel?.mDataRefreshingLiveData?.observe(viewLifecycleOwner) {
             if (!it) {
@@ -494,4 +520,61 @@ class AssertAdapter(
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)
+}
+
+class PhoneReceiveViewAnimators(private val targetView: View) {
+
+    private val alphaAnimator by lazy {
+        ObjectAnimator.ofFloat(
+            targetView,
+            "alpha",
+            1f,
+            0.5f
+        ).apply { duration = 300 }
+    }
+
+    private val translationAnimator by lazy {
+        ObjectAnimator.ofFloat(
+            targetView,
+            "translationX",
+            0f,
+            DensityUtility.dp2px(targetView.context, 22f) + targetView.measuredWidth / 2
+        ).apply { duration = 300 }
+    }
+
+    private val reverseAnimatorsRunnable by lazy {
+        Runnable {
+            if (!isViewFloating()) {
+                alphaAnimator.reverse()
+                translationAnimator.reverse()
+            }
+        }
+    }
+
+    private fun isEventOngoing(): Boolean {
+        return targetView.visibility == View.VISIBLE
+    }
+
+    private fun isViewFloating(): Boolean {
+        return targetView.translationX == 0f
+    }
+
+    fun startAnimators() {
+        if (!isEventOngoing()) return
+
+        targetView.removeCallbacks(reverseAnimatorsRunnable)
+        if (isViewFloating()) {
+            translationAnimator.start()
+            alphaAnimator.start()
+        }
+    }
+
+    fun delayReverseAnimators() {
+        if (!isEventOngoing()) return
+
+        targetView.postDelayed(
+            reverseAnimatorsRunnable,
+            2000
+        )
+    }
 }
