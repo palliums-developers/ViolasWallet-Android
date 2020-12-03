@@ -102,7 +102,7 @@ class WalletFragment : BaseFragment() {
     }
 
     private val phoneReceiveViewAnimators by lazy {
-        PhoneReceiveViewAnimators(clPhoneReceive)
+        PhoneReceiveViewAnimators(clPhoneReceiveGroup)
     }
 
     override fun getLayoutResId(): Int {
@@ -205,8 +205,8 @@ class WalletFragment : BaseFragment() {
         llTransferGroup.setOnClickListener(this)
         llCollectionGroup.setOnClickListener(this)
         llMappingGroup.setOnClickListener(this)
-        clMiningRewardGroup.setOnClickListener(this)
-        clPhoneReceive.setOnClickListener(this)
+        clMiningGroup.setOnClickListener(this)
+        clPhoneReceiveGroup.setOnClickListener(this)
 
         refreshLayout.setEnableOverScrollDrag(true)
         refreshLayout.setOnMultiPurposeListener(object : SimpleMultiPurposeListener() {
@@ -369,12 +369,12 @@ class WalletFragment : BaseFragment() {
                 backupWallet()
             }
 
-            R.id.clMiningRewardGroup -> {
+            R.id.clMiningGroup -> {
                 // TODO 进入挖矿激励详情页面
                 showToast(R.string.mining_reward)
             }
 
-            R.id.clPhoneReceive -> {
+            R.id.clPhoneReceiveGroup -> {
                 PhoneReceiveRewardActivity.start(this, REQUEST_CODE_PHONE_RECEIVE)
             }
         }
@@ -457,7 +457,7 @@ class WalletFragment : BaseFragment() {
 
             REQUEST_CODE_PHONE_RECEIVE -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    clPhoneReceive.visibility = View.GONE
+                    clPhoneReceiveGroup.visibility = View.GONE
                 }
             }
         }

@@ -609,4 +609,5 @@
     <string name="home_market_mining_desc">现在加入资金池可获得同手续费奖励等价的VLS挖矿福利</string>
     <string name="home_bank_mining_title">存、借挖矿规则</string>
     <string name="home_wallet_phone_receive_title">免费领取</string>
+    <string name="home_wallet_mining_title">挖矿领福利</string>
 </resources>
