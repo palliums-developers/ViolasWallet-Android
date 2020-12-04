@@ -113,6 +113,7 @@ class WalletFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         EventBus.getDefault().register(this)
+        refreshLayout.autoRefresh(0, 100, 1f, true)
         actionBar.post { adapterViewHeight() }
         recyclerAssert.adapter = mAssertAdapter
         recyclerAssert.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -229,7 +230,7 @@ class WalletFragment : BaseFragment() {
                         phoneReceiveViewAnimators.delayReverseAnimators()
                     }
                 } else {
-                    if(isDragging){
+                    if (isDragging) {
                         hasDragged = true
                     }
                 }
@@ -238,14 +239,13 @@ class WalletFragment : BaseFragment() {
         refreshLayout.setOnRefreshListener {
             CommandActuator.post(RefreshAssetsAllListCommand())
         }
-        refreshLayout.autoRefresh()
     }
 
     private fun adapterViewHeight() {
         val statusBarHeight = StatusBarUtil.getStatusBarHeight()
         val topViewHeight = clTopGroup.measuredHeight
         val bottomViewTopMargin =
-            topViewHeight + statusBarHeight - DensityUtility.dp2px(requireContext(), 16)
+            topViewHeight + statusBarHeight - DensityUtility.dp2px(requireContext(), 40)
 
         clTopGroup.setPadding(
             clTopGroup.paddingLeft,
