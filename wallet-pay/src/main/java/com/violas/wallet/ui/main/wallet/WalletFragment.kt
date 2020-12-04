@@ -221,7 +221,7 @@ class WalletFragment : BaseFragment() {
                 footerHeight: Int,
                 maxDragHeight: Int
             ) {
-                logError("Test") { "onFooterMoving. isDragging($isDragging), percent($percent), offset($offset)" }
+                //logError("Test") { "onFooterMoving. isDragging($isDragging), percent($percent), offset($offset)" }
                 if (hasDragged) {
                     if (offset != 0) {
                         phoneReceiveViewAnimators.startAnimators()
@@ -503,7 +503,7 @@ class AssertAdapter(
          *
          * 先忽略此操作不做对比，全列表刷新。
          */
-        return false
+        return isChange
     }
 }) {
     private var mAssetsHidden: Boolean = false
