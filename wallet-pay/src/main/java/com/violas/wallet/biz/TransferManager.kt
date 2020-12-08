@@ -15,10 +15,17 @@ import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
 import com.violas.wallet.utils.validationViolasAddress
 import com.violas.walletconnect.extensions.hexStringToByteArray
+import org.palliums.libracore.crypto.Ed25519KeyPair
 import org.palliums.libracore.http.LibraException
 import org.palliums.libracore.transaction.AccountAddress
+import org.palliums.libracore.transaction.TransactionMetadata
+import org.palliums.libracore.transaction.TransactionPayload
+import org.palliums.libracore.transaction.optionTransactionPayload
 import org.palliums.libracore.transaction.storage.StructTag
 import org.palliums.libracore.transaction.storage.TypeTag
+import org.palliums.libracore.wallet.Account
+import org.palliums.libracore.wallet.AccountIdentifier
+import org.palliums.libracore.wallet.SubAddress
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
 
@@ -133,9 +140,20 @@ class TransferManager {
 
         when (accountDO.coinNumber) {
             CoinTypes.Libra.coinType() -> {
+                var receiverAddress = address
+                var receiverSubAddress: String? = null
+                try {
+                    val accountIdentifier = AccountIdentifier.decode(address)
+                    receiverAddress = accountIdentifier.getAccountAddress().toHex()
+                    receiverSubAddress = accountIdentifier.getSubAddress().toHex()
+                } catch (e: Exception) {
+
+                }
+
                 transferLibra(
                     context,
-                    address,
+                    receiverAddress,
+                    receiverSubAddress,
                     amount,
                     privateKey,
                     accountDO,
@@ -145,9 +163,18 @@ class TransferManager {
                 )
             }
             CoinTypes.Violas.coinType() -> {
+                var receiverAddress = address
+                var receiverSubAddress: String? = null
+                try {
+                    val accountIdentifier = org.palliums.violascore.wallet.AccountIdentifier.decode(address)
+                    receiverAddress = accountIdentifier.getAccountAddress().toHex()
+                    receiverSubAddress = accountIdentifier.getSubAddress().toHex()
+                } catch (e: Exception) {
+
+                }
                 transferViolas(
                     context,
-                    address,
+                    receiverAddress,
                     amount,
                     privateKey,
                     accountDO,
@@ -204,6 +231,7 @@ class TransferManager {
     private suspend fun transferLibra(
         context: Context,
         address: String,
+        subAddress: String?,
         amount: Double,
         decryptPrivateKey: ByteArray,
         account: AccountDO,
@@ -217,22 +245,33 @@ class TransferManager {
                 error.invoke(LibraException.CurrencyNotExistException())
                 return
             }
-            DataRepository.getLibraRpcService().sendLibraToken(
-                context,
-                org.palliums.libracore.wallet.Account(
-                    org.palliums.libracore.crypto.Ed25519KeyPair(decryptPrivateKey)
-                ),
-                address,
-                (amount * 1000000L).toLong(),
-                TypeTag.newStructTag(
-                    StructTag(
-                        AccountAddress(token.address.hexStringToByteArray()),
-                        token.module,
-                        token.name,
-                        arrayListOf()
+
+            val transactionMetadata = if (subAddress.isNullOrBlank()) {
+                null
+            } else {
+                TransactionMetadata.createGeneralMetadataToSubAddress(SubAddress(subAddress))
+            }
+            val metadata = transactionMetadata?.metadata ?: byteArrayOf()
+            val metadataSignature = transactionMetadata?.signatureMessage ?: byteArrayOf()
+
+            DataRepository.getLibraRpcService().sendTransaction(
+                payload = TransactionPayload.optionTransactionPayload(
+                    context,
+                    address,
+                    (amount * 1000000L).toLong(),
+                    metadata,
+                    metadataSignature,
+                    TypeTag.newStructTag(
+                        StructTag(
+                            AccountAddress(token.address.hexStringToByteArray()),
+                            token.module,
+                            token.name,
+                            arrayListOf()
+                        )
                     )
                 ),
-                token.module,
+                account = Account(Ed25519KeyPair(decryptPrivateKey)),
+                gasCurrencyCode = token.module,
                 chainId = Vm.LibraChainId
             )
             success.invoke("")

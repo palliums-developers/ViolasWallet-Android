@@ -89,7 +89,10 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
                 it is AssetsCoinVo && (it.getCoinNumber() == CoinTypes.Violas.coinType() || it.getCoinNumber() == CoinTypes.Libra.coinType())
             }.forEach {
                 it as AssetsLibraCoinVo
-                mAccountManager.activateAccount(it)
+                try {
+                    mAccountManager.activateAccount(it)
+                } catch (e: Exception) {
+                }
             }
         }
     }

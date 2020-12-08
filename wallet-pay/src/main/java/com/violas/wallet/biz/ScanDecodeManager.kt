@@ -142,7 +142,7 @@ private fun decodeLibraQRCode(msg: String): TranQRCode {
 
     return TranQRCode(
         "libra",
-        decode.getAccountIdentifier().getAccountAddress().toHex(),
+        decode.getAccountIdentifier().encodeV1(),
         decode.getAmount(),
         "",
         decode.getCurrency()
@@ -154,7 +154,7 @@ private fun decodeViolasQRCode(msg: String): TranQRCode {
 
     return TranQRCode(
         "violas",
-        decode.getAccountIdentifier().getAccountAddress().toHex(),
+        decode.getAccountIdentifier().encodeV1(),
         decode.getAmount(),
         null,
         decode.getCurrency()
