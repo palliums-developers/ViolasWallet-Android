@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.incentivePlan.phoneReceiveReward
+package com.violas.wallet.ui.incentivePlan.receiveRewards
 
 import androidx.lifecycle.MutableLiveData
 import com.palliums.base.BaseViewModel
@@ -11,7 +11,6 @@ import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.getCountryArea
 import com.violas.wallet.utils.validationViolasAddress
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 /**
@@ -20,7 +19,7 @@ import kotlinx.coroutines.withContext
  * <p>
  * desc:
  */
-class PhoneReceiveRewardViewModel : BaseViewModel() {
+class ReceiveIncentiveRewardsViewModel : BaseViewModel() {
 
     companion object {
         const val ACTION_GET_VERIFICATION_CODE = 0
@@ -29,6 +28,13 @@ class PhoneReceiveRewardViewModel : BaseViewModel() {
 
     private var violasAccount: AccountDO? = null
     val countryAreaLiveData = MutableLiveData<CountryAreaVO>()
+
+    private val basicService by lazy {
+        DataRepository.getBasicService()
+    }
+    private val incentiveService by lazy {
+        DataRepository.getIncentiveService()
+    }
 
     suspend fun init() = withContext(Dispatchers.IO) {
         val countryArea = getCountryArea()
@@ -43,23 +49,31 @@ class PhoneReceiveRewardViewModel : BaseViewModel() {
     }
 
     override suspend fun realExecute(action: Int, vararg params: Any) {
-        val areaCode = countryAreaLiveData.value!!.areaCode
-        val phoneNumber = params[0] as String
         val walletAddress = violasAccount!!.address
+        val phoneNumber = params[0] as String
+        val areaCode = countryAreaLiveData.value!!.areaCode
 
         // 获取验证码操作
         if (action == ACTION_GET_VERIFICATION_CODE) {
-            // TODO 发送获取验证码请求
-            delay(3000)
+            basicService.sendPhoneVerifyCode(
+                walletAddress,
+                phoneNumber,
+                areaCode
+            )
             tipsMessage.postValueSupport(getString(R.string.hint_get_verification_code_success))
             return
         }
 
-        // 领取奖励
-        // TODO 领取逻辑
+        // 领取激励奖励
         val verificationCode = params[1] as String
         val inviterAddress = params[2] as String
-        delay(3000)
+        incentiveService.receiveIncentiveRewards(
+            walletAddress,
+            phoneNumber,
+            areaCode,
+            verificationCode,
+            inviterAddress
+        )
         tipsMessage.postValueSupport(getString(R.string.hint_phone_receive_reward_success))
     }
 

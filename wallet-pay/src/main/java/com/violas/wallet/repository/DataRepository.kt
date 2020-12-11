@@ -13,12 +13,16 @@ import com.violas.wallet.common.BaseBizUrl.getViolasChainUrl
 import com.violas.wallet.repository.database.AppDatabase
 import com.violas.wallet.repository.http.bank.BankApi
 import com.violas.wallet.repository.http.bank.BankRepository
+import com.violas.wallet.repository.http.basic.BasicApi
+import com.violas.wallet.repository.http.basic.BasicRepository
 import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorApi
 import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorRepository
 import com.violas.wallet.repository.http.bitcoin.trezor.BitcoinTrezorService
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.repository.http.exchange.ExchangeApi
 import com.violas.wallet.repository.http.exchange.ExchangeRepository
+import com.violas.wallet.repository.http.incentive.IncentiveApi
+import com.violas.wallet.repository.http.incentive.IncentiveRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
 import com.violas.wallet.repository.http.libra.violas.LibraViolasApi
@@ -118,6 +122,12 @@ object DataRepository {
 
     fun getBankService() =
         BankRepository(retrofit.create(BankApi::class.java))
+
+    fun getBasicService() =
+        BasicRepository(retrofit.create(BasicApi::class.java))
+
+    fun getIncentiveService() =
+        IncentiveRepository(retrofit.create(IncentiveApi::class.java))
 
     fun getMultiTokenContractService(): MultiContractRpcApi {
         return retrofit.create(MultiContractRpcApi::class.java)

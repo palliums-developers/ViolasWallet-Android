@@ -1,46 +1,47 @@
-package com.violas.wallet.ui.incentivePlan.phoneReceiveReward
+package com.violas.wallet.ui.incentivePlan.receiveRewards
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.Gravity
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.ui.incentivePlan.phoneReceiveReward.PhoneReceiveRewardViewModel.Companion.ACTION_GET_VERIFICATION_CODE
-import com.violas.wallet.ui.incentivePlan.phoneReceiveReward.PhoneReceiveRewardViewModel.Companion.ACTION_RECEIVE_REWARD
+import com.violas.wallet.event.ReceiveIncentiveRewardsEvent
+import com.violas.wallet.ui.incentivePlan.receiveRewards.ReceiveIncentiveRewardsViewModel.Companion.ACTION_GET_VERIFICATION_CODE
+import com.violas.wallet.ui.incentivePlan.receiveRewards.ReceiveIncentiveRewardsViewModel.Companion.ACTION_RECEIVE_REWARD
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.SelectCountryAreaActivity
-import kotlinx.android.synthetic.main.activity_phone_receive_reward.*
-import kotlinx.coroutines.delay
+import kotlinx.android.synthetic.main.activity_receive_incentive_rewards.*
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 11/25/20 3:15 PM.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 手机号领取奖励页面
+ * desc: 领取激励奖励页面
  */
-class PhoneReceiveRewardActivity : BaseViewModelActivity() {
+class ReceiveIncentiveRewardsActivity : BaseViewModelActivity() {
 
     companion object {
         private const val REQUEST_CODE_SELECT_COUNTRY_AREA = 0
 
-        fun start(fragment: Fragment, requestCode: Int) {
-            Intent(fragment.requireContext(), PhoneReceiveRewardActivity::class.java)
-                .start(fragment, requestCode)
+        fun start(context: Context) {
+            Intent(context, ReceiveIncentiveRewardsActivity::class.java)
+                .start(context)
         }
     }
 
     private val viewModel by lazy {
-        ViewModelProvider(this).get(PhoneReceiveRewardViewModel::class.java)
+        ViewModelProvider(this).get(ReceiveIncentiveRewardsViewModel::class.java)
     }
 
     private val countDownTimer by lazy {
@@ -57,7 +58,7 @@ class PhoneReceiveRewardActivity : BaseViewModelActivity() {
     }
 
     override fun getLayoutResId(): Int {
-        return R.layout.activity_phone_receive_reward
+        return R.layout.activity_receive_incentive_rewards
     }
 
     override fun getViewModel(): BaseViewModel {
@@ -169,7 +170,7 @@ class PhoneReceiveRewardActivity : BaseViewModelActivity() {
                         action = ACTION_RECEIVE_REWARD,
                         successCallback = {
                             launch {
-                                delay(2000)
+                                EventBus.getDefault().post(ReceiveIncentiveRewardsEvent())
                                 close()
                             }
                         }

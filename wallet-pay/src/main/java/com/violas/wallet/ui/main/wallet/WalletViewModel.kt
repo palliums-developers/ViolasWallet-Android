@@ -1,14 +1,20 @@
 package com.violas.wallet.ui.main.wallet
 
-import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.event.ReceiveIncentiveRewardsEvent
+import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsVo
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.math.RoundingMode
 
 class WalletViewModel : ViewModel() {
@@ -16,8 +22,15 @@ class WalletViewModel : ViewModel() {
 
     private val mTotalFiatBalanceLiveData = MutableLiveData(BigDecimal("0"))
     val mHiddenTotalFiatBalanceLiveData = MutableLiveData(false)
+    val receiveIncentiveRewardsStateLiveData = MutableLiveData(-1)
+
+    private val incentiveService by lazy {
+        DataRepository.getIncentiveService()
+    }
 
     init {
+        EventBus.getDefault().register(this)
+
         val calculate = {
             when {
                 mHiddenTotalFiatBalanceLiveData.value == true -> {
@@ -28,8 +41,10 @@ class WalletViewModel : ViewModel() {
                 }
                 else -> {
                     mTotalFiatBalanceStrLiveData.value =
-                        "$ ${mTotalFiatBalanceLiveData.value?.setScale(2, RoundingMode.DOWN)
-                            ?.toPlainString() ?: "0.00"}"
+                        "$ ${
+                            mTotalFiatBalanceLiveData.value?.setScale(2, RoundingMode.DOWN)
+                                ?.toPlainString() ?: "0.00"
+                        }"
                 }
             }
         }
@@ -39,6 +54,11 @@ class WalletViewModel : ViewModel() {
         mTotalFiatBalanceStrLiveData.addSource(mHiddenTotalFiatBalanceLiveData) {
             calculate()
         }
+    }
+
+    override fun onCleared() {
+        EventBus.getDefault().unregister(this)
+        super.onCleared()
     }
 
     fun taggerTotalDisplay() {
@@ -54,5 +74,35 @@ class WalletViewModel : ViewModel() {
             }
         }
         mTotalFiatBalanceLiveData.value = total
+    }
+
+    fun loadReceiveIncentiveRewardsState() {
+        val lastState = receiveIncentiveRewardsStateLiveData.value
+        if (lastState == 1 || lastState == Int.MIN_VALUE) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // 标记在加载中
+                receiveIncentiveRewardsStateLiveData.postValue(Int.MIN_VALUE)
+
+                val accountManager =
+                    WalletAppViewModel.getViewModelInstance().mAccountManager
+                val violasAccount =
+                    accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
+
+                val state =
+                    incentiveService.getReceiveIncentiveRewardsState(violasAccount!!.address)
+                receiveIncentiveRewardsStateLiveData.postValue(state)
+            } catch (e: Exception) {
+                if (receiveIncentiveRewardsStateLiveData.value == Int.MIN_VALUE) {
+                    receiveIncentiveRewardsStateLiveData.postValue(lastState)
+                }
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onReceiveIncentiveRewardsEvent(event: ReceiveIncentiveRewardsEvent) {
+        receiveIncentiveRewardsStateLiveData.value = 1
     }
 }

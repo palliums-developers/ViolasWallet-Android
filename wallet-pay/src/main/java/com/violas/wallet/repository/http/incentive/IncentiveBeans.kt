@@ -11,6 +11,12 @@ import com.google.gson.annotations.SerializedName
  */
 
 @Keep
+data class ReceiveIncentiveRewardsResultsDTO(
+    @SerializedName("is_new")
+    val state: Int = 0                  // 领取状态（0: New wallet; 1: received）
+)
+
+@Keep
 data class InviteMiningEarningDTO(
     @SerializedName("address")
     val inviteeAddress: String = "",    // 被邀请账号

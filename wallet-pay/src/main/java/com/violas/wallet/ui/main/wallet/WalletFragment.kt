@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.expandTouchArea
-import com.palliums.extensions.logError
 import com.palliums.extensions.show
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
@@ -37,7 +36,7 @@ import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
 import com.violas.wallet.ui.collection.MultiCollectionActivity
 import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
-import com.violas.wallet.ui.incentivePlan.phoneReceiveReward.PhoneReceiveRewardActivity
+import com.violas.wallet.ui.incentivePlan.receiveRewards.ReceiveIncentiveRewardsActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.mapping.MappingActivity
 import com.violas.wallet.ui.scan.ScanActivity
@@ -101,12 +100,17 @@ class WalletFragment : BaseFragment() {
         }
     }
 
-    private val phoneReceiveViewAnimators by lazy {
-        PhoneReceiveViewAnimators(clPhoneReceiveGroup)
+    private val receiveIncentiveRewardsViewAnimators by lazy {
+        ReceiveIncentiveRewardsViewAnimators(clReceiveIncentiveRewardsGroup)
     }
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_wallet
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mWalletViewModel.loadReceiveIncentiveRewardsState()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -123,7 +127,7 @@ class WalletFragment : BaseFragment() {
                 //logError("Test") { "onScrolled. dx($dx), dy($dy)" }
                 if (dy != 0) {
                     hasScrolled = true
-                    phoneReceiveViewAnimators.startAnimators()
+                    receiveIncentiveRewardsViewAnimators.startAnimators()
                 }
             }
 
@@ -132,7 +136,7 @@ class WalletFragment : BaseFragment() {
                 //logError("Test") { "onScrollStateChanged. newState($newState)" }
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && hasScrolled) {
                     hasScrolled = false
-                    phoneReceiveViewAnimators.delayReverseAnimators()
+                    receiveIncentiveRewardsViewAnimators.delayReverseAnimators()
                 }
             }
         })
@@ -185,6 +189,13 @@ class WalletFragment : BaseFragment() {
                 )
             }
         }
+        mWalletViewModel.receiveIncentiveRewardsStateLiveData.observe(viewLifecycleOwner) {
+            if (it == 0) {
+                clReceiveIncentiveRewardsGroup.visibility = View.VISIBLE
+            } else if (it == 1) {
+                clReceiveIncentiveRewardsGroup.visibility = View.GONE
+            }
+        }
         mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(viewLifecycleOwner) {
             when (it) {
                 WalletConnectStatus.Login -> {
@@ -207,7 +218,7 @@ class WalletFragment : BaseFragment() {
         llCollectionGroup.setOnClickListener(this)
         llMappingGroup.setOnClickListener(this)
         clMiningGroup.setOnClickListener(this)
-        clPhoneReceiveGroup.setOnClickListener(this)
+        clReceiveIncentiveRewardsGroup.setOnClickListener(this)
 
         refreshLayout.setEnableOverScrollDrag(true)
         refreshLayout.setEnableOverScrollBounce(false)
@@ -224,10 +235,10 @@ class WalletFragment : BaseFragment() {
                 //logError("Test") { "onFooterMoving. isDragging($isDragging), percent($percent), offset($offset)" }
                 if (hasDragged) {
                     if (offset != 0) {
-                        phoneReceiveViewAnimators.startAnimators()
+                        receiveIncentiveRewardsViewAnimators.startAnimators()
                     } else {
                         hasDragged = false
-                        phoneReceiveViewAnimators.delayReverseAnimators()
+                        receiveIncentiveRewardsViewAnimators.delayReverseAnimators()
                     }
                 } else {
                     if (isDragging) {
@@ -238,6 +249,7 @@ class WalletFragment : BaseFragment() {
         })
         refreshLayout.setOnRefreshListener {
             CommandActuator.post(RefreshAssetsAllListCommand())
+            mWalletViewModel.loadReceiveIncentiveRewardsState()
         }
     }
 
@@ -375,8 +387,8 @@ class WalletFragment : BaseFragment() {
                 showToast(R.string.mining_reward)
             }
 
-            R.id.clPhoneReceiveGroup -> {
-                PhoneReceiveRewardActivity.start(this, REQUEST_CODE_PHONE_RECEIVE)
+            R.id.clReceiveIncentiveRewardsGroup -> {
+                ReceiveIncentiveRewardsActivity.start(requireContext())
             }
         }
     }
@@ -458,7 +470,7 @@ class WalletFragment : BaseFragment() {
 
             REQUEST_CODE_PHONE_RECEIVE -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    clPhoneReceiveGroup.visibility = View.GONE
+                    clReceiveIncentiveRewardsGroup.visibility = View.GONE
                 }
             }
         }
@@ -550,7 +562,7 @@ class AssertAdapter(
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)
 }
 
-class PhoneReceiveViewAnimators(private val targetView: View) {
+class ReceiveIncentiveRewardsViewAnimators(private val targetView: View) {
 
     private val alphaAnimator by lazy {
         ObjectAnimator.ofFloat(
