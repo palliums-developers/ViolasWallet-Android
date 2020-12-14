@@ -19,6 +19,7 @@ import com.palliums.content.App
 import com.palliums.extensions.createNotificationChannel
 import com.palliums.extensions.getNotificationManager
 import com.palliums.extensions.logDebug
+import com.palliums.extensions.logError
 import com.palliums.utils.getColorByAttrId
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.viewModel.WalletConnectViewModel
@@ -45,8 +46,14 @@ class PayApp : App() {
 
     private fun initNotification() {
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
-            logDebug("Firebase") {
-                "onGetInstanceIdComplete. success = ${it.isSuccessful}, token = ${it.result?.token}"
+            if (it.isSuccessful) {
+                logDebug("Firebase") {
+                    "onGetInstanceIdComplete. isSuccessful = true, token = ${it.result?.token}"
+                }
+            } else {
+                logError("Firebase") {
+                    "onGetInstanceIdComplete. isSuccessful = false, exception = ${it.exception?.toString()}"
+                }
             }
         }
 
