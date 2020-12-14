@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.incentivePlan.miningEarnings
 
 import com.palliums.paging.PagingViewModel
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.incentive.BankMiningEarningDTO
 import kotlinx.coroutines.delay
 
@@ -14,14 +15,22 @@ class BankMiningEarningsViewModel(
     private val walletAddress: String
 ) : PagingViewModel<BankMiningEarningDTO>() {
 
+    private val incentiveService by lazy {
+        DataRepository.getIncentiveService()
+    }
+
     override suspend fun loadData(
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
         onSuccess: (List<BankMiningEarningDTO>, Any?) -> Unit
     ) {
-        // TODO 对接接口
-        onSuccess.invoke(fakeData(), null)
+        val data = incentiveService.getBankMiningEarnings(
+            walletAddress,
+            pageSize,
+            (pageNumber - 1) * pageSize
+        )
+        onSuccess.invoke(data, null)
     }
 
     private suspend fun fakeData(): List<BankMiningEarningDTO> {

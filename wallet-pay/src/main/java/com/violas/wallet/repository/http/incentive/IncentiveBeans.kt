@@ -18,14 +18,14 @@ data class ReceiveIncentiveRewardsResultsDTO(
 
 @Keep
 data class InviteMiningEarningDTO(
-    @SerializedName("address")
+    @SerializedName("be_invited")
     val inviteeAddress: String = "",    // 被邀请账号
     @SerializedName("date")
     val invitationTime: Long = 0,       // 邀请时间
     @SerializedName("amount")
     val miningEarnings: Long = 0,       // 挖矿收益
     @SerializedName("status")
-    val status: Int = 0,                // 状态
+    val status: Int = 0,                // 状态（0：未到帐；1：已到帐）
 )
 
 @Keep
@@ -35,7 +35,9 @@ data class PoolMiningEarningDTO(
     @SerializedName("amount")
     val extractionAmount: Long = 0,     // 提取数量
     @SerializedName("status")
-    val status: Int = 0,                // 状态
+    val status: Int = 0,                // 状态（0：未到帐；1：已到帐）
+    @SerializedName("type")
+    val type: Int = 0                   // 类型
 )
 
 @Keep
@@ -45,5 +47,7 @@ data class BankMiningEarningDTO(
     @SerializedName("amount")
     val extractionAmount: Long = 0,     // 提取数量
     @SerializedName("status")
-    val status: Int = 0,                // 状态
+    val status: Int = 0,                // 状态（0：未到帐；1：已到帐）
+    @SerializedName("type")
+    val type: Int = 0                   // 类型（3: deposit; 4: withdraw; 5: borrow; 6: repayment; 7: bank extract;）
 )

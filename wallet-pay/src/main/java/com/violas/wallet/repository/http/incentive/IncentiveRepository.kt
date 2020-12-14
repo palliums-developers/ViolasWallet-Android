@@ -40,4 +40,36 @@ class IncentiveRepository(private val incentiveApi: IncentiveApi) {
 }""".toRequestBody("application/json".toMediaTypeOrNull())
             .let { incentiveApi.receiveIncentiveRewards(it).await() }
 
+    /**
+     * 获取邀请收益明细
+     */
+    suspend fun getInviteMiningEarnings(
+        address: String,
+        pageSize: Int,
+        offset: Int
+    ) =
+        incentiveApi.getInviteMiningEarnings(address, pageSize, offset)
+            .await().data ?: emptyList()
+
+    /**
+     * 获取资金池收益明细
+     */
+    suspend fun getPoolMiningEarnings(
+        address: String,
+        pageSize: Int,
+        offset: Int
+    ) =
+        incentiveApi.getPoolMiningEarnings(address, pageSize, offset)
+            .await().data ?: emptyList()
+
+    /**
+     * 获取数字银行收益明细
+     */
+    suspend fun getBankMiningEarnings(
+        address: String,
+        pageSize: Int,
+        offset: Int
+    ) =
+        incentiveApi.getBankMiningEarnings(address, pageSize, offset)
+            .await().data ?: emptyList()
 }

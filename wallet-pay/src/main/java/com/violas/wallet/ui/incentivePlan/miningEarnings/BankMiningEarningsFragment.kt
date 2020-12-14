@@ -155,6 +155,16 @@ class BankMiningEarningsFragment : BasePagingFragment<BankMiningEarningDTO>() {
                         itemView.context
                     )
                 )
+
+                itemView.tvType.setText(
+                    when (it.type) {
+                        3 -> R.string.mining_earnings_type_deposit
+                        4 -> R.string.mining_earnings_type_withdrawal
+                        5 -> R.string.mining_earnings_type_borrowing
+                        6 -> R.string.mining_earnings_type_repayment
+                        else -> R.string.mining_earnings_type_active_extraction
+                    }
+                )
             }
         }
     }

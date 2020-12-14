@@ -20,7 +20,7 @@ import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.repository.http.incentive.PoolMiningEarningDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import kotlinx.android.synthetic.main.fragment_pool_mining_earnings.*
-import kotlinx.android.synthetic.main.item_invite_mining_earning.view.*
+import kotlinx.android.synthetic.main.item_pool_mining_earning.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 

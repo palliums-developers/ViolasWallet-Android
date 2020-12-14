@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_22"
-        android:text="@string/mining_earnings_type_extract"
+        android:text="@string/mining_earnings_type_active_extraction"
         android:textSize="@dimen/fs_12"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
