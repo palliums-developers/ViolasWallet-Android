@@ -180,13 +180,46 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/llReceiptAddress" />
 
+        <TextView
+            android:id="@+id/tvAddressNotAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/dp_5"
+            android:text="@string/txn_details_desc_address_not_add"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="@dimen/fs_10"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@id/llReceiptAddress"
+            app:layout_constraintTop_toBottomOf="@id/llReceiptAddress"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvAddAddress"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingHorizontal="@dimen/dp_8"
+            android:paddingBottom="@dimen/dp_5"
+            android:singleLine="true"
+            android:text="@string/txn_details_action_add_address"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="@dimen/fs_10"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/llReceiptAddress"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@id/tvAddressNotAdd"
+            app:layout_constraintTop_toBottomOf="@id/llReceiptAddress"
+            app:layout_constraintWidth_max="wrap"
+            tools:visibility="visible" />
+
         <LinearLayout
             android:id="@+id/llPaymentAddress"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvAmount"
-            app:layout_constraintTop_toBottomOf="@id/llReceiptAddress">
+            app:layout_constraintTop_toBottomOf="@id/tvAddressNotAdd">
 
             <TextView
                 android:id="@+id/tvPaymentAddress"

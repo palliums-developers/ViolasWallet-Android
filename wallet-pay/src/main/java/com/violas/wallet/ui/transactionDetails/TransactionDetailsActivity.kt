@@ -1,6 +1,7 @@
 package com.violas.wallet.ui.transactionDetails
 
 import android.Manifest
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -11,17 +12,21 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.palliums.base.ViewController
 import com.palliums.extensions.close
+import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.utils.*
 import com.palliums.widget.loading.LoadingDialog
 import com.violas.wallet.R
+import com.violas.wallet.biz.AddressBookManager
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.ui.addressBook.add.AddAddressBookActivity
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
@@ -50,6 +55,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     companion object {
         private const val PIC_DIR_NAME = "ViolasPay Photos"
         private const val REQUEST_CODE_SAVE_PICTURE = 100
+        private const val REQUEST_CODE_ADD_ADDRESS = 101
 
         fun start(context: Context, record: TransactionRecordVO) {
             Intent(context, TransactionDetailsActivity::class.java)
@@ -144,6 +150,38 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 ClipboardUtils.copy(this, mTransactionRecord.transactionId)
             }
         }
+
+        tvAddAddress.expandTouchArea()
+        tvAddAddress.setOnClickListener {
+            AddAddressBookActivity.start(
+                this,
+                REQUEST_CODE_ADD_ADDRESS,
+                mTransactionRecord.coinType.coinType(),
+                mTransactionRecord.toAddress
+            )
+        }
+    }
+
+    private fun initAddAddressView() {
+        if (mTransactionRecord.transactionType != TransactionType.TRANSFER
+            || mTransactionRecord.toAddress.isNullOrBlank()
+        ) {
+            return
+        }
+
+        launch {
+            val isAdded = withContext(Dispatchers.IO) {
+                AddressBookManager().isAddressAdded(
+                    mTransactionRecord.coinType.coinType(),
+                    mTransactionRecord.toAddress!!
+                )
+            }
+
+            if (!isAdded) {
+                tvAddressNotAdd.visibility = View.VISIBLE
+                tvAddAddress.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun initView(transactionRecord: TransactionRecordVO) {
@@ -155,6 +193,8 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         toolbar.layoutParams = (toolbar.layoutParams as ConstraintLayout.LayoutParams).apply {
             topMargin = StatusBarUtil.getStatusBarHeight()
         }
+
+        initAddAddressView()
 
         when (transactionRecord.transactionState) {
             TransactionState.PENDING -> {
@@ -422,6 +462,14 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             REQUEST_CODE_SAVE_PICTURE -> {
                 saveIntoAlbum()
             }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_ADD_ADDRESS && resultCode == Activity.RESULT_OK) {
+            tvAddressNotAdd.visibility = View.GONE
+            tvAddAddress.visibility = View.GONE
         }
     }
 }

@@ -606,4 +606,8 @@
     <string name="home_bank_mining_title">存、借挖矿规则</string>
     <string name="home_wallet_phone_receive_title">免费领取</string>
     <string name="home_wallet_mining_title">挖矿领福利</string>
+
+    <string name="txn_details_desc_address_not_add">此地址未添加</string>
+    <string name="txn_details_action_add_address">立即添加</string>
+
 </resources>

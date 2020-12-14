@@ -27,13 +27,19 @@ class AddAddressBookActivity : BaseAppActivity() {
         private const val REQUEST_SCAN_QR_CODE = 1
 
         private const val EXT_COIN_TYPE = "a1"
+        private const val EXT_ADDRESS = "a2"
+
         fun start(
             context: Activity,
             requestCode: Int,
-            coinType: Int = CoinTypes.Bitcoin.coinType()
+            coinType: Int = CoinTypes.Bitcoin.coinType(),
+            address: String? = null
         ) {
             Intent(context, AddAddressBookActivity::class.java).apply {
                 putExtra(EXT_COIN_TYPE, coinType)
+                if (!address.isNullOrBlank()) {
+                    putExtra(EXT_ADDRESS, address)
+                }
             }.start(context, requestCode)
         }
     }
@@ -64,6 +70,12 @@ class AddAddressBookActivity : BaseAppActivity() {
 
         mCoinTypes = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
         refreshCoinType()
+
+        val address = intent.getStringExtra(EXT_ADDRESS)
+        if (!address.isNullOrBlank()) {
+            editAddress.setText(address)
+        }
+
         btnScan.setOnClickListener {
             ScanActivity.start(this@AddAddressBookActivity, REQUEST_SCAN_QR_CODE)
         }
@@ -87,7 +99,7 @@ class AddAddressBookActivity : BaseAppActivity() {
                 CoinTypes.Bitcoin.coinType() -> {
                     validationBTCAddress(address)
                 }
-                CoinTypes.Violas.coinType()->{
+                CoinTypes.Violas.coinType() -> {
                     validationViolasAddress(address)
                 }
                 CoinTypes.Libra.coinType() -> {
