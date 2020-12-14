@@ -129,33 +129,6 @@ class MainActivity : BaseAppActivity() {
                 R.id.tab_me
             )
         )
-        launch {
-            delay(10000)
-            val wordList = listOf(
-                "velvet",
-                "version", "sea",
-                "near",
-                "truly",
-                "open",
-                "blanket",
-                "exchange",
-                "leaf",
-                "cupboard",
-                "shine",
-                "poem"
-            )
-            val seed = SeedCalculator()
-                .withWordsFromWordList(English.INSTANCE)
-                .calculateSeed(wordList, "") ?: throw MnemonicException()
-            val extendedKey = ExtendedKey.create(seed)
-            val bip44Path =
-                BIP44.m().purpose44().coinType(CoinTypes.BitcoinTest).account(0).external()
-                    .address(0)
-
-            val derive = CoinPairDerive(extendedKey).derive(bip44Path)
-            val deriveBitcoin = derive as BitCoinECKeyPair
-            Log.e("==Bitcoin", deriveBitcoin.address)
-        }
     }
 
     private fun resetToDefaultIcon() {
