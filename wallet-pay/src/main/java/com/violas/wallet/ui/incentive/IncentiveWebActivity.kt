@@ -7,9 +7,15 @@ import com.github.lzyzsd.jsbridge.CallBackFunction
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import com.palliums.extensions.logInfo
+import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.R
 import com.violas.wallet.base.BaseBridgeWebActivity
+import com.violas.wallet.biz.ExchangeManager
+import com.violas.wallet.biz.bank.BankManager
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.common.EXTRA_KEY_TITLE
 import com.violas.wallet.common.EXTRA_KEY_URL
 import com.violas.wallet.event.*
@@ -22,6 +28,7 @@ import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_bridge_web.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
@@ -35,7 +42,7 @@ import kotlin.random.Random
  * <p>
  * desc: 挖矿激励web页面
  */
-class IncentiveWebActivity() : BaseBridgeWebActivity() {
+class IncentiveWebActivity : BaseBridgeWebActivity() {
 
     companion object {
         private const val TAG = "IncentiveWebActivity"
@@ -100,10 +107,14 @@ class IncentiveWebActivity() : BaseBridgeWebActivity() {
     private val mTitle by lazy { intent.getStringExtra(EXTRA_KEY_TITLE) }
     private val mUrl by lazy { intent.getStringExtra(EXTRA_KEY_URL) }
     private val mGson by lazy { Gson() }
+    private val mBankManager by lazy { BankManager() }
+    private val mExchangeManager by lazy { ExchangeManager() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EventBus.getDefault().register(this)
+        setTitleRightText(R.string.title_orders)
+        setTitleRightImageResource(getResourceId(R.attr.iconRecordPrimary, this))
     }
 
     override fun onDestroy() {
@@ -113,6 +124,11 @@ class IncentiveWebActivity() : BaseBridgeWebActivity() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onReceiveIncentiveRewardsEvent(event: ReceiveIncentiveRewardsEvent) {
+        startLoad()
+    }
+
+    override fun onTitleRightViewClick() {
+        super.onTitleRightViewClick()
         startLoad()
     }
 
@@ -138,11 +154,11 @@ class IncentiveWebActivity() : BaseBridgeWebActivity() {
 
                 when (request.method) {
                     "withdraw_pool_profit" -> {
-                        withdrawPoolEarnings(request, callbackFunction)
+                        withdrawMiningRewards(request, callbackFunction, false)
                     }
 
                     "withdraw_bank_profit" -> {
-                        withdrawBankEarnings(request, callbackFunction)
+                        withdrawMiningRewards(request, callbackFunction, true)
                     }
 
                     "new_user_check" -> {
@@ -150,17 +166,18 @@ class IncentiveWebActivity() : BaseBridgeWebActivity() {
                     }
 
                     "pool_farming" -> {
-                        gotoHomePoolPage(request, callbackFunction)
+                        backToHomePoolPage(request, callbackFunction)
                     }
 
                     "bank_deposit_farming" -> {
-                        gotoHomeBankPage(request, callbackFunction, true)
+                        backToHomeBankPage(request, callbackFunction, true)
                     }
 
                     "bank_loan_farming" -> {
-                        gotoHomeBankPage(request, callbackFunction, false)
+                        backToHomeBankPage(request, callbackFunction, false)
                     }
 
+                    "yield_farming_detail",
                     "mine_invite" -> {
                         startEarningsDetailsPage(request, callbackFunction)
                     }
@@ -180,11 +197,11 @@ class IncentiveWebActivity() : BaseBridgeWebActivity() {
         }
     }
 
-    private suspend fun withdrawPoolEarnings(
+    private suspend fun withdrawMiningRewards(
         request: Request,
-        callbackFunction: CallBackFunction
+        callbackFunction: CallBackFunction,
+        bankMining: Boolean
     ) {
-        // TODO
         val accountManager = WalletAppViewModel.getViewModelInstance().mAccountManager
         val violasAccount = withContext(Dispatchers.IO) {
             accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
@@ -205,44 +222,43 @@ class IncentiveWebActivity() : BaseBridgeWebActivity() {
                 )
             }
         ) {
-            launch {
-
-            }
+            sendWithdrawMiningRewardsTxn(request, callbackFunction, bankMining, it)
         }
     }
 
-    private suspend fun withdrawBankEarnings(
+    private fun sendWithdrawMiningRewardsTxn(
         request: Request,
-        callbackFunction: CallBackFunction
+        callbackFunction: CallBackFunction,
+        bankMining: Boolean,
+        privateKey: ByteArray
     ) {
-        // TODO
-        val accountManager = WalletAppViewModel.getViewModelInstance().mAccountManager
-        val violasAccount = withContext(Dispatchers.IO) {
-            accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
-        }
-        if (violasAccount == null) {
-            callbackFunction.onCallBack(
-                Response.error(request.id, -1, "Account does not exist").toJson()
-            )
-            return
-        }
+        launch {
+            val response = withContext(Dispatchers.IO) {
+                return@withContext try {
+                    if (bankMining) {
+                        mBankManager.withdrawReward(privateKey)
+                    } else {
+                        mExchangeManager.withdrawReward(privateKey)
+                    }
 
-        authenticateAccount(
-            violasAccount,
-            accountManager,
-            cancelCallback = {
-                callbackFunction.onCallBack(
-                    Response.error(request.id, -1, "User canceled").toJson()
-                )
+                    Response.success(request.id)
+                } catch (e: Exception) {
+                    Response.error(request.id, -2, e.message ?: "unknown error")
+                }
             }
-        ) {
-            launch {
 
-            }
+            callbackFunction.onCallBack(response.toJson())
+            CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+
+            dismissProgress()
+            showToast(R.string.tips_withdrawal_success)
+
+            delay(2000)
+            startLoad()
         }
     }
 
-    private fun gotoHomePoolPage(
+    private fun backToHomePoolPage(
         request: Request,
         callbackFunction: CallBackFunction
     ) {
@@ -253,12 +269,12 @@ class IncentiveWebActivity() : BaseBridgeWebActivity() {
         close()
     }
 
-    private fun gotoHomeBankPage(
+    private fun backToHomeBankPage(
         request: Request,
         callbackFunction: CallBackFunction,
         deposit: Boolean
     ) {
-        EventBus.getDefault().post(SwitchHomePageEvent(HomePageType.Market))
+        EventBus.getDefault().post(SwitchHomePageEvent(HomePageType.Bank))
         EventBus.getDefault()
             .post(SwitchBankPageEvent(if (deposit) BankPageType.Deposit else BankPageType.Borrowing))
         callbackFunction.onCallBack(Response.success(request.id).toJson())

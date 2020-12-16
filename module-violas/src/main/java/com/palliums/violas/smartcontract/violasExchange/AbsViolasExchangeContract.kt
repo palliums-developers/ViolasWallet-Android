@@ -19,6 +19,9 @@ abstract class AbsViolasExchangeContract {
             "a11ceb0b0100000006010002030207040902050b10071b0e082910000000010001020101000206060c0503030a020a020002090009010845786368616e67650473776170000000000000000000000000000000010201010001080b000a010a020a030b040b05380002"
         private const val mAddCurrencyContract =
             "a11ceb0b0100000006010002030206040802050a070711160827100000000100010101000201060c000109000845786368616e67650c6164645f63757272656e63790000000000000000000000000000000101010001030b00380002"
+        // TODO 替换提取资金池挖矿奖励合约
+        private const val mWithdrawRewardContract =
+            "a11ceb0b0100000006010002030206040802050a070711160827100000000100010101000201060c000109000845786368616e67650c6164645f63757272656e63790000000000000000000000000000000101010001030b00380002"
     }
 
     abstract fun getContractAddress(): String
@@ -132,6 +135,21 @@ abstract class AbsViolasExchangeContract {
         )
     }
 
+    /**
+     * 提取挖矿奖励
+     */
+    fun optionWithdrawRewardTransactionPayload(): TransactionPayload {
+        val moveEncode = getWithdrawRewardContract()
+
+        return TransactionPayload(
+            TransactionPayload.Script(
+                moveEncode,
+                arrayListOf(),
+                arrayListOf()
+            )
+        )
+    }
+
     fun optionInitializeTransactionPayload(): TransactionPayload {
         val moveEncode = replaceContractAddress(mInitializeContract)
 
@@ -162,4 +180,5 @@ abstract class AbsViolasExchangeContract {
     fun getAddLiquidityContract() = replaceContractAddress(mAddLiquidityContract)
     fun getRemoveLiquidityContract() = replaceContractAddress(mRemoveLiquidityContract)
     fun getTokenSwapContract() = replaceContractAddress(mTokenSwapContract)
+    fun getWithdrawRewardContract() = replaceContractAddress(mWithdrawRewardContract)
 }

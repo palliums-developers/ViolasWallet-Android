@@ -16,6 +16,8 @@ abstract class AbsViolasBankContract {
             "a11ceb0b0100000007010002030216041804051c180734310865100675050000000100010101000202030000030401000004050101010306000602060c030001060c010102060c0a0203060c030a020109000a56696f6c617342616e6b09657869745f62616e6b0c69735f7075626c6973686564077075626c6973680672656465656d000000000000000000000000000000010a0202010001010501110a0011010921030605090a00070011020a000a010b0238000b000a01380102"
         private const val mRepayBorrow2Contract =
             "a11ceb0b0100000007010002030216041804051c18073438086c10067c050000000100010101000202030000030401000004050101010006030602060c030001060c010102060c0a0203060c030a020109000a56696f6c617342616e6b0a656e7465725f62616e6b0c69735f7075626c6973686564077075626c6973680c72657061795f626f72726f77000000000000000000000000000000010a0202010001010501110a0011010921030605090a00070011020a000a0138000b000a010b02380102"
+        private const val mClaimIncentiveContract =
+            "a11ceb0b010000000601000203020f05110b071c30084c10065c05000000010001000002000200000303010001060c00010102060c0a020a56696f6c617342616e6b0f636c61696d5f696e63656e746976650c69735f7075626c6973686564077075626c697368000000000000000000000000000000010a020201000000010c0a0011010921030605090a00070011020b00110002"
     }
 
     abstract fun getContractAddress(): String
@@ -34,6 +36,7 @@ abstract class AbsViolasBankContract {
     fun getLock2Contract() = replaceContractAddress(mLock2Contract)
     fun getRedeem2Contract() = replaceContractAddress(mRedeem2Contract)
     fun getRepayBorrow2Contract() = replaceContractAddress(mRepayBorrow2Contract)
+    fun getClaimIncentiveContract() = replaceContractAddress(mClaimIncentiveContract)
 
     /**
      * 往银行存钱
@@ -131,6 +134,21 @@ abstract class AbsViolasBankContract {
                     TransactionArgument.newU64(amount),
                     TransactionArgument.newByteArray(data)
                 )
+            )
+        )
+    }
+
+    /**
+     * 提取挖矿奖励
+     */
+    fun optionWithdrawRewardTransactionPayload(): TransactionPayload {
+        val moveEncode = getClaimIncentiveContract()
+
+        return TransactionPayload(
+            TransactionPayload.Script(
+                moveEncode,
+                arrayListOf(),
+                arrayListOf()
             )
         )
     }

@@ -194,4 +194,22 @@ class BankManager {
         )
         return generateTransaction.sequenceNumber.toString()
     }
+
+    /**
+     * 提取挖矿奖励
+     */
+    @Throws(ViolasException::class)
+    suspend fun withdrawReward(
+        privateKey: ByteArray,
+    ) {
+        val withdrawRewardTransactionPayload =
+            mViolasBankContract.optionWithdrawRewardTransactionPayload()
+
+        mViolasRPCService.sendTransaction(
+            payload = withdrawRewardTransactionPayload,
+            account = Account(KeyPair.fromSecretKey(privateKey)),
+            gasCurrencyCode = "vls",
+            chainId = Vm.ViolasChainId
+        )
+    }
 }

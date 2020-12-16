@@ -1,6 +1,7 @@
 package com.violas.wallet.biz
 
 import com.palliums.extensions.logInfo
+import com.palliums.violas.error.ViolasException
 import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
@@ -212,6 +213,24 @@ class ExchangeManager {
             removeLiquidityTransactionPayload,
             Account(KeyPair.fromSecretKey(privateKey)),
             gasCurrencyCode = coinA.module,
+            chainId = Vm.ViolasChainId
+        )
+    }
+
+    /**
+     * 提取挖矿奖励
+     */
+    @Throws(ViolasException::class)
+    suspend fun withdrawReward(
+        privateKey: ByteArray
+    ) {
+        val withdrawRewardTransactionPayload =
+            mViolasExchangeContract.optionWithdrawRewardTransactionPayload()
+
+        mViolasService.sendTransaction(
+            payload = withdrawRewardTransactionPayload,
+            account = Account(KeyPair.fromSecretKey(privateKey)),
+            gasCurrencyCode = "vls",
             chainId = Vm.ViolasChainId
         )
     }
