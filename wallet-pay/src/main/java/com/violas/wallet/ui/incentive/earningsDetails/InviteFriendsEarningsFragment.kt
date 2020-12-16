@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.incentivePlan.miningEarnings
+package com.violas.wallet.ui.incentive.earningsDetails
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,9 +17,9 @@ import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.repository.http.incentive.InviteMiningEarningDTO
+import com.violas.wallet.repository.http.incentive.InviteFriendsEarningDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
-import kotlinx.android.synthetic.main.fragment_invite_mining_earnings.*
+import kotlinx.android.synthetic.main.fragment_invite_friends_earnings.*
 import kotlinx.android.synthetic.main.item_invite_mining_earning.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -30,11 +30,11 @@ import java.util.*
  * <p>
  * desc: 邀请好友收益视图
  */
-class InviteMiningEarningsFragment : BasePagingFragment<InviteMiningEarningDTO>() {
+class InviteFriendsEarningsFragment : BasePagingFragment<InviteFriendsEarningDTO>() {
 
     companion object {
-        fun newInstance(walletAddress: String): InviteMiningEarningsFragment {
-            return InviteMiningEarningsFragment().apply {
+        fun newInstance(walletAddress: String): InviteFriendsEarningsFragment {
+            return InviteFriendsEarningsFragment().apply {
                 arguments = Bundle().apply {
                     putString(KEY_ONE, walletAddress)
                 }
@@ -45,7 +45,7 @@ class InviteMiningEarningsFragment : BasePagingFragment<InviteMiningEarningDTO>(
     private lateinit var mWalletAddress: String
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_invite_mining_earnings
+        return R.layout.fragment_invite_friends_earnings
     }
 
     override fun getRecyclerView(): RecyclerView {
@@ -60,7 +60,7 @@ class InviteMiningEarningsFragment : BasePagingFragment<InviteMiningEarningDTO>(
         return vStatusLayout
     }
 
-    override fun lazyInitPagingViewModel(): PagingViewModel<InviteMiningEarningDTO> {
+    override fun lazyInitPagingViewModel(): PagingViewModel<InviteFriendsEarningDTO> {
         return ViewModelProvider(
             this,
             object : ViewModelProvider.Factory {
@@ -70,10 +70,10 @@ class InviteMiningEarningsFragment : BasePagingFragment<InviteMiningEarningDTO>(
                         .newInstance(mWalletAddress)
                 }
             }
-        ).get(InviteMiningEarningsViewModel::class.java)
+        ).get(InviteFriendsEarningsViewModel::class.java)
     }
 
-    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<InviteMiningEarningDTO> {
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<InviteFriendsEarningDTO> {
         return ViewAdapter()
     }
 
@@ -106,7 +106,7 @@ class InviteMiningEarningsFragment : BasePagingFragment<InviteMiningEarningDTO>(
         getPagingHandler().start()
     }
 
-    class ViewAdapter : PagingViewAdapter<InviteMiningEarningDTO>() {
+    class ViewAdapter : PagingViewAdapter<InviteFriendsEarningDTO>() {
 
         private val simpleDateFormat by lazy {
             SimpleDateFormat("HH:mm MM/dd", Locale.ENGLISH)
@@ -130,9 +130,9 @@ class InviteMiningEarningsFragment : BasePagingFragment<InviteMiningEarningDTO>(
     class ViewHolder(
         view: View,
         private val simpleDateFormat: SimpleDateFormat
-    ) : BaseViewHolder<InviteMiningEarningDTO>(view) {
+    ) : BaseViewHolder<InviteFriendsEarningDTO>(view) {
 
-        override fun onViewBind(itemPosition: Int, itemData: InviteMiningEarningDTO?) {
+        override fun onViewBind(itemPosition: Int, itemData: InviteFriendsEarningDTO?) {
             itemData?.let {
                 itemView.tvAddress.text = if (it.inviteeAddress.length > 12)
                     "${it.inviteeAddress.substring(0, 6)}...${

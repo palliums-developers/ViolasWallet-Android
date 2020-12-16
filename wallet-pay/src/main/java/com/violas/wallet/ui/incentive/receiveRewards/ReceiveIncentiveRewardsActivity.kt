@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.incentivePlan.receiveRewards
+package com.violas.wallet.ui.incentive.receiveRewards
 
 import android.app.Activity
 import android.content.Context
@@ -15,8 +15,8 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.event.ReceiveIncentiveRewardsEvent
-import com.violas.wallet.ui.incentivePlan.receiveRewards.ReceiveIncentiveRewardsViewModel.Companion.ACTION_GET_VERIFICATION_CODE
-import com.violas.wallet.ui.incentivePlan.receiveRewards.ReceiveIncentiveRewardsViewModel.Companion.ACTION_RECEIVE_REWARD
+import com.violas.wallet.ui.incentive.receiveRewards.ReceiveIncentiveRewardsViewModel.Companion.ACTION_GET_VERIFICATION_CODE
+import com.violas.wallet.ui.incentive.receiveRewards.ReceiveIncentiveRewardsViewModel.Companion.ACTION_RECEIVE_REWARD
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
 import com.violas.wallet.ui.selectCountryArea.SelectCountryAreaActivity
 import kotlinx.android.synthetic.main.activity_receive_incentive_rewards.*

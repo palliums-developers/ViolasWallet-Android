@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.incentivePlan.receiveRewards
+package com.violas.wallet.ui.incentive.receiveRewards
 
 import androidx.lifecycle.MutableLiveData
 import com.palliums.base.BaseViewModel

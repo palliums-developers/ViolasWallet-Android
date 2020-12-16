@@ -41,18 +41,18 @@ class IncentiveRepository(private val incentiveApi: IncentiveApi) {
             .let { incentiveApi.receiveIncentiveRewards(it).await() }
 
     /**
-     * 获取邀请收益明细
+     * 获取邀请好友收益明细
      */
-    suspend fun getInviteMiningEarnings(
+    suspend fun getInviteFriendsEarnings(
         address: String,
         pageSize: Int,
         offset: Int
     ) =
-        incentiveApi.getInviteMiningEarnings(address, pageSize, offset)
+        incentiveApi.getInviteFriendsEarnings(address, pageSize, offset)
             .await().data ?: emptyList()
 
     /**
-     * 获取资金池收益明细
+     * 获取资金池挖矿收益明细
      */
     suspend fun getPoolMiningEarnings(
         address: String,
@@ -63,7 +63,7 @@ class IncentiveRepository(private val incentiveApi: IncentiveApi) {
             .await().data ?: emptyList()
 
     /**
-     * 获取数字银行收益明细
+     * 获取数字银行挖矿收益明细
      */
     suspend fun getBankMiningEarnings(
         address: String,

@@ -220,10 +220,10 @@
             android:name=".ui.selectCountryArea.SelectCountryAreaActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.incentivePlan.receiveRewards.ReceiveIncentiveRewardsActivity"
+            android:name=".ui.incentive.receiveRewards.ReceiveIncentiveRewardsActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.incentivePlan.miningEarnings.MiningEarningsDetailsActivity"
+            android:name=".ui.incentive.earningsDetails.IncentiveEarningsDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.APP.DayNight.Secondary"/>
 

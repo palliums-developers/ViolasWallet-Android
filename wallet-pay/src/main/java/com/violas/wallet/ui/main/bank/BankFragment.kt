@@ -22,8 +22,11 @@ import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
+import com.violas.wallet.event.BankPageType
+import com.violas.wallet.event.SwitchBankPageEvent
 import com.violas.wallet.ui.bank.order.borrowing.BankBorrowingOrderActivity
 import com.violas.wallet.ui.bank.order.deposit.BankDepositOrderActivity
+import com.violas.wallet.ui.incentive.IncentiveWebActivity
 import com.violas.wallet.ui.main.bank.BankViewModel.Companion.ACTION_LOAD_ACCOUNT_INFO
 import com.violas.wallet.ui.main.bank.BankViewModel.Companion.ACTION_LOAD_BORROWING_PRODUCTS
 import com.violas.wallet.ui.main.bank.BankViewModel.Companion.ACTION_LOAD_DEPOSIT_PRODUCTS
@@ -32,6 +35,9 @@ import com.violas.wallet.widget.popup.MenuPopup
 import kotlinx.android.synthetic.main.fragment_bank.*
 import kotlinx.android.synthetic.main.fragment_bank_content.*
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Created by elephant on 2020/8/19 15:38.
@@ -52,6 +58,7 @@ class BankFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        EventBus.getDefault().register(this)
         clTopGroup.post { adapterViewHeight() }
         initFragmentPager()
     }
@@ -61,6 +68,24 @@ class BankFragment : BaseFragment() {
 
         initEvent()
         initObserver()
+    }
+
+    override fun onDestroyView() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroyView()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSwitchBankPageEvent(event: SwitchBankPageEvent) {
+        when (event.bankPageType) {
+            BankPageType.Deposit -> {
+                tabLayout.getTabAt(0)?.select()
+            }
+
+            BankPageType.Borrowing -> {
+                tabLayout.getTabAt(1)?.select()
+            }
+        }
     }
 
     private fun adapterViewHeight() {
@@ -171,8 +196,7 @@ class BankFragment : BaseFragment() {
 
         tvMiningRule.expandTouchArea(20)
         tvMiningRule.setOnClickListener {
-            // TODO 进入挖矿规则页面
-            showToast(R.string.home_bank_mining_title)
+            IncentiveWebActivity.startIncentiveRules(requireContext())
         }
     }
 

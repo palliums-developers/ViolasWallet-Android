@@ -7,9 +7,11 @@ import com.palliums.base.BaseFragment
 import com.violas.wallet.R
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.addressBook.AddressBookActivity
+import com.violas.wallet.ui.incentive.IncentiveWebActivity
 import com.violas.wallet.ui.setting.SettingActivity
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.fragment_me.*
+import kotlinx.coroutines.launch
 
 /**
  * 我的页面
@@ -48,13 +50,15 @@ class MeFragment : BaseFragment() {
             }
 
             R.id.mivMiningReward -> {
-                // TODO 进入挖矿激励详情页面
-                showToast(R.string.mining_reward)
+                launch {
+                    IncentiveWebActivity.startIncentiveHomePage(requireContext())
+                }
             }
 
             R.id.mivInvitationReward -> {
-                // TODO 进入邀请激励详情页面
-                showToast(R.string.invitation_reward)
+                launch {
+                    IncentiveWebActivity.startInviteHomePage(requireContext())
+                }
             }
 
             R.id.mivSettings -> {

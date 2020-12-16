@@ -17,7 +17,7 @@ data class ReceiveIncentiveRewardsResultsDTO(
 )
 
 @Keep
-data class InviteMiningEarningDTO(
+data class InviteFriendsEarningDTO(
     @SerializedName("be_invited")
     val inviteeAddress: String = "",    // 被邀请账号
     @SerializedName("date")

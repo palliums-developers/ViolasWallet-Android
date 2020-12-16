@@ -34,17 +34,17 @@ interface IncentiveApi {
     ): Observable<Response<Any>>
 
     /**
-     * 获取邀请收益明细
+     * 获取邀请好友收益明细
      */
     @GET("/violas/1.0/incentive/orders/invite")
-    fun getInviteMiningEarnings(
+    fun getInviteFriendsEarnings(
         @Query("address") address: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
-    ): Observable<ListResponse<InviteMiningEarningDTO>>
+    ): Observable<ListResponse<InviteFriendsEarningDTO>>
 
     /**
-     * 获取资金池收益明细
+     * 获取资金池挖矿收益明细
      */
     @GET("/violas/1.0/incentive/orders/pool")
     fun getPoolMiningEarnings(
@@ -54,7 +54,7 @@ interface IncentiveApi {
     ): Observable<ListResponse<PoolMiningEarningDTO>>
 
     /**
-     * 获取数字银行收益明细
+     * 获取数字银行挖矿收益明细
      */
     @GET("/violas/1.0/incentive/orders/bank")
     fun getBankMiningEarnings(

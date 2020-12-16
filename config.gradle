@@ -3,7 +3,7 @@ ext {
             payApplicationId: 'com.violas.wallet.pay',
             payVersionName  : '0.2.3',
             ssoApplicationId: 'com.violas.wallet.sso',
-            ssoVersionName  : '0.1.11',
+            ssoVersionName  : '0.1.11'
     ]
 
     versions = [
@@ -91,6 +91,7 @@ ext {
             BottomNavigationViewEx                 : '2.0.4',
             uTakePhoto                             : '1.0.6',
             glide                                  : '4.9.0',
+            jsbridge                               : '1.0.4',
 
             /************************* Data *************************/
             rxjava2                                : '2.2.13',
@@ -106,7 +107,7 @@ ext {
             jpinyin                                : 'v1.0',
             crashreport                            : '3.1.0',
             crashreport_upgrade                    : '1.4.2',
-            app_center_sdk                         : '3.2.2',
+            app_center_sdk                         : '3.2.2'
     ]
 
     libraries = [
@@ -196,6 +197,7 @@ ext {
             glide_compiler                  : "com.github.bumptech.glide:compiler:$versions.glide",
             // see https://github.com/TakuSemba/Spotlight 高亮引导
             spotlight                       : 'com.github.takusemba:spotlight:2.0.1',
+            jsbridge                        : "com.github.lzyzsd:jsbridge:${versions.jsbridge}",
 
             /************************* Data *************************/
             // see https://github.com/ReactiveX/RxJava
@@ -215,6 +217,6 @@ ext {
             Luban                           : "top.zibin:Luban:$versions.Luban",
             // see https://docs.microsoft.com/zh-cn/appcenter/sdk/getting-started/android
             appcenter_analytics             : "com.microsoft.appcenter:appcenter-analytics:${versions.app_center_sdk}",
-            appcenter_crashes               : "com.microsoft.appcenter:appcenter-crashes:${versions.app_center_sdk}",
+            appcenter_crashes               : "com.microsoft.appcenter:appcenter-crashes:${versions.app_center_sdk}"
     ]
 }

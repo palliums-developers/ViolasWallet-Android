@@ -29,6 +29,7 @@ import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
+import com.violas.wallet.ui.incentive.IncentiveWebActivity
 import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -150,8 +151,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         }
 
         clMiningGroup.setOnClickListener {
-            // TODO 进入挖矿规则页面
-            showToast(R.string.home_market_mining_title)
+            IncentiveWebActivity.startIncentiveRules(requireContext())
         }
 
         // 数据观察

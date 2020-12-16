@@ -1,8 +1,8 @@
-package com.violas.wallet.ui.incentivePlan.miningEarnings
+package com.violas.wallet.ui.incentive.earningsDetails
 
 import com.palliums.paging.PagingViewModel
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.http.incentive.BankMiningEarningDTO
+import com.violas.wallet.repository.http.incentive.InviteFriendsEarningDTO
 import kotlinx.coroutines.delay
 
 /**
@@ -11,9 +11,9 @@ import kotlinx.coroutines.delay
  * <p>
  * desc:
  */
-class BankMiningEarningsViewModel(
+class InviteFriendsEarningsViewModel(
     private val walletAddress: String
-) : PagingViewModel<BankMiningEarningDTO>() {
+) : PagingViewModel<InviteFriendsEarningDTO>() {
 
     private val incentiveService by lazy {
         DataRepository.getIncentiveService()
@@ -23,9 +23,9 @@ class BankMiningEarningsViewModel(
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<BankMiningEarningDTO>, Any?) -> Unit
+        onSuccess: (List<InviteFriendsEarningDTO>, Any?) -> Unit
     ) {
-        val data = incentiveService.getBankMiningEarnings(
+        val data = incentiveService.getInviteFriendsEarnings(
             walletAddress,
             pageSize,
             (pageNumber - 1) * pageSize
@@ -33,20 +33,23 @@ class BankMiningEarningsViewModel(
         onSuccess.invoke(data, null)
     }
 
-    private suspend fun fakeData(): List<BankMiningEarningDTO> {
+    private suspend fun fakeData(): List<InviteFriendsEarningDTO> {
         delay(500)
         return mutableListOf(
-            BankMiningEarningDTO(
+            InviteFriendsEarningDTO(
+                "2eiw8fjagalgl20wis9",
                 System.currentTimeMillis(),
                 1000_120000L,
                 0
             ),
-            BankMiningEarningDTO(
+            InviteFriendsEarningDTO(
+                "2eiw8fjagalgl20wis9",
                 System.currentTimeMillis(),
                 2000_000000L,
                 1
             ),
-            BankMiningEarningDTO(
+            InviteFriendsEarningDTO(
+                "2eiw8fjagalgl20wis9",
                 System.currentTimeMillis(),
                 2000_500000L,
                 1

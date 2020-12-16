@@ -1,8 +1,8 @@
-package com.violas.wallet.ui.incentivePlan.miningEarnings
+package com.violas.wallet.ui.incentive.earningsDetails
 
 import com.palliums.paging.PagingViewModel
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.http.incentive.PoolMiningEarningDTO
+import com.violas.wallet.repository.http.incentive.BankMiningEarningDTO
 import kotlinx.coroutines.delay
 
 /**
@@ -11,9 +11,9 @@ import kotlinx.coroutines.delay
  * <p>
  * desc:
  */
-class PoolMiningEarningsViewModel(
+class BankMiningEarningsViewModel(
     private val walletAddress: String
-) : PagingViewModel<PoolMiningEarningDTO>() {
+) : PagingViewModel<BankMiningEarningDTO>() {
 
     private val incentiveService by lazy {
         DataRepository.getIncentiveService()
@@ -23,9 +23,9 @@ class PoolMiningEarningsViewModel(
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<PoolMiningEarningDTO>, Any?) -> Unit
+        onSuccess: (List<BankMiningEarningDTO>, Any?) -> Unit
     ) {
-        val data = incentiveService.getPoolMiningEarnings(
+        val data = incentiveService.getBankMiningEarnings(
             walletAddress,
             pageSize,
             (pageNumber - 1) * pageSize
@@ -33,20 +33,20 @@ class PoolMiningEarningsViewModel(
         onSuccess.invoke(data, null)
     }
 
-    private suspend fun fakeData(): List<PoolMiningEarningDTO> {
+    private suspend fun fakeData(): List<BankMiningEarningDTO> {
         delay(500)
         return mutableListOf(
-            PoolMiningEarningDTO(
+            BankMiningEarningDTO(
                 System.currentTimeMillis(),
                 1000_120000L,
                 0
             ),
-            PoolMiningEarningDTO(
+            BankMiningEarningDTO(
                 System.currentTimeMillis(),
                 2000_000000L,
                 1
             ),
-            PoolMiningEarningDTO(
+            BankMiningEarningDTO(
                 System.currentTimeMillis(),
                 2000_500000L,
                 1

@@ -36,7 +36,8 @@ import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
 import com.violas.wallet.ui.collection.MultiCollectionActivity
 import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
-import com.violas.wallet.ui.incentivePlan.receiveRewards.ReceiveIncentiveRewardsActivity
+import com.violas.wallet.ui.incentive.IncentiveWebActivity
+import com.violas.wallet.ui.incentive.receiveRewards.ReceiveIncentiveRewardsActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.mapping.MappingActivity
 import com.violas.wallet.ui.scan.ScanActivity
@@ -383,8 +384,9 @@ class WalletFragment : BaseFragment() {
             }
 
             R.id.clMiningGroup -> {
-                // TODO 进入挖矿激励详情页面
-                showToast(R.string.mining_reward)
+                launch {
+                    IncentiveWebActivity.startIncentiveHomePage(requireContext())
+                }
             }
 
             R.id.clReceiveIncentiveRewardsGroup -> {

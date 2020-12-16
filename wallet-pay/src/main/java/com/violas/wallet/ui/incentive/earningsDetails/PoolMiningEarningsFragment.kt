@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.incentivePlan.miningEarnings
+package com.violas.wallet.ui.incentive.earningsDetails
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,10 +17,10 @@ import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.repository.http.incentive.BankMiningEarningDTO
+import com.violas.wallet.repository.http.incentive.PoolMiningEarningDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
-import kotlinx.android.synthetic.main.fragment_bank_mining_earnings.*
-import kotlinx.android.synthetic.main.item_bank_mining_earning.view.*
+import kotlinx.android.synthetic.main.fragment_pool_mining_earnings.*
+import kotlinx.android.synthetic.main.item_pool_mining_earning.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,13 +28,13 @@ import java.util.*
  * Created by elephant on 11/26/20 2:28 PM.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 数字银行挖矿收益视图
+ * desc: 资金池挖矿收益视图
  */
-class BankMiningEarningsFragment : BasePagingFragment<BankMiningEarningDTO>() {
+class PoolMiningEarningsFragment : BasePagingFragment<PoolMiningEarningDTO>() {
 
     companion object {
-        fun newInstance(walletAddress: String): BankMiningEarningsFragment {
-            return BankMiningEarningsFragment().apply {
+        fun newInstance(walletAddress: String): PoolMiningEarningsFragment {
+            return PoolMiningEarningsFragment().apply {
                 arguments = Bundle().apply {
                     putString(KEY_ONE, walletAddress)
                 }
@@ -45,7 +45,7 @@ class BankMiningEarningsFragment : BasePagingFragment<BankMiningEarningDTO>() {
     private lateinit var mWalletAddress: String
 
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_bank_mining_earnings
+        return R.layout.fragment_pool_mining_earnings
     }
 
     override fun getRecyclerView(): RecyclerView {
@@ -60,7 +60,7 @@ class BankMiningEarningsFragment : BasePagingFragment<BankMiningEarningDTO>() {
         return vStatusLayout
     }
 
-    override fun lazyInitPagingViewModel(): PagingViewModel<BankMiningEarningDTO> {
+    override fun lazyInitPagingViewModel(): PagingViewModel<PoolMiningEarningDTO> {
         return ViewModelProvider(
             this,
             object : ViewModelProvider.Factory {
@@ -70,10 +70,10 @@ class BankMiningEarningsFragment : BasePagingFragment<BankMiningEarningDTO>() {
                         .newInstance(mWalletAddress)
                 }
             }
-        ).get(BankMiningEarningsViewModel::class.java)
+        ).get(PoolMiningEarningsViewModel::class.java)
     }
 
-    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<BankMiningEarningDTO> {
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<PoolMiningEarningDTO> {
         return ViewAdapter()
     }
 
@@ -106,7 +106,7 @@ class BankMiningEarningsFragment : BasePagingFragment<BankMiningEarningDTO>() {
         getPagingHandler().start()
     }
 
-    class ViewAdapter : PagingViewAdapter<BankMiningEarningDTO>() {
+    class ViewAdapter : PagingViewAdapter<PoolMiningEarningDTO>() {
 
         private val simpleDateFormat by lazy {
             SimpleDateFormat("HH:mm MM/dd", Locale.ENGLISH)
@@ -118,7 +118,7 @@ class BankMiningEarningsFragment : BasePagingFragment<BankMiningEarningDTO>() {
         ): BaseViewHolder<out Any> {
             return ViewHolder(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_bank_mining_earning,
+                    R.layout.item_pool_mining_earning,
                     parent,
                     false
                 ),
@@ -130,9 +130,9 @@ class BankMiningEarningsFragment : BasePagingFragment<BankMiningEarningDTO>() {
     class ViewHolder(
         view: View,
         private val simpleDateFormat: SimpleDateFormat
-    ) : BaseViewHolder<BankMiningEarningDTO>(view) {
+    ) : BaseViewHolder<PoolMiningEarningDTO>(view) {
 
-        override fun onViewBind(itemPosition: Int, itemData: BankMiningEarningDTO?) {
+        override fun onViewBind(itemPosition: Int, itemData: PoolMiningEarningDTO?) {
             itemData?.let {
                 itemView.tvTime.text = formatDate(it.extractionTime, simpleDateFormat)
 
@@ -154,16 +154,6 @@ class BankMiningEarningsFragment : BasePagingFragment<BankMiningEarningDTO>() {
                             android.R.attr.textColor,
                         itemView.context
                     )
-                )
-
-                itemView.tvType.setText(
-                    when (it.type) {
-                        3 -> R.string.mining_earnings_type_deposit
-                        4 -> R.string.mining_earnings_type_withdrawal
-                        5 -> R.string.mining_earnings_type_borrowing
-                        6 -> R.string.mining_earnings_type_repayment
-                        else -> R.string.mining_earnings_type_active_extraction
-                    }
                 )
             }
         }

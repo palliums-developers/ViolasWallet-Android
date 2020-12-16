@@ -1,8 +1,8 @@
-package com.violas.wallet.ui.incentivePlan.miningEarnings
+package com.violas.wallet.ui.incentive.earningsDetails
 
 import com.palliums.paging.PagingViewModel
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.http.incentive.InviteMiningEarningDTO
+import com.violas.wallet.repository.http.incentive.PoolMiningEarningDTO
 import kotlinx.coroutines.delay
 
 /**
@@ -11,9 +11,9 @@ import kotlinx.coroutines.delay
  * <p>
  * desc:
  */
-class InviteMiningEarningsViewModel(
+class PoolMiningEarningsViewModel(
     private val walletAddress: String
-) : PagingViewModel<InviteMiningEarningDTO>() {
+) : PagingViewModel<PoolMiningEarningDTO>() {
 
     private val incentiveService by lazy {
         DataRepository.getIncentiveService()
@@ -23,9 +23,9 @@ class InviteMiningEarningsViewModel(
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<InviteMiningEarningDTO>, Any?) -> Unit
+        onSuccess: (List<PoolMiningEarningDTO>, Any?) -> Unit
     ) {
-        val data = incentiveService.getInviteMiningEarnings(
+        val data = incentiveService.getPoolMiningEarnings(
             walletAddress,
             pageSize,
             (pageNumber - 1) * pageSize
@@ -33,23 +33,20 @@ class InviteMiningEarningsViewModel(
         onSuccess.invoke(data, null)
     }
 
-    private suspend fun fakeData(): List<InviteMiningEarningDTO> {
+    private suspend fun fakeData(): List<PoolMiningEarningDTO> {
         delay(500)
         return mutableListOf(
-            InviteMiningEarningDTO(
-                "2eiw8fjagalgl20wis9",
+            PoolMiningEarningDTO(
                 System.currentTimeMillis(),
                 1000_120000L,
                 0
             ),
-            InviteMiningEarningDTO(
-                "2eiw8fjagalgl20wis9",
+            PoolMiningEarningDTO(
                 System.currentTimeMillis(),
                 2000_000000L,
                 1
             ),
-            InviteMiningEarningDTO(
-                "2eiw8fjagalgl20wis9",
+            PoolMiningEarningDTO(
                 System.currentTimeMillis(),
                 2000_500000L,
                 1

@@ -1,4 +1,4 @@
-package com.violas.wallet.ui.incentivePlan.miningEarnings
+package com.violas.wallet.ui.incentive.earningsDetails
 
 import android.content.Context
 import android.content.Intent
@@ -14,7 +14,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
-import kotlinx.android.synthetic.main.activity_mining_earnings_details.*
+import kotlinx.android.synthetic.main.activity_incentive_earnings_details.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -23,13 +23,13 @@ import kotlinx.coroutines.withContext
  * Created by elephant on 11/26/20 11:03 AM.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: 挖矿收益明细页面
+ * desc: 激励收益明细页面
  */
-class MiningEarningsDetailsActivity : BaseAppActivity() {
+class IncentiveEarningsDetailsActivity : BaseAppActivity() {
 
     companion object {
         fun start(context: Context) {
-            Intent(context, MiningEarningsDetailsActivity::class.java)
+            Intent(context, IncentiveEarningsDetailsActivity::class.java)
                 .start(context)
         }
     }
@@ -37,7 +37,7 @@ class MiningEarningsDetailsActivity : BaseAppActivity() {
     private lateinit var violasAddress: String
 
     override fun getLayoutResId(): Int {
-        return R.layout.activity_mining_earnings_details
+        return R.layout.activity_incentive_earnings_details
     }
 
     override fun getTitleStyle(): Int {
@@ -85,7 +85,7 @@ class MiningEarningsDetailsActivity : BaseAppActivity() {
     private fun initChildView() {
         val fragments = mutableListOf<Fragment>()
         supportFragmentManager.fragments.forEach {
-            if (it is InviteMiningEarningsFragment
+            if (it is InviteFriendsEarningsFragment
                 || it is PoolMiningEarningsFragment
                 || it is BankMiningEarningsFragment
             ) {
@@ -94,7 +94,7 @@ class MiningEarningsDetailsActivity : BaseAppActivity() {
         }
 
         if (fragments.isEmpty()) {
-            fragments.add(InviteMiningEarningsFragment.newInstance(violasAddress))
+            fragments.add(InviteFriendsEarningsFragment.newInstance(violasAddress))
             fragments.add(PoolMiningEarningsFragment.newInstance(violasAddress))
             fragments.add(BankMiningEarningsFragment.newInstance(violasAddress))
         }
