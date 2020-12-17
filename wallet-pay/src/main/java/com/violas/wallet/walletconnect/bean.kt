@@ -18,7 +18,9 @@ enum class TransactionDataType(val value: Int) {
     VIOLAS_BANK_DEPOSIT(7),
     VIOLAS_BANK_REDEEM(8),
     VIOLAS_BANK_BORROW(9),
-    VIOLAS_BANK_REPAY_BORROW(10);
+    VIOLAS_BANK_REPAY_BORROW(10),
+    VIOLAS_EXCHANGE_WITHDRAW_REWARD(11),
+    VIOLAS_BANK_WITHDRAW_REWARD(12);
 
     companion object {
         fun decode(value: Int): TransactionDataType {
@@ -48,6 +50,8 @@ enum class TransactionDataType(val value: Int) {
                 VIOLAS_BANK_REDEEM.value -> VIOLAS_BANK_REDEEM
                 VIOLAS_BANK_BORROW.value -> VIOLAS_BANK_BORROW
                 VIOLAS_BANK_REPAY_BORROW.value -> VIOLAS_BANK_REPAY_BORROW
+                VIOLAS_EXCHANGE_WITHDRAW_REWARD.value -> VIOLAS_EXCHANGE_WITHDRAW_REWARD
+                VIOLAS_BANK_WITHDRAW_REWARD.value -> VIOLAS_BANK_WITHDRAW_REWARD
                 else -> {
                     None
                 }

@@ -20,7 +20,9 @@ class ViolasTransferDecodeEngine(
             TransferBankDepositDecode(mRawTransaction),
             TransferBankRedeemDecode(mRawTransaction),
             TransferBankRepayBorrowDecode(mRawTransaction),
-            TransferBankBorrowDecode(mRawTransaction)
+            TransferBankBorrowDecode(mRawTransaction),
+            TransferExchangeWithdrawRewardDecode(mRawTransaction),
+            TransferBankWithdrawRewardDecode(mRawTransaction)
         )
 
     fun decode(): Pair<TransactionDataType, String> {
