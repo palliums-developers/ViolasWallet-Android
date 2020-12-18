@@ -196,7 +196,9 @@ class BankFragment : BaseFragment() {
 
         tvMiningRule.expandTouchArea(20)
         tvMiningRule.setOnClickListener {
-            IncentiveWebActivity.startIncentiveRules(requireContext())
+            launch {
+                IncentiveWebActivity.startIncentiveRules(requireContext())
+            }
         }
     }
 

@@ -151,7 +151,9 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         }
 
         clMiningGroup.setOnClickListener {
-            IncentiveWebActivity.startIncentiveRules(requireContext())
+            launch {
+                IncentiveWebActivity.startIncentiveRules(requireContext())
+            }
         }
 
         // 数据观察

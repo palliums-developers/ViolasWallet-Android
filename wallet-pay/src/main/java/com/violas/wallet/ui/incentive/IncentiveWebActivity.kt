@@ -79,7 +79,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity() {
          * 打开激励挖矿首页
          */
         suspend fun startIncentiveHomePage(context: Context) {
-            val url = "http://www.baidu.com?language=${
+            val url = "https://wallet.violas.io/homepage/home/miningAwards?language=${
                 getLanguageCode()
             }&address=${getViolasAddress() ?: ""}"
             start(context, url)
@@ -89,7 +89,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity() {
          * 打开邀请好友首页
          */
         suspend fun startInviteHomePage(context: Context) {
-            val url = "http://www.baidu.com?language=${
+            val url = "https://wallet.violas.io/homepage/home/inviteRewards?language=${
                 getLanguageCode()
             }&address=${getViolasAddress() ?: ""}"
             start(context, url)
@@ -98,8 +98,10 @@ class IncentiveWebActivity : BaseBridgeWebActivity() {
         /**
          * 打开激励挖矿规则页面
          */
-        fun startIncentiveRules(context: Context) {
-            val url = "http://www.baidu.com?language=${getLanguageCode()}"
+        suspend fun startIncentiveRules(context: Context) {
+            val url = "https://wallet.violas.io/homepage/home/ruleDescription?language=${
+                getLanguageCode()
+            }&address=${getViolasAddress() ?: ""}"
             start(context, url)
         }
     }
