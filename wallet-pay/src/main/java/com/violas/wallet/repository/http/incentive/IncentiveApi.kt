@@ -20,7 +20,7 @@ interface IncentiveApi {
     /**
      * 获取领取激励奖励结果
      */
-    @GET("/violas/1.0/incentive/check/verified")
+    @GET("/1.0/violas/incentive/check/verified")
     fun getReceiveIncentiveRewardsResults(
         @Query("address") address: String
     ): Observable<Response<ReceiveIncentiveRewardsResultsDTO>>
@@ -28,7 +28,7 @@ interface IncentiveApi {
     /**
      * 领取激励奖励
      */
-    @POST("/violas/1.0/incentive/mobile/verify")
+    @POST("/1.0/violas/incentive/mobile/verify")
     fun receiveIncentiveRewards(
         @Body body: RequestBody
     ): Observable<Response<Any>>
@@ -36,7 +36,7 @@ interface IncentiveApi {
     /**
      * 获取邀请好友收益明细
      */
-    @GET("/violas/1.0/incentive/orders/invite")
+    @GET("/1.0/violas/incentive/orders/invite")
     fun getInviteFriendsEarnings(
         @Query("address") address: String,
         @Query("limit") pageSize: Int,
@@ -46,7 +46,7 @@ interface IncentiveApi {
     /**
      * 获取资金池挖矿收益明细
      */
-    @GET("/violas/1.0/incentive/orders/pool")
+    @GET("/1.0/violas/incentive/orders/pool")
     fun getPoolMiningEarnings(
         @Query("address") address: String,
         @Query("limit") pageSize: Int,
@@ -56,7 +56,7 @@ interface IncentiveApi {
     /**
      * 获取数字银行挖矿收益明细
      */
-    @GET("/violas/1.0/incentive/orders/bank")
+    @GET("/1.0/violas/incentive/orders/bank")
     fun getBankMiningEarnings(
         @Query("address") address: String,
         @Query("limit") pageSize: Int,
