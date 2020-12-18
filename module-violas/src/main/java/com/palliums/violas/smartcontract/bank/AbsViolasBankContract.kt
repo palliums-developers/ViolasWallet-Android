@@ -36,7 +36,7 @@ abstract class AbsViolasBankContract {
     fun getLock2Contract() = replaceContractAddress(mLock2Contract)
     fun getRedeem2Contract() = replaceContractAddress(mRedeem2Contract)
     fun getRepayBorrow2Contract() = replaceContractAddress(mRepayBorrow2Contract)
-    fun getClaimIncentiveContract() = replaceContractAddress(mClaimIncentiveContract)
+    fun getWithdrawRewardContract() = replaceContractAddress(mClaimIncentiveContract)
 
     /**
      * 往银行存钱
@@ -142,7 +142,7 @@ abstract class AbsViolasBankContract {
      * 提取挖矿奖励
      */
     fun optionWithdrawRewardTransactionPayload(): TransactionPayload {
-        val moveEncode = getClaimIncentiveContract()
+        val moveEncode = getWithdrawRewardContract()
 
         return TransactionPayload(
             TransactionPayload.Script(

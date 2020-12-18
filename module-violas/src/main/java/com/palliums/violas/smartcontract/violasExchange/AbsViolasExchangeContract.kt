@@ -11,17 +11,12 @@ abstract class AbsViolasExchangeContract {
 
         private const val mAddLiquidityContract =
             "a11ceb0b0100000006010002030207040902050b0d071817082f10000000010001020101000205060c030303030002090009010845786368616e67650d6164645f6c6971756964697479000000000000000000000000000000010201010001070b000a010a020a030a04380002"
-        private const val mInitializeContract =
-            "a11ceb0b0100000005010002030205050704070b14081f100000000100010001060c000845786368616e67650a696e697469616c697a6500000000000000000000000000000001000001030b00110002"
         private const val mRemoveLiquidityContract =
             "a11ceb0b0100000006010002030207040902050b0c07171a083110000000010001020101000204060c0303030002090009010845786368616e67651072656d6f76655f6c6971756964697479000000000000000000000000000000010201010001060b000a010a020a03380002"
-        private const val mTokenSwapContract =
+        private const val mSwapContract =
             "a11ceb0b0100000006010002030207040902050b10071b0e082910000000010001020101000206060c0503030a020a020002090009010845786368616e67650473776170000000000000000000000000000000010201010001080b000a010a020a030b040b05380002"
-        private const val mAddCurrencyContract =
-            "a11ceb0b0100000006010002030206040802050a070711160827100000000100010101000201060c000109000845786368616e67650c6164645f63757272656e63790000000000000000000000000000000101010001030b00380002"
-        // TODO 替换提取资金池挖矿奖励合约
-        private const val mWithdrawRewardContract =
-            "a11ceb0b0100000006010002030206040802050a070711160827100000000100010101000201060c000109000845786368616e67650c6164645f63757272656e63790000000000000000000000000000000101010001030b00380002"
+        private const val mWithdrawMineRewardContract =
+            "a11ceb0b0100000005010002030205050704070b1e0829100000000100010001060c000845786368616e67651477697468647261775f6d696e655f72657761726400000000000000000000000000000001000001030b00110002"
     }
 
     abstract fun getContractAddress(): String
@@ -53,7 +48,7 @@ abstract class AbsViolasExchangeContract {
         tokenAMinAmount: Long,
         tokenBMinAmount: Long
     ): TransactionPayload {
-        val moveEncode = replaceContractAddress(mAddLiquidityContract)
+        val moveEncode = getAddLiquidityContract()
 
         return TransactionPayload(
             TransactionPayload.Script(
@@ -84,7 +79,7 @@ abstract class AbsViolasExchangeContract {
         tokenAMinAmount: Long,
         tokenBMinAmount: Long
     ): TransactionPayload {
-        val moveEncode = replaceContractAddress(mRemoveLiquidityContract)
+        val moveEncode = getRemoveLiquidityContract()
 
         return TransactionPayload(
             TransactionPayload.Script(
@@ -118,7 +113,7 @@ abstract class AbsViolasExchangeContract {
         path: ByteArray,
         data: ByteArray
     ): TransactionPayload {
-        val moveEncode = replaceContractAddress(mTokenSwapContract)
+        val moveEncode = getTokenSwapContract()
 
         return TransactionPayload(
             TransactionPayload.Script(
@@ -150,35 +145,8 @@ abstract class AbsViolasExchangeContract {
         )
     }
 
-    fun optionInitializeTransactionPayload(): TransactionPayload {
-        val moveEncode = replaceContractAddress(mInitializeContract)
-
-        return TransactionPayload(
-            TransactionPayload.Script(
-                moveEncode,
-                arrayListOf(),
-                arrayListOf(
-                )
-            )
-        )
-    }
-
-    fun optionAddCurrencyTransactionPayload(
-        token: TypeTag
-    ): TransactionPayload {
-        val moveEncode = replaceContractAddress(mAddCurrencyContract)
-
-        return TransactionPayload(
-            TransactionPayload.Script(
-                moveEncode,
-                arrayListOf(token),
-                arrayListOf()
-            )
-        )
-    }
-
     fun getAddLiquidityContract() = replaceContractAddress(mAddLiquidityContract)
     fun getRemoveLiquidityContract() = replaceContractAddress(mRemoveLiquidityContract)
-    fun getTokenSwapContract() = replaceContractAddress(mTokenSwapContract)
-    fun getWithdrawRewardContract() = replaceContractAddress(mWithdrawRewardContract)
+    fun getTokenSwapContract() = replaceContractAddress(mSwapContract)
+    fun getWithdrawRewardContract() = replaceContractAddress(mWithdrawMineRewardContract)
 }

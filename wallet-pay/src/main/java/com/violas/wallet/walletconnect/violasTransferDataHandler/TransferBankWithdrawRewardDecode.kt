@@ -18,7 +18,7 @@ class TransferBankWithdrawRewardDecode(private val transaction: RawTransaction) 
         val payload = transaction.payload?.payload
 
         return payload is TransactionPayload.Script && payload.code.contentEquals(
-            mViolasBankContract.getClaimIncentiveContract()
+            mViolasBankContract.getWithdrawRewardContract()
         )
     }
 
