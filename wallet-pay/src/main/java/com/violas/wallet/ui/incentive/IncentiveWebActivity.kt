@@ -7,7 +7,6 @@ import com.github.lzyzsd.jsbridge.CallBackFunction
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import com.palliums.extensions.logInfo
-import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -23,7 +22,6 @@ import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.ui.incentive.earningsDetails.IncentiveEarningsDetailsActivity
 import com.violas.wallet.ui.incentive.receiveRewards.ReceiveIncentiveRewardsActivity
 import com.violas.wallet.ui.main.market.pool.MarketPoolOpMode
-import com.violas.wallet.ui.web.WebCommonActivity
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_bridge_web.*
@@ -49,7 +47,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity() {
 
         @JvmStatic
         private fun start(context: Context, url: String, title: String? = null) {
-            Intent(context, WebCommonActivity::class.java).also {
+            Intent(context, IncentiveWebActivity::class.java).also {
                 it.putExtra(EXTRA_KEY_URL, url)
                 if (title != null) {
                     it.putExtra(EXTRA_KEY_TITLE, title)
@@ -113,10 +111,8 @@ class IncentiveWebActivity : BaseBridgeWebActivity() {
     private val mExchangeManager by lazy { ExchangeManager() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         EventBus.getDefault().register(this)
-        setTitleRightText(R.string.title_orders)
-        setTitleRightImageResource(getResourceId(R.attr.iconRecordPrimary, this))
+        super.onCreate(savedInstanceState)
     }
 
     override fun onDestroy() {

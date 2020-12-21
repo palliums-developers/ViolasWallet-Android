@@ -7,8 +7,12 @@
 
     <com.github.lzyzsd.jsbridge.BridgeWebView
         android:id="@+id/vWeb"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="gone" />
 
     <ProgressBar
@@ -25,12 +29,16 @@
 
     <LinearLayout
         android:id="@+id/vFailed"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0"
         android:background="?attr/colorSurfaceSecondary"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible">
 
         <TextView

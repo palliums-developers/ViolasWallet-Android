@@ -226,6 +226,9 @@
             android:name=".ui.incentive.earningsDetails.IncentiveEarningsDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.APP.DayNight.Secondary"/>
+        <activity
+            android:name=".ui.incentive.IncentiveWebActivity"
+            android:screenOrientation="portrait"/>
 
         <service
             android:name=".service.MyFirebaseMessagingService"

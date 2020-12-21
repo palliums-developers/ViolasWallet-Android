@@ -108,7 +108,6 @@ abstract class BaseBridgeWebActivity : BaseAppActivity() {
     }
 
     protected fun stopLoad() {
-
         try {
             vWeb.stopLoading()
         } catch (e: Exception) {
