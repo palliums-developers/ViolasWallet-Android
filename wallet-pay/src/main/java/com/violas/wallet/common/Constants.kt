@@ -20,3 +20,6 @@ const val KEY_FIVE = "KEY_FIVE"
 
 const val KEY_MSG_TYPE = "msg_type"
 const val KEY_MSG_TXID = "msg_txid"
+
+
+const val SYSTEM_ALBUM_DIR_NAME = "ViolasPay Photos"

@@ -10,11 +10,11 @@ import com.violas.wallet.R
 class ClipboardUtils {
     companion object {
         @JvmStatic
-        fun copy(context: Context, message: String) {
+        fun copy(context: Context, message: String, tipsResId: Int = R.string.copy_success) {
             val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             // 将文本内容放到系统剪贴板里。
             cm.setPrimaryClip(ClipData.newPlainText("bitcoin_Address", message))
-            Toast.makeText(context, R.string.copy_success, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, tipsResId, Toast.LENGTH_SHORT).show()
         }
 
         @JvmStatic

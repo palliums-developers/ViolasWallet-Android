@@ -9,9 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import com.github.lzyzsd.jsbridge.BridgeWebViewClient
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.activity_bridge_web.*
+
 
 /**
  * Created by elephant on 2019-10-31 17:41.
@@ -119,6 +121,7 @@ abstract class BaseBridgeWebActivity : BaseAppActivity() {
         val settings = vWeb.settings
 
         settings.javaScriptEnabled = true
+        settings.javaScriptCanOpenWindowsAutomatically = true
         settings.domStorageEnabled = true
 
         settings.allowFileAccess = true
@@ -156,6 +159,56 @@ abstract class BaseBridgeWebActivity : BaseAppActivity() {
                     }
                 }
             }
+
+            override fun onJsAlert(
+                view: WebView?,
+                url: String?,
+                message: String?,
+                result: JsResult?
+            ): Boolean {
+                showToast("onJsAlert: $message")
+                val b: AlertDialog.Builder = AlertDialog.Builder(this@BaseBridgeWebActivity)
+                b.setTitle("Alert")
+                b.setMessage(message)
+                b.setPositiveButton(android.R.string.ok) { dialog, which ->
+                    result!!.confirm()
+                }
+                b.setCancelable(false)
+                b.create().show()
+                return super.onJsAlert(view, url, message, result)
+            }
+
+            override fun onJsConfirm(
+                view: WebView?,
+                url: String?,
+                message: String?,
+                result: JsResult?
+            ): Boolean {
+                showToast("onJsConfirm: $message")
+                return super.onJsConfirm(view, url, message, result)
+            }
+
+            override fun onJsPrompt(
+                view: WebView?,
+                url: String?,
+                message: String?,
+                defaultValue: String?,
+                result: JsPromptResult?
+            ): Boolean {
+                showToast("onJsPrompt: $message")
+                return super.onJsPrompt(view, url, message, defaultValue, result)
+            }
+
+            override fun onJsBeforeUnload(
+                view: WebView?,
+                url: String?,
+                message: String?,
+                result: JsResult?
+            ): Boolean {
+                showToast("onJsBeforeUnload: $message")
+                return super.onJsBeforeUnload(view, url, message, result)
+            }
+
         }
         vWeb.webViewClient = object : BridgeWebViewClient(vWeb) {
 

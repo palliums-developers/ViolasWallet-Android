@@ -2,14 +2,12 @@ package com.violas.wallet.ui.transactionDetails
 
 import android.Manifest
 import android.app.Activity
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -26,6 +24,7 @@ import com.palliums.widget.loading.LoadingDialog
 import com.violas.wallet.R
 import com.violas.wallet.biz.AddressBookManager
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.SYSTEM_ALBUM_DIR_NAME
 import com.violas.wallet.ui.addressBook.add.AddAddressBookActivity
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
@@ -40,8 +39,6 @@ import me.yokeyword.fragmentation.SupportActivity
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.PermissionRequest
-import java.io.File
-import java.io.OutputStream
 
 /**
  * Created by elephant on 2020/6/8 15:05.
@@ -53,7 +50,6 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     EasyPermissions.PermissionCallbacks, CoroutineScope by CustomMainScope() {
 
     companion object {
-        private const val PIC_DIR_NAME = "ViolasPay Photos"
         private const val REQUEST_CODE_SAVE_PICTURE = 100
         private const val REQUEST_CODE_ADD_ADDRESS = 101
 
@@ -306,7 +302,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
         if (EasyPermissions.hasPermissions(this, *perms)) {
-            saveIntoAlbum()
+            savePicture()
         } else {
             EasyPermissions.requestPermissions(
                 PermissionRequest.Builder(this, REQUEST_CODE_SAVE_PICTURE, *perms)
@@ -319,13 +315,13 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         }
     }
 
-    private fun saveIntoAlbum() {
+    private fun savePicture() {
         launch {
             showProgress()
 
             val result = withContext(Dispatchers.IO) {
                 val bitmap = viewConversionBitmap()
-                return@withContext saveBitmap(bitmap)
+                return@withContext bitmap.saveIntoSystemAlbum(SYSTEM_ALBUM_DIR_NAME)
             }
 
             delay(300)
@@ -350,53 +346,6 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         clTransactionInfo.draw(canvas)
 
         return bitmap
-    }
-
-    private fun saveBitmap(bitmap: Bitmap): Boolean {
-        var outputStream: OutputStream? = null
-        try {
-            val picDir = this.getExternalFilesDir(PIC_DIR_NAME) ?: return false
-            if (!picDir.exists()) {
-                picDir.mkdirs()
-            }
-
-            val curTime = System.currentTimeMillis()
-            val picName = "$curTime.png"
-            val picPath = File(picDir, picName).absolutePath
-            val contentValues = ContentValues()
-            contentValues.put(MediaStore.Images.ImageColumns.DATA, picPath)
-            contentValues.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, picName)
-            contentValues.put(MediaStore.Images.ImageColumns.MIME_TYPE, "image/png")
-            contentValues.put(MediaStore.Images.ImageColumns.DATE_ADDED, curTime / 1000)
-            contentValues.put(MediaStore.Images.ImageColumns.DATE_MODIFIED, curTime / 1000)
-            contentValues.put(MediaStore.Images.ImageColumns.SIZE, bitmap.byteCount)
-
-            val contentResolver = this.contentResolver
-            val uri = contentResolver.insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
-            ) ?: return false
-
-            outputStream = contentResolver.openOutputStream(uri)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            return true
-        } catch (e: Exception) {
-            return false
-        } finally {
-            try {
-                outputStream?.let {
-                    it.flush()
-                    it.close()
-                }
-            } catch (ignore: Exception) {
-            }
-            try {
-                if (!bitmap.isRecycled) {
-                    bitmap.recycle()
-                }
-            } catch (e: Exception) {
-            }
-        }
     }
 
     override fun attachBaseContext(newBase: Context) {
@@ -460,7 +409,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
         when (requestCode) {
             REQUEST_CODE_SAVE_PICTURE -> {
-                saveIntoAlbum()
+                savePicture()
             }
         }
     }

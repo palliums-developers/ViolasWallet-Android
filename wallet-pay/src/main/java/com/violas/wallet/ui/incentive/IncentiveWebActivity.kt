@@ -1,13 +1,17 @@
 package com.violas.wallet.ui.incentive
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import com.github.lzyzsd.jsbridge.CallBackFunction
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import com.palliums.extensions.logInfo
+import com.palliums.utils.saveIntoSystemAlbum
 import com.palliums.utils.start
+import com.palliums.utils.toBitmap
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseBridgeWebActivity
@@ -17,11 +21,13 @@ import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.common.EXTRA_KEY_TITLE
 import com.violas.wallet.common.EXTRA_KEY_URL
+import com.violas.wallet.common.SYSTEM_ALBUM_DIR_NAME
 import com.violas.wallet.event.*
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.ui.incentive.earningsDetails.IncentiveEarningsDetailsActivity
 import com.violas.wallet.ui.incentive.receiveRewards.ReceiveIncentiveRewardsActivity
 import com.violas.wallet.ui.main.market.pool.MarketPoolOpMode
+import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_bridge_web.*
@@ -32,6 +38,9 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
+import pub.devrel.easypermissions.PermissionRequest
 import kotlin.random.Random
 
 /**
@@ -40,10 +49,11 @@ import kotlin.random.Random
  * <p>
  * desc: 挖矿激励web页面
  */
-class IncentiveWebActivity : BaseBridgeWebActivity() {
+class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.PermissionCallbacks {
 
     companion object {
         private const val TAG = "IncentiveWebActivity"
+        private const val REQUEST_CODE_SAVE_PICTURE = 100
 
         @JvmStatic
         private fun start(context: Context, url: String, title: String? = null) {
@@ -109,6 +119,9 @@ class IncentiveWebActivity : BaseBridgeWebActivity() {
     private val mGson by lazy { Gson() }
     private val mBankManager by lazy { BankManager() }
     private val mExchangeManager by lazy { ExchangeManager() }
+
+    private var savePictureRequest: Request? = null
+    private var savePictureCallbackFunction: CallBackFunction? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         EventBus.getDefault().register(this)
@@ -178,6 +191,14 @@ class IncentiveWebActivity : BaseBridgeWebActivity() {
                     "yield_farming_detail",
                     "mine_invite" -> {
                         startEarningsDetailsPage(request, callbackFunction)
+                    }
+
+                    "save_picture" -> {
+                        handleSavePictureRequest(request, callbackFunction)
+                    }
+
+                    "share_link" -> {
+                        shareLink(request, callbackFunction)
                     }
 
                     "closePage" -> {
@@ -306,6 +327,53 @@ class IncentiveWebActivity : BaseBridgeWebActivity() {
         ReceiveIncentiveRewardsActivity.start(this)
     }
 
+    private suspend fun handleSavePictureRequest(
+        request: Request,
+        callbackFunction: CallBackFunction
+    ) {
+        if (request.params.size != 1) {
+            callbackFunction.onCallBack(
+                Response.error(request.id, -1, "param is error").toJson()
+            )
+            return
+        }
+
+        val perms = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        if (EasyPermissions.hasPermissions(this, *perms)) {
+            savePicture(request, callbackFunction)
+        } else {
+            savePictureRequest = request
+            savePictureCallbackFunction = callbackFunction
+            EasyPermissions.requestPermissions(
+                PermissionRequest.Builder(this, REQUEST_CODE_SAVE_PICTURE, *perms)
+                    .setRationale(R.string.save_picture_hint_need_permissions)
+                    .setNegativeButtonText(R.string.action_cancel)
+                    .setPositiveButtonText(R.string.action_ok)
+                    .setTheme(R.style.AppAlertDialog)
+                    .build()
+            )
+        }
+    }
+
+    private fun shareLink(
+        request: Request,
+        callbackFunction: CallBackFunction
+    ) {
+        if (request.params.size != 1) {
+            callbackFunction.onCallBack(
+                Response.error(request.id, -1, "param is error").toJson()
+            )
+            return
+        }
+
+        val url = request.params[0]
+        ClipboardUtils.copy(this, url, R.string.tips_share_link_success)
+        callbackFunction.onCallBack(Response.success(request.id).toJson())
+    }
+
     class Response<T>(
         val id: String,
         val result: T? = null,
@@ -333,4 +401,105 @@ class IncentiveWebActivity : BaseBridgeWebActivity() {
         val params: Array<String>,
         val id: String = Random.nextInt().toString()
     )
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        when (requestCode) {
+            REQUEST_CODE_SAVE_PICTURE -> {
+                launch {
+                    if (savePictureRequest != null && savePictureCallbackFunction != null) {
+                        savePictureCallbackFunction!!.onCallBack(
+                            Response.error(
+                                savePictureRequest!!.id,
+                                -2,
+                                "No storage permission"
+                            ).toJson()
+                        )
+                    }
+                    savePictureRequest = null
+                    savePictureCallbackFunction = null
+                }
+            }
+        }
+
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            AppSettingsDialog.Builder(this)
+                .setTitle(getString(R.string.save_picture_title_get_permissions))
+                .setRationale(getString(R.string.save_picture_hint_set_permissions))
+                .setNegativeButton(R.string.action_cancel)
+                .setPositiveButton(R.string.action_ok)
+                .setThemeResId(R.style.AppAlertDialog)
+                .build()
+                .show()
+        }
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        when (requestCode) {
+            REQUEST_CODE_SAVE_PICTURE -> {
+                launch {
+                    if (savePictureRequest != null && savePictureCallbackFunction != null) {
+                        savePicture(
+                            savePictureRequest!!,
+                            savePictureCallbackFunction!!
+                        )
+                    }
+                    savePictureRequest = null
+                    savePictureCallbackFunction = null
+                }
+            }
+        }
+    }
+
+    private suspend fun savePicture(
+        request: Request,
+        callbackFunction: CallBackFunction
+    ) {
+        showProgress()
+
+        // 针对某些设备首次申请权限后立即保存失败的问题
+        delay(500)
+
+        // base64字符转Bitmap
+        val bitmap: Bitmap? = withContext(Dispatchers.IO) {
+            val base64Str = request.params[0]
+            base64Str.toBitmap()
+        }
+
+        if (bitmap == null) {
+            dismissProgress()
+            showToast(R.string.tips_save_into_album_failure)
+            callbackFunction.onCallBack(
+                Response.error(request.id, -2, "Failed to convert to image").toJson()
+            )
+            return
+        }
+
+        // 保存图片到系统相册
+        val saveResult: Boolean = withContext(Dispatchers.IO) {
+            bitmap.saveIntoSystemAlbum(SYSTEM_ALBUM_DIR_NAME)
+        }
+
+        dismissProgress()
+        if (saveResult) {
+            showToast(R.string.tips_save_into_album_success)
+            callbackFunction.onCallBack(
+                Response.success(savePictureRequest!!.id).toJson()
+            )
+        } else {
+            showToast(R.string.tips_save_into_album_failure)
+            callbackFunction.onCallBack(
+                Response.error(request.id, -2, "Failed to save to system album").toJson()
+            )
+        }
+    }
+
 }
