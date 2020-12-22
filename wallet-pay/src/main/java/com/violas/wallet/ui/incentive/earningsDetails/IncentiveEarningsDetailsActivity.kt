@@ -70,7 +70,8 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
             violasAddress = accountDO.address
             true
         } else {
-            false
+            violasAddress = ""
+            true
         }
     }
 

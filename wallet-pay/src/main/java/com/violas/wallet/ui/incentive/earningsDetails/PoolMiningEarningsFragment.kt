@@ -81,6 +81,8 @@ class PoolMiningEarningsFragment : BasePagingFragment<PoolMiningEarningDTO>() {
         super.onViewCreated(view, savedInstanceState)
         if (!initData(savedInstanceState)) {
             close()
+        } else {
+            getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
         }
     }
 
@@ -103,7 +105,11 @@ class PoolMiningEarningsFragment : BasePagingFragment<PoolMiningEarningDTO>() {
         super.onLazyInitViewByResume(savedInstanceState)
 
         getPagingHandler().init()
-        getPagingHandler().start()
+        if (mWalletAddress.isBlank()) {
+            getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_EMPTY)
+        } else {
+            getPagingHandler().start()
+        }
     }
 
     class ViewAdapter : PagingViewAdapter<PoolMiningEarningDTO>() {
