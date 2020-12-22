@@ -72,7 +72,7 @@
             tools:text="120.00000000" />
 
         <LinearLayout
-            android:id="@+id/viewWalletConnect"
+            android:id="@+id/llWalletConnectGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_16"
@@ -110,7 +110,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/vVerticalLine1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/viewWalletConnect">
+            app:layout_constraintTop_toBottomOf="@id/llWalletConnectGroup">
 
             <View
                 android:layout_width="@dimen/dp_16"
@@ -207,7 +207,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/viewAssetsGroup"
+        android:id="@+id/clBottomGroup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/dp_188"
@@ -271,7 +271,7 @@
             app:layout_constraintTop_toTopOf="@+id/tvAssert" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerAssert"
+            android:id="@+id/rvAssert"
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_0"
             android:layout_marginTop="@dimen/dp_12"
@@ -284,31 +284,21 @@
             tools:itemCount="30"
             tools:listitem="@layout/item_wallet_assert" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:id="@+id/viewAddAccount"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dp_188"
-        android:background="@drawable/bg_wallet_main_assets_list"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/dp_15"
-        android:paddingTop="@dimen/dp_13"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
         <LinearLayout
-            android:id="@+id/viewCreateAccount"
-            android:layout_width="match_parent"
+            android:id="@+id/llCreateAccountGroup"
+            android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_64"
-            android:layout_marginVertical="@dimen/dp_6"
+            android:layout_marginHorizontal="@dimen/dp_15"
+            android:layout_marginTop="@dimen/dp_18"
+            android:layout_marginBottom="@dimen/dp_6"
             android:background="@drawable/sel_bg_style_1_solid_corners_16"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/clMiningGroup"
+            tools:visibility="visible">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -328,13 +318,19 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/viewImportAccount"
-            android:layout_width="match_parent"
+            android:id="@+id/llImportAccountGroup"
+            android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_64"
+            android:layout_marginHorizontal="@dimen/dp_15"
             android:layout_marginVertical="@dimen/dp_6"
             android:background="@drawable/sel_bg_style_1_solid_corners_16"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llCreateAccountGroup"
+            tools:visibility="visible">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -353,7 +349,19 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/groupHaveAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="tvAssert,ivAddAssert,rvAssert" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/groupNoAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="llCreateAccountGroup,llImportAccountGroup" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include
         layout="@layout/view_backup_now_wallet"

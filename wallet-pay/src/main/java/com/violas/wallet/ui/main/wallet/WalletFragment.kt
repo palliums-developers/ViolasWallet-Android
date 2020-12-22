@@ -75,7 +75,6 @@ class WalletFragment : BaseFragment() {
         private const val REQUEST_ADD_ASSERT = 0
         private const val REQUEST_SCAN_QR_CODE = 1
         private const val REQUEST_TOKEN_INFO = 2
-        private const val REQUEST_CODE_PHONE_RECEIVE = 3
     }
 
     private val mWalletAppViewModel by lazy {
@@ -120,8 +119,8 @@ class WalletFragment : BaseFragment() {
         EventBus.getDefault().register(this)
         refreshLayout.autoRefresh(0, 100, 1f, true)
         actionBar.post { adapterViewHeight() }
-        recyclerAssert.adapter = mAssertAdapter
-        recyclerAssert.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        rvAssert.adapter = mAssertAdapter
+        rvAssert.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             private var hasScrolled = false
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -160,11 +159,12 @@ class WalletFragment : BaseFragment() {
         }
         mWalletAppViewModel?.mExistsAccountLiveData?.observe(viewLifecycleOwner) {
             if (it) {
-                viewAssetsGroup.visibility = View.VISIBLE
-                viewAddAccount.visibility = View.GONE
+                groupHaveAccount.visibility = View.VISIBLE
+                groupNoAccount.visibility = View.GONE
             } else {
-                viewAssetsGroup.visibility = View.GONE
-                viewAddAccount.visibility = View.VISIBLE
+                groupHaveAccount.visibility = View.GONE
+                groupNoAccount.visibility = View.VISIBLE
+                mWalletViewModel.resetReceiveIncentiveRewardsState()
             }
             handleBackupMnemonicWarn(it)
             handleDialogShow(it)
@@ -193,17 +193,17 @@ class WalletFragment : BaseFragment() {
         mWalletViewModel.receiveIncentiveRewardsStateLiveData.observe(viewLifecycleOwner) {
             if (it == 0) {
                 clReceiveIncentiveRewardsGroup.visibility = View.VISIBLE
-            } else if (it == 1) {
+            } else if (it == 1 || it == -1) {
                 clReceiveIncentiveRewardsGroup.visibility = View.GONE
             }
         }
         mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(viewLifecycleOwner) {
             when (it) {
                 WalletConnectStatus.Login -> {
-                    viewWalletConnect.visibility = View.VISIBLE
+                    llWalletConnectGroup.visibility = View.VISIBLE
                 }
                 else -> {
-                    viewWalletConnect.visibility = View.INVISIBLE
+                    llWalletConnectGroup.visibility = View.INVISIBLE
                 }
             }
         }
@@ -212,9 +212,9 @@ class WalletFragment : BaseFragment() {
         ivTotalHidden.setOnClickListener(this)
         ivAddAssert.setOnClickListener(this)
         ivScan.setOnClickListener(this)
-        viewWalletConnect.setOnClickListener(this)
-        viewCreateAccount.setOnClickListener(this)
-        viewImportAccount.setOnClickListener(this)
+        llWalletConnectGroup.setOnClickListener(this)
+        llCreateAccountGroup.setOnClickListener(this)
+        llImportAccountGroup.setOnClickListener(this)
         llTransferGroup.setOnClickListener(this)
         llCollectionGroup.setOnClickListener(this)
         llMappingGroup.setOnClickListener(this)
@@ -266,12 +266,8 @@ class WalletFragment : BaseFragment() {
             clTopGroup.paddingRight,
             clTopGroup.paddingBottom
         )
-        viewAssetsGroup.layoutParams =
-            (viewAssetsGroup.layoutParams as ConstraintLayout.LayoutParams).apply {
-                topMargin = bottomViewTopMargin
-            }
-        viewAddAccount.layoutParams =
-            (viewAddAccount.layoutParams as ConstraintLayout.LayoutParams).apply {
+        clBottomGroup.layoutParams =
+            (clBottomGroup.layoutParams as ConstraintLayout.LayoutParams).apply {
                 topMargin = bottomViewTopMargin
             }
     }
@@ -337,7 +333,7 @@ class WalletFragment : BaseFragment() {
                 }
             }
 
-            R.id.viewWalletConnect -> {
+            R.id.llWalletConnectGroup -> {
                 activity?.let { it1 -> WalletConnectManagerActivity.startActivity(it1) }
             }
 
@@ -371,11 +367,11 @@ class WalletFragment : BaseFragment() {
                 }
             }
 
-            R.id.viewCreateAccount -> {
+            R.id.llCreateAccountGroup -> {
                 activity?.let { CreateIdentityActivity.start(it) }
             }
 
-            R.id.viewImportAccount -> {
+            R.id.llImportAccountGroup -> {
                 activity?.let { ImportIdentityActivity.start(it) }
             }
 
@@ -467,12 +463,6 @@ class WalletFragment : BaseFragment() {
                             }
                         }
                     }
-                }
-            }
-
-            REQUEST_CODE_PHONE_RECEIVE -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    clReceiveIncentiveRewardsGroup.visibility = View.GONE
                 }
             }
         }

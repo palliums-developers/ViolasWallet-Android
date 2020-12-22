@@ -76,27 +76,34 @@ class WalletViewModel : ViewModel() {
         mTotalFiatBalanceLiveData.value = total
     }
 
+    fun resetReceiveIncentiveRewardsState() {
+        val lastState = receiveIncentiveRewardsStateLiveData.value
+        if (lastState == -1) return
+
+        receiveIncentiveRewardsStateLiveData.value = -1
+    }
+
     fun loadReceiveIncentiveRewardsState() {
         val lastState = receiveIncentiveRewardsStateLiveData.value
         if (lastState == 1 || lastState == Int.MIN_VALUE) return
 
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                // 标记在加载中
-                receiveIncentiveRewardsStateLiveData.postValue(Int.MIN_VALUE)
+            // 标记在加载中
+            receiveIncentiveRewardsStateLiveData.postValue(Int.MIN_VALUE)
 
+            val newState = try {
                 val accountManager =
                     WalletAppViewModel.getViewModelInstance().mAccountManager
                 val violasAccount =
                     accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
 
-                val state =
-                    incentiveService.getReceiveIncentiveRewardsState(violasAccount!!.address)
-                receiveIncentiveRewardsStateLiveData.postValue(state)
+                incentiveService.getReceiveIncentiveRewardsState(violasAccount!!.address)
             } catch (e: Exception) {
-                if (receiveIncentiveRewardsStateLiveData.value == Int.MIN_VALUE) {
-                    receiveIncentiveRewardsStateLiveData.postValue(lastState)
-                }
+                lastState
+            }
+
+            if (receiveIncentiveRewardsStateLiveData.value == Int.MIN_VALUE) {
+                receiveIncentiveRewardsStateLiveData.postValue(newState)
             }
         }
     }
