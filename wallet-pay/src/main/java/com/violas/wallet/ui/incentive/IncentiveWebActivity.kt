@@ -8,6 +8,7 @@ import android.os.Bundle
 import com.github.lzyzsd.jsbridge.CallBackFunction
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.extensions.logInfo
 import com.palliums.utils.saveIntoSystemAlbum
 import com.palliums.utils.start
@@ -252,28 +253,37 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
         privateKey: ByteArray
     ) {
         launch {
-            val response = withContext(Dispatchers.IO) {
+            val exception = withContext(Dispatchers.IO) {
                 return@withContext try {
                     if (bankMining) {
                         mBankManager.withdrawReward(privateKey)
                     } else {
                         mExchangeManager.withdrawReward(privateKey)
                     }
-
-                    Response.success(request.id)
+                    null
                 } catch (e: Exception) {
-                    Response.error(request.id, -2, e.message ?: "unknown error")
+                    e
                 }
             }
 
-            callbackFunction.onCallBack(response.toJson())
-            CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
-
+            delay(500)
             dismissProgress()
-            showToast(R.string.tips_withdrawal_success)
 
-            delay(2000)
-            startLoad()
+            if (exception != null) {
+                callbackFunction.onCallBack(
+                    Response.error(
+                        request.id,
+                        -2,
+                        exception.message ?: "unknown error"
+                    ).toJson()
+                )
+                showToast(exception.getShowErrorMessage(false))
+                return@launch
+            }
+
+            CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+            callbackFunction.onCallBack(Response.success(request.id).toJson())
+            showToast(R.string.tips_withdrawal_success)
         }
     }
 
