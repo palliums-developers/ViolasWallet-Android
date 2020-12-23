@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.palliums.violas.error.ViolasException
 import org.palliums.violascore.BuildConfig
+import org.palliums.violascore.common.CURRENCY_DEFAULT_CODE
 import org.palliums.violascore.crypto.*
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
@@ -39,7 +40,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         payload: TransactionPayload,
         account: Account,
         sequenceNumber: Long = -1L,
-        gasCurrencyCode: String = lbrStructTagType(),
+        gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
         delayed: Long = 600,
@@ -89,7 +90,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         payload: TransactionPayload,
         account: Account,
         sequenceNumber: Long = -1L,
-        gasCurrencyCode: String = lbrStructTagType(),
+        gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
         delayed: Long = 600,
@@ -132,7 +133,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         payload: TransactionPayload,
         senderAddress: String,
         sequenceNumber: Long = -1L,
-        gasCurrencyCode: String = lbrStructTagType(),
+        gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
         delayed: Long = 600,
@@ -201,8 +202,8 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         account: Account,
         address: String,
         amount: Long,
-        typeTag: TypeTag = lbrStructTag(),
-        gasCurrencyCode: String = lbrStructTagType(),
+        typeTag: TypeTag = newDefaultStructTypeTag(),
+        gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
         chainId: Int
     ) {
         val transactionPayload =

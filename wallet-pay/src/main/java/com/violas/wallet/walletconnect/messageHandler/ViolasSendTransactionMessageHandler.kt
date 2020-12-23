@@ -14,12 +14,12 @@ import com.violas.walletconnect.jsonrpc.JsonRpcError
 import com.violas.walletconnect.models.WCMethod
 import com.violas.walletconnect.models.violas.WCViolasSendTransaction
 import kotlinx.coroutines.runBlocking
+import org.palliums.violascore.common.CURRENCY_DEFAULT_CODE
 import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.TransactionArgument
 import org.palliums.violascore.transaction.TransactionPayload
-import org.palliums.violascore.transaction.lbrStructTagType
 import org.palliums.violascore.transaction.storage.TypeTag
 
 class ViolasSendTransactionMessageHandler : IMessageHandler<JsonArray> {
@@ -47,7 +47,7 @@ class ViolasSendTransactionMessageHandler : IMessageHandler<JsonArray> {
         val gasUnitPrice = tx.gasUnitPrice ?: 0
         val maxGasAmount = tx.maxGasAmount ?: 1_000_000
         val expirationTime = tx.expirationTime ?: System.currentTimeMillis() + 1000
-        val gasCurrencyCode = tx.gasCurrencyCode ?: lbrStructTagType()
+        val gasCurrencyCode = tx.gasCurrencyCode ?: CURRENCY_DEFAULT_CODE
         val sequenceNumber = tx.sequenceNumber ?: -1
         val chainId = tx.chainId
 

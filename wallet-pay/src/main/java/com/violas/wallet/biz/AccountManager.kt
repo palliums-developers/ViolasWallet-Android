@@ -17,6 +17,7 @@ import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.biz.command.SaveAssetsFiatBalanceCommand
+import com.violas.wallet.common.CURRENCY_DEFAULT_ADDRESS
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
@@ -36,6 +37,7 @@ import org.palliums.libracore.mnemonic.Mnemonic
 import org.palliums.libracore.mnemonic.WordCount
 import org.palliums.libracore.transaction.AccountAddress
 import org.palliums.libracore.wallet.Account
+import org.palliums.violascore.common.CURRENCY_DEFAULT_CODE
 import org.palliums.violascore.serialization.toHex
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -434,17 +436,17 @@ class AccountManager {
             mAccountTokenStorage.insert(
                 TokenDo(
                     account_id = insertIds[0],
-                    assetsName = "LBR",
-                    name = "LBR",
-                    address = "00000000000000000000000000000001",
+                    assetsName = CURRENCY_DEFAULT_CODE,
+                    name = CURRENCY_DEFAULT_CODE,
+                    address = CURRENCY_DEFAULT_ADDRESS,
                     enable = true,
                     logo = "file:///android_asset/logo/ic_violas_logo.png"
                 ),
                 TokenDo(
                     account_id = insertIds[1],
-                    assetsName = "LBR",
-                    name = "LBR",
-                    address = "00000000000000000000000000000001",
+                    assetsName = org.palliums.libracore.common.CURRENCY_DEFAULT_CODE,
+                    name = org.palliums.libracore.common.CURRENCY_DEFAULT_CODE,
+                    address = CURRENCY_DEFAULT_ADDRESS,
                     enable = true,
                     logo = "file:///android_asset/logo/ic_libra_logo.png"
                 )

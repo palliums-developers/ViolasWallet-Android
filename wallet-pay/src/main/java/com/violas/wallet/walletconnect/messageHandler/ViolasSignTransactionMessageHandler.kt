@@ -7,23 +7,19 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.walletconnect.violasTransferDataHandler.ViolasTransferDecodeEngine
 import com.violas.wallet.walletconnect.TransactionSwapVo
+import com.violas.wallet.walletconnect.violasTransferDataHandler.ViolasTransferDecodeEngine
 import com.violas.walletconnect.exceptions.InvalidJsonRpcParamsException
-import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.jsonrpc.JsonRpcError
 import com.violas.walletconnect.models.WCMethod
-import com.violas.walletconnect.models.violas.WCViolasSendTransaction
-import com.violas.walletconnect.models.violas.WCViolasSignRawTransaction
 import com.violas.walletconnect.models.violas.WCViolasSignTransaction
 import kotlinx.coroutines.runBlocking
+import org.palliums.violascore.common.CURRENCY_DEFAULT_CODE
 import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
-import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionArgument
 import org.palliums.violascore.transaction.TransactionPayload
-import org.palliums.violascore.transaction.lbrStructTagType
 import org.palliums.violascore.transaction.storage.TypeTag
 
 class ViolasSignTransactionMessageHandler : IMessageHandler<JsonArray> {
@@ -50,7 +46,7 @@ class ViolasSignTransactionMessageHandler : IMessageHandler<JsonArray> {
         val gasUnitPrice = tx.gasUnitPrice ?: 0
         val maxGasAmount = tx.maxGasAmount ?: 1_000_000
         val expirationTime = tx.expirationTime ?: System.currentTimeMillis() + 1000
-        val gasCurrencyCode = tx.gasCurrencyCode ?: lbrStructTagType()
+        val gasCurrencyCode = tx.gasCurrencyCode ?: CURRENCY_DEFAULT_CODE
         val sequenceNumber = tx.sequenceNumber ?: -1
         val chainId = tx.chainId
 

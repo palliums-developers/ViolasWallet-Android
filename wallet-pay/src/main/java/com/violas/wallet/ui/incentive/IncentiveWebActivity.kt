@@ -502,7 +502,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
         if (saveResult) {
             showToast(R.string.tips_save_into_album_success)
             callbackFunction.onCallBack(
-                Response.success(savePictureRequest!!.id).toJson()
+                Response.success(request.id).toJson()
             )
         } else {
             showToast(R.string.tips_save_into_album_failure)
