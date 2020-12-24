@@ -507,7 +507,7 @@ class AssertAdapter(
          *
          * 先忽略此操作不做对比，全列表刷新。
          */
-        return isChange
+        return false
     }
 }) {
     private var mAssetsHidden: Boolean = false

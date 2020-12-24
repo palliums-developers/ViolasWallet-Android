@@ -437,6 +437,7 @@ class AccountManager {
                 TokenDo(
                     account_id = insertIds[0],
                     assetsName = CURRENCY_DEFAULT_CODE,
+                    module = CURRENCY_DEFAULT_CODE,
                     name = CURRENCY_DEFAULT_CODE,
                     address = CURRENCY_DEFAULT_ADDRESS,
                     enable = true,
@@ -445,6 +446,7 @@ class AccountManager {
                 TokenDo(
                     account_id = insertIds[1],
                     assetsName = org.palliums.libracore.common.CURRENCY_DEFAULT_CODE,
+                    module = org.palliums.libracore.common.CURRENCY_DEFAULT_CODE,
                     name = org.palliums.libracore.common.CURRENCY_DEFAULT_CODE,
                     address = CURRENCY_DEFAULT_ADDRESS,
                     enable = true,
