@@ -6,8 +6,7 @@ import com.palliums.content.App
 import com.palliums.utils.setSystemBar
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.common.KEY_MSG_TXID
-import com.violas.wallet.common.KEY_MSG_TYPE
+import com.violas.wallet.common.KEY_FIREBASE_CLOUD_MESSAGING_MSG_ID
 import com.violas.wallet.ui.main.MainActivity
 import com.violas.wallet.ui.message.MessageCenterActivity
 import kotlinx.coroutines.Dispatchers
@@ -25,15 +24,19 @@ class LaunchActivity : BaseAppActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val msgId = intent?.extras?.getString(KEY_FIREBASE_CLOUD_MESSAGING_MSG_ID)
+        val fromNotification = !msgId.isNullOrBlank()
+
         val hasLaunch = App.existsActivity(MainActivity::class.java)
+        if (hasLaunch) {
+            super.onCreate(savedInstanceState)
+            if (fromNotification) {
+                // 应用在后台收到消息推送时，App已启动，直接跳转到消息中心页面
+                MessageCenterActivity.start(this, intent?.extras)
+            } else {
+                MainActivity.start(this@LaunchActivity)
+            }
 
-        val msgType = intent?.extras?.getString(KEY_MSG_TYPE)
-        val msgTxid = intent?.extras?.getString(KEY_MSG_TXID)
-        val fromNotification = !msgType.isNullOrBlank() && !msgTxid.isNullOrBlank()
-
-        if (hasLaunch && fromNotification) {
-            // 应用在后台收到消息推送时，App已启动，直接跳转到消息中心页面
-            MessageCenterActivity.start(this, intent?.extras)
             finish()
             return
         }

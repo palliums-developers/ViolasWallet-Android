@@ -18,8 +18,12 @@ const val KEY_THREE = "KEY_THREE"
 const val KEY_FOUR = "KEY_FOUR"
 const val KEY_FIVE = "KEY_FIVE"
 
+/**
+ * 消息推送相关
+ */
 const val KEY_MSG_TYPE = "msg_type"
 const val KEY_MSG_TXID = "msg_txid"
+const val KEY_FIREBASE_CLOUD_MESSAGING_MSG_ID = "google.message_id"
 
 const val SYSTEM_ALBUM_DIR_NAME = "ViolasPay Photos"
 
