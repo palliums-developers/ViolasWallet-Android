@@ -102,6 +102,9 @@ open class WCClient(
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+        Log.d(TAG, "<< websocket connection abnormal: ${t.message ?: t.toString()} >>")
+
+        resetState()
         onFailure(t)
 
         listeners.forEach { it.onFailure(webSocket, t, response) }
@@ -120,7 +123,7 @@ open class WCClient(
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-        Log.d(TAG, "<< closing socket >>")
+        Log.d(TAG, "<< websocket closing >>")
 
         resetState()
         onDisconnect(code, reason)
@@ -148,12 +151,13 @@ open class WCClient(
             .url(session.bridge)
             .build()
 
+        Log.d(TAG, "<< open websocket >>")
         socket = httpClient.newWebSocket(request, this)
+        Log.d(TAG, "<< opening websocket >>")
     }
 
     fun approveSession(accounts: List<String>, chainId: String): Boolean {
-//        check(handshakeId > 0) { "handshakeId must be greater than 0 on session approve" }
-        Log.e("wallet connect", "handshakeId is: $handshakeId")
+        // check(handshakeId > 0) { "handshakeId must be greater than 0 on session approve" }
 
         val result = WCApproveSessionResponse(
             chainId = chainId,
@@ -278,6 +282,7 @@ open class WCClient(
                 remotePeerId = param.peerId
                 onSessionRequest(request.id, param.peerMeta)
             }
+
             WCMethod.SESSION_UPDATE -> {
                 val param = gson.fromJson<List<WCSessionUpdate>>(request.params)
                     .firstOrNull() ?: throw InvalidJsonRpcParamsException(request.id)
@@ -285,14 +290,17 @@ open class WCClient(
                     killSession()
                 }
             }
-        }
-        if (!messageHandler.onHandler(request.id, request.method, request.params)) {
-            val response = JsonRpcErrorResponse(
-                id = request.id,
-                error = JsonRpcError.methodNotFound("'${request.method}' Method doesn't exist.")
-            )
-            val toJson = Gson().toJson(response)
-            encryptAndSend(toJson)
+
+            else -> {
+                if (!messageHandler.onHandler(request.id, request.method, request.params)) {
+                    val response = JsonRpcErrorResponse(
+                        id = request.id,
+                        error = JsonRpcError.methodNotFound("'${request.method}' Method doesn't exist.")
+                    )
+                    val toJson = Gson().toJson(response)
+                    encryptAndSend(toJson)
+                }
+            }
         }
     }
 
@@ -309,11 +317,17 @@ open class WCClient(
     }
 
     fun encryptAndSend(result: String): Boolean {
-        Log.d(TAG, "==> message $result")
-        val session =
-            this.session ?: throw IllegalStateException("session can't be null on message send")
+        if (this.session == null) {
+            Log.d(TAG, "==> message $result")
+            throw IllegalStateException("session can't be null on message send")
+        }
 
-        return encryptAndSend(result, remotePeerId ?: session.topic, MessageType.PUB, session.key)
+        return encryptAndSend(
+            result,
+            remotePeerId ?: this.session!!.topic,
+            MessageType.PUB,
+            this.session!!.key
+        )
     }
 
     fun encryptAndSend(result: String, topic: String, type: MessageType, key: String): Boolean {
@@ -339,7 +353,12 @@ open class WCClient(
 
 
     fun disconnect(): Boolean {
-        return socket?.close(WS_CLOSE_NORMAL, null) ?: false
+        if (socket == null) {
+            return false
+        }
+
+        Log.d(TAG, "<< close websocket >>")
+        return socket!!.close(WS_CLOSE_NORMAL, null)
     }
 
     fun addSocketListener(listener: WebSocketListener) {

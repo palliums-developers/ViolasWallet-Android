@@ -80,22 +80,20 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
         }
         mWalletConnect.mWalletConnectSessionListener = object : WalletConnectSessionListener {
             override fun onRequest(id: Long, peer: WCPeerMeta) {
-                launch(Dispatchers.IO) {
-                    val findByCoinTypeByIdentity =
-                        mAccountStorage.loadAllByCoinType(CoinTypes.Violas.coinType())
-                    val accounts =
-                        findByCoinTypeByIdentity.map {
-                            it.address
-                        }
-                    val chainId = Vm.ViolasChainId.toString()
-                    if (mWalletConnect.approveSession(accounts, chainId)) {
-                        mRequestHandle = true
-                        finish()
-                    } else {
-                        showToast(String.format(getString(R.string.common_http_request_fail), ""))
+                val findByCoinTypeByIdentity =
+                    mAccountStorage.loadAllByCoinType(CoinTypes.Violas.coinType())
+                val accounts =
+                    findByCoinTypeByIdentity.map {
+                        it.address
                     }
-                    dismissProgress()
+                val chainId = Vm.ViolasChainId.toString()
+                if (mWalletConnect.approveSession(accounts, chainId)) {
+                    mRequestHandle = true
+                    finish()
+                } else {
+                    showToast(String.format(getString(R.string.common_http_request_fail), ""))
                 }
+                dismissProgress()
             }
         }
         btnConfirmLogin.setOnClickListener {
