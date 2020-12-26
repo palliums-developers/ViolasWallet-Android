@@ -77,6 +77,10 @@ class WalletConnectActivity : BaseAppActivity() {
                         }
                         putExtra(CONNECT_DATA, mTransactionSwapVo)
                     })
+                (newContext as? Activity)?.overridePendingTransition(
+                    R.anim.activity_bottom_in,
+                    R.anim.activity_none
+                )
             }
         }
     }
@@ -104,7 +108,6 @@ class WalletConnectActivity : BaseAppActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        overridePendingTransition(R.anim.activity_bottom_in, R.anim.activity_none)
         window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
 

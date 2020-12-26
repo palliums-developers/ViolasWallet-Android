@@ -1,6 +1,6 @@
 package com.violas.wallet.ui.walletconnect
 
-import android.content.Context
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.palliums.utils.setSystemBar
@@ -12,14 +12,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class WalletConnectManagerActivity : BaseAppActivity() {
+
     companion object {
-        fun startActivity(context: Context) {
-            context.startActivity(
+        fun startActivity(activity: Activity) {
+            activity.startActivity(
                 Intent(
-                    context,
+                    activity,
                     WalletConnectManagerActivity::class.java
                 )
             )
+            activity.overridePendingTransition(R.anim.activity_bottom_in, R.anim.activity_none)
         }
     }
 
@@ -31,7 +33,6 @@ class WalletConnectManagerActivity : BaseAppActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        overridePendingTransition(R.anim.activity_bottom_in, R.anim.activity_none)
         window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
 
