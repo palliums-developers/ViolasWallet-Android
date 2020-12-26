@@ -41,13 +41,9 @@ import com.violas.wallet.ui.incentive.receiveRewards.ReceiveIncentiveRewardsActi
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.mapping.MappingActivity
 import com.violas.wallet.ui.scan.ScanActivity
-import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.tokenDetails.TokenDetailsActivity
 import com.violas.wallet.ui.transfer.MultiTransferActivity
-import com.violas.wallet.ui.transfer.TransferActivity
-import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
-import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.loadCircleImage
 import com.violas.wallet.viewModel.WalletAppViewModel
@@ -73,8 +69,6 @@ import org.greenrobot.eventbus.ThreadMode
 class WalletFragment : BaseFragment() {
     companion object {
         private const val REQUEST_ADD_ASSERT = 0
-        private const val REQUEST_SCAN_QR_CODE = 1
-        private const val REQUEST_TOKEN_INFO = 2
     }
 
     private val mWalletAppViewModel by lazy {
@@ -326,7 +320,7 @@ class WalletFragment : BaseFragment() {
             R.id.ivScan -> {
                 activity?.let { it1 ->
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
-                        ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
+                        ScanActivity.start(it1)
                     } else {
                         showToast(R.string.tips_create_or_import_wallet)
                     }
@@ -423,46 +417,6 @@ class WalletFragment : BaseFragment() {
             REQUEST_ADD_ASSERT -> {
                 if (resultCode == Activity.RESULT_OK) {
                     mWalletAppViewModel?.refreshAssetsList(true)
-                }
-            }
-
-            REQUEST_SCAN_QR_CODE -> {
-                data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { scanType, scanBean ->
-                        when (scanType) {
-                            ScanCodeType.Address -> {
-                                scanBean as ScanTranBean
-                                activity?.let {
-                                    TransferActivity.start(
-                                        it,
-                                        scanBean.coinType,
-                                        scanBean.address,
-                                        scanBean.amount,
-                                        scanBean.tokenName
-                                    )
-                                }
-                            }
-
-                            ScanCodeType.Text -> {
-                                activity?.let {
-                                    ScanResultActivity.start(it, scanBean.msg)
-                                }
-                            }
-
-                            ScanCodeType.WalletConnectSocket -> {
-                                context?.let {
-                                    WalletConnectAuthorizationActivity.startActivity(it, msg)
-                                }
-                            }
-
-                            ScanCodeType.Login -> {
-                                scanBean as ScanLoginBean
-                                activity?.let {
-                                    LoginWebActivity.start(it, scanBean)
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }

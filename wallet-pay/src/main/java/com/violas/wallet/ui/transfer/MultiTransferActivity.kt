@@ -15,12 +15,9 @@ import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.biz.ScanCodeType
-import com.violas.wallet.biz.ScanTranBean
+import com.violas.wallet.biz.*
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
-import com.violas.wallet.biz.decodeScanQRCode
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
@@ -309,14 +306,15 @@ class MultiTransferActivity : BaseAppActivity(),
                 }
             }
             REQUEST_SCAN_QR_CODE -> {
-                data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { scanType, scanBean ->
-                        if (scanType == ScanCodeType.Address) {
-                            scanBean as ScanTranBean
-                            changeCurrAssets(scanBean.coinType, scanBean.tokenName)
-                            onScanAddressQr(scanBean.address)
-                        } else if (scanType == ScanCodeType.Text) {
-                            onScanAddressQr(scanBean.msg)
+                data?.getParcelableExtra<QRCode>(ScanActivity.RESULT_QR_CODE_DATA)?.let { qrCode ->
+                    when (qrCode) {
+                        is TransferQRCode -> {
+                            changeCurrAssets(qrCode.coinType, qrCode.tokenName)
+                            onScanAddressQr(qrCode.address)
+                        }
+
+                        is CommonQRCode ->{
+                            onScanAddressQr(qrCode.content)
                         }
                     }
                 }

@@ -13,7 +13,7 @@ import com.palliums.utils.setSystemBar
 import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
-import com.violas.wallet.biz.ScanLoginBean
+import com.violas.wallet.biz.LoginQRCode
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.utils.decryptAccount
 import kotlinx.android.synthetic.main.activity_login_desktop.*
@@ -30,15 +30,15 @@ class LoginWebActivity : BaseViewModelActivity() {
         private const val SCAN_LOGIN_TYPE_DESKTOP = 1
         const val SCAN_LOGIN_TYPE_WEB = 2
 
-        fun start(context: Context, scanLoginBean: ScanLoginBean) {
-            if (scanLoginBean.loginType == SCAN_LOGIN_TYPE_WEB) {
+        fun start(context: Context, loginQRCode: LoginQRCode) {
+            if (loginQRCode.loginType == SCAN_LOGIN_TYPE_WEB) {
                 Intent(context, LoginWebActivity::class.java)
-                    .apply { putExtra(KEY_ONE, scanLoginBean.sessionId) }
+                    .apply { putExtra(KEY_ONE, loginQRCode.sessionId) }
                     .start(context)
                 return
             }
 
-            if (scanLoginBean.loginType == SCAN_LOGIN_TYPE_DESKTOP) {
+            if (loginQRCode.loginType == SCAN_LOGIN_TYPE_DESKTOP) {
                 if (context is BaseActivity) {
                     context.showToast(R.string.tips_scan_login_desktop)
                 } else if (context is BaseFragment) {

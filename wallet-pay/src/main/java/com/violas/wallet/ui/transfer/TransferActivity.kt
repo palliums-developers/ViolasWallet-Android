@@ -13,7 +13,6 @@ import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
-import kotlinx.coroutines.launch
 
 abstract class TransferActivity : BaseAppActivity() {
     companion object {
@@ -124,17 +123,14 @@ abstract class TransferActivity : BaseAppActivity() {
                 }
             }
             REQUEST_SCAN_QR_CODE -> {
-                data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { scanType, scanBean ->
-                        launch {
-                            account?.let {
-                                if (scanType == ScanCodeType.Address) {
-                                    scanBean as ScanTranBean
-                                    onScanAddressQr(scanBean.address)
-                                } else if (scanType == ScanCodeType.Text) {
-                                    onScanAddressQr(scanBean.msg)
-                                }
-                            }
+                data?.getParcelableExtra<QRCode>(ScanActivity.RESULT_QR_CODE_DATA)?.let { qrCode ->
+                    when (qrCode) {
+                        is TransferQRCode -> {
+                            onScanAddressQr(qrCode.address)
+                        }
+
+                        is CommonQRCode ->{
+                            onScanAddressQr(qrCode.content)
                         }
                     }
                 }

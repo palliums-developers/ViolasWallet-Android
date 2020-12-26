@@ -98,7 +98,13 @@ class WalletConnectActivity : BaseAppActivity() {
 
     override fun getTitleStyle() = PAGE_STYLE_NOT_TITLE
 
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.activity_none, R.anim.activity_bottom_out)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        overridePendingTransition(R.anim.activity_bottom_in, R.anim.activity_none)
         window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
 

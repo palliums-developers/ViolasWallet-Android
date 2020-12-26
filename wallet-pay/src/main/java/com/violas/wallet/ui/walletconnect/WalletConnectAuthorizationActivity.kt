@@ -33,7 +33,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
     companion object {
         private const val CONNECT_MSG = "connect_msg"
 
-        fun startActivity(context: Context, msg: String) {
+        fun start(context: Context, msg: String) {
             context.startActivity(
                 Intent(
                     context,
@@ -63,6 +63,11 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
 
     override fun getTitleStyle() = PAGE_STYLE_NOT_TITLE
 
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.activity_none, R.anim.activity_bottom_out)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
@@ -89,11 +94,12 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
                 val chainId = Vm.ViolasChainId.toString()
                 if (mWalletConnect.approveSession(accounts, chainId)) {
                     mRequestHandle = true
-                    finish()
+                    dismissProgress()
+                    close()
                 } else {
+                    dismissProgress()
                     showToast(String.format(getString(R.string.common_http_request_fail), ""))
                 }
-                dismissProgress()
             }
         }
         btnConfirmLogin.setOnClickListener {
@@ -110,7 +116,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
             }, 10 * 1000)
         }
         tvCancelLogin.setOnClickListener {
-            finish()
+            close()
         }
     }
 

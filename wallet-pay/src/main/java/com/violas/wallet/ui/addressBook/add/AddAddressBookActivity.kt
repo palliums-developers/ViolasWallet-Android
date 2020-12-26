@@ -7,10 +7,7 @@ import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.biz.AddressBookManager
-import com.violas.wallet.biz.ScanCodeType
-import com.violas.wallet.biz.ScanTranBean
-import com.violas.wallet.biz.decodeScanQRCode
+import com.violas.wallet.biz.*
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.database.entity.AddressBookDo
 import com.violas.wallet.ui.scan.ScanActivity
@@ -168,24 +165,20 @@ class AddAddressBookActivity : BaseAppActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_SCAN_QR_CODE -> {
-                data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { scanType, scanBean ->
-                        launch {
-                            when (scanType) {
-                                ScanCodeType.Address -> {
-                                    scanBean as ScanTranBean
-                                    try {
-                                        editAddress.setText(scanBean.address)
-                                        mCoinTypes =
-                                            CoinTypes.parseCoinType(scanBean.coinType).coinType()
-                                        refreshCoinType()
-                                    } catch (e: Exception) {
-                                    }
-                                }
-                                ScanCodeType.Text -> {
-                                    editAddress.setText(scanBean.msg)
-                                }
+                data?.getParcelableExtra<QRCode>(ScanActivity.RESULT_QR_CODE_DATA)?.let { qrCode ->
+                    when (qrCode) {
+                        is TransferQRCode -> {
+                            editAddress.setText(qrCode.address)
+                            try {
+                                editAddress.setText(qrCode.address)
+                                mCoinTypes = CoinTypes.parseCoinType(qrCode.coinType).coinType()
+                                refreshCoinType()
+                            } catch (e: Exception) {
                             }
+                        }
+
+                        is CommonQRCode -> {
+                            editAddress.setText(qrCode.content)
                         }
                     }
                 }
