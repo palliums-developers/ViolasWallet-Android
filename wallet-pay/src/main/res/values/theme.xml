@@ -157,6 +157,9 @@
         <item name="iconTriangleArrow">@mipmap/ic_triangle_arrow</item>
         <item name="iconAmount">@mipmap/ic_amount</item>
         <item name="iconInfo">@mipmap/ic_info</item>
+        <item name="iconMsgNotificationLight">@mipmap/ic_msg_notification_white</item>
+        <item name="iconClear">@mipmap/ic_clear</item>
+
         <item name="bgLoadFailure">@mipmap/bg_load_failure</item>
         <item name="bgLoadEmptyData">@mipmap/bg_load_empty_data</item>
         <item name="bgSearchEmptyData">@mipmap/bg_search_empty_data</item>

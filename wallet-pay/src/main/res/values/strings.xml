@@ -616,5 +616,8 @@
     <string name="txn_details_desc_address_not_add">此地址未添加</string>
     <string name="txn_details_action_add_address">立即添加</string>
     <string name="tips_share_link_success">已复制</string>
+    <string name="title_transfer_notification">转账通知</string>
+    <string name="title_system_notification">系统通知</string>
+    <string name="tips_msg_list_empty">暂无消息</string>
 
 </resources>

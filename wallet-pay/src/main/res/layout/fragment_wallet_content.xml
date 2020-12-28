@@ -59,6 +59,38 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/actionBar" />
 
+        <ImageView
+            android:id="@+id/ivMsgNotification"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            android:layout_marginEnd="@dimen/dp_51"
+            android:foreground="?attr/actionBarItemBackground"
+            android:padding="@dimen/dp_13"
+            android:src="?attr/iconMsgNotificationLight"
+            app:layout_constraintBottom_toBottomOf="@id/actionBar"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/actionBar" />
+
+        <TextView
+            android:id="@+id/tvMsgNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_msg"
+            android:gravity="center"
+            android:minWidth="@dimen/dp_11"
+            android:paddingHorizontal="@dimen/dp_2"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="@dimen/dp_8"
+            android:visibility="gone"
+            app:layout_constraintCircle="@id/ivMsgNotification"
+            app:layout_constraintCircleAngle="45"
+            app:layout_constraintCircleRadius="@dimen/dp_11"
+            app:layout_constraintEnd_toEndOf="@id/ivMsgNotification"
+            app:layout_constraintTop_toTopOf="@id/ivMsgNotification"
+            tools:text="9"
+            tools:visibility="visible" />
+
         <com.palliums.widget.NumberTextView
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"

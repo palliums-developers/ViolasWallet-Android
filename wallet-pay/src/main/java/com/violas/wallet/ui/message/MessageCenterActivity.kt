@@ -3,11 +3,19 @@ package com.violas.wallet.ui.message
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+import com.google.android.material.tabs.TabLayout
 import com.palliums.content.App
+import com.palliums.utils.getColorByAttrId
+import com.palliums.utils.getResourceId
 import com.palliums.utils.start
+import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.ui.main.MainActivity
+import kotlinx.android.synthetic.main.activity_message_center.*
 
 /**
  * Created by elephant on 2020/10/10 17:33.
@@ -38,8 +46,14 @@ class MessageCenterActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.message_center)
+        setTitleRightImageResource(getResourceId(R.attr.iconClear, this))
 
-        // TODO 同步消息，具体的消息处理逻辑
+        initFragmentPager()
+    }
+
+    override fun onTitleRightViewClick() {
+        super.onTitleRightViewClick()
+        // TODO 清除未读消息
     }
 
     override fun onBackPressedSupport() {
@@ -48,5 +62,79 @@ class MessageCenterActivity : BaseAppActivity() {
             MainActivity.start(this)
         }
         super.onBackPressedSupport()
+    }
+
+    private fun initFragmentPager() {
+        val fragments = mutableListOf<Fragment>()
+        supportFragmentManager.fragments.forEach {
+            if (it is TransferNotificationFragment || it is SystemNotificationFragment) {
+                fragments.add(it)
+            }
+        }
+        if (fragments.isEmpty()) {
+            fragments.add(TransferNotificationFragment())
+            fragments.add(SystemNotificationFragment())
+        }
+
+        val fragmentPagerAdapter = FragmentPagerAdapterSupport(supportFragmentManager).apply {
+            setFragments(fragments)
+            setTitles(
+                mutableListOf(
+                    getString(R.string.title_transfer_notification),
+                    getString(R.string.title_system_notification)
+                )
+            )
+        }
+
+        viewPager.offscreenPageLimit = 1
+        viewPager.adapter = fragmentPagerAdapter
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                updateTab(tab, false)
+                // TODO test code, don't forget to delete
+                showBadge(tab, false)
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                updateTab(tab, true)
+                // TODO test code, don't forget to delete
+                showBadge(tab, true)
+            }
+        })
+        tabLayout.setupWithViewPager(viewPager)
+        tabLayout.post {
+            val count = viewPager.adapter!!.count
+            for (i in 0 until count) {
+                tabLayout.getTabAt(i)?.let { tab ->
+                    tab.setCustomView(R.layout.item_msg_center_tab_layout)
+                    updateTab(tab, i == viewPager.currentItem)?.let {
+                        it.text = tab.text
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateTab(tab: TabLayout.Tab, select: Boolean): TextView? {
+        tab.customView?.findViewById<View>(R.id.vIndicator)?.visibility =
+            if (select) View.VISIBLE else View.GONE
+        return tab.customView?.findViewById<TextView>(R.id.textView)?.also {
+            it.setTextColor(
+                getColorByAttrId(
+                    if (select) android.R.attr.textColor else android.R.attr.textColorTertiary,
+                    this
+                )
+            )
+        }
+    }
+
+    private fun showBadge(tab: TabLayout.Tab, show: Boolean) {
+        tab.customView?.findViewById<View>(R.id.vBadge)?.visibility =
+            if (show) View.VISIBLE else View.GONE
     }
 }

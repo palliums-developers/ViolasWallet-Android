@@ -40,6 +40,7 @@ import com.violas.wallet.ui.incentive.IncentiveWebActivity
 import com.violas.wallet.ui.incentive.receiveRewards.ReceiveIncentiveRewardsActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
 import com.violas.wallet.ui.mapping.MappingActivity
+import com.violas.wallet.ui.message.MessageCenterActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.ui.tokenDetails.TokenDetailsActivity
 import com.violas.wallet.ui.transfer.MultiTransferActivity
@@ -206,6 +207,7 @@ class WalletFragment : BaseFragment() {
         ivTotalHidden.setOnClickListener(this)
         ivAddAssert.setOnClickListener(this)
         ivScan.setOnClickListener(this)
+        ivMsgNotification.setOnClickListener(this)
         llWalletConnectGroup.setOnClickListener(this)
         llCreateAccountGroup.setOnClickListener(this)
         llImportAccountGroup.setOnClickListener(this)
@@ -325,6 +327,10 @@ class WalletFragment : BaseFragment() {
                         showToast(R.string.tips_create_or_import_wallet)
                     }
                 }
+            }
+
+            R.id.ivMsgNotification -> {
+                MessageCenterActivity.start(requireContext())
             }
 
             R.id.llWalletConnectGroup -> {

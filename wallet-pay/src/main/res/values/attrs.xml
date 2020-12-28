@@ -60,6 +60,9 @@
     <attr name="iconTriangleArrow" format="reference" />
     <attr name="iconAmount" format="reference" />
     <attr name="iconInfo" format="reference" />
+    <attr name="iconMsgNotificationLight" format="reference" />
+    <attr name="iconClear" format="reference" />
+
     <attr name="bgLoadFailure" format="reference" />
     <attr name="bgLoadEmptyData" format="reference" />
     <attr name="bgSearchEmptyData" format="reference" />

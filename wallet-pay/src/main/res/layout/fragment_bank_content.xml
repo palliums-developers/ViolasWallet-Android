@@ -206,12 +206,13 @@
             android:layout_height="@dimen/dp_26"
             android:layout_marginEnd="@dimen/dp_3"
             android:background="?attr/homeBankMiningBg"
+            android:fontFamily="@string/font_family_title"
             android:gravity="start|center_vertical"
             android:paddingStart="@dimen/dp_11"
             android:paddingEnd="@dimen/dp_35"
             android:text="@string/home_bank_mining_title"
             android:textColor="?attr/colorPrimary"
-            android:textStyle="bold"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintBottom_toBottomOf="@id/tabLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tabLayout" />
@@ -235,7 +236,7 @@
             app:tabSelectedTextColor="?android:attr/textColor"
             app:tabTextColor="?android:attr/textColorTertiary" />
 
-        <com.palliums.widget.NoSlideViewPager
+        <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager"
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_0"
