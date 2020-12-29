@@ -36,7 +36,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.APP.DayNight.Home"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".ui.identity.createIdentity.CreateIdentityActivity"
             android:screenOrientation="portrait" />
