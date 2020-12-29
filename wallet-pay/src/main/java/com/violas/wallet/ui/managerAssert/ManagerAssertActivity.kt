@@ -88,6 +88,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
             if (checked) {
                 openToken(checkbox, checked, assertToken)
             } else {
+                assertToken.enable = false
                 launch(Dispatchers.IO) {
                     mTokenManager.insert(checked, assertToken)
                 }
@@ -140,6 +141,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
             try {
                 if (isPublish(assertOriginateToken.account_id, assertOriginateToken.tokenMark)) {
                     mTokenManager.insert(checked, assertOriginateToken)
+                    assertOriginateToken.enable = true
                     dismissProgress()
                 } else {
                     val account = mAccountManager.getAccountById(assertOriginateToken.account_id)
@@ -189,6 +191,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                     )
                     if (hasSuccess) {
                         mTokenManager.insert(checked, assertOriginateToken)
+                        assertOriginateToken.enable = true
                     } else {
                         withContext(Dispatchers.Main) {
                             checkbox.setCheckedNoEvent(false)

@@ -48,7 +48,8 @@ class TokenManager {
                         name = it.showName,
                         fullName = it.showName,
                         isToken = true,
-                        logo = it.showLogo
+                        logo = it.showLogo,
+                        coinType = CoinTypes.Violas.coinType()
                     )
                 )
             }
@@ -71,7 +72,8 @@ class TokenManager {
                         name = it.showName,
                         fullName = it.showName,
                         isToken = true,
-                        logo = it.showLogo
+                        logo = it.showLogo,
+                        coinType = CoinTypes.Libra.coinType()
                     )
                 )
             }
