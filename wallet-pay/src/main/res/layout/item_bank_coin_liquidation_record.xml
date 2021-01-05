@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/tvLiquidatedLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_17"
         android:includeFontPadding="false"
         android:text="@string/liquidated"
@@ -21,7 +21,7 @@
     <com.palliums.widget.NumberTextView
         android:id="@+id/tvLiquidated"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_12"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_16"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_12"
@@ -32,7 +32,7 @@
     <TextView
         android:id="@+id/tvDeductedLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_122"
         android:includeFontPadding="false"
         android:text="@string/deducted"
@@ -44,7 +44,7 @@
     <com.palliums.widget.NumberTextView
         android:id="@+id/tvDeducted"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_12"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_16"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_12"
@@ -55,7 +55,7 @@
     <TextView
         android:id="@+id/tvTime"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_10"
         app:layout_constraintBottom_toBottomOf="@id/tvLiquidatedLabel"
@@ -65,7 +65,7 @@
     <TextView
         android:id="@+id/tvState"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_12"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_16"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_12"

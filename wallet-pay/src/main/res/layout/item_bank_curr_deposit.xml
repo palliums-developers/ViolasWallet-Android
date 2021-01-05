@@ -20,7 +20,7 @@
     <TextView
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_16"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_8"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_16"
@@ -50,7 +50,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/sel_bg_btn2_primary"
-        android:includeFontPadding="false"
         android:minWidth="@dimen/dp_50"
         android:paddingHorizontal="@dimen/dp_14"
         android:paddingVertical="@dimen/dp_5"
@@ -64,7 +63,7 @@
     <TextView
         android:id="@+id/tvPrincipalLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_24"
         android:includeFontPadding="false"
         android:text="@string/principal"
@@ -76,7 +75,7 @@
     <com.palliums.widget.NumberTextView
         android:id="@+id/tvPrincipal"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_14"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_12"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_14"
@@ -87,7 +86,7 @@
     <TextView
         android:id="@+id/tvEarningsLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:text="@string/earnings"
         android:textColor="?android:attr/textColorTertiary"
@@ -100,7 +99,7 @@
     <com.palliums.widget.NumberTextView
         android:id="@+id/tvEarnings"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_14"
+        android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_14"
         app:layout_constraintStart_toStartOf="@id/tvEarningsLabel"
@@ -110,7 +109,7 @@
     <TextView
         android:id="@+id/tvDepositYieldLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:text="@string/deposit_yield"
         android:textColor="?android:attr/textColorTertiary"
@@ -121,7 +120,7 @@
     <com.palliums.widget.NumberTextView
         android:id="@+id/tvDepositYield"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_14"
+        android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:textColor="?attr/bankProductRateTextColor"
         android:textSize="@dimen/fs_14"

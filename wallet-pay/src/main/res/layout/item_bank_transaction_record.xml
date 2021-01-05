@@ -19,7 +19,7 @@
     <TextView
         android:id="@+id/tvCoinName"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_16"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_8"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_16"
@@ -30,7 +30,7 @@
     <TextView
         android:id="@+id/tvTime"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_12"
+        android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_12"
@@ -41,7 +41,7 @@
     <com.palliums.widget.NumberTextView
         android:id="@+id/tvAmount"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_18"
+        android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_18"
         android:textStyle="bold"
@@ -52,7 +52,7 @@
     <TextView
         android:id="@+id/tvDesc"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_12"
+        android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_12"

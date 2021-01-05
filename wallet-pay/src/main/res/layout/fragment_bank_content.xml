@@ -41,7 +41,7 @@
         <TextView
             android:id="@+id/tvTotalDepositLabel"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_10"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_35"
             android:includeFontPadding="false"
             android:text="@string/total_deposit_label"
@@ -63,7 +63,7 @@
         <com.palliums.widget.NumberTextView
             android:id="@+id/tvTotalDeposit"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_19"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_24"
             android:includeFontPadding="false"
             android:textColor="?attr/colorOnPrimary"
@@ -85,7 +85,7 @@
         <TextView
             android:id="@+id/tvTotalBorrowableLabel"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_10"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_8"
             android:includeFontPadding="false"
             android:text="@string/total_borrowable_label"
@@ -98,7 +98,7 @@
         <com.palliums.widget.NumberTextView
             android:id="@+id/tvBorrowable"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_10"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_10"
             android:includeFontPadding="false"
             android:textColor="?attr/colorOnPrimary"
@@ -123,7 +123,7 @@
         <TextView
             android:id="@+id/tvTotalEarningsLabel"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_10"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_8"
             android:includeFontPadding="false"
             android:text="@string/total_earnings_label"
@@ -136,7 +136,7 @@
         <com.palliums.widget.NumberTextView
             android:id="@+id/tvTotalEarnings"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_10"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_10"
             android:includeFontPadding="false"
             android:textColor="?attr/colorOnPrimary"

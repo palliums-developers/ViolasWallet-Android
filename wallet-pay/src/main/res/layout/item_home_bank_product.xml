@@ -19,7 +19,7 @@
     <TextView
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_16"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_8"
         android:fontFamily="@string/font_family_title"
         android:includeFontPadding="false"
@@ -31,7 +31,7 @@
     <TextView
         android:id="@+id/tvDesc"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_10"
@@ -42,7 +42,7 @@
     <com.palliums.widget.NumberTextView
         android:id="@+id/tvRate"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_18"
+        android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:textColor="?attr/bankProductRateTextColor"
         android:textSize="@dimen/fs_18"
@@ -54,7 +54,7 @@
     <TextView
         android:id="@+id/tvRateLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_10"

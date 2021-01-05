@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/tvTimeLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_34"
         android:layout_marginTop="@dimen/dp_19"
         android:includeFontPadding="false"
@@ -22,7 +22,7 @@
     <TextView
         android:id="@+id/tvAmountLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_122"
         android:includeFontPadding="false"
         android:text="@string/amount"
@@ -34,7 +34,7 @@
     <TextView
         android:id="@+id/tvStateLabel"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_10"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_34"
         android:includeFontPadding="false"
         android:text="@string/state"

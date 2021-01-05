@@ -13,7 +13,7 @@
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_20"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_23"
             android:includeFontPadding="false"
             android:text="@string/extraction"
@@ -75,7 +75,7 @@
         <TextView
             android:id="@+id/tvAmountDesc"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_12"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_4"
             android:includeFontPadding="false"
             android:text="@string/bank_withdrawal_label_extractable_amount"
@@ -87,7 +87,7 @@
         <com.palliums.widget.NumberTextView
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_12"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_5"
             android:includeFontPadding="false"
             android:textSize="@dimen/fs_12"
@@ -155,7 +155,7 @@
         <TextView
             android:id="@+id/tvTips"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_12"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_10"
             android:includeFontPadding="false"
             android:textColor="?attr/colorError"
