@@ -230,7 +230,6 @@ class ExchangeManager {
         mViolasService.sendTransaction(
             payload = withdrawRewardTransactionPayload,
             account = Account(KeyPair.fromSecretKey(privateKey)),
-            gasCurrencyCode = "vls",
             chainId = Vm.ViolasChainId
         )
     }

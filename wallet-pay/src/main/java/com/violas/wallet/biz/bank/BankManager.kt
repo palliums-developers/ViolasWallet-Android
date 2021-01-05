@@ -208,7 +208,6 @@ class BankManager {
         mViolasRPCService.sendTransaction(
             payload = withdrawRewardTransactionPayload,
             account = Account(KeyPair.fromSecretKey(privateKey)),
-            gasCurrencyCode = "vls",
             chainId = Vm.ViolasChainId
         )
     }
