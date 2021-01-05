@@ -9,7 +9,7 @@
         <shape>
             <solid android:color="@android:color/transparent" />
             <stroke
-                android:width="?attr/strokeThickness"
+                android:width="?attr/dividerThickness"
                 android:color="?attr/boxStrokeColor" />
         </shape>
     </item>
