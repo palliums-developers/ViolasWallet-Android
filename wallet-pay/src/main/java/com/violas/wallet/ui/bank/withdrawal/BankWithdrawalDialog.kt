@@ -98,9 +98,11 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
 
     private fun initView() {
         tvCurrency.text = depositDetails.tokenDisplayName
-        tvAmount.text = "${convertAmountToDisplayAmountStr(
-            depositDetails.availableAmount
-        )} ${depositDetails.tokenDisplayName}"
+        tvAmount.text = "${
+            convertAmountToDisplayAmountStr(
+                depositDetails.availableAmount
+            )
+        } ${depositDetails.tokenDisplayName}"
 
         etInputBox.post {
             etInputBox.setPadding(
@@ -190,7 +192,9 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
         launch {
             try {
                 showProgress()
-                bankManager.redeem(pwd, account, productId, mark, amount)
+                withContext(Dispatchers.IO) {
+                    bankManager.redeem(pwd, account, productId, mark, amount)
+                }
                 dismissProgress()
                 showToast(getString(R.string.tips_withdrawal_success))
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
