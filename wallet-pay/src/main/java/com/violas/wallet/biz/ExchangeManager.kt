@@ -53,7 +53,7 @@ class ExchangeManager {
         val marketCurrencies = mExchangeService.getMarketSupportCurrencies()
 
         val marketTokens = mutableListOf<ITokenVo>()
-        if (marketCurrencies?.bitcoinCurrencies?.isNotEmpty() == true) {
+        if (marketCurrencies.bitcoinCurrencies?.isNotEmpty() == true) {
             marketTokens.add(
                 PlatformTokenVo(
                     coinNumber = if (Vm.TestNet)
@@ -65,7 +65,7 @@ class ExchangeManager {
                 )
             )
         }
-        marketCurrencies?.libraCurrencies?.forEach {
+        marketCurrencies.libraCurrencies?.forEach {
             marketTokens.add(
                 StableTokenVo(
                     name = it.name,
@@ -78,7 +78,7 @@ class ExchangeManager {
                 )
             )
         }
-        marketCurrencies?.violasCurrencies?.forEach {
+        marketCurrencies.violasCurrencies?.forEach {
             marketTokens.add(
                 StableTokenVo(
                     name = it.name,

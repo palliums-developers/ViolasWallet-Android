@@ -27,12 +27,12 @@ data class SwapTrialSTO(
 
 @Keep
 data class MarketCurrenciesDTO(
-    @SerializedName(value = "btc")
-    val bitcoinCurrencies: List<MarketCurrencyDTO>,
-    @SerializedName(value = "libra")
-    val libraCurrencies: List<MarketCurrencyDTO>,
     @SerializedName(value = "violas")
-    val violasCurrencies: List<MarketCurrencyDTO>
+    val violasCurrencies: List<MarketCurrencyDTO>?,
+    @SerializedName(value = "btc")
+    val bitcoinCurrencies: List<MarketCurrencyDTO>? = null,
+    @SerializedName(value = "libra")
+    val libraCurrencies: List<MarketCurrencyDTO>? = null,
 )
 
 @Keep

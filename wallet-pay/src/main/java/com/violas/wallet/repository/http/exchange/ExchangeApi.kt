@@ -18,7 +18,7 @@ interface ExchangeApi {
      * 获取交易市场支持的币种
      */
     @GET("/1.0/market/exchange/currency")
-    fun getMarketSupportCurrencies(): Observable<Response<MarketCurrenciesDTO>>
+    fun getMarketSupportCurrencies(): Observable<ListResponse<MarketCurrencyDTO>>
 
     /**
      * 尝试计算兑换价值

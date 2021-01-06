@@ -12,8 +12,10 @@ import com.palliums.net.await
 class ExchangeRepository(private val api: ExchangeApi) {
 
     @Throws(RequestException::class)
-    suspend fun getMarketSupportCurrencies() =
-        api.getMarketSupportCurrencies().await().data
+    suspend fun getMarketSupportCurrencies() = run {
+        val violasCurrencies = api.getMarketSupportCurrencies().await().data
+        MarketCurrenciesDTO(violasCurrencies = violasCurrencies)
+    }
 
     @Throws(RequestException::class)
     suspend fun exchangeSwapTrial(
@@ -93,8 +95,10 @@ class ExchangeRepository(private val api: ExchangeApi) {
     ) =
         api.getSwapRecords(
             "${violasWalletAddress}_violas,${
-            libraWalletAddress}_libra,${
-            bitcoinWalletAddress}_btc",
+                libraWalletAddress
+            }_libra,${
+                bitcoinWalletAddress
+            }_btc",
             pageSize,
             offset
         ).await().data ?: emptyList()
