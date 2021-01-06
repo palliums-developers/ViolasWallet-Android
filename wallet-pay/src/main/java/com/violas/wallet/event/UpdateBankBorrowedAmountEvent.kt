@@ -6,4 +6,4 @@ package com.violas.wallet.event
  * <p>
  * desc:
  */
-class UpdateBankBorrowedAmountEvent(val productId: String, val borrowedAmount: String)
+class UpdateBankBorrowedAmountEvent(val borrowedAmount: String)

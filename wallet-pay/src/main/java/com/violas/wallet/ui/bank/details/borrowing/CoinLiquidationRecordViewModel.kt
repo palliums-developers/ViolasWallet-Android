@@ -35,8 +35,7 @@ class CoinLiquidationRecordViewModel(
 
         // 更新待还金额
         coinLiquidationInfo?.let {
-            EventBus.getDefault()
-                .post(UpdateBankBorrowedAmountEvent(it.productId, it.borrowedAmount))
+            EventBus.getDefault().post(UpdateBankBorrowedAmountEvent(it.borrowedAmount))
         }
 
         val records = coinLiquidationInfo?.records ?: emptyList()

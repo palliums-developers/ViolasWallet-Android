@@ -35,8 +35,7 @@ class CoinRepaymentRecordViewModel(
 
         // 更新待还金额
         coinRepaymentInfo?.let {
-            EventBus.getDefault()
-                .post(UpdateBankBorrowedAmountEvent(it.productId, it.borrowedAmount))
+            EventBus.getDefault().post(UpdateBankBorrowedAmountEvent(it.borrowedAmount))
         }
 
         val records = coinRepaymentInfo?.records ?: emptyList()

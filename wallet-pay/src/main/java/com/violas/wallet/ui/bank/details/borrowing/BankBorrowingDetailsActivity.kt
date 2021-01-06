@@ -79,11 +79,9 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     @Subscribe
     fun onUpdateBankBorrowedAmountEvent(event: UpdateBankBorrowedAmountEvent) {
         launch {
-            if (borrowingInfo.productId == event.productId) {
-                borrowingInfo.borrowedAmount = event.borrowedAmount
-                tvAmountToBeRepaid.text =
-                    convertAmountToDisplayAmountStr(borrowingInfo.borrowedAmount)
-            }
+            borrowingInfo.borrowedAmount = event.borrowedAmount
+            tvAmountToBeRepaid.text =
+                convertAmountToDisplayAmountStr(borrowingInfo.borrowedAmount)
         }
     }
 
