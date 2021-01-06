@@ -89,11 +89,12 @@ class ViolasBizService(
 
             // 解析交易类型
             val realTransactionType =
-                if (dto.type.equals("ADD_CURRENCY_TO_ACCOUNT", true)) {
+                if (dto.type.equals("ADD_CURRENCY_TO_ACCOUNT", true)
+                    || dto.type.equals("0", true)) {
                     TransactionType.ADD_CURRENCY
                 } else if (dto.sender != walletAddress && dto.receiver == walletAddress) {
                     TransactionType.COLLECTION
-                } else if (dto.sender == walletAddress && dto.receiver.isNotBlank()) {
+                } else if (dto.sender == walletAddress && !dto.receiver.isNullOrBlank()) {
                     TransactionType.TRANSFER
                 } else {
                     TransactionType.OTHER

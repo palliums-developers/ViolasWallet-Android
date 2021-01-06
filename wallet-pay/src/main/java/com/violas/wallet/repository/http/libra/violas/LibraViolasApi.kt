@@ -52,7 +52,7 @@ data class TransactionRecordDTO(
     @SerializedName(value = "sender")
     val sender: String = "",
     @SerializedName(value = "receiver")
-    val receiver: String = "",
+    val receiver: String? = null,
     @SerializedName(value = "amount")
     val amount: String = "",
     @SerializedName(value = "currency")
