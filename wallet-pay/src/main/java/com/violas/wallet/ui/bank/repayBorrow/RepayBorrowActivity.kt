@@ -210,7 +210,7 @@ class RepayBorrowActivity : BankBusinessActivity() {
                     amount
                 )
                 dismissProgress()
-                showToast(getString(R.string.hint_bank_business_borrow_success))
+                showToast(getString(R.string.hint_bank_business_repay_borrow_success))
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 finish()
             } catch (e: Exception) {
