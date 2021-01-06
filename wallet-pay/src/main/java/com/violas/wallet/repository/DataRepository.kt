@@ -57,9 +57,9 @@ object DataRepository {
                 else
                     HttpLoggingInterceptor.Level.NONE
             })
-            .callTimeout(40, TimeUnit.SECONDS)
-            .connectTimeout(40, TimeUnit.SECONDS)
-            .readTimeout(40, TimeUnit.SECONDS)
+            .callTimeout(100, TimeUnit.SECONDS)
+            .connectTimeout(100, TimeUnit.SECONDS)
+            .readTimeout(100, TimeUnit.SECONDS)
             .build()
     }
 
