@@ -37,10 +37,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginTop="@dimen/dp_23"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_14"
-        app:layout_constraintBottom_toBottomOf="@id/tvAmountToBeRepaid"
         app:layout_constraintStart_toEndOf="@id/tvAmountToBeRepaid"
+        app:layout_constraintTop_toBottomOf="@id/tvAmountToBeRepaidLabel"
         tools:text="VLSUSD" />
 
     <com.google.android.material.tabs.TabLayout
