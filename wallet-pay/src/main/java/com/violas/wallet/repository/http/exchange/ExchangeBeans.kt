@@ -243,3 +243,36 @@ data class SwapRecordDTO(
     @SerializedName(value = "status")
     val status: Int
 ) : Parcelable
+
+@Keep
+@Parcelize
+data class ViolasSwapRecordDTO(
+
+    @SerializedName(value = "input_show_name")
+    val inputDisplayName: String?,
+    @SerializedName(value = "input_name")
+    val inputCoinName: String?,
+    @SerializedName(value = "input_amount")
+    val inputCoinAmount: String?,
+
+    @SerializedName(value = "output_show_name")
+    val outputDisplayName: String?,
+    @SerializedName(value = "output_name")
+    val outputCoinName: String?,
+    @SerializedName(value = "output_amount")
+    val outputCoinAmount: String?,
+
+    @SerializedName(value = "gas_currency")
+    val gasCoinName: String?,
+    @SerializedName(value = "gas_used")
+    val gasCoinAmount: String?,
+
+    @SerializedName(value = "date")
+    val time: Long,
+    @SerializedName(value = "confirmed_time")
+    val confirmedTime: Long,
+    @SerializedName(value = "version")
+    val version: Long,
+    @SerializedName(value = "status")
+    val status: String?
+) : Parcelable

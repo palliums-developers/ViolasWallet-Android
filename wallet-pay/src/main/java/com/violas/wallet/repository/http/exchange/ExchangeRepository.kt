@@ -103,4 +103,15 @@ class ExchangeRepository(private val api: ExchangeApi) {
             offset
         ).await().data ?: emptyList()
 
+    suspend fun getViolasSwapRecords(
+        address: String,
+        pageSize: Int,
+        offset: Int
+    ) =
+        api.getViolasSwapRecords(
+            address,
+            pageSize,
+            offset
+        ).await().data ?: emptyList()
+
 }

@@ -110,7 +110,7 @@ interface ExchangeApi {
     ): Observable<ListResponse<PoolRecordDTO>>
 
     /**
-     * 获取交易市场兑换记录(包含Violas链内稳定币兑换记录，和跨链兑换记录)
+     * 获取交易市场Violas币币兑换和跨链兑换记录
      * @param walletAddresses   地址
      * @param pageSize          分页大小
      * @param offset            偏移量，从0开始
@@ -121,5 +121,15 @@ interface ExchangeApi {
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
     ): Observable<ListResponse<SwapRecordDTO>>
+
+    /**
+     * 获取交易市场Violas币币兑换记录
+     */
+    @GET("/1.0/market/exchange/transaction")
+    fun getViolasSwapRecords(
+        @Query("address") walletAddress: String,
+        @Query("limit") pageSize: Int,
+        @Query("offset") offset: Int
+    ): Observable<ListResponse<ViolasSwapRecordDTO>>
 
 }

@@ -18,11 +18,9 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.http.exchange.SwapRecordDTO
+import com.violas.wallet.repository.http.exchange.ViolasSwapRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
-import com.violas.wallet.utils.str2CoinType
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_swap_record.view.*
 import kotlinx.coroutines.Dispatchers
@@ -37,13 +35,13 @@ import java.util.*
  * <p>
  * desc: 交易市场兑换记录页面
  */
-class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
+class SwapRecordActivity : BasePagingActivity<ViolasSwapRecordDTO>() {
 
-    override fun lazyInitPagingViewModel(): PagingViewModel<SwapRecordDTO> {
+    override fun lazyInitPagingViewModel(): PagingViewModel<ViolasSwapRecordDTO> {
         return ViewModelProvider(this).get(SwapRecordViewModel::class.java)
     }
 
-    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<SwapRecordDTO> {
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<ViolasSwapRecordDTO> {
         return ViewAdapter(
             clickItemCallback = {
                 SwapDetailsActivity.start(this, it)
@@ -89,9 +87,9 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
     }
 
     class ViewAdapter(
-        private val clickItemCallback: ((SwapRecordDTO) -> Unit)? = null,
-        private val clickRetryCallback: ((SwapRecordDTO, Int) -> Unit)? = null
-    ) : PagingViewAdapter<SwapRecordDTO>() {
+        private val clickItemCallback: ((ViolasSwapRecordDTO) -> Unit)? = null,
+        private val clickRetryCallback: ((ViolasSwapRecordDTO, Int) -> Unit)? = null
+    ) : PagingViewAdapter<ViolasSwapRecordDTO>() {
 
         private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
 
@@ -115,53 +113,35 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
     class ViewHolder(
         view: View,
         private val simpleDateFormat: SimpleDateFormat,
-        private val clickItemCallback: ((SwapRecordDTO) -> Unit)? = null,
-        private val clickRetryCallback: ((SwapRecordDTO, Int) -> Unit)? = null
-    ) : BaseViewHolder<SwapRecordDTO>(view) {
+        private val clickItemCallback: ((ViolasSwapRecordDTO) -> Unit)? = null,
+        private val clickRetryCallback: ((ViolasSwapRecordDTO, Int) -> Unit)? = null
+    ) : BaseViewHolder<ViolasSwapRecordDTO>(view) {
 
         init {
             itemView.setOnClickListener(this)
             itemView.tvRetry.setOnClickListener(this)
         }
 
-        override fun onViewBind(itemPosition: Int, itemData: SwapRecordDTO?) {
+        override fun onViewBind(itemPosition: Int, itemData: ViolasSwapRecordDTO?) {
             itemData?.let {
                 itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
 
                 itemView.tvInputCoin.text =
-                    if (it.inputCoinDisplayName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
+                    if (it.inputDisplayName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
                         getString(R.string.value_null)
                     } else {
-                        "${
-                            convertAmountToDisplayAmountStr(
-                                it.inputCoinAmount,
-                                str2CoinType(it.inputChainName)
-                            )
-                        } ${it.inputCoinDisplayName}"
+                        "${convertAmountToDisplayAmountStr(it.inputCoinAmount)} ${it.inputDisplayName}"
                     }
 
                 itemView.tvOutputCoin.text =
-                    if (it.outputCoinDisplayName.isNullOrBlank() || it.outputCoinAmount.isNullOrBlank()) {
+                    if (it.outputDisplayName.isNullOrBlank() || it.outputCoinAmount.isNullOrBlank()) {
                         getString(R.string.value_null)
                     } else {
-                        "${
-                            convertAmountToDisplayAmountStr(
-                                it.outputCoinAmount,
-                                str2CoinType(it.outputChainName)
-                            )
-                        } ${it.outputCoinDisplayName}"
+                        "${convertAmountToDisplayAmountStr(it.outputCoinAmount)} ${it.outputDisplayName}"
                     }
 
-                when (it.status) {
-                    4001 -> {
-                        itemView.tvRetry.visibility = View.GONE
-                        itemView.tvState.setText(R.string.market_swap_state_succeeded)
-                        itemView.tvState.setTextColor(
-                            getColorByAttrId(R.attr.textColorSuccess, itemView.context)
-                        )
-                    }
-
-                    4002 -> {
+                when {
+                    it.status.isNullOrBlank() -> {
                         // TODO 取消先隐藏
                         itemView.tvRetry.visibility = View.GONE
                         itemView.tvRetry.expandTouchArea()
@@ -171,7 +151,18 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
                         )
                     }
 
-                    4004 -> {
+
+                    it.status.equals("Executed", true) -> {
+                        itemView.tvRetry.visibility = View.GONE
+                        itemView.tvState.setText(R.string.market_swap_state_succeeded)
+                        itemView.tvState.setTextColor(
+                            getColorByAttrId(R.attr.textColorSuccess, itemView.context)
+                        )
+                    }
+
+                    it.status.equals("Cancel", true)
+                            || it.status.equals("Canceled", true)
+                            || it.status.equals("Cancelled", true) -> {
                         itemView.tvRetry.visibility = View.GONE
                         itemView.tvState.setText(R.string.market_swap_state_cancelled)
                         itemView.tvState.setTextColor(
@@ -190,7 +181,7 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
             }
         }
 
-        override fun onViewClick(view: View, itemPosition: Int, itemData: SwapRecordDTO?) {
+        override fun onViewClick(view: View, itemPosition: Int, itemData: ViolasSwapRecordDTO?) {
             itemData?.let {
                 when (view) {
                     itemView -> clickItemCallback?.invoke(it)
@@ -204,31 +195,20 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
     }
 }
 
-class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
+class SwapRecordViewModel : PagingViewModel<ViolasSwapRecordDTO>() {
 
     private val exchangeService by lazy {
         DataRepository.getExchangeService()
     }
 
     private lateinit var violasWalletAddress: String
-    private lateinit var libraWalletAddress: String
-    private lateinit var bitcoinWalletAddress: String
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
             AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
                 ?: return@withContext false
-        val libraAccount =
-            AccountManager().getIdentityByCoinType(CoinTypes.Libra.coinType())
-                ?: return@withContext false
-        val bitcoinAccount =
-            AccountManager().getIdentityByCoinType(
-                if (Vm.TestNet) CoinTypes.BitcoinTest.coinType() else CoinTypes.Bitcoin.coinType()
-            ) ?: return@withContext false
 
         violasWalletAddress = violasAccount.address
-        libraWalletAddress = libraAccount.address
-        bitcoinWalletAddress = bitcoinAccount.address
         return@withContext true
     }
 
@@ -236,12 +216,10 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<SwapRecordDTO>, Any?) -> Unit
+        onSuccess: (List<ViolasSwapRecordDTO>, Any?) -> Unit
     ) {
-        val list = exchangeService.getSwapRecords(
+        val list = exchangeService.getViolasSwapRecords(
             violasWalletAddress,
-            libraWalletAddress,
-            bitcoinWalletAddress,
             pageSize,
             (pageNumber - 1) * pageSize
         )

@@ -13,10 +13,9 @@ import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.repository.http.exchange.SwapRecordDTO
+import com.violas.wallet.repository.http.exchange.ViolasSwapRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertAmountToExchangeRate
-import com.violas.wallet.utils.str2CoinType
 import kotlinx.android.synthetic.main.activity_swap_details.*
 
 /**
@@ -28,14 +27,14 @@ import kotlinx.android.synthetic.main.activity_swap_details.*
 class SwapDetailsActivity : BaseAppActivity() {
 
     companion object {
-        fun start(context: Context, record: SwapRecordDTO) {
+        fun start(context: Context, record: ViolasSwapRecordDTO) {
             Intent(context, SwapDetailsActivity::class.java)
                 .apply { putExtra(KEY_ONE, record) }
                 .start(context)
         }
     }
 
-    private lateinit var mSwapRecord: SwapRecordDTO
+    private lateinit var mSwapRecord: ViolasSwapRecordDTO
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_swap_details
@@ -58,7 +57,7 @@ class SwapDetailsActivity : BaseAppActivity() {
     }
 
     private fun initData(savedInstanceState: Bundle?): Boolean {
-        var record: SwapRecordDTO? = null
+        var record: ViolasSwapRecordDTO? = null
         if (savedInstanceState != null) {
             record = savedInstanceState.getParcelable(KEY_ONE)
         } else if (intent != null) {
@@ -73,24 +72,18 @@ class SwapDetailsActivity : BaseAppActivity() {
         }
     }
 
-    private fun initView(record: SwapRecordDTO) {
+    private fun initView(record: ViolasSwapRecordDTO) {
         tvInputCoin.text =
-            if (record.inputCoinDisplayName.isNullOrBlank() || record.inputCoinAmount.isNullOrBlank())
+            if (record.inputDisplayName.isNullOrBlank() || record.inputCoinAmount.isNullOrBlank())
                 getString(R.string.value_null)
             else
-                "${convertAmountToDisplayAmountStr(
-                    record.inputCoinAmount,
-                    str2CoinType(record.inputChainName)
-                )} ${record.inputCoinDisplayName}"
+                "${convertAmountToDisplayAmountStr(record.inputCoinAmount)} ${record.inputDisplayName}"
 
         tvOutputCoin.text =
-            if (record.outputCoinDisplayName.isNullOrBlank() || record.outputCoinAmount.isNullOrBlank())
+            if (record.outputDisplayName.isNullOrBlank() || record.outputCoinAmount.isNullOrBlank())
                 getString(R.string.value_null)
             else
-                "${convertAmountToDisplayAmountStr(
-                    record.outputCoinAmount,
-                    str2CoinType(record.outputChainName)
-                )} ${record.outputCoinDisplayName}"
+                "${convertAmountToDisplayAmountStr(record.outputCoinAmount)} ${record.outputDisplayName}"
 
         tvExchangeRate.text =
             if (record.inputCoinAmount.isNullOrBlank() || record.outputCoinAmount.isNullOrBlank())
@@ -116,7 +109,7 @@ class SwapDetailsActivity : BaseAppActivity() {
         tvDealTime.text = getString(R.string.value_null)
 
         // 兑换中
-        if (record.status == 4002) {
+        if (record.status.isNullOrBlank()) {
             tvProcessingDesc.typeface =
                 Typeface.create(getString(R.string.font_family_title), Typeface.NORMAL)
             tvProcessingDesc.setTextColor(
@@ -148,8 +141,8 @@ class SwapDetailsActivity : BaseAppActivity() {
         tvResultDesc.visibility = View.VISIBLE
         tvRetry.visibility = View.GONE
 
-        when (record.status) {
-            4001 -> {
+        when {
+            record.status.equals("Executed", true) -> {
                 tvResultDesc.setText(R.string.market_swap_state_succeeded)
                 tvResultDesc.setTextColor(
                     getColorByAttrId(android.R.attr.textColor, this)
@@ -159,7 +152,9 @@ class SwapDetailsActivity : BaseAppActivity() {
                 )
             }
 
-            4004 -> {
+            record.status.equals("Cancel", true)
+                    || record.status.equals("Canceled", true)
+                    || record.status.equals("Cancelled", true) -> {
                 tvResultDesc.setText(R.string.market_swap_state_cancelled)
                 tvResultDesc.setTextColor(
                     getColorByAttrId(android.R.attr.textColorTertiary, this)
