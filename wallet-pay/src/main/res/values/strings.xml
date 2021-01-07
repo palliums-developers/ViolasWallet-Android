@@ -606,6 +606,8 @@
     <string name="mining_earnings_type_withdrawal">提取</string>
     <string name="mining_earnings_type_borrowing">借款</string>
     <string name="mining_earnings_type_repayment">还款</string>
+    <string name="mining_earnings_type_add_liquidity">转入</string>
+    <string name="mining_earnings_type_remove_liquidity">转出</string>
     <string name="mining_earnings_type_active_extraction">一键提取</string>
     <string name="home_market_mining_title">挖矿福利</string>
     <string name="home_market_mining_desc">现在加入资金池可获得同手续费奖励等价的VLS挖矿福利</string>

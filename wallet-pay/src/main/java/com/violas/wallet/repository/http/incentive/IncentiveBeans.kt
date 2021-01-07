@@ -37,7 +37,7 @@ data class PoolMiningEarningDTO(
     @SerializedName("status")
     val status: Int = 0,                // 状态（0：未到帐；1：已到帐）
     @SerializedName("type")
-    val type: Int = 0                   // 类型
+    val type: Int = 0                   // 类型（8: pool add; 9: pool remove; 10: pool extract）
 )
 
 @Keep

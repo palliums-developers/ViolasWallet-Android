@@ -161,6 +161,14 @@ class PoolMiningEarningsFragment : BasePagingFragment<PoolMiningEarningDTO>() {
                         itemView.context
                     )
                 )
+
+                itemView.tvType.setText(
+                    when (it.type) {
+                        8 -> R.string.mining_earnings_type_add_liquidity
+                        9 -> R.string.mining_earnings_type_remove_liquidity
+                        else -> R.string.mining_earnings_type_active_extraction
+                    }
+                )
             }
         }
     }

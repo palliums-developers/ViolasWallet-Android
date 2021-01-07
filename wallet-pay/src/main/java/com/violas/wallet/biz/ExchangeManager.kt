@@ -37,8 +37,8 @@ class ExchangeManager {
         AccountManager()
     }
 
-    private val mViolasService by lazy {
-        DataRepository.getViolasService()
+    private val mViolasRPCService by lazy {
+        DataRepository.getViolasChainRpcService()
     }
 
     private val mViolasExchangeContract by lazy {
@@ -147,7 +147,7 @@ class ExchangeManager {
                 if (swapPosition) amountAMin else amountBMin
             )
 
-        mViolasService.sendTransaction(
+        mViolasRPCService.sendTransaction(
             addLiquidityTransactionPayload,
             Account(KeyPair.fromSecretKey(privateKey)),
             gasCurrencyCode = coinA.module,
@@ -209,7 +209,7 @@ class ExchangeManager {
                 if (swapPosition) amountAMin else amountBMin
             )
 
-        mViolasService.sendTransaction(
+        mViolasRPCService.sendTransaction(
             removeLiquidityTransactionPayload,
             Account(KeyPair.fromSecretKey(privateKey)),
             gasCurrencyCode = coinA.module,
@@ -227,7 +227,7 @@ class ExchangeManager {
         val withdrawRewardTransactionPayload =
             mViolasExchangeContract.optionWithdrawRewardTransactionPayload()
 
-        mViolasService.sendTransaction(
+        mViolasRPCService.sendTransaction(
             payload = withdrawRewardTransactionPayload,
             account = Account(KeyPair.fromSecretKey(privateKey)),
             chainId = Vm.ViolasChainId
