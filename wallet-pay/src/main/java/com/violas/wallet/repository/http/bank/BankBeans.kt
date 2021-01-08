@@ -17,15 +17,15 @@ import kotlinx.android.parcel.Parcelize
 @Keep
 data class AccountInfoDTO(
     @SerializedName("amount")
-    var totalDeposit: String,
+    var totalDeposit: Double,           // 存款总额
     @SerializedName("borrow")
-    var borrowable: String,
+    var borrowed: Double,               // 已借
     @SerializedName("borrow_limit")
-    var borrowableLimit: String,
+    var borrowableLimit: Double,        // 可借总额
     @SerializedName("total")
-    var totalEarnings: String,
+    var totalEarnings: Double,          // 总收益
     @SerializedName("yesterday")
-    var yesterdayEarnings: String
+    var yesterdayEarnings: Double       // 昨日收益
 )
 //endregion
 

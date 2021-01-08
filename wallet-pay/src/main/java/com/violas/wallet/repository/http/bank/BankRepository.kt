@@ -20,7 +20,7 @@ class BankRepository(private val api: BankApi) {
         address: String
     ) =
         api.getAccountInfo(address).await().data
-            ?: AccountInfoDTO("0", "0", "0", "0", "0")
+            ?: AccountInfoDTO(0.toDouble(), 0.toDouble(), 0.toDouble(), 0.toDouble(), 0.toDouble())
 
     /**
      * 获取存款产品列表

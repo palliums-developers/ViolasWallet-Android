@@ -229,9 +229,13 @@ fun getAmountPrefix(amountBigDecimal: BigDecimal, input: Boolean): String {
     }
 }
 
-fun keepTwoDecimals(amountStr: String): String {
-    return BigDecimal(amountStr)
-        .setScale(2, RoundingMode.DOWN)
+fun convertAmountToUSD(amount: Double, stripTrailingZeros: Boolean = true): String {
+    return BigDecimal(amount)
+        .divide(BigDecimal(100), 2, RoundingMode.DOWN).apply {
+            if (stripTrailingZeros) {
+                stripTrailingZeros()
+            }
+        }
         .toPlainString()
 }
 

@@ -10,7 +10,7 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bank.AccountInfoDTO
 import com.violas.wallet.repository.http.bank.BorrowingProductSummaryDTO
 import com.violas.wallet.repository.http.bank.DepositProductSummaryDTO
-import com.violas.wallet.utils.keepTwoDecimals
+import com.violas.wallet.utils.convertAmountToUSD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
@@ -60,17 +60,19 @@ class BankViewModel : BaseViewModel() {
         val handleAmount: (Boolean, AccountInfoDTO?) -> Unit = { showAmount, accountInfo ->
             if (showAmount) {
                 totalDepositLiveData.value =
-                    "≈ ${keepTwoDecimals(accountInfo?.totalDeposit ?: "0")}"
+                    "≈ ${convertAmountToUSD((accountInfo?.totalDeposit ?: 0.toDouble()) * 100)}"
                 borrowableLiveData.value =
-                    "≈ ${keepTwoDecimals(
-                        accountInfo?.borrowable ?: "0"
-                    )}/${keepTwoDecimals(
-                        accountInfo?.borrowableLimit ?: "0"
-                    )}"
+                    "≈ ${
+                        convertAmountToUSD(
+                            ((accountInfo?.borrowableLimit ?: 0.toDouble()) - (accountInfo?.borrowed ?: 0.toDouble())) * 100
+                        )
+                    }/${
+                        convertAmountToUSD((accountInfo?.borrowableLimit ?: 0.toDouble()) * 100)
+                    }"
                 totalEarningsLiveData.value =
-                    "≈ ${keepTwoDecimals(accountInfo?.totalEarnings ?: "0")}"
+                    "≈ ${convertAmountToUSD((accountInfo?.totalEarnings ?: 0.toDouble()) * 100)}"
                 yesterdayEarningsLiveData.value =
-                    "${keepTwoDecimals(accountInfo?.yesterdayEarnings ?: "0")} $"
+                    "${convertAmountToUSD((accountInfo?.yesterdayEarnings ?: 0.toDouble()) * 100)} $"
             } else {
                 totalDepositLiveData.value = "≈ ******"
                 borrowableLiveData.value = "≈ ******"
