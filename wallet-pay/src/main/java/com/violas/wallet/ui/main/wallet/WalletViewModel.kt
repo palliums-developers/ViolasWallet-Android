@@ -11,6 +11,7 @@ import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -87,23 +88,27 @@ class WalletViewModel : ViewModel() {
         val lastState = receiveIncentiveRewardsStateLiveData.value
         if (lastState == 1 || lastState == Int.MIN_VALUE) return
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             // 标记在加载中
-            receiveIncentiveRewardsStateLiveData.postValue(Int.MIN_VALUE)
+            receiveIncentiveRewardsStateLiveData.value = Int.MIN_VALUE
 
-            val newState = try {
-                val accountManager =
-                    WalletAppViewModel.getViewModelInstance().mAccountManager
-                val violasAccount =
-                    accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
+            val newState = withContext(Dispatchers.IO) {
+                try {
+                    val accountManager =
+                        WalletAppViewModel.getViewModelInstance().mAccountManager
+                    val violasAccount =
+                        accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
 
-                incentiveService.getReceiveIncentiveRewardsState(violasAccount!!.address)
-            } catch (e: Exception) {
-                lastState
+                    incentiveService.getReceiveIncentiveRewardsState(violasAccount!!.address)
+                } catch (e: Exception) {
+                    lastState
+                }
             }
 
             if (receiveIncentiveRewardsStateLiveData.value == Int.MIN_VALUE) {
-                receiveIncentiveRewardsStateLiveData.postValue(newState)
+                receiveIncentiveRewardsStateLiveData.value = newState
+            } else {
+                receiveIncentiveRewardsStateLiveData.value = -1
             }
         }
     }
