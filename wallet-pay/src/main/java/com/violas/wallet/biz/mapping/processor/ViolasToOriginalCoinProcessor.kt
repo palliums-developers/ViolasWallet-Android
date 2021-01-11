@@ -31,7 +31,7 @@ class ViolasToOriginalCoinProcessor(
     private val libraRpcService: LibraRpcService
 ) : MappingProcessor {
 
-    private val violasService by lazy { DataRepository.getViolasService() }
+    private val violasService by lazy { DataRepository.getViolasChainRpcService() }
 
     override fun hasMappable(coinPair: MappingCoinPairDTO): Boolean {
         val toCoinType = str2CoinType(coinPair.toCoin.chainName)
