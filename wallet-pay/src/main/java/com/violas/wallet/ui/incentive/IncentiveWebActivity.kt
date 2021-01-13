@@ -139,11 +139,6 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
         startLoad()
     }
 
-    override fun onTitleRightViewClick() {
-        super.onTitleRightViewClick()
-        startLoad()
-    }
-
     override fun getUrl(): String {
         return mUrl
     }
@@ -283,6 +278,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
 
             CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
             callbackFunction.onCallBack(Response.success(request.id).toJson())
+            startLoad()
             showToast(R.string.tips_withdrawal_success)
         }
     }
