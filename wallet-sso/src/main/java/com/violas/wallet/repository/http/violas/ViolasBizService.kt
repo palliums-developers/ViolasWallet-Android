@@ -44,7 +44,7 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
                     TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN
                 } else if (bean.sender != address && bean.receiver == address) {
                     TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT
-                } else if (bean.sender == address && bean.receiver.isNotBlank()) {
+                } else if (bean.sender == address && !bean.receiver.isNullOrBlank()) {
                     TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
                 } else {
                     TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER

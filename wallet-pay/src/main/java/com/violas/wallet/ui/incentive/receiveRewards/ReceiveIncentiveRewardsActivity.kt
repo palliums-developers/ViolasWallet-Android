@@ -13,6 +13,8 @@ import com.palliums.base.BaseViewModel
 import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseViewModelActivity
+import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.event.ReceiveIncentiveRewardsEvent
 import com.violas.wallet.ui.incentive.receiveRewards.ReceiveIncentiveRewardsViewModel.Companion.ACTION_GET_VERIFICATION_CODE
@@ -170,6 +172,7 @@ class ReceiveIncentiveRewardsActivity : BaseViewModelActivity() {
                         action = ACTION_RECEIVE_REWARD,
                         successCallback = {
                             launch {
+                                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                                 EventBus.getDefault().post(ReceiveIncentiveRewardsEvent())
                                 close()
                             }
