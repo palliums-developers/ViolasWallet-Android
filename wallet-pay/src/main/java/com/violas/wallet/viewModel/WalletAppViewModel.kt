@@ -12,6 +12,7 @@ import com.palliums.utils.coroutineExceptionHandler
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.command.CommandActuator
+import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.biz.command.SaveAssetsAllBalanceCommand
 import com.violas.wallet.biz.command.SaveAssetsFiatBalanceCommand
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
@@ -85,14 +86,23 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
 
     private suspend fun checkAccountActivate(localAssets: List<AssetsVo>) {
         withContext(Dispatchers.IO + coroutineExceptionHandler()) {
+            var activateResult = false
+
             localAssets.filter {
                 it is AssetsCoinVo && (it.getCoinNumber() == CoinTypes.Violas.coinType() || it.getCoinNumber() == CoinTypes.Libra.coinType())
             }.forEach {
                 it as AssetsLibraCoinVo
                 try {
-                    mAccountManager.activateAccount(it)
+                    if (mAccountManager.activateAccount(it)) {
+                        activateResult = true
+                    }
                 } catch (e: Exception) {
                 }
+            }
+
+            if (activateResult) {
+                // 激活账户成功要刷新资产
+                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 1000)
             }
         }
     }

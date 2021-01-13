@@ -518,19 +518,29 @@ class AccountManager {
         }
     }
 
-    suspend fun activateAccount(assets: AssetsLibraCoinVo) {
-        when (assets.getCoinNumber()) {
+    suspend fun activateAccount(assets: AssetsLibraCoinVo): Boolean {
+        return when (assets.getCoinNumber()) {
             CoinTypes.Violas.coinType() -> {
-                if (!isActivate(assets.authKey)) {
+                if (isActivate(assets.authKey)) {
+                    false
+                } else {
                     DataRepository.getViolasService()
                         .activateAccount(assets.address, assets.authKeyPrefix)
+                    true
                 }
             }
             CoinTypes.Libra.coinType() -> {
-                if (!isActivate(assets.authKey)) {
+                if (isActivate(assets.authKey)) {
+                    false
+                } else {
                     DataRepository.getLibraBizService()
                         .activateAccount(assets.address, assets.authKeyPrefix)
+                    true
                 }
+            }
+
+            else -> {
+                false
             }
         }
     }
