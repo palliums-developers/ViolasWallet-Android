@@ -225,6 +225,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
             callbackFunction.onCallBack(
                 Response.error(request.id, -1, "Account does not exist").toJson()
             )
+            showToast(R.string.tips_create_or_import_wallet)
             return
         }
 
@@ -326,6 +327,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
             callbackFunction.onCallBack(
                 Response.error(request.id, -1, "Account does not exist").toJson()
             )
+            showToast(R.string.tips_create_or_import_wallet)
             return
         }
 
