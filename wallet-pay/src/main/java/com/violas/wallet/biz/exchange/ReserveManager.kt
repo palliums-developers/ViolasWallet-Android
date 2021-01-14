@@ -156,7 +156,8 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
             val marketAllReservePairDeferred =
                 exceptionAsync { mExchangeService.getMarketAllReservePair() }
 
-            if (mMappingRealMap.isEmpty()) {
+            // 交易市场不支持跨链兑换
+            /*if (mMappingRealMap.isEmpty()) {
                 val marketMappingRealCoinDeferred =
                     exceptionAsync { mExchangeService.getMarketPairRelation() }
                 val marketMappingRealCoin = marketMappingRealCoinDeferred.await()
@@ -164,7 +165,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
                     mMappingRealMap[mappingKey(mappingReal)] =
                         mappingReal
                 }
-            }
+            }*/
 
             val marketAllReservePair = marketAllReservePairDeferred.await()
             if (marketAllReservePair != null) {

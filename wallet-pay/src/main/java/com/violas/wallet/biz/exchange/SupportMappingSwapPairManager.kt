@@ -24,7 +24,8 @@ class SupportMappingSwapPairManager : CoroutineScope by CustomIOScope() {
      */
     @Throws(Exception::class)
     fun getMappingSwapPair(force: Boolean = false): List<MappingPairInfoDTO> {
-        if (force || mMappingSwapPair.isEmpty()) {
+        // 交易市场不支持跨链兑换
+        /*if (force || mMappingSwapPair.isEmpty()) {
             synchronized(this) {
                 if (mMappingSwapPair.isEmpty()) {
                     mMappingSwapPair.clear()
@@ -39,7 +40,7 @@ class SupportMappingSwapPairManager : CoroutineScope by CustomIOScope() {
                     return mMappingSwapPair
                 }
             }
-        }
+        }*/
         return mMappingSwapPair
     }
 
