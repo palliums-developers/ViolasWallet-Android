@@ -74,11 +74,11 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
 
             CommandActuator.post(SaveAssetsAllBalanceCommand())
 
-            if (isFirst) {
+            //if (isFirst) {
                 localAssets = mAccountManager.refreshFiatAssetsAmount(localAssets)
                 mAssetsListLiveData.postValue(localAssets)
                 CommandActuator.post(SaveAssetsFiatBalanceCommand())
-            }
+            //}
         }
         mDataRefreshingLiveData.postValue(false)
         checkAccountActivate(localAssets)
