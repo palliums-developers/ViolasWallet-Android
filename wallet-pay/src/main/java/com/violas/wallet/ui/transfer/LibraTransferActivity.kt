@@ -181,6 +181,7 @@ class LibraTransferActivity : TransferActivity() {
                 mTransferManager.transfer(
                     this@LibraTransferActivity,
                     address.trim(),
+                    toSubAddress,
                     amount.trim(),
                     it,
                     account!!,

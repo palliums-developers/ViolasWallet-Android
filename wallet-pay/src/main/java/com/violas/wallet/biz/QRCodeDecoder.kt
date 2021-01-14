@@ -41,6 +41,7 @@ class TransferQRCode(
     val content: String,
     val coinType: Int,
     val address: String,
+    val subAddress: String? = null,
     var amount: Long = 0,
     var label: String? = null,
     val tokenName: String? = null
@@ -116,6 +117,7 @@ suspend fun decodeQRCode(content: String): QRCode = withContext(Dispatchers.IO) 
             content,
             coinType.coinType(),
             transferQRCodeBean.address,
+            transferQRCodeBean.subAddress,
             transferQRCodeBean.amount,
             transferQRCodeBean.label,
             tokenName
@@ -126,6 +128,7 @@ suspend fun decodeQRCode(content: String): QRCode = withContext(Dispatchers.IO) 
 private data class TransferQRCodeBean(
     val coinType: String?,
     val address: String,
+    val subAddress: String? = null,
     var amount: Long = 0,
     var label: String? = null,
     val tokenName: String? = null
@@ -135,7 +138,8 @@ private fun decodeLibraTransferQRCode(content: String): TransferQRCodeBean {
     val intentIdentifier = org.palliums.libracore.wallet.IntentIdentifier.decode(content)
     return TransferQRCodeBean(
         "libra",
-        intentIdentifier.getAccountIdentifier().encodeV1(),
+        intentIdentifier.getAccountIdentifier().getAccountAddress().toHex(),
+        intentIdentifier.getAccountIdentifier().getSubAddress().toHex(),
         intentIdentifier.getAmount(),
         "",
         intentIdentifier.getCurrency()
@@ -146,7 +150,8 @@ private fun decodeViolasTransferQRCode(content: String): TransferQRCodeBean {
     val intentIdentifier = IntentIdentifier.decode(content)
     return TransferQRCodeBean(
         "violas",
-        intentIdentifier.getAccountIdentifier().encodeV1(),
+        intentIdentifier.getAccountIdentifier().getAccountAddress().toHex(),
+        intentIdentifier.getAccountIdentifier().getSubAddress().toHex(),
         intentIdentifier.getAmount(),
         null,
         intentIdentifier.getCurrency()
@@ -185,7 +190,7 @@ private fun decodeTransferQRCode(content: String): TransferQRCodeBean {
                 }
             }
     }
-    return TransferQRCodeBean(coinType, addressSplit[0], amount, label)
+    return TransferQRCodeBean(coinType, addressSplit[0], null, amount, label)
 }
 
 private data class LoginQRCodeBean(

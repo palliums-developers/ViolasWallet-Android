@@ -132,6 +132,7 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
                         this@ScanActivity,
                         qrCode.coinType,
                         qrCode.address,
+                        qrCode.subAddress,
                         qrCode.amount,
                         qrCode.tokenName
                     )

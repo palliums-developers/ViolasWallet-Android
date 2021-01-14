@@ -24,7 +24,6 @@ import org.palliums.libracore.transaction.optionTransactionPayload
 import org.palliums.libracore.transaction.storage.StructTag
 import org.palliums.libracore.transaction.storage.TypeTag
 import org.palliums.libracore.wallet.Account
-import org.palliums.libracore.wallet.AccountIdentifier
 import org.palliums.libracore.wallet.SubAddress
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
@@ -126,7 +125,8 @@ class TransferManager {
     @Throws(AddressFaultException::class, WrongPasswordException::class)
     suspend fun transfer(
         context: Context,
-        address: String,
+        receiverAddress: String,
+        receiverSubAddress: String?,
         amountStr: String,
         privateKey: ByteArray,
         accountDO: AccountDO,
@@ -140,16 +140,6 @@ class TransferManager {
 
         when (accountDO.coinNumber) {
             CoinTypes.Libra.coinType() -> {
-                var receiverAddress = address
-                var receiverSubAddress: String? = null
-                try {
-                    val accountIdentifier = AccountIdentifier.decode(address)
-                    receiverAddress = accountIdentifier.getAccountAddress().toHex()
-                    receiverSubAddress = accountIdentifier.getSubAddress().toHex()
-                } catch (e: Exception) {
-
-                }
-
                 transferLibra(
                     context,
                     receiverAddress,
@@ -163,15 +153,6 @@ class TransferManager {
                 )
             }
             CoinTypes.Violas.coinType() -> {
-                var receiverAddress = address
-                var receiverSubAddress: String? = null
-                try {
-                    val accountIdentifier = org.palliums.violascore.wallet.AccountIdentifier.decode(address)
-                    receiverAddress = accountIdentifier.getAccountAddress().toHex()
-                    receiverSubAddress = accountIdentifier.getSubAddress().toHex()
-                } catch (e: Exception) {
-
-                }
                 transferViolas(
                     context,
                     receiverAddress,

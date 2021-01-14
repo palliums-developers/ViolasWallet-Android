@@ -22,6 +22,7 @@ abstract class TransferActivity : BaseAppActivity() {
         private const val EXT_IS_TOKEN = "3"
         private const val EXT_ASSETS_NAME = "4"
         private const val EXT_COIN_NUMBER = "5"
+        private const val EXT_SUB_ADDRESS = "6"
 
         const val REQUEST_SELECTOR_ADDRESS = 1
         const val REQUEST_SCAN_QR_CODE = 2
@@ -29,7 +30,8 @@ abstract class TransferActivity : BaseAppActivity() {
         fun start(
             context: Context,
             assetsVo: AssetsVo,
-            toAddress: String? = null,
+            address: String? = null,
+            subAddress: String? = null,
             amount: Long? = null
         ) {
             val assetsName = if (assetsVo is AssetsCoinVo) {
@@ -37,13 +39,14 @@ abstract class TransferActivity : BaseAppActivity() {
             } else {
                 assetsVo.getAssetsName()
             }
-            start(context, assetsVo.getCoinNumber(), toAddress, amount, assetsName)
+            start(context, assetsVo.getCoinNumber(), address, subAddress, amount, assetsName)
         }
 
         fun start(
             context: Context,
             coinType: Int,
             address: String? = null,
+            subAddress: String? = null,
             amount: Long? = null,
             tokenName: String? = null
         ) {
@@ -63,6 +66,7 @@ abstract class TransferActivity : BaseAppActivity() {
                 putExtra(EXT_IS_TOKEN, isToken)
                 putExtra(EXT_ASSETS_NAME, tokenName)
                 putExtra(EXT_COIN_NUMBER, coinType)
+                putExtra(EXT_SUB_ADDRESS, subAddress)
             }.start(context)
         }
     }
@@ -72,6 +76,7 @@ abstract class TransferActivity : BaseAppActivity() {
     var coinNumber: Int = CoinTypes.Violas.coinType()
     var transferAmount = 0L
     var toAddress: String? = ""
+    var toSubAddress: String? = ""
     var account: AccountDO? = null
 
     val mAccountManager by lazy {
@@ -95,12 +100,14 @@ abstract class TransferActivity : BaseAppActivity() {
             coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
             transferAmount = savedInstanceState.getLong(EXT_AMOUNT, 0)
             toAddress = savedInstanceState.getString(EXT_ADDRESS)
+            toSubAddress = savedInstanceState.getString(EXT_SUB_ADDRESS)
         } else if (intent != null) {
             isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
             assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
             coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
             transferAmount = intent.getLongExtra(EXT_AMOUNT, 0)
             toAddress = intent.getStringExtra(EXT_ADDRESS)
+            toSubAddress = intent.getStringExtra(EXT_SUB_ADDRESS)
         }
     }
 
@@ -111,6 +118,7 @@ abstract class TransferActivity : BaseAppActivity() {
         outState.putInt(EXT_COIN_NUMBER, coinNumber)
         outState.putLong(EXT_AMOUNT, transferAmount)
         toAddress?.let { outState.putString(EXT_ADDRESS, it) }
+        toSubAddress?.let { outState.putString(EXT_SUB_ADDRESS, it) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -118,19 +126,24 @@ abstract class TransferActivity : BaseAppActivity() {
         when (requestCode) {
             REQUEST_SELECTOR_ADDRESS -> {
                 data?.apply {
-                    val address = getStringExtra(AddressBookActivity.RESULT_SELECT_ADDRESS) ?: ""
-                    onSelectAddress(address)
+                    toAddress = getStringExtra(AddressBookActivity.RESULT_SELECT_ADDRESS) ?: ""
+                    toSubAddress = null
+                    onSelectAddress(toAddress ?: "")
                 }
             }
             REQUEST_SCAN_QR_CODE -> {
                 data?.getParcelableExtra<QRCode>(ScanActivity.RESULT_QR_CODE_DATA)?.let { qrCode ->
                     when (qrCode) {
                         is TransferQRCode -> {
-                            onScanAddressQr(qrCode.address)
+                            toAddress = qrCode.address
+                            toSubAddress = qrCode.subAddress
+                            onScanAddressQr(toAddress ?: "")
                         }
 
-                        is CommonQRCode ->{
-                            onScanAddressQr(qrCode.content)
+                        is CommonQRCode -> {
+                            toAddress = qrCode.content
+                            toSubAddress = null
+                            onScanAddressQr(toAddress ?: "")
                         }
                     }
                 }

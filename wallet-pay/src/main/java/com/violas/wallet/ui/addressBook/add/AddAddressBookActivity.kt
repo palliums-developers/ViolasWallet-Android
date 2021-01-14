@@ -168,7 +168,6 @@ class AddAddressBookActivity : BaseAppActivity() {
                 data?.getParcelableExtra<QRCode>(ScanActivity.RESULT_QR_CODE_DATA)?.let { qrCode ->
                     when (qrCode) {
                         is TransferQRCode -> {
-                            editAddress.setText(qrCode.address)
                             try {
                                 editAddress.setText(qrCode.address)
                                 mCoinTypes = CoinTypes.parseCoinType(qrCode.coinType).coinType()

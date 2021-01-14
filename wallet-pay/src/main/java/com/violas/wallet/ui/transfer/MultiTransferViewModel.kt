@@ -124,7 +124,8 @@ class MultiTransferViewModel : ViewModel() {
     @Throws(AddressFaultException::class, WrongPasswordException::class)
     suspend fun transfer(
         account: AccountDO,
-        pwd: ByteArray
+        pwd: ByteArray,
+        toSubAddress: String?
     ) {
         val assets = mCurrAssets.value
             ?: throw RuntimeException(getString(R.string.hint_please_select_currency_transfer))
@@ -158,7 +159,8 @@ class MultiTransferViewModel : ViewModel() {
                 viewModelScope.launch(Dispatchers.IO) {
                     mTransferManager.transfer(
                         context = ContextProvider.getContext(),
-                        address = mTransferPayeeAddress.value ?: "",
+                        receiverAddress = mTransferPayeeAddress.value ?: "",
+                        receiverSubAddress = toSubAddress,
                         amountStr = mTransferAmount.value ?: "",
                         privateKey = privateKey,
                         accountDO = account,

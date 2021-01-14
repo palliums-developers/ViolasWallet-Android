@@ -49,11 +49,13 @@ class MultiTransferActivity : BaseAppActivity(),
         private const val EXT_AMOUNT = "2"
         private const val EXT_ASSETS_NAME = "3"
         private const val EXT_COIN_NUMBER = "4"
+        private const val EXT_SUB_ADDRESS = "5"
 
         fun start(
             context: Context,
             assetsVo: AssetsVo? = null,
             toAddress: String? = null,
+            toSubAddress: String? = null,
             amount: Long? = null
         ) {
             val assetsName = if (assetsVo is AssetsCoinVo) {
@@ -71,6 +73,7 @@ class MultiTransferActivity : BaseAppActivity(),
                 putExtra(EXT_AMOUNT, amount)
                 putExtra(EXT_ASSETS_NAME, assetsName)
                 putExtra(EXT_COIN_NUMBER, coinNumber)
+                putExtra(EXT_SUB_ADDRESS, toSubAddress)
             }.start(context)
         }
     }
@@ -80,6 +83,7 @@ class MultiTransferActivity : BaseAppActivity(),
     private var coinNumber: Int = CoinTypes.Violas.coinType()
     private var transferAmount = 0L
     private var toAddress: String? = ""
+    private var toSubAddress: String? = ""
     private val mAccountManager by lazy { AccountManager() }
     private var mCurrAssetsAmount = BigDecimal("0")
 
@@ -119,6 +123,7 @@ class MultiTransferActivity : BaseAppActivity(),
             )
         )
         outState.putString(EXT_ADDRESS, editAddressInput.text.toString().trim())
+        toSubAddress?.let { outState.putString(EXT_SUB_ADDRESS, it) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -212,11 +217,13 @@ class MultiTransferActivity : BaseAppActivity(),
             coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
             transferAmount = savedInstanceState.getLong(EXT_AMOUNT, 0)
             toAddress = savedInstanceState.getString(EXT_ADDRESS)
+            toSubAddress = savedInstanceState.getString(EXT_SUB_ADDRESS)
         } else if (intent != null) {
             assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
             coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
             transferAmount = intent.getLongExtra(EXT_AMOUNT, 0)
             toAddress = intent.getStringExtra(EXT_ADDRESS)
+            toSubAddress = intent.getStringExtra(EXT_SUB_ADDRESS)
         }
     }
 
@@ -263,7 +270,7 @@ class MultiTransferActivity : BaseAppActivity(),
             launch(Dispatchers.IO) {
                 try {
                     showProgress()
-                    mMultiTransferViewModel.transfer(account, it.toByteArray())
+                    mMultiTransferViewModel.transfer(account, it.toByteArray(), toSubAddress)
                     dismissProgress()
                     withContext(Dispatchers.Main) {
                         showToast(getString(R.string.hint_transfer_broadcast_success))
@@ -309,11 +316,13 @@ class MultiTransferActivity : BaseAppActivity(),
                 data?.getParcelableExtra<QRCode>(ScanActivity.RESULT_QR_CODE_DATA)?.let { qrCode ->
                     when (qrCode) {
                         is TransferQRCode -> {
+                            toSubAddress = qrCode.subAddress
                             changeCurrAssets(qrCode.coinType, qrCode.tokenName)
                             onScanAddressQr(qrCode.address)
                         }
 
-                        is CommonQRCode ->{
+                        is CommonQRCode -> {
+                            toSubAddress = null
                             onScanAddressQr(qrCode.content)
                         }
                     }
