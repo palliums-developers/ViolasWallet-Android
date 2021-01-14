@@ -18,9 +18,11 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.repository.http.incentive.InviteFriendsEarningDTO
-import com.violas.wallet.utils.convertAmountToDisplayAmountStr
+import com.violas.wallet.utils.convertAmountToDisplayAmount
 import kotlinx.android.synthetic.main.fragment_invite_friends_earnings.*
 import kotlinx.android.synthetic.main.item_invite_mining_earning.view.*
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -151,7 +153,11 @@ class InviteFriendsEarningsFragment : BasePagingFragment<InviteFriendsEarningDTO
                     it.inviteeAddress
 
                 itemView.tvAmount.text = "${
-                    convertAmountToDisplayAmountStr(it.miningEarnings)
+                    convertAmountToDisplayAmount(
+                        BigDecimal(it.miningEarnings),
+                        decimalScale =0,
+                        roundingMode = RoundingMode.UP
+                    ).toPlainString()
                 }VLS"
 
                 itemView.tvTime.text = formatDate(it.invitationTime, simpleDateFormat)

@@ -18,9 +18,10 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.repository.http.incentive.PoolMiningEarningDTO
-import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import kotlinx.android.synthetic.main.fragment_pool_mining_earnings.*
 import kotlinx.android.synthetic.main.item_pool_mining_earning.view.*
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -143,7 +144,11 @@ class PoolMiningEarningsFragment : BasePagingFragment<PoolMiningEarningDTO>() {
                 itemView.tvTime.text = formatDate(it.extractionTime, simpleDateFormat)
 
                 itemView.tvAmount.text = "${
-                    convertAmountToDisplayAmountStr(it.extractionAmount)
+                    com.violas.wallet.utils.convertAmountToDisplayAmount(
+                        BigDecimal(it.extractionAmount),
+                        decimalScale = 0,
+                        roundingMode = RoundingMode.UP
+                    ).toPlainString()
                 }VLS"
 
                 itemView.tvState.setText(
