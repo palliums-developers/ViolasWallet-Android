@@ -11,6 +11,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.event.BankDepositEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bank.DepositProductDetailsDTO
@@ -24,6 +25,7 @@ import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import java.math.BigDecimal
 
 /**
@@ -252,9 +254,10 @@ class DepositActivity : BankBusinessActivity() {
         launch(Dispatchers.IO) {
             try {
                 showProgress()
-                mBankManager.lock(pwd.toByteArray(), account,productId, mark, amount)
+                mBankManager.lock(pwd.toByteArray(), account, productId, mark, amount)
                 dismissProgress()
                 showToast(getString(R.string.hint_bank_business_deposit_success))
+                EventBus.getDefault().post(BankDepositEvent())
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 finish()
             } catch (e: Exception) {

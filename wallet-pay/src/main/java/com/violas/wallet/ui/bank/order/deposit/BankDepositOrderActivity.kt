@@ -16,6 +16,7 @@ import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
+import com.violas.wallet.event.BankWithdrawalEvent
 import com.violas.wallet.repository.http.bank.DepositInfoDTO
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
 import com.violas.wallet.ui.bank.record.deposit.BankDepositRecordActivity
@@ -26,6 +27,8 @@ import com.violas.wallet.utils.loadCircleImage
 import kotlinx.android.synthetic.main.activity_bank_order.*
 import kotlinx.android.synthetic.main.item_bank_curr_deposit.view.*
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 /**
  * Created by elephant on 2020/8/24 11:19.
@@ -82,10 +85,23 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
 
         launch {
             if (getViewModel().initAddress()) {
+                EventBus.getDefault().register(this@BankDepositOrderActivity)
                 getPagingHandler().start()
             } else {
                 statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
             }
+        }
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
+    }
+
+    @Subscribe
+    fun onBankWithdrawalEvent(event: BankWithdrawalEvent) {
+        launch {
+            getRefreshLayout()?.autoRefresh()
         }
     }
 

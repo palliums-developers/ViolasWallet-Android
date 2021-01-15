@@ -22,6 +22,7 @@ import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_TWO
+import com.violas.wallet.event.BankWithdrawalEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bank.DepositDetailsDTO
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
@@ -33,6 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 import org.palliums.violascore.http.ViolasException
 import java.math.BigDecimal
 
@@ -197,6 +199,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
                 }
                 dismissProgress()
                 showToast(getString(R.string.tips_withdrawal_success))
+                EventBus.getDefault().post(BankWithdrawalEvent())
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 close()
             } catch (e: Exception) {

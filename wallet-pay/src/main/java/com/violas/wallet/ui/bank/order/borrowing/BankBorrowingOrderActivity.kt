@@ -14,6 +14,7 @@ import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
+import com.violas.wallet.event.BankRepaymentEvent
 import com.violas.wallet.repository.http.bank.BorrowingInfoDTO
 import com.violas.wallet.ui.bank.details.borrowing.BankBorrowingDetailsActivity
 import com.violas.wallet.ui.bank.order.BaseBankOrderActivity
@@ -23,6 +24,8 @@ import com.violas.wallet.utils.loadCircleImage
 import kotlinx.android.synthetic.main.activity_bank_order.*
 import kotlinx.android.synthetic.main.item_bank_curr_borrowing.view.*
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 /**
  * Created by elephant on 2020/8/24 18:09.
@@ -66,10 +69,23 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<BorrowingInfoDTO>() {
 
         launch {
             if (getViewModel().initAddress()) {
+                EventBus.getDefault().register(this@BankBorrowingOrderActivity)
                 getPagingHandler().start()
             } else {
                 statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)
             }
+        }
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
+    }
+
+    @Subscribe
+    fun onBankRepaymentEvent(event: BankRepaymentEvent) {
+        launch {
+            getRefreshLayout()?.autoRefresh()
         }
     }
 

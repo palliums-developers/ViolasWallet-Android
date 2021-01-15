@@ -5,10 +5,13 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
-import com.palliums.utils.*
+import com.palliums.utils.getColorByAttrId
+import com.palliums.utils.getResourceId
+import com.palliums.utils.start
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -25,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.math.BigDecimal
 
 /**
  * Created by elephant on 2020/8/27 16:39.
@@ -70,9 +74,7 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     }
 
     override fun onDestroy() {
-        if (EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().unregister(this)
-        }
+        EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
 
@@ -80,8 +82,11 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     fun onUpdateBankBorrowedAmountEvent(event: UpdateBankBorrowedAmountEvent) {
         launch {
             borrowingInfo.borrowedAmount = event.borrowedAmount
+            val borrowedAmount = BigDecimal(borrowingInfo.borrowedAmount)
             tvAmountToBeRepaid.text =
-                convertAmountToDisplayAmountStr(borrowingInfo.borrowedAmount)
+                convertAmountToDisplayAmountStr(borrowedAmount)
+            flBottomView.visibility =
+                if (borrowedAmount == BigDecimal.ZERO) View.GONE else View.VISIBLE
         }
     }
 

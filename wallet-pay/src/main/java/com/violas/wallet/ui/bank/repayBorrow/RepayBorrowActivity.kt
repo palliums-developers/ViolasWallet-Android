@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import com.palliums.extensions.logError
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -11,6 +12,8 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.event.BankRepaymentEvent
+import com.violas.wallet.event.UpdateBankBorrowedAmountEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bank.BorrowDetailsDTO
@@ -27,6 +30,7 @@ import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 2020/8/19 15:38.
@@ -112,7 +116,7 @@ class RepayBorrowActivity : BankBusinessActivity() {
                     ),
                     BusinessParameter(
                         getString(R.string.label_miner_fees),
-                        "0.00 ${tokenShowName}"
+                        "0.00 $tokenShowName"
                     ),
                     BusinessParameter(
                         getString(R.string.hint_repayment_account),
@@ -211,6 +215,8 @@ class RepayBorrowActivity : BankBusinessActivity() {
                 )
                 dismissProgress()
                 showToast(getString(R.string.hint_bank_business_repay_borrow_success))
+                calculateSurplusBorrowedAndSendEvent(amount)
+                EventBus.getDefault().post(BankRepaymentEvent())
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 finish()
             } catch (e: Exception) {
@@ -218,6 +224,17 @@ class RepayBorrowActivity : BankBusinessActivity() {
                 e.message?.let { showToast(it) }
                 dismissProgress()
             }
+        }
+    }
+
+    private fun calculateSurplusBorrowedAndSendEvent(repaymentAmount: Long) {
+        try {
+            val totalBorrowed = mBorrowingDetails?.borrowedAmount ?: 0
+            val surplusBorrowed =
+                if (totalBorrowed > repaymentAmount) totalBorrowed - repaymentAmount else 0
+            EventBus.getDefault().post(UpdateBankBorrowedAmountEvent(surplusBorrowed.toString()))
+        } catch (e: Exception) {
+            logError(e) { "calculate surplus borrowed failed" }
         }
     }
 }

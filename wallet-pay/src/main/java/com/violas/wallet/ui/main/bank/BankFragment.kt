@@ -22,8 +22,7 @@ import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
-import com.violas.wallet.event.BankPageType
-import com.violas.wallet.event.SwitchBankPageEvent
+import com.violas.wallet.event.*
 import com.violas.wallet.ui.bank.order.borrowing.BankBorrowingOrderActivity
 import com.violas.wallet.ui.bank.order.deposit.BankDepositOrderActivity
 import com.violas.wallet.ui.incentive.IncentiveWebActivity
@@ -52,6 +51,8 @@ class BankFragment : BaseFragment() {
     }
     private lateinit var fragmentPagerAdapter: FragmentPagerAdapterSupport
 
+    private var updateAccountInfoTag = false
+
     override fun getLayoutResId(): Int {
         return R.layout.fragment_bank
     }
@@ -71,6 +72,7 @@ class BankFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
+        updateAccountInfoTag = false
         EventBus.getDefault().unregister(this)
         super.onDestroyView()
     }
@@ -85,6 +87,38 @@ class BankFragment : BaseFragment() {
             BankPageType.Borrowing -> {
                 tabLayout.getTabAt(1)?.select()
             }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onBankDepositEvent(event: BankDepositEvent) {
+        markAccountInfoNeedUpdate()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onBankWithdrawalEvent(event: BankWithdrawalEvent) {
+        markAccountInfoNeedUpdate()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onBankBorrowEvent(event: BankBorrowEvent) {
+        markAccountInfoNeedUpdate()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onBankRepaymentEvent(event: BankRepaymentEvent) {
+        markAccountInfoNeedUpdate()
+    }
+
+    private fun markAccountInfoNeedUpdate() {
+        updateAccountInfoTag = true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (updateAccountInfoTag) {
+            updateAccountInfoTag = false
+            loadData(ACTION_LOAD_ACCOUNT_INFO)
         }
     }
 

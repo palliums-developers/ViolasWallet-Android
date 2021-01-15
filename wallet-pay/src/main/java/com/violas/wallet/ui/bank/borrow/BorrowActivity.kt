@@ -19,6 +19,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.event.BankBorrowEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bank.BorrowProductDetailsDTO
@@ -33,6 +34,7 @@ import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 2020/8/19 15:38.
@@ -306,6 +308,7 @@ class BorrowActivity : BankBusinessActivity() {
                 )
                 dismissProgress()
                 showToast(getString(R.string.hint_bank_business_borrow_success))
+                EventBus.getDefault().post(BankBorrowEvent())
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 finish()
             } catch (e: Exception) {
