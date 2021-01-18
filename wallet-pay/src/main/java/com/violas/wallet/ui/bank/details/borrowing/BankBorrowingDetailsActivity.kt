@@ -18,6 +18,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.event.BankRepaymentEvent
 import com.violas.wallet.event.UpdateBankBorrowedAmountEvent
 import com.violas.wallet.repository.http.bank.BorrowingInfoDTO
 import com.violas.wallet.ui.bank.repayBorrow.RepayBorrowActivity
@@ -90,6 +91,13 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         }
     }
 
+    @Subscribe
+    fun onBankRepaymentEvent(event: BankRepaymentEvent) {
+        launch {
+            close()
+        }
+    }
+
     private suspend fun initData(savedInstanceState: Bundle?): Boolean {
         if (savedInstanceState != null) {
             borrowingInfo = savedInstanceState.getParcelable(KEY_ONE) ?: return false
@@ -118,8 +126,10 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
 
     private fun initBorrowingInfoView() {
         title = borrowingInfo.productName
-        tvAmountToBeRepaid.text = convertAmountToDisplayAmountStr(borrowingInfo.borrowedAmount)
+        //tvAmountToBeRepaid.text = convertAmountToDisplayAmountStr(borrowingInfo.borrowedAmount)
+        tvAmountToBeRepaid.setText(R.string.value_null)
         tvCoinUnit.text = borrowingInfo.productName
+        flBottomView.visibility = View.GONE
     }
 
     private fun initEvent() {

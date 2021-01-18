@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import com.palliums.extensions.logError
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -13,7 +12,6 @@ import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.event.BankRepaymentEvent
-import com.violas.wallet.event.UpdateBankBorrowedAmountEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bank.BorrowDetailsDTO
@@ -215,7 +213,6 @@ class RepayBorrowActivity : BankBusinessActivity() {
                 )
                 dismissProgress()
                 showToast(getString(R.string.hint_bank_business_repay_borrow_success))
-                calculateSurplusBorrowedAndSendEvent(amount)
                 EventBus.getDefault().post(BankRepaymentEvent())
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 finish()
@@ -224,17 +221,6 @@ class RepayBorrowActivity : BankBusinessActivity() {
                 e.message?.let { showToast(it) }
                 dismissProgress()
             }
-        }
-    }
-
-    private fun calculateSurplusBorrowedAndSendEvent(repaymentAmount: Long) {
-        try {
-            val totalBorrowed = mBorrowingDetails?.borrowedAmount ?: 0
-            val surplusBorrowed =
-                if (totalBorrowed > repaymentAmount) totalBorrowed - repaymentAmount else 0
-            EventBus.getDefault().post(UpdateBankBorrowedAmountEvent(surplusBorrowed.toString()))
-        } catch (e: Exception) {
-            logError(e) { "calculate surplus borrowed failed" }
         }
     }
 }

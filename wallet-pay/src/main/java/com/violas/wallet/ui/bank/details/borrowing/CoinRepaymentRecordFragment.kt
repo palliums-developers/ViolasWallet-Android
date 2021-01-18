@@ -18,15 +18,11 @@ import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_THREE
 import com.violas.wallet.common.KEY_TWO
-import com.violas.wallet.event.BankRepaymentEvent
 import com.violas.wallet.repository.http.bank.CoinRepaymentRecordDTO
 import com.violas.wallet.ui.bank.details.BaseCoinTxRecordFragment
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import kotlinx.android.synthetic.main.fragment_bank_coin_repayment_record.*
 import kotlinx.android.synthetic.main.item_bank_coin_repayment_record.view.*
-import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -85,23 +81,6 @@ class CoinRepaymentRecordFragment : BaseCoinTxRecordFragment<CoinRepaymentRecord
 
     override fun lazyInitPagingViewAdapter(): PagingViewAdapter<CoinRepaymentRecordDTO> {
         return ViewAdapter()
-    }
-
-    override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
-        super.onLazyInitViewByResume(savedInstanceState)
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onDestroyView() {
-        EventBus.getDefault().unregister(this)
-        super.onDestroyView()
-    }
-
-    @Subscribe
-    fun onBankRepaymentEvent(event: BankRepaymentEvent) {
-        launch {
-            getRefreshLayout()?.autoRefresh()
-        }
     }
 
     class ViewAdapter : PagingViewAdapter<CoinRepaymentRecordDTO>() {
