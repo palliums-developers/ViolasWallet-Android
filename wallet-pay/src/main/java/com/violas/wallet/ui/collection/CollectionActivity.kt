@@ -23,8 +23,11 @@ import org.palliums.libracore.wallet.IntentIdentifier
 import org.palliums.violascore.serialization.hexToBytes
 import java.util.*
 
-
+/**
+ * 收款页面
+ */
 class CollectionActivity : BaseAppActivity() {
+
     companion object {
         private const val EXT_ACCOUNT_ID = "0"
         private const val EXT_IS_TOKEN = "1"
@@ -61,7 +64,7 @@ class CollectionActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.title_colletction)
+        title = getString(R.string.receive_title)
 
         if (savedInstanceState != null) {
             isToken = savedInstanceState.getBoolean(EXT_IS_TOKEN, false)

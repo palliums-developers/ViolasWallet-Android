@@ -76,7 +76,7 @@ class MyPoolActivity : BaseListingActivity<PoolLiquidityDTO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.title_market_my_pool)
+        setTitle(R.string.my_pool_title)
 
         btnTransferIn.setOnClickListener {
             EventBus.getDefault().post(SwitchMarketPageEvent(MarketPageType.Pool))
@@ -154,7 +154,7 @@ class MyPoolActivity : BaseListingActivity<PoolLiquidityDTO>() {
         override fun onViewBind(itemPosition: Int, itemData: PoolLiquidityDTO?) {
             itemData?.let {
                 itemView.tvLiquidityAmount.text = getString(
-                    R.string.market_liquidity_token_amount_format,
+                    R.string.market_common_label_pool_token_amount_format,
                     convertAmountToDisplayAmountStr(it.amount)
                 )
                 itemView.tvTokenA.text =

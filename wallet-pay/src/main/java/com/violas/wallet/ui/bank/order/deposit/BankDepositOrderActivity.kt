@@ -79,9 +79,9 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.deposit_order)
+        setTitle(R.string.bank_deposit_orders_title)
         ivIcon.setImageResource(getResourceId(R.attr.bankDepositOrderIcon, this))
-        tvLabel.setText(R.string.current_deposit)
+        tvLabel.setText(R.string.bank_deposit_orders_label_current_deposit)
 
         launch {
             if (getViewModel().initAddress()) {

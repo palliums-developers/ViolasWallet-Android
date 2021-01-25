@@ -15,17 +15,17 @@ class HelpFeedbackActivity : BaseWebActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitleRightText(R.string.help_feedback_menu)
+        setTitleRightText(R.string.common_title_feedback)
         setTitleRightTextColor(R.color.color_492AC5)
     }
 
     override fun getUrl(): String {
         // TODO 替换帮助与反馈url
-        return getString(R.string.help_feedback_url)
+        return getString(R.string.url_app_help_and_feedback)
     }
 
     override fun getFixedTitle(): String? {
-        return getString(R.string.help_feedback_title)
+        return getString(R.string.common_title_help_feedback)
     }
 
     override fun onTitleRightViewClick() {

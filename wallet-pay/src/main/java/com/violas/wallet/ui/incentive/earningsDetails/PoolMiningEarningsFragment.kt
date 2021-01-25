@@ -153,9 +153,9 @@ class PoolMiningEarningsFragment : BasePagingFragment<PoolMiningEarningDTO>() {
 
                 itemView.tvState.setText(
                     if (it.status == 0)
-                        R.string.mining_earnings_state_issuing
+                        R.string.incentive_earnings_details_state_issuing
                     else
-                        R.string.mining_earnings_state_arrived
+                        R.string.incentive_earnings_details_state_arrived
                 )
                 itemView.tvState.setTextColor(
                     getColorByAttrId(
@@ -169,9 +169,9 @@ class PoolMiningEarningsFragment : BasePagingFragment<PoolMiningEarningDTO>() {
 
                 itemView.tvType.setText(
                     when (it.type) {
-                        8 -> R.string.mining_earnings_type_add_liquidity
-                        9 -> R.string.mining_earnings_type_remove_liquidity
-                        else -> R.string.mining_earnings_type_active_extraction
+                        8 -> R.string.incentive_earnings_details_type_add_liquidity
+                        9 -> R.string.incentive_earnings_details_type_remove_liquidity
+                        else -> R.string.incentive_earnings_details_type_active_extraction
                     }
                 )
             }

@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_200"
-            android:text="@string/web_load_failed_tips"
+            android:text="@string/web_desc_load_failure"
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/fs_17" />
 
@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_8"
-            android:text="@string/web_load_failed_retry"
+            android:text="@string/web_desc_retry"
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/fs_14" />
 

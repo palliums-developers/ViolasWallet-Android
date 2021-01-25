@@ -26,9 +26,13 @@ class FeedbackActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.help_feedback_title)
+        setTitle(R.string.common_title_help_feedback)
 
-        vCount.text = getString(R.string.feedback_content_count, 0, CONTENT_MAX_NUMBER)
+        vCount.text = getString(
+            R.string.feedback_desc_content_count,
+            0,
+            CONTENT_MAX_NUMBER
+        )
 
         vClose.setOnClickListener(this)
         vConfirm.setOnClickListener(this)
@@ -42,8 +46,11 @@ class FeedbackActivity : BaseAppActivity() {
                     return
                 }
 
-                vCount.text =
-                    getString(R.string.feedback_content_count, currentNumber, CONTENT_MAX_NUMBER)
+                vCount.text = getString(
+                    R.string.feedback_desc_content_count,
+                    currentNumber,
+                    CONTENT_MAX_NUMBER
+                )
             }
         })
     }
@@ -53,13 +60,13 @@ class FeedbackActivity : BaseAppActivity() {
             R.id.vConfirm -> {
                 val content = vContent.text.toString().trim()
                 if (content.isEmpty()) {
-                    showToast(R.string.feedback_hint_input_content)
+                    showToast(R.string.feedback_tips_content_empty)
                     return
                 }
 
                 val contact = vContact.text.toString().trim()
                 if (contact.isEmpty()) {
-                    showToast(R.string.feedback_hint_input_contact)
+                    showToast(R.string.feedback_tips_contact_empty)
                     return
                 }
 

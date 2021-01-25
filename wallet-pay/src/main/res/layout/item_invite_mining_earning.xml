@@ -49,6 +49,6 @@
         android:textSize="@dimen/fs_12"
         app:layout_constraintBaseline_toBaselineOf="@id/tvAddress"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="@string/mining_earnings_state_arrived" />
+        tools:text="@string/incentive_earnings_details_state_arrived" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,7 +10,6 @@ import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.util.Log
 import android.view.View
 import com.palliums.content.App
 import com.palliums.extensions.expandTouchArea
@@ -28,7 +27,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * 创建钱包页面
+ */
 class CreateIdentityActivity : BaseAppActivity() {
+
     companion object {
         fun start(context: Context) {
             context.startActivity(Intent(context, CreateIdentityActivity::class.java))
@@ -39,7 +42,7 @@ class CreateIdentityActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.title_create_the_wallet)
+        title = getString(R.string.create_wallet_title)
 
         launch {
             tvPrivacyPolicy.movementMethod = LinkMovementMethod.getInstance()
@@ -51,52 +54,47 @@ class CreateIdentityActivity : BaseAppActivity() {
 
         btnConfirm.setOnClickListener {
             if (!btnHasAgreePrivacyPolicy.isChecked) {
-                showToast(getString(R.string.hint_wallet_agree_terms))
+                showToast(getString(R.string.create_wallet_tips_1))
                 return@setOnClickListener
             }
+
             val password = editPassword.text.toString().trim()
             val passwordConfirm = editConfirmPassword.text.toString().trim()
 
             try {
                 PasswordCheckUtil.check(password)
-                if (!password.contentEquals(passwordConfirm)) {
-                    showToast(getString(R.string.hint_confirm_password_fault))
-                    return@setOnClickListener
-                }
+            } catch (e: Exception) {
+                showToast(e.message ?: getString(R.string.hint_please_minimum_password_length))
+                return@setOnClickListener
+            }
+
+            if (!password.contentEquals(passwordConfirm)) {
+                showToast(getString(R.string.create_wallet_tips_2))
+                return@setOnClickListener
+            }
+
+            launch {
                 showProgress()
-                launch(Dispatchers.IO) {
-                    val mnemonicWords = AccountManager().createIdentity(
+                val mnemonicWords = withContext(Dispatchers.IO) {
+                    AccountManager().createIdentity(
                         this@CreateIdentityActivity,
                         password.toByteArray()
                     )
-                    withContext(Dispatchers.Main) {
-                        dismissProgress()
-
-                        BackupPromptActivity.start(
-                            this@CreateIdentityActivity,
-                            mnemonicWords as ArrayList<String>,
-                            BackupMnemonicFrom.CREATE_IDENTITY_WALLET
-                        )
-
-                        App.finishAllActivity()
-                    }
                 }
-            } catch (e: PasswordLengthShortException) {
-                showToast(getString(R.string.hint_please_minimum_password_length))
-            } catch (e: PasswordLengthLongException) {
-                showToast(getString(R.string.hint_please_maxmum_password_length))
-            } catch (e: PasswordSpecialFailsException) {
-                showToast(getString(R.string.hint_please_cannot_contain_special_characters))
-            } catch (e: PasswordValidationFailsException) {
-                showToast(getString(R.string.hint_please_password_rules_are_wrong))
-            } catch (e: PasswordEmptyException) {
-                showToast(getString(R.string.hint_please_password_not_empty))
+                dismissProgress()
+
+                BackupPromptActivity.start(
+                    this@CreateIdentityActivity,
+                    mnemonicWords,
+                    BackupMnemonicFrom.CREATE_IDENTITY_WALLET
+                )
+
+                App.finishAllActivity()
             }
         }
     }
 
     private fun openWebPage(url: String) {
-        Log.e("wallet connect", "open url $url")
         val webpage: Uri = Uri.parse(url)
         val intent = Intent(Intent.ACTION_VIEW, webpage)
         if (intent.resolveActivity(packageManager) != null) {
@@ -105,13 +103,13 @@ class CreateIdentityActivity : BaseAppActivity() {
     }
 
     private suspend fun buildUseBehaviorSpan() = withContext(Dispatchers.IO) {
-        val useBehavior = getString(R.string.agreement_read_and_agree)
-        val privacyPolicy = getString(R.string.privacy_policy)
-        val userAgreement = getString(R.string.service_agreement)
+        val useBehavior = getString(R.string.create_wallet_action_2)
+        val userAgreement = getString(R.string.common_content_user_agreement)
+        val privacyPolicy = getString(R.string.common_content_privacy_policy)
         val spannableStringBuilder = SpannableStringBuilder(useBehavior)
         val userAgreementClickSpanPrivacy = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                openWebPage(getString(R.string.service_agreement_url))
+                openWebPage(getString(R.string.url_app_service_agreement))
             }
 
             override fun updateDrawState(ds: TextPaint) {
@@ -124,7 +122,7 @@ class CreateIdentityActivity : BaseAppActivity() {
         }
         val privacyPolicyClickSpanPrivacy = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                openWebPage(getString(R.string.url_privacy_policy))
+                openWebPage(getString(R.string.url_app_privacy_policy))
             }
 
             override fun updateDrawState(ds: TextPaint) {

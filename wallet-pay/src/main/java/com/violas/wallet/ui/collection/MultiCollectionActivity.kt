@@ -35,8 +35,12 @@ import org.palliums.libracore.wallet.IntentIdentifier
 import org.palliums.violascore.serialization.hexToBytes
 import java.util.*
 
+/**
+ *  通用的收款页面
+ */
 class MultiCollectionActivity : BaseAppActivity(),
     AssetsVoTokenSelectTokenDialog.AssetsDataResourcesBridge {
+
     companion object {
         const val EXT_ASSETS_NAME = "1"
         const val EXT_COIN_NUMBER = "2"
@@ -92,7 +96,7 @@ class MultiCollectionActivity : BaseAppActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.title_colletction)
+        title = getString(R.string.receive_title)
 
         mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
             if (!initTag) {

@@ -47,13 +47,13 @@ class BankDepositRecordViewModel : PagingViewModel<DepositRecordDTO>() {
     suspend fun loadCoinFilterData() = withContext(Dispatchers.IO) {
         val depositProducts = bankService.getDepositProducts()
         val coinFilterData = depositProducts.map { it.tokenModule } as MutableList
-        coinFilterData.add(0, getString(R.string.label_all))
+        coinFilterData.add(0, getString(R.string.bank_records_common_type_all))
         coinFilterDataLiveData.postValue(coinFilterData)
     }
 
     fun loadStateFilterData() {
         val stateFilterData = mutableListOf(
-            getString(R.string.label_all),
+            getString(R.string.bank_records_common_type_all),
             getString(R.string.bank_deposit_state_deposited),
             getString(R.string.bank_deposit_state_withdrew)
         )

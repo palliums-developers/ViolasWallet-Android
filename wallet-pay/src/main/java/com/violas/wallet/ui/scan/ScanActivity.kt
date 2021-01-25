@@ -22,7 +22,6 @@ import com.violas.wallet.biz.*
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
-import com.violas.wallet.ui.webManagement.LoginWebActivity
 import kotlinx.android.synthetic.main.activity_scan.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,6 +29,9 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.PermissionRequest
 
+/**
+ * 二维码扫描页面
+ */
 class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
 
     companion object {
@@ -76,7 +78,7 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
 
         startCamera()
 
-        title = getString(R.string.title_scan)
+        title = getString(R.string.qr_code_scan_title)
 
         initView()
 
@@ -98,9 +100,9 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
         } else {
             EasyPermissions.requestPermissions(
                 PermissionRequest.Builder(this, REQUEST_PERMISSION_CAMERA, *perms)
-                    .setRationale(R.string.hint_scan_need_camera_permissions)
-                    .setNegativeButtonText(R.string.action_cancel)
-                    .setPositiveButtonText(R.string.action_ok)
+                    .setRationale(R.string.qr_code_scan_need_permissions_desc)
+                    .setNegativeButtonText(R.string.common_action_cancel)
+                    .setPositiveButtonText(R.string.common_action_ok)
                     .setTheme(R.style.AppAlertDialog)
                     .build()
             )
@@ -140,10 +142,6 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
 
                 is WalletConnectQRCode -> {
                     WalletConnectAuthorizationActivity.start(this@ScanActivity, qrCode.content)
-                }
-
-                is LoginQRCode -> {
-                    LoginWebActivity.start(this@ScanActivity, qrCode)
                 }
 
                 is CommonQRCode -> {
@@ -215,10 +213,10 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             AppSettingsDialog.Builder(this)
-                .setTitle(getString(R.string.hint_get_the_camera_permissions))
-                .setRationale(getString(R.string.hint_set_permissions_to_open))
-                .setNegativeButton(R.string.action_cancel)
-                .setPositiveButton(R.string.action_ok)
+                .setTitle(getString(R.string.qr_code_scan_set_permissions_title))
+                .setRationale(getString(R.string.qr_code_scan_set_permissions_desc))
+                .setNegativeButton(R.string.common_action_cancel)
+                .setPositiveButton(R.string.common_action_ok)
                 .setThemeResId(R.style.AppAlertDialog)
                 .build().show();
         }

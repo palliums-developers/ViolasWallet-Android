@@ -32,7 +32,7 @@
             android:id="@+id/tvCoinFilterText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/all_currencies"
+            android:text="@string/bank_records_common_type_all_currencies"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="@dimen/fs_12" />
 
@@ -71,7 +71,7 @@
             android:id="@+id/tvStateFilterText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/all_state"
+            android:text="@string/bank_records_common_type_all_state"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="@dimen/fs_12" />
 

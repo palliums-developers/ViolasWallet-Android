@@ -60,7 +60,7 @@ class ReceiveIncentiveRewardsViewModel : BaseViewModel() {
                 phoneNumber,
                 areaCode
             )
-            tipsMessage.postValueSupport(getString(R.string.hint_get_verification_code_success))
+            tipsMessage.postValueSupport(getString(R.string.incentive_receive_tips_get_verification_code_success))
             return
         }
 
@@ -74,7 +74,7 @@ class ReceiveIncentiveRewardsViewModel : BaseViewModel() {
             verificationCode,
             inviterAddress
         )
-        tipsMessage.postValueSupport(getString(R.string.hint_phone_receive_reward_success))
+        tipsMessage.postValueSupport(getString(R.string.incentive_receive_tips_receive_success))
     }
 
     override fun checkParams(action: Int, vararg params: Any): Boolean {
@@ -82,25 +82,25 @@ class ReceiveIncentiveRewardsViewModel : BaseViewModel() {
 
         val countryArea = countryAreaLiveData.value ?: return false
         if (violasAccount == null) {
-            tipsMessage.postValueSupport(getString(R.string.hint_account_error))
+            tipsMessage.postValueSupport(getString(R.string.common_tips_account_error))
             return false
         }
 
         val phoneNumber = params[0] as String
         if (phoneNumber.isEmpty()) {
-            tipsMessage.postValueSupport(getString(R.string.hint_input_phone_number))
+            tipsMessage.postValueSupport(getString(R.string.incentive_receive_hint_phone_number))
             return false
         }
 
         if (action == ACTION_RECEIVE_REWARD) {
             if ((params[1] as String).isEmpty()) {
-                tipsMessage.postValueSupport(getString(R.string.hint_input_verification_code))
+                tipsMessage.postValueSupport(getString(R.string.incentive_receive_hint_verification_code))
                 return false
             }
 
             val inviterAddress = params[2] as String
             if (inviterAddress.isNotEmpty() && !validationViolasAddress(inviterAddress)) {
-                tipsMessage.postValueSupport(getString(R.string.hint_inviter_address_error))
+                tipsMessage.postValueSupport(getString(R.string.incentive_receive_tips_inviter_address_error))
                 return false
             }
         }

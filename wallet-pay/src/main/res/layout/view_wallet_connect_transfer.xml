@@ -24,7 +24,7 @@
             android:id="@+id/tvTitleSender"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/wallet_connect_transfer_sender_address"
+            android:text="@string/wallet_connect_txn_label_sender_address"
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toStartOf="@+id/guideline1"
@@ -64,7 +64,7 @@
             android:id="@+id/tvTitleAmount"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/wallet_connect_transfer_amount"
+            android:text="@string/wallet_connect_transfer_label_amount"
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -88,7 +88,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="@string/wallet_connect_transfer_address"
+            android:text="@string/wallet_connect_transfer_label_receiver_address"
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -112,7 +112,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="矿工费用："
+            android:text="@string/common_label_gas_fees_colon"
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -130,5 +130,7 @@
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toTopOf="@+id/tvTitleFee"
             tools:text="1234.999999 violas" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </LinearLayout>

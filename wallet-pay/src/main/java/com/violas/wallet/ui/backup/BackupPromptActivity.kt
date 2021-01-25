@@ -55,7 +55,7 @@ class BackupPromptActivity : BaseBackupMnemonicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.backup_mnemonic_prompt_title)
+        setTitle(R.string.mnemonic_backup_prompt_title)
         if (mnemonicFrom == BackupMnemonicFrom.CREATE_IDENTITY_WALLET) {
             // 如果是创建身份钱包后进入该页面，则不支持后退
             setTitleLeftViewVisibility(View.GONE)

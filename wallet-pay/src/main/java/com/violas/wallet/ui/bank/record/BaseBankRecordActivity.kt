@@ -83,10 +83,10 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
         })
 
         getCurrFilterLiveData(true).observe(this, Observer {
-            tvCoinFilterText.text = it?.second ?: getString(R.string.all_currencies)
+            tvCoinFilterText.text = it?.second ?: getString(R.string.bank_records_common_type_all_currencies)
         })
         getCurrFilterLiveData(false).observe(this, Observer {
-            tvStateFilterText.text = it?.second ?: getString(R.string.all_state)
+            tvStateFilterText.text = it?.second ?: getString(R.string.bank_records_common_type_all_state)
         })
 
         getCurrFilterLiveData(true).value = null
@@ -96,7 +96,7 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
     private fun setStatusLayout(search: Boolean) {
         statusLayout.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
-            if (search) R.string.no_matching_search_results else R.string.common_status_empty
+            if (search) R.string.bank_records_common_desc_search_empty else R.string.common_status_empty
         )
         statusLayout.setImageWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,

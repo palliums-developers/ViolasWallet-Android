@@ -41,7 +41,7 @@
     <string name="tips_email_client_not_found">No available mail clients found</string>
     <string name="title_select_browser">Please select the browser</string>
 
-    <string name="hint_please_minimum_password_length">Passwords are 8-20 digits long and must contain upper and lower case letters and Numbers.</string>
+    <string name="hint_please_minimum_password_length">Passwords are 8–20 digits long and must contain upper and lower case letters and Numbers.</string>
     <string name="hint_please_maxmum_password_length">@string/hint_please_minimum_password_length</string>
     <string name="hint_please_cannot_contain_special_characters">@string/hint_please_minimum_password_length</string>
     <string name="hint_please_password_rules_are_wrong">@string/hint_please_minimum_password_length</string>

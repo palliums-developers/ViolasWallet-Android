@@ -144,10 +144,6 @@
             android:name=".ui.mapping.MappingRecordActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.webManagement.LoginWebActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.APP.DayNight.Secondary.WalletConnect" />
-        <activity
             android:name=".ui.walletconnect.WalletConnectManagerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.APP.DayNight.Secondary.WalletConnect" />
@@ -249,7 +245,7 @@
             android:resource="@color/colorAccent" />-->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id" />
+            android:value="@string/notification_channel_id_default" />
 
         <!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data

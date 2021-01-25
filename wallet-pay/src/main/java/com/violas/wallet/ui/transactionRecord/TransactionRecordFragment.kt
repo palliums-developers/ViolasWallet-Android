@@ -79,7 +79,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         getPagingHandler().init()
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
-            getString(R.string.tips_no_transaction_record)
+            getString(R.string.txn_records_desc_records_empty)
         )
         getPagingHandler().start()
     }

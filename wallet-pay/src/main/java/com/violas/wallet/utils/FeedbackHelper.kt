@@ -32,7 +32,7 @@ fun feedbackByEmail(activity: Activity) {
     openEmailClient(
         activity = activity,
         receiver = FEEDBACK_EMAIL_ADDRESS,
-        subject = "${getString(R.string.app_name)} ${getString(R.string.feedback)}",
+        subject = "${getString(R.string.app_name)} ${getString(R.string.common_title_feedback)}",
         text = stringBuilder.toString()
     )
 }

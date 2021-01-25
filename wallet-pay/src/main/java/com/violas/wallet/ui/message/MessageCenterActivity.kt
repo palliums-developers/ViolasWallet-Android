@@ -45,7 +45,7 @@ class MessageCenterActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.message_center)
+        setTitle(R.string.msg_center_title)
         setTitleRightImageResource(getResourceId(R.attr.iconClear, this))
 
         initFragmentPager()
@@ -80,8 +80,8 @@ class MessageCenterActivity : BaseAppActivity() {
             setFragments(fragments)
             setTitles(
                 mutableListOf(
-                    getString(R.string.title_transfer_notification),
-                    getString(R.string.title_system_notification)
+                    getString(R.string.msg_center_tab_transfer_notification),
+                    getString(R.string.msg_center_tab_system_notification)
                 )
             )
         }

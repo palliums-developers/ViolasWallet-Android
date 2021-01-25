@@ -156,8 +156,8 @@ class BankFragment : BaseFragment() {
             setFragments(fragments)
             setTitles(
                 mutableListOf(
-                    getString(R.string.deposit_market),
-                    getString(R.string.borrowing_market)
+                    getString(R.string.home_bank_tab_deposit_market),
+                    getString(R.string.home_bank_tab_borrowing_market)
                 )
             )
         }
@@ -253,11 +253,11 @@ class BankFragment : BaseFragment() {
                     mutableListOf(
                         Pair(
                             getResourceId(R.attr.bankDepositOrderIcon, context!!),
-                            R.string.deposit_order
+                            R.string.home_bank_menu_deposit_order
                         ),
                         Pair(
                             getResourceId(R.attr.bankBorrowingOrderIcon, context!!),
-                            R.string.borrowing_order
+                            R.string.home_bank_menu_borrowing_order
                         )
                     )
                 ) { position ->

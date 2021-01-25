@@ -17,7 +17,7 @@
         android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/market_swap_state_succeeded"
+        tools:text="@string/swap_txn_state_succeeded"
         tools:textColor="?attr/textColorSuccess" />
 
     <TextView
@@ -72,7 +72,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
         android:includeFontPadding="false"
-        android:text="@string/gas_fee_format"
+        android:text="@string/market_swap_label_gas_fee_format"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_10"
         app:layout_constraintStart_toStartOf="@id/tvState"

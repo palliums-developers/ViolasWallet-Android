@@ -7,6 +7,18 @@
     android:background="?attr/walletBackupNowHintBg">
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="83dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@string/font_family_title"
+        android:text="@string/mnemonic_backup_warn_title"
+        android:textColor="?attr/walletBackupNowTitleTextColor"
+        android:textSize="@dimen/fs_14"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/tvHint1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -15,22 +27,10 @@
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="22dp"
         android:lineSpacingMultiplier="1.25"
-        android:text="@string/hint_back_up_mnemonic_words_content"
+        android:text="@string/mnemonic_backup_warn_desc"
         android:textSize="@dimen/fs_10"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="83dp"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@string/font_family_title"
-        android:text="@string/backup_mnemonic_warn_title"
-        android:textColor="?attr/walletBackupNowTitleTextColor"
-        android:textSize="@dimen/fs_14"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,9 +42,10 @@
         android:layout_marginEnd="21dp"
         android:background="?attr/walletBackupNowBtnBg"
         android:paddingBottom="9dp"
-        android:text="@string/hint_backup_now"
+        android:text="@string/mnemonic_backup_warn_action"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="@dimen/fs_10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

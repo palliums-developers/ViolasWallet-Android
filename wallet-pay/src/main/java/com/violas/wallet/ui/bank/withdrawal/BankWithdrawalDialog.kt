@@ -143,20 +143,20 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
         // 未输入判断
         val inputAmountStr = etInputBox.text.toString().trim()
         if (inputAmountStr.isEmpty()) {
-            tvTips.setText(R.string.bank_withdrawal_hint_no_input)
+            tvTips.setText(R.string.bank_withdrawal_tips_withdrawal_amount_empty)
             return
         }
 
         // 输入为0判断, 当作未输入判断
         val amount = convertDisplayAmountToAmount(inputAmountStr)
         if (amount <= BigDecimal.ZERO) {
-            tvTips.setText(R.string.bank_withdrawal_hint_no_input)
+            tvTips.setText(R.string.bank_withdrawal_tips_withdrawal_amount_empty)
             return
         }
 
         // 可提取数量不足
         if (amount > BigDecimal(depositDetails.availableAmount)) {
-            tvTips.setText(R.string.bank_withdrawal_hint_insufficient_extractable_amount)
+            tvTips.setText(R.string.bank_withdrawal_tips_insufficient_balance)
             return
         }
 
@@ -165,7 +165,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
                 accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
             }
             if (accountDO == null) {
-                showToast(getString(R.string.hint_account_error))
+                showToast(getString(R.string.common_tips_account_error))
                 return@launch
             }
 
@@ -198,7 +198,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
                     bankManager.redeem(pwd, account, productId, mark, amount)
                 }
                 dismissProgress()
-                showToast(getString(R.string.tips_withdrawal_success))
+                showToast(getString(R.string.bank_withdrawal_tips_withdrawal_success))
                 EventBus.getDefault().post(BankWithdrawalEvent())
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 close()

@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="@string/hint_collection_address"
+            android:text="@string/receive_desc_receiver_address"
             android:textSize="@dimen/fs_20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +44,7 @@
                 android:id="@+id/tvToSelectText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/select_token"
+                android:text="@string/common_action_select_token"
                 android:textColor="@color/sel_text_color_btn2"
                 android:textSize="@dimen/fs_12" />
 
@@ -74,6 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:textSize="@dimen/fs_16"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivQRCode"
@@ -107,5 +108,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tvAddress"
             app:layout_constraintTop_toTopOf="@id/tvAddress" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

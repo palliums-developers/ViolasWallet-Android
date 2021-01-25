@@ -41,7 +41,7 @@ class MeFragment : BaseFragment() {
                 if (mWalletAppViewModel.isExistsAccount()) {
                     WalletManagerActivity.start(requireContext())
                 } else {
-                    showToast(R.string.tips_create_or_import_wallet)
+                    showToast(R.string.common_tips_account_empty)
                 }
             }
 

@@ -38,6 +38,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * 添加币种页面
+ */
 class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
 
     companion object {
@@ -102,8 +105,8 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.title_assert_manager)
-        setTitleRightText(R.string.action_get_experience_the_coin)
+        title = getString(R.string.add_currency_title)
+        setTitleRightText(R.string.add_currency_menu)
 
         getRecyclerView().addItemDecoration(
             RecyclerViewItemDividers(
@@ -147,12 +150,16 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                     val account = mAccountManager.getAccountById(assertOriginateToken.account_id)
                     dismissProgress()
                     withContext(Dispatchers.Main) {
-                        PublishTokenDialog().setConfirmListener {
-                            showPasswordDialog(account, assertOriginateToken, checkbox, checked)
-                            it.dismiss()
-                        }.setCancelListener {
-                            checkbox.setCheckedNoEvent(false)
-                        }.show(supportFragmentManager)
+                        PublishTokenDialog()
+                            .setCurrencyName(assertOriginateToken.name)
+                            .setConfirmListener {
+                                showPasswordDialog(account, assertOriginateToken, checkbox, checked)
+                                it.dismiss()
+                            }
+                            .setCancelListener {
+                                checkbox.setCheckedNoEvent(false)
+                            }
+                            .show(supportFragmentManager)
                     }
                 }
             } catch (e: Exception) {
@@ -197,7 +204,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                             checkbox.setCheckedNoEvent(false)
                             showToast(
                                 getString(
-                                    R.string.hint_not_none_coin_or_net_error,
+                                    R.string.add_currency_first_tips_add_failure,
                                     CoinTypes.parseCoinType(account.coinNumber).coinName()
                                 ),
                                 Toast.LENGTH_LONG
@@ -209,7 +216,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                         checkbox.setCheckedNoEvent(false)
                         showToast(
                             getString(
-                                R.string.hint_not_none_coin_or_net_error,
+                                R.string.add_currency_first_tips_add_failure,
                                 CoinTypes.parseCoinType(account.coinNumber).coinName()
                             ),
                             Toast.LENGTH_LONG
@@ -235,7 +242,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
             WebCommonActivity.start(
                 this,
                 url,
-                getString(R.string.action_get_experience_the_coin)
+                getString(R.string.add_currency_menu)
             )
         }
     }

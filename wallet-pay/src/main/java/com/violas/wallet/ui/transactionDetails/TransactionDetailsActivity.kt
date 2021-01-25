@@ -200,7 +200,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 tvDesc.setTextColor(
                     getColorByAttrId(R.attr.textColorProcessing, this)
                 )
-                tvDesc.setText(R.string.desc_transaction_state_transaction_pending)
+                tvDesc.setText(R.string.txn_details_state_processing)
             }
 
             TransactionState.FAILURE -> {
@@ -213,19 +213,19 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 tvDesc.setText(
                     when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
-                            R.string.desc_transaction_state_transfer_failure
+                            R.string.txn_details_state_transfer_failure
                         }
 
                         TransactionType.COLLECTION -> {
-                            R.string.desc_transaction_state_collection_failure
+                            R.string.txn_details_state_collection_failure
                         }
 
                         TransactionType.ADD_CURRENCY -> {
-                            R.string.desc_transaction_state_add_currency_failure
+                            R.string.txn_details_state_add_currency_failure
                         }
 
                         else -> {
-                            R.string.desc_transaction_state_transaction_failure
+                            R.string.txn_details_state_transaction_failure
                         }
                     }
                 )
@@ -241,19 +241,19 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 tvDesc.setText(
                     when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
-                            R.string.desc_transaction_state_transfer_success
+                            R.string.txn_details_state_transfer_success
                         }
 
                         TransactionType.COLLECTION -> {
-                            R.string.desc_transaction_state_collection_success
+                            R.string.txn_details_state_collection_success
                         }
 
                         TransactionType.ADD_CURRENCY -> {
-                            R.string.desc_transaction_state_add_currency_success
+                            R.string.txn_details_state_add_currency_success
                         }
 
                         else -> {
-                            R.string.desc_transaction_state_transaction_success
+                            R.string.txn_details_state_transaction_success
                         }
                     }
                 )
@@ -306,9 +306,9 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         } else {
             EasyPermissions.requestPermissions(
                 PermissionRequest.Builder(this, REQUEST_CODE_SAVE_PICTURE, *perms)
-                    .setRationale(R.string.save_picture_hint_need_permissions)
-                    .setNegativeButtonText(R.string.action_cancel)
-                    .setPositiveButtonText(R.string.action_ok)
+                    .setRationale(R.string.save_picture_need_permissions_desc)
+                    .setNegativeButtonText(R.string.common_action_cancel)
+                    .setPositiveButtonText(R.string.common_action_ok)
                     .setTheme(R.style.AppAlertDialog)
                     .build()
             )
@@ -328,9 +328,9 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
 
             dismissProgress()
             if (result) {
-                showToast(R.string.tips_save_into_album_success)
+                showToast(R.string.save_picture_tips_success)
             } else {
-                showToast(R.string.tips_save_into_album_failure)
+                showToast(R.string.save_picture_tips_failure)
             }
         }
     }
@@ -396,10 +396,10 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             AppSettingsDialog.Builder(this)
-                .setTitle(getString(R.string.save_picture_title_get_permissions))
-                .setRationale(getString(R.string.save_picture_hint_set_permissions))
-                .setNegativeButton(R.string.action_cancel)
-                .setPositiveButton(R.string.action_ok)
+                .setTitle(getString(R.string.save_picture_set_permissions_title))
+                .setRationale(getString(R.string.save_picture_set_permissions_desc))
+                .setNegativeButton(R.string.common_action_cancel)
+                .setPositiveButton(R.string.common_action_ok)
                 .setThemeResId(R.style.AppAlertDialog)
                 .build()
                 .show()

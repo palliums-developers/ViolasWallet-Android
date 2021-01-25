@@ -99,7 +99,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        statusLayout.setReloadText(R.string.hint_click_retry)
+        statusLayout.setReloadText(R.string.bank_biz_desc_click_retry)
         val businessId = intent.getStringExtra(EXT_BUSINESS_ID) ?: "0"
         if (businessId != null) {
             loadBusiness(businessId)
@@ -281,7 +281,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
             }
         }
         if (!isFind) {
-            showToast(getString(R.string.hint_currencies_not_supported_in_current_version))
+            showToast(getString(R.string.bank_biz_tips_unsupported_currency))
             finish()
         }
     }

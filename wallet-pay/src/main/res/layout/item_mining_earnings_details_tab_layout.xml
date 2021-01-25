@@ -15,6 +15,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="@string/tab_invite_mining_earnings" />
+        tools:text="@string/incentive_earnings_details_tab_invite" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

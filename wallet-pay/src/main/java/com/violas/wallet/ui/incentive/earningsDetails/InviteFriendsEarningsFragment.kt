@@ -164,9 +164,9 @@ class InviteFriendsEarningsFragment : BasePagingFragment<InviteFriendsEarningDTO
 
                 itemView.tvState.setText(
                     if (it.status == 0)
-                        R.string.mining_earnings_state_issuing
+                        R.string.incentive_earnings_details_state_issuing
                     else
-                        R.string.mining_earnings_state_arrived
+                        R.string.incentive_earnings_details_state_arrived
                 )
                 itemView.tvState.setTextColor(
                     getColorByAttrId(

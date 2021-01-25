@@ -47,16 +47,16 @@ class BankBorrowingRecordViewModel : PagingViewModel<BorrowingRecordDTO>() {
     suspend fun loadCoinFilterData() = withContext(Dispatchers.IO) {
         val borrowingProducts = bankService.getBorrowingProducts()
         val coinFilterData = borrowingProducts.map { it.tokenModule } as MutableList
-        coinFilterData.add(0, getString(R.string.label_all))
+        coinFilterData.add(0, getString(R.string.bank_records_common_type_all))
         coinFilterDataLiveData.postValue(coinFilterData)
     }
 
     fun loadStateFilterData() {
         val coinFilterData = mutableListOf(
-            getString(R.string.label_all),
-            getString(R.string.bank_borrowing_state_borrowed),
-            getString(R.string.bank_borrowing_state_repaid),
-            getString(R.string.bank_borrowing_state_liquidated)
+            getString(R.string.bank_records_common_type_all),
+            getString(R.string.bank_borrowing_records_type_borrowed),
+            getString(R.string.bank_borrowing_records_type_repaid),
+            getString(R.string.bank_borrowing_records_type_liquidated)
         )
         stateFilterDataLiveData.postValue(coinFilterData)
     }

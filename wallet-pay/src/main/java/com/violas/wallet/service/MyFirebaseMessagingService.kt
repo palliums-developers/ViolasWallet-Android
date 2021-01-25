@@ -83,7 +83,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         intent.putExtras(extras)
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-        val channelId = notificationChannelId ?: getString(R.string.default_notification_channel_id)
+        val channelId = notificationChannelId ?: getString(R.string.notification_channel_id_default)
         com.palliums.extensions.sendNotification(
             channelId = channelId,
             smallIcon = R.mipmap.ic_notification,
@@ -91,15 +91,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             contentText = messageBody as String,
             intent = intent,
             priority = when (channelId) {
-                getString(R.string.transaction_notification_channel_id) -> {
+                getString(R.string.notification_channel_id_transaction) -> {
                     NotificationCompat.PRIORITY_HIGH
                 }
 
-                getString(R.string.events_notification_channel_id) -> {
+                getString(R.string.notification_channel_id_events) -> {
                     NotificationCompat.PRIORITY_DEFAULT
                 }
 
-                getString(R.string.update_notification_channel_id) -> {
+                getString(R.string.notification_channel_id_update) -> {
                     NotificationCompat.PRIORITY_LOW
                 }
 

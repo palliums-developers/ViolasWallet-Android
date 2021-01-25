@@ -24,6 +24,6 @@
         app:layout_constraintEnd_toEndOf="@id/guideline"
         app:layout_constraintStart_toStartOf="@id/guideline"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/all" />
+        tools:text="@string/bank_records_common_type_all_state" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

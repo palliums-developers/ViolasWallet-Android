@@ -24,7 +24,7 @@
             android:id="@+id/tvTitleSender"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/wallet_connect_transfer_sender_address"
+            android:text="@string/wallet_connect_txn_label_sender_address"
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toStartOf="@+id/guideline1"
@@ -84,7 +84,7 @@
                     android:id="@+id/inputCoin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/hint_exchange_swap_input"
+                    android:text="@string/wallet_connect_swap_label_from"
                     android:textColor="@color/color_999999"
                     android:textSize="@dimen/fs_12"
                     app:layout_constraintStart_toStartOf="parent"
@@ -98,7 +98,7 @@
                     android:textSize="@dimen/fs_20"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/inputCoin"
-                    tools:text="输入" />
+                    tools:text="0" />
 
                 <TextView
                     android:id="@+id/inputCoinUnit"
@@ -121,7 +121,7 @@
                     android:id="@+id/outputCoin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/hint_exchange_swap_output"
+                    android:text="@string/wallet_connect_swap_label_to"
                     android:textColor="@color/color_999999"
                     android:textSize="@dimen/fs_12"
                     app:layout_constraintStart_toStartOf="@+id/outputCoinAmount"
@@ -136,7 +136,7 @@
                     android:textSize="@dimen/fs_20"
                     app:layout_constraintEnd_toStartOf="@+id/outputCoinUnit"
                     app:layout_constraintTop_toBottomOf="@+id/outputCoin"
-                    tools:text="输入" />
+                    tools:text="0" />
 
                 <TextView
                     android:id="@+id/outputCoinUnit"
@@ -178,7 +178,7 @@
                 android:id="@+id/tvTitlePath"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/hint_exchange_swap_path"
+                android:text="@string/wallet_connect_swap_label_path"
                 android:textColor="?android:attr/textColorTertiary"
                 android:textSize="@dimen/fs_14"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"

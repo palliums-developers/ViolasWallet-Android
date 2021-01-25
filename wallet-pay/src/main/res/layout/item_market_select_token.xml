@@ -45,7 +45,7 @@
         android:textSize="@dimen/fs_12"
         app:layout_constraintBottom_toBottomOf="@id/vLogoGroup"
         app:layout_constraintStart_toStartOf="@id/tvTokenName"
-        tools:text="@string/market_select_token_balance_format" />
+        tools:text="@string/common_label_balance_format" />
 
     <TextView
         android:id="@+id/tvSelected"

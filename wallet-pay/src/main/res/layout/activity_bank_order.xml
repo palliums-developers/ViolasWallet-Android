@@ -27,7 +27,7 @@
         app:layout_constraintBottom_toBottomOf="@id/ivIcon"
         app:layout_constraintStart_toEndOf="@id/ivIcon"
         app:layout_constraintTop_toTopOf="@id/ivIcon"
-        tools:text="@string/current_deposit" />
+        tools:text="@string/bank_deposit_orders_label_current_deposit" />
 
     <com.palliums.widget.refresh.DefaultRefreshLayout
         android:id="@+id/refreshLayout"

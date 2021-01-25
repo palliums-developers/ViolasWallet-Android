@@ -3,7 +3,6 @@ package com.violas.wallet.ui.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.palliums.extensions.clearLongPressToast
@@ -12,16 +11,8 @@ import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getResourceId
 import com.palliums.utils.setSystemBar
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
-import com.quincysx.crypto.CoinTypes
-import com.quincysx.crypto.bip32.ExtendedKey
-import com.quincysx.crypto.bip39.SeedCalculator
-import com.quincysx.crypto.bip39.wordlists.English
-import com.quincysx.crypto.bip44.BIP44
-import com.quincysx.crypto.bip44.CoinPairDerive
-import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.biz.MnemonicException
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
 import com.violas.wallet.ui.main.bank.BankFragment
@@ -29,8 +20,6 @@ import com.violas.wallet.ui.main.market.MarketFragment
 import com.violas.wallet.ui.main.me.MeFragment
 import com.violas.wallet.ui.main.wallet.WalletFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -163,7 +152,7 @@ class MainActivity : BaseAppActivity() {
     override fun onBackPressedSupport() {
         if (System.currentTimeMillis() - mQuitTimePoint > QUIT_CHECK_INTERNAL) {
             Toast.makeText(
-                applicationContext, R.string.quit_confirmation,
+                applicationContext, R.string.common_tips_exit_app,
                 Toast.LENGTH_SHORT
             ).show()
             mQuitTimePoint = System.currentTimeMillis()

@@ -26,7 +26,7 @@
             android:textSize="@dimen/fs_14"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="BTC" />
+            tools:text="VLS" />
 
         <com.palliums.widget.NumberTextView
             android:id="@+id/tvCoinAmount"
@@ -36,7 +36,7 @@
             android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvHintCoinName"
-            tools:text="@string/hint_transfer_amount" />
+            tools:text="@string/transfer_label_balance_format" />
 
         <com.palliums.widget.NumberEditText
             android:id="@+id/editAmountInput"
@@ -46,7 +46,7 @@
             android:layout_marginTop="7dp"
             android:background="@drawable/selector_edit_bg_box"
             android:gravity="center_vertical"
-            android:hint="@string/hint_input_amount"
+            android:hint="@string/transfer_hint_transfer_amount"
             android:inputType="numberDecimal"
             android:paddingHorizontal="@dimen/dp_14"
             android:textSize="@dimen/fs_14"
@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:text="@string/hint_collection_address"
+            android:text="@string/transfer_label_receiver_address"
             android:textSize="@dimen/fs_14"
             app:layout_constraintStart_toStartOf="@id/tvHintCoinName"
             app:layout_constraintTop_toBottomOf="@id/editAmountInput" />
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"
             android:background="@drawable/selector_edit_bg_box"
-            android:hint="@string/hint_input_collection_address"
+            android:hint="@string/transfer_hint_receiver_address"
             android:maxLength="100"
             android:minHeight="48dp"
             android:paddingVertical="@dimen/dp_7"
@@ -105,7 +105,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:text="@string/hint_fee"
+            android:text="@string/transfer_label_fees"
             android:textSize="@dimen/fs_14"
             app:layout_constraintStart_toStartOf="@id/tvHintCoinName"
             app:layout_constraintTop_toBottomOf="@id/editAddressInput" />
@@ -113,7 +113,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hint_slow"
+            android:text="@string/transfer_desc_slow"
             android:textSize="@dimen/fs_12"
             app:layout_constraintBottom_toTopOf="@id/sbQuota"
             app:layout_constraintStart_toStartOf="@id/tvHintCoinName" />
@@ -121,7 +121,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hint_fast"
+            android:text="@string/transfer_desc_fast"
             android:textSize="@dimen/fs_12"
             app:layout_constraintBottom_toTopOf="@id/sbQuota"
             app:layout_constraintEnd_toEndOf="@id/tvCoinAmount" />
@@ -158,10 +158,12 @@
             style="@style/BaseButtonPrimary"
             android:layout_marginTop="@dimen/dp_74"
             android:layout_marginBottom="@dimen/dp_50"
-            android:text="@string/action_tvHintFee"
+            android:text="@string/transfer_action_transfer"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/sbQuota" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

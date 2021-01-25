@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_23"
             android:includeFontPadding="false"
-            android:text="@string/extraction"
+            android:text="@string/bank_withdrawal_title"
             android:textSize="@dimen/fs_20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
             android:layout_marginTop="@dimen/dp_24"
             android:background="@drawable/sel_bg_edit_box_corners_3"
             android:gravity="center_vertical"
-            android:hint="@string/bank_withdrawal_hint_no_input"
+            android:hint="@string/bank_withdrawal_hint_withdrawal_amount"
             android:includeFontPadding="false"
             android:inputType="numberDecimal"
             android:paddingHorizontal="@dimen/dp_8"
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_4"
             android:includeFontPadding="false"
-            android:text="@string/bank_withdrawal_label_extractable_amount"
+            android:text="@string/bank_withdrawal_label_deposited_amount"
             android:textSize="@dimen/fs_12"
             app:layout_constraintBottom_toBottomOf="@id/ivAmountIcon"
             app:layout_constraintStart_toEndOf="@id/ivAmountIcon"
@@ -88,7 +88,6 @@
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_5"
             android:includeFontPadding="false"
             android:textSize="@dimen/fs_12"
             android:textStyle="bold"
@@ -104,7 +103,7 @@
             android:layout_marginEnd="@dimen/dp_20"
             android:includeFontPadding="false"
             android:padding="@dimen/dp_10"
-            android:text="@string/all"
+            android:text="@string/common_action_all"
             android:textColor="?attr/colorPrimary"
             android:textSize="@dimen/fs_12"
             app:layout_constraintEnd_toEndOf="parent"
@@ -146,7 +145,7 @@
             android:id="@+id/btnExtraction"
             style="@style/BaseButtonPrimary"
             android:layout_marginVertical="@dimen/dp_46"
-            android:text="@string/extraction_nbsp"
+            android:text="@string/bank_withdrawal_action"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -163,7 +162,7 @@
             app:layout_constraintEnd_toEndOf="@id/etInputBox"
             app:layout_constraintStart_toStartOf="@id/etInputBox"
             app:layout_constraintTop_toBottomOf="@id/btnExtraction"
-            tools:text="@string/bank_withdrawal_hint_no_input" />
+            tools:text="@string/bank_withdrawal_tips_withdrawal_amount_empty" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

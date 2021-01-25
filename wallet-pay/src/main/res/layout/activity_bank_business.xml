@@ -46,7 +46,7 @@
                         android:textSize="@dimen/fs_12"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        tools:text="@string/hint_bank_deposit_business_name" />
+                        tools:text="@string/bank_deposit_label_biz_name" />
 
                     <LinearLayout
                         android:id="@+id/viewGroupCurrentAssets"
@@ -88,7 +88,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvBusinessName"
-                        tools:hint="每1V-AAA递增" />
+                        tools:hint="@string/bank_biz_hint_limit_amount_format" />
 
                     <TextView
                         android:id="@+id/tvAllValue"
@@ -97,7 +97,7 @@
                         android:paddingStart="12dp"
                         android:paddingTop="12dp"
                         android:paddingBottom="12dp"
-                        android:text="@string/action_bank_amount_all"
+                        android:text="@string/common_action_all"
                         android:textColor="?attr/colorPrimary"
                         android:textSize="@dimen/fs_10"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -132,13 +132,12 @@
                                 android:layout_marginStart="4dp"
                                 android:textColor="?android:attr/textColorSecondary"
                                 android:textSize="@dimen/fs_10"
-                                tools:text="可借额度 :" />
+                                tools:text="@string/common_label_available_balance" />
 
                             <com.palliums.widget.NumberTextView
                                 android:id="@+id/tvBusinessUsableAmount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
                                 android:textColor="?android:attr/textColorSecondary"
                                 android:textSize="@dimen/fs_10"
                                 android:textStyle="bold"
@@ -165,13 +164,12 @@
                                 android:layout_marginStart="4dp"
                                 android:textColor="?android:attr/textColorSecondary"
                                 android:textSize="@dimen/fs_10"
-                                tools:text="可借额度 :" />
+                                tools:text="@string/bank_borrow_label_borrowable_colon" />
 
                             <com.palliums.widget.NumberTextView
                                 android:id="@+id/tvBusinessLimitAmount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
                                 android:textColor="?android:attr/textColorSecondary"
                                 android:textSize="@dimen/fs_10"
                                 android:textStyle="bold"
@@ -219,7 +217,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@string/font_family_title"
-                        android:text="@string/hint_bank_product_description"
+                        android:text="@string/bank_biz_title_product_desc"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="@dimen/fs_14"
                         app:layout_constraintStart_toStartOf="parent"
@@ -280,7 +278,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@string/font_family_title"
-                        android:text="@string/hint_bank_common_problem"
+                        android:text="@string/bank_biz_title_common_problem"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="@dimen/fs_14"
                         app:layout_constraintStart_toStartOf="parent"
@@ -321,6 +319,7 @@
                     android:visibility="gone"
                     tools:visibility="visible" />
             </LinearLayout>
+
         </ScrollView>
 
         <LinearLayout
@@ -343,6 +342,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/dp_10"
                 android:paddingBottom="10dp"
                 android:visibility="gone"
                 tools:visibility="visible">
@@ -361,10 +361,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:maxWidth="300dp"
                     android:textColor="?android:textColorTertiary"
                     android:textSize="@dimen/fs_12"
-                    tools:text="你好" />
+                    tools:text="@string/bank_borrow_action_agreement_read_and_agree" />
             </LinearLayout>
 
             <Button
@@ -379,7 +378,9 @@
                 android:textColor="#E54040"
                 android:textSize="@dimen/fs_12"
                 android:visibility="gone" />
+
         </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.palliums.widget.status.DefaultStatusLayout
@@ -388,4 +389,5 @@
         android:layout_height="match_parent"
         android:background="@color/white"
         app:slShowReloadOnFailed="true" />
+
 </FrameLayout>

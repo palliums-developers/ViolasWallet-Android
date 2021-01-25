@@ -19,7 +19,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * 添加地址页面
+ */
 class AddAddressBookActivity : BaseAppActivity() {
+
     companion object {
         private const val REQUEST_SCAN_QR_CODE = 1
 
@@ -43,18 +47,6 @@ class AddAddressBookActivity : BaseAppActivity() {
 
     private var mCoinTypes = Int.MIN_VALUE
 
-    private val mCoinList by lazy {
-        linkedMapOf(
-            Pair(Int.MIN_VALUE, getString(R.string.action_please_choose)),
-            Pair(CoinTypes.Violas.coinType(), CoinTypes.Violas.fullName()),
-            Pair(CoinTypes.Libra.coinType(), CoinTypes.Libra.fullName()),
-            if (Vm.TestNet) {
-                Pair(CoinTypes.BitcoinTest.coinType(), CoinTypes.BitcoinTest.fullName())
-            } else {
-                Pair(CoinTypes.Bitcoin.coinType(), CoinTypes.Bitcoin.fullName())
-            }
-        )
-    }
     private val mAddressBookManager by lazy {
         AddressBookManager()
     }
@@ -63,7 +55,7 @@ class AddAddressBookActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.title_add_address_book)
+        title = getString(R.string.add_address_title)
 
         mCoinTypes = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
         refreshCoinType()
@@ -79,18 +71,21 @@ class AddAddressBookActivity : BaseAppActivity() {
         btnAdd.setOnClickListener {
             val note = editNote.text.toString().trim()
             if (note.isEmpty()) {
-                showToast(getString(R.string.hint_input_note))
+                showToast(getString(R.string.add_address_tips_note_empty))
                 return@setOnClickListener
             }
+
             val address = editAddress.text.toString().trim()
             if (address.isEmpty()) {
-                showToast(getString(R.string.hint_input_address))
+                showToast(getString(R.string.add_address_tips_address_empty))
                 return@setOnClickListener
             }
+
             if (mCoinTypes == Int.MIN_VALUE) {
-                showToast(getString(R.string.hint_please_select_address_system))
+                showToast(getString(R.string.add_address_tips_type_empty))
                 return@setOnClickListener
             }
+
             val checkAddress = when (mCoinTypes) {
                 CoinTypes.BitcoinTest.coinType(),
                 CoinTypes.Bitcoin.coinType() -> {
@@ -107,9 +102,10 @@ class AddAddressBookActivity : BaseAppActivity() {
                 }
             }
             if (!checkAddress) {
-                showToast(getString(R.string.hint_input_address_error))
+                showToast(getString(R.string.add_address_tips_address_error))
                 return@setOnClickListener
             }
+
             launch(Dispatchers.IO) {
                 mAddressBookManager.install(
                     AddressBookDo(
@@ -118,7 +114,7 @@ class AddAddressBookActivity : BaseAppActivity() {
                         coin_number = mCoinTypes
                     )
                 )
-                showToast(getString(R.string.hint_address_success))
+                showToast(getString(R.string.add_address_tips_add_success))
                 withContext(Dispatchers.Main) {
                     setResult(Activity.RESULT_OK)
                     finish()

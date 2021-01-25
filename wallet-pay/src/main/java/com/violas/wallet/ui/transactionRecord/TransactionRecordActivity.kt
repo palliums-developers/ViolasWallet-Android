@@ -46,7 +46,7 @@ class TransactionRecordActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.transaction_record_title)
+        setTitle(R.string.txn_records_title)
 
         findFragment(TransactionRecordFragment::class.java)?.pop()
 
@@ -64,7 +64,7 @@ class TransactionRecordActivity : BaseAppActivity() {
                         )
                     )
                 } else {
-                    showToast(R.string.account_tips_not_found)
+                    showToast(R.string.common_tips_account_error)
                     finish()
                 }
             }

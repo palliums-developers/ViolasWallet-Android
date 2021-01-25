@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_27"
-        android:text="@string/desc_scan_wallet_connect_login"
+        android:text="@string/wallet_connect_login_title"
         android:textSize="@dimen/fs_16"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,7 +42,7 @@
         android:paddingTop="8dp"
         android:paddingEnd="22dp"
         android:paddingBottom="8dp"
-        android:text="@string/hint_wallet_connect_prompt"
+        android:text="@string/wallet_connect_login_desc_login"
         android:textSize="@dimen/fs_14"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -62,7 +62,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvScanLoginDescribe"
-        tools:text="*其使用行为同样适用" />
+        tools:text="@string/wallet_connect_login_declare" />
 
     <LinearLayout
         android:id="@+id/viewWalletConnectLoginWarning"
@@ -85,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="@string/hint_wallet_connect_repeated_connection"
+            android:text="@string/wallet_connect_login_desc_logged"
             android:textColor="?attr/textColorWarn"
             android:textSize="@dimen/fs_12" />
     </LinearLayout>
@@ -94,7 +94,7 @@
         android:id="@+id/btnConfirmLogin"
         style="@style/BaseButtonPrimary"
         android:layout_marginTop="@dimen/dp_30"
-        android:text="@string/action_confirm_login"
+        android:text="@string/wallet_connect_login_action_confirm_login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
@@ -108,7 +108,7 @@
         android:layout_marginBottom="@dimen/dp_20"
         android:foreground="?attr/selectableItemBackground"
         android:gravity="center"
-        android:text="@string/action_cancel_login"
+        android:text="@string/wallet_connect_login_action_cancel_login"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_12"
         app:layout_constraintEnd_toEndOf="parent"

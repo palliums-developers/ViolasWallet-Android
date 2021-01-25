@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_29"
             android:includeFontPadding="false"
-            android:text="@string/main_wallet_total_fiat_balance"
+            android:text="@string/home_wallet_label_total_asset"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/fs_12"
             app:layout_constraintBottom_toBottomOf="@id/actionBar"
@@ -101,7 +101,7 @@
             android:textSize="@dimen/fs_24"
             app:layout_constraintStart_toStartOf="@+id/tvTotalAssetsTitle"
             app:layout_constraintTop_toBottomOf="@+id/tvTotalAssetsTitle"
-            tools:text="120.00000000" />
+            tools:text="120.00" />
 
         <LinearLayout
             android:id="@+id/llWalletConnectGroup"
@@ -125,7 +125,7 @@
                 android:layout_marginStart="@dimen/dp_5"
                 android:gravity="center"
                 android:includeFontPadding="false"
-                android:text="@string/wallet_connect_have_landed"
+                android:text="@string/home_wallet_action_web_logged"
                 android:textColor="?attr/walletHomeWalletConnectTextColor"
                 android:textSize="@dimen/fs_12" />
 
@@ -155,7 +155,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_8"
                 android:includeFontPadding="false"
-                android:text="@string/transfer"
+                android:text="@string/home_wallet_action_transfer"
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="@dimen/fs_12" />
 
@@ -192,7 +192,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_8"
                 android:includeFontPadding="false"
-                android:text="@string/collection"
+                android:text="@string/home_wallet_action_receive"
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="@dimen/fs_12" />
 
@@ -230,7 +230,7 @@
                 android:layout_marginStart="@dimen/dp_8"
                 android:layout_marginEnd="@dimen/dp_27"
                 android:includeFontPadding="false"
-                android:text="@string/mapping"
+                android:text="@string/home_wallet_action_mapping"
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="@dimen/fs_12" />
 
@@ -266,7 +266,7 @@
                 android:layout_marginStart="@dimen/dp_125"
                 android:layout_marginEnd="@dimen/dp_59"
                 android:letterSpacing="0.11"
-                android:text="@string/home_wallet_mining_title"
+                android:text="@string/incentive_home_wallet_action_1"
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="@dimen/fs_21"
                 android:textStyle="bold"
@@ -284,7 +284,7 @@
             android:layout_marginStart="@dimen/dp_29"
             android:layout_marginTop="@dimen/dp_19"
             android:includeFontPadding="false"
-            android:text="@string/label_assets"
+            android:text="@string/home_wallet_label_assets"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="@dimen/fs_14"
             app:layout_constraintStart_toStartOf="parent"
@@ -343,7 +343,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_22"
                 android:fontFamily="@string/font_family_title"
-                android:text="@string/create_account"
+                android:text="@string/home_wallet_action_create_wallet"
                 android:textColor="?attr/walletHomeInitWalletTextColor"
                 android:textSize="@dimen/fs_16" />
 
@@ -375,7 +375,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_22"
                 android:fontFamily="@string/font_family_title"
-                android:text="@string/import_account"
+                android:text="@string/home_wallet_action_import_wallet"
                 android:textColor="?attr/walletHomeInitWalletTextColor"
                 android:textSize="@dimen/fs_16" />
 
@@ -423,7 +423,7 @@
             android:layout_height="@dimen/dp_19"
             android:layout_marginHorizontal="@dimen/dp_5"
             android:gravity="center"
-            android:text="@string/home_wallet_phone_receive_title"
+            android:text="@string/incentive_home_wallet_action_2"
             android:textColor="?attr/colorPrimary"
             android:textSize="@dimen/fs_10"
             android:textStyle="bold"

@@ -25,7 +25,7 @@ class DepositMarketFragment : BaseBankMarketFragment<DepositProductSummaryDTO>()
         itemView.tvName.text = itemData.productName
         itemView.tvDesc.text = itemData.productDesc
         itemView.tvRate.text = convertRateToPercentage(itemData.depositYield)
-        itemView.tvRateLabel.setText(R.string.deposit_yield)
+        itemView.tvRateLabel.setText(R.string.bank_deposit_orders_label_yield)
     }
 
     override fun onItemClick(itemData: DepositProductSummaryDTO, itemPosition: Int) {

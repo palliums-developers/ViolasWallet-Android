@@ -256,7 +256,7 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
         statusLayout.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             if (searchText.isNullOrEmpty())
-                getString(R.string.tips_select_token_list_is_empty)
+                getString(R.string.select_currency_desc_tokens_empty)
             else
                 getSearchEmptyTips(searchText)
         )
@@ -264,7 +264,7 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
     }
 
     private fun getSearchEmptyTips(searchText: String) = run {
-        val text = getString(R.string.tips_select_token_search_is_empty, searchText)
+        val text = getString(R.string.select_currency_desc_search_empty_format, searchText)
         val spannableStringBuilder = SpannableStringBuilder(text)
         text.indexOf(searchText).let {
             spannableStringBuilder.setSpan(
@@ -310,7 +310,7 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
             )
             holder.itemView.tvTokenName.text = item.displayName
             holder.itemView.tvTokenBalance.text = getString(
-                R.string.market_select_token_balance_format,
+                R.string.common_label_balance_format,
                 item.displayAmount.toPlainString(),
                 item.displayName
             )

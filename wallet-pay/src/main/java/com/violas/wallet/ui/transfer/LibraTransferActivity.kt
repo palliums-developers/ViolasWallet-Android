@@ -25,7 +25,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 
+/**
+ * Diem/Violas转账页面
+ */
 class LibraTransferActivity : TransferActivity() {
+
     override fun getLayoutResId() = R.layout.activity_transfer
 
     private var mBalance: BigDecimal? = null
@@ -62,7 +66,7 @@ class LibraTransferActivity : TransferActivity() {
                 }
             }
             if (!exists) {
-                showToast(getString(R.string.hint_unsupported_tokens))
+                showToast(getString(R.string.transfer_tips_unopened_or_unsupported_token))
                 finish()
                 return@Observer
             }
@@ -71,7 +75,7 @@ class LibraTransferActivity : TransferActivity() {
                 try {
                     account = mAccountManager.getAccountById(mAssetsVo.getAccountId())
                     if (account?.accountType == AccountType.NoDollars && mAssetsVo is AssetsCoinVo) {
-                        showToast(getString(R.string.hint_unsupported_coin))
+                        showToast(getString(R.string.transfer_tips_unsupported_currency))
                         finish()
                         return@launch
                     }
@@ -85,10 +89,12 @@ class LibraTransferActivity : TransferActivity() {
                             editAmountInput.setText(convertAmountToDisplayUnit.first)
                         }
                         if (isToken) {
-                            title = "${mAssetsVo.getAssetsName()} ${getString(R.string.transfer)}"
+                            title =
+                                getString(R.string.transfer_title_format, mAssetsVo.getAssetsName())
                             tvHintCoinName.text = mAssetsVo.getAssetsName()
                         } else {
-                            title = "${coinType.coinName()} ${getString(R.string.transfer)}"
+                            title =
+                                getString(R.string.transfer_title_format, coinType.coinName())
                             tvHintCoinName.text = coinType.coinName()
                         }
                     }
@@ -127,7 +133,7 @@ class LibraTransferActivity : TransferActivity() {
         withContext(Dispatchers.Main) {
             mAssetsVo.amountWithUnit
             tvCoinAmount.text = String.format(
-                getString(R.string.hint_transfer_amount),
+                getString(R.string.transfer_label_balance_format),
                 mAssetsVo.amountWithUnit.amount,
                 mAssetsVo.amountWithUnit.unit
             )
@@ -189,7 +195,7 @@ class LibraTransferActivity : TransferActivity() {
                     isToken,
                     mAssetsVo.getId(),
                     {
-                        showToast(getString(R.string.hint_transfer_broadcast_success))
+                        showToast(getString(R.string.transfer_tips_transfer_success))
                         CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                         dismissProgress()
                         print(it)

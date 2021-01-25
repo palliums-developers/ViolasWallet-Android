@@ -1,135 +1,478 @@
 <resources>
 
-    <string name="language_follow_system">跟随系统</string>
-    <string name="language_follow_system_more">跟随系统</string>
-    <string name="language_en">English</string>
-    <string name="language_en_more">英文</string>
-    <string name="language_chinese_simplified">简体中文</string>
-    <string name="language_chinese_simplified_more">简体中文</string>
-    <string name="language_chinese_traditional">繁體中文</string>
-    <string name="language_chinese_traditional_more">繁体中文</string>
+    <!--URL-->
+    <string name="url_app_service_agreement">https://violas.io/violas_service_html/Terms_of_Service</string>
+    <string name="url_app_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy</string>
+    <string name="url_app_help_and_feedback">https://www.baidu.com/</string>
+    <string name="url_bank_service_agreement">https://violas.io/violas_service_html/Terms_of_Service</string>
 
-    <string name="backup_mnemonic_prompt_title">备份提示</string>
-    <string name="backup_mnemonic_prompt_btn_later">稍后备份</string>
-    <string name="backup_mnemonic_prompt_btn_start">开始备份</string>
-    <string name="backup_mnemonic_prompt_content_01">获取助记词</string>
-    <string name="backup_mnemonic_prompt_content_02">备份助记词</string>
-    <string name="backup_mnemonic_prompt_content_03">使用纸和笔正确抄写助记词\n如果你的手机丢失、被盗、损坏，Keystore将可以恢复你的资产</string>
-    <string name="backup_mnemonic_prompt_content_04">离线保管</string>
-    <string name="backup_mnemonic_prompt_content_05">请妥善保管至隔离网络的安全地方\n请勿将助记词在联网环境下分享和存储，比如邮件、相册、社交应用等</string>
-    <string name="backup_mnemonic_prompt_content_06">等于拥有钱包资产所有权</string>
-    <string name="backup_mnemonic_warn_title">安全提醒</string>
-    <string name="backup_mnemonic_warn_btn">立即备份</string>
-    <string name="backup_mnemonic_warn_content_01">您的身份助记词未备份，请务必备份助记词</string>
-    <string name="backup_mnemonic_warn_content_02">助记词可用于恢复身份下钱包资产，防止忘记密码、应用删除、手机丢失等情况导致资产损失</string>
-    <string name="show_mnemonic_title">备份助记词</string>
-    <string name="show_mnemonic_content_01">请将这些词按顺序写在纸上</string>
-    <string name="show_mnemonic_content_02">不要截屏或复制到剪切板\n这将可能被第三方恶意软件收集\n造成资产损失</string>
-    <string name="backup_mnemonic_show_title">备份助记词展示</string>
-    <string name="confirm_mnemonic_title">确认助记词</string>
-    <string name="confirm_mnemonic_content_01">请按顺序点击助记词，以确认您正确备份</string>
-    <string name="confirm_mnemonic_tips_01">助记词顺序不正确，请校对</string>
-    <string name="confirm_mnemonic_tips_02">请先按顺序点击所有助记词</string>
+    <!--通用-->
+    <string name="common_action_cancel_space">取&#160;消</string>
+    <string name="common_action_cancel">取消</string>
+    <string name="common_action_ok_space">确&#160;定</string>
+    <string name="common_action_ok">确定</string>
+    <string name="common_action_confirm_space">确&#160;认</string>
+    <string name="common_action_confirm">确认</string>
+    <string name="common_action_select_token">选择币种</string>
+    <string name="common_action_retry">重试</string>
+    <string name="common_action_all">全部</string>
+    <string name="common_desc_value_null">--</string>
+    <string name="common_state_cancelled">已取消</string>
+    <string name="common_state_submitted">已提交</string>
+    <string name="common_label_balance_format">余额：%1$s %2$s</string>
+    <string name="common_label_available_balance">可用余额&#160;：</string>
+    <string name="common_label_gas_fees">矿工费用</string>
+    <string name="common_label_gas_fees_colon">矿工费用：</string>
+    <string name="common_label_miner_fees">矿工费用</string>
+    <string name="common_label_miner_fees_colon">矿工费用：</string>
+    <string name="common_label_time">时间</string>
+    <string name="common_label_amount">数量</string>
+    <string name="common_label_state">状态</string>
+    <string name="common_title_wallet_management">钱包管理</string>
+    <string name="common_title_address_book">地址薄</string>
+    <string name="common_title_settings">设置</string>
+    <string name="common_title_multi_language">多语言</string>
+    <string name="common_title_service_agreement">服务协议</string>
+    <string name="common_title_privacy_policy">隐私条例</string>
+    <string name="common_title_about_us">关于我们</string>
+    <string name="common_title_help_feedback">帮助与反馈</string>
+    <string name="common_title_feedback">问题反馈</string>
+    <string name="common_title_prompt">提示</string>
+    <string name="common_content_user_agreement">《用户协议》</string>
+    <string name="common_content_privacy_policy">《隐私条款》</string>
+    <string name="common_tips_account_empty">请先创建/导入钱包</string>
+    <string name="common_tips_account_error">钱包账号不存在</string>
+    <string name="common_tips_insufficient_available_balance">当前可用余额不足</string>
+    <string name="common_tips_insufficient_available_balance_format">%1$s可用余额不足</string>
+    <string name="common_tips_exit_app">再次点击退出</string>
+    <string name="common_tips_copy_success">复制成功</string>
 
-    <string name="account_label_identity">身份钱包</string>
-    <string name="account_label_other">创建/导入</string>
-    <string name="account_management_title">钱包管理</string>
-    <string name="account_selection_title">选择钱包</string>
+    <string name="chain_tips_payee_account_not_active">收款账户没有激活</string>
 
-    <string name="btn_next_step">下一步</string>
-    <string name="btn_complete">完成</string>
-    <string name="action_back">返回</string>
-    <string name="quit_confirmation">再次点击退出</string>
-    <string name="action_confirm">确认</string>
-    <string name="transfer">转账</string>
-    <string name="collection">收款</string>
-    <string name="copy_success">复制成功</string>
-    <string name="hint_insufficient_or_trading_fees_are_confirmed">余额不足或资产还未确认</string>
-    <string name="title_colletction">收款</string>
-    <string name="title_import_the_wallet">导入钱包</string>
-    <string name="title_create_the_wallet">创建钱包</string>
-    <string name="create_identity">创建身份</string>
-    <string name="import_identity">导入身份</string>
-    <string name="action_create">创建</string>
-    <string name="action_import">导入</string>
-    <string name="hint_input_nickname">输入昵称</string>
-    <string name="hint_wallet_password">输入钱包密码</string>
-    <string name="hint_input_confirm_password">再次确认密码</string>
-    <string name="hint_confirm_password_fault">密码输入不一致</string>
-    <string name="hint_nickname_empty">钱包昵称不能为空</string>
-    <string name="hint_input_password_short">输入的密码太短</string>
-    <string name="hint_input_mnemonic_word">输入助记词单词，并用空格分隔</string>
-    <string name="hint_mnemonic_error">助记词错误</string>
-    <string name="action_start_import">开始导入</string>
-    <string name="action_immediately_into">马上进入</string>
-    <string name="title_welcome_1">欢迎来到</string>
-    <string name="title_welcome_2">Violas</string>
-    <string name="hint_security_setting">安全设置</string>
-    <string name="hint_backup_now">立即备份</string>
-    <string name="label_current_assets">当前资产</string>
-    <string name="label_transaction_records">交易记录</string>
-    <string name="label_assets">资产</string>
-    <string name="title_address_book">地址簿</string>
-    <string name="hint_address_book">地址簿</string>
-    <string name="title_add_address_book">添加地址</string>
-    <string name="label_address_book_note">备注信息少于20个字</string>
-    <string name="hint_note">备注</string>
-    <string name="label_address">地址</string>
-    <string name="hint_input_address">输入地址</string>
-    <string name="action_add_nbsp">添&#160;加</string>
-    <string name="hint_select">选择</string>
-    <string name="hint_type">类型</string>
-    <string name="hint_input_note">请填写备注</string>
-    <string name="hint_input_address_error">输入的地址不正确</string>
-    <string name="hint_address_success">添加成功</string>
-    <string name="hint_create_any_wallet">创建%1$s钱包</string>
-    <string name="hint_import_any_wallet">导入%1$s钱包</string>
-    <string name="hint_collection_address">收款地址</string>
-    <string name="hint_input_collection_address">输入收款地址</string>
-    <string name="action_copy">复制</string>
-    <string name="hint_transfer_amount">余额：%1$s %2$s</string>
-    <string name="hint_input_amount">输入金额</string>
-    <string name="hint_slow">慢</string>
-    <string name="hint_fast">快</string>
-    <string name="hint_fee">手续费</string>
-    <string name="action_tvHintFee">转账</string>
-    <string name="title_transfer">转账</string>
-    <string name="hint_please_input_amount">请填写转账金额</string>
-    <string name="hint_please_input_address">请填写转账地址</string>
-    <string name="title_assert_manager">币种管理</string>
-    <string name="title_manager">管理</string>
-    <string name="hint_output_back">导出助记词</string>
-    <string name="action_delete_wallet">删除钱包</string>
-    <string name="hint_change_wallet_name">更换钱包名</string>
-    <string name="hint_input_password">输入密码</string>
-    <string name="hint_delete_address_book">删除地址</string>
-    <string name="action_cancel">取消</string>
-    <string name="hint_password">密码</string>
-    <string name="hint_please_input_password">请填写密码</string>
-    <string name="hint_password_error">密码错误</string>
-    <string name="hint_to_their_error">不能转账给自己</string>
-    <string name="hint_wallet_info">钱包详情</string>
-    <string name="hint_input_new_wallet_name">请输入新的钱包名称</string>
-    <string name="hint_modify_success">修改成功</string>
-    <string name="me_wallet_management">钱包管理</string>
-    <string name="me_transfer_record">转账记录</string>
-    <string name="me_address_book">地址薄</string>
-    <string name="me_settings">设置</string>
-    <string name="hint_get_the_camera_permissions">获取相机权限</string>
-    <string name="hint_set_permissions_to_open">需要获取相机权限才能扫描二维码，前往开启。</string>
-    <string name="hint_scan_need_camera_permissions">扫码需要获取相机权限</string>
-    <string name="action_scan_address">扫描钱包地址</string>
-    <string name="title_scan">扫一扫</string>
+    <!--首页欢迎弹窗-->
+    <string name="welcome_title_1">欢迎来到</string>
+    <string name="welcome_title_2">Violas</string>
+    <string name="welcome_action">马上进入</string>
 
-    <string name="add_wallet_title">添加钱包</string>
+    <!--首页底部导航栏-->
+    <string name="home_tab_wallet">钱包</string>
+    <string name="home_tab_market">市场</string>
+    <string name="home_tab_bank">数字银行</string>
+    <string name="home_tab_me">我的</string>
 
-    <string name="setting_title">设置</string>
-    <string name="setting_multi_language">多语言</string>
-    <string name="setting_service_agreement">服务协议</string>
-    <string name="setting_about_us">关于我们</string>
-    <string name="setting_help_feedback">帮助与反馈</string>
+    <!--首页钱包-->
+    <string name="home_wallet_label_total_asset">总资产</string>
+    <string name="home_wallet_label_assets">资产</string>
+    <string name="home_wallet_action_web_logged">网页钱包已登录</string>
+    <string name="home_wallet_action_transfer">转账</string>
+    <string name="home_wallet_action_receive">收款</string>
+    <string name="home_wallet_action_mapping">映射</string>
+    <string name="home_wallet_action_create_wallet">创建钱包</string>
+    <string name="home_wallet_action_import_wallet">导入钱包</string>
 
-    <string name="about_us_title">关于我们</string>
+    <!--创建钱包-->
+    <string name="create_wallet_title">创建钱包</string>
+    <string name="create_wallet_hint_1">8–20位，大小写字母、数字</string>
+    <string name="create_wallet_hint_2">再次输入密码</string>
+    <string name="create_wallet_action_1">创&#160;建</string>
+    <string name="create_wallet_action_2">我已阅读并同意《用户协议》和《隐私政策》</string>
+    <string name="create_wallet_tips_1">请阅读并同意《用户协议》和《隐私政策》</string>
+    <string name="create_wallet_tips_2">密码输入不一致</string>
+
+    <!--导入钱包-->
+    <string name="import_wallet_title">导入钱包</string>
+    <string name="import_wallet_hint_mnemonics">输入助记词单词，并用空格分隔</string>
+    <string name="import_wallet_hint_pwd">8–20位，大小写字母、数字</string>
+    <string name="import_wallet_hint_comfirm_pwd">再次确认密码</string>
+    <string name="import_wallet_action_start_import">开始导入</string>
+    <string name="import_wallet_tips_two_pwd_not_equals">密码输入不一致</string>
+    <string name="import_wallet_tips_mnemonics_error">助记词错误</string>
+
+    <!--助记词备份提示-->
+    <string name="mnemonic_backup_prompt_title">备份提示</string>
+    <string name="mnemonic_backup_prompt_desc_1">获取助记词</string>
+    <string name="mnemonic_backup_prompt_desc_2">等于拥有钱包资产所有权</string>
+    <string name="mnemonic_backup_prompt_desc_3">备份助记词</string>
+    <string name="mnemonic_backup_prompt_desc_4">使用纸和笔正确抄写助记词\n如果你的手机丢失、被盗、损坏，Keystore将可以恢复你的资产</string>
+    <string name="mnemonic_backup_prompt_desc_5">离线保管</string>
+    <string name="mnemonic_backup_prompt_desc_6">请妥善保管至隔离网络的安全地方\n请勿将助记词在联网环境下分享和存储，比如邮件、相册、社交应用等</string>
+    <string name="mnemonic_backup_prompt_action_1">开始备份</string>
+    <string name="mnemonic_backup_prompt_action_2">稍后备份</string>
+
+    <!--助记词备份展示-->
+    <string name="mnemonic_backup_show_title">备份助记词</string>
+    <string name="mnemonic_backup_show_desc_1">请将这些词按顺序写在纸上</string>
+    <string name="mnemonic_backup_show_desc_2">不要截屏或复制到剪切板\n这将可能被第三方恶意软件收集\n造成资产损失</string>
+    <string name="mnemonic_backup_show_action">下一步</string>
+
+    <!--助记词备份确认-->
+    <string name="mnemonic_backup_confirm_title">确认助记词</string>
+    <string name="mnemonic_backup_confirm_desc">请按顺序点击助记词，以确认您正确备份</string>
+    <string name="mnemonic_backup_confirm_action">完成</string>
+    <string name="mnemonic_backup_confirm_tips_1">请先按顺序点击所有助记词</string>
+    <string name="mnemonic_backup_confirm_tips_2">助记词顺序不正确，请校对</string>
+
+    <!--助记词备份提醒-->
+    <string name="mnemonic_backup_warn_title">安全提醒</string>
+    <string name="mnemonic_backup_warn_desc">您的身份助记词未备份，请务必备份助记词，助记词可用于恢复身份下钱包资产，防止忘记密码、应用删除、手机丢失等情况导致资产损失</string>
+    <string name="mnemonic_backup_warn_action">立即备份</string>
+
+    <!--添加币种-->
+    <string name="add_currency_title">添加币种</string>
+    <string name="add_currency_menu">获取体验币</string>
+    <string name="add_currency_first_title_1">提示</string>
+    <string name="add_currency_first_title_2">请先激活</string>
+    <string name="add_currency_first_desc_format">首次开启%1$s需向系统支付少量费用激活，系统将默认选择同一链上有余额的币种进行支付</string>
+    <string name="add_currency_first_action_1">确定</string>
+    <string name="add_currency_first_action_2">取消</string>
+    <string name="add_currency_first_tips_add_failure">没有足够的 %1$s 或网络异常，请稍后再试。</string>
+
+    <!--币种详情-->
+    <string name="currency_details_tab_1">全部</string>
+    <string name="currency_details_tab_2">转入</string>
+    <string name="currency_details_tab_3">转出</string>
+    <string name="currency_details_action_1">转&#160;账</string>
+    <string name="currency_details_action_2">收&#160;款</string>
+    <string name="currency_details_action_3">闪&#160;兑</string>
+
+    <!--交易记录-->
+    <string name="txn_records_title">交易记录</string>
+    <string name="txn_records_desc_records_empty">暂无交易记录</string>
+
+    <!--交易详情-->
+    <string name="txn_details_title">详&#160;情</string>
+    <string name="txn_details_menu">分享</string>
+    <string name="txn_details_desc">此地址未添加</string>
+    <string name="txn_details_action_1">立即添加</string>
+    <string name="txn_details_action_2">浏览器查询更详细信息 ></string>
+    <string name="txn_details_label_1">金额：</string>
+    <string name="txn_details_label_2">矿工费用：</string>
+    <string name="txn_details_label_3">收款地址：</string>
+    <string name="txn_details_label_4">付款地址：</string>
+    <string name="txn_details_label_5">交易号：</string>
+    <string name="txn_details_state_processing">交易中</string>
+    <string name="txn_details_state_transfer_success">转账成功</string>
+    <string name="txn_details_state_transfer_failure">转账失败</string>
+    <string name="txn_details_state_collection_success">收款成功</string>
+    <string name="txn_details_state_collection_failure">收款失败</string>
+    <string name="txn_details_state_add_currency_success">稳定币激活成功</string>
+    <string name="txn_details_state_add_currency_failure">稳定币激活失败</string>
+    <string name="txn_details_state_transaction_success">交易成功</string>
+    <string name="txn_details_state_transaction_failure">交易失败</string>
+
+    <!--保存图片-->
+    <string name="save_picture_title">保存到相册</string>
+    <string name="save_picture_tips_success">已保存到相册</string>
+    <string name="save_picture_tips_failure">保存到相册失败</string>
+    <string name="save_picture_need_permissions_desc">保存图片需要获取存储权限</string>
+    <string name="save_picture_set_permissions_title">获取存储权限</string>
+    <string name="save_picture_set_permissions_desc">需要获取存储权限才能保存图片，前往开启。</string>
+
+    <!--转账-->
+    <string name="transfer_title">转账</string>
+    <string name="transfer_title_format">%1$s转账</string>
+    <string name="transfer_label_balance_format">余额：%1$s %2$s</string>
+    <string name="transfer_label_receiver_address">收款地址</string>
+    <string name="transfer_label_fees">手续费</string>
+    <string name="transfer_hint_transfer_amount">输入金额</string>
+    <string name="transfer_hint_receiver_address">输入收款地址</string>
+    <string name="transfer_desc_slow">慢</string>
+    <string name="transfer_desc_fast">快</string>
+    <string name="transfer_action_transfer">确认转账</string>
+    <string name="transfer_tips_unopened_or_unsupported_token">未打开或不支持的代币</string>
+    <string name="transfer_tips_unsupported_currency">不支持的数字货币</string>
+    <string name="transfer_tips_token_empty">请选择要转账的币种</string>
+    <string name="transfer_tips_transfer_amount_empty">请填写转账金额</string>
+    <string name="transfer_tips_address_empty">请填写转账地址</string>
+    <string name="transfer_tips_address_error">地址有误</string>
+    <string name="transfer_tips_address_is_myself">不能转账给自己</string>
+    <string name="transfer_tips_transfer_success">转账交易广播成功</string>
+    <string name="transfer_tips_transfer_failure">转账失败</string>
+    <string name="transfer_tips_insufficient_balance_or_assets_unconfirmed">余额不足或资产还未确认</string>
+    <string name="transfer_tips_account_no_activation">当前账户没有激活</string>
+    <string name="transfer_tips_receive_account_no_activation">收款账户没有激活</string>
+    <string name="transfer_tips_account_no_control">没有当前账户的控制权</string>
+    <string name="transfer_tips_node_not_response">节点请求失败</string>
+
+    <!--收款-->
+    <string name="receive_title">收款</string>
+    <string name="receive_desc_receiver_address">收款地址</string>
+
+    <!--映射-->
+    <string name="mapping_title">映射</string>
+    <string name="mapping_label_balance">可用余额 ：</string>
+    <string name="mapping_label_exchange_rate">汇率</string>
+    <string name="mapping_hint_mapping_amount">转出数量</string>
+    <string name="mapping_action_mapping">确定映射</string>
+    <string name="mapping_label_gas_fee">矿工费用</string>
+    <string name="mapping_eth_tokens_title">如何映射 ETH 代币？</string>
+    <string name="mapping_eth_tokens_desc">将链接复制到以下钱包，即可将ETH代币映射至violas钱包</string>
+    <string name="mapping_tips_token_empty">请选择币种</string>
+    <string name="mapping_tips_mapping_amount_empty">请输入转出数量</string>
+    <string name="mapping_tips_insufficient_balance">当前可用余额不足</string>
+    <string name="mapping_tips_unsupported_token">不支持该币种映射</string>
+    <string name="mapping_tips_mapping_success">映射交易广播成功</string>
+    <string name="mapping_tips_mapping_failure">映射失败</string>
+    <!--映射记录-->
+    <string name="mapping_records_title">映射记录</string>
+    <string name="mapping_records_label_gas_fee_format">矿工费用：%1$s</string>
+    <string name="mapping_txn_state_processing">映射中</string>
+    <string name="mapping_txn_state_succeeded">映射成功</string>
+    <string name="mapping_txn_state_failed">映射失败</string>
+
+    <!--首页市场-->
+    <string name="home_market_tab_swap">兑换</string>
+    <string name="home_market_tab_pool">资金池</string>
+    <string name="home_market_menu_txn_records">市场交易记录</string>
+    <!--市场通用-->
+    <string name="market_common_action_select_token">选择通证</string>
+    <string name="market_common_tips_token_empty">请选择通证</string>
+    <string name="market_common_label_token_balance_format">当前资产：%1$s</string>
+    <string name="market_common_label_pool_tokens">资金池通证</string>
+    <string name="market_common_label_pool_token_amount_format">通证：%1$s</string>
+    <string name="market_common_label_swap_rate_colon">兑换率：</string>
+    <string name="market_common_label_charge_colon">手续费：</string>
+    <string name="market_common_label_order_time_colon">下单时间：</string>
+    <string name="market_common_label_deal_time_colon">成交时间：</string>
+    <!--市场兑换-->
+    <string name="market_swap_action_swap">兑&#160;换</string>
+    <string name="market_swap_label_from">输入</string>
+    <string name="market_swap_label_to">输出</string>
+    <string name="market_swap_label_charge_rate_format">费率：%1$s</string>
+    <string name="market_swap_label_swap_rate_format">兑换率：%1$s</string>
+    <string name="market_swap_label_gas_fee_format">矿工费用：%1$s</string>
+    <string name="market_swap_tips_from_token_empty">请选择通证</string>
+    <string name="market_swap_tips_to_token_empty">请选择通证</string>
+    <string name="market_swap_tips_amount_empty">请输入兑换数量</string>
+    <string name="market_swap_tips_insufficient_balance">可用余额不足</string>
+    <string name="market_swap_tips_swap_estimating">正在估算兑换金额…</string>
+    <string name="market_swap_tips_swap_success">兑换交易广播成功</string>
+    <string name="market_swap_tips_swap_failure">兑换失败</string>
+    <string name="market_swap_tips_unsupported_pair">不支持该交易对</string>
+    <!--市场资金池-->
+    <string name="market_pool_title_select_pool_token">选择交易对</string>
+    <string name="market_pool_action_add_liquidity">转入</string>
+    <string name="market_pool_action_remove_liquidity">转出</string>
+    <string name="market_pool_action_deposit">转&#160;入</string>
+    <string name="market_pool_action_withdrawal">转&#160;出</string>
+    <string name="market_pool_action_select_pool_token">选择交易对</string>
+    <string name="market_pool_label_input">转入</string>
+    <string name="market_pool_label_output">转出</string>
+    <string name="market_pool_label_total_pool_tokens_format">你的资金池共有：%1$s</string>
+    <string name="market_pool_label_pool_token_balance_format">当前通证：%1$s</string>
+    <string name="market_pool_desc_earnings">转入资金池可获取手续费收益</string>
+    <string name="market_pool_desc_and">%1$s和%2$s</string>
+    <string name="market_pool_tips_pool_tokens_empty">没有可选择的交易对</string>
+    <string name="market_pool_tips_add_liquidity_estimating">正在估算转入金额…</string>
+    <string name="market_pool_tips_remove_liquidity_estimating">正在估算转出金额…</string>
+    <string name="market_pool_tips_pool_token_empty">请选择交易对</string>
+    <string name="market_pool_tips_input_amount_empty">请输入转入数量</string>
+    <string name="market_pool_tips_output_amount_empty">请输入转出数量</string>
+    <string name="market_pool_tips_add_liquidity_success">转入交易广播成功</string>
+    <string name="market_pool_tips_add_liquidity_failure">转入失败</string>
+    <string name="market_pool_tips_remove_liquidity_success">转出交易广播成功</string>
+    <string name="market_pool_tips_remove_liquidity_failure">转出失败</string>
+    <!--我的资金池-->
+    <string name="my_pool_title">我的资金池</string>
+    <string name="my_pool_action_add_liquidity">转&#160;入</string>
+    <string name="my_pool_action_remove_liquidity">转&#160;出</string>
+    <string name="my_pool_label_assets">资产</string>
+    <!--兑换记录-->
+    <string name="swap_records_title">兑换记录</string>
+    <string name="swap_txn_state_processing">兑换中</string>
+    <string name="swap_txn_state_succeeded">兑换成功</string>
+    <string name="swap_txn_state_failed">兑换失败</string>
+    <string name="swap_details_title">兑换详情</string>
+    <!--资金池记录-->
+    <string name="pool_records_title">资金池记录</string>
+    <string name="pool_txn_state_processing">打包中</string>
+    <string name="pool_txn_state_add_liquidity_succeeded">转入成功</string>
+    <string name="pool_txn_state_add_liquidity_failed">转入失败</string>
+    <string name="pool_txn_state_remove_liquidity_succeeded">转出成功</string>
+    <string name="pool_txn_state_remove_liquidity_failed">转出失败</string>
+    <string name="pool_details_title">详 情</string>
+    <string name="pool_details_label_pool_token">通证：</string>
+    <!--选择币种-->
+    <string name="select_currency_hint_search">搜索Token</string>
+    <string name="select_currency_desc_tokens_empty">暂无可以选择的Token</string>
+    <string name="select_currency_desc_search_empty_format">未找到%1$s相关的Token</string>
+
+    <!--首页数字银行-->
+    <string name="home_bank_label_total_deposit">存款总额（$）</string>
+    <string name="home_bank_label_total_borrowable">可借总额（$）</string>
+    <string name="home_bank_label_total_earnings">累计收益（$）</string>
+    <string name="home_bank_label_yesterday_earnings">昨日收益&#160;</string>
+    <string name="home_bank_tab_deposit_market">存款市场</string>
+    <string name="home_bank_tab_borrowing_market">借款市场</string>
+    <string name="home_bank_menu_deposit_order">存款订单</string>
+    <string name="home_bank_menu_borrowing_order">借款订单</string>
+    <!--存款订单-->
+    <string name="bank_deposit_orders_title">存款订单</string>
+    <string name="bank_deposit_orders_state_earning">收益中</string>
+    <string name="bank_deposit_orders_label_current_deposit">当前存款</string>
+    <string name="bank_deposit_orders_label_principal">本金</string>
+    <string name="bank_deposit_orders_label_earnings">收益</string>
+    <string name="bank_deposit_orders_label_yield">年化收益率</string>
+    <string name="bank_deposit_orders_action_withdrawal">提&#160;取</string>
+    <!--存款记录-->
+    <string name="bank_deposit_records_title">存款记录</string>
+    <string name="bank_deposit_records_type_deposited">已存款</string>
+    <string name="bank_deposit_records_type_withdrew">已提取</string>
+    <string name="bank_deposit_state_depositing">存款中</string>
+    <string name="bank_deposit_state_deposited">已存款</string>
+    <string name="bank_deposit_state_deposit_failed">存款失败</string>
+    <string name="bank_deposit_state_withdrawing">提取中</string>
+    <string name="bank_deposit_state_withdrew">已提取</string>
+    <string name="bank_deposit_state_withdrawal_failed">提取失败</string>
+    <!--借款订单-->
+    <string name="bank_borrowing_orders_title">借款订单</string>
+    <string name="bank_borrowing_orders_label_current_borrowing">当前借款</string>
+    <string name="bank_borrowing_orders_label_borrowed_amount">待还金额</string>
+    <!--借款记录-->
+    <string name="bank_borrowing_records_title">借款记录</string>
+    <string name="bank_borrowing_records_type_borrowed">已借款</string>
+    <string name="bank_borrowing_records_type_repaid">已还款</string>
+    <string name="bank_borrowing_records_type_liquidated">已清算</string>
+    <!--数字银行交易记录通用-->
+    <string name="bank_records_common_type_all">全部</string>
+    <string name="bank_records_common_type_all_currencies">全部币种</string>
+    <string name="bank_records_common_type_all_state">全部状态</string>
+    <string name="bank_records_common_desc_search_empty">没有匹配的搜索结果</string>
+    <!--借款详情-->
+    <string name="bank_borrowing_details_tab_borrowing">借款明细</string>
+    <string name="bank_borrowing_details_tab_repayment">还款明细</string>
+    <string name="bank_borrowing_details_tab_liquidation">清算明细</string>
+    <string name="bank_borrowing_details_action">立即还款</string>
+    <string name="bank_borrowing_details_label_liquidation_amount">被清算</string>
+    <string name="bank_borrowing_details_label_deduction_amount">已抵扣</string>
+    <string name="bank_borrowing_state_borrowing">借款中</string>
+    <string name="bank_borrowing_state_borrowed">已借款</string>
+    <string name="bank_borrowing_state_borrowing_failed">借款失败</string>
+    <string name="bank_borrowing_state_repaying">还款中</string>
+    <string name="bank_borrowing_state_repaid">已还款</string>
+    <string name="bank_borrowing_state_repayment_failed">还款失败</string>
+    <string name="bank_borrowing_state_liquidating">清算中</string>
+    <string name="bank_borrowing_state_liquidated">已清算</string>
+    <string name="bank_borrowing_state_liquidation_failed">清算失败</string>
+    <!--数字银行业务通用-->
+    <string name="bank_biz_title_product_desc">产品说明</string>
+    <string name="bank_biz_title_common_problem">常见问题</string>
+    <string name="bank_biz_hint_limit_amount_format">%1$s %2$s起，每%3$s %4$s递增</string>
+    <string name="bank_biz_hint_pledge_rate_algorithm">质押率=借贷数量/存款数量</string>
+    <string name="bank_biz_label_pledge_rate">质押率</string>
+    <string name="bank_biz_desc_click_retry">点击重试</string>
+    <string name="bank_biz_tips_unsupported_currency">当前版本不支持的币种</string>
+    <string name="bank_biz_tips_load_currency_error">币种信息加载异常</string>
+    <string name="bank_biz_tips_select_currency_error">选择的币种信息异常</string>
+    <string name="bank_biz_tips_greater_than_daily_limit">不可大于当日限额</string>
+    <!--数字银行存款-->
+    <string name="bank_deposit_title">存款</string>
+    <string name="bank_deposit_label_biz_name">我要存</string>
+    <string name="bank_deposit_action_deposit">立即存款</string>
+    <string name="bank_deposit_label_daily_limit">每日限额&#160;：</string>
+    <string name="bank_deposit_label_annual_deposit_rate">存款年利率</string>
+    <string name="bank_deposit_tips_deposit_amount_empty">请输入存款数量</string>
+    <string name="bank_deposit_tips_deposit_amount_too_small_format">存款金额不得低于%1$s%2$s</string>
+    <string name="bank_deposit_tips_deposit_amount_too_big_format">存款金额不得高于%1$s%2$s</string>
+    <string name="bank_deposit_tips_deposit_success">存款交易广播成功</string>
+    <string name="bank_deposit_tips_deposit_failure">存款失败</string>
+    <!--数字银行提款-->
+    <string name="bank_withdrawal_title">提取</string>
+    <string name="bank_withdrawal_action">提&#160;取</string>
+    <string name="bank_withdrawal_label_deposited_amount">可提数量&#160;：</string>
+    <string name="bank_withdrawal_desc">如果您当前有借贷操作，则需将部分存款作为质押金。提取质押金需还对应数量的借款金额。</string>
+    <string name="bank_withdrawal_hint_withdrawal_amount">输入提取数量</string>
+    <string name="bank_withdrawal_tips_withdrawal_amount_empty">请输入提取数量</string>
+    <string name="bank_withdrawal_tips_insufficient_balance">可提取数量不足</string>
+    <string name="bank_withdrawal_tips_withdrawal_success">提取交易广播成功</string>
+    <string name="bank_withdrawal_tips_withdrawal_failure">提取失败</string>
+    <!--数字银行借款-->
+    <string name="bank_borrow_title">借款</string>
+    <string name="bank_borrow_action_borrowing">立即借款</string>
+    <string name="bank_borrow_label_biz_name">我要借</string>
+    <string name="bank_borrow_label_borrowable_colon">可借额度&#160;：</string>
+    <string name="bank_borrow_label_borrowing_rate">借款利率</string>
+    <string name="bank_borrow_content_borrowing_rate_format">%1$s/日</string>
+    <string name="bank_borrow_label_pledge_account">质押账户</string>
+    <string name="bank_borrow_type_bank_balance">银行余额</string>
+    <string name="bank_borrow_desc_pledge_account">清算部分将从存款账户扣除</string>
+    <string name="bank_borrow_action_agreement_read_and_agree">我已阅读并同意《质押借款服务协议》</string>
+    <string name="bank_borrow_desc_agreement">《质押借款服务协议》</string>
+    <string name="bank_borrow_tips_read_and_agree_agreement">请阅读并同意《质押借款服务协议》</string>
+    <string name="bank_borrow_tips_borrow_amount_empty">请输入借款数量</string>
+    <string name="bank_borrow_tips_borrow_amount_too_small_format">借款金额不得低于%1$s%2$s</string>
+    <string name="bank_borrow_tips_borrow_amount_too_big_format">借款金额不得高于%1$s%2$s</string>
+    <string name="bank_borrow_tips_borrow_success">借款交易广播成功</string>
+    <string name="bank_borrow_tips_borrow_failure">借款失败</string>
+    <!--数字银行还款-->
+    <string name="bank_repayment_title">还款</string>
+    <string name="bank_repayment_action">立即还款</string>
+    <string name="bank_repayment_label_biz_name">我要还</string>
+    <string name="bank_repayment_label_borrowed_amount">待还余额&#160;：</string>
+    <string name="bank_repayment_hint_repayment_amount">输入还款金额</string>
+    <string name="bank_repayment_label_borrowing_rate">借贷率</string>
+    <string name="bank_repayment_label_repayment_account">还款账户</string>
+    <string name="bank_repayment_content_repayment_account">钱包余额</string>
+    <string name="bank_repayment_tips_repayment_amount_empty">请输入还款数量</string>
+    <string name="bank_repayment_tips_repayment_success">还款交易广播成功</string>
+    <string name="bank_repayment_tips_repayment_failure">还款失败</string>
+
+    <!--钱包管理-->
+    <string name="wallet_management_title">管理</string>
+    <string name="wallet_management_label_export_mnemonics">导出助记词</string>
+    <string name="wallet_management_label_touch_id">指纹ID</string>
+    <string name="wallet_management_action_delete_wallet">删除钱包</string>
+    <!--删除钱包-->
+    <string name="delete_wallet_desc">请谨慎使用此操作，删除前确认你的钱包已安全备份，否则数字资产将无法找回！</string>
+    <!--指纹ID-->
+    <string name="touch_id_open_prompt_title">设置指纹识别让交易更方便</string>
+    <string name="touch_id_open_prompt_action_setup_now">马上设置</string>
+    <string name="touch_id_open_prompt_action_later_setup">稍后再说</string>
+    <string name="touch_id_unable_tips_unsupported">当前设备不支持此功能</string>
+    <string name="touch_id_unable_tips_unopened">请先开启生物识别功能</string>
+    <string name="touch_id_unable_tips_unavailable">生物识别暂不可用，请稍后再试。</string>
+    <string name="open_touch_id_title">开启指纹验证</string>
+    <string name="auth_touch_id_title">指纹验证</string>
+    <string name="auth_touch_id_action_use_password">使用密码</string>
+    <string name="auth_touch_id_action_enable_now">马上启用</string>
+    <string name="auth_touch_id_action_retry">再次尝试指纹</string>
+    <string name="auth_touch_id_desc_auth_start">请验证已有指纹</string>
+    <string name="auth_touch_id_desc_auth_failure">未能识别指纹</string>
+    <string name="auth_touch_id_desc_try_again">再试一次</string>
+    <string name="auth_touch_id_desc_lockout">指纹传感器已暂停使用，请稍后重试。</string>
+    <string name="auth_touch_id_desc_lockout_permanent">指纹传感器已停用，需要验证手机密码。</string>
+    <string name="close_touch_id_desc">确定关闭指纹验证？</string>
+
+    <!--地址薄-->
+    <string name="address_book_desc_addresses_empty">暂时没有地址</string>
+    <!--删除地址-->
+    <string name="delete_address_title">删除地址</string>
+    <string name="delete_address_desc">确定要在地址簿中删除该地址！</string>
+    <!--添加地址-->
+    <string name="add_address_title">添加地址</string>
+    <string name="add_address_label_note">备注</string>
+    <string name="add_address_label_address">地址</string>
+    <string name="add_address_label_type">类型</string>
+    <string name="add_address_hint_note">备注信息少于20个字</string>
+    <string name="add_address_hint_address">输入地址</string>
+    <string name="add_address_action_add">添&#160;加</string>
+    <string name="add_address_tips_note_empty">请填写备注</string>
+    <string name="add_address_tips_address_empty">请输入地址</string>
+    <string name="add_address_tips_type_empty">请选择钱包类型</string>
+    <string name="add_address_tips_address_error">输入的地址不正确</string>
+    <string name="add_address_tips_add_success">添加成功</string>
+
+    <!--设置-->
+    <!--多语言-->
+    <string name="multi_language_label_follow_system">跟随系统</string>
+    <string name="multi_language_desc_follow_system">跟随系统</string>
+    <string name="multi_language_label_english">English</string>
+    <string name="multi_language_desc_english">英文</string>
+    <string name="multi_language_label_chinese_simplified">简体中文</string>
+    <string name="multi_language_desc_chinese_simplified">简体中文</string>
+    <string name="multi_language_label_chinese_traditional">繁體中文</string>
+    <string name="multi_language_desc_chinese_traditional">繁体中文</string>
+    <!--关于我们-->
     <string name="about_us_website_key">官方网站</string>
     <string name="about_us_website_value">https://violas.io</string>
     <string name="about_us_email_key">邮箱</string>
@@ -142,478 +485,138 @@
     <string name="about_us_twitter_value">xxxxx</string>
     <string name="about_us_facebook_key">Facebook</string>
     <string name="about_us_facebook_value">xxxxx</string>
-    <string name="hint_address_error">地址有误</string>
+    <!--帮组与反馈-->
+    <string name="feedback_hint_content">输入内容</string>
+    <string name="feedback_hint_contact">输入您的联系方式</string>
+    <string name="feedback_desc_content_count">%1$d/%2$d</string>
+    <string name="feedback_tips_content_empty">请输入内容</string>
+    <string name="feedback_tips_contact_empty">请输入您的联系方式</string>
 
-    <string name="web_load_failed_tips">无法打开页面</string>
-    <string name="web_load_failed_retry">轻触屏幕重新加载</string>
+    <!--密码验证-->
+    <string name="auth_pwd_title">输入密码</string>
+    <string name="auth_pwd_hint_pwd">密码</string>
+    <string name="auth_pwd_hint_pwd_empty">请填写密码</string>
+    <string name="auth_pwd_hint_pwd_error">密码错误</string>
 
-    <string name="service_agreement_title">服务协议</string>
-    <string name="service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service</string>
-    <string name="title_privacy_policy">隐私条例</string>
-    <string name="url_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy</string>
-    <string name="feedback">问题反馈</string>
-    <string name="help_feedback_title">帮助与反馈</string>
-    <string name="help_feedback_menu">问题反馈</string>
-    <string name="help_feedback_url">https://www.baidu.com/</string>
-    <string name="feedback_title">问题反馈</string>
-    <string name="feedback_hint_input_content">请输入内容</string>
-    <string name="feedback_hint_input_contact">请输入您的联系方式</string>
-    <string name="feedback_content_count">%1$d/%2$d</string>
+    <!--国家/地区-->
+    <string name="country_area_title_select_area_code">选择电话区号</string>
+    <string name="country_area_title_select_country_area">选择国家或地区</string>
+    <string name="country_area_united_states">美国</string>
 
-    <string name="title_market">市场</string>
-    <string name="hint_transfer_number">转出数量</string>
-    <string name="hint_receipt_number">收到数量</string>
-    <string name="hint_parities">汇率</string>
-    <string name="title_change_language">修改语言</string>
-    <string name="transaction_record_title">交易记录</string>
-    <string name="transaction_record_time">日期</string>
-    <string name="transaction_record_amount">数量</string>
-    <string name="transaction_record_consume">消耗</string>
-    <string name="transaction_record_receipt">收款</string>
-    <string name="transaction_record_transfer">转账</string>
-    <string name="transaction_record_open">开启</string>
-    <string name="transaction_record_activation">激活</string>
-    <string name="transaction_record_stablecoin">稳定币</string>
-    <string name="transaction_record_new_coin">新币种</string>
-    <string name="transaction_record_query">浏览器查询</string>
-    <string name="transaction_record_not_supported_query">暂不支持</string>
+    <!--激励挖矿-->
+    <!--激励挖矿首页部分-->
+    <string name="incentive_home_wallet_action_1">挖矿领福利</string>
+    <string name="incentive_home_wallet_action_2">免费领取</string>
+    <string name="incentive_home_market_title">挖矿福利</string>
+    <string name="incentive_home_market_desc">现在加入资金池可获得同手续费奖励等价的VLS挖矿福利</string>
+    <string name="incentive_home_bank_action">存｜借挖矿规则</string>
+    <string name="incentive_home_me_action_1">挖矿奖励及规则</string>
+    <string name="incentive_home_me_action_2">邀请奖励</string>
+    <!--手机领取奖励-->
+    <string name="incentive_receive_title">验证手机号</string>
+    <string name="incentive_receive_desc">1. 每个手机号有三次验证机会\n2. 请您放心，手机号不会绑定您的钱包\n3. 验证成功后可获取 10 VLS</string>
+    <string name="incentive_receive_hint_phone_number">请输入手机号</string>
+    <string name="incentive_receive_hint_verification_code">请输入验证码</string>
+    <string name="incentive_receive_hint_inviter_address">邀请人VLS地址（选填）</string>
+    <string name="incentive_receive_tips_inviter_address_error">请输入正确的邀请人VLS地址</string>
+    <string name="incentive_receive_tips_get_verification_code_success">验证码已发送，请注意查收</string>
+    <string name="incentive_receive_tips_receive_success">领取成功</string>
+    <string name="incentive_receive_action_get_verification_code">获取验证码</string>
+    <string name="incentive_receive_action_receive_now">立即领取</string>
+    <!--挖矿收益明细-->
+    <string name="incentive_earnings_details_title">收益明细</string>
+    <string name="incentive_earnings_details_tab_invite">邀请好友</string>
+    <string name="incentive_earnings_details_tab_pool">资金池</string>
+    <string name="incentive_earnings_details_tab_bank">数字银行</string>
+    <string name="incentive_earnings_details_label_invited_account">被邀请账号</string>
+    <string name="incentive_earnings_details_label_mining_earnings">挖矿收益</string>
+    <string name="incentive_earnings_details_label_invitation_time">邀请时间</string>
+    <string name="incentive_earnings_details_label_withdrawal_time">提取时间</string>
+    <string name="incentive_earnings_details_label_withdrawal_amount">提取数量</string>
+    <string name="incentive_earnings_details_label_operation_type">操作类型</string>
+    <string name="incentive_earnings_details_state_issuing">发放中</string>
+    <string name="incentive_earnings_details_state_arrived">已到账</string>
+    <string name="incentive_earnings_details_type_deposit">存款</string>
+    <string name="incentive_earnings_details_type_withdrawal">提取</string>
+    <string name="incentive_earnings_details_type_borrowing">借款</string>
+    <string name="incentive_earnings_details_type_repayment">还款</string>
+    <string name="incentive_earnings_details_type_add_liquidity">转入</string>
+    <string name="incentive_earnings_details_type_remove_liquidity">转出</string>
+    <string name="incentive_earnings_details_type_active_extraction">一键提取</string>
+    <string name="incentive_tips_share_link_success">已复制</string>
 
-    <string name="account_tips_not_found">钱包账号不存在</string>
-    <string name="hint_assert_open_error">资产开启失败</string>
-    <string name="hint_transaction_record">交易记录</string>
-    <string name="hint_unsupported_tokens">未打开或不支持的代币</string>
-    <string name="hint_unsupported_coin">不支持的数字货币</string>
-    <string name="hint_scan_result">扫码结果</string>
-    <string name="action_exchange">兑换</string>
-    <string name="action_view_orders">查看订单</string>
-    <string name="title_orders">订单</string>
-    <string name="title_tab_uncompleted">未完成</string>
-    <string name="title_tab_completed">已完成</string>
-    <string name="hint_quotes_not_open">开发中敬请期待</string>
-    <string name="action_revoke">撤销</string>
-    <string name="label_total_amount">数量</string>
-    <string name="label_entrust_total_amount">委托数量</string>
-    <string name="label_traded_amount">已成交的数量</string>
-    <string name="label_fee">手续费</string>
-    <string name="label_market">市场</string>
-    <string name="label_number">@string/label_total_amount</string>
-    <string name="label_price">价格</string>
-    <string name="label_all">全部</string>
-    <string name="label_me_order_entrust">当前委托</string>
-    <string name="label_all_order_entrust">他人委托</string>
-    <string name="hint_me_order_empty">您没有该交易对的委托</string>
-    <string name="hint_all_order_empty">交易所没有该交易对的委托</string>
-    <string name="title_order_details">订单详情</string>
-    <string name="title_group_orders">成交纪录</string>
-    <string name="label_time">时间</string>
-    <string name="state_revoked">已撤销</string>
-    <string name="state_completed">已完成</string>
-    <string name="state_revoking">撤销中</string>
+    <!--WalletConnect-->
+    <string name="wallet_connect_login_title">网页 ViolasPay 登录确认</string>
+    <string name="wallet_connect_login_declare">*其使用行为同样适用《用户协议》和《隐私条款》</string>
+    <string name="wallet_connect_login_desc_login">网页 ViolasPay 正在申请访问你的钱包地址，你确认将钱包地址公开给此网站吗?</string>
+    <string name="wallet_connect_login_desc_login_format">网页 %1$s 正在申请访问你的钱包地址，你确认将钱包地址公开给此网站吗?</string>
+    <string name="wallet_connect_login_desc_logged">您已有登录状态的网页钱包，确认登录将强制退出之前的网页钱包</string>
+    <string name="wallet_connect_login_action_confirm_login">确认登录</string>
+    <string name="wallet_connect_login_action_cancel_login">取消登录</string>
+    <string name="wallet_connect_management_title">网页钱包已登录</string>
+    <string name="wallet_connect_management_action">退出网页钱包</string>
+    <string name="wallet_connect_txn_title">交易确认</string>
+    <string name="wallet_connect_txn_label_sender_address">地址：</string>
+    <string name="wallet_connect_add_currency_label">注册币种</string>
+    <string name="wallet_connect_transfer_label_amount">金额：</string>
+    <string name="wallet_connect_transfer_label_receiver_address">转账地址：</string>
+    <string name="wallet_connect_swap_label_from">输入</string>
+    <string name="wallet_connect_swap_label_to">输出</string>
+    <string name="wallet_connect_swap_label_path">路径</string>
+    <string name="wallet_connect_pool_label_input">转入</string>
+    <string name="wallet_connect_pool_label_output">转出</string>
+    <string name="wallet_connect_bank_label_deposit_biz_name">我要存</string>
+    <string name="wallet_connect_bank_label_withdrawal_biz_name">提取数量</string>
+    <string name="wallet_connect_bank_label_borrow_biz_name">我要借</string>
+    <string name="wallet_connect_bank_label_repayment_biz_name">我要还</string>
 
-    <string name="hint_exchange_successful">兑换申请成功</string>
-    <string name="hint_exchange_error">兑换申请失败</string>
-    <string name="hint_unable_change">无法申请兑换</string>
-    <string name="hint_unknown_error">未知错误</string>
-    <string name="hint_change_number_not_zero">兑换数量不能为零</string>
+    <!--二维码扫描-->
+    <string name="qr_code_result_title">扫码结果</string>
+    <string name="qr_code_scan_title">扫一扫</string>
+    <string name="qr_code_scan_hint">扫描钱包地址</string>
+    <string name="qr_code_scan_need_permissions_desc">扫码需要获取相机权限</string>
+    <string name="qr_code_scan_set_permissions_title">获取相机权限</string>
+    <string name="qr_code_scan_set_permissions_desc">需要获取相机权限才能扫描二维码，前往开启。</string>
 
-    <string name="tips_revoke_success">撤销成功</string>
-    <string name="tips_revoke_failure">撤销失败</string>
-    <string name="hint_transfer_failed">转账失败</string>
-    <string name="hint_transfer_account_no_activation">当前账户没有激活</string>
-    <string name="hint_transfer_receive_account_no_activation">收款账户没有激活</string>
-    <string name="hint_transfer_account_no_control">没有当前账户的控制权</string>
-    <string name="hint_transfer_node_not_response">节点请求失败</string>
+    <!--Web-->
+    <string name="web_desc_load_failure">无法打开页面</string>
+    <string name="web_desc_retry">轻触屏幕重新加载</string>
 
-    <string name="hint_back_up_mnemonic_words">您的身份助记词未备份，请务必备份助记词</string>
-    <string name="hint_back_up_mnemonic_words_content">您的身份助记词未备份，请务必备份! 助记词可用于恢复身份下钱包资产，防止忘记密码、应用删除、手机丢失等情况导致资产损失</string>
-    <string name="tab_wallet">钱包</string>
-    <string name="tab_market">市场</string>
-    <string name="tab_me">我的</string>
-    <string name="tab_bank">数字银行</string>
-    <string name="action_please_choose">请选择</string>
-    <string name="hint_please_select_address_system">请选择钱包类型</string>
-    <string name="hint_confirm_delete_address_book">确定要在地址簿中删除该地址！</string>
-    <string name="hint_publish_token">首次打开稳定币</string>
-    <string name="hint_publish_token_content">首次打开稳定币需要花费少量的手续费，是否继续。</string>
-    <string name="hint_publish_token_content_custom">首次开启 %1$s 需向系统支付少量费用激活，系统将默认选择同一链上有余额的币种进行支付。</string>
+    <!--所属页面暂时启用或屏蔽-->
+    <!--添加钱包-->
+    <string name="wallet_account_title_add_wallet">添加钱包</string>
+    <string name="wallet_account_title_select_wallet">选择钱包</string>
+    <string name="wallet_account_label_identity">身份钱包</string>
+    <string name="wallet_account_label_other">创建/导入</string>
+    <!--创建钱包-->
+    <string name="init_wallet_title_create_wallet_format">创建%1$s钱包</string>
+    <string name="init_wallet_title_import_wallet_format">导入%1$s钱包</string>
+    <string name="init_wallet_action_create">创建</string>
+    <string name="init_wallet_action_import">导入</string>
+    <string name="init_wallet_hint_wallet_name">输入昵称</string>
+    <string name="init_wallet_hint_wallet_pwd">输入钱包密码</string>
+    <string name="init_wallet_hint_confirm_wallet_pwd">再次确认密码</string>
+    <string name="init_wallet_tips_wallet_name_empty">钱包昵称不能为空</string>
+    <string name="init_wallet_tips_two_pwd_not_equals">密码输入不一致</string>
+    <!--钱包信息-->
+    <string name="wallet_info_title">钱包详情</string>
+    <string name="wallet_info_label_modify_wallet_name">更换钱包名</string>
+    <string name="wallet_info_tips_new_wallet_name_empty">请输入新的钱包名称</string>
+    <string name="wallet_info_tips_modify_wallet_name_success">修改成功</string>
+    <!--Identity-->
+    <string name="identity_action_create_identity">创建身份</string>
+    <string name="identity_action_import_identity">导入身份</string>
 
-    <string name="tips_no_address">暂时没有地址</string>
-    <string name="tips_no_transaction_record">暂无交易记录</string>
-    <string name="tips_no_uncompleted_orders">暂无未完成的订单</string>
-    <string name="tips_no_completed_orders">暂无已完成的订单</string>
-    <string name="tips_no_order_trades">暂无成交记录</string>
+    <!--消息推送-->
+    <string name="msg_center_title">消息中心</string>
+    <string name="msg_center_tab_transfer_notification">转账通知</string>
+    <string name="msg_center_tab_system_notification">系统通知</string>
+    <string name="msg_center_tips_msgs_empty">暂无消息</string>
 
-    <string name="format_wallet_name">%1$s钱包</string>
-    <string name="hinet_token_select">请选择</string>
-    <string name="hint_note_select_exchange_coin">未选择要兑换的币种</string>
-    <string name="hint_note_sellect_coin_more">没有其他稳定币可以选择了</string>
-    <string name="hint_not_none_coin_or_net_error">没有足够的 %1$s 或网络异常，请稍后再试。</string>
-    <string name="hint_exchange_amount_too_large">兑换金额过大</string>
-    <string name="hint_transfer_broadcast_success">转账交易广播成功</string>
-
-    <string name="label_cross_chain_exchange">币币兑换</string>
-    <string name="hint_input_account_password">请输入 %1$s 账户密码</string>
-    <string name="hint_input_account_password_error">%1$s 账户密码错误</string>
-
-    <string name="hint_mapping_exchange_exist_orders">您有%1$d笔兑换订单</string>
-    <string name="hint_mapping_exchange_not_exist_orders">您还没有兑换订单</string>
-    <string name="hint_mapping_exchange_load_orders_failed">兑换订单加载失败，点击重试</string>
-    <string name="hint_unsupported_trading_pair">不支持该交易对</string>
-
-    <string name="status_processing">进行中</string>
-    <string name="status_failure">失败</string>
-    <string name="status_unknown">未知</string>
-    <string name="label_exchange">兑换</string>
-    <string name="title_mapping_exchange_orders">查看订单</string>
-    <string name="tips_no_mapping_exchange_orders">暂无兑换订单</string>
-    <string name="hint_load_exchange_pair">查询支持的交易对</string>
-
-    <string name="desc_scan_login">网页ViolasPay登录确认</string>
-    <string name="desc_scan_wallet_connect_login">登录确认</string>
-    <string name="desc_scan_wallet_connect_login_info">网页 %1$s 正在申请访问你的钱包地址 你确认将钱包地址公开给此网站吗?</string>
-    <string name="hint_input_login_pwd">请输入支付密码</string>
-    <string name="tips_login_pwd_error">密码错误，请重新输入</string>
-    <string name="action_confirm_login">确认登录</string>
-    <string name="action_cancel_login">取消登录</string>
-    <string name="tips_scan_login_success">网页ViolasPay已登录</string>
-    <string name="tips_scan_login_desktop">请在州长SSO钱包上操作扫码登录</string>
-    <string name="tips_scan_login_not_support">不支持该扫码登录操作</string>
-    <string name="wallet_connect_transfer_sender_address">地址：</string>
-    <string name="wallet_connect_transfer_amount">金额：</string>
-    <string name="wallet_connect_transfer_address">转账地址：</string>
-    <string name="wallet_connect_use_behavior">*其使用行为同样适用《服务协议》和《隐私条款》</string>
-    <string name="service_agreement">《服务协议》</string>
-    <string name="privacy_policy">《隐私条款》</string>
-    <string name="wallet_connect_transaction">交易确认</string>
-
-    <string name="title_open_fingerprint_verification">开启指纹验证</string>
-    <string name="action_cancel_nbsp">取&#160;消</string>
-    <string name="action_confirm_nbsp">确&#160;定</string>
-    <string name="action_use_password">使用密码</string>
-    <string name="action_start_now_enable">马上启用</string>
-    <string name="action_go_to_enable">去启用</string>
-    <string name="action_retry_fingerprint">再次尝试指纹</string>
-    <string name="desc_fingerprint_authenticate_title_start">请验证已有指纹</string>
-    <string name="desc_fingerprint_authenticate_title_failed">未能识别指纹</string>
-    <string name="desc_fingerprint_authenticate_error_retry">再试一次</string>
-    <string name="desc_fingerprint_authenticate_error_lockout">指纹传感器已暂停使用，请稍后重试。</string>
-    <string name="desc_fingerprint_authenticate_error_lockout_permanent">指纹传感器已停用，需要验证手机密码。</string>
-    <string name="label_fingerprint_verification">指纹验证</string>
-    <string name="title_prompt">提示</string>
-    <string name="desc_close_fingerprint_verification">确定关闭指纹验证？</string>
-    <string name="desc_biometric_error_no_hardware">当前设备不支持此功能</string>
-    <string name="desc_biometric_error_none_enrolled">请先开启生物识别功能</string>
-    <string name="desc_biometric_error_hardware_unavailable">生物识别暂不可用，请稍后再试。</string>
-    <string name="title_open_fingerprint_verification_prompt">设置指纹识别让交易更方便</string>
-    <string name="action_set_up_now">马上设置</string>
-    <string name="action_talk_about_later">稍后再说</string>
-    <string name="create_account">创建钱包</string>
-    <string name="import_account">导入钱包</string>
-
-    <string name="tips_create_or_import_wallet">请先创建/导入钱包</string>
-    <string name="desc_delete_wallet">请谨慎使用此操作，删除前确认你的钱包已安全备份，否则数字资产将无法找回！</string>
-    <string name="hint_wallet_connect_repeated_connection">您已有登录状态的网页钱包，确认登录将强制退出之前的网页钱包</string>
-    <string name="hint_wallet_connect_prompt">网页 Vlolas Pay 正在申请访问你的钱包地址 你确认将钱包地址公开给此网站吗?</string>
-    <string name="wallet_connect_have_landed">网页钱包已登录</string>
-    <string name="main_wallet_total_fiat_balance">总资产</string>
-    <string name="action_transfer_nbsp">转&#160;账</string>
-    <string name="action_collection_nbsp">收&#160;款</string>
-    <string name="action_exchange_nbsp">闪&#160;兑</string>
-    <string name="label_transfer_in">转入</string>
-    <string name="label_transfer_out">转出</string>
-    <string name="wallet_connect_log_out">退出网页钱包</string>
-    <string name="state_trading">交易中</string>
-    <string name="title_transaction_details_nbsp">详 情</string>
-    <string name="label_transaction_details_amount">金额：</string>
-    <string name="label_transaction_details_gas">矿工费用：</string>
-    <string name="label_transaction_details_receipt_address">收款地址：</string>
-    <string name="label_transaction_details_payment_address">付款地址：</string>
-    <string name="label_transaction_details_transaction_number">交易号：</string>
-    <string name="desc_transaction_state_transaction_pending">交易中</string>
-    <string name="desc_transaction_state_transfer_success">转账成功</string>
-    <string name="desc_transaction_state_transfer_failure">转账失败</string>
-    <string name="desc_transaction_state_collection_success">收款成功</string>
-    <string name="desc_transaction_state_collection_failure">收款失败</string>
-    <string name="desc_transaction_state_add_currency_success">稳定币激活成功</string>
-    <string name="desc_transaction_state_add_currency_failure">稳定币激活失败</string>
-    <string name="desc_transaction_state_transaction_success">交易成功</string>
-    <string name="desc_transaction_state_transaction_failure">交易失败</string>
-    <string name="desc_view_by_browser">浏览器查询更详细信息 ></string>
-    <string name="title_share">分享</string>
-    <string name="desc_save_into_album">保存到相册</string>
-    <string name="tips_save_into_album_success">已保存到相册</string>
-    <string name="tips_save_into_album_failure">保存到相册失败</string>
-    <string name="save_picture_hint_need_permissions">保存图片需要获取存储权限</string>
-    <string name="save_picture_title_get_permissions">获取存储权限</string>
-    <string name="save_picture_hint_set_permissions">需要获取存储权限才能保存图片，前往开启。</string>
-    <string name="action_ok">确定</string>
-    <string name="action_get_experience_the_coin">获取体验币</string>
-    <string name="agreement_read_and_agree">我已阅读并同意《服务协议》和《隐私条款》</string>
-    <string name="hint_wallet_agree_terms">请阅读并同意服务协议与隐私政策</string>
-
-    <string name="title_market_swap">兑换</string>
-    <string name="title_market_pool">资金池</string>
-    <string name="title_market_my_pool">我的资金池</string>
-    <string name="handling_fee_rate_format">费率：%1$s</string>
-    <string name="exchange_rate_format">兑换率：%1$s</string>
-    <string name="gas_fee_format">矿工费用：%1$s</string>
-    <string name="input">输入</string>
-    <string name="output">输出</string>
-    <string name="action_swap_nbsp">兑&#160;换</string>
-    <string name="action_swap_unable_change">该交易对暂时无法兑换</string>
-    <string name="action_swap_input_exchange_quantity">请输入兑换数量</string>
-    <string name="select_token">选择通证</string>
-    <string name="title_market_swap_records">兑换记录</string>
-    <string name="transfer_in">转入</string>
-    <string name="transfer_out">转出</string>
-    <string name="pool_liquidity_token">资金池通证</string>
-    <string name="market_my_pool_amount_format">你的资金池共有：%1$s</string>
-    <string name="action_transfer_in_nbsp">转&#160;入</string>
-    <string name="action_transfer_out_nbsp">转&#160;出</string>
-    <string name="title_market_pool_records">资金池记录</string>
-    <string name="select_token_pair">选择交易对</string>
-    <string name="market_pool_earnings_desc">转入资金池可获取手续费收益</string>
-    <string name="wallet_connect_transfer_registered_coinname">注册币种</string>
-    <string name="tips_market_pool_select_token_pair_empty">没有可选择的交易对</string>
-    <string name="hint_market_select_token_search_box">搜索token</string>
-    <string name="market_select_token_balance_format">余额：%1$s %2$s</string>
-    <string name="tips_select_token_list_is_empty">暂无可以选择的Token</string>
-    <string name="tips_select_token_search_is_empty">未找到%1$s相关的Token</string>
-    <string name="market_token_balance_format">当前资产：%1$s</string>
-    <string name="market_liquidity_token_balance_format">当前通证：%1$s</string>
-    <string name="market_transaction_records">市场交易记录</string>
-    <string name="market_swap_state_processing">兑换中</string>
-    <string name="market_swap_state_succeeded">兑换成功</string>
-    <string name="market_swap_state_failed">兑换失败</string>
-    <string name="market_swap_amount_insufficient">可用余额不足</string>
-    <string name="market_swap_state_cancelled">已取消</string>
-    <string name="action_retry">重试</string>
-    <string name="market_liquidity_token_amount_format">通证：%1$s</string>
-    <string name="market_pool_state_processing">打包中</string>
-    <string name="market_pool_add_state_succeeded">转入成功</string>
-    <string name="market_pool_add_state_failed">转入失败</string>
-    <string name="market_pool_remove_state_succeeded">转出成功</string>
-    <string name="market_pool_remove_state_failed">转出失败</string>
-    <string name="swap_details">兑换详情</string>
-    <string name="label_transaction_details_exchange_rate">兑换率：</string>
-    <string name="label_transaction_details_handling_fee">手续费：</string>
-    <string name="label_transaction_details_order_time">下单时间：</string>
-    <string name="label_transaction_details_deal_time">成交时间：</string>
-    <string name="market_transaction_state_submitted">已提交</string>
-    <string name="pool_details">详情</string>
-    <string name="label_transaction_details_liquidity_token">通证：</string>
-    <string name="hint_swap_input_assets_not_select">请选择通证</string>
-    <string name="hint_swap_output_assets_not_select">请选择通证</string>
-    <string name="hint_swap_input_assets_amount_input">请输入兑换数量</string>
-    <string name="hint_swap_output_assets_amount_input">资金池暂时无法兑换</string>
-    <string name="hint_payee_account_not_active">收款账户没有激活</string>
-    <string name="tips_market_add_liquidity_coin_not_selected">请选择通证</string>
-    <string name="tips_market_add_liquidity_amount_not_input">请输入转入数量</string>
-    <string name="tips_market_add_liquidity_estimate_amount">正在估算转入金额…</string>
-    <string name="tips_market_remove_liquidity_pair_not_selected">请选择交易对</string>
-    <string name="tips_market_remove_liquidity_amount_not_input">请输入转出数量</string>
-    <string name="tips_market_remove_liquidity_estimate_amount">正在估算转出金额…</string>
-    <string name="tips_market_insufficient_balance_format">%1$s可用余额不足</string>
-    <string name="tips_market_add_liquidity_success">转入交易广播成功</string>
-    <string name="tips_market_add_liquidity_failure">转入失败</string>
-    <string name="tips_market_remove_liquidity_success">转出交易广播成功</string>
-    <string name="tips_market_remove_liquidity_failure">转出失败</string>
-    <string name="hint_swap_exchange_transaction_broadcast_success">兑换交易广播成功</string>
-    <string name="hint_exchange_swap_input">输入</string>
-    <string name="hint_exchange_swap_output">输出</string>
-    <string name="hint_exchange_swap_path">路径</string>
-    <string name="exchange_add_liquidity">转入</string>
-    <string name="exchange_remove_liquidity">转出</string>
-
-    <string name="mapping">映射</string>
-    <string name="label_available_balance">可用余额 ：</string>
-    <string name="action_mapping">确定映射</string>
-    <string name="label_mapping_exchange_rate">汇率</string>
-    <string name="label_miner_fees">矿工费用</string>
-    <string name="hint_please_select_currency_transfer">请选择要转账的币种</string>
-    <string name="select_mapping_coin">选择币种</string>
-    <string name="tips_mapping_coin_not_selected">请选择币种</string>
-    <string name="tips_mapping_amount_not_input">请输入转出数量</string>
-    <string name="tips_mapping_insufficient_balance">当前可用余额不足</string>
-    <string name="tips_mapping_success">映射交易广播成功</string>
-    <string name="tips_mapping_failure">映射失败</string>
-    <string name="tips_mapping_unsupported">不支持该币种映射</string>
-    <string name="mapping_record">映射记录</string>
-    <string name="mapping_state_processing">映射中</string>
-    <string name="mapping_state_succeeded">映射成功</string>
-    <string name="mapping_state_failed">映射失败</string>
-    <string name="mapping_state_cancelled">已取消</string>
-
-    <string name="total_deposit_label">存款总额（$）</string>
-    <string name="total_borrowable_label">可借总额（$）</string>
-    <string name="total_earnings_label">累计收益（$）</string>
-    <string name="yesterday_earnings_label">昨日收益&#160;</string>
-    <string name="deposit_market">存款市场</string>
-    <string name="borrowing_market">借款市场</string>
-    <string name="deposit_order">存款订单</string>
-    <string name="borrowing_order">借款订单</string>
-    <string name="current_deposit">当前存款</string>
-    <string name="current_borrowing">当前借款</string>
-    <string name="earning">收益中</string>
-    <string name="principal">本金</string>
-    <string name="earnings">收益</string>
-    <string name="deposit_yield">年化收益率</string>
-    <string name="borrowing_rate">借贷率</string>
-    <string name="withdrawal_nbsp">提&#160;取</string>
-    <string name="amount_to_be_repaid">待还金额</string>
-    <string name="deposit_record">存款记录</string>
-    <string name="borrowing_record">借款记录</string>
-    <string name="borrowing_details">借款明细</string>
-    <string name="repayment_details">还款明细</string>
-    <string name="liquidation_details">清算明细</string>
-    <string name="all_currencies">全部币种</string>
-    <string name="all_state">全部状态</string>
-    <string name="bank_deposit_state_depositing">存款中</string>
-    <string name="bank_deposit_state_deposited">已存款</string>
-    <string name="bank_deposit_state_deposit_failed">存款失败</string>
-    <string name="bank_deposit_state_withdrawing">提取中</string>
-    <string name="bank_deposit_state_withdrew">已提取</string>
-    <string name="bank_deposit_state_withdrawal_failed">提取失败</string>
-    <string name="bank_borrowing_state_borrowing">借款中</string>
-    <string name="bank_borrowing_state_borrowed">已借款</string>
-    <string name="bank_borrowing_state_borrowing_failed">借款失败</string>
-    <string name="bank_borrowing_state_repaying">还款中</string>
-    <string name="bank_borrowing_state_repaid">已还款</string>
-    <string name="bank_borrowing_state_repayment_failed">还款失败</string>
-    <string name="bank_borrowing_state_liquidating">清算中</string>
-    <string name="bank_borrowing_state_liquidated">已清算</string>
-    <string name="bank_borrowing_state_liquidation_failed">清算失败</string>
-    <string name="no_matching_search_results">没有匹配的搜索结果</string>
-    <string name="amount">数量</string>
-    <string name="state">状态</string>
-    <string name="liquidated">被清算</string>
-    <string name="deducted">已抵扣</string>
-
-    <string name="extraction">提取</string>
-    <string name="extraction_nbsp">提&#160;取</string>
-    <string name="bank_withdrawal_label_extractable_amount">可提数量 :</string>
-    <string name="bank_withdrawal_desc">如果您当前有借贷操作，则需将部分存款作为质押金。提取质押金需还对应数量的借款金额。</string>
-    <string name="bank_withdrawal_hint_no_input">请输入提取数量</string>
-    <string name="bank_withdrawal_hint_insufficient_extractable_amount">可提取数量不足</string>
-    <string name="tips_withdrawal_success">提取交易广播成功</string>
-    <string name="all">全部</string>
-
-    <string name="bank_borrow_agreement_read_and_agree">我已阅读并同意《质押借款服务协议》</string>
-    <string name="bank_borrow_policy">《质押借款服务协议》</string>
-    <string name="bank_borrow_service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service</string>
-    <string name="hint_bank_borrow_agree_terms">请阅读并同意质押借款服务协议</string>
-
-    <string name="action_bank_amount_all">全部</string>
-    <string name="hint_bank_product_description">产品说明</string>
-    <string name="hint_bank_common_problem">常见问题</string>
-
-    <string name="title_borrow">借款</string>
-    <string name="hint_bank_borrow_business_name">我要借</string>
-    <string name="title_bank_borrow_business_name">我要借</string>
-    <string name="hint_can_borrow_lines">可借额度 :</string>
-    <string name="action_borrowing_immediately">立即借款</string>
-    <string name="hint_please_enter_the_amount_borrowed">请输入借款数量</string>
-
-    <string name="title_deposit">存款</string>
-    <string name="hint_bank_deposit_business_name">我要存</string>
-    <string name="hint_bank_deposit_available_balance">可用余额 :</string>
-    <string name="hint_bank_deposit_daily_limit">每日限额 :</string>
-    <string name="action_deposit_immediately">立即存款</string>
-    <string name="hint_currencies_not_supported_in_current_version">当前版本不支持的币种</string>
-    <string name="hint_bank_business_select_assets">请先选择币种</string>
-    <string name="hint_account_error">账户异常</string>
-    <string name="hint_bank_business_assets_error">选择的币种信息异常</string>
-    <string name="hint_bank_business_borrow_success">借款成功</string>
-    <string name="hint_bank_business_deposit_success">存款成功</string>
-
-    <string name="title_repay_borrow">还款</string>
-    <string name="hint_bank_repay_borrow_business_name">我要还</string>
-    <string name="hint_can_repay_borrow_lines">待还余额 :</string>
-    <string name="action_repay_borrowing_immediately">立即还款</string>
-    <string name="hint_please_enter_the_amount_repay_borrowed">请输入还款数量</string>
-    <string name="hint_bank_business_repay_borrow_success">还款成功</string>
-    <string name="hint_bank_limit_amount">%1$s %2$s起，每%3$s %4$s递增</string>
-    <string name="hint_please_enter_deposit_quantity">请输入存款数量</string>
-    <string name="hint_deposit_amount_too_small">存款金额不得低于%1$s%2$s</string>
-    <string name="hint_deposit_amount_too_big">存款金额不得高于%1$s%2$s</string>
-    <string name="hint_not_exceed_quota_today">不可大于当日限额</string>
-    <string name="hint_please_enter_borrow_quantity">请输入存款数量</string>
-    <string name="hint_borrow_amount_too_small">存款金额不得低于%1$s%2$s</string>
-    <string name="hint_borrow_amount_too_big">存款金额不得高于%1$s%2$s</string>
-    <string name="hint_please_read_and_agree_pledge_service_agreement">请阅读并同意质押借款服务协议</string>
-    <string name="hint_borrowing_rates">借款利率</string>
-    <string name="hint_pledge_rate">质押率</string>
-    <string name="hint_pledge_account">质押账户</string>
-    <string name="hint_bank_balance">银行余额</string>
-    <string name="hint_borrow_liquidation">清算部分将从存款账户扣除</string>
-    <string name="hint_borrow_pledge_algorithm">质押率=借贷数量/存款数量</string>
-    <string name="hint_annual_deposit_rate">存款年利率</string>
-    <string name="hint_enter_repayment_amount">输入还款金额</string>
-    <string name="hint_repayment_account">还款账户</string>
-    <string name="hint_borrow_wallet_balance">钱包余额</string>
-    <string name="hint_repay_borrow_insufficient_balance">当前可用余额不足</string>
-    <string name="hint_click_retry">点击重试</string>
-
-    <string name="wallet_connect_bank_deposit">我要存</string>
-    <string name="wallet_connect_bank_redeem">提取数量</string>
-    <string name="wallet_connect_bank_borrow">我要借</string>
-    <string name="wallet_connect_bank_repay_borrow">我要还</string>
-    <string name="hint_bank_load_assets_error">币种信息加载异常</string>
-
-    <string name="default_notification_channel_name">其他通知</string>
-    <string name="transaction_notification_channel_name">交易提醒</string>
-    <string name="events_notification_channel_name">公告活动</string>
-    <string name="update_notification_channel_name">版本更新</string>
-
-    <string name="message_center">消息中心</string>
-    <string name="hint_eth_mapping">如何映射 ETH 代币？</string>
-    <string name="hint_eth_violas_content">将链接复制到以下钱包，即可将ETH代币映射至violas钱包</string>
-    <string name="invitation_reward">邀请奖励</string>
-    <string name="mining_reward_and_rules">挖矿奖励及规则</string>
-    <string name="mining_reward">挖矿奖励</string>
-    <string name="united_states">美国</string>
-    <string name="title_select_phone_area_code">选择电话区号</string>
-    <string name="title_select_country_or_area">选择国家或地区</string>
-    <string name="title_phone_receive_reward">验证手机号</string>
-    <string name="desc_phone_receive_reward">1. 每个手机号有三次验证机会\n2. 请您放心，手机号不会绑定您的钱包\n3. 验证成功后可获取 10 VLS</string>
-    <string name="hint_input_phone_number">请输入手机号</string>
-    <string name="hint_input_verification_code">请输入验证码</string>
-    <string name="hint_input_inviter_address">邀请人VLS地址（选填）</string>
-    <string name="hint_inviter_address_error">请输入正确的邀请人VLS地址</string>
-    <string name="hint_get_verification_code_success">验证码已发送，请注意查收</string>
-    <string name="hint_phone_receive_reward_success">领取成功</string>
-    <string name="action_get_verification_code">获取验证码</string>
-    <string name="action_receive_right_now">立即领取</string>
-    <string name="title_incentive_earnings_details">收益明细</string>
-    <string name="tab_invite_mining_earnings">邀请好友</string>
-    <string name="tab_pool_mining_earnings">资金池</string>
-    <string name="tab_bank_mining_earnings">数字银行</string>
-    <string name="invited_account">被邀请账号</string>
-    <string name="mining_earnings">挖矿收益</string>
-    <string name="invitation_time">邀请时间</string>
-    <string name="extraction_time">提取时间</string>
-    <string name="extraction_amount">提取数量</string>
-    <string name="operation_type">操作类型</string>
-    <string name="mining_earnings_state_issuing">发放中</string>
-    <string name="mining_earnings_state_arrived">已到账</string>
-    <string name="mining_earnings_type_deposit">存款</string>
-    <string name="mining_earnings_type_withdrawal">提取</string>
-    <string name="mining_earnings_type_borrowing">借款</string>
-    <string name="mining_earnings_type_repayment">还款</string>
-    <string name="mining_earnings_type_add_liquidity">转入</string>
-    <string name="mining_earnings_type_remove_liquidity">转出</string>
-    <string name="mining_earnings_type_active_extraction">一键提取</string>
-    <string name="home_market_mining_title">挖矿福利</string>
-    <string name="home_market_mining_desc">现在加入资金池可获得同手续费奖励等价的VLS挖矿福利</string>
-    <string name="home_bank_mining_title">存、借挖矿规则</string>
-    <string name="home_wallet_phone_receive_title">免费领取</string>
-    <string name="home_wallet_mining_title">挖矿领福利</string>
-
-    <string name="txn_details_desc_address_not_add">此地址未添加</string>
-    <string name="txn_details_action_add_address">立即添加</string>
-    <string name="tips_share_link_success">已复制</string>
-    <string name="title_transfer_notification">转账通知</string>
-    <string name="title_system_notification">系统通知</string>
-    <string name="tips_msg_list_empty">暂无消息</string>
+    <!--通知渠道-->
+    <string name="notification_channel_name_default">其他通知</string>
+    <string name="notification_channel_name_transaction">交易提醒</string>
+    <string name="notification_channel_name_events">公告活动</string>
+    <string name="notification_channel_name_update">版本更新</string>
 
 </resources>

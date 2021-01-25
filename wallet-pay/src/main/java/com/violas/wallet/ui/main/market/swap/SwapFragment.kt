@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseFragment
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.extensions.show
 import com.palliums.net.LoadState
 import com.palliums.utils.TextWatcherSimple
@@ -42,10 +43,6 @@ import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.palliums.libracore.http.LibraException
-import org.palliums.violascore.http.ViolasException
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -101,7 +98,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                         if (IAssetsMark.convert(it) == getAssetsMark()) {
                             withContext(Dispatchers.Main) {
                                 tvFromBalance.text = getString(
-                                    R.string.market_token_balance_format,
+                                    R.string.market_common_label_token_balance_format,
                                     "${assets?.amountWithUnit?.amount ?: "0"} ${it.displayName}"
                                 )
                             }
@@ -119,7 +116,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                     if (IAssetsMark.convert(it) == getAssetsMark()) {
                         withContext(Dispatchers.Main) {
                             tvToBalance.text = getString(
-                                R.string.market_token_balance_format,
+                                R.string.market_common_label_token_balance_format,
                                 "${assets?.amountWithUnit?.amount ?: "0"} ${it.displayName}"
                             )
                         }
@@ -134,11 +131,11 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
 
         etFromInputBox.hint = "0.00"
         etToInputBox.hint = "0.00"
-        handleValueNull(tvFromBalance, R.string.market_token_balance_format)
-        handleValueNull(tvToBalance, R.string.market_token_balance_format)
-        handleValueNull(tvHandlingFeeRate, R.string.handling_fee_rate_format)
-        handleValueNull(tvExchangeRate, R.string.exchange_rate_format)
-        handleValueNull(tvGasFee, R.string.gas_fee_format)
+        handleValueNull(tvFromBalance, R.string.market_common_label_token_balance_format)
+        handleValueNull(tvToBalance, R.string.market_common_label_token_balance_format)
+        handleValueNull(tvHandlingFeeRate, R.string.market_swap_label_charge_rate_format)
+        handleValueNull(tvExchangeRate, R.string.market_swap_label_swap_rate_format)
+        handleValueNull(tvGasFee, R.string.market_swap_label_gas_fee_format)
 
         mReserveManager.init(this)
 
@@ -164,44 +161,45 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
         btnSwap.setOnClickListener {
             clearInputBoxFocusAndHideSoftInput()
 
+            // 没有钱包账户
             if (!WalletAppViewModel.getViewModelInstance().isExistsAccount()) {
-                // 没有钱包账户
-                showToast(R.string.tips_create_or_import_wallet)
+                showToast(R.string.common_tips_account_empty)
                 return@setOnClickListener
             }
 
+            // 输入币种没有选择
             if (swapViewModel.getCurrFromTokenLiveData().value == null) {
-                // 输入币种没有选择
-                showToast(getString(R.string.hint_swap_input_assets_not_select))
+                showToast(getString(R.string.market_swap_tips_from_token_empty))
                 return@setOnClickListener
             }
+            // 输出币种没有选择
             if (swapViewModel.getCurrToTokenLiveData().value == null) {
-                // 输出币种没有选择
-                showToast(getString(R.string.hint_swap_output_assets_not_select))
+                showToast(getString(R.string.market_swap_tips_to_token_empty))
                 return@setOnClickListener
             }
+            // 填写输入金额
             if (etFromInputBox.text?.isEmpty() == true) {
-                // 填写输入金额
-                showToast(getString(R.string.hint_swap_input_assets_amount_input))
+                showToast(getString(R.string.market_swap_tips_amount_empty))
                 return@setOnClickListener
             }
+            // 填写输出金额
             if (etToInputBox.text?.isEmpty() == true) {
-                // 填写输出金额
-                showToast(getString(R.string.hint_swap_input_assets_amount_input))
+                showToast(getString(R.string.market_swap_tips_amount_empty))
                 return@setOnClickListener
             }
             if (mCurrFromAssetsAmount < BigDecimal(
                     etFromInputBox.text?.trim()?.toString() ?: "0"
                 )
             ) {
-                showToast(R.string.market_swap_amount_insufficient)
+                showToast(R.string.market_swap_tips_insufficient_balance)
                 return@setOnClickListener
             }
             if (mSwapPath.size <= 1) {
                 // 请稍后正在估算输出金额
-                showToast(getString(R.string.hint_swap_output_assets_amount_input))
+                showToast(getString(R.string.market_swap_tips_swap_estimating))
                 return@setOnClickListener
             }
+
             showProgress()
             launch(Dispatchers.IO) {
                 try {
@@ -219,8 +217,8 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
         swapViewModel.getCurrFromTokenLiveData().observe(viewLifecycleOwner, Observer {
             mCurrFromAssetsAmount = BigDecimal("0")
             if (it == null) {
-                tvFromSelectText.text = getString(R.string.select_token)
-                handleValueNull(tvFromBalance, R.string.market_token_balance_format)
+                tvFromSelectText.text = getString(R.string.market_common_action_select_token)
+                handleValueNull(tvFromBalance, R.string.market_common_label_token_balance_format)
                 fromAssertsAmountSubscriber.changeSubscriber(null)
             } else {
                 tvFromSelectText.text = it.displayName
@@ -229,8 +227,8 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
         })
         swapViewModel.getCurrToTokenLiveData().observe(viewLifecycleOwner, Observer {
             if (it == null) {
-                tvToSelectText.text = getString(R.string.select_token)
-                handleValueNull(tvToBalance, R.string.market_token_balance_format)
+                tvToSelectText.text = getString(R.string.market_common_action_select_token)
+                handleValueNull(tvToBalance, R.string.market_common_label_token_balance_format)
                 handleInputTextWatcher("", etToInputBox, toInputTextWatcher)
                 toAssertsAmountSubscriber.changeSubscriber(null)
             } else {
@@ -243,30 +241,30 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
         })
         swapViewModel.getHandlingFeeRateLiveDataLiveData().observe(viewLifecycleOwner, Observer {
             if (it == null) {
-                handleValueNull(tvHandlingFeeRate, R.string.handling_fee_rate_format)
+                handleValueNull(tvHandlingFeeRate, R.string.market_swap_label_charge_rate_format)
             } else {
                 tvHandlingFeeRate.text = getString(
-                    R.string.handling_fee_rate_format,
+                    R.string.market_swap_label_charge_rate_format,
                     "${it.toPlainString()}%"
                 )
             }
         })
         swapViewModel.getExchangeRateLiveData().observe(viewLifecycleOwner, Observer {
             if (it == null) {
-                handleValueNull(tvExchangeRate, R.string.exchange_rate_format)
+                handleValueNull(tvExchangeRate, R.string.market_swap_label_swap_rate_format)
             } else {
                 tvExchangeRate.text = getString(
-                    R.string.exchange_rate_format,
+                    R.string.market_swap_label_swap_rate_format,
                     "1:${it.toPlainString()}"
                 )
             }
         })
         swapViewModel.getGasFeeLiveData().observe(viewLifecycleOwner, Observer {
             if (it == null) {
-                handleValueNull(tvGasFee, R.string.gas_fee_format)
+                handleValueNull(tvGasFee, R.string.market_swap_label_gas_fee_format)
             } else {
                 tvGasFee.text = getString(
-                    R.string.gas_fee_format,
+                    R.string.market_swap_label_gas_fee_format,
                     it.toString()
                 )
             }
@@ -312,20 +310,16 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                 )
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 resetState()
-                showToast(getString(R.string.hint_swap_exchange_transaction_broadcast_success))
-            } catch (e: ViolasException) {
-                e.printStackTrace()
+                showToast(getString(R.string.market_swap_tips_swap_success))
             } catch (e: UnsupportedTradingPairsException) {
-                showToast(getString(R.string.hint_unsupported_trading_pair))
-            } catch (e: LibraException) {
-                e.printStackTrace()
-            } catch (e: AccountPayeeNotFindException) {
-                showToast(getString(R.string.hint_payee_account_not_active))
+                showToast(getString(R.string.market_swap_tips_unsupported_pair))
+            }  catch (e: AccountPayeeNotFindException) {
+                showToast(getString(R.string.chain_tips_payee_account_not_active))
             } catch (e: AccountPayeeTokenNotActiveException) {
                 showPublishTokenDialog(pwd, e)
             } catch (e: Exception) {
                 e.printStackTrace()
-                showToast(getString(R.string.hint_unknown_error))
+                showToast(e.getShowErrorMessage(false))
             }
             dismissProgress()
         }
@@ -336,12 +330,8 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
         e: AccountPayeeTokenNotActiveException
     ) {
         PublishTokenDialog()
-            .setContent(
-                getString(
-                    R.string.hint_publish_token_content_custom,
-                    e.assetsMark.displayName
-                )
-            )
+            .setAddCurrencyPage(false)
+            .setCurrencyName(e.assetsMark.displayName)
             .setConfirmListener {
                 it.dismiss()
                 launch(Dispatchers.IO) {
@@ -350,11 +340,11 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                         if (swapViewModel.publishToken(pwd, e.coinTypes, e.assetsMark)) {
                             swap(pwd)
                         } else {
-                            showToast(R.string.desc_transaction_state_add_currency_failure)
+                            showToast(R.string.txn_details_state_add_currency_failure)
                         }
                     } catch (e: Exception) {
-                        showToast(R.string.desc_transaction_state_add_currency_failure)
                         e.printStackTrace()
+                        showToast(R.string.txn_details_state_add_currency_failure)
                         dismissProgress()
                     }
                 }
@@ -456,13 +446,13 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                     }
                     // 获取计算出来的金额
                     var outputAmount = tradeExact.amount
-                    if(isInputFrom){
+                    if (isInputFrom) {
                         if (toToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
                             toToken.coinNumber == CoinTypes.Bitcoin.coinType()
                         ) {
                             outputAmount *= 100
                         }
-                    }else{
+                    } else {
                         if (fromToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
                             fromToken.coinNumber == CoinTypes.Bitcoin.coinType()
                         ) {
@@ -522,7 +512,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                     mSwapPath.clear()
                     mSwapPath.addAll(tradeExact.path)
                     withContext(Dispatchers.Main) {
-                        btnSwap.setText(R.string.action_swap_nbsp)
+                        btnSwap.setText(R.string.market_swap_action_swap)
 
                         handleInputTextWatcher(
                             outputAmountByCoin, outputEdit, if (isInputFrom) {
@@ -652,6 +642,6 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
 
     //*********************************** 其它逻辑 ***********************************//
     private val handleValueNull: (TextView, Int) -> Unit = { textView, formatResId ->
-        textView.text = getString(formatResId, getString(R.string.value_null))
+        textView.text = getString(formatResId, getString(R.string.common_desc_value_null))
     }
 }

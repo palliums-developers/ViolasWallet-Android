@@ -2,8 +2,9 @@ package com.violas.wallet.ui.bank.deposit
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
+import com.palliums.extensions.getShowErrorMessage
+import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -21,6 +22,7 @@ import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayUnitToAmount
+import com.violas.wallet.utils.convertRateToPercentage
 import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +37,7 @@ import java.math.BigDecimal
  * desc: 数字银行-存款页面
  */
 class DepositActivity : BankBusinessActivity() {
+
     companion object {
         fun start(
             context: Context,
@@ -90,9 +93,9 @@ class DepositActivity : BankBusinessActivity() {
         mDepositProductDetails?.run {
             mBankBusinessViewModel.mBusinessUserInfoLiveData.postValue(
                 BusinessUserInfo(
-                    getString(R.string.hint_bank_deposit_business_name),
+                    getString(R.string.bank_deposit_label_biz_name),
                     getString(
-                        R.string.hint_bank_limit_amount,
+                        R.string.bank_biz_hint_limit_amount_format,
                         convertAmountToDisplayAmountStr(minimumAmount),
                         tokenShowName,
                         convertAmountToDisplayAmountStr(minimumStep),
@@ -100,7 +103,7 @@ class DepositActivity : BankBusinessActivity() {
                     ),
                     BusinessUserAmountInfo(
                         R.drawable.icon_bank_user_amount_limit,
-                        getString(R.string.hint_bank_deposit_daily_limit),
+                        getString(R.string.bank_deposit_label_daily_limit),
                         convertAmountToDisplayAmountStr(quotaLimit - quotaUsed),
                         tokenShowName,
                         convertAmountToDisplayAmountStr(quotaLimit)
@@ -117,14 +120,17 @@ class DepositActivity : BankBusinessActivity() {
             mBankBusinessViewModel.mBusinessParameterListLiveData.postValue(
                 arrayListOf(
                     BusinessParameter(
-                        getString(R.string.hint_annual_deposit_rate),
-                        "${rate * 100}%",
-                        contentColor = Color.parseColor("#13B788")
+                        getString(R.string.bank_deposit_label_annual_deposit_rate),
+                        convertRateToPercentage(rate),
+                        contentColor = getColorByAttrId(
+                            R.attr.bankProductRateTextColor,
+                            this@DepositActivity
+                        )
                     ),
                     BusinessParameter(
-                        getString(R.string.hint_pledge_rate),
-                        "${pledgeRate * 100}%",
-                        getString(R.string.hint_borrow_pledge_algorithm)
+                        getString(R.string.bank_biz_label_pledge_rate),
+                        convertRateToPercentage(pledgeRate, 0),
+                        getString(R.string.bank_biz_hint_pledge_rate_algorithm)
                     )
                 )
             )
@@ -142,10 +148,10 @@ class DepositActivity : BankBusinessActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBankBusinessViewModel.mPageTitleLiveData.value = getString(R.string.title_deposit)
+        mBankBusinessViewModel.mPageTitleLiveData.value = getString(R.string.bank_deposit_title)
 
         mBankBusinessViewModel.mBusinessActionLiveData.value =
-            getString(R.string.action_deposit_immediately)
+            getString(R.string.bank_deposit_action_deposit)
     }
 
     override fun onCoinAmountNotice(assetsVo: AssetsVo?) {
@@ -154,7 +160,7 @@ class DepositActivity : BankBusinessActivity() {
             mBankBusinessViewModel.mBusinessUsableAmount.postValue(
                 BusinessUserAmountInfo(
                     R.drawable.icon_bank_user_amount_info,
-                    getString(R.string.hint_bank_deposit_available_balance),
+                    getString(R.string.common_label_available_balance),
                     assetsVo.amountWithUnit.amount,
                     assetsVo.amountWithUnit.unit
                 )
@@ -181,29 +187,41 @@ class DepositActivity : BankBusinessActivity() {
     override fun clickExecBusiness() {
         launch(Dispatchers.IO) {
             mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(null)
-            val amountStr = editBusinessValue.text.toString()
+
             val assets = mBankBusinessViewModel.mCurrentAssetsLiveData.value
             if (assets == null) {
-                showToast(getString(R.string.hint_bank_load_assets_error))
+                showToast(getString(R.string.bank_biz_tips_load_currency_error))
                 return@launch
             }
-            if (amountStr.isEmpty()) {
-                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(getString(R.string.hint_please_enter_deposit_quantity))
+
+            val market = IAssetsMark.convert(assets)
+            if (market !is LibraTokenAssetsMark) {
+                showToast(getString(R.string.bank_biz_tips_select_currency_error))
                 return@launch
             }
+
             val account = mAccountManager.getIdentityByCoinType(assets.getCoinNumber())
             if (account == null) {
-                showToast(getString(R.string.hint_account_error))
+                showToast(getString(R.string.common_tips_account_error))
                 return@launch
             }
+
+            val amountStr = editBusinessValue.text.toString()
+            if (amountStr.isEmpty()) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(R.string.bank_deposit_tips_deposit_amount_empty)
+                )
+                return@launch
+            }
+
             val amount =
                 convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
-
-            if (amount < mDepositProductDetails?.minimumAmount ?: 0) {
+            val minimumAmount = mDepositProductDetails?.minimumAmount ?: 0
+            if (amount < minimumAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
                     getString(
-                        R.string.hint_deposit_amount_too_small,
-                        convertAmountToDisplayAmountStr(mDepositProductDetails?.minimumAmount ?: 0),
+                        R.string.bank_deposit_tips_deposit_amount_too_small_format,
+                        convertAmountToDisplayAmountStr(minimumAmount),
                         mDepositProductDetails?.tokenShowName ?: ""
                     )
                 )
@@ -214,27 +232,20 @@ class DepositActivity : BankBusinessActivity() {
                 (mDepositProductDetails?.quotaLimit ?: 0) - (mDepositProductDetails?.quotaUsed ?: 0)
             if (amount > limitAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
-                    getString(R.string.hint_not_exceed_quota_today)
+                    getString(R.string.bank_biz_tips_greater_than_daily_limit)
                 )
                 return@launch
             }
 
-            val maxAmount = (mDepositProductDetails?.quotaLimit ?: 0)
+            val maxAmount = mDepositProductDetails?.quotaLimit ?: 0
             if (amount > maxAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
                     getString(
-                        R.string.hint_deposit_amount_too_big,
+                        R.string.bank_deposit_tips_deposit_amount_too_big_format,
                         convertAmountToDisplayAmountStr(maxAmount),
                         mDepositProductDetails?.tokenShowName ?: ""
                     )
                 )
-                return@launch
-            }
-
-            val market = IAssetsMark.convert(assets)
-
-            if (market !is LibraTokenAssetsMark) {
-                showToast(getString(R.string.hint_bank_business_assets_error))
                 return@launch
             }
 
@@ -256,13 +267,13 @@ class DepositActivity : BankBusinessActivity() {
                 showProgress()
                 mBankManager.lock(pwd.toByteArray(), account, productId, mark, amount)
                 dismissProgress()
-                showToast(getString(R.string.hint_bank_business_deposit_success))
+                showToast(getString(R.string.bank_deposit_tips_deposit_success))
                 EventBus.getDefault().post(BankDepositEvent())
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 finish()
             } catch (e: Exception) {
                 e.printStackTrace()
-                e.message?.let { showToast(it) }
+                showToast(e.getShowErrorMessage(false))
                 dismissProgress()
             }
         }

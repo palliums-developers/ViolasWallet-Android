@@ -39,8 +39,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 
+/**
+ * 转账通用页面
+ */
 class MultiTransferActivity : BaseAppActivity(),
     AssetsVoTokenSelectTokenDialog.AssetsDataResourcesBridge {
+
     companion object {
         private const val REQUEST_SELECTOR_ADDRESS = 1
         private const val REQUEST_SCAN_QR_CODE = 2
@@ -98,7 +102,7 @@ class MultiTransferActivity : BaseAppActivity(),
         override fun onNotice(assets: AssetsVo?) {
             launch {
                 tvCoinAmount.text = String.format(
-                    getString(R.string.hint_transfer_amount),
+                    getString(R.string.transfer_label_balance_format),
                     assets?.amountWithUnit?.amount ?: "- -",
                     assets?.amountWithUnit?.unit ?: ""
                 )
@@ -128,7 +132,7 @@ class MultiTransferActivity : BaseAppActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.title_transfer)
+        title = getString(R.string.transfer_title)
 
         mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
             if (!initTag) {
@@ -243,17 +247,19 @@ class MultiTransferActivity : BaseAppActivity(),
     private fun transfer() {
         val assets = mMultiTransferViewModel.mCurrAssets.value
         if (assets == null) {
-            showToast(R.string.hint_please_select_currency_transfer)
+            showToast(R.string.transfer_tips_token_empty)
             return
         }
+
         launch(Dispatchers.IO) {
             try {
                 showProgress()
                 val account = mAccountManager.getIdentityByCoinType(assets.getCoinNumber())
                 if (account == null) {
-                    showToast(getString(R.string.hint_unsupported_tokens))
+                    showToast(getString(R.string.transfer_tips_unopened_or_unsupported_token))
                     return@launch
                 }
+
                 mMultiTransferViewModel.checkConditions(account, mCurrAssetsAmount)
                 dismissProgress()
                 showPasswordAndSend(account)
@@ -273,7 +279,7 @@ class MultiTransferActivity : BaseAppActivity(),
                     mMultiTransferViewModel.transfer(account, it.toByteArray(), toSubAddress)
                     dismissProgress()
                     withContext(Dispatchers.Main) {
-                        showToast(getString(R.string.hint_transfer_broadcast_success))
+                        showToast(getString(R.string.transfer_tips_transfer_success))
                         CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                         finish()
                     }

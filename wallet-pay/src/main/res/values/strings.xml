@@ -1,139 +1,483 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
-    <string name="language_follow_system">Default to System Settings</string>
-    <string name="language_follow_system_more">Default to System Settings</string>
-    <string name="language_en">English</string>
-    <string name="language_en_more">English</string>
-    <string name="language_chinese_simplified">简体中文</string>
-    <string name="language_chinese_simplified_more">Simplified Chinese</string>
-    <string name="language_chinese_traditional">繁體中文</string>
-    <string name="language_chinese_traditional_more">Traditional Chinese</string>
+    <!--URL-->
+    <string name="url_app_service_agreement">https://violas.io/violas_service_html/Terms_of_Service</string>
+    <string name="url_app_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy</string>
+    <string name="url_app_help_and_feedback">https://www.baidu.com/</string>
+    <string name="url_bank_service_agreement">https://violas.io/violas_service_html/Terms_of_Service</string>
 
-    <string name="backup_mnemonic_prompt_title">Backup Mnemonic Words Hint</string>
-    <string name="backup_mnemonic_prompt_btn_later">Backup Mnemonic Words Later</string>
-    <string name="backup_mnemonic_prompt_btn_start">Start Backup Mnemonic Words</string>
-    <string name="backup_mnemonic_prompt_content_01">Get Mnemonic Words</string>
-    <string name="backup_mnemonic_prompt_content_02">Backup Mnemonic Words</string>
-    <string name="backup_mnemonic_prompt_content_03">Write down mnemonic words on paper\nIf you have lost or damaged your phone，mnemonic words will be used to recover your funds in the wallet</string>
-    <string name="backup_mnemonic_prompt_content_04">Keep Offline</string>
-    <string name="backup_mnemonic_prompt_content_05">Please keep mnemonic words offline and in a safe place\nNever share, store mnemonic words on internet such as email, texting, social network, etc.</string>
-    <string name="backup_mnemonic_prompt_content_06">Equal to own all funds in the wallet</string>
-    <string name="backup_mnemonic_warn_title">Safety Warning</string>
-    <string name="backup_mnemonic_warn_btn">Backup Now</string>
-    <string name="backup_mnemonic_warn_content_01">Your identity mnemonic words are not yet backed up，Please backup the mnemonic words</string>
-    <string name="backup_mnemonic_warn_content_02">Mnemonic words may be used to recover funds in the identity wallet in case you forgot the wallet access code, removed the App or lost your phone</string>
-    <string name="show_mnemonic_title">Backup Mnemonic Words</string>
-    <string name="show_mnemonic_content_01">Please write down the mnemonic words in order</string>
-    <string name="show_mnemonic_content_02">Do not copy or make screenshot\nIt might be collected by a third party software\nto cause loss of funds</string>
-    <string name="backup_mnemonic_show_title">Showing Backup Mnemonic Words</string>
-    <string name="confirm_mnemonic_title">Confirm Mnemonic Words</string>
-    <string name="confirm_mnemonic_content_01">Please click on the order of mnemonic words to confirm your backup</string>
-    <string name="confirm_mnemonic_tips_01">Invalid order of the mnemonic words. Please correct it</string>
-    <string name="confirm_mnemonic_tips_02">Please click in the order of the mnemonic words</string>
+    <!--通用-->
+    <string name="common_action_cancel_space">Cancel</string>
+    <string name="common_action_cancel">Cancel</string>
+    <string name="common_action_ok_space">OK</string>
+    <string name="common_action_ok">OK</string>
+    <string name="common_action_confirm_space">Confirm</string>
+    <string name="common_action_confirm">Confirm</string>
+    <string name="common_action_select_token">Select Token</string>
+    <string name="common_action_retry">Retry</string>
+    <string name="common_action_all">All</string>
+    <string name="common_desc_value_null">--</string>
+    <string name="common_state_cancelled">Cancelled</string>
+    <string name="common_state_submitted">Submitted</string>
+    <string name="common_label_balance_format">Balance: %1$s %2$s</string>
+    <string name="common_label_available_balance">Available balance:&#160;</string>
+    <string name="common_label_gas_fees">Gas Fees</string>
+    <string name="common_label_gas_fees_colon">Gas Fees:&#160;</string>
+    <string name="common_label_miner_fees">Miner Fees</string>
+    <string name="common_label_miner_fees_colon">Miner Fees:&#160;</string>
+    <string name="common_label_time">Time</string>
+    <string name="common_label_amount">Amount</string>
+    <string name="common_label_state">State</string>
+    <string name="common_title_wallet_management">Manage Wallet</string>
+    <string name="common_title_address_book">Address Book</string>
+    <string name="common_title_settings">Settings</string>
+    <string name="common_title_multi_language">Languages</string>
+    <string name="common_title_service_agreement">Service Agreement</string>
+    <string name="common_title_privacy_policy">Privacy Policy</string>
+    <string name="common_title_about_us">About Us</string>
+    <string name="common_title_help_feedback">Help &amp; Feedback</string>
+    <string name="common_title_feedback">Feedback</string>
+    <string name="common_title_prompt">Prompt</string>
+    <string name="common_content_user_agreement">"User Agreement"</string>
+    <string name="common_content_privacy_policy">"Privacy Policy"</string>
+    <string name="common_tips_account_empty">Please create/import wallet first</string>
+    <string name="common_tips_account_error">Wallet account does not exist</string>
+    <string name="common_tips_insufficient_available_balance">Insufficient balance</string>
+    <string name="common_tips_insufficient_available_balance_format">Insufficient %1$s balance</string>
+    <string name="common_tips_exit_app">Click again to exit</string>
+    <string name="common_tips_copy_success">Copy Success</string>
 
-    <string name="account_label_identity">Identity Wallet</string>
-    <string name="account_label_other">Create/Import</string>
-    <string name="account_management_title">Manage Wallet</string>
-    <string name="account_selection_title">Select Wallet</string>
+    <string name="chain_tips_payee_account_not_active">The payee account is not activated</string>
 
-    <string name="btn_next_step">Next</string>
-    <string name="btn_complete">Complete</string>
-    <string name="action_back">Back</string>
-    <string name="quit_confirmation">Click again to exit</string>
-    <string name="action_confirm">Confirm</string>
-    <string name="transfer">Transfer</string>
-    <string name="collection">Receive</string>
-    <string name="copy_success">Copy Success</string>
-    <string name="hint_insufficient_or_trading_fees_are_confirmed">Insufficient balance or transactions not confirmed</string>
-    <string name="title_colletction">Receive</string>
-    <string name="title_import_the_wallet">Import Identity</string>
-    <string name="title_create_the_wallet">Create Identity</string>
-    <string name="create_identity">Create Identity</string>
-    <string name="import_identity">Import Identity</string>
-    <string name="action_create">Create</string>
-    <string name="action_import">Import</string>
-    <string name="hint_input_nickname">Input Nickname</string>
-    <string name="hint_wallet_password">Input Wallet Access Code</string>
-    <string name="hint_input_confirm_password">Confirm Wallet Access Code</string>
-    <string name="hint_confirm_password_fault">Invalid Wallet Access Code</string>
-    <string name="hint_nickname_empty">Wallet nickname cannot be empty</string>
-    <string name="hint_input_password_short">Wallet Access Code too short</string>
-    <string name="hint_input_mnemonic_word">Input mnemonic words with space</string>
-    <string name="hint_mnemonic_error">Mnemonic Words Error</string>
-    <string name="action_start_import">Start Import</string>
-    <string name="action_immediately_into">Enter Now</string>
-    <string name="title_welcome_1">Welcome To</string>
-    <string name="title_welcome_2">Violas</string>
-    <string name="hint_security_setting">Security Settings</string>
-    <string name="hint_backup_now">Backup Now</string>
-    <string name="label_current_assets">Current Funds</string>
-    <string name="label_transaction_records">Transaction History</string>
-    <string name="label_assets">Funds</string>
-    <string name="title_address_book">Address Book</string>
-    <string name="hint_address_book">Address Book</string>
-    <string name="title_add_address_book">Add Address</string>
-    <string name="label_address_book_note">Note cannot be less than 20 characters</string>
-    <string name="hint_note">Note</string>
-    <string name="label_address">Address</string>
-    <string name="hint_input_address">Input Address</string>
-    <string name="action_add_nbsp">Add</string>
-    <string name="hint_select">Select</string>
-    <string name="hint_type">Type</string>
-    <string name="hint_input_note">Please Write Note</string>
-    <string name="hint_input_address_error">Input Invalid Address</string>
-    <string name="hint_address_success">Add Success</string>
-    <string name="hint_create_any_wallet">Create%1$s Wallet</string>
-    <string name="hint_import_any_wallet">Import%1$s Wallet</string>
-    <string name="hint_collection_address">Receiving Address</string>
-    <string name="hint_input_collection_address">Input Receiving Address</string>
-    <string name="action_copy">Copy</string>
-    <string name="hint_transfer_amount">Amount：%1$s %2$s</string>
-    <string name="hint_input_amount">Input Amount</string>
-    <string name="hint_slow">Slow</string>
-    <string name="hint_fast">Fast</string>
-    <string name="hint_fee">Transaction Fee</string>
-    <string name="action_tvHintFee">Transfer</string>
-    <string name="title_transfer">Transfer</string>
-    <string name="hint_please_input_amount">Input Transfer Amount</string>
-    <string name="hint_please_input_address">Input Transfer Address</string>
-    <string name="title_assert_manager">Manage Assert</string>
-    <string name="title_manager">Manage</string>
-    <string name="hint_output_back">Export Mnemonic Words</string>
-    <string name="action_delete_wallet">Delete Wallet</string>
-    <string name="hint_change_wallet_name">Change Wallet Name</string>
-    <string name="hint_input_password">Input Access Code</string>
-    <string name="hint_delete_address_book">Remove Address Book</string>
-    <string name="action_cancel">Cancel</string>
-    <string name="hint_password">Access Code</string>
-    <string name="hint_please_input_password">Input Access Code</string>
-    <string name="hint_password_error">Access Code Error</string>
-    <string name="hint_wallet_info">Wallet Detail</string>
-    <string name="hint_input_new_wallet_name">Input New Wallet Name</string>
-    <string name="hint_modify_success">Update Success</string>
-    <string name="me_wallet_management">Manage Wallet</string>
-    <string name="me_transfer_record">Transfer History</string>
-    <string name="me_address_book">Address Book</string>
-    <string name="me_settings">Settings</string>
-    <string name="hint_get_the_camera_permissions">Get permission to access camera</string>
-    <string name="hint_set_permissions_to_open">Need access camera to scan QR. Grant access to camera</string>
-    <string name="hint_scan_need_camera_permissions">Need grant access to camera to scan</string>
-    <string name="action_scan_address">Scan Wallet Address</string>
-    <string name="title_scan">Scan</string>
+    <!--欢迎弹窗-->
+    <string name="welcome_title_1">Welcome to</string>
+    <string name="welcome_title_2">Violas</string>
+    <string name="welcome_action">Enter</string>
 
-    <string name="add_wallet_title">Add Wallet</string>
+    <!--首页底部导航栏-->
+    <string name="home_tab_wallet">Wallet</string>
+    <string name="home_tab_market">Market</string>
+    <string name="home_tab_bank">Bank</string>
+    <string name="home_tab_me">Profile</string>
 
-    <string name="setting_title">Settings</string>
-    <string name="setting_multi_language">Languages</string>
-    <string name="setting_service_agreement">Service Agreement</string>
-    <string name="setting_about_us">About Us</string>
-    <string name="setting_help_feedback">Help &amp; Feedback</string>
+    <!--首页钱包-->
+    <string name="home_wallet_label_total_asset">Total Asset</string>
+    <string name="home_wallet_label_assets">Assets</string>
+    <string name="home_wallet_action_web_logged">Web Wallet Logged</string>
+    <string name="home_wallet_action_transfer">Transfer</string>
+    <string name="home_wallet_action_receive">Receive</string>
+    <string name="home_wallet_action_mapping">Mapping</string>
+    <string name="home_wallet_action_create_wallet">Create Wallet</string>
+    <string name="home_wallet_action_import_wallet">Import Wallet</string>
 
-    <string name="about_us_title">About Us</string>
+    <!--创建钱包-->
+    <string name="create_wallet_title">Create Wallet</string>
+    <string name="create_wallet_hint_1">8–20 characters and include both numbers and letters in upper and lower case</string>
+    <string name="create_wallet_hint_2">Repeat password</string>
+    <string name="create_wallet_action_1">Create</string>
+    <string name="create_wallet_action_2">I have read and agree with the "User Agreement" and "Privacy Policy"</string>
+    <string name="create_wallet_tips_1">Please read and agree to the "User Agreement" and "Privacy Policy"</string>
+    <string name="create_wallet_tips_2">Invalid Wallet Access Code</string>
+
+    <!--导入钱包-->
+    <string name="import_wallet_title">Import Wallet</string>
+    <string name="import_wallet_hint_mnemonics">Type in Mnemonic words in the original order and separated by space</string>
+    <string name="import_wallet_hint_pwd">8–20 characters and include both numbers and letters in upper and lower case</string>
+    <string name="import_wallet_hint_comfirm_pwd">Confirm password</string>
+    <string name="import_wallet_action_start_import">Start Import</string>
+    <string name="import_wallet_tips_two_pwd_not_equals">Invalid Wallet Access Code</string>
+    <string name="import_wallet_tips_mnemonics_error">Mnemonic Words Error</string>
+
+    <!--助记词备份提示-->
+    <string name="mnemonic_backup_prompt_title">Backup Reminder</string>
+    <string name="mnemonic_backup_prompt_desc_1">Get Mnemonics</string>
+    <string name="mnemonic_backup_prompt_desc_2">Equals to own the wallet</string>
+    <string name="mnemonic_backup_prompt_desc_3">Backup Mnemonics</string>
+    <string name="mnemonic_backup_prompt_desc_4">Write down the Mnemonics in order to recover your wallet</string>
+    <string name="mnemonic_backup_prompt_desc_5">Keep It Offline</string>
+    <string name="mnemonic_backup_prompt_desc_6">Keep it secure offline. Do not share or transmit it online</string>
+    <string name="mnemonic_backup_prompt_action_1">Start Backup</string>
+    <string name="mnemonic_backup_prompt_action_2">Backup Later</string>
+
+    <!--助记词备份展示-->
+    <string name="mnemonic_backup_show_title">Backup Mnemonics</string>
+    <string name="mnemonic_backup_show_desc_1">Write down the Mnemonics in order</string>
+    <string name="mnemonic_backup_show_desc_2">Don\'t copy &amp; paste the Mnemonics</string>
+    <string name="mnemonic_backup_show_action">Next</string>
+
+    <!--助记词备份确认-->
+    <string name="mnemonic_backup_confirm_title">Confirm Mnemonics</string>
+    <string name="mnemonic_backup_confirm_desc">Click your Mnemonic words in the original order</string>
+    <string name="mnemonic_backup_confirm_action">Complete</string>
+    <string name="mnemonic_backup_confirm_tips_1">Please click in the order of the mnemonic words</string>
+    <string name="mnemonic_backup_confirm_tips_2">Your Mnemonic words are not in the original order</string>
+
+    <!--助记词备份提醒-->
+    <string name="mnemonic_backup_warn_title">Safety reminder</string>
+    <string name="mnemonic_backup_warn_desc">Please backup your Mnemonics in roder to recove your wallet and prevent lost of fund!</string>
+    <string name="mnemonic_backup_warn_action">Backup Now</string>
+
+    <!--添加币种-->
+    <string name="add_currency_title">Add Currency</string>
+    <string name="add_currency_menu">Get Test Coin</string>
+    <string name="add_currency_first_title_1">Prompt</string>
+    <string name="add_currency_first_title_2">Please Activate First</string>
+    <string name="add_currency_first_desc_format">首次开启%1$s需向系统支付少量费用激活，系统将默认选择同一链上有余额的币种进行支付</string>
+    <string name="add_currency_first_action_1">Confirm</string>
+    <string name="add_currency_first_action_2">Cancel</string>
+    <string name="add_currency_first_tips_add_failure">There are not enough %1$s or network exceptions, please try again later.</string>
+
+    <!--币种详情-->
+    <string name="currency_details_tab_1">All</string>
+    <string name="currency_details_tab_2">Roll In</string>
+    <string name="currency_details_tab_3">Roll Out</string>
+    <string name="currency_details_action_1">Transfer</string>
+    <string name="currency_details_action_2">Receive</string>
+    <string name="currency_details_action_3">Swap</string>
+
+    <!--交易记录-->
+    <string name="txn_records_title">Transaction History</string>
+    <string name="txn_records_desc_records_empty">No transaction record</string>
+
+    <!--交易详情-->
+    <string name="txn_details_title">Details</string>
+    <string name="txn_details_menu">Share</string>
+    <string name="txn_details_desc">This address was not added</string>
+    <string name="txn_details_action_1">Add Now</string>
+    <string name="txn_details_action_2">Browser for more detailed information ></string>
+    <string name="txn_details_label_1">Amount:&#160;</string>
+    <string name="txn_details_label_2">Gas Fee:&#160;</string>
+    <string name="txn_details_label_3">Receiver:&#160;</string>
+    <string name="txn_details_label_4">Sender:&#160;</string>
+    <string name="txn_details_label_5">No.:&#160;</string>
+    <string name="txn_details_state_processing">Processing</string>
+    <string name="txn_details_state_transfer_success">Transfer Successful</string>
+    <string name="txn_details_state_transfer_failure">Transfer Failed</string>
+    <string name="txn_details_state_collection_success">Receive Successful</string>
+    <string name="txn_details_state_collection_failure">Receive Failed</string>
+    <string name="txn_details_state_add_currency_success">Stable Coin Publish Successful</string>
+    <string name="txn_details_state_add_currency_failure">Stable Coin Publish Failed</string>
+    <string name="txn_details_state_transaction_success">Transaction Successful</string>
+    <string name="txn_details_state_transaction_failure">Transaction Failed</string>
+
+    <!--保存图片-->
+    <string name="save_picture_title">Save To Album</string>
+    <string name="save_picture_tips_success">Saved to album</string>
+    <string name="save_picture_tips_failure">Failed to save to album</string>
+    <string name="save_picture_need_permissions_desc">You need storage permission to save images</string>
+    <string name="save_picture_set_permissions_title">Get storage permission</string>
+    <string name="save_picture_set_permissions_desc">You need to get the storage permission to save the image. Go to open.</string>
+
+    <!--转账-->
+    <string name="transfer_title">Transfer</string>
+    <string name="transfer_title_format">%1$s Transfer</string>
+    <string name="transfer_label_balance_format">Balance: %1$s %2$s</string>
+    <string name="transfer_label_receiver_address">Recipient Address</string>
+    <string name="transfer_label_fees">Transaction Fee</string>
+    <string name="transfer_hint_transfer_amount">Enter Amount</string>
+    <string name="transfer_hint_receiver_address">Enter Address</string>
+    <string name="transfer_desc_slow">Slow</string>
+    <string name="transfer_desc_fast">Fast</string>
+    <string name="transfer_action_transfer">Confirm</string>
+    <string name="transfer_tips_unopened_or_unsupported_token">Not Yet Open or Supported Digital Currency</string>
+    <string name="transfer_tips_unsupported_currency">Not Supported Fiat Currency</string>
+    <string name="transfer_tips_token_empty">Please select the currency to transfer</string>
+    <string name="transfer_tips_transfer_amount_empty">Input Transfer Amount</string>
+    <string name="transfer_tips_address_empty">Input Transfer Address</string>
+    <string name="transfer_tips_address_error">Address Error</string>
+    <string name="transfer_tips_address_is_myself">You can\'t transfer money to yourself</string>
+    <string name="transfer_tips_transfer_success">Successful broadcast of transfer transaction</string>
+    <string name="transfer_tips_transfer_failure">Transfer failed</string>
+    <string name="transfer_tips_insufficient_balance_or_assets_unconfirmed">Insufficient balance or transactions not confirmed</string>
+    <string name="transfer_tips_account_no_activation">当前账户没有激活</string>
+    <string name="transfer_tips_receive_account_no_activation">收款账户没有激活</string>
+    <string name="transfer_tips_account_no_control">没有当前账户的控制权</string>
+    <string name="transfer_tips_node_not_response">节点请求失败</string>
+
+    <!--收款-->
+    <string name="receive_title">Receive</string>
+    <string name="receive_desc_receiver_address">Recipient Address</string>
+
+    <!--映射-->
+    <string name="mapping_title">Mapping</string>
+    <string name="mapping_label_balance">Balance : </string>
+    <string name="mapping_hint_mapping_amount">Transfer Amount</string>
+    <string name="mapping_action_mapping">Confirm</string>
+    <string name="mapping_label_exchange_rate">Exchange rate</string>
+    <string name="mapping_label_gas_fee">Gas fee</string>
+    <string name="mapping_eth_tokens_title">How to map ETH ERC20 token?</string>
+    <string name="mapping_eth_tokens_desc">Copy &amp; paste the link to the wallet then map the ETH ERC20 token to Violas wallet</string>
+    <string name="mapping_tips_token_empty">Please select currency</string>
+    <string name="mapping_tips_mapping_amount_empty">Please enter the map amount</string>
+    <string name="mapping_tips_insufficient_balance">Insufficient balance</string>
+    <string name="mapping_tips_unsupported_token">The currency mapping is not supported</string>
+    <string name="mapping_tips_mapping_success">Successful broadcast of mapping transaction</string>
+    <string name="mapping_tips_mapping_failure">Mapping failed</string>
+    <!--映射记录-->
+    <string name="mapping_records_title">Mapping Records</string>
+    <string name="mapping_records_label_gas_fee_format">Gas fee: %1$s</string>
+    <string name="mapping_txn_state_processing">Mapping Processing</string>
+    <string name="mapping_txn_state_succeeded">Mapping Successful</string>
+    <string name="mapping_txn_state_failed">Mapping Failed</string>
+
+    <!--首页市场-->
+    <string name="home_market_tab_swap">Swap</string>
+    <string name="home_market_tab_pool">Pool</string>
+    <string name="home_market_menu_txn_records">Market Transaction Records</string>
+    <!--市场通用-->
+    <string name="market_common_action_select_token">Select Token</string>
+    <string name="market_common_label_token_balance_format">Balance: %1$s</string>
+    <string name="market_common_tips_token_empty">Please select token</string>
+    <string name="market_common_label_pool_tokens">Pool tokens</string>
+    <string name="market_common_label_pool_token_amount_format">Token: %1$s</string>
+    <string name="market_common_label_swap_rate_colon">Swap Rate: </string>
+    <string name="market_common_label_charge_colon">Fees: </string>
+    <string name="market_common_label_order_time_colon">Order Time: </string>
+    <string name="market_common_label_deal_time_colon">Deal Time: </string>
+    <!--市场兑换-->
+    <string name="market_swap_action_swap">Swap</string>
+    <string name="market_swap_label_from">From</string>
+    <string name="market_swap_label_to">To</string>
+    <string name="market_swap_label_charge_rate_format">Fees rate: %1$s</string>
+    <string name="market_swap_label_swap_rate_format">Swap rate: %1$s</string>
+    <string name="market_swap_label_gas_fee_format">Gas fee: %1$s</string>
+    <string name="market_swap_tips_from_token_empty">Please select token</string>
+    <string name="market_swap_tips_to_token_empty">Please select token</string>
+    <string name="market_swap_tips_amount_empty">Please enter an amount</string>
+    <string name="market_swap_tips_insufficient_balance">Insufficient available balance</string>
+    <string name="market_swap_tips_swap_estimating">Estimating swap amount</string>
+    <string name="market_swap_tips_unsupported_pair">Does not support this transaction pair</string>
+    <string name="market_swap_tips_swap_success">Successful broadcast of swap transaction</string>
+    <string name="market_swap_tips_swap_failure">Swap failed</string>
+    <!--市场资金池-->
+    <string name="market_pool_title_select_pool_token">Select Pair</string>
+    <string name="market_pool_action_add_liquidity">Add Liquidity</string>
+    <string name="market_pool_action_remove_liquidity">Remove Liquidity</string>
+    <string name="market_pool_action_deposit">Deposit</string>
+    <string name="market_pool_action_withdrawal">Withdrawal</string>
+    <string name="market_pool_action_select_pool_token">Select Pair</string>
+    <string name="market_pool_label_input">Input</string>
+    <string name="market_pool_label_output">Output</string>
+    <string name="market_pool_label_total_pool_tokens_format">Your total pool tokens: %1$s</string>
+    <string name="market_pool_label_pool_token_balance_format">Balance: %1$s</string>
+    <string name="market_pool_desc_earnings">Provide liquidity will be rewarded by the swap fee</string>
+    <string name="market_pool_desc_and">%1$s and %2$s</string>
+    <string name="market_pool_tips_pool_tokens_empty">No pairs available</string>
+    <string name="market_pool_tips_add_liquidity_estimating">Estimating input amount</string>
+    <string name="market_pool_tips_remove_liquidity_estimating">Estimating output amount</string>
+    <string name="market_pool_tips_pool_token_empty">Please select pair</string>
+    <string name="market_pool_tips_input_amount_empty">Please enter an amount</string>
+    <string name="market_pool_tips_output_amount_empty">Please enter an amount</string>
+    <string name="market_pool_tips_add_liquidity_success">Successful broadcast of add liquidity transaction</string>
+    <string name="market_pool_tips_add_liquidity_failure">Add liquidity failed</string>
+    <string name="market_pool_tips_remove_liquidity_success">Successful broadcast of remove liquidity transaction</string>
+    <string name="market_pool_tips_remove_liquidity_failure">Remove liquidity failed</string>
+    <!--我的资金池-->
+    <string name="my_pool_title">My Pool</string>
+    <string name="my_pool_action_add_liquidity">Add Liquidity</string>
+    <string name="my_pool_action_remove_liquidity">Remove Liquidity</string>
+    <string name="my_pool_label_assets">Liquidity</string>
+    <!--兑换记录-->
+    <string name="swap_records_title">Swap Records</string>
+    <string name="swap_txn_state_processing">Swapping</string>
+    <string name="swap_txn_state_succeeded">Swap Successful</string>
+    <string name="swap_txn_state_failed">Swap Failed</string>
+    <string name="swap_details_title">Swap Details</string>
+    <!--资金池记录-->
+    <string name="pool_records_title">Pool Records</string>
+    <string name="pool_txn_state_processing">Packing</string>
+    <string name="pool_txn_state_add_liquidity_succeeded">Deposit Successful</string>
+    <string name="pool_txn_state_add_liquidity_failed">Deposit Failed</string>
+    <string name="pool_txn_state_remove_liquidity_succeeded">Withdraw Successful</string>
+    <string name="pool_txn_state_remove_liquidity_failed">Withdraw Failed</string>
+    <string name="pool_details_title">Details</string>
+    <string name="pool_details_label_pool_token">Pool Token: </string>
+    <!--选择币种-->
+    <string name="select_currency_hint_search">Search Token</string>
+    <string name="select_currency_desc_tokens_empty">There is no Token to choose</string>
+    <string name="select_currency_desc_search_empty_format">No %1$s related Token found</string>
+
+    <!--首页数字银行-->
+    <string name="home_bank_label_total_deposit">Total Deposit&#160;($)&#160;</string>
+    <string name="home_bank_label_total_borrowable">Total Borrowable&#160;($)&#160;</string>
+    <string name="home_bank_label_total_earnings">Total Earnings&#160;($)&#160;</string>
+    <string name="home_bank_label_yesterday_earnings">Yesterday\'s Earnings&#160;</string>
+    <string name="home_bank_tab_deposit_market">Deposit Market</string>
+    <string name="home_bank_tab_borrowing_market">Borrowing Market</string>
+    <string name="home_bank_menu_deposit_order">Deposit Orders</string>
+    <string name="home_bank_menu_borrowing_order">Borrowing Orders</string>
+    <!--存款订单-->
+    <string name="bank_deposit_orders_title">Deposit Orders</string>
+    <string name="bank_deposit_orders_label_current_deposit">Current Deposit</string>
+    <string name="bank_deposit_orders_label_principal">Principal</string>
+    <string name="bank_deposit_orders_label_earnings">Earnings</string>
+    <string name="bank_deposit_orders_label_yield">APY</string>
+    <string name="bank_deposit_orders_state_earning">Earning Interest</string>
+    <string name="bank_deposit_orders_action_withdrawal">Withdrawal</string>
+    <!--存款记录-->
+    <string name="bank_deposit_records_title">Deposit Records</string>
+    <string name="bank_deposit_records_type_deposited">Deposited</string>
+    <string name="bank_deposit_records_type_withdrew">Withdrew</string>
+    <string name="bank_deposit_state_depositing">Depositing</string>
+    <string name="bank_deposit_state_deposited">Deposited</string>
+    <string name="bank_deposit_state_deposit_failed">Deposit failed</string>
+    <string name="bank_deposit_state_withdrawing">Withdrawing</string>
+    <string name="bank_deposit_state_withdrew">Withdrew</string>
+    <string name="bank_deposit_state_withdrawal_failed">Withdrawal failed</string>
+    <!--借款订单-->
+    <string name="bank_borrowing_orders_title">Borrowing Orders</string>
+    <string name="bank_borrowing_orders_label_current_borrowing">Current Borrowing</string>
+    <string name="bank_borrowing_orders_label_borrowed_amount">Rest loan amount</string>
+    <!--借款记录-->
+    <string name="bank_borrowing_records_title">Borrowing Records</string>
+    <string name="bank_borrowing_records_type_borrowed">Borrowed</string>
+    <string name="bank_borrowing_records_type_repaid">Repaid</string>
+    <string name="bank_borrowing_records_type_liquidated">Liquidated</string>
+    <!--数字银行交易记录通用-->
+    <string name="bank_records_common_type_all">All</string>
+    <string name="bank_records_common_type_all_currencies">All Tokens</string>
+    <string name="bank_records_common_type_all_state">All State</string>
+    <string name="bank_records_common_desc_search_empty">No result match search</string>
+    <!--借款详情-->
+    <string name="bank_borrowing_details_tab_borrowing">Borrowing Details</string>
+    <string name="bank_borrowing_details_tab_repayment">Repayment Details</string>
+    <string name="bank_borrowing_details_tab_liquidation">Liquidation Details</string>
+    <string name="bank_borrowing_details_action">Repayment Now</string>
+    <string name="bank_borrowing_details_label_liquidation_amount">Liquidation Amount</string>
+    <string name="bank_borrowing_details_label_deduction_amount">Deduction Amount</string>
+    <string name="bank_borrowing_state_borrowing">Borrowing</string>
+    <string name="bank_borrowing_state_borrowed">Borrowed</string>
+    <string name="bank_borrowing_state_borrowing_failed">Borrow failed</string>
+    <string name="bank_borrowing_state_repaying">Repaying</string>
+    <string name="bank_borrowing_state_repaid">Repaid</string>
+    <string name="bank_borrowing_state_repayment_failed">Repayment failed</string>
+    <string name="bank_borrowing_state_liquidating">Liquidating</string>
+    <string name="bank_borrowing_state_liquidated">Liquidated</string>
+    <string name="bank_borrowing_state_liquidation_failed">Liquidation failed</string>
+    <!--数字银行业务通用-->
+    <string name="bank_biz_title_product_desc">Product Description</string>
+    <string name="bank_biz_title_common_problem">FAQ</string>
+    <string name="bank_biz_hint_limit_amount_format">Increment by %3$s %4$s starting at %1$s %2$s</string>
+    <string name="bank_biz_hint_pledge_rate_algorithm">Loan-to-value ratio = borrowing/lending</string>
+    <string name="bank_biz_label_pledge_rate">Loan-to-value Ratio</string>
+    <string name="bank_biz_desc_click_retry">Click retry</string>
+    <string name="bank_biz_tips_unsupported_currency">Currency not supported by the current version</string>
+    <string name="bank_biz_tips_load_currency_error">Currency information loading is abnormal</string>
+    <string name="bank_biz_tips_select_currency_error">The selected currency information is abnormal</string>
+    <string name="bank_biz_tips_greater_than_daily_limit">No more than the limit of the day</string>
+    <!--数字银行存款-->
+    <string name="bank_deposit_title">Deposit</string>
+    <string name="bank_deposit_action_deposit">Deposit Now</string>
+    <string name="bank_deposit_label_biz_name">To deposit</string>
+    <string name="bank_deposit_label_daily_limit">Daily limit&#160;:&#160;&#160;</string>
+    <string name="bank_deposit_label_annual_deposit_rate">Lending APY</string>
+    <string name="bank_deposit_tips_deposit_amount_empty">Please enter the deposit amount</string>
+    <string name="bank_deposit_tips_deposit_amount_too_small_format">The deposit amount must not be less than %1$s %2$s</string>
+    <string name="bank_deposit_tips_deposit_amount_too_big_format">The deposit amount cannot be higher than %1$s %2$s</string>
+    <string name="bank_deposit_tips_deposit_success">Successful broadcast of deposit transaction</string>
+    <string name="bank_deposit_tips_deposit_failure">Deposit failed</string>
+    <!--数字银行提款-->
+    <string name="bank_withdrawal_title">Withdrawal</string>
+    <string name="bank_withdrawal_action">Withdrawal</string>
+    <string name="bank_withdrawal_label_deposited_amount">Amount&#160;:&#160;&#160;</string>
+    <string name="bank_withdrawal_desc">If you have loans, some of deposits will be used as collacteral. You can withdraw deposits after payoff the loans.</string>
+    <string name="bank_withdrawal_hint_withdrawal_amount">Enter withdrawal amount</string>
+    <string name="bank_withdrawal_tips_withdrawal_amount_empty">Please enter the withdrawal amount</string>
+    <string name="bank_withdrawal_tips_insufficient_balance">Insufficient withdraw amount</string>
+    <string name="bank_withdrawal_tips_withdrawal_success">Successful broadcast of withdrawal transaction</string>
+    <string name="bank_withdrawal_tips_withdrawal_failure">Withdrawal failed</string>
+    <!--数字银行借款-->
+    <string name="bank_borrow_title">Borrow</string>
+    <string name="bank_borrow_action_borrowing">Borrow Now</string>
+    <string name="bank_borrow_label_biz_name">To borrow</string>
+    <string name="bank_borrow_label_borrowable_colon">Loan limit&#160;:&#160;&#160;</string>
+    <string name="bank_borrow_label_borrowing_rate">Borrowing rate</string>
+    <string name="bank_borrow_content_borrowing_rate_format">%1$s Day</string>
+    <string name="bank_borrow_label_pledge_account">Pledge account</string>
+    <string name="bank_borrow_type_bank_balance">Account balance</string>
+    <string name="bank_borrow_desc_pledge_account">The liquidation part will be deducted from the deposit account</string>
+    <string name="bank_borrow_action_agreement_read_and_agree">I have read and agree with the "Loan Servicing Agreement"</string>
+    <string name="bank_borrow_desc_agreement">"Loan Servicing Agreement"</string>
+    <string name="bank_borrow_tips_read_and_agree_agreement">Please read and agree with the "Loan Servicing Agreement"</string>
+    <string name="bank_borrow_tips_borrow_amount_empty">Please enter the borrow amount</string>
+    <string name="bank_borrow_tips_borrow_amount_too_small_format">The borrow amount must not be less than %1$s %2$s</string>
+    <string name="bank_borrow_tips_borrow_amount_too_big_format">The borrow amount cannot be higher than %1$s %2$s</string>
+    <string name="bank_borrow_tips_borrow_success">Successful broadcast of borrow transaction</string>
+    <string name="bank_borrow_tips_borrow_failure">Borrow failed</string>
+    <!--数字银行还款-->
+    <string name="bank_repayment_title">Repayment</string>
+    <string name="bank_repayment_action">Repayment Now</string>
+    <string name="bank_repayment_label_biz_name">To payoff</string>
+    <string name="bank_repayment_label_borrowed_amount">Rest amount&#160;:&#160;&#160;</string>
+    <string name="bank_repayment_hint_repayment_amount">Enter repayment amount</string>
+    <string name="bank_repayment_label_borrowing_rate">Loan rate</string>
+    <string name="bank_repayment_label_repayment_account">Repayment account</string>
+    <string name="bank_repayment_content_repayment_account">Wallet balance</string>
+    <string name="bank_repayment_tips_repayment_amount_empty">Please enter repayment amount</string>
+    <string name="bank_repayment_tips_repayment_success">Successful broadcast of repayment transaction</string>
+    <string name="bank_repayment_tips_repayment_failure">Repayment failed</string>
+
+    <!--钱包管理-->
+    <string name="wallet_management_title">Manage</string>
+    <string name="wallet_management_label_export_mnemonics">Export Mnemonics</string>
+    <string name="wallet_management_label_touch_id">Touch ID</string>
+    <string name="wallet_management_action_delete_wallet">Delete Wallet</string>
+    <!--删除钱包-->
+    <string name="delete_wallet_desc">Please backup your wallet before deleting it! Otherwise your fund will be lost!</string>
+    <!--指纹ID-->
+    <string name="touch_id_open_prompt_title">Set up fingerprint recognition to make transactions more convenient</string>
+    <string name="touch_id_open_prompt_action_setup_now">Set Up Now</string>
+    <string name="touch_id_open_prompt_action_later_setup">Talk About Later</string>
+    <string name="touch_id_unable_tips_unsupported">The current device does not support this function</string>
+    <string name="touch_id_unable_tips_unopened">Please turn on biometrics first</string>
+    <string name="touch_id_unable_tips_unavailable">Biometrics is temporarily unavailable, please try again later.</string>
+    <string name="open_touch_id_title">Open Fingerprint Verification</string>
+    <string name="auth_touch_id_title">Fingerprint Verification</string>
+    <string name="auth_touch_id_action_use_password">Use Password</string>
+    <string name="auth_touch_id_action_enable_now">Start Now Enable</string>
+    <string name="auth_touch_id_action_retry">Try fingerprint again</string>
+    <string name="auth_touch_id_desc_auth_start">Please verify that you have a fingerprint</string>
+    <string name="auth_touch_id_desc_try_again">Try again</string>
+    <string name="auth_touch_id_desc_auth_failure">Fingerprint not recognized</string>
+    <string name="auth_touch_id_desc_lockout">The fingerprint sensor is temporarily suspended. Please try again later.</string>
+    <string name="auth_touch_id_desc_lockout_permanent">The fingerprint sensor is disabled, and the phone password needs to be verified.</string>
+    <string name="close_touch_id_desc">Are you sure to turn off fingerprint verification?</string>
+
+    <!--地址薄-->
+    <string name="address_book_desc_addresses_empty">No Address Yet</string>
+    <!--删除地址-->
+    <string name="delete_address_title">Remove Address</string>
+    <string name="delete_address_desc">Confirm to remove this address from the Address Book！</string>
+    <!--添加地址-->
+    <string name="add_address_title">Add Address</string>
+    <string name="add_address_label_note">Note</string>
+    <string name="add_address_label_address">Address</string>
+    <string name="add_address_label_type">Type</string>
+    <string name="add_address_hint_note">Note should be less than 20 characters</string>
+    <string name="add_address_hint_address">Input address</string>
+    <string name="add_address_action_add">Add</string>
+    <string name="add_address_tips_note_empty">Please write note</string>
+    <string name="add_address_tips_address_empty">Please input address</string>
+    <string name="add_address_tips_type_empty">Please select the wallet type</string>
+    <string name="add_address_tips_address_error">Input invalid address</string>
+    <string name="add_address_tips_add_success">Add success</string>
+
+    <!--设置-->
+    <!--多语言-->
+    <string name="multi_language_label_follow_system">Default to System Settings</string>
+    <string name="multi_language_desc_follow_system">Default to System Settings</string>
+    <string name="multi_language_label_english">English</string>
+    <string name="multi_language_desc_english">English</string>
+    <string name="multi_language_label_chinese_simplified">简体中文</string>
+    <string name="multi_language_desc_chinese_simplified">Simplified Chinese</string>
+    <string name="multi_language_label_chinese_traditional">繁體中文</string>
+    <string name="multi_language_desc_chinese_traditional">Traditional Chinese</string>
+    <!--关于我们-->
     <string name="about_us_website_key">Official Website</string>
     <string name="about_us_website_value">https://violas.io</string>
-    <string name="about_us_email_key">Email</string>
+    <string name="about_us_email_key">Email Address</string>
     <string name="about_us_email_value">violas.team@violas.io</string>
-    <string name="about_us_wechat_key">wechat</string>
+    <string name="about_us_wechat_key">WeChat</string>
     <string name="about_us_wechat_value">xxxxx</string>
     <string name="about_us_telegram_key">Telegram</string>
     <string name="about_us_telegram_value">xxxxx</string>
@@ -141,485 +485,142 @@
     <string name="about_us_twitter_value">xxxxx</string>
     <string name="about_us_facebook_key">Facebook</string>
     <string name="about_us_facebook_value">xxxxx</string>
-    <string name="hint_address_error">Address Error</string>
+    <!--帮组与反馈-->
+    <string name="feedback_hint_content">Enter content</string>
+    <string name="feedback_hint_contact">Enter your contact information</string>
+    <string name="feedback_desc_content_count">%1$d/%2$d</string>
+    <string name="feedback_tips_content_empty">Please enter content</string>
+    <string name="feedback_tips_contact_empty">Please enter your contact information</string>
 
-    <string name="web_load_failed_tips">Cannot Open the Page</string>
-    <string name="web_load_failed_retry">Touch the screen to reload</string>
+    <!--密码验证-->
+    <string name="auth_pwd_title">Input Access Code</string>
+    <string name="auth_pwd_hint_pwd">Access Code</string>
+    <string name="auth_pwd_hint_pwd_empty">Input Access Code</string>
+    <string name="auth_pwd_hint_pwd_error">Access Code Error</string>
 
-    <string name="service_agreement_title">Service Agreement</string>
-    <string name="service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service</string>
-    <string name="title_privacy_policy">Privacy Policy</string>
-    <string name="url_privacy_policy">https://violas.io/violas_service_html/Privacy_Policy</string>
-    <string name="feedback">Feedback</string>
-    <string name="help_feedback_title">Help &amp; Feedback</string>
-    <string name="help_feedback_menu">Question Feedback</string>
-    <string name="help_feedback_url">https://www.baidu.com/</string>
-    <string name="feedback_title">Question Feedback</string>
-    <string name="feedback_hint_input_content">Input Feedback</string>
-    <string name="feedback_hint_input_contact">Input your contact info</string>
-    <string name="feedback_content_count">%1$d/%2$d</string>
+    <!--国家/地区-->
+    <string name="country_area_title_select_area_code">Choose phone area code</string>
+    <string name="country_area_title_select_country_area">Select country or region</string>
+    <string name="country_area_united_states">United States</string>
 
-    <string name="title_market">Market</string>
-    <string name="hint_transfer_number">Transfer Amount</string>
-    <string name="hint_receipt_number">Receiving Amount</string>
-    <string name="hint_parities">Exchange Rate</string>
-    <string name="title_change_language">Change Language</string>
-    <string name="transaction_record_title">Transaction History</string>
-    <string name="transaction_record_time">Time</string>
-    <string name="transaction_record_amount">Amount</string>
-    <string name="transaction_record_consume">Consume</string>
-    <string name="transaction_record_receipt">Receive</string>
-    <string name="transaction_record_transfer">Transfer</string>
-    <string name="transaction_record_open">Open</string>
-    <string name="transaction_record_activation">Activation</string>
-    <string name="transaction_record_stablecoin">Stablecoin</string>
-    <string name="transaction_record_new_coin">New Fiat Currency</string>
-    <string name="transaction_record_query">Query</string>
-    <string name="transaction_record_not_supported_query">Not Supported</string>
+    <!--激励挖矿-->
+    <!--激励挖矿首页部分-->
+    <string name="incentive_home_wallet_action_1">Mining Bonus</string>
+    <string name="incentive_home_wallet_action_2">Receive</string>
+    <string name="incentive_home_market_title">Mining Incentives</string>
+    <string name="incentive_home_market_desc">Liquidity mining with VLS token incentives</string>
+    <string name="incentive_home_bank_action">Mining Rules</string>
+    <string name="incentive_home_me_action_1">Mining Incentive &amp; Rules</string>
+    <string name="incentive_home_me_action_2">Bonus For Inviting Friends</string>
+    <!--手机领取奖励-->
+    <string name="incentive_receive_title">Phone Number Verification</string>
+    <string name="incentive_receive_desc">1. Each phone number can be tried 3 times\n2. Phone number will not be stored nor associated with your account\n3. Verified account will receive 10 VLS</string>
+    <string name="incentive_receive_hint_phone_number">Enter mobile phone number</string>
+    <string name="incentive_receive_hint_verification_code">Enter verification code</string>
+    <string name="incentive_receive_hint_inviter_address">Referral account address(Optional)</string>
+    <string name="incentive_receive_action_get_verification_code">Get Verification Code</string>
+    <string name="incentive_receive_action_receive_now">Get It</string>
+    <string name="incentive_receive_tips_inviter_address_error">Please enter the correct VLS address of the inviter</string>
+    <string name="incentive_receive_tips_get_verification_code_success">The verification code has been sent, please check</string>
+    <string name="incentive_receive_tips_receive_success">Received successfully</string>
+    <!--挖矿收益明细-->
+    <string name="incentive_earnings_details_title">Earning Details</string>
+    <string name="incentive_earnings_details_tab_invite">Invite Friends</string>
+    <string name="incentive_earnings_details_tab_pool">Pool</string>
+    <string name="incentive_earnings_details_tab_bank">Bank</string>
+    <string name="incentive_earnings_details_label_invited_account">Invited account</string>
+    <string name="incentive_earnings_details_label_mining_earnings">Mining earning</string>
+    <string name="incentive_earnings_details_label_invitation_time">Invitation time</string>
+    <string name="incentive_earnings_details_label_withdrawal_time">Withdrawal time</string>
+    <string name="incentive_earnings_details_label_withdrawal_amount">Withdrawal amount</string>
+    <string name="incentive_earnings_details_label_operation_type">Operations</string>
+    <string name="incentive_earnings_details_state_issuing">Issuing</string>
+    <string name="incentive_earnings_details_state_arrived">Issued</string>
+    <string name="incentive_earnings_details_type_deposit">Deposit</string>
+    <string name="incentive_earnings_details_type_withdrawal">Withdrawal</string>
+    <string name="incentive_earnings_details_type_borrowing">Borrowing</string>
+    <string name="incentive_earnings_details_type_repayment">Repayment</string>
+    <string name="incentive_earnings_details_type_add_liquidity">Add liquidity</string>
+    <string name="incentive_earnings_details_type_remove_liquidity">Remove liquidity</string>
+    <string name="incentive_earnings_details_type_active_extraction">Extraction</string>
+    <string name="incentive_tips_share_link_success">Copied</string>
 
-    <string name="account_tips_not_found">Wallet Account Not Exist</string>
-    <string name="hint_assert_open_error">Open Funds Failed</string>
-    <string name="hint_transaction_record">Transaction History</string>
-    <string name="hint_unsupported_tokens">Not Yet Open or Supported Digital Currency</string>
-    <string name="hint_unsupported_coin">Not Supported Fiat Currency</string>
-    <string name="hint_scan_result">Scan Result</string>
-    <string name="action_exchange">Exchange</string>
-    <string name="action_view_orders">Orders</string>
-    <string name="title_orders">Order</string>
-    <string name="title_tab_uncompleted">Incomplete</string>
-    <string name="title_tab_completed">Completed</string>
-    <string name="hint_quotes_not_open">The development is full of expectation</string>
-    <string name="action_revoke">Revoke</string>
-    <string name="label_total_amount">Amount</string>
-    <string name="label_entrust_total_amount">Entrust Number</string>
-    <string name="label_traded_amount">Amount Traded</string>
-    <string name="label_fee">Transaction Fee</string>
-    <string name="label_market">Market</string>
-    <string name="label_number">@string/label_total_amount</string>
-    <string name="label_price">Price</string>
-    <string name="label_all">All</string>
-    <string name="label_me_order_entrust">Current Order</string>
-    <string name="label_all_order_entrust">Order List</string>
-    <string name="hint_me_order_empty">Empty Order</string>
-    <string name="hint_all_order_empty">Empty Order List</string>
-    <string name="title_order_details">Order Details</string>
-    <string name="title_group_orders">Order History</string>
-    <string name="label_time">Time</string>
-    <string name="state_revoked">Revoked</string>
-    <string name="state_completed">Completed</string>
-    <string name="state_revoking">Revoking</string>
+    <!--WalletConnect-->
+    <string name="wallet_connect_login_title">Website ViolasPay Login Confirmation</string>
+    <string name="wallet_connect_login_declare">*The "User Agreement" and "Privacy Policy" shall also apply to its usage</string>
+    <string name="wallet_connect_login_desc_login">Website ViolasPay is requesting access to your wallet address. Are you sure you have made your wallet address public to this site?</string>
+    <string name="wallet_connect_login_desc_login_format">Website %1$s is requesting access to your wallet address. Are you sure you want to disclose your wallet address to this site?</string>
+    <string name="wallet_connect_login_desc_logged">You already have the login status of the web wallet, confirming the login will force you to exit the previous web wallet</string>
+    <string name="wallet_connect_login_action_confirm_login">Sign In</string>
+    <string name="wallet_connect_login_action_cancel_login">Cancel</string>
+    <string name="wallet_connect_management_title">Web Wallet Logged</string>
+    <string name="wallet_connect_management_action">Exit Web Wallet</string>
+    <string name="wallet_connect_txn_title">Transfer Confirmation</string>
+    <string name="wallet_connect_txn_label_sender_address">Address:&#160;</string>
+    <string name="wallet_connect_add_currency_label">Add Currency</string>
+    <string name="wallet_connect_transfer_label_amount">Amount:&#160;</string>
+    <string name="wallet_connect_transfer_label_receiver_address">Recipient Address:&#160;</string>
+    <string name="wallet_connect_swap_label_from">From</string>
+    <string name="wallet_connect_swap_label_to">To</string>
+    <string name="wallet_connect_swap_label_path">Path</string>
+    <string name="wallet_connect_pool_label_input">Input</string>
+    <string name="wallet_connect_pool_label_output">Output</string>
+    <string name="wallet_connect_bank_label_deposit_biz_name">To deposit</string>
+    <string name="wallet_connect_bank_label_withdrawal_biz_name">Withdraw amount</string>
+    <string name="wallet_connect_bank_label_borrow_biz_name">To borrow</string>
+    <string name="wallet_connect_bank_label_repayment_biz_name">To payoff</string>
 
-    <string name="hint_exchange_successful">Exchange Application Successful</string>
-    <string name="hint_exchange_error">Exchange Application Error</string>
-    <string name="hint_unable_change">Unable to Exchange</string>
-    <string name="hint_unknown_error">Error</string>
-    <string name="hint_change_number_not_zero">Amount of exchange cannot be zero</string>
+    <!--二维码扫描-->
+    <string name="qr_code_result_title">Scan Result</string>
+    <string name="qr_code_scan_title">Scan</string>
+    <string name="qr_code_scan_hint">Scan Wallet Address</string>
+    <string name="qr_code_scan_need_permissions_desc">Need grant access to camera to scan</string>
+    <string name="qr_code_scan_set_permissions_title">Get permission to access camera</string>
+    <string name="qr_code_scan_set_permissions_desc">Need access camera to scan QR. Grant access to camera</string>
 
-    <string name="tips_revoke_success">Revoke Success</string>
-    <string name="tips_revoke_failure">Revoke Failed</string>
-    <string name="hint_transfer_failed">Transfer Failed</string>
-    <string name="hint_transfer_account_no_activation">当前账户没有激活</string>
-    <string name="hint_transfer_receive_account_no_activation">收款账户没有激活</string>
-    <string name="hint_transfer_account_no_control">没有当前账户的控制权</string>
-    <string name="hint_transfer_node_not_response">节点请求失败</string>
+    <!--Web-->
+    <string name="web_desc_load_failure">Cannot Open the Page</string>
+    <string name="web_desc_retry">Touch the screen to reload</string>
 
-    <string name="hint_back_up_mnemonic_words">Your identity mnemonic is not backed up. Be sure to back up the mnemonic</string>
-    <string name="hint_back_up_mnemonic_words_content">Mnemonic words can be used to recover the wallet assets under the identity, to prevent the asset loss caused by forgotten password, application deletion, mobile phone loss, etc</string>
-    <string name="tab_wallet">Wallet</string>
-    <string name="tab_market">Market</string>
-    <string name="tab_me">Me</string>
-    <string name="tab_bank">Bank</string>
-    <string name="action_please_choose">Select</string>
-    <string name="hint_please_select_address_system">Please select the wallet type</string>
-    <string name="hint_confirm_delete_address_book">Confirm to remove this address from the Address Book！</string>
-    <string name="hint_publish_token">Open the stability coin for the first time</string>
-    <string name="hint_publish_token_content">The first time to open the stable coin requires a small fee, whether to continue.</string>
-    <string name="hint_publish_token_content_custom">首次开启 %1$s 需向系统支付少量费用激活，系统将默认选择同一链上有余额的币种进行支付。</string>
+    <!--所属页面暂未启用或屏蔽-->
+    <!--添加钱包-->
+    <string name="wallet_account_title_add_wallet">Add Wallet</string>
+    <string name="wallet_account_label_identity">Identity Wallet</string>
+    <string name="wallet_account_label_other">Create/Import</string>
+    <string name="wallet_account_title_select_wallet">Select Wallet</string>
+    <!--创建钱包-->
+    <string name="init_wallet_title_create_wallet_format">Create%1$s Wallet</string>
+    <string name="init_wallet_title_import_wallet_format">Import%1$s Wallet</string>
+    <string name="init_wallet_action_create">Create</string>
+    <string name="init_wallet_action_import">Import</string>
+    <string name="init_wallet_hint_wallet_name">Input Nickname</string>
+    <string name="init_wallet_hint_wallet_pwd">Input Wallet Access Code</string>
+    <string name="init_wallet_hint_confirm_wallet_pwd">Confirm Wallet Access Code</string>
+    <string name="init_wallet_tips_wallet_name_empty">Wallet nickname cannot be empty</string>
+    <string name="init_wallet_tips_two_pwd_not_equals">Invalid Wallet Access Code</string>
+    <!--钱包信息-->
+    <string name="wallet_info_title">Wallet Detail</string>
+    <string name="wallet_info_label_modify_wallet_name">Change Wallet Name</string>
+    <string name="wallet_info_tips_new_wallet_name_empty">Input New Wallet Name</string>
+    <string name="wallet_info_tips_modify_wallet_name_success">Update Success</string>
+    <!--Identity-->
+    <string name="identity_action_create_identity">Create Identity</string>
+    <string name="identity_action_import_identity">Import Identity</string>
 
-    <string name="tips_no_address">No address at present</string>
-    <string name="tips_no_transaction_record">No transaction record</string>
-    <string name="tips_no_uncompleted_orders">There are no outstanding orders</string>
-    <string name="tips_no_completed_orders">No orders have been completed</string>
-    <string name="tips_no_order_trades">No transaction records</string>
+    <!--消息推送-->
+    <string name="msg_center_title">Notification Center</string>
+    <string name="msg_center_tab_transfer_notification">Transaction Notification</string>
+    <string name="msg_center_tab_system_notification">System Notification</string>
+    <string name="msg_center_tips_msgs_empty">No notification alerts</string>
 
-    <string name="format_wallet_name">%1$s Wallet</string>
-    <string name="hinet_token_select">Please Select</string>
-    <string name="hint_note_select_exchange_coin">No currency to be exchanged</string>
-    <string name="hint_note_sellect_coin_more">There is no other stable currency to choose from</string>
-    <string name="hint_not_none_coin_or_net_error">There are not enough %1$s or network exceptions, please try again later.</string>
-    <string name="hint_exchange_amount_too_large">Excessive exchange amount</string>
-    <string name="hint_to_their_error">You can\'t transfer money to yourself</string>
-    <string name="hint_transfer_broadcast_success">Transfer transaction broadcast successful</string>
-
-    // 以下为机翻
-    <string name="label_cross_chain_exchange">Dollar coin</string>
-    <string name="hint_input_account_password">Please enter %1$s account password</string>
-    <string name="hint_input_account_password_error">%1$s account password error</string>
-
-    <string name="hint_mapping_exchange_exist_orders">You have %1$d exchange orders</string>
-    <string name="hint_mapping_exchange_not_exist_orders">You haven\'t changed your order yet</string>
-    <string name="hint_mapping_exchange_load_orders_failed">Conversion order failed to load, click retry</string>
-    <string name="hint_unsupported_trading_pair">Does not support this transaction pair</string>
-
-    <string name="status_processing">ongoing</string>
-    <string name="status_failure">failure</string>
-    <string name="status_unknown">unknown</string>
-    <string name="label_exchange">exchange</string>
-    <string name="title_mapping_exchange_orders">To view the order</string>
-    <string name="tips_no_mapping_exchange_orders">No exchange order at present</string>
-    <string name="hint_load_exchange_pair">Query for supported transaction pairs</string>
-
-    <string name="desc_scan_login">Page ViolasPay login confirmation</string>
-    <string name="desc_scan_wallet_connect_login">Login</string>
-    <string name="desc_scan_wallet_connect_login_info">%1$s is requesting access to your wallet address. Are you sure you want to disclose your wallet address to this site?</string>
-    <string name="hint_input_login_pwd">Please enter your payment password</string>
-    <string name="tips_login_pwd_error">The password is wrong. Please enter it again</string>
-    <string name="action_confirm_login">Confirm the login</string>
-    <string name="action_cancel_login">Cancel the login</string>
-    <string name="tips_scan_login_success">Web page ViolasPay is logged in</string>
-    <string name="tips_scan_login_desktop">Please operate the scan code on the governor SSO wallet to log in</string>
-    <string name="tips_scan_login_not_support">The scan login operation is not supported</string>
-    <string name="wallet_connect_transfer_sender_address">Address：</string>
-    <string name="wallet_connect_transfer_amount">Amount：</string>
-    <string name="wallet_connect_transfer_address">Transfer the address：</string>
-    <string name="wallet_connect_use_behavior">*The Service Agreement and The Privacy Policy shall also apply to its usage.</string>
-    <string name="service_agreement">The Service Agreement</string>
-    <string name="privacy_policy">Privacy Policy</string>
-    <string name="wallet_connect_transaction">Transfer confirmation</string>
-
-    <string name="title_open_fingerprint_verification">Open Fingerprint Verification</string>
-    <string name="action_cancel_nbsp">Cancel</string>
-    <string name="action_confirm_nbsp">Confirm</string>
-    <string name="action_use_password">Use Password</string>
-    <string name="action_start_now_enable">Start Now Enable</string>
-    <string name="action_go_to_enable">Go To Enable</string>
-    <string name="action_retry_fingerprint">Try fingerprint again</string>
-    <string name="desc_fingerprint_authenticate_title_start">Please verify that you have a fingerprint</string>
-    <string name="desc_fingerprint_authenticate_error_retry">Try again</string>
-    <string name="desc_fingerprint_authenticate_title_failed">Fingerprint not recognized</string>
-    <string name="desc_fingerprint_authenticate_error_lockout">The fingerprint sensor is temporarily suspended. Please try again later.</string>
-    <string name="desc_fingerprint_authenticate_error_lockout_permanent">The fingerprint sensor is disabled, and the phone password needs to be verified.</string>
-    <string name="label_fingerprint_verification">Fingerprint Verification</string>
-    <string name="title_prompt">Prompt</string>
-    <string name="desc_close_fingerprint_verification">Are you sure to turn off fingerprint verification?</string>
-    <string name="desc_biometric_error_no_hardware">The current device does not support this function</string>
-    <string name="desc_biometric_error_none_enrolled">Please turn on biometrics first</string>
-    <string name="desc_biometric_error_hardware_unavailable">Biometrics is temporarily unavailable, please try again later.</string>
-    <string name="title_open_fingerprint_verification_prompt">Set up fingerprint recognition to make transactions more convenient</string>
-    <string name="action_set_up_now">Set Up Now</string>
-    <string name="action_talk_about_later">Talk About Later</string>
-    <string name="create_account">Create a wallet</string>
-    <string name="import_account">Import the wallet</string>
-
-    <string name="tips_create_or_import_wallet">Please create/import wallet first</string>
-    <string name="desc_delete_wallet">Please use this operation carefully, make sure your wallet is backed up securely before deleting, otherwise the digital asset will not be recovered!</string>
-    <string name="hint_wallet_connect_repeated_connection">You already have the login status of the web wallet, confirming the login will force you to exit the previous web wallet</string>
-    <string name="hint_wallet_connect_prompt">Vlolas Pay is applying for access to your wallet address. Are you sure you have made your wallet address public to this site?</string>
-    <string name="wallet_connect_have_landed">Web wallet is logged in</string>
-    <string name="main_wallet_total_fiat_balance">Total assets</string>
-    <string name="action_transfer_nbsp">Transfer</string>
-    <string name="action_collection_nbsp">Accept the paragraph</string>
-    <string name="action_exchange_nbsp">Rapid change</string>
-    <string name="label_transfer_in">Into</string>
-    <string name="label_transfer_out">Roll out</string>
-    <string name="wallet_connect_log_out">Exit web Wallet</string>
-    <string name="state_trading">Trading in</string>
-    <string name="title_transaction_details_nbsp">Detailed situation</string>
-    <string name="label_transaction_details_amount">Amount：</string>
-    <string name="label_transaction_details_gas">Cost of miners：</string>
-    <string name="label_transaction_details_receipt_address">Collection address：</string>
-    <string name="label_transaction_details_payment_address">Payment address：</string>
-    <string name="label_transaction_details_transaction_number">Transaction no：</string>
-    <string name="desc_transaction_state_transaction_pending">Trading in</string>
-    <string name="desc_transaction_state_transfer_success">Transfer success</string>
-    <string name="desc_transaction_state_transfer_failure">Transfer failed</string>
-    <string name="desc_transaction_state_collection_success">Payment success</string>
-    <string name="desc_transaction_state_collection_failure">Payment failure</string>
-    <string name="desc_transaction_state_add_currency_success">Stability coin activated successfully</string>
-    <string name="desc_transaction_state_add_currency_failure">Stabilization coin activation failed</string>
-    <string name="desc_transaction_state_transaction_success">A successful deal</string>
-    <string name="desc_transaction_state_transaction_failure">Transaction failure</string>
-    <string name="desc_view_by_browser">The browser queries for more details ></string>
-    <string name="title_share">share</string>
-    <string name="desc_save_into_album">Save to album</string>
-    <string name="tips_save_into_album_success">Saved to album</string>
-    <string name="tips_save_into_album_failure">Failed to save to album</string>
-    <string name="save_picture_hint_need_permissions">You need storage permission to save images</string>
-    <string name="save_picture_title_get_permissions">Get storage permission</string>
-    <string name="save_picture_hint_set_permissions">You need to get the storage permission to save the image. Go to open.</string>
-    <string name="action_ok">OK</string>
-    <string name="action_get_experience_the_coin">Get experience coin</string>
-    <string name="agreement_read_and_agree">I have read and agree to The Service Agreement and Privacy Policy.</string>
-    <string name="hint_wallet_agree_terms">Please read and agree to the Service Agreement and privacy policy</string>
-
-    <string name="title_market_swap">Exchange</string>
-    <string name="title_market_pool">Pool</string>
-    <string name="title_market_my_pool">My Pool</string>
-    <string name="handling_fee_rate_format">费率：%1$s</string>
-    <string name="exchange_rate_format">兑换率：%1$s</string>
-    <string name="gas_fee_format">矿工费用：%1$s</string>
-    <string name="input">输入</string>
-    <string name="output">输出</string>
-    <string name="action_swap_nbsp">兑&#160;换</string>
-    <string name="action_swap_unable_change">该交易对暂时无法兑换</string>
-    <string name="action_swap_input_exchange_quantity">请输入兑换数量</string>
-    <string name="select_token">选择通证</string>
-    <string name="title_market_swap_records">兑换记录</string>
-    <string name="transfer_in">转入</string>
-    <string name="transfer_out">转出</string>
-    <string name="pool_liquidity_token">资金池通证</string>
-    <string name="market_my_pool_amount_format">你的资金池共有：%1$s</string>
-    <string name="action_transfer_in_nbsp">转&#160;入</string>
-    <string name="action_transfer_out_nbsp">转&#160;出</string>
-    <string name="title_market_pool_records">资金池记录</string>
-    <string name="select_token_pair">选择交易对</string>
-    <string name="market_pool_earnings_desc">转入资金池可获取手续费收益</string>
-    <string name="wallet_connect_transfer_registered_coinname">注册币种</string>
-    <string name="tips_market_pool_select_token_pair_empty">没有可选择的交易对</string>
-    <string name="hint_market_select_token_search_box">搜索token</string>
-    <string name="market_select_token_balance_format">余额：%1$s %2$s</string>
-    <string name="tips_select_token_list_is_empty">暂无可以选择的Token</string>
-    <string name="tips_select_token_search_is_empty">未找到%1$s相关的Token</string>
-    <string name="market_token_balance_format">当前资产：%1$s</string>
-    <string name="market_liquidity_token_balance_format">当前通证：%1$s</string>
-    <string name="value_null" tools:ignore="MissingTranslation">-&#160;-</string>
-    <string name="market_transaction_records">市场交易记录</string>
-    <string name="market_swap_state_processing">兑换中</string>
-    <string name="market_swap_state_succeeded">兑换成功</string>
-    <string name="market_swap_state_failed">兑换失败</string>
-    <string name="market_swap_amount_insufficient">可用余额不足</string>
-    <string name="market_swap_state_cancelled">已取消</string>
-    <string name="action_retry">重试</string>
-    <string name="market_liquidity_token_amount_format">通证：%1$s</string>
-    <string name="market_pool_state_processing">打包中</string>
-    <string name="market_pool_add_state_succeeded">转入成功</string>
-    <string name="market_pool_add_state_failed">转入失败</string>
-    <string name="market_pool_remove_state_succeeded">转出成功</string>
-    <string name="market_pool_remove_state_failed">转出失败</string>
-    <string name="swap_details">兑换详情</string>
-    <string name="label_transaction_details_exchange_rate">兑换率：</string>
-    <string name="label_transaction_details_handling_fee">手续费：</string>
-    <string name="label_transaction_details_order_time">下单时间：</string>
-    <string name="label_transaction_details_deal_time">成交时间：</string>
-    <string name="market_transaction_state_submitted">已提交</string>
-    <string name="pool_details">详情</string>
-    <string name="label_transaction_details_liquidity_token">通证：</string>
-    <string name="hint_swap_input_assets_not_select">请选择通证</string>
-    <string name="hint_swap_output_assets_not_select">请选择通证</string>
-    <string name="hint_swap_input_assets_amount_input">请输入兑换数量</string>
-    <string name="hint_swap_output_assets_amount_input">资金池暂时无法兑换</string>
-    <string name="hint_payee_account_not_active">收款账户没有激活</string>
-    <string name="tips_market_add_liquidity_coin_not_selected">请选择通证</string>
-    <string name="tips_market_add_liquidity_amount_not_input">请输入转入数量</string>
-    <string name="tips_market_add_liquidity_estimate_amount">正在估算转入金额…</string>
-    <string name="tips_market_remove_liquidity_pair_not_selected">请选择交易对</string>
-    <string name="tips_market_remove_liquidity_amount_not_input">请输入转出数量</string>
-    <string name="tips_market_remove_liquidity_estimate_amount">正在估算转出金额…</string>
-    <string name="tips_market_insufficient_balance_format">%1$s可用余额不足</string>
-    <string name="tips_market_add_liquidity_success">转入交易广播成功</string>
-    <string name="tips_market_add_liquidity_failure">转入失败</string>
-    <string name="tips_market_remove_liquidity_success">转出交易广播成功</string>
-    <string name="tips_market_remove_liquidity_failure">转出失败</string>
-    <string name="hint_swap_exchange_transaction_broadcast_success">兑换交易广播成功</string>
-    <string name="hint_exchange_swap_input">输入</string>
-    <string name="hint_exchange_swap_output">输出</string>
-    <string name="hint_exchange_swap_path">路径</string>
-    <string name="exchange_add_liquidity">转入</string>
-    <string name="exchange_remove_liquidity">转出</string>
-
-    <string name="mapping">Mapping</string>
-    <string name="label_available_balance">可用余额 ：</string>
-    <string name="action_mapping">确定映射</string>
-    <string name="label_mapping_exchange_rate">汇率</string>
-    <string name="label_miner_fees">矿工费用</string>
-    <string name="hint_please_select_currency_transfer">请选择要转账的币种</string>
-    <string name="select_mapping_coin">选择币种</string>
-    <string name="tips_mapping_coin_not_selected">请选择币种</string>
-    <string name="tips_mapping_amount_not_input">请输入转出数量</string>
-    <string name="tips_mapping_insufficient_balance">当前可用余额不足</string>
-    <string name="tips_mapping_success">映射交易广播成功</string>
-    <string name="tips_mapping_failure">映射失败</string>
-    <string name="tips_mapping_unsupported">不支持该币种映射</string>
-    <string name="mapping_record">映射记录</string>
-    <string name="mapping_state_processing">映射中</string>
-    <string name="mapping_state_succeeded">映射成功</string>
-    <string name="mapping_state_failed">映射失败</string>
-    <string name="mapping_state_cancelled">已取消</string>
-
-    <string name="total_deposit_label">存款总额（$）</string>
-    <string name="total_borrowable_label">可借总额（$）</string>
-    <string name="total_earnings_label">累计收益（$）</string>
-    <string name="yesterday_earnings_label">昨日收益&#160;</string>
-    <string name="deposit_market">存款市场</string>
-    <string name="borrowing_market">借款市场</string>
-    <string name="deposit_order">存款订单</string>
-    <string name="borrowing_order">借款订单</string>
-    <string name="current_deposit">当前存款</string>
-    <string name="current_borrowing">当前借款</string>
-    <string name="earning">收益中</string>
-    <string name="principal">本金</string>
-    <string name="earnings">收益</string>
-    <string name="deposit_yield">年化收益率</string>
-    <string name="borrowing_rate">借贷率</string>
-    <string name="withdrawal_nbsp">提&#160;取</string>
-    <string name="amount_to_be_repaid">待还金额</string>
-    <string name="deposit_record">存款记录</string>
-    <string name="borrowing_record">借款记录</string>
-    <string name="borrowing_details">借款明细</string>
-    <string name="repayment_details">还款明细</string>
-    <string name="liquidation_details">清算明细</string>
-    <string name="all_currencies">全部币种</string>
-    <string name="all_state">全部状态</string>
-    <string name="bank_deposit_state_depositing">存款中</string>
-    <string name="bank_deposit_state_deposited">已存款</string>
-    <string name="bank_deposit_state_deposit_failed">存款失败</string>
-    <string name="bank_deposit_state_withdrawing">提取中</string>
-    <string name="bank_deposit_state_withdrew">已提取</string>
-    <string name="bank_deposit_state_withdrawal_failed">提取失败</string>
-    <string name="bank_borrowing_state_borrowing">借款中</string>
-    <string name="bank_borrowing_state_borrowed">已借款</string>
-    <string name="bank_borrowing_state_borrowing_failed">借款失败</string>
-    <string name="bank_borrowing_state_repaying">还款中</string>
-    <string name="bank_borrowing_state_repaid">已还款</string>
-    <string name="bank_borrowing_state_repayment_failed">还款失败</string>
-    <string name="bank_borrowing_state_liquidating">清算中</string>
-    <string name="bank_borrowing_state_liquidated">已清算</string>
-    <string name="bank_borrowing_state_liquidation_failed">清算失败</string>
-    <string name="no_matching_search_results">没有匹配的搜索结果</string>
-    <string name="amount">数量</string>
-    <string name="state">状态</string>
-    <string name="liquidated">被清算</string>
-    <string name="deducted">已抵扣</string>
-
-    <string name="extraction">提取</string>
-    <string name="extraction_nbsp">提&#160;取</string>
-    <string name="bank_withdrawal_label_extractable_amount">可提数量 :</string>
-    <string name="bank_withdrawal_desc">如果您当前有借贷操作，则需将部分存款作为质押金。提取质押金需还对应数量的借款金额。</string>
-    <string name="bank_withdrawal_hint_no_input">请输入提取数量</string>
-    <string name="bank_withdrawal_hint_insufficient_extractable_amount">可提取数量不足</string>
-    <string name="tips_withdrawal_success">提取交易广播成功</string>
-    <string name="all">全部</string>
-
-    <string name="bank_borrow_agreement_read_and_agree">我已阅读并同意《质押借款服务协议》</string>
-    <string name="bank_borrow_policy">《质押借款服务协议》</string>
-    <string name="bank_borrow_service_agreement_url">https://violas.io/violas_service_html/Terms_of_Service</string>
-    <string name="hint_bank_borrow_agree_terms">请阅读并同意质押借款服务协议</string>
-
-    <string name="action_bank_amount_all">全部</string>
-    <string name="hint_bank_product_description">产品说明</string>
-    <string name="hint_bank_common_problem">常见问题</string>
-
-    <string name="title_borrow">借款</string>
-    <string name="hint_bank_borrow_business_name">我要借</string>
-    <string name="title_bank_borrow_business_name">我要借</string>
-    <string name="hint_can_borrow_lines">可借额度 :</string>
-    <string name="action_borrowing_immediately">立即借款</string>
-    <string name="hint_please_enter_the_amount_borrowed">请输入借款数量</string>
-
-    <string name="title_deposit">存款</string>
-    <string name="hint_bank_deposit_business_name">我要存</string>
-    <string name="hint_bank_deposit_available_balance">可用余额 :</string>
-    <string name="hint_bank_deposit_daily_limit">每日限额 :</string>
-    <string name="action_deposit_immediately">立即存款</string>
-    <string name="hint_currencies_not_supported_in_current_version">当前版本不支持的币种</string>
-    <string name="hint_bank_business_select_assets">请先选择币种</string>
-    <string name="hint_account_error">账户异常</string>
-    <string name="hint_bank_business_assets_error">选择的币种信息异常</string>
-    <string name="hint_bank_business_borrow_success">借款成功</string>
-    <string name="hint_bank_business_deposit_success">存款成功</string>
-
-    <string name="title_repay_borrow">还款</string>
-    <string name="hint_bank_repay_borrow_business_name">我要还</string>
-    <string name="hint_can_repay_borrow_lines">待还余额 :</string>
-    <string name="action_repay_borrowing_immediately">立即还款</string>
-    <string name="hint_please_enter_the_amount_repay_borrowed">请输入还款数量</string>
-    <string name="hint_bank_business_repay_borrow_success">还款成功</string>
-    <string name="hint_bank_limit_amount">%1$s %2$s起，每%3$s %4$s递增</string>
-    <string name="hint_please_enter_deposit_quantity">请输入存款数量</string>
-    <string name="hint_deposit_amount_too_small">存款金额不得低于%1$s%2$s</string>
-    <string name="hint_deposit_amount_too_big">存款金额不得高于%1$s%2$s</string>
-    <string name="hint_not_exceed_quota_today">不可大于当日限额</string>
-    <string name="hint_please_enter_borrow_quantity">请输入存款数量</string>
-    <string name="hint_borrow_amount_too_small">存款金额不得低于%1$s%2$s</string>
-    <string name="hint_borrow_amount_too_big">存款金额不得高于%1$s%2$s</string>
-    <string name="hint_please_read_and_agree_pledge_service_agreement">请阅读并同意质押借款服务协议</string>
-    <string name="hint_borrowing_rates">借款利率</string>
-    <string name="hint_pledge_rate">质押率</string>
-    <string name="hint_pledge_account">质押账户</string>
-    <string name="hint_bank_balance">银行余额</string>
-    <string name="hint_borrow_liquidation">清算部分将从存款账户扣除</string>
-    <string name="hint_borrow_pledge_algorithm">质押率=借贷数量/存款数量</string>
-    <string name="hint_annual_deposit_rate">存款年利率</string>
-    <string name="hint_enter_repayment_amount">输入还款金额</string>
-    <string name="hint_repayment_account">还款账户</string>
-    <string name="hint_borrow_wallet_balance">钱包余额</string>
-    <string name="hint_repay_borrow_insufficient_balance">当前可用余额不足</string>
-    <string name="hint_click_retry">点击重试</string>
-    <string name="wallet_connect_bank_deposit">我要存</string>
-    <string name="wallet_connect_bank_redeem">提取数量</string>
-    <string name="wallet_connect_bank_borrow">我要借</string>
-    <string name="wallet_connect_bank_repay_borrow">我要还</string>
-    <string name="hint_bank_load_assets_error">币种信息加载异常</string>
-
-    <string name="default_notification_channel_id" translatable="false">default</string>
-    <string name="transaction_notification_channel_id" translatable="false">transaction</string>
-    <string name="events_notification_channel_id" translatable="false">events</string>
-    <string name="update_notification_channel_id" translatable="false">update</string>
-
-    <string name="default_notification_channel_name">其他通知</string>
-    <string name="transaction_notification_channel_name">交易提醒</string>
-    <string name="events_notification_channel_name">公告活动</string>
-    <string name="update_notification_channel_name">版本更新</string>
-
-    <string name="message_center">消息中心</string>
-    <string name="hint_eth_mapping">如何映射 ETH 代币？</string>
-    <string name="hint_eth_violas_content">将链接复制到以下钱包，即可将ETH代币映射至violas钱包</string>
-    <string name="invitation_reward">邀请奖励</string>
-    <string name="mining_reward_and_rules">挖矿奖励及规则</string>
-    <string name="mining_reward">挖矿奖励</string>
-    <string name="united_states">United States</string>
-    <string name="title_select_phone_area_code">Choose phone area code</string>
-    <string name="title_select_country_or_area">Select country or region</string>
-    <string name="title_phone_receive_reward">验证手机号</string>
-    <string name="desc_phone_receive_reward">1. 每个手机号有三次验证机会\n2. 请您放心，手机号不会绑定您的钱包\n3. 验证成功后可获取 10 VLS</string>
-    <string name="hint_input_phone_number">请输入手机号</string>
-    <string name="hint_input_verification_code">请输入验证码</string>
-    <string name="hint_input_inviter_address">邀请人VLS地址（选填）</string>
-    <string name="hint_inviter_address_error">请输入正确的邀请人VLS地址</string>
-    <string name="hint_get_verification_code_success">验证码已发送，请注意查收</string>
-    <string name="hint_phone_receive_reward_success">领取成功</string>
-    <string name="action_get_verification_code">获取验证码</string>
-    <string name="action_receive_right_now">立即领取</string>
-    <string name="title_incentive_earnings_details">收益明细</string>
-    <string name="tab_invite_mining_earnings">邀请好友</string>
-    <string name="tab_pool_mining_earnings">资金池</string>
-    <string name="tab_bank_mining_earnings">数字银行</string>
-    <string name="invited_account">被邀请账号</string>
-    <string name="mining_earnings">挖矿收益</string>
-    <string name="invitation_time">邀请时间</string>
-    <string name="extraction_time">提取时间</string>
-    <string name="extraction_amount">提取数量</string>
-    <string name="operation_type">操作类型</string>
-    <string name="mining_earnings_state_issuing">发放中</string>
-    <string name="mining_earnings_state_arrived">已到账</string>
-    <string name="mining_earnings_type_deposit">存款</string>
-    <string name="mining_earnings_type_withdrawal">提取</string>
-    <string name="mining_earnings_type_borrowing">借款</string>
-    <string name="mining_earnings_type_repayment">还款</string>
-    <string name="mining_earnings_type_add_liquidity">转入</string>
-    <string name="mining_earnings_type_remove_liquidity">转出</string>
-    <string name="mining_earnings_type_active_extraction">一键提取</string>
-    <string name="home_market_mining_title">挖矿福利</string>
-    <string name="home_market_mining_desc">现在加入资金池可获得同手续费奖励等价的VLS挖矿福利</string>
-    <string name="home_bank_mining_title">存、借挖矿规则</string>
-    <string name="home_wallet_phone_receive_title">免费领取</string>
-    <string name="home_wallet_mining_title">挖矿领福利</string>
-
-    <string name="txn_details_desc_address_not_add">此地址未添加</string>
-    <string name="txn_details_action_add_address">立即添加</string>
-    <string name="tips_share_link_success">已复制</string>
-    <string name="title_transfer_notification">转账通知</string>
-    <string name="title_system_notification">系统通知</string>
-    <string name="tips_msg_list_empty">暂无消息</string>
+    <!--通知渠道-->
+    <string name="notification_channel_name_default">Other Notification</string>
+    <string name="notification_channel_name_transaction">Transaction Reminder</string>
+    <string name="notification_channel_name_events">Announcement</string>
+    <string name="notification_channel_name_update">Version Update</string>
+    <string name="notification_channel_id_default" translatable="false">default</string>
+    <string name="notification_channel_id_transaction" translatable="false">transaction</string>
+    <string name="notification_channel_id_events" translatable="false">events</string>
+    <string name="notification_channel_id_update" translatable="false">update</string>
 
 </resources>

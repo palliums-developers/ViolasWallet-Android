@@ -47,7 +47,7 @@ class CreateWalletActivity : BaseAppActivity() {
             CoinTypes.parseCoinType(intent.getIntExtra(EXT_COIN_TYPE, CoinTypes.Violas.coinType()))
 
         tvCreateHint.text =
-            String.format(getString(R.string.hint_create_any_wallet), mCurrentCoinType.coinName())
+            String.format(getString(R.string.init_wallet_title_create_wallet_format), mCurrentCoinType.coinName())
 
         ivLogo.setImageResource(
             when (mCurrentCoinType) {
@@ -72,13 +72,13 @@ class CreateWalletActivity : BaseAppActivity() {
             val passwordConfirm = editConfirmPassword.text.toString().trim()
 
             if (walletName.isEmpty()) {
-                showToast(getString(R.string.hint_nickname_empty))
+                showToast(getString(R.string.init_wallet_tips_wallet_name_empty))
                 return@setOnClickListener
             }
             try {
                 PasswordCheckUtil.check(password)
                 if (!password.contentEquals(passwordConfirm)) {
-                    showToast(getString(R.string.hint_confirm_password_fault))
+                    showToast(getString(R.string.init_wallet_tips_two_pwd_not_equals))
                     return@setOnClickListener
                 }
                 showProgress()

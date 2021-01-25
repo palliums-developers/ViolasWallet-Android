@@ -63,7 +63,7 @@ class WalletManagerActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.title_manager)
+        title = getString(R.string.wallet_management_title)
 
         launch {
             try {
@@ -137,13 +137,13 @@ class WalletManagerActivity : BaseAppActivity() {
 
         val prompt = when (canAuthenticate) {
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
-                getString(R.string.desc_biometric_error_no_hardware)
+                getString(R.string.touch_id_unable_tips_unsupported)
             }
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                getString(R.string.desc_biometric_error_none_enrolled)
+                getString(R.string.touch_id_unable_tips_unopened)
             }
             else -> {
-                getString(R.string.desc_biometric_error_hardware_unavailable)
+                getString(R.string.touch_id_unable_tips_unavailable)
             }
         }
         UnableBiometricPromptDialog()
@@ -155,9 +155,9 @@ class WalletManagerActivity : BaseAppActivity() {
     private fun openBiometricAuthentication(password: String) {
         val promptParams =
             BiometricCompat.PromptParams.Builder(this)
-                .title(getString(R.string.title_open_fingerprint_verification))
-                .negativeButtonText(getString(R.string.action_cancel_nbsp))
-                .positiveButtonText(getString(R.string.action_start_now_enable))
+                .title(getString(R.string.open_touch_id_title))
+                .negativeButtonText(getString(R.string.common_action_cancel_space))
+                .positiveButtonText(getString(R.string.auth_touch_id_action_enable_now))
                 .customFingerprintDialogClass(CustomFingerprintDialog::class.java)
                 .reactivateWhenLockoutPermanent(true)
                 .autoCloseWhenError(false)

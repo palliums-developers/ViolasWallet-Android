@@ -266,12 +266,12 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
             }
         }
 
-        val titles = mutableListOf(getString(R.string.label_all))
+        val titles = mutableListOf(getString(R.string.currency_details_tab_1))
         if (mCoinNumber == CoinTypes.Libra.coinType()
             || mCoinNumber == CoinTypes.Violas.coinType()
         ) {
-            titles.add(getString(R.string.label_transfer_in))
-            titles.add(getString(R.string.label_transfer_out))
+            titles.add(getString(R.string.currency_details_tab_2))
+            titles.add(getString(R.string.currency_details_tab_3))
         }
 
         viewPager.offscreenPageLimit = 2

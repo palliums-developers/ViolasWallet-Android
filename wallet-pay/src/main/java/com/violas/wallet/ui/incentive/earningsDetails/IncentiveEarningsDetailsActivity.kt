@@ -76,7 +76,7 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
     }
 
     private fun initTopView() {
-        setTitle(R.string.title_incentive_earnings_details)
+        setTitle(R.string.incentive_earnings_details_title)
         setTopBackgroundResource(getResourceId(R.attr.bgPageTopViewLight, this))
         /*setTopBackgroundHeight(
             StatusBarUtil.getStatusBarHeight() + DensityUtility.dp2px(this, 110)
@@ -105,9 +105,9 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
             setFragments(fragments)
             setTitles(
                 mutableListOf(
-                    getString(R.string.tab_invite_mining_earnings),
-                    getString(R.string.tab_pool_mining_earnings),
-                    getString(R.string.tab_bank_mining_earnings),
+                    getString(R.string.incentive_earnings_details_tab_invite),
+                    getString(R.string.incentive_earnings_details_tab_pool),
+                    getString(R.string.incentive_earnings_details_tab_bank),
                 )
             )
         }

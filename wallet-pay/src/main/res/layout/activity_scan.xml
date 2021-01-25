@@ -27,7 +27,7 @@
         android:id="@+id/hint_scan_qr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/action_scan_address"
+        android:text="@string/qr_code_scan_hint"
         android:textColor="@color/white"
         android:textSize="@dimen/fs_12"
         app:layout_constraintBottom_toBottomOf="parent"

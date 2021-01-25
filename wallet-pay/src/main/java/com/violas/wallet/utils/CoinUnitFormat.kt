@@ -239,10 +239,16 @@ fun convertAmountToUSD(amount: Double, stripTrailingZeros: Boolean = true): Stri
         .toPlainString()
 }
 
-fun convertRateToPercentage(rate: Double): String {
-    return "${
-        BigDecimal(rate * 100)
-            .setScale(2, RoundingMode.DOWN)
-            .toPlainString()
-    }%"
+fun convertRateToPercentage(rate: Double, minimumDecimalScale: Int = 2): String {
+    val rateStr = BigDecimal(rate * 100).toPlainString()
+    val array = rateStr.split(".")
+    return if (array.size >= 2 && array[1].length > minimumDecimalScale) {
+        "$rateStr%"
+    } else {
+        "${
+            BigDecimal(rate * 100)
+                .setScale(minimumDecimalScale, RoundingMode.DOWN)
+                .toPlainString()
+        }%"
+    }
 }

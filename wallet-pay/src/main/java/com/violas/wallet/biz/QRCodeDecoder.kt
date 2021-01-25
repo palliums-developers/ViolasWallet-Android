@@ -48,25 +48,10 @@ class TransferQRCode(
 ) : QRCode
 
 /**
- * 登录二维码
- */
-@Parcelize
-class LoginQRCode(
-    val content: String,
-    val loginType: Int,
-    val sessionId: String
-) : QRCode
-
-/**
  * 解析二维码
  * @param content 二维码内容
  */
 suspend fun decodeQRCode(content: String): QRCode = withContext(Dispatchers.IO) {
-    val loginQRCodeBean = decodeLoginQRCode(content)
-    if (loginQRCodeBean != null) {
-        return@withContext LoginQRCode(content, loginQRCodeBean.type, loginQRCodeBean.sessionId)
-    }
-
     if (decodeWalletConnectQRCode(content)) {
         return@withContext WalletConnectQRCode(content)
     }
@@ -191,25 +176,6 @@ private fun decodeTransferQRCode(content: String): TransferQRCodeBean {
             }
     }
     return TransferQRCodeBean(coinType, addressSplit[0], null, amount, label)
-}
-
-private data class LoginQRCodeBean(
-    @SerializedName("type")
-    val type: Int,
-    @SerializedName("session_id")
-    val sessionId: String
-)
-
-private fun decodeLoginQRCode(content: String): LoginQRCodeBean? {
-    return try {
-        val bean = Gson().fromJson(content, LoginQRCodeBean::class.java)
-        if (bean.type > 0 && bean.sessionId.isNotEmpty())
-            bean
-        else
-            null
-    } catch (ignore: Exception) {
-        null
-    }
 }
 
 private fun decodeWalletConnectQRCode(content: String): Boolean {

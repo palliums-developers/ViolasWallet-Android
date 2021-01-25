@@ -93,6 +93,7 @@ class ViewFillers {
                     view.tvDescribeAddress.text = mTransferDataType.to
                     view.tvDescribeAmount.text = "$amount BTC"
                     view.tvDescribeFee.text = "0.00 BTC"
+                    view.tvTitleFee.setText(R.string.common_label_miner_fees_colon)
                 }
                 view
             }

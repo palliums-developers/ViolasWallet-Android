@@ -153,9 +153,9 @@ class BankMiningEarningsFragment : BasePagingFragment<BankMiningEarningDTO>() {
 
                 itemView.tvState.setText(
                     if (it.status == 0)
-                        R.string.mining_earnings_state_issuing
+                        R.string.incentive_earnings_details_state_issuing
                     else
-                        R.string.mining_earnings_state_arrived
+                        R.string.incentive_earnings_details_state_arrived
                 )
                 itemView.tvState.setTextColor(
                     getColorByAttrId(
@@ -169,11 +169,11 @@ class BankMiningEarningsFragment : BasePagingFragment<BankMiningEarningDTO>() {
 
                 itemView.tvType.setText(
                     when (it.type) {
-                        3 -> R.string.mining_earnings_type_deposit
-                        4 -> R.string.mining_earnings_type_withdrawal
-                        5 -> R.string.mining_earnings_type_borrowing
-                        6 -> R.string.mining_earnings_type_repayment
-                        else -> R.string.mining_earnings_type_active_extraction
+                        3 -> R.string.incentive_earnings_details_type_deposit
+                        4 -> R.string.incentive_earnings_details_type_withdrawal
+                        5 -> R.string.incentive_earnings_details_type_borrowing
+                        6 -> R.string.incentive_earnings_details_type_repayment
+                        else -> R.string.incentive_earnings_details_type_active_extraction
                     }
                 )
             }

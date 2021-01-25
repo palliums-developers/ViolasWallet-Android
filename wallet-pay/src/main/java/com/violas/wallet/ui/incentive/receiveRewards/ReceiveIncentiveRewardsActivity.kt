@@ -70,7 +70,7 @@ class ReceiveIncentiveRewardsActivity : BaseViewModelActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.title_phone_receive_reward)
+        setTitle(R.string.incentive_receive_title)
 
         btnReceive.requestFocus()
         launch {
@@ -210,7 +210,7 @@ class ReceiveIncentiveRewardsActivity : BaseViewModelActivity() {
         tvGetVerificationCode.isClickable = true
         tvGetVerificationCode.isEnabled = true
         tvGetVerificationCode.gravity = Gravity.END or Gravity.CENTER_VERTICAL
-        tvGetVerificationCode.setText(R.string.action_get_verification_code)
+        tvGetVerificationCode.setText(R.string.incentive_receive_action_get_verification_code)
         tvGetVerificationCode.setTextColor(
             getColorByAttrId(
                 R.attr.colorPrimary,

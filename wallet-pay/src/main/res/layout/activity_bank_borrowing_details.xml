@@ -13,7 +13,7 @@
         android:layout_marginStart="@dimen/dp_34"
         android:layout_marginTop="@dimen/dp_29"
         android:includeFontPadding="false"
-        android:text="@string/amount_to_be_repaid"
+        android:text="@string/bank_borrowing_orders_label_borrowed_amount"
         android:textSize="@dimen/fs_10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -89,7 +89,7 @@
             android:id="@+id/btnGoRepayment"
             style="@style/BaseButtonPrimary"
             android:layout_gravity="center"
-            android:text="@string/action_repay_borrowing_immediately" />
+            android:text="@string/bank_borrowing_details_action" />
 
     </FrameLayout>
 

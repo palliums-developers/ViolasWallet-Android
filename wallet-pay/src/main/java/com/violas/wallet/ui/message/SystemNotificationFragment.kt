@@ -35,7 +35,7 @@ class SystemNotificationFragment : BasePagingFragment<NotificationMsgDTO>() {
         super.onViewCreated(view, savedInstanceState)
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
-            R.string.tips_msg_list_empty
+            R.string.msg_center_tips_msgs_empty
         )
         getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
     }

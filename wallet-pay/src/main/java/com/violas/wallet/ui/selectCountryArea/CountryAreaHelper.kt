@@ -98,7 +98,7 @@ fun getCountryArea(queryCountryCode: String? = null): CountryAreaVO {
 
     return queryCountryArea ?: systemCountryArea ?: CountryAreaVO(
         areaCode = "1",
-        countryName = getString(R.string.united_states),
+        countryName = getString(R.string.country_area_united_states),
         countryCode = "US"
     )
 }

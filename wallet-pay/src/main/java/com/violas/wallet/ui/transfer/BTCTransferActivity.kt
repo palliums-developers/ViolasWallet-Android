@@ -25,6 +25,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * BTC转账页面
+ */
 class BTCTransferActivity : TransferActivity() {
 
     //BTC
@@ -63,7 +66,7 @@ class BTCTransferActivity : TransferActivity() {
                 }
             }
             if (!exists) {
-                showToast(getString(R.string.hint_unsupported_tokens))
+                showToast(getString(R.string.transfer_tips_unopened_or_unsupported_token))
                 finish()
                 return@Observer
             }
@@ -80,10 +83,12 @@ class BTCTransferActivity : TransferActivity() {
                             editAmountInput.setText(convertAmountToDisplayUnit.first)
                         }
                         if (isToken) {
-                            title = "${mAssetsVo.getAssetsName()} ${getString(R.string.transfer)}"
+                            title =
+                                getString(R.string.transfer_title_format, mAssetsVo.getAssetsName())
                             tvHintCoinName.text = mAssetsVo.getAssetsName()
                         } else {
-                            title = "${coinType.coinName()} ${getString(R.string.transfer)}"
+                            title =
+                                getString(R.string.transfer_title_format, coinType.coinName())
                             tvHintCoinName.text = coinType.coinName()
                         }
                     }
@@ -190,7 +195,7 @@ class BTCTransferActivity : TransferActivity() {
                     account!!,
                     sbQuota.progress,
                     success = {
-                        showToast(getString(R.string.hint_transfer_broadcast_success))
+                        showToast(getString(R.string.transfer_tips_transfer_success))
                         dismissProgress()
                         CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                         print(it)

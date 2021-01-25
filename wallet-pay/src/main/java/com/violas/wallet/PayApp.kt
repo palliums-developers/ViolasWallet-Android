@@ -61,29 +61,29 @@ class PayApp : App() {
 
         val notificationManager = getNotificationManager()
         createNotificationChannel(
-            getString(R.string.transaction_notification_channel_id),
-            getString(R.string.transaction_notification_channel_name),
+            getString(R.string.notification_channel_id_transaction),
+            getString(R.string.notification_channel_name_transaction),
             NotificationManager.IMPORTANCE_HIGH,
             lockscreenVisibility = Notification.VISIBILITY_PRIVATE,
             notificationManager = notificationManager
         )
         createNotificationChannel(
-            getString(R.string.events_notification_channel_id),
-            getString(R.string.events_notification_channel_name),
+            getString(R.string.notification_channel_id_events),
+            getString(R.string.notification_channel_name_events),
             NotificationManager.IMPORTANCE_DEFAULT,
             lockscreenVisibility = Notification.VISIBILITY_PUBLIC,
             notificationManager = notificationManager
         )
         createNotificationChannel(
-            getString(R.string.update_notification_channel_id),
-            getString(R.string.update_notification_channel_name),
+            getString(R.string.notification_channel_id_update),
+            getString(R.string.notification_channel_name_update),
             NotificationManager.IMPORTANCE_LOW,
             lockscreenVisibility = Notification.VISIBILITY_PUBLIC,
             notificationManager = notificationManager
         )
         createNotificationChannel(
-            getString(R.string.default_notification_channel_id),
-            getString(R.string.default_notification_channel_name),
+            getString(R.string.notification_channel_id_default),
+            getString(R.string.notification_channel_name_default),
             NotificationManager.IMPORTANCE_LOW,
             lockscreenVisibility = Notification.VISIBILITY_PUBLIC,
             notificationManager = notificationManager

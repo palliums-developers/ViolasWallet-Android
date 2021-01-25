@@ -27,7 +27,7 @@ class AboutUsActivity : BaseAppActivity(), View.OnLongClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.about_us_title)
+        setTitle(R.string.common_title_about_us)
         tvAppNameVersion.text = "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}"
 
         mivWebsite.setOnClickListener(this)
@@ -67,7 +67,7 @@ class AboutUsActivity : BaseAppActivity(), View.OnLongClickListener {
                         handleError = false
                     )
                 } catch (e: Exception) {
-                    ClipboardUtils.copy(this, getString(R.string.about_us_email_value))
+                    ClipboardUtils.copy(this, mivEmail.endDescText.trim())
                 }
             }
 

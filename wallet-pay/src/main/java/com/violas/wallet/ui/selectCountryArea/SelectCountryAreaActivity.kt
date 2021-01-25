@@ -65,9 +65,9 @@ class SelectCountryAreaActivity : BaseAppActivity() {
 
         setTitle(
             if (selectAreaCode) {
-                R.string.title_select_phone_area_code
+                R.string.country_area_title_select_area_code
             } else {
-                R.string.title_select_country_or_area
+                R.string.country_area_title_select_country_area
             }
         )
 

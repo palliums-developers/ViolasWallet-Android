@@ -53,7 +53,7 @@ class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.title_market_pool_records)
+        setTitle(R.string.pool_records_title)
         getPagingHandler().init()
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
@@ -121,14 +121,14 @@ class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
 
                 itemView.tvAToken.text =
                     if (it.coinAName.isNullOrBlank() || it.coinAAmount.isNullOrBlank()) {
-                        getString(R.string.value_null)
+                        getString(R.string.common_desc_value_null)
                     } else {
                         "${convertAmountToDisplayAmountStr(it.coinAAmount)} ${it.coinAName}"
                     }
 
                 itemView.tvBToken.text =
                     if (it.coinBName.isNullOrBlank() || it.coinBAmount.isNullOrBlank()) {
-                        getString(R.string.value_null)
+                        getString(R.string.common_desc_value_null)
                     } else {
                         "${convertAmountToDisplayAmountStr(it.coinBAmount)} ${it.coinBName}"
                     }
@@ -145,11 +145,11 @@ class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
 
                 itemView.tvLiquidity.text =
                     if (it.liquidityAmount.isNullOrBlank()) {
-                        getString(R.string.value_null)
+                        getString(R.string.common_desc_value_null)
                     } else {
                         val amount = BigDecimal(it.liquidityAmount)
                         getString(
-                            R.string.market_liquidity_token_amount_format,
+                            R.string.market_common_label_pool_token_amount_format,
                             "${
                                 getAmountPrefix(
                                     amount,
@@ -162,9 +162,9 @@ class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
                 if (it.isSuccess()) {
                     itemView.tvState.setText(
                         if (it.isAddLiquidity())
-                            R.string.market_pool_add_state_succeeded
+                            R.string.pool_txn_state_add_liquidity_succeeded
                         else
-                            R.string.market_pool_remove_state_succeeded
+                            R.string.pool_txn_state_remove_liquidity_succeeded
                     )
                     itemView.tvState.setTextColor(
                         getColorByAttrId(R.attr.textColorSuccess, itemView.context)
@@ -172,9 +172,9 @@ class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
                 } else {
                     itemView.tvState.setText(
                         if (it.isAddLiquidity())
-                            R.string.market_pool_add_state_failed
+                            R.string.pool_txn_state_add_liquidity_failed
                         else
-                            R.string.market_pool_remove_state_failed
+                            R.string.pool_txn_state_remove_liquidity_failed
                     )
                     itemView.tvState.setTextColor(
                         getColorByAttrId(R.attr.textColorFailure, itemView.context)

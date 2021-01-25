@@ -128,7 +128,7 @@ class MultiTransferViewModel : ViewModel() {
         toSubAddress: String?
     ) {
         val assets = mCurrAssets.value
-            ?: throw RuntimeException(getString(R.string.hint_please_select_currency_transfer))
+            ?: throw RuntimeException(getString(R.string.transfer_tips_token_empty))
 
         suspendCancellableCoroutine<String> { cancellation ->
             cancellation.invokeOnCancellation {

@@ -43,7 +43,7 @@ class PasswordInputDialog : DialogFragment() {
             if (trim.isEmpty()) {
                 Toast.makeText(
                     context,
-                    getString(R.string.hint_please_input_password),
+                    getString(R.string.auth_pwd_hint_pwd_empty),
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener

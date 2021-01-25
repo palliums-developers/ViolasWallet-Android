@@ -55,7 +55,7 @@ class BankBorrowingRecordActivity : BaseBankRecordActivity<BorrowingRecordDTO>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.borrowing_record)
+        setTitle(R.string.bank_borrowing_records_title)
         launch {
             if (getViewModel().initAddress()) {
                 getPagingHandler().start()

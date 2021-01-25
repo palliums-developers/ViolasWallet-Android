@@ -141,13 +141,13 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
     }
 
     private suspend fun buildUseBehaviorSpan() = withContext(Dispatchers.IO) {
-        val useBehavior = getString(R.string.wallet_connect_use_behavior)
-        val privacyPolicy = getString(R.string.privacy_policy)
-        val userAgreement = getString(R.string.service_agreement)
+        val useBehavior = getString(R.string.wallet_connect_login_declare)
+        val privacyPolicy = getString(R.string.common_content_privacy_policy)
+        val userAgreement = getString(R.string.common_content_user_agreement)
         val spannableStringBuilder = SpannableStringBuilder(useBehavior)
         val userAgreementClickSpanPrivacy = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                openWebPage(getString(R.string.service_agreement_url))
+                openWebPage(getString(R.string.url_app_service_agreement))
             }
 
             override fun updateDrawState(ds: TextPaint) {
@@ -160,7 +160,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
         }
         val privacyPolicyClickSpanPrivacy = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                openWebPage(getString(R.string.url_privacy_policy))
+                openWebPage(getString(R.string.url_app_privacy_policy))
             }
 
             override fun updateDrawState(ds: TextPaint) {

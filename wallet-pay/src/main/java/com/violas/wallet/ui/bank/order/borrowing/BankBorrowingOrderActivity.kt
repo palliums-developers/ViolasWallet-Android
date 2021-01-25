@@ -63,9 +63,9 @@ class BankBorrowingOrderActivity : BaseBankOrderActivity<BorrowingInfoDTO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.borrowing_order)
+        setTitle(R.string.bank_borrowing_orders_title)
         ivIcon.setImageResource(getResourceId(R.attr.bankBorrowingOrderIcon, this))
-        tvLabel.setText(R.string.current_borrowing)
+        tvLabel.setText(R.string.bank_borrowing_orders_label_current_borrowing)
 
         launch {
             if (getViewModel().initAddress()) {

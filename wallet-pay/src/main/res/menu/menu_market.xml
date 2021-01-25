@@ -5,7 +5,7 @@
     <item
         android:id="@+id/market_record"
         android:icon="?attr/marketMenuRecordIcon"
-        android:title="@string/market_transaction_records"
+        android:title="@string/home_market_menu_txn_records"
         app:showAsAction="always" />
 
 </menu>

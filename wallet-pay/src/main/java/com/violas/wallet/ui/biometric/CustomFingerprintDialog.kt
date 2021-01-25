@@ -62,11 +62,11 @@ class CustomFingerprintDialog : BaseFingerprintDialogFragment() {
 
         val positiveButtonText = when {
             isDeviceCredentialAllowed() ->
-                getString(R.string.action_use_password)
+                getString(R.string.auth_touch_id_action_use_password)
             isReactivateWhenLockoutPermanent() -> {
                 val setText = getPositiveButtonText()
                 if (setText.isNullOrBlank()) {
-                    getString(R.string.action_start_now_enable)
+                    getString(R.string.auth_touch_id_action_enable_now)
                 } else {
                     setText
                 }
@@ -128,43 +128,43 @@ class CustomFingerprintDialog : BaseFingerprintDialogFragment() {
     }
 
     override fun onShowFailed(msg: CharSequence) {
-        super.onShowFailed(getString(R.string.desc_fingerprint_authenticate_error_retry))
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_failed))
+        super.onShowFailed(getString(R.string.auth_touch_id_desc_try_again))
+        updateTitleText(getString(R.string.auth_touch_id_desc_auth_failure))
     }
 
     override fun onShowHelp(msg: CharSequence) {
-        super.onShowHelp(getString(R.string.desc_fingerprint_authenticate_error_retry))
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_failed))
+        super.onShowHelp(getString(R.string.auth_touch_id_desc_try_again))
+        updateTitleText(getString(R.string.auth_touch_id_desc_auth_failure))
     }
 
     override fun onShowError(msg: CharSequence, errorId: Int) {
         if (errorId == BiometricPrompt.ERROR_LOCKOUT) {
             super.onShowError(
-                getString(R.string.desc_fingerprint_authenticate_error_lockout),
+                getString(R.string.auth_touch_id_desc_lockout),
                 errorId
             )
         } else {
             super.onShowError(msg, errorId)
         }
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_failed))
+        updateTitleText(getString(R.string.auth_touch_id_desc_auth_failure))
     }
 
     override fun onResetMessage() {
         updateFingerprintIcon(STATE_FINGERPRINT)
-        updateErrorText(getString(R.string.desc_fingerprint_authenticate_error_retry))
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_start))
+        updateErrorText(getString(R.string.auth_touch_id_desc_try_again))
+        updateTitleText(getString(R.string.auth_touch_id_desc_auth_start))
     }
 
     override fun onShowLockoutPermanent(msg: CharSequence) {
-        super.onShowLockoutPermanent(getString(R.string.desc_fingerprint_authenticate_error_lockout_permanent))
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_failed))
+        super.onShowLockoutPermanent(getString(R.string.auth_touch_id_desc_lockout_permanent))
+        updateTitleText(getString(R.string.auth_touch_id_desc_auth_failure))
         updatePositiveBtn(true)
     }
 
     override fun onBiometricReactivated() {
         updateFingerprintIcon(STATE_FINGERPRINT)
         updateErrorText("")
-        updateTitleText(getString(R.string.desc_fingerprint_authenticate_title_start))
+        updateTitleText(getString(R.string.auth_touch_id_desc_auth_start))
         updatePositiveBtn(false)
     }
 

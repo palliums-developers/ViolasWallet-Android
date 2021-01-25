@@ -39,11 +39,11 @@ fun validationBTCAddress(address: String): Boolean {
 }
 
 fun validationLibraAddress(address: String): Boolean {
-    return validationLibraBech32Address(address) || validationViolasNormalAddress(address)
+    return validationLibraNormalAddress(address)
 }
 
 fun validationViolasAddress(address: String): Boolean {
-    return validationViolasBech32Address(address) || validationViolasNormalAddress(address)
+    return validationViolasNormalAddress(address)
 }
 
 private fun validationLibraNormalAddress(address: String): Boolean {

@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/pool_liquidity_token"
+            android:text="@string/market_common_label_pool_tokens"
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/fs_12" />
 
@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_14"
-            android:hint="@string/value_null"
+            android:hint="@string/common_desc_value_null"
             android:textSize="@dimen/fs_24"
             android:textStyle="bold"
             tools:text="1000" />
@@ -47,7 +47,7 @@
         android:layout_marginStart="@dimen/dp_45"
         android:layout_marginTop="@dimen/dp_19"
         android:background="@drawable/sel_bg_market_my_pool_btn"
-        android:text="@string/action_transfer_in_nbsp"
+        android:text="@string/my_pool_action_add_liquidity"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="@dimen/fs_14"
         app:layout_constraintEnd_toStartOf="@id/btnTransferOut"
@@ -61,7 +61,7 @@
         android:layout_height="@dimen/dp_28"
         android:layout_marginEnd="@dimen/dp_45"
         android:background="@drawable/sel_bg_market_my_pool_btn"
-        android:text="@string/action_transfer_out_nbsp"
+        android:text="@string/my_pool_action_remove_liquidity"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="@dimen/fs_14"
         app:layout_constraintEnd_toEndOf="parent"
@@ -85,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_4"
         android:layout_marginTop="@dimen/dp_35"
-        android:text="@string/label_assets"
+        android:text="@string/my_pool_label_assets"
         android:textSize="@dimen/fs_14"
         app:layout_constraintStart_toStartOf="@id/vLine"
         app:layout_constraintTop_toBottomOf="@id/btnTransferIn" />

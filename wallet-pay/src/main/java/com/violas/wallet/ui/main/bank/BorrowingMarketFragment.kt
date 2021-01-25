@@ -25,7 +25,7 @@ class BorrowingMarketFragment : BaseBankMarketFragment<BorrowingProductSummaryDT
         itemView.tvName.text = itemData.productName
         itemView.tvDesc.text = itemData.productDesc
         itemView.tvRate.text = convertRateToPercentage(itemData.borrowingRate)
-        itemView.tvRateLabel.setText(R.string.borrowing_rate)
+        itemView.tvRateLabel.setText(R.string.bank_repayment_label_borrowing_rate)
     }
 
     override fun onItemClick(itemData: BorrowingProductSummaryDTO, itemPosition: Int) {

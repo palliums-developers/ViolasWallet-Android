@@ -25,7 +25,7 @@ import java.util.*
  * Created by elephant on 2020/8/14 17:45.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc:
+ * desc: 映射记录页面
  */
 class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
 
@@ -46,7 +46,7 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.mapping_record)
+        setTitle(R.string.mapping_records_title)
         getPagingHandler().init()
 
         launch {
@@ -99,7 +99,7 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
                     if (it.inputCoinDisplayName.isNullOrBlank()
                         || it.inputCoinAmount.isNullOrBlank()
                     ) {
-                        getString(R.string.value_null)
+                        getString(R.string.common_desc_value_null)
                     } else {
                         "${
                             convertAmountToDisplayAmountStr(
@@ -113,7 +113,7 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
                     if (it.outputCoinDisplayName.isNullOrBlank()
                         || it.outputCoinAmount.isNullOrBlank()
                     ) {
-                        getString(R.string.value_null)
+                        getString(R.string.common_desc_value_null)
                     } else {
                         "${
                             convertAmountToDisplayAmountStr(
@@ -124,32 +124,32 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
                     }
 
                 itemView.tvMinerFees.text =
-                    getString(R.string.gas_fee_format, getString(R.string.value_null))
+                    getString(R.string.mapping_records_label_gas_fee_format, getString(R.string.common_desc_value_null))
 
                 when {
                     it.state?.equals("end", true) == true -> {
-                        itemView.tvState.setText(R.string.mapping_state_succeeded)
+                        itemView.tvState.setText(R.string.mapping_txn_state_succeeded)
                         itemView.tvState.setTextColor(
                             getColorByAttrId(R.attr.textColorSuccess, itemView.context)
                         )
                     }
 
                     it.state?.equals("start", true) == true -> {
-                        itemView.tvState.setText(R.string.mapping_state_processing)
+                        itemView.tvState.setText(R.string.mapping_txn_state_processing)
                         itemView.tvState.setTextColor(
                             getColorByAttrId(R.attr.textColorProcessing, itemView.context)
                         )
                     }
 
                     it.state?.equals("cancel", true) == true -> {
-                        itemView.tvState.setText(R.string.mapping_state_cancelled)
+                        itemView.tvState.setText(R.string.common_state_cancelled)
                         itemView.tvState.setTextColor(
                             getColorByAttrId(android.R.attr.textColorTertiary, itemView.context)
                         )
                     }
 
                     else -> {
-                        itemView.tvState.setText(R.string.mapping_state_failed)
+                        itemView.tvState.setText(R.string.mapping_txn_state_failed)
                         itemView.tvState.setTextColor(
                             getColorByAttrId(R.attr.textColorFailure, itemView.context)
                         )

@@ -147,9 +147,9 @@ fun BaseActivity.authenticateAccountByBiometric(
 
     val promptParams =
         BiometricCompat.PromptParams.Builder(this)
-            .title(getString(R.string.label_fingerprint_verification))
-            .negativeButtonText(getString(R.string.action_cancel_nbsp))
-            .positiveButtonText(getString(R.string.action_use_password))
+            .title(getString(R.string.auth_touch_id_title))
+            .negativeButtonText(getString(R.string.common_action_cancel_space))
+            .positiveButtonText(getString(R.string.auth_touch_id_action_use_password))
             .customFingerprintDialogClass(CustomFingerprintDialog::class.java)
             .useFingerprint(useFingerprint)
             .build()
@@ -226,9 +226,9 @@ fun Fragment.authenticateAccountByBiometric(
 
     val promptParams =
         BiometricCompat.PromptParams.Builder(this)
-            .title(getString(R.string.label_fingerprint_verification))
-            .negativeButtonText(getString(R.string.action_cancel_nbsp))
-            .positiveButtonText(getString(R.string.action_use_password))
+            .title(getString(R.string.auth_touch_id_title))
+            .negativeButtonText(getString(R.string.common_action_cancel_space))
+            .positiveButtonText(getString(R.string.auth_touch_id_action_use_password))
             .customFingerprintDialogClass(CustomFingerprintDialog::class.java)
             .useFingerprint(useFingerprint)
             .build()
@@ -408,7 +408,7 @@ fun BaseActivity.decryptAccount(
 
     if (password.isNullOrBlank()) {
         if (passwordFromUserInput) {
-            showToast(getString(R.string.hint_please_input_password))
+            showToast(getString(R.string.auth_pwd_hint_pwd_empty))
         }
         return
     }
@@ -509,7 +509,7 @@ fun BaseActivity.decryptAccount(
             }
 
             if (passwordFromUserInput) {
-                showToast(getString(R.string.hint_password_error))
+                showToast(getString(R.string.auth_pwd_hint_pwd_error))
             }
             passwordErrorCallback?.invoke()
         }
@@ -556,7 +556,7 @@ fun Fragment.decryptAccount(
 
     if (password.isNullOrBlank()) {
         if (passwordFromUserInput) {
-            (this as? ViewController)?.showToast(getString(R.string.hint_please_input_password))
+            (this as? ViewController)?.showToast(getString(R.string.auth_pwd_hint_pwd_empty))
         }
         return
     }
@@ -658,7 +658,7 @@ fun Fragment.decryptAccount(
             }
 
             if (passwordFromUserInput) {
-                (this as? ViewController)?.showToast(getString(R.string.hint_password_error))
+                (this as? ViewController)?.showToast(getString(R.string.auth_pwd_hint_pwd_error))
             }
             passwordErrorCallback?.invoke()
         }

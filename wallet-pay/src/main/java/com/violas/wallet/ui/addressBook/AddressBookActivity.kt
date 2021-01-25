@@ -101,7 +101,7 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        title = getString(R.string.title_address_book)
+        title = getString(R.string.common_title_address_book)
         setTitleRightImageResource(getResourceId(R.attr.iconAdd, this))
 
         mCoinType = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
@@ -110,7 +110,7 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
         getListingHandler().init()
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
-            getString(R.string.tips_no_address)
+            getString(R.string.address_book_desc_addresses_empty)
         )
 
         getViewModel().execute(mCoinType)

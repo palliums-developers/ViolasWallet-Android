@@ -25,7 +25,7 @@
         android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toEndOf="@id/ivIcon"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/market_swap_state_succeeded"
+        tools:text="@string/swap_txn_state_succeeded"
         tools:textColor="?attr/textColorSuccess" />
 
     <TextView
@@ -76,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
-        android:text="@string/market_liquidity_token_amount_format"
+        android:text="@string/market_common_label_pool_token_amount_format"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_10"
         app:layout_constraintStart_toStartOf="@id/tvState"

@@ -127,7 +127,7 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     private fun initBorrowingInfoView() {
         title = borrowingInfo.productName
         //tvAmountToBeRepaid.text = convertAmountToDisplayAmountStr(borrowingInfo.borrowedAmount)
-        tvAmountToBeRepaid.setText(R.string.value_null)
+        tvAmountToBeRepaid.setText(R.string.common_desc_value_null)
         tvCoinUnit.text = borrowingInfo.productName
         flBottomView.visibility = View.GONE
     }
@@ -182,9 +182,9 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
             setFragments(fragments)
             setTitles(
                 mutableListOf(
-                    getString(R.string.borrowing_details),
-                    getString(R.string.repayment_details),
-                    getString(R.string.liquidation_details)
+                    getString(R.string.bank_borrowing_details_tab_borrowing),
+                    getString(R.string.bank_borrowing_details_tab_repayment),
+                    getString(R.string.bank_borrowing_details_tab_liquidation)
                 )
             )
         }

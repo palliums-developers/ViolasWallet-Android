@@ -29,24 +29,24 @@ import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
 
 class ForcedStopException : RuntimeException("")
-class ToTheirException : RuntimeException(getString(R.string.hint_to_their_error))
-class WrongPasswordException : RuntimeException(getString(R.string.hint_password_error))
-class AddressFaultException : RuntimeException(getString(R.string.hint_address_error))
-class TransferUnknownException : RuntimeException(getString(R.string.hint_transfer_failed))
+class ToTheirException : RuntimeException(getString(R.string.transfer_tips_address_is_myself))
+class WrongPasswordException : RuntimeException(getString(R.string.auth_pwd_hint_pwd_error))
+class AddressFaultException : RuntimeException(getString(R.string.transfer_tips_address_error))
+class TransferUnknownException : RuntimeException(getString(R.string.transfer_tips_transfer_failure))
 class LackOfBalanceException :
-    RuntimeException(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
+    RuntimeException(getString(R.string.transfer_tips_insufficient_balance_or_assets_unconfirmed))
 
 class AccountNoActivationException :
-    RuntimeException(getString(R.string.hint_transfer_account_no_activation))
+    RuntimeException(getString(R.string.transfer_tips_account_no_activation))
 
 class ReceiveAccountNoActivationException :
-    RuntimeException(getString(R.string.hint_transfer_receive_account_no_activation))
+    RuntimeException(getString(R.string.transfer_tips_receive_account_no_activation))
 
 class AccountNoControlException :
-    RuntimeException(getString(R.string.hint_transfer_account_no_control))
+    RuntimeException(getString(R.string.transfer_tips_account_no_control))
 
 class NodeNotResponseException :
-    RuntimeException(getString(R.string.hint_transfer_account_no_control))
+    RuntimeException(getString(R.string.transfer_tips_account_no_control))
 
 
 class TransferManager {
@@ -101,7 +101,7 @@ class TransferManager {
         account: AccountDO
     ) {
         if (address.isEmpty()) {
-            throw RuntimeException(getString(R.string.hint_please_input_address))
+            throw RuntimeException(getString(R.string.transfer_tips_address_empty))
         }
 
         if (!checkAddress(address, account.coinNumber)) {
@@ -115,10 +115,10 @@ class TransferManager {
         val amount = try {
             amountStr.trim().toDouble()
         } catch (e: Exception) {
-            throw RuntimeException(getString(R.string.hint_please_input_amount))
+            throw RuntimeException(getString(R.string.transfer_tips_transfer_amount_empty))
         }
         if (amount <= 0) {
-            throw RuntimeException(getString(R.string.hint_please_input_amount))
+            throw RuntimeException(getString(R.string.transfer_tips_transfer_amount_empty))
         }
     }
 

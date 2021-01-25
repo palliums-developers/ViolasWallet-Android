@@ -59,7 +59,7 @@
             app:layout_constraintTop_toBottomOf="@id/ivHeader"
             app:mivShowBottomLine="false"
             app:mivStartIcon="?attr/meHomeWalletMenuIcon"
-            app:mivStartTitleText="@string/me_wallet_management" />
+            app:mivStartTitleText="@string/common_title_wallet_management" />
 
         <com.palliums.widget.MenuItemView
             android:id="@+id/mivAddressBook"
@@ -72,7 +72,7 @@
             app:layout_constraintTop_toBottomOf="@id/mivWalletManagement"
             app:mivShowBottomLine="false"
             app:mivStartIcon="?attr/meHomeAddressMenuIcon"
-            app:mivStartTitleText="@string/me_address_book" />
+            app:mivStartTitleText="@string/common_title_address_book" />
 
         <com.palliums.widget.MenuItemView
             android:id="@+id/mivMiningReward"
@@ -85,7 +85,7 @@
             app:layout_constraintTop_toBottomOf="@id/mivAddressBook"
             app:mivShowBottomLine="false"
             app:mivStartIcon="?attr/meHomeMiningRewardMenuIcon"
-            app:mivStartTitleText="@string/mining_reward_and_rules" />
+            app:mivStartTitleText="@string/incentive_home_me_action_1" />
 
         <com.palliums.widget.MenuItemView
             android:id="@+id/mivInvitationReward"
@@ -98,7 +98,7 @@
             app:layout_constraintTop_toBottomOf="@id/mivMiningReward"
             app:mivShowBottomLine="false"
             app:mivStartIcon="?attr/meHomeInvitationRewardMenuIcon"
-            app:mivStartTitleText="@string/invitation_reward" />
+            app:mivStartTitleText="@string/incentive_home_me_action_2" />
 
         <com.palliums.widget.MenuItemView
             android:id="@+id/mivSettings"
@@ -111,7 +111,7 @@
             app:layout_constraintTop_toBottomOf="@id/mivInvitationReward"
             app:mivShowBottomLine="false"
             app:mivStartIcon="?attr/meHomeSettingsMenuIcon"
-            app:mivStartTitleText="@string/me_settings" />
+            app:mivStartTitleText="@string/common_title_settings" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

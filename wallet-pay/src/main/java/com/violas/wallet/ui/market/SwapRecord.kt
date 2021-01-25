@@ -59,7 +59,7 @@ class SwapRecordActivity : BasePagingActivity<ViolasSwapRecordDTO>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.title_market_swap_records)
+        setTitle(R.string.swap_records_title)
         getPagingHandler().init()
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
@@ -128,14 +128,14 @@ class SwapRecordActivity : BasePagingActivity<ViolasSwapRecordDTO>() {
 
                 itemView.tvInputCoin.text =
                     if (it.inputDisplayName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
-                        getString(R.string.value_null)
+                        getString(R.string.common_desc_value_null)
                     } else {
                         "${convertAmountToDisplayAmountStr(it.inputCoinAmount)} ${it.inputDisplayName}"
                     }
 
                 itemView.tvOutputCoin.text =
                     if (it.outputDisplayName.isNullOrBlank() || it.outputCoinAmount.isNullOrBlank()) {
-                        getString(R.string.value_null)
+                        getString(R.string.common_desc_value_null)
                     } else {
                         "${convertAmountToDisplayAmountStr(it.outputCoinAmount)} ${it.outputDisplayName}"
                     }
@@ -145,7 +145,7 @@ class SwapRecordActivity : BasePagingActivity<ViolasSwapRecordDTO>() {
                         // TODO 取消先隐藏
                         itemView.tvRetry.visibility = View.GONE
                         itemView.tvRetry.expandTouchArea()
-                        itemView.tvState.setText(R.string.market_swap_state_processing)
+                        itemView.tvState.setText(R.string.swap_txn_state_processing)
                         itemView.tvState.setTextColor(
                             getColorByAttrId(R.attr.textColorProcessing, itemView.context)
                         )
@@ -154,7 +154,7 @@ class SwapRecordActivity : BasePagingActivity<ViolasSwapRecordDTO>() {
 
                     it.status.equals("Executed", true) -> {
                         itemView.tvRetry.visibility = View.GONE
-                        itemView.tvState.setText(R.string.market_swap_state_succeeded)
+                        itemView.tvState.setText(R.string.swap_txn_state_succeeded)
                         itemView.tvState.setTextColor(
                             getColorByAttrId(R.attr.textColorSuccess, itemView.context)
                         )
@@ -164,7 +164,7 @@ class SwapRecordActivity : BasePagingActivity<ViolasSwapRecordDTO>() {
                             || it.status.equals("Canceled", true)
                             || it.status.equals("Cancelled", true) -> {
                         itemView.tvRetry.visibility = View.GONE
-                        itemView.tvState.setText(R.string.market_swap_state_cancelled)
+                        itemView.tvState.setText(R.string.common_state_cancelled)
                         itemView.tvState.setTextColor(
                             getColorByAttrId(android.R.attr.textColorTertiary, itemView.context)
                         )
@@ -172,7 +172,7 @@ class SwapRecordActivity : BasePagingActivity<ViolasSwapRecordDTO>() {
 
                     else -> {
                         itemView.tvRetry.visibility = View.GONE
-                        itemView.tvState.setText(R.string.market_swap_state_failed)
+                        itemView.tvState.setText(R.string.swap_txn_state_failed)
                         itemView.tvState.setTextColor(
                             getColorByAttrId(R.attr.textColorFailure, itemView.context)
                         )

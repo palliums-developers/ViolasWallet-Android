@@ -111,7 +111,7 @@ class TransactionRecordViewHolder(
 
                             else -> {
                                 itemView.tvDesc.visibility = View.VISIBLE
-                                itemView.tvDesc.text = getString(R.string.state_trading)
+                                itemView.tvDesc.text = getString(R.string.txn_details_state_processing)
                                 itemView.tvDesc.setTextColor(
                                     getColor(
                                         getResourceId(

@@ -46,7 +46,7 @@
         android:layout_marginTop="@dimen/dp_1"
         android:layout_marginEnd="@dimen/dp_11"
         android:includeFontPadding="false"
-        android:text="@string/amount_to_be_repaid"
+        android:text="@string/bank_borrowing_orders_label_borrowed_amount"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_10"
         app:layout_constraintEnd_toStartOf="@id/ivArrow"

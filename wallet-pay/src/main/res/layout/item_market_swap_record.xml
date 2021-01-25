@@ -15,7 +15,7 @@
         android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/market_swap_state_succeeded"
+        tools:text="@string/swap_txn_state_succeeded"
         tools:textColor="?attr/textColorSuccess" />
 
     <TextView
@@ -26,7 +26,7 @@
         android:background="@drawable/sel_bg_btn2_primary"
         android:paddingHorizontal="@dimen/dp_8"
         android:paddingVertical="@dimen/dp_1"
-        android:text="@string/action_retry"
+        android:text="@string/common_action_retry"
         android:textColor="@color/sel_text_color_btn2"
         android:textSize="@dimen/fs_12"
         android:visibility="gone"

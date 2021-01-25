@@ -60,7 +60,7 @@
         android:visibility="gone"
         app:layout_constraintBaseline_toBaselineOf="@id/tvTime"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="@string/state_trading"
+        tools:text="@string/txn_details_state_processing"
         tools:textColor="?attr/textColorProcessing"
         tools:visibility="visible" />
 

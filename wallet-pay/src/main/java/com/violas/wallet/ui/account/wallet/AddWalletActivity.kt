@@ -50,7 +50,7 @@ class AddWalletActivity : BaseListingActivity<AddWalletVo>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.add_wallet_title)
+        setTitle(R.string.wallet_account_title_add_wallet)
 
         getRecyclerView().addItemDecoration(
             RecyclerViewItemDividers(

@@ -2,7 +2,6 @@ package com.violas.wallet.ui.bank.borrow
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
@@ -11,6 +10,7 @@ import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.view.View
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinTypes
@@ -29,6 +29,7 @@ import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayUnitToAmount
+import com.violas.wallet.utils.convertRateToPercentage
 import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +44,7 @@ import org.greenrobot.eventbus.EventBus
  * desc: 数字银行-借款页面
  */
 class BorrowActivity : BankBusinessActivity() {
+
     companion object {
         fun start(
             context: Context,
@@ -101,7 +103,7 @@ class BorrowActivity : BankBusinessActivity() {
             mBankBusinessViewModel.mBusinessUsableAmount.postValue(
                 BusinessUserAmountInfo(
                     R.drawable.icon_bank_user_amount_info,
-                    getString(R.string.hint_can_borrow_lines),
+                    getString(R.string.bank_borrow_label_borrowable_colon),
                     convertAmountToDisplayAmountStr(quotaLimit - quotaUsed),
                     tokenShowName,
                     convertAmountToDisplayAmountStr(quotaLimit)
@@ -109,9 +111,9 @@ class BorrowActivity : BankBusinessActivity() {
             )
             mBankBusinessViewModel.mBusinessUserInfoLiveData.postValue(
                 BusinessUserInfo(
-                    getString(R.string.hint_bank_borrow_business_name),
+                    getString(R.string.bank_borrow_label_biz_name),
                     getString(
-                        R.string.hint_bank_limit_amount,
+                        R.string.bank_biz_hint_limit_amount_format,
                         convertAmountToDisplayAmountStr(minimumAmount),
                         tokenShowName,
                         convertAmountToDisplayAmountStr(minimumStep),
@@ -129,21 +131,25 @@ class BorrowActivity : BankBusinessActivity() {
             mBankBusinessViewModel.mBusinessParameterListLiveData.postValue(
                 arrayListOf(
                     BusinessParameter(
-                        getString(R.string.hint_borrowing_rates),
-                        "${rate * 100}%/日",
-                        contentColor = Color.parseColor("#13B788")
-                    ),
-                    BusinessParameter(
-                        getString(R.string.hint_pledge_rate),
-                        "${pledgeRate * 100}%",
-                        getString(R.string.hint_borrow_pledge_algorithm)
-                    ),
-                    BusinessParameter(
-                        getString(R.string.hint_pledge_account),
-                        getString(R.string.hint_bank_balance),
+                        getString(R.string.bank_borrow_label_borrowing_rate),
                         getString(
-                            R.string.hint_borrow_liquidation
+                            R.string.bank_borrow_content_borrowing_rate_format,
+                            convertRateToPercentage(rate)
+                        ),
+                        contentColor = getColorByAttrId(
+                            R.attr.bankProductRateTextColor,
+                            this@BorrowActivity
                         )
+                    ),
+                    BusinessParameter(
+                        getString(R.string.bank_biz_label_pledge_rate),
+                        convertRateToPercentage(pledgeRate, 0),
+                        getString(R.string.bank_biz_hint_pledge_rate_algorithm)
+                    ),
+                    BusinessParameter(
+                        getString(R.string.bank_borrow_label_pledge_account),
+                        getString(R.string.bank_borrow_type_bank_balance),
+                        getString(R.string.bank_borrow_desc_pledge_account)
                     )
                 )
             )
@@ -161,10 +167,10 @@ class BorrowActivity : BankBusinessActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBankBusinessViewModel.mPageTitleLiveData.value = getString(R.string.title_borrow)
+        mBankBusinessViewModel.mPageTitleLiveData.value = getString(R.string.bank_borrow_title)
 
         mBankBusinessViewModel.mBusinessActionLiveData.value =
-            getString(R.string.action_borrowing_immediately)
+            getString(R.string.bank_borrow_action_borrowing)
 
         launch {
             mBankBusinessViewModel.mBusinessPolicyLiveData.value = buildUseBehaviorSpan()
@@ -181,12 +187,12 @@ class BorrowActivity : BankBusinessActivity() {
 
     private suspend fun buildUseBehaviorSpan(): SpannableStringBuilder? =
         withContext(Dispatchers.IO) {
-            val useBehavior = getString(R.string.bank_borrow_agreement_read_and_agree)
-            val borrowPolicy = getString(R.string.bank_borrow_policy)
+            val useBehavior = getString(R.string.bank_borrow_action_agreement_read_and_agree)
+            val borrowPolicy = getString(R.string.bank_borrow_desc_agreement)
             val spannableStringBuilder = SpannableStringBuilder(useBehavior)
             val userAgreementClickSpanPrivacy = object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    openWebPage(getString(R.string.bank_borrow_service_agreement_url))
+                    openWebPage(getString(R.string.url_bank_service_agreement))
                 }
 
                 override fun updateDrawState(ds: TextPaint) {
@@ -226,33 +232,47 @@ class BorrowActivity : BankBusinessActivity() {
     override fun clickExecBusiness() {
         launch(Dispatchers.IO) {
             mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(null)
-            val amountStr = editBusinessValue.text.toString()
             val assets = mBankBusinessViewModel.mCurrentAssetsLiveData.value
             if (assets == null) {
-                showToast(getString(R.string.hint_bank_load_assets_error))
+                showToast(getString(R.string.bank_biz_tips_load_currency_error))
                 return@launch
             }
+
+            val market = IAssetsMark.convert(assets)
+            if (market !is LibraTokenAssetsMark) {
+                showToast(getString(R.string.bank_biz_tips_select_currency_error))
+                return@launch
+            }
+
             val account = mAccountManager.getIdentityByCoinType(assets.getCoinNumber())
             if (account == null) {
-                showToast(getString(R.string.hint_account_error))
+                showToast(getString(R.string.common_tips_account_error))
                 return@launch
             }
+
+            val amountStr = editBusinessValue.text.toString()
             if (amountStr.isEmpty()) {
-                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(getString(R.string.hint_please_enter_the_amount_borrowed))
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(R.string.bank_borrow_tips_borrow_amount_empty)
+                )
                 return@launch
             }
+
             if (!btnHasAgreePolicy.isChecked) {
-                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(getString(R.string.hint_please_read_and_agree_pledge_service_agreement))
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(R.string.bank_borrow_tips_read_and_agree_agreement)
+                )
                 return@launch
             }
+
             val amount =
                 convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
-
-            if (amount < mBorrowProductDetails?.minimumAmount ?: 0) {
+            val minimumAmount = mBorrowProductDetails?.minimumAmount ?: 0
+            if (amount < minimumAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
                     getString(
-                        R.string.hint_borrow_amount_too_small,
-                        convertAmountToDisplayAmountStr(mBorrowProductDetails?.minimumAmount ?: 0),
+                        R.string.bank_borrow_tips_borrow_amount_too_small_format,
+                        convertAmountToDisplayAmountStr(minimumAmount),
                         mBorrowProductDetails?.tokenShowName ?: ""
                     )
                 )
@@ -263,7 +283,7 @@ class BorrowActivity : BankBusinessActivity() {
                 (mBorrowProductDetails?.quotaLimit ?: 0) - (mBorrowProductDetails?.quotaUsed ?: 0)
             if (amount > limitAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
-                    getString(R.string.hint_not_exceed_quota_today)
+                    getString(R.string.bank_biz_tips_greater_than_daily_limit)
                 )
                 return@launch
             }
@@ -272,18 +292,11 @@ class BorrowActivity : BankBusinessActivity() {
             if (amount > maxAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
                     getString(
-                        R.string.hint_borrow_amount_too_big,
+                        R.string.bank_borrow_tips_borrow_amount_too_big_format,
                         convertAmountToDisplayAmountStr(maxAmount),
                         mBorrowProductDetails?.tokenShowName ?: ""
                     )
                 )
-                return@launch
-            }
-
-            val market = IAssetsMark.convert(assets)
-
-            if (market !is LibraTokenAssetsMark) {
-                showToast(getString(R.string.hint_bank_business_assets_error))
                 return@launch
             }
 
@@ -307,13 +320,13 @@ class BorrowActivity : BankBusinessActivity() {
                     mBorrowProductDetails!!.id, mark, amount
                 )
                 dismissProgress()
-                showToast(getString(R.string.hint_bank_business_borrow_success))
+                showToast(getString(R.string.bank_borrow_tips_borrow_success))
                 EventBus.getDefault().post(BankBorrowEvent())
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 finish()
             } catch (e: Exception) {
                 e.printStackTrace()
-                e.message?.let { showToast(it) }
+                showToast(e.getShowErrorMessage(false))
                 dismissProgress()
             }
         }

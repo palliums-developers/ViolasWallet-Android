@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="24dp"
             android:paddingEnd="11dp"
-            android:text="@string/hint_note"
+            android:text="@string/add_address_label_note"
             android:textSize="@dimen/fs_14" />
 
         <EditText
@@ -26,7 +26,7 @@
             android:layout_height="@dimen/dp_60"
             android:layout_marginEnd="23dp"
             android:background="@drawable/selector_edit_bg_line"
-            android:hint="@string/label_address_book_note"
+            android:hint="@string/add_address_hint_note"
             android:maxLength="20"
             android:textSize="@dimen/fs_14" />
     </LinearLayout>
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="24dp"
             android:paddingEnd="11dp"
-            android:text="@string/label_address"
+            android:text="@string/add_address_label_address"
             android:textSize="@dimen/fs_14"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="23dp"
             android:background="@drawable/selector_edit_bg_line"
-            android:hint="@string/hint_input_address"
+            android:hint="@string/add_address_hint_address"
             android:minHeight="@dimen/dp_60"
             android:paddingStart="0dp"
             android:paddingTop="12dp"
@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="24dp"
             android:paddingEnd="11dp"
-            android:text="@string/hint_type"
+            android:text="@string/add_address_label_type"
             android:textSize="@dimen/fs_14" />
 
         <RadioGroup
@@ -142,5 +142,5 @@
         android:id="@+id/btnAdd"
         style="@style/BaseButtonPrimary"
         android:layout_marginTop="@dimen/dp_60"
-        android:text="@string/action_add_nbsp" />
+        android:text="@string/add_address_action_add" />
 </LinearLayout>

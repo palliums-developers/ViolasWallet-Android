@@ -82,7 +82,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         titleColor = getResourceId(R.attr.colorOnPrimary, this)
         setTopBackgroundResource(getResourceId(R.attr.homeFragmentTopBg, this))
         setTitleRightImageResource(getResourceId(R.attr.iconRecordSecondary, this))
-        setTitle(R.string.mapping)
+        setTitle(R.string.mapping_title)
 
         // 设置View初始值
         reset()
@@ -105,7 +105,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
 
         tvDappUrl.setOnClickListener {
             ClipboardUtils.copy(this, tvDappUrl.text.toString())
-            showToast(R.string.copy_success)
+            showToast(R.string.common_tips_copy_success)
         }
 
         // 数据观察
@@ -271,14 +271,14 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         // 未选择币种判断
         val coinPair = mappingViewModel.getCurrMappingCoinPairLiveData().value
         if (coinPair == null) {
-            showToast(R.string.tips_mapping_coin_not_selected)
+            showToast(R.string.mapping_tips_token_empty)
             return true
         }
 
         // 未输入判断
         val inputAmountStr = etFromInputBox.text.toString().trim()
         if (inputAmountStr.isEmpty()) {
-            showToast(R.string.tips_mapping_amount_not_input)
+            showToast(R.string.mapping_tips_mapping_amount_empty)
             return true
         }
 
@@ -286,13 +286,13 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         val inputAmount =
             convertDisplayAmountToAmount(inputAmountStr, str2CoinType(coinPair.fromCoin.chainName))
         if (inputAmount <= BigDecimal.ZERO) {
-            showToast(R.string.tips_mapping_amount_not_input)
+            showToast(R.string.mapping_tips_mapping_amount_empty)
             return true
         }
 
         // 余额不足判断
         if (inputAmount > coinBalance) {
-            showToast(R.string.tips_mapping_insufficient_balance)
+            showToast(R.string.mapping_tips_insufficient_balance)
             return true
         }
 
@@ -338,17 +338,17 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                 clearInputBox()
                 dismissProgress()
-                showToast(R.string.tips_mapping_success)
+                showToast(R.string.mapping_tips_mapping_success)
             } catch (e: Exception) {
                 dismissProgress()
 
                 when (e) {
                     is UnsupportedMappingCoinPairException -> {
-                        showToast(R.string.tips_mapping_unsupported)
+                        showToast(R.string.mapping_tips_unsupported_token)
                     }
 
                     is AccountPayeeNotFindException -> {
-                        showToast(R.string.hint_payee_account_not_active)
+                        showToast(R.string.chain_tips_payee_account_not_active)
                     }
 
                     is PayeeAccountCoinNotActiveException -> {
@@ -372,9 +372,8 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         exception: PayeeAccountCoinNotActiveException
     ) {
         PublishTokenDialog()
-            .setContent(
-                getString(R.string.hint_publish_token_content_custom, exception.assets.displayName)
-            )
+            .setAddCurrencyPage(false)
+            .setCurrencyName(exception.assets.displayName)
             .setConfirmListener {
                 it.dismiss()
 
@@ -389,13 +388,13 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
                         ) {
                             mapping(false, payeeAccountDO, payerAccountDO, password)
                         } else {
-                            showToast(R.string.desc_transaction_state_add_currency_failure)
+                            showToast(R.string.txn_details_state_add_currency_failure)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
 
                         dismissProgress()
-                        showToast(R.string.desc_transaction_state_add_currency_failure)
+                        showToast(R.string.txn_details_state_add_currency_failure)
                     }
                 }
             }.show(supportFragmentManager)
@@ -411,10 +410,10 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
 
     // <editor-fold defaultState="collapsed" desc="其它逻辑">
     private fun reset() {
-        tvBalance.setText(R.string.value_null)
-        tvExchangeRate.setText(R.string.value_null)
-        tvMinerFees.setText(R.string.value_null)
-        tvFromSelectText.setText(R.string.select_mapping_coin)
+        tvBalance.setText(R.string.common_desc_value_null)
+        tvExchangeRate.setText(R.string.common_desc_value_null)
+        tvMinerFees.setText(R.string.common_desc_value_null)
+        tvFromSelectText.setText(R.string.common_action_select_token)
         tvToCoinName.text = ""
         etFromInputBox.setText("")
         etToInputBox.setText("0")

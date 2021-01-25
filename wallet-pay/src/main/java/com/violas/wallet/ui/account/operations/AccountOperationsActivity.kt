@@ -127,10 +127,10 @@ class AccountOperationsActivity : BaseAppActivity() {
     private fun initView() {
         if (operationMode == AccountOperationMode.MANAGEMENT) {
             EventBus.getDefault().register(this)
-            setTitle(R.string.account_management_title)
+            setTitle(R.string.common_title_wallet_management)
             setTitleRightImageResource(R.mipmap.ic_add)
         } else {
-            setTitle(R.string.account_selection_title)
+            setTitle(R.string.wallet_account_title_select_wallet)
         }
 
         vAccountList.showSlideBar(false)

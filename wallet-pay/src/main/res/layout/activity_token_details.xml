@@ -161,7 +161,7 @@
             android:layout_weight="1"
             android:background="@drawable/shape_bg_token_info_transfer"
             android:foreground="?attr/selectableItemBackground"
-            android:text="@string/action_transfer_nbsp"
+            android:text="@string/currency_details_action_1"
             android:textSize="@dimen/fs_14" />
 
         <View
@@ -176,7 +176,7 @@
             android:layout_weight="1"
             android:background="@drawable/shape_bg_token_info_collection"
             android:foreground="?attr/selectableItemBackground"
-            android:text="@string/action_collection_nbsp"
+            android:text="@string/currency_details_action_2"
             android:textSize="@dimen/fs_14" />
 
         <View
@@ -199,7 +199,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/shape_bg_token_info_exchange"
                 android:foreground="?attr/selectableItemBackground"
-                android:text="@string/action_exchange_nbsp"
+                android:text="@string/currency_details_action_3"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="@dimen/fs_14" />
 

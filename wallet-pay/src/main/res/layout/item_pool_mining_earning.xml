@@ -15,7 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/mining_earnings_type_active_extraction" />
+        tools:text="@string/incentive_earnings_details_type_active_extraction" />
 
     <com.palliums.widget.NumberTextView
         android:id="@+id/tvAmount"
@@ -49,6 +49,6 @@
         android:textSize="@dimen/fs_12"
         app:layout_constraintBaseline_toBaselineOf="@id/tvTime"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="@string/mining_earnings_state_arrived" />
+        tools:text="@string/incentive_earnings_details_state_arrived" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

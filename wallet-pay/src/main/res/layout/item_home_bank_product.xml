@@ -60,6 +60,6 @@
         android:textSize="@dimen/fs_10"
         app:layout_constraintBottom_toBottomOf="@id/ivLogo"
         app:layout_constraintEnd_toEndOf="@id/tvRate"
-        tools:text="@string/deposit_yield" />
+        tools:text="@string/bank_deposit_orders_label_yield" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

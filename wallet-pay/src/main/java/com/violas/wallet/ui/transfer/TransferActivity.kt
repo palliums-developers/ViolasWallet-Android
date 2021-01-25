@@ -93,7 +93,7 @@ abstract class TransferActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        title = getString(R.string.title_transfer)
+        title = getString(R.string.transfer_title)
         if (savedInstanceState != null) {
             isToken = savedInstanceState.getBoolean(EXT_IS_TOKEN, false)
             assetsName = savedInstanceState.getString(EXT_ASSETS_NAME)

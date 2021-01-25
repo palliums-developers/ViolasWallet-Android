@@ -3,17 +3,17 @@
     <item
         android:id="@+id/tab_wallet"
         android:icon="?attr/homeBottomWalletTabSelectedIcon"
-        android:title="@string/tab_wallet" />
+        android:title="@string/home_tab_wallet" />
     <item
         android:id="@+id/tab_market"
         android:icon="?attr/homeBottomMarketTabNormalIcon"
-        android:title="@string/tab_market" />
+        android:title="@string/home_tab_market" />
     <item
         android:id="@+id/tab_bank"
         android:icon="?attr/homeBottomBankTabNormalIcon"
-        android:title="@string/tab_bank" />
+        android:title="@string/home_tab_bank" />
     <item
         android:id="@+id/tab_me"
         android:icon="?attr/homeBottomMeTabNormalIcon"
-        android:title="@string/tab_me" />
+        android:title="@string/home_tab_me" />
 </menu>

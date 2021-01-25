@@ -11,4 +11,4 @@
     android:paddingVertical="@dimen/dp_5"
     android:textSize="@dimen/fs_12"
     tools:background="@drawable/sel_bg_market_select_popup_item_checked"
-    tools:text="@string/transfer_in" />
+    tools:text="@string/market_pool_action_add_liquidity" />

@@ -86,8 +86,8 @@ class MarketFragment : BaseFragment() {
         viewPager.offscreenPageLimit = 1
         viewPager.adapter = FragmentPagerAdapterSupport(childFragmentManager).apply {
             setFragments(fragments)
-            addTitle(getString(R.string.title_market_swap))
-            addTitle(getString(R.string.title_market_pool))
+            addTitle(getString(R.string.home_market_tab_swap))
+            addTitle(getString(R.string.home_market_tab_pool))
         }
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {

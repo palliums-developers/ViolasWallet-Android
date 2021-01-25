@@ -20,10 +20,11 @@ class RequestHeaderInterceptor(private val closeConnection: Boolean = true) : In
 
         val newRequest = originalRequest.newBuilder()
             .header("User-Agent", getHttpUserAgent())
+            .header("platform", "android")
             .header("bundleId", BuildConfig.APPLICATION_ID)
             .header("versionName", BuildConfig.VERSION_NAME)
             .header("versionCode", BuildConfig.VERSION_CODE.toString())
-            .header("location", MultiLanguageUtility.getInstance().localTag)
+            .header("language", MultiLanguageUtility.getInstance().localTag)
             .header("timestamp", System.currentTimeMillis().toString())
             .header("deviceId", getUniquePseudoID()).apply {
                 if (closeConnection) {

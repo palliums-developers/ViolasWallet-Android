@@ -11,7 +11,6 @@ import com.violas.wallet.R;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -25,9 +24,9 @@ public class MultiLanguageUtility {
     private static final Map<Integer, LanguageBean> mLocaleLanguageMap = new LinkedHashMap<>();
 
     static {
-        mLocaleLanguageMap.put(LanguageType.LANGUAGE_CHINESE_SIMPLIFIED, new LanguageBean(LanguageType.LANGUAGE_CHINESE_SIMPLIFIED, Locale.SIMPLIFIED_CHINESE, R.string.language_chinese_simplified, R.string.language_chinese_simplified_more));
-        mLocaleLanguageMap.put(LanguageType.LANGUAGE_EN, new LanguageBean(LanguageType.LANGUAGE_EN, Locale.ENGLISH, R.string.language_en, R.string.language_en_more));
-        //mLocaleLanguageMap.put(LanguageType.LANGUAGE_CHINESE_TRADITIONAL, new LanguageBean(LanguageType.LANGUAGE_CHINESE_TRADITIONAL, Locale.TRADITIONAL_CHINESE, R.string.language_chinese_traditional, R.string.language_chinese_traditional_more));
+        mLocaleLanguageMap.put(LanguageType.LANGUAGE_CHINESE_SIMPLIFIED, new LanguageBean(LanguageType.LANGUAGE_CHINESE_SIMPLIFIED, Locale.SIMPLIFIED_CHINESE, R.string.multi_language_label_chinese_simplified, R.string.multi_language_desc_chinese_simplified));
+        mLocaleLanguageMap.put(LanguageType.LANGUAGE_EN, new LanguageBean(LanguageType.LANGUAGE_EN, Locale.ENGLISH, R.string.multi_language_label_english, R.string.multi_language_desc_english));
+        //mLocaleLanguageMap.put(LanguageType.LANGUAGE_CHINESE_TRADITIONAL, new LanguageBean(LanguageType.LANGUAGE_CHINESE_TRADITIONAL, Locale.TRADITIONAL_CHINESE, R.string.multi_language_label_chinese_traditional, R.string.multi_language_desc_chinese_traditional));
     }
 
     private static final String TAG = "MultiLanguageUtil";

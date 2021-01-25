@@ -324,7 +324,7 @@ class WalletFragment : BaseFragment() {
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
                         ScanActivity.start(it1)
                     } else {
-                        showToast(R.string.tips_create_or_import_wallet)
+                        showToast(R.string.common_tips_account_empty)
                     }
                 }
             }
@@ -342,7 +342,7 @@ class WalletFragment : BaseFragment() {
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
                         context?.let { it1 -> MultiTransferActivity.start(it1) }
                     } else {
-                        showToast(R.string.tips_create_or_import_wallet)
+                        showToast(R.string.common_tips_account_empty)
                     }
                 }
             }
@@ -352,7 +352,7 @@ class WalletFragment : BaseFragment() {
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
                         context?.let { it1 -> MultiCollectionActivity.start(it1) }
                     } else {
-                        showToast(R.string.tips_create_or_import_wallet)
+                        showToast(R.string.common_tips_account_empty)
                     }
                 }
             }
@@ -362,7 +362,7 @@ class WalletFragment : BaseFragment() {
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
                         MappingActivity.start(it)
                     } else {
-                        showToast(R.string.tips_create_or_import_wallet)
+                        showToast(R.string.common_tips_account_empty)
                     }
                 }
             }

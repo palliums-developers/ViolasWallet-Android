@@ -225,7 +225,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
             callbackFunction.onCallBack(
                 Response.error(request.id, -1, "Account does not exist").toJson()
             )
-            showToast(R.string.tips_create_or_import_wallet)
+            showToast(R.string.common_tips_account_empty)
             return
         }
 
@@ -280,7 +280,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
             CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
             callbackFunction.onCallBack(Response.success(request.id).toJson())
             startLoad()
-            showToast(R.string.tips_withdrawal_success)
+            showToast(R.string.bank_withdrawal_tips_withdrawal_success)
         }
     }
 
@@ -327,7 +327,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
             callbackFunction.onCallBack(
                 Response.error(request.id, -1, "Account does not exist").toJson()
             )
-            showToast(R.string.tips_create_or_import_wallet)
+            showToast(R.string.common_tips_account_empty)
             return
         }
 
@@ -357,9 +357,9 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
             savePictureCallbackFunction = callbackFunction
             EasyPermissions.requestPermissions(
                 PermissionRequest.Builder(this, REQUEST_CODE_SAVE_PICTURE, *perms)
-                    .setRationale(R.string.save_picture_hint_need_permissions)
-                    .setNegativeButtonText(R.string.action_cancel)
-                    .setPositiveButtonText(R.string.action_ok)
+                    .setRationale(R.string.save_picture_need_permissions_desc)
+                    .setNegativeButtonText(R.string.common_action_cancel)
+                    .setPositiveButtonText(R.string.common_action_ok)
                     .setTheme(R.style.AppAlertDialog)
                     .build()
             )
@@ -378,7 +378,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
         }
 
         val url = request.params[0]
-        ClipboardUtils.copy(this, url, R.string.tips_share_link_success)
+        ClipboardUtils.copy(this, url, R.string.incentive_tips_share_link_success)
         callbackFunction.onCallBack(Response.success(request.id).toJson())
     }
 
@@ -440,10 +440,10 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
 
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             AppSettingsDialog.Builder(this)
-                .setTitle(getString(R.string.save_picture_title_get_permissions))
-                .setRationale(getString(R.string.save_picture_hint_set_permissions))
-                .setNegativeButton(R.string.action_cancel)
-                .setPositiveButton(R.string.action_ok)
+                .setTitle(getString(R.string.save_picture_set_permissions_title))
+                .setRationale(getString(R.string.save_picture_set_permissions_desc))
+                .setNegativeButton(R.string.common_action_cancel)
+                .setPositiveButton(R.string.common_action_ok)
                 .setThemeResId(R.style.AppAlertDialog)
                 .build()
                 .show()
@@ -484,7 +484,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
 
         if (bitmap == null) {
             dismissProgress()
-            showToast(R.string.tips_save_into_album_failure)
+            showToast(R.string.save_picture_tips_failure)
             callbackFunction.onCallBack(
                 Response.error(request.id, -2, "Failed to convert to image").toJson()
             )
@@ -498,12 +498,12 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
 
         dismissProgress()
         if (saveResult) {
-            showToast(R.string.tips_save_into_album_success)
+            showToast(R.string.save_picture_tips_success)
             callbackFunction.onCallBack(
                 Response.success(request.id).toJson()
             )
         } else {
-            showToast(R.string.tips_save_into_album_failure)
+            showToast(R.string.save_picture_tips_failure)
             callbackFunction.onCallBack(
                 Response.error(request.id, -2, "Failed to save to system album").toJson()
             )

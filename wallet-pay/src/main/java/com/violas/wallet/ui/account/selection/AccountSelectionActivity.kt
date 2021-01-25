@@ -46,7 +46,7 @@ class AccountSelectionActivity : BaseAppActivity() {
             .debug(BuildConfig.DEBUG)
             .install()
 
-        setTitle(R.string.account_selection_title)
+        setTitle(R.string.wallet_account_title_select_wallet)
 
         var lastAccountType = AccountType.ALL
         savedInstanceState?.let {

@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_4"
             android:includeFontPadding="false"
-            android:text="@string/label_available_balance"
+            android:text="@string/mapping_label_balance"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="@dimen/fs_10"
             app:layout_constraintBottom_toBottomOf="@id/vBalanceIcon"
@@ -59,7 +59,7 @@
             android:layout_height="@dimen/dp_48"
             android:layout_marginTop="@dimen/dp_16"
             android:background="@drawable/sel_bg_market_edit_box"
-            android:hint="@string/hint_transfer_number"
+            android:hint="@string/mapping_hint_mapping_amount"
             android:includeFontPadding="false"
             android:inputType="numberDecimal"
             android:paddingStart="@dimen/dp_16"
@@ -85,7 +85,7 @@
                 android:id="@+id/tvFromSelectText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/select_mapping_coin"
+                android:text="@string/common_action_select_token"
                 android:textColor="@color/sel_text_color_btn2"
                 android:textSize="@dimen/fs_12" />
 
@@ -135,7 +135,7 @@
             app:layout_constraintBottom_toBottomOf="@id/etToInputBox"
             app:layout_constraintEnd_toEndOf="@id/etToInputBox"
             app:layout_constraintTop_toTopOf="@id/etToInputBox"
-            tools:text="VLSBTC" />
+            tools:text="vBTC" />
 
         <View
             android:id="@+id/vDivider"
@@ -154,7 +154,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_30"
             android:includeFontPadding="false"
-            android:text="@string/label_mapping_exchange_rate"
+            android:text="@string/mapping_label_exchange_rate"
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/fs_10"
             app:layout_constraintStart_toStartOf="@id/vDivider"
@@ -170,7 +170,7 @@
             app:layout_constraintBaseline_toBaselineOf="@id/tvExchangeRateLabel"
             app:layout_constraintEnd_toEndOf="@id/vDivider"
             app:layout_constraintStart_toEndOf="@id/tvExchangeRateLabel"
-            tools:text="1 BTC = 100 VLSBTC" />
+            tools:text="1 BTC = 1 vBTC" />
 
         <TextView
             android:id="@+id/tvMinerFeesLabel"
@@ -178,7 +178,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_10"
             android:includeFontPadding="false"
-            android:text="@string/label_miner_fees"
+            android:text="@string/mapping_label_gas_fee"
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="@dimen/fs_10"
             app:layout_constraintStart_toStartOf="@id/vDivider"
@@ -200,7 +200,7 @@
             android:id="@+id/btnMapping"
             style="@style/BaseButtonPrimary"
             android:layout_marginTop="@dimen/dp_31"
-            android:text="@string/action_mapping"
+            android:text="@string/mapping_action_mapping"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvMinerFeesLabel" />
@@ -220,7 +220,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hint_eth_mapping"
+            android:text="@string/mapping_eth_tokens_title"
             android:textColor="@color/color_999999"
             android:textSize="@dimen/fs_14" />
 
@@ -228,7 +228,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="@string/hint_eth_violas_content"
+            android:text="@string/mapping_eth_tokens_desc"
             android:textColor="@color/color_333333"
             android:textSize="@dimen/fs_12" />
 

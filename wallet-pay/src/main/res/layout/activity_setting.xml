@@ -44,7 +44,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivHeader"
-        app:mivStartTitleText="@string/setting_multi_language" />
+        app:mivStartTitleText="@string/common_title_multi_language" />
 
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivServiceAgreement"
@@ -52,7 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivMultiLanguage"
-        app:mivStartTitleText="@string/setting_service_agreement" />
+        app:mivStartTitleText="@string/common_title_service_agreement" />
 
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivPrivacyPolicy"
@@ -61,7 +61,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivServiceAgreement"
         app:mivShowBottomLine="false"
-        app:mivStartTitleText="@string/title_privacy_policy" />
+        app:mivStartTitleText="@string/common_title_privacy_policy" />
 
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivAboutUs"
@@ -71,7 +71,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivPrivacyPolicy"
         app:mivShowBottomLine="false"
-        app:mivStartTitleText="@string/setting_about_us" />
+        app:mivStartTitleText="@string/common_title_about_us" />
 
     <com.palliums.widget.MenuItemView
         android:id="@+id/mivHelpFeedback"
@@ -81,6 +81,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mivAboutUs"
         app:mivShowBottomLine="false"
-        app:mivStartTitleText="@string/setting_help_feedback" />
+        app:mivStartTitleText="@string/common_title_help_feedback" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
