@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.activity_message_center.*
  * Created by elephant on 2020/10/10 17:33.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc:
+ * desc: 通知消息中心页面
  */
 class MessageCenterActivity : BaseAppActivity() {
 
@@ -67,13 +67,13 @@ class MessageCenterActivity : BaseAppActivity() {
     private fun initFragmentPager() {
         val fragments = mutableListOf<Fragment>()
         supportFragmentManager.fragments.forEach {
-            if (it is TransferNotificationFragment || it is SystemNotificationFragment) {
+            if (it is TransactionMessageFragment || it is SystemMessageFragment) {
                 fragments.add(it)
             }
         }
         if (fragments.isEmpty()) {
-            fragments.add(TransferNotificationFragment())
-            fragments.add(SystemNotificationFragment())
+            fragments.add(TransactionMessageFragment())
+            fragments.add(SystemMessageFragment())
         }
 
         val fragmentPagerAdapter = FragmentPagerAdapterSupport(supportFragmentManager).apply {

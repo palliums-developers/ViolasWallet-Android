@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/sel_bg_msg_unread">
+
+    <View
+        android:id="@+id/vStatus"
+        android:layout_width="@dimen/dp_14"
+        android:layout_height="@dimen/dp_14"
+        android:layout_marginStart="@dimen/dp_15"
+        app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvTitle"
+        tools:background="?attr/iconRecordStateSucceeded" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginTop="@dimen/dp_14"
+        android:layout_marginEnd="@dimen/dp_15"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        android:textSize="@dimen/fs_14"
+        app:layout_constraintEnd_toStartOf="@id/tvTime"
+        app:layout_constraintStart_toEndOf="@id/vStatus"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="VLS : 100VLS 转账成功转账成功转账成功转账转转账成功转账成功转账成功转账转" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_15"
+        android:includeFontPadding="false"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="@dimen/fs_12"
+        app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="07.10 15:42" />
+
+    <TextView
+        android:id="@+id/tvDesc"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_14"
+        android:ellipsize="middle"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_14"
+        app:layout_constraintEnd_toEndOf="@id/tvTime"
+        app:layout_constraintStart_toStartOf="@id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        tools:text="收款地址：YUsJ8N1AidNUySQGCpwswQUaoyL2Muffadsaga" />
+
+    <View
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="?attr/dividerThickness"
+        android:layout_marginTop="@dimen/dp_14"
+        android:background="?attr/colorDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/tvTime"
+        app:layout_constraintStart_toStartOf="@id/vStatus"
+        app:layout_constraintTop_toBottomOf="@id/tvDesc" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

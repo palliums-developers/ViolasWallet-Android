@@ -30,6 +30,8 @@ import com.violas.wallet.repository.http.libra.violas.LibraViolasRepository
 import com.violas.wallet.repository.http.libra.violas.LibraViolasService
 import com.violas.wallet.repository.http.mapping.MappingApi
 import com.violas.wallet.repository.http.mapping.MappingRepository
+import com.violas.wallet.repository.http.message.MessageApi
+import com.violas.wallet.repository.http.message.MessageRepository
 import com.violas.wallet.repository.http.violas.ViolasBizService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -128,6 +130,9 @@ object DataRepository {
 
     fun getIncentiveService() =
         IncentiveRepository(retrofit.create(IncentiveApi::class.java))
+
+    fun getMessageService() =
+        MessageRepository(retrofit.create(MessageApi::class.java))
 
     fun getMultiTokenContractService(): MultiContractRpcApi {
         return retrofit.create(MultiContractRpcApi::class.java)

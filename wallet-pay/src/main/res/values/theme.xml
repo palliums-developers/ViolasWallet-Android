@@ -281,6 +281,9 @@
         <item name="bankDepositEarningBgColor">@color/color_13B788_06</item>
         <item name="bankRecordCoinFilterTopBg">@mipmap/bg_bank_record_coin_filter_top</item>
         <item name="bankRecordStateFilterTopBg">@mipmap/bg_bank_record_state_filter_top</item>
+
+        <!--消息中心页面资源属性-->
+        <item name="msgItemUnread">@color/color_FAF7FF</item>
     </style>
 
     <style name="ToolbarNavigationButtonStyle" parent="Widget.AppCompat.Toolbar.Button.Navigation">

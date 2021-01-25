@@ -611,7 +611,9 @@
     <string name="msg_center_title">消息中心</string>
     <string name="msg_center_tab_transfer_notification">转账通知</string>
     <string name="msg_center_tab_system_notification">系统通知</string>
-    <string name="msg_center_tips_msgs_empty">暂无消息</string>
+    <string name="msg_center_tips_messages_empty">暂无消息</string>
+    <string name="msg_center_tips_system_msg_url_empty">消息链接未找到</string>
+    <string name="msg_center_tips_get_msg_details_failed">获取消息内容失败</string>
 
     <!--通知渠道-->
     <string name="notification_channel_name_default">其他通知</string>

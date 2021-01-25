@@ -184,4 +184,7 @@
     <attr name="bankRecordCoinFilterTopBg" format="reference" />
     <attr name="bankRecordStateFilterTopBg" format="reference" />
 
+    <!--消息中心页面资源属性-->
+    <attr name="msgItemUnread" format="color" />
+
 </resources>

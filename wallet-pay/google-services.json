@@ -1,43 +1,41 @@
 {
   "project_info": {
-    "project_number": "1022148688605",
-    "firebase_url": "https://violas-b93b0.firebaseio.com",
-    "project_id": "violas-b93b0",
-    "storage_bucket": "violas-b93b0.appspot.com"
+    "project_number": "675290848213",
+    "project_id": "violas-push-server",
+    "storage_bucket": "violas-push-server.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1022148688605:android:131262b68ec636cfd0b934",
+        "mobilesdk_app_id": "1:675290848213:android:af1b445b9f2d8bdb8fbb5c",
         "android_client_info": {
           "package_name": "com.violas.wallet.pay.demo"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1022148688605-m14dulrhqdh3842c4qh08e8poba0mr9v.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.violas.wallet.pay.demo",
-            "certificate_hash": "43a94b596597ec37c28f1804907e726e975fd23a"
-          }
-        },
-        {
-          "client_id": "1022148688605-pq0ft4js3k9e5ku0fkbpfish17vn740s.apps.googleusercontent.com",
+          "client_id": "675290848213-1e7lgtf3upsavof5fr352rbbb7q1n674.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAaxvBJXgUAk1_8aI8zspeoZU4nEPfqLU0"
+          "current_key": "AIzaSyAr-wXa3fCgQDTcsm5jWVqyVjvRuZZXOe0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1022148688605-pq0ft4js3k9e5ku0fkbpfish17vn740s.apps.googleusercontent.com",
+              "client_id": "675290848213-1e7lgtf3upsavof5fr352rbbb7q1n674.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "675290848213-m1uag4thq6ks4ikli7jhludkfbiegsjr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.palliums.violas"
+              }
             }
           ]
         }

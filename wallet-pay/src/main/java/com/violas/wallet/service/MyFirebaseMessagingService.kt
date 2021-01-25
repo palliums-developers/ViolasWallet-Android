@@ -8,6 +8,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.palliums.extensions.logDebug
 import com.violas.wallet.R
 import com.violas.wallet.ui.message.MessageCenterActivity
+import com.violas.wallet.viewModel.MessageViewModel
 
 /**
  * Created by elephant on 2020/10/9 17:33.
@@ -29,6 +30,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
         // sendRegistrationToServer(token);
+        if (token.isNotBlank()) {
+            MessageViewModel.getInstance().registerDevice(token)
+        }
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {

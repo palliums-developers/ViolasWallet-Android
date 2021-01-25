@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.google.firebase.iid.FirebaseInstanceId
 import com.lxj.xpopup.XPopup
 import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.analytics.Analytics
@@ -18,10 +17,10 @@ import com.microsoft.appcenter.crashes.CrashesListener
 import com.palliums.content.App
 import com.palliums.extensions.createNotificationChannel
 import com.palliums.extensions.getNotificationManager
-import com.palliums.extensions.logDebug
-import com.palliums.extensions.logError
 import com.palliums.utils.getColorByAttrId
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
+import com.violas.wallet.viewModel.MessageViewModel
+import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
 
 
@@ -31,12 +30,29 @@ class PayApp : App() {
             System.setProperty("kotlinx.coroutines.debug", "on")
         }
         super.onCreate()
+
         handlerError()
         handlerAppCenter()
-        resetWalletConnect()
 
         initNotification()
         initXPopup()
+
+        initAccountAndAssets()
+        initMessagePush()
+        initWalletConnect()
+    }
+
+    private fun initAccountAndAssets() {
+        WalletAppViewModel.getViewModelInstance()
+    }
+
+    private fun initMessagePush() {
+        MessageViewModel.getInstance()
+    }
+
+    private fun initWalletConnect() {
+        // 暂时不考虑多进程
+        WalletConnectViewModel.getViewModelInstance(this)
     }
 
     private fun initXPopup() {
@@ -45,18 +61,6 @@ class PayApp : App() {
     }
 
     private fun initNotification() {
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
-            if (it.isSuccessful) {
-                logDebug("Firebase") {
-                    "onGetInstanceIdComplete. isSuccessful = true, token = ${it.result?.token}"
-                }
-            } else {
-                logError("Firebase") {
-                    "onGetInstanceIdComplete. isSuccessful = false, exception = ${it.exception?.toString()}"
-                }
-            }
-        }
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
         val notificationManager = getNotificationManager()
@@ -129,10 +133,5 @@ class PayApp : App() {
         super.attachBaseContext(newBase)
         MultiLanguageUtility.init(newBase)
         MultiLanguageUtility.attachBaseContext(newBase)
-    }
-
-    private fun resetWalletConnect() {
-        // 暂时不考虑多进程
-        WalletConnectViewModel.getViewModelInstance(this)
     }
 }
