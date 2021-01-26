@@ -273,14 +273,14 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
                         exception.message ?: "unknown error"
                     ).toJson()
                 )
-                showToast(exception.getShowErrorMessage(false))
+                showToast(exception.getShowErrorMessage(R.string.incentive_tips_active_extraction_failure))
                 return@launch
             }
 
             CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
             callbackFunction.onCallBack(Response.success(request.id).toJson())
             startLoad()
-            showToast(R.string.bank_withdrawal_tips_withdrawal_success)
+            showToast(R.string.incentive_tips_active_extraction_success)
         }
     }
 

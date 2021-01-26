@@ -254,7 +254,7 @@ class RepayBorrowActivity : BankBusinessActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 e.message?.let { showToast(it) }
-                showToast(e.getShowErrorMessage(false))
+                showToast(e.getShowErrorMessage(R.string.bank_repayment_tips_repayment_failure))
                 dismissProgress()
             }
         }

@@ -13,5 +13,5 @@ interface BaseException {
      *
      * @param loadAction true: 表示是加载数据动作；false: 表示是其它操作动作
      */
-    fun getErrorMessage(loadAction: Boolean): String
+    fun getErrorMessage(loadAction: Boolean? = null, failedDesc: String? = null): String
 }

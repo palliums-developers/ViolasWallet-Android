@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.extensions.logError
 import com.palliums.extensions.show
 import com.palliums.utils.start
@@ -284,8 +285,8 @@ class MultiTransferActivity : BaseAppActivity(),
                         finish()
                     }
                 } catch (e: Exception) {
-                    e.message?.let { showToast(it) }
                     dismissProgress()
+                    showToast(e.message ?: getString(R.string.transfer_tips_transfer_failure))
                 }
             }
         })

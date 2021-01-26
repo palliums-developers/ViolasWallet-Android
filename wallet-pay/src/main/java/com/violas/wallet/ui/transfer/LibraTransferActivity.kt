@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.AmountInputFilter
 import androidx.lifecycle.Observer
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.getShowErrorMessage
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
@@ -195,16 +196,16 @@ class LibraTransferActivity : TransferActivity() {
                     isToken,
                     mAssetsVo.getId(),
                     {
+                        print(it)
+                        dismissProgress()
                         showToast(getString(R.string.transfer_tips_transfer_success))
                         CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
-                        dismissProgress()
-                        print(it)
                         finish()
                     },
                     {
-                        it.message?.let { it1 -> showToast(it1) }
-                        dismissProgress()
                         it.printStackTrace()
+                        dismissProgress()
+                        showToast(it.message ?: getString(R.string.transfer_tips_transfer_failure))
                     })
             }
         }

@@ -296,7 +296,7 @@ class DepositActivity : BankBusinessActivity() {
                 finish()
             } catch (e: Exception) {
                 e.printStackTrace()
-                showToast(e.getShowErrorMessage(false))
+                showToast(e.getShowErrorMessage(R.string.bank_deposit_tips_deposit_failure))
                 dismissProgress()
             }
         }

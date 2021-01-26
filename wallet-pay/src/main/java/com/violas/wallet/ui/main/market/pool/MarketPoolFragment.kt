@@ -19,6 +19,7 @@ import com.lxj.xpopup.enums.PopupAnimation
 import com.lxj.xpopup.interfaces.SimpleCallback
 import com.palliums.base.BaseFragment
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.extensions.show
 import com.palliums.net.LoadState
 import com.palliums.utils.*
@@ -237,15 +238,21 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     )
                 }
 
+                LoadState.Status.FAILURE -> {
+                    dismissProgress()
+                    it.getDataIfNotHandled()?.run {
+                        if (action == ACTION_ADD_LIQUIDITY || action == ACTION_REMOVE_LIQUIDITY)
+                            return@run
+
+                        val msg = throwable?.getShowErrorMessage(true) ?: errorText
+                        if (!msg.isNullOrBlank()) {
+                            showToast(msg)
+                        }
+                    }
+                }
+
                 else -> {
                     dismissProgress()
-                }
-            }
-        })
-        poolViewModel.tipsMessage.observe(viewLifecycleOwner, Observer {
-            it.getDataIfNotHandled()?.let { msg ->
-                if (msg.isNotEmpty()) {
-                    showToast(msg)
                 }
             }
         })
@@ -698,6 +705,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     etInputBoxB.text.toString().trim(),
                     action = ACTION_ADD_LIQUIDITY,
                     failureCallback = {
+                        showToast(it.getShowErrorMessage(R.string.market_pool_tips_add_liquidity_failure))
                         poolViewModel.startSyncLiquidityReserveWork()
                     }
                 ) {
@@ -713,6 +721,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     etInputBoxA.text.toString().trim(),
                     action = ACTION_REMOVE_LIQUIDITY,
                     failureCallback = {
+                        showToast(it.getShowErrorMessage(R.string.market_pool_tips_remove_liquidity_failure))
                         poolViewModel.startSyncLiquidityReserveWork()
                     }
                 ) {

@@ -54,7 +54,7 @@ class BankDepositOrderActivity : BaseBankOrderActivity<DepositInfoDTO>() {
                 BankWithdrawalDialog.newInstance(depositInfo.productId, depositDetails)
                     .show(supportFragmentManager)
             } catch (e: Exception) {
-                showToast(e.getShowErrorMessage(false))
+                showToast(e.getShowErrorMessage(true))
                 dismissProgress()
             }
         }

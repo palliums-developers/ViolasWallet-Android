@@ -7,6 +7,7 @@ import android.widget.SeekBar
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.getShowErrorMessage
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
@@ -195,16 +196,16 @@ class BTCTransferActivity : TransferActivity() {
                     account!!,
                     sbQuota.progress,
                     success = {
-                        showToast(getString(R.string.transfer_tips_transfer_success))
-                        dismissProgress()
-                        CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                         print(it)
+                        dismissProgress()
+                        showToast(getString(R.string.transfer_tips_transfer_success))
+                        CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                         finish()
                     },
                     error = {
-                        it.message?.let { it1 -> showToast(it1) }
-                        dismissProgress()
                         it.printStackTrace()
+                        dismissProgress()
+                        showToast(it.message ?: getString(R.string.transfer_tips_transfer_failure))
                     })
             }
         }

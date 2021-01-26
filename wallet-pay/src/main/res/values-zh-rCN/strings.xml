@@ -187,12 +187,12 @@
     <string name="transfer_tips_address_error">地址有误</string>
     <string name="transfer_tips_address_is_myself">不能转账给自己</string>
     <string name="transfer_tips_transfer_success">转账交易广播成功</string>
-    <string name="transfer_tips_transfer_failure">转账失败</string>
+    <string name="transfer_tips_transfer_failure">转账失败，请稍后重试</string>
     <string name="transfer_tips_insufficient_balance_or_assets_unconfirmed">余额不足或资产还未确认</string>
     <string name="transfer_tips_account_no_activation">当前账户没有激活</string>
     <string name="transfer_tips_receive_account_no_activation">收款账户没有激活</string>
     <string name="transfer_tips_account_no_control">没有当前账户的控制权</string>
-    <string name="transfer_tips_node_not_response">节点请求失败</string>
+    <string name="transfer_tips_node_not_response">节点响应失败</string>
 
     <!--收款-->
     <string name="receive_title">收款</string>
@@ -211,7 +211,7 @@
     <string name="mapping_tips_mapping_amount_empty">请输入转出数量</string>
     <string name="mapping_tips_unsupported_token">不支持该币种映射</string>
     <string name="mapping_tips_mapping_success">映射交易广播成功</string>
-    <string name="mapping_tips_mapping_failure">映射失败</string>
+    <string name="mapping_tips_mapping_failure">映射失败，请稍后重试</string>
     <!--映射记录-->
     <string name="mapping_records_title">映射记录</string>
     <string name="mapping_records_label_gas_fee_format">矿工费用：%1$s</string>
@@ -246,7 +246,7 @@
     <string name="market_swap_tips_insufficient_balance">可用余额不足</string>
     <string name="market_swap_tips_swap_estimating">正在估算兑换金额…</string>
     <string name="market_swap_tips_swap_success">兑换交易广播成功</string>
-    <string name="market_swap_tips_swap_failure">兑换失败</string>
+    <string name="market_swap_tips_swap_failure">兑换失败，请稍后重试</string>
     <string name="market_swap_tips_unsupported_pair">不支持该交易对</string>
     <!--市场资金池-->
     <string name="market_pool_title_select_pool_token">选择交易对</string>
@@ -268,9 +268,9 @@
     <string name="market_pool_tips_input_amount_empty">请输入转入数量</string>
     <string name="market_pool_tips_output_amount_empty">请输入转出数量</string>
     <string name="market_pool_tips_add_liquidity_success">转入交易广播成功</string>
-    <string name="market_pool_tips_add_liquidity_failure">转入失败</string>
+    <string name="market_pool_tips_add_liquidity_failure">转入失败，请稍后重试</string>
     <string name="market_pool_tips_remove_liquidity_success">转出交易广播成功</string>
-    <string name="market_pool_tips_remove_liquidity_failure">转出失败</string>
+    <string name="market_pool_tips_remove_liquidity_failure">转出失败，请稍后重试</string>
     <!--我的资金池-->
     <string name="my_pool_title">我的资金池</string>
     <string name="my_pool_action_add_liquidity">转&#160;入</string>
@@ -374,7 +374,7 @@
     <string name="bank_deposit_tips_deposit_amount_too_small_format">存款金额不得低于%1$s%2$s</string>
     <string name="bank_deposit_tips_deposit_amount_too_big_format">存款金额不得高于%1$s%2$s</string>
     <string name="bank_deposit_tips_deposit_success">存款交易广播成功</string>
-    <string name="bank_deposit_tips_deposit_failure">存款失败</string>
+    <string name="bank_deposit_tips_deposit_failure">存款失败，请稍后重试</string>
     <!--数字银行提款-->
     <string name="bank_withdrawal_title">提取</string>
     <string name="bank_withdrawal_action">提&#160;取</string>
@@ -384,7 +384,7 @@
     <string name="bank_withdrawal_tips_withdrawal_amount_empty">请输入提取数量</string>
     <string name="bank_withdrawal_tips_withdrawal_amount_excess">可提取数量不足</string>
     <string name="bank_withdrawal_tips_withdrawal_success">提取交易广播成功</string>
-    <string name="bank_withdrawal_tips_withdrawal_failure">提取失败</string>
+    <string name="bank_withdrawal_tips_withdrawal_failure">提取失败，请稍后重试</string>
     <!--数字银行借款-->
     <string name="bank_borrow_title">借款</string>
     <string name="bank_borrow_action_borrowing">立即借款</string>
@@ -402,7 +402,7 @@
     <string name="bank_borrow_tips_borrow_amount_too_small_format">借款金额不得低于%1$s%2$s</string>
     <string name="bank_borrow_tips_borrow_amount_too_big_format">借款金额不得高于%1$s%2$s</string>
     <string name="bank_borrow_tips_borrow_success">借款交易广播成功</string>
-    <string name="bank_borrow_tips_borrow_failure">借款失败</string>
+    <string name="bank_borrow_tips_borrow_failure">借款失败，请稍后重试</string>
     <!--数字银行还款-->
     <string name="bank_repayment_title">还款</string>
     <string name="bank_repayment_action">立即还款</string>
@@ -415,7 +415,7 @@
     <string name="bank_repayment_tips_repayment_amount_empty">请输入还款数量</string>
     <string name="bank_repayment_tips_repayment_amount_excess">还款金额超出待还金额</string>
     <string name="bank_repayment_tips_repayment_success">还款交易广播成功</string>
-    <string name="bank_repayment_tips_repayment_failure">还款失败</string>
+    <string name="bank_repayment_tips_repayment_failure">还款失败，请稍后重试</string>
 
     <!--钱包管理-->
     <string name="wallet_management_title">管理</string>
@@ -544,6 +544,8 @@
     <string name="incentive_earnings_details_type_remove_liquidity">转出</string>
     <string name="incentive_earnings_details_type_active_extraction">一键提取</string>
     <string name="incentive_tips_share_link_success">已复制</string>
+    <string name="incentive_tips_active_extraction_success">提取交易广播成功</string>
+    <string name="incentive_tips_active_extraction_failure">提取失败，请稍后重试</string>
 
     <!--WalletConnect-->
     <string name="wallet_connect_login_title">网页 ViolasPay 登录确认</string>

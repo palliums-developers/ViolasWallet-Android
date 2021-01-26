@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewHolder
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.listing.ListingViewModel
 import com.palliums.utils.DensityUtility
@@ -170,6 +171,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                     e.message?.let {
                         showToast(it)
                     }
+                    showToast(e.getShowErrorMessage(false))
                 }
             }
         }
@@ -206,8 +208,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                                 getString(
                                     R.string.add_currency_first_tips_add_failure,
                                     CoinTypes.parseCoinType(account.coinNumber).coinName()
-                                ),
-                                Toast.LENGTH_LONG
+                                )
                             )
                         }
                     }
@@ -215,11 +216,12 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                     withContext(Dispatchers.Main) {
                         checkbox.setCheckedNoEvent(false)
                         showToast(
-                            getString(
-                                R.string.add_currency_first_tips_add_failure,
-                                CoinTypes.parseCoinType(account.coinNumber).coinName()
-                            ),
-                            Toast.LENGTH_LONG
+                            e.getShowErrorMessage(
+                                failedDesc = getString(
+                                    R.string.add_currency_first_tips_add_failure,
+                                    CoinTypes.parseCoinType(account.coinNumber).coinName()
+                                )
+                            )
                         )
                     }
                 }

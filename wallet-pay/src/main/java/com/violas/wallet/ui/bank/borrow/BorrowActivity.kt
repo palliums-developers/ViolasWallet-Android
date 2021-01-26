@@ -262,7 +262,7 @@ class BorrowActivity : BankBusinessActivity() {
             // 输入0
             val amount =
                 convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
-            if(amount <= 0){
+            if (amount <= 0) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
                     getString(R.string.bank_borrow_tips_borrow_amount_empty)
                 )
@@ -338,7 +338,7 @@ class BorrowActivity : BankBusinessActivity() {
                 finish()
             } catch (e: Exception) {
                 e.printStackTrace()
-                showToast(e.getShowErrorMessage(false))
+                showToast(e.getShowErrorMessage(R.string.bank_borrow_tips_borrow_failure))
                 dismissProgress()
             }
         }

@@ -215,7 +215,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
                     if (e is ViolasException.AccountNoActivation) {
                         getString(R.string.exception_account_no_activation)
                     } else {
-                        e.getShowErrorMessage(false)
+                        e.getShowErrorMessage(R.string.bank_withdrawal_tips_withdrawal_failure)
                     }
                 )
             }

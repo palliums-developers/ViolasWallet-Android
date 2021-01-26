@@ -55,20 +55,23 @@ abstract class BaseViewModel : ViewModel() {
             if (loadState.value?.peekData()?.status == LoadState.Status.RUNNING) {
                 logWarn(TAG) {
                     "execute(action = $action, param = ${
-                    params.contentToString()}) => executing"
+                        params.contentToString()
+                    }) => executing"
                 }
                 return false
             } else if (checkParamBeforeExecute && !checkParams(action, *params)) {
                 logError(TAG) {
                     "execute(action = $action, param = ${
-                    params.contentToString()}) => params abnormal"
+                        params.contentToString()
+                    }) => params abnormal"
                 }
                 return false
             }
 
             logInfo(TAG) {
                 "execute(action = $action, param = ${
-                params.contentToString()}) => start"
+                    params.contentToString()
+                }) => start"
             }
             loadState.setValueSupport(LoadState.RUNNING.apply { this.action = action })
         }
@@ -83,8 +86,10 @@ abstract class BaseViewModel : ViewModel() {
                 withContext(Dispatchers.IO) { realExecute(action, *params) }
                 logInfo(TAG) {
                     "execute(action = $action, param = ${
-                    params.contentToString()}) => success(${
-                    System.currentTimeMillis() - startTime}ms)"
+                        params.contentToString()
+                    }) => success(${
+                        System.currentTimeMillis() - startTime
+                    }ms)"
                 }
 
                 synchronized(lock) {
@@ -99,8 +104,10 @@ abstract class BaseViewModel : ViewModel() {
                 if (!activeCancellation) {
                     logError(e, TAG) {
                         "execute(action = $action, param = ${
-                        params.contentToString()}) => failure(${
-                        System.currentTimeMillis() - startTime}ms)"
+                            params.contentToString()
+                        }) => failure(${
+                            System.currentTimeMillis() - startTime
+                        }ms)"
                     }
 
                     delayOnError(startTime)

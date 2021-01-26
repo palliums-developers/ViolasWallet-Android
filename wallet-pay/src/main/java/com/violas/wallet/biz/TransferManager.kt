@@ -46,7 +46,7 @@ class AccountNoControlException :
     RuntimeException(getString(R.string.transfer_tips_account_no_control))
 
 class NodeNotResponseException :
-    RuntimeException(getString(R.string.transfer_tips_account_no_control))
+    RuntimeException(getString(R.string.transfer_tips_node_not_response))
 
 
 class TransferManager {

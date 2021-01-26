@@ -319,7 +319,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                 showPublishTokenDialog(pwd, e)
             } catch (e: Exception) {
                 e.printStackTrace()
-                showToast(e.getShowErrorMessage(false))
+                showToast(e.getShowErrorMessage(R.string.market_swap_tips_swap_failure))
             }
             dismissProgress()
         }

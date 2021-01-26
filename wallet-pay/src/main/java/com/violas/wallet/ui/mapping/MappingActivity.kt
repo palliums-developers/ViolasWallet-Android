@@ -358,8 +358,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
 
                     else -> {
                         e.printStackTrace()
-
-                        showToast(e.getShowErrorMessage(false))
+                        showToast(e.getShowErrorMessage(R.string.mapping_tips_mapping_failure))
                     }
                 }
             }

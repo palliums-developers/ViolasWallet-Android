@@ -187,12 +187,12 @@
     <string name="transfer_tips_address_error">Address Error</string>
     <string name="transfer_tips_address_is_myself">You can\'t transfer money to yourself</string>
     <string name="transfer_tips_transfer_success">Successful broadcast of transfer transaction</string>
-    <string name="transfer_tips_transfer_failure">Transfer failed</string>
+    <string name="transfer_tips_transfer_failure">Transfer failed, please try again later</string>
     <string name="transfer_tips_insufficient_balance_or_assets_unconfirmed">Insufficient balance or transactions not confirmed</string>
-    <string name="transfer_tips_account_no_activation">当前账户没有激活</string>
-    <string name="transfer_tips_receive_account_no_activation">收款账户没有激活</string>
-    <string name="transfer_tips_account_no_control">没有当前账户的控制权</string>
-    <string name="transfer_tips_node_not_response">节点请求失败</string>
+    <string name="transfer_tips_account_no_activation">Current account is not activated</string>
+    <string name="transfer_tips_receive_account_no_activation">The receiving account is not activated</string>
+    <string name="transfer_tips_account_no_control">No control over the current account</string>
+    <string name="transfer_tips_node_not_response">Node response failed</string>
 
     <!--收款-->
     <string name="receive_title">Receive</string>
@@ -211,7 +211,7 @@
     <string name="mapping_tips_mapping_amount_empty">Please enter the map amount</string>
     <string name="mapping_tips_unsupported_token">The currency mapping is not supported</string>
     <string name="mapping_tips_mapping_success">Successful broadcast of mapping transaction</string>
-    <string name="mapping_tips_mapping_failure">Mapping failed</string>
+    <string name="mapping_tips_mapping_failure">Mapping failed, please try again later</string>
     <!--映射记录-->
     <string name="mapping_records_title">Mapping Records</string>
     <string name="mapping_records_label_gas_fee_format">Gas fee: %1$s</string>
@@ -247,7 +247,7 @@
     <string name="market_swap_tips_swap_estimating">Estimating swap amount</string>
     <string name="market_swap_tips_unsupported_pair">Does not support this transaction pair</string>
     <string name="market_swap_tips_swap_success">Successful broadcast of swap transaction</string>
-    <string name="market_swap_tips_swap_failure">Swap failed</string>
+    <string name="market_swap_tips_swap_failure">Swap failed, please try again later</string>
     <!--市场资金池-->
     <string name="market_pool_title_select_pool_token">Select Pair</string>
     <string name="market_pool_action_add_liquidity">Add Liquidity</string>
@@ -268,9 +268,9 @@
     <string name="market_pool_tips_input_amount_empty">Please enter an amount</string>
     <string name="market_pool_tips_output_amount_empty">Please enter an amount</string>
     <string name="market_pool_tips_add_liquidity_success">Successful broadcast of add liquidity transaction</string>
-    <string name="market_pool_tips_add_liquidity_failure">Add liquidity failed</string>
+    <string name="market_pool_tips_add_liquidity_failure">Add liquidity failed, please try again later</string>
     <string name="market_pool_tips_remove_liquidity_success">Successful broadcast of remove liquidity transaction</string>
-    <string name="market_pool_tips_remove_liquidity_failure">Remove liquidity failed</string>
+    <string name="market_pool_tips_remove_liquidity_failure">Remove liquidity failed, please try again later</string>
     <!--我的资金池-->
     <string name="my_pool_title">My Pool</string>
     <string name="my_pool_action_add_liquidity">Add Liquidity</string>
@@ -374,7 +374,7 @@
     <string name="bank_deposit_tips_deposit_amount_too_small_format">The deposit amount must not be less than %1$s %2$s</string>
     <string name="bank_deposit_tips_deposit_amount_too_big_format">The deposit amount cannot be higher than %1$s %2$s</string>
     <string name="bank_deposit_tips_deposit_success">Successful broadcast of deposit transaction</string>
-    <string name="bank_deposit_tips_deposit_failure">Deposit failed</string>
+    <string name="bank_deposit_tips_deposit_failure">Deposit failed, please try again later</string>
     <!--数字银行提款-->
     <string name="bank_withdrawal_title">Withdrawal</string>
     <string name="bank_withdrawal_action">Withdrawal</string>
@@ -384,7 +384,7 @@
     <string name="bank_withdrawal_tips_withdrawal_amount_empty">Please enter the withdrawal amount</string>
     <string name="bank_withdrawal_tips_withdrawal_amount_excess">Insufficient withdraw amount</string>
     <string name="bank_withdrawal_tips_withdrawal_success">Successful broadcast of withdrawal transaction</string>
-    <string name="bank_withdrawal_tips_withdrawal_failure">Withdrawal failed</string>
+    <string name="bank_withdrawal_tips_withdrawal_failure">Withdrawal failed, please try again later</string>
     <!--数字银行借款-->
     <string name="bank_borrow_title">Borrow</string>
     <string name="bank_borrow_action_borrowing">Borrow Now</string>
@@ -402,7 +402,7 @@
     <string name="bank_borrow_tips_borrow_amount_too_small_format">The borrow amount must not be less than %1$s %2$s</string>
     <string name="bank_borrow_tips_borrow_amount_too_big_format">The borrow amount cannot be higher than %1$s %2$s</string>
     <string name="bank_borrow_tips_borrow_success">Successful broadcast of borrow transaction</string>
-    <string name="bank_borrow_tips_borrow_failure">Borrow failed</string>
+    <string name="bank_borrow_tips_borrow_failure">Borrow failed, please try again later</string>
     <!--数字银行还款-->
     <string name="bank_repayment_title">Repayment</string>
     <string name="bank_repayment_action">Repayment Now</string>
@@ -415,7 +415,7 @@
     <string name="bank_repayment_tips_repayment_amount_empty">Please enter repayment amount</string>
     <string name="bank_repayment_tips_repayment_amount_excess">The repayment amount exceeds the amount to be repaid</string>
     <string name="bank_repayment_tips_repayment_success">Successful broadcast of repayment transaction</string>
-    <string name="bank_repayment_tips_repayment_failure">Repayment failed</string>
+    <string name="bank_repayment_tips_repayment_failure">Repayment failed, please try again later</string>
 
     <!--钱包管理-->
     <string name="wallet_management_title">Manage</string>
@@ -544,6 +544,8 @@
     <string name="incentive_earnings_details_type_remove_liquidity">Remove liquidity</string>
     <string name="incentive_earnings_details_type_active_extraction">Extraction</string>
     <string name="incentive_tips_share_link_success">Copied</string>
+    <string name="incentive_tips_active_extraction_success">Successful broadcast of withdrawal transaction</string>
+    <string name="incentive_tips_active_extraction_failure">Withdrawal failed, please try again later</string>
 
     <!--WalletConnect-->
     <string name="wallet_connect_login_title">Website ViolasPay Login Confirmation</string>

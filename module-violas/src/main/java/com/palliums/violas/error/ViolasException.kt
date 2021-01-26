@@ -41,22 +41,31 @@ abstract class ViolasException(
     override val message: String?
         get() = super.message
 
-    override fun getErrorMessage(loadAction: Boolean): String {
+    override fun getErrorMessage(loadAction: Boolean?, failedDesc: String?): String {
         if (this !is UnknownException && !errorMsg.isNullOrEmpty()) {
             return errorMsg
         }
 
-        if (loadAction) {
+        if (!failedDesc.isNullOrBlank()) {
+            return if (com.palliums.BuildConfig.DEBUG)
+                "$failedDesc($errorCode)\n${errorMsg ?: "Unknown reason"}"
+            else
+                "$failedDesc($errorCode)"
+        }
+
+        if (loadAction == true) {
             return if (BuildConfig.DEBUG)
-                "${getString(R.string.common_load_fail)}($errorCode)\n${errorMsg
-                    ?: "Unknown reason"}"
+                "${getString(R.string.common_load_fail)}($errorCode)\n${
+                    errorMsg ?: "Unknown reason"
+                }"
             else
                 "${getString(R.string.common_load_fail)}($errorCode)"
         }
 
         return if (BuildConfig.DEBUG)
-            "${getString(R.string.common_operation_fail)}($errorCode)\n${errorMsg
-                ?: "Unknown reason"}"
+            "${getString(R.string.common_operation_fail)}($errorCode)\n${
+                errorMsg ?: "Unknown reason"
+            }"
         else
             "${getString(R.string.common_operation_fail)}($errorCode)"
     }
