@@ -382,7 +382,7 @@
     <string name="bank_withdrawal_desc">如果您当前有借贷操作，则需将部分存款作为质押金。提取质押金需还对应数量的借款金额。</string>
     <string name="bank_withdrawal_hint_withdrawal_amount">输入提取数量</string>
     <string name="bank_withdrawal_tips_withdrawal_amount_empty">请输入提取数量</string>
-    <string name="bank_withdrawal_tips_insufficient_balance">可提取数量不足</string>
+    <string name="bank_withdrawal_tips_withdrawal_amount_excess">可提取数量不足</string>
     <string name="bank_withdrawal_tips_withdrawal_success">提取交易广播成功</string>
     <string name="bank_withdrawal_tips_withdrawal_failure">提取失败</string>
     <!--数字银行借款-->
@@ -413,6 +413,7 @@
     <string name="bank_repayment_label_repayment_account">还款账户</string>
     <string name="bank_repayment_content_repayment_account">钱包余额</string>
     <string name="bank_repayment_tips_repayment_amount_empty">请输入还款数量</string>
+    <string name="bank_repayment_tips_repayment_amount_excess">还款金额超出待还金额</string>
     <string name="bank_repayment_tips_repayment_success">还款交易广播成功</string>
     <string name="bank_repayment_tips_repayment_failure">还款失败</string>
 

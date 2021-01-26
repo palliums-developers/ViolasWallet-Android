@@ -179,6 +179,7 @@ class RepayBorrowActivity : BankBusinessActivity() {
                 return@launch
             }
 
+            // 未输入
             val amountStr = editBusinessValue.text.toString()
             if (amountStr.isEmpty()) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
@@ -187,10 +188,27 @@ class RepayBorrowActivity : BankBusinessActivity() {
                 return@launch
             }
 
+            // 输入0
             val amount =
                 convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
+            if (amount <= 0) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(R.string.bank_repayment_tips_repayment_amount_empty)
+                )
+                return@launch
+            }
+
+            // 超出待还金额
+            if (amount > mBorrowingDetails?.borrowedAmount ?: 0){
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(R.string.bank_repayment_tips_repayment_amount_excess)
+                )
+                return@launch
+            }
+
+            // 超出余额
             if (amount > mBankBusinessViewModel.mCurrentAssetsLiveData.value?.getAmount() ?: 0) {
-                showToast(
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
                     getString(
                         R.string.common_tips_insufficient_available_balance_format,
                         assets.getAssetsName()

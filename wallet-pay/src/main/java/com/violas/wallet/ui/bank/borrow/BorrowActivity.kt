@@ -250,6 +250,7 @@ class BorrowActivity : BankBusinessActivity() {
                 return@launch
             }
 
+            // 未输入
             val amountStr = editBusinessValue.text.toString()
             if (amountStr.isEmpty()) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
@@ -258,15 +259,17 @@ class BorrowActivity : BankBusinessActivity() {
                 return@launch
             }
 
-            if (!btnHasAgreePolicy.isChecked) {
+            // 输入0
+            val amount =
+                convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
+            if(amount <= 0){
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
-                    getString(R.string.bank_borrow_tips_read_and_agree_agreement)
+                    getString(R.string.bank_borrow_tips_borrow_amount_empty)
                 )
                 return@launch
             }
 
-            val amount =
-                convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
+            // 小于最小可借额
             val minimumAmount = mBorrowProductDetails?.minimumAmount ?: 0
             if (amount < minimumAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
@@ -279,6 +282,7 @@ class BorrowActivity : BankBusinessActivity() {
                 return@launch
             }
 
+            // 超出每日限额
             val limitAmount =
                 (mBorrowProductDetails?.quotaLimit ?: 0) - (mBorrowProductDetails?.quotaUsed ?: 0)
             if (amount > limitAmount) {
@@ -288,6 +292,7 @@ class BorrowActivity : BankBusinessActivity() {
                 return@launch
             }
 
+            // 超出最大可借额
             val maxAmount = (mBorrowProductDetails?.quotaLimit ?: 0)
             if (amount > maxAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
@@ -296,6 +301,13 @@ class BorrowActivity : BankBusinessActivity() {
                         convertAmountToDisplayAmountStr(maxAmount),
                         mBorrowProductDetails?.tokenShowName ?: ""
                     )
+                )
+                return@launch
+            }
+
+            if (!btnHasAgreePolicy.isChecked) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(R.string.bank_borrow_tips_read_and_agree_agreement)
                 )
                 return@launch
             }

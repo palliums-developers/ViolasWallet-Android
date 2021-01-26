@@ -156,7 +156,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
 
         // 可提取数量不足
         if (amount > BigDecimal(depositDetails.availableAmount)) {
-            tvTips.setText(R.string.bank_withdrawal_tips_insufficient_balance)
+            tvTips.setText(R.string.bank_withdrawal_tips_withdrawal_amount_excess)
             return
         }
 

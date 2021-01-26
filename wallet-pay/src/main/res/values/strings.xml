@@ -382,7 +382,7 @@
     <string name="bank_withdrawal_desc">If you have loans, some of deposits will be used as collacteral. You can withdraw deposits after payoff the loans.</string>
     <string name="bank_withdrawal_hint_withdrawal_amount">Enter withdrawal amount</string>
     <string name="bank_withdrawal_tips_withdrawal_amount_empty">Please enter the withdrawal amount</string>
-    <string name="bank_withdrawal_tips_insufficient_balance">Insufficient withdraw amount</string>
+    <string name="bank_withdrawal_tips_withdrawal_amount_excess">Insufficient withdraw amount</string>
     <string name="bank_withdrawal_tips_withdrawal_success">Successful broadcast of withdrawal transaction</string>
     <string name="bank_withdrawal_tips_withdrawal_failure">Withdrawal failed</string>
     <!--数字银行借款-->
@@ -413,6 +413,7 @@
     <string name="bank_repayment_label_repayment_account">Repayment account</string>
     <string name="bank_repayment_content_repayment_account">Wallet balance</string>
     <string name="bank_repayment_tips_repayment_amount_empty">Please enter repayment amount</string>
+    <string name="bank_repayment_tips_repayment_amount_excess">The repayment amount exceeds the amount to be repaid</string>
     <string name="bank_repayment_tips_repayment_success">Successful broadcast of repayment transaction</string>
     <string name="bank_repayment_tips_repayment_failure">Repayment failed</string>
 

@@ -206,6 +206,7 @@ class DepositActivity : BankBusinessActivity() {
                 return@launch
             }
 
+            // 未输入
             val amountStr = editBusinessValue.text.toString()
             if (amountStr.isEmpty()) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
@@ -214,8 +215,17 @@ class DepositActivity : BankBusinessActivity() {
                 return@launch
             }
 
+            // 输入0
             val amount =
                 convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
+            if (amount <= 0) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(R.string.bank_deposit_tips_deposit_amount_empty)
+                )
+                return@launch
+            }
+
+            // 小于最小存款额
             val minimumAmount = mDepositProductDetails?.minimumAmount ?: 0
             if (amount < minimumAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
@@ -228,6 +238,7 @@ class DepositActivity : BankBusinessActivity() {
                 return@launch
             }
 
+            // 超出每日限额
             val limitAmount =
                 (mDepositProductDetails?.quotaLimit ?: 0) - (mDepositProductDetails?.quotaUsed ?: 0)
             if (amount > limitAmount) {
@@ -237,6 +248,7 @@ class DepositActivity : BankBusinessActivity() {
                 return@launch
             }
 
+            // 超出最大存款额
             val maxAmount = mDepositProductDetails?.quotaLimit ?: 0
             if (amount > maxAmount) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
@@ -244,6 +256,17 @@ class DepositActivity : BankBusinessActivity() {
                         R.string.bank_deposit_tips_deposit_amount_too_big_format,
                         convertAmountToDisplayAmountStr(maxAmount),
                         mDepositProductDetails?.tokenShowName ?: ""
+                    )
+                )
+                return@launch
+            }
+
+            // 超出余额
+            if (amount > mBankBusinessViewModel.mCurrentAssetsLiveData.value?.getAmount() ?: 0) {
+                mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
+                    getString(
+                        R.string.common_tips_insufficient_available_balance_format,
+                        assets.getAssetsName()
                     )
                 )
                 return@launch
