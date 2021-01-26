@@ -22,6 +22,7 @@ import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.mapping.PayeeAccountCoinNotActiveException
 import com.violas.wallet.biz.mapping.UnsupportedMappingCoinPairException
+import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
@@ -103,9 +104,9 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
             authenticateAccount()
         }
 
+        tvDappUrl.text = BaseBrowserUrl.getViolasMappingDappUrl()
         tvDappUrl.setOnClickListener {
             ClipboardUtils.copy(this, tvDappUrl.text.toString())
-            showToast(R.string.common_tips_copy_success)
         }
 
         // 数据观察
@@ -292,7 +293,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
 
         // 余额不足判断
         if (inputAmount > coinBalance) {
-            showToast(R.string.mapping_tips_insufficient_balance)
+            showToast(R.string.common_tips_insufficient_available_balance)
             return true
         }
 

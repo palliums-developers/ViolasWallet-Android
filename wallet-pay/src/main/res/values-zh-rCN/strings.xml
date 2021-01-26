@@ -209,7 +209,6 @@
     <string name="mapping_eth_tokens_desc">将链接复制到以下钱包，即可将ETH代币映射至violas钱包</string>
     <string name="mapping_tips_token_empty">请选择币种</string>
     <string name="mapping_tips_mapping_amount_empty">请输入转出数量</string>
-    <string name="mapping_tips_insufficient_balance">当前可用余额不足</string>
     <string name="mapping_tips_unsupported_token">不支持该币种映射</string>
     <string name="mapping_tips_mapping_success">映射交易广播成功</string>
     <string name="mapping_tips_mapping_failure">映射失败</string>

@@ -209,7 +209,6 @@
     <string name="mapping_eth_tokens_desc">Copy &amp; paste the link to the wallet then map the ETH ERC20 token to Violas wallet</string>
     <string name="mapping_tips_token_empty">Please select currency</string>
     <string name="mapping_tips_mapping_amount_empty">Please enter the map amount</string>
-    <string name="mapping_tips_insufficient_balance">Insufficient balance</string>
     <string name="mapping_tips_unsupported_token">The currency mapping is not supported</string>
     <string name="mapping_tips_mapping_success">Successful broadcast of mapping transaction</string>
     <string name="mapping_tips_mapping_failure">Mapping failed</string>
