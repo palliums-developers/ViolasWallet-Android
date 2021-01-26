@@ -199,8 +199,14 @@ class RepayBorrowActivity : BankBusinessActivity() {
                 return@launch
             }
 
+            // 因为银行清算服务的原因，要想全部提取填0
+            val realAmount = if (amount == mBorrowingDetails?.borrowedAmount ?: 0)
+                0
+            else
+                amount
+
             authenticateAccount(account, mAccountManager, passwordCallback = {
-                sendTransfer(account, market, it, amount)
+                sendTransfer(account, market, it, realAmount)
             })
         }
     }

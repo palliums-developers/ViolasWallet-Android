@@ -160,6 +160,12 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
             return
         }
 
+        // 因为银行清算服务的原因，要想全部提取填0
+        val realAmount = if (amount == BigDecimal(depositDetails.availableAmount))
+            0
+        else
+            amount.toLong()
+
         launch {
             val accountDO = withContext(Dispatchers.IO) {
                 accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
@@ -179,7 +185,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
                         depositDetails.tokenName
                     ),
                     it.toByteArray(),
-                    amount.toLong()
+                    realAmount
                 )
             })
         }

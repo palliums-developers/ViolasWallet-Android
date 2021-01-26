@@ -115,7 +115,6 @@ fun convertDisplayAmountToAmount(
 ): BigDecimal {
     return amountBigDecimal
         .multiply(BigDecimal(getCoinUnit(coinTypes)))
-        .stripTrailingZeros()
 }
 
 fun convertAmountToDisplayAmount(
