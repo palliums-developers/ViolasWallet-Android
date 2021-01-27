@@ -550,10 +550,10 @@
     <!--WalletConnect-->
     <string name="wallet_connect_common_desc_all_amount">All</string>
     <string name="wallet_connect_login_title">Website ViolasPay Login Confirmation</string>
-    <string name="wallet_connect_login_declare">*The "User Agreement" and "Privacy Policy" shall also apply to its usage</string>
+    <string name="wallet_connect_login_declare">*"User Agreement" and "Privacy Policy" do apply</string>
     <string name="wallet_connect_login_desc_login">Website ViolasPay is requesting access to your wallet address. Are you sure you have made your wallet address public to this site?</string>
     <string name="wallet_connect_login_desc_login_format">Website %1$s is requesting access to your wallet address. Are you sure you want to disclose your wallet address to this site?</string>
-    <string name="wallet_connect_login_desc_logged">You already have the login status of the web wallet, confirming the login will force you to exit the previous web wallet</string>
+    <string name="wallet_connect_login_desc_logged">Confirm login to the web wallet and logout other web wallet</string>
     <string name="wallet_connect_login_action_confirm_login">Sign In</string>
     <string name="wallet_connect_login_action_cancel_login">Cancel</string>
     <string name="wallet_connect_management_title">Web Wallet Logged</string>

@@ -33,13 +33,13 @@
     <string name="common_title_settings">设置</string>
     <string name="common_title_multi_language">多语言</string>
     <string name="common_title_service_agreement">服务协议</string>
-    <string name="common_title_privacy_policy">隐私条例</string>
+    <string name="common_title_privacy_policy">隐私政策</string>
     <string name="common_title_about_us">关于我们</string>
     <string name="common_title_help_feedback">帮助与反馈</string>
     <string name="common_title_feedback">问题反馈</string>
     <string name="common_title_prompt">提示</string>
     <string name="common_content_user_agreement">《用户协议》</string>
-    <string name="common_content_privacy_policy">《隐私条款》</string>
+    <string name="common_content_privacy_policy">《隐私政策》</string>
     <string name="common_tips_account_empty">请先创建/导入钱包</string>
     <string name="common_tips_account_error">钱包账号不存在</string>
     <string name="common_tips_insufficient_available_balance">当前可用余额不足</string>
@@ -550,7 +550,7 @@
     <!--WalletConnect-->
     <string name="wallet_connect_common_desc_all_amount">全部</string>
     <string name="wallet_connect_login_title">网页 ViolasPay 登录确认</string>
-    <string name="wallet_connect_login_declare">*其使用行为同样适用《用户协议》和《隐私条款》</string>
+    <string name="wallet_connect_login_declare">*其使用行为同样适用《用户协议》和《隐私政策》</string>
     <string name="wallet_connect_login_desc_login">网页 ViolasPay 正在申请访问你的钱包地址，你确认将钱包地址公开给此网站吗?</string>
     <string name="wallet_connect_login_desc_login_format">网页 %1$s 正在申请访问你的钱包地址，你确认将钱包地址公开给此网站吗?</string>
     <string name="wallet_connect_login_desc_logged">您已有登录状态的网页钱包，确认登录将强制退出之前的网页钱包</string>
