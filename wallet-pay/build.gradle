@@ -2,7 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.gms.google-services'
+// TODO 暂时屏蔽消息推送通知
+//apply plugin: 'com.google.gms.google-services'
 
 apply from: '../and_res_guard.gradle'
 
@@ -181,8 +182,8 @@ dependencies {
     kapt libraries.glide_compiler
 
     //implementation libraries.firebase_core
-    implementation libraries.firebase_messaging
     //implementation platform('com.google.firebase:firebase-bom:25.12.0')
+    implementation libraries.firebase_messaging
 
     implementation libraries.jpinyin
     implementation libraries.jsbridge

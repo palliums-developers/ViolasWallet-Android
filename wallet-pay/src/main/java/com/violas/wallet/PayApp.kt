@@ -33,12 +33,14 @@ class PayApp : App() {
 
         handlerError()
         handlerAppCenter()
-
-        initNotification()
         initXPopup()
 
         initAccountAndAssets()
-        initMessagePush()
+
+        // TODO 暂时屏蔽消息推送通知
+        //initMessagePush()
+        //initMessageNotification()
+
         initWalletConnect()
     }
 
@@ -60,7 +62,7 @@ class PayApp : App() {
         XPopup.setShadowBgColor(Color.parseColor("#98000000"))
     }
 
-    private fun initNotification() {
+    private fun initMessageNotification() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
         val notificationManager = getNotificationManager()
