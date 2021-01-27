@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
+import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.walletconnect.messageHandler.TransferBitcoinDataType
 import kotlinx.android.synthetic.main.view_wallet_connect_exchange_swap.view.*
@@ -204,9 +205,12 @@ class ViewFillers {
                     BankDepositDatatype::class.java
                 )
 
-                val amount = BigDecimal(mTransferDataType.amount).divide(
-                    BigDecimal("1000000"), 6, RoundingMode.DOWN
-                ).stripTrailingZeros().toPlainString()
+                val amount = if (mTransferDataType.amount > 0)
+                    BigDecimal(mTransferDataType.amount).divide(
+                        BigDecimal("1000000"), 6, RoundingMode.DOWN
+                    ).stripTrailingZeros().toPlainString()
+                else
+                    getString(R.string.wallet_connect_common_desc_all_amount)
 
                 val view = LayoutInflater.from(context)
                     .inflate(R.layout.view_wallet_connect_bank_redeem, viewGroupContent, false)
@@ -242,12 +246,19 @@ class ViewFillers {
                     BankDepositDatatype::class.java
                 )
 
-                val amount = BigDecimal(mTransferDataType.amount).divide(
-                    BigDecimal("1000000"), 6, RoundingMode.DOWN
-                ).stripTrailingZeros().toPlainString()
+                val amount = if (mTransferDataType.amount > 0)
+                    BigDecimal(mTransferDataType.amount).divide(
+                        BigDecimal("1000000"), 6, RoundingMode.DOWN
+                    ).stripTrailingZeros().toPlainString()
+                else
+                    getString(R.string.wallet_connect_common_desc_all_amount)
 
                 val view = LayoutInflater.from(context)
-                    .inflate(R.layout.view_wallet_connect_bank_repay_borrow, viewGroupContent, false)
+                    .inflate(
+                        R.layout.view_wallet_connect_bank_repay_borrow,
+                        viewGroupContent,
+                        false
+                    )
                 withContext(Dispatchers.Main) {
                     view.tvDescribeAmount.text = "$amount ${mTransferDataType.coinName}"
                     view.tvDescribeFee.text = "0.00 ${mTransferDataType.coinName}"

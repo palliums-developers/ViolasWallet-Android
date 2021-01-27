@@ -548,6 +548,7 @@
     <string name="incentive_tips_active_extraction_failure">提取失败，请稍后重试</string>
 
     <!--WalletConnect-->
+    <string name="wallet_connect_common_desc_all_amount">全部</string>
     <string name="wallet_connect_login_title">网页 ViolasPay 登录确认</string>
     <string name="wallet_connect_login_declare">*其使用行为同样适用《用户协议》和《隐私条款》</string>
     <string name="wallet_connect_login_desc_login">网页 ViolasPay 正在申请访问你的钱包地址，你确认将钱包地址公开给此网站吗?</string>

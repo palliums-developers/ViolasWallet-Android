@@ -548,6 +548,7 @@
     <string name="incentive_tips_active_extraction_failure">Withdrawal failed, please try again later</string>
 
     <!--WalletConnect-->
+    <string name="wallet_connect_common_desc_all_amount">All</string>
     <string name="wallet_connect_login_title">Website ViolasPay Login Confirmation</string>
     <string name="wallet_connect_login_declare">*The "User Agreement" and "Privacy Policy" shall also apply to its usage</string>
     <string name="wallet_connect_login_desc_login">Website ViolasPay is requesting access to your wallet address. Are you sure you have made your wallet address public to this site?</string>
