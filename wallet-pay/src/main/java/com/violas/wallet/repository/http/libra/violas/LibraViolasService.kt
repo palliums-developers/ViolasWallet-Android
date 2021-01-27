@@ -84,7 +84,7 @@ class LibraViolasService(
                 transactionState = transactionState,
                 fromAddress = dto.sender,
                 toAddress = dto.receiver,
-                time = dto.expiration_time,
+                time = dto.confirmedTime,
                 amount = dto.amount,
                 tokenId = tokenId,
                 tokenDisplayName = tokenDisplayName,

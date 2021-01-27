@@ -67,7 +67,7 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
                 id = (pageNumber - 1) * pageSize + index,
                 coinTypes = CoinTypes.Violas,
                 transactionType = transactionType,
-                time = bean.expiration_time * 1000,
+                time = bean.confirmedTime,
                 amount = bean.amount,
                 gas = bean.gas,
                 address = showAddress,

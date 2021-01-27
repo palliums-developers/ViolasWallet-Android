@@ -62,7 +62,9 @@ data class TransactionRecordDTO(
     @SerializedName(value = "gas_currency")
     val gasCurrency: String = "",
     @SerializedName(value = "expiration_time")
-    val expiration_time: Long = 0,
+    val expirationTime: Long = 0,
+    @SerializedName(value = "confirmed_time")
+    val confirmedTime: Long = 0,
     @SerializedName(value = "sequence_number")
     val sequence_number: Long = 0,
     @SerializedName(value = "version")

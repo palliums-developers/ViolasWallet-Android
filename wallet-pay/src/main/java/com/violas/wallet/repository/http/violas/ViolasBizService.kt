@@ -90,7 +90,8 @@ class ViolasBizService(
             // 解析交易类型
             val realTransactionType =
                 if (dto.type.equals("ADD_CURRENCY_TO_ACCOUNT", true)
-                    || dto.type.equals("0", true)) {
+                    || dto.type.equals("0", true)
+                ) {
                     TransactionType.ADD_CURRENCY
                 } else if (dto.sender != walletAddress && dto.receiver == walletAddress) {
                     TransactionType.COLLECTION
@@ -105,7 +106,7 @@ class ViolasBizService(
                 coinType = CoinTypes.Violas,
                 transactionType = realTransactionType,
                 transactionState = transactionState,
-                time = dto.expiration_time,
+                time = dto.confirmedTime,
                 fromAddress = dto.sender,
                 toAddress = dto.receiver,
                 amount = dto.amount,
