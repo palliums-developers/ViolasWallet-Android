@@ -33,9 +33,7 @@ import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Companion.ACTION_SWAP_SELECT_FROM
 import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Companion.ACTION_SWAP_SELECT_TO
 import com.violas.wallet.ui.main.market.selectToken.SwapTokensDataResourcesBridge
-import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.convertAmountToDisplayUnit
-import com.violas.wallet.utils.convertDisplayUnitToAmount
+import com.violas.wallet.utils.*
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
@@ -434,17 +432,15 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
 
                 if (inputAmount == 0L) {
                     withContext(Dispatchers.Main) {
-                        withContext(Dispatchers.Main) {
-                            handleInputTextWatcher(
-                                "", outputEdit, if (isInputFrom) {
-                                    toInputTextWatcher
-                                } else {
-                                    fromInputTextWatcher
-                                }
-                            )
-                            swapViewModel.getExchangeRateLiveData().value = null
-                            swapViewModel.getHandlingFeeRateLiveDataLiveData().value = null
-                        }
+                        swapViewModel.getExchangeRateLiveData().value = null
+                        swapViewModel.getHandlingFeeRateLiveDataLiveData().value = null
+                        handleInputTextWatcher(
+                            "", outputEdit, if (isInputFrom) {
+                                toInputTextWatcher
+                            } else {
+                                fromInputTextWatcher
+                            }
+                        )
                     }
                     return@launch
                 }
@@ -455,10 +451,8 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                     withContext(Dispatchers.Main) {
                         noSwapPath = true
                         mSwapPath.clear()
-                        swapViewModel.getExchangeRateLiveData().value =
-                            BigDecimal.valueOf(0)
-                        swapViewModel.getHandlingFeeRateLiveDataLiveData().value =
-                            BigDecimal.valueOf(0)
+                        swapViewModel.getExchangeRateLiveData().value = null
+                        swapViewModel.getHandlingFeeRateLiveDataLiveData().value = null
                         handleInputTextWatcher(
                             "", outputEdit, if (isInputFrom) {
                                 toInputTextWatcher
@@ -512,31 +506,10 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                     }.multiply(BigDecimal("100"))
 
                     // 计算兑换率
-                    val exchangeRate = if (isInputFrom) {
-                        BigDecimal(outputAmountByCoin).divide(
-                            BigDecimal(inputAmountStr).divide(
-                                BigDecimal(1),
-                                6,
-                                RoundingMode.HALF_UP
-                            ),
-                            6,
-                            RoundingMode.HALF_UP
-                        )
-                    } else {
-                        try {
-                            BigDecimal(outputAmountStr).divide(
-                                BigDecimal(outputAmountByCoin).divide(
-                                    BigDecimal(1),
-                                    6,
-                                    RoundingMode.HALF_UP
-                                ),
-                                6,
-                                RoundingMode.HALF_UP
-                            )
-                        } catch (e: Exception) {
-                            BigDecimal("0")
-                        }
-                    }
+                    val exchangeRate = convertAmountToExchangeRate(
+                        if (isInputFrom) inputAmountStr else outputAmountByCoin,
+                        if (isInputFrom) outputAmountByCoin else outputAmountStr
+                    )
 
                     withContext(Dispatchers.Main) {
                         noSwapPath = false

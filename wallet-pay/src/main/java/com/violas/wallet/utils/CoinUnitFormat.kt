@@ -208,16 +208,50 @@ fun convertAmountToExchangeRate(
     amountBBigDecimal: BigDecimal,
     coinTypesB: CoinTypes = CoinTypes.Violas
 ): BigDecimal? {
-    return if (amountABigDecimal > BigDecimal.ZERO && amountBBigDecimal > BigDecimal.ZERO)
-        amountBBigDecimal
-            .divide(
+    if (amountABigDecimal > BigDecimal.ZERO && amountBBigDecimal > BigDecimal.ZERO) {
+        val rateBigDecimal = amountBBigDecimal.divide(
+            amountABigDecimal,
+            20,
+            RoundingMode.HALF_UP
+        ).stripTrailingZeros()
+
+        try {
+            val array = rateBigDecimal.toPlainString().split(".")
+            if (array.size < 2 || array[1].length <= getCoinDecimal(coinTypesB))
+                return rateBigDecimal
+
+            var scaleStart = 0
+            val charsStart = array[1].toCharArray()
+            for (char in charsStart) {
+                scaleStart++
+                if (char != '0')
+                    break
+            }
+
+            var scaleEnd = getCoinDecimal(coinTypesB)
+            val charsEnd = array[1].substring(scaleEnd).toCharArray()
+            for (char in charsEnd) {
+                scaleEnd++
+                if (char != '0')
+                    break
+            }
+
+            val scale = if (scaleStart < scaleEnd)
+                getCoinDecimal(coinTypesB)
+            else
+                scaleEnd + 1
+
+            return amountBBigDecimal.divide(
                 amountABigDecimal,
-                20,
-                RoundingMode.DOWN
-            )
-            .stripTrailingZeros()
-    else
-        null
+                scale,
+                RoundingMode.HALF_UP
+            ).stripTrailingZeros()
+        } catch (e: Exception) {
+            return rateBigDecimal
+        }
+    } else {
+        return null
+    }
 }
 
 fun getAmountPrefix(amountBigDecimal: BigDecimal, input: Boolean): String {
