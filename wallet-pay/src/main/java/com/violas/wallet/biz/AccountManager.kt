@@ -563,9 +563,8 @@ class AccountManager {
         )
 
         val localAssets = mutableListOf<AssetsVo>()
-
-        val loadAll = mAccountStorage.loadAll()
-        loadAll.forEach {
+        val accountList = mAccountStorage.loadAll()
+        accountList.forEach {
             when (it.coinNumber) {
                 CoinTypes.Libra.coinType() -> {
                     localAssets.add(
@@ -578,8 +577,8 @@ class AccountManager {
                             it.address,
                             it.amount,
                             it.logo
-                        ).also {
-                            it.setAssetsName(CoinTypes.Libra.coinName())
+                        ).also { asset ->
+                            asset.setAssetsName(CoinTypes.Libra.coinName())
                         }
                     )
                 }
@@ -594,8 +593,8 @@ class AccountManager {
                             it.address,
                             it.amount,
                             it.logo
-                        ).also {
-                            it.setAssetsName(CoinTypes.Violas.coinName())
+                        ).also { asset ->
+                            asset.setAssetsName(CoinTypes.Violas.coinName())
                         }
                     )
                 }
@@ -609,69 +608,68 @@ class AccountManager {
                             it.amount,
                             it.accountType,
                             it.logo
-                        ).also { coin ->
-                            coin.setAssetsName(CoinTypes.Bitcoin.coinName())
+                        ).also { asset ->
+                            asset.setAssetsName(CoinTypes.Bitcoin.coinName())
 
-                            val convertDisplayUnitToAmount = convertAmountToDisplayUnit(
+                            val displayUnit = convertAmountToDisplayUnit(
                                 it.amount,
-                                CoinTypes.parseCoinType(coin.getCoinNumber())
+                                CoinTypes.parseCoinType(asset.getCoinNumber())
                             )
-
-                            coin.amountWithUnit.amount = convertDisplayUnitToAmount.first
-                            coin.amountWithUnit.unit = coin.getAssetsName()
+                            asset.amountWithUnit.amount = displayUnit.first
+                            asset.amountWithUnit.unit = asset.getAssetsName()
 
                             val rateAmount = assetsFiatBalanceSharedPreferences.getString(
-                                SaveAssetsFiatBalanceCommand.tokenKey(
-                                    coin
-                                ), "0.00"
+                                SaveAssetsFiatBalanceCommand.tokenKey(asset),
+                                "0.00"
                             ) ?: "0.00"
-                            coin.fiatAmountWithUnit.rate = rateAmount
-                            coin.fiatAmountWithUnit.amount =
-                                BigDecimal(coin.amountWithUnit.amount).multiply(
-                                    BigDecimal(rateAmount)
-                                ).setScale(2, RoundingMode.DOWN).stripTrailingZeros()
-                                    .toPlainString()
+                            asset.fiatAmountWithUnit.rate = rateAmount
+                            asset.fiatAmountWithUnit.amount =
+                                BigDecimal(asset.amountWithUnit.amount)
+                                    .multiply(BigDecimal(rateAmount))
+                                    .setScale(2, RoundingMode.DOWN)
+                                    .stripTrailingZeros().toPlainString()
                         }
                     )
                 }
             }
         }
 
-        val localCoinMap = loadAll.toMap { accountDO -> accountDO.id.toString() }
-        val localTokenAssets = mAccountTokenStorage.loadEnableAll()
-
-        localTokenAssets.forEach {
-            if (localCoinMap.containsKey(it.account_id.toString())) {
+        val accountMap = accountList.toMap { accountDO -> accountDO.id.toString() }
+        val localTokens = mAccountTokenStorage.loadEnableAll()
+        localTokens.forEach {
+            val account = accountMap[it.account_id.toString()]
+            if (account != null) {
                 localAssets.add(
                     AssetsTokenVo(
                         it.id!!,
                         it.account_id,
-                        localCoinMap[it.account_id.toString()]?.coinNumber ?: 0,
+                        account.coinNumber,
                         it.address,
                         it.module,
                         it.name,
                         it.enable,
                         it.amount,
                         it.logo
-                    ).also { tokenVo ->
-                        tokenVo.setAssetsName(it.assetsName)
-                        tokenVo.amountWithUnit.amount = BigDecimal(it.amount).divide(
-                            BigDecimal("1000000"),
-                            6,
-                            RoundingMode.DOWN
-                        ).stripTrailingZeros().toPlainString()
-                        tokenVo.amountWithUnit.unit = it.assetsName
+                    ).also { asset ->
+                        asset.setAssetsName(it.assetsName)
+
+                        val displayUnit = convertAmountToDisplayUnit(
+                            it.amount,
+                            CoinTypes.parseCoinType(account.coinNumber)
+                        )
+                        asset.amountWithUnit.amount = displayUnit.first
+                        asset.amountWithUnit.unit = it.assetsName
 
                         val rateAmount = assetsFiatBalanceSharedPreferences.getString(
-                            SaveAssetsFiatBalanceCommand.tokenKey(
-                                tokenVo
-                            ), "0.00"
+                            SaveAssetsFiatBalanceCommand.tokenKey(asset),
+                            "0.00"
                         ) ?: "0.00"
-                        tokenVo.fiatAmountWithUnit.rate = rateAmount
-                        tokenVo.fiatAmountWithUnit.amount =
-                            BigDecimal(tokenVo.amountWithUnit.amount).multiply(
-                                BigDecimal(rateAmount)
-                            ).setScale(2, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+                        asset.fiatAmountWithUnit.rate = rateAmount
+                        asset.fiatAmountWithUnit.amount =
+                            BigDecimal(asset.amountWithUnit.amount)
+                                .multiply(BigDecimal(rateAmount))
+                                .setScale(2, RoundingMode.DOWN)
+                                .stripTrailingZeros().toPlainString()
                     }
                 )
             }
@@ -694,18 +692,19 @@ class AccountManager {
 
     private fun queryBTCBalance(localAssets: List<AssetsVo>) {
         localAssets.filter { it is AssetsCoinVo && (it.getCoinNumber() == CoinTypes.BitcoinTest.coinType() || it.getCoinNumber() == CoinTypes.Bitcoin.coinType()) }
-            .forEach { assets ->
-                assets as AssetsCoinVo
+            .forEach { asset ->
+                asset as AssetsCoinVo
                 val subscribe = DataRepository.getBitcoinService()
-                    .getBalance(assets.address)
+                    .getBalance(asset.address)
                     .subscribe({ balance ->
-                        assets.setAmount(balance.toLong())
-                        val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
+                        asset.setAmount(balance.toLong())
+
+                        val displayUnit = convertAmountToDisplayUnit(
                             balance.toLong(),
-                            CoinTypes.parseCoinType(assets.getCoinNumber())
+                            CoinTypes.parseCoinType(asset.getCoinNumber())
                         )
-                        assets.amountWithUnit.amount = convertAmountToDisplayUnit.first
-                        assets.amountWithUnit.unit = convertAmountToDisplayUnit.second
+                        asset.amountWithUnit.amount = displayUnit.first
+                        asset.amountWithUnit.unit = displayUnit.second
                     }, {
                         it.printStackTrace()
                     })
@@ -718,66 +717,71 @@ class AccountManager {
             Context.MODE_PRIVATE
         )
         localAssets.filter { it is AssetsLibraCoinVo && it.getCoinNumber() == CoinTypes.Libra.coinType() }
-            .forEach { assets ->
+            .forEach {
                 try {
-                    assets as AssetsLibraCoinVo
-                    DataRepository.getLibraRpcService().getAccountState(assets.address)?.let { it ->
-                        assets.authKey = it.authenticationKey
-                        assets.delegatedKeyRotationCapability = it.delegatedKeyRotationCapability
-                        assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability
+                    it as AssetsLibraCoinVo
+                    DataRepository.getLibraRpcService().getAccountState(it.address)
+                        ?.let { accountState ->
+                            it.authKey = accountState.authenticationKey
+                            it.delegatedKeyRotationCapability =
+                                accountState.delegatedKeyRotationCapability
+                            it.delegatedWithdrawalCapability =
+                                accountState.delegatedWithdrawalCapability
 
-                        val filter =
-                            localAssets.filter { assetsToken -> assetsToken is AssetsTokenVo && assetsToken.getAccountId() == assets.getAccountId() }
-                                .toMap { assetsToken ->
-                                    (assetsToken as AssetsTokenVo).module.toUpperCase(Locale.getDefault())
-                                }
-                        it.balances?.forEach { balance ->
-                            val assetsVo = filter[balance.currency.toUpperCase(Locale.getDefault())]
-                            if (assetsVo == null) {
-                                localAssets.add(HiddenTokenVo(
-                                    assets.getId(),
-                                    assets.getAccountId(),
-                                    assets.getCoinNumber(),
-                                    AccountAddress.DEFAULT.toHex(),
-                                    balance.currency,
-                                    balance.currency,
-                                    amount = balance.amount
-                                ).also { tokenVo ->
-                                    tokenVo.setAssetsName(balance.currency)
-                                    tokenVo.amountWithUnit.amount =
-                                        BigDecimal(balance.amount).divide(
-                                            BigDecimal("1000000"),
-                                            6,
-                                            RoundingMode.DOWN
-                                        ).stripTrailingZeros().toPlainString()
-                                    tokenVo.amountWithUnit.unit = balance.currency
+                            val localAssetMap = localAssets.filter { asset ->
+                                asset is AssetsTokenVo && asset.getAccountId() == it.getAccountId()
+                            }.toMap { asset ->
+                                (asset as AssetsTokenVo).module.toUpperCase(Locale.getDefault())
+                            }
 
-                                    val rateAmount = assetsFiatBalanceSharedPreferences.getString(
-                                        SaveAssetsFiatBalanceCommand.tokenKey(
-                                            tokenVo
-                                        ), "0.00"
-                                    ) ?: "0.00"
-                                    tokenVo.fiatAmountWithUnit.rate = rateAmount
-                                    tokenVo.fiatAmountWithUnit.amount =
-                                        BigDecimal(tokenVo.amountWithUnit.amount).multiply(
-                                            BigDecimal(rateAmount)
-                                        ).setScale(2, RoundingMode.DOWN).stripTrailingZeros()
-                                            .toPlainString()
-                                })
-                            } else {
-                                assetsVo.apply {
-                                    this as AssetsTokenVo
-                                    setAmount(balance.amount)
-                                    val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
-                                        balance.amount,
-                                        CoinTypes.parseCoinType(assets.getCoinNumber())
-                                    )
-                                    amountWithUnit.amount = convertAmountToDisplayUnit.first
-                                    amountWithUnit.unit = getAssetsName()
+                            accountState.balances?.forEach { accountBalance ->
+                                val assetsVo =
+                                    localAssetMap[accountBalance.currency.toUpperCase(Locale.getDefault())]
+                                if (assetsVo == null) {
+                                    localAssets.add(HiddenTokenVo(
+                                        it.getId(),
+                                        it.getAccountId(),
+                                        it.getCoinNumber(),
+                                        AccountAddress.DEFAULT.toHex(),
+                                        accountBalance.currency,
+                                        accountBalance.currency,
+                                        amount = accountBalance.amount
+                                    ).also { tokenVo ->
+                                        tokenVo.setAssetsName(accountBalance.currency)
+
+                                        val displayUnit = convertAmountToDisplayUnit(
+                                            accountBalance.amount,
+                                            CoinTypes.parseCoinType(it.getCoinNumber())
+                                        )
+                                        tokenVo.amountWithUnit.amount = displayUnit.first
+                                        tokenVo.amountWithUnit.unit = accountBalance.currency
+
+                                        val rateAmount =
+                                            assetsFiatBalanceSharedPreferences.getString(
+                                                SaveAssetsFiatBalanceCommand.tokenKey(tokenVo),
+                                                "0.00"
+                                            ) ?: "0.00"
+                                        tokenVo.fiatAmountWithUnit.rate = rateAmount
+                                        tokenVo.fiatAmountWithUnit.amount =
+                                            BigDecimal(tokenVo.amountWithUnit.amount)
+                                                .multiply(BigDecimal(rateAmount))
+                                                .setScale(2, RoundingMode.DOWN)
+                                                .stripTrailingZeros().toPlainString()
+                                    })
+                                } else {
+                                    assetsVo.apply {
+                                        this as AssetsTokenVo
+                                        setAmount(accountBalance.amount)
+                                        val displayUnit = convertAmountToDisplayUnit(
+                                            accountBalance.amount,
+                                            CoinTypes.parseCoinType(it.getCoinNumber())
+                                        )
+                                        amountWithUnit.amount = displayUnit.first
+                                        amountWithUnit.unit = getAssetsName()
+                                    }
                                 }
                             }
                         }
-                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -790,66 +794,70 @@ class AccountManager {
             Context.MODE_PRIVATE
         )
         localAssets.filter { it is AssetsCoinVo && it.getCoinNumber() == CoinTypes.Violas.coinType() }
-            .forEach { assets ->
-                assets as AssetsLibraCoinVo
+            .forEach {
+                it as AssetsLibraCoinVo
                 try {
-                    DataRepository.getViolasChainRpcService().getAccountState(assets.address)?.let {
-                        assets.authKey = it.authenticationKey
-                        assets.delegatedKeyRotationCapability = it.delegatedKeyRotationCapability
-                        assets.delegatedWithdrawalCapability = it.delegatedWithdrawalCapability
+                    DataRepository.getViolasChainRpcService().getAccountState(it.address)
+                        ?.let { accountState ->
+                            it.authKey = accountState.authenticationKey
+                            it.delegatedKeyRotationCapability =
+                                accountState.delegatedKeyRotationCapability
+                            it.delegatedWithdrawalCapability =
+                                accountState.delegatedWithdrawalCapability
 
-                        val filter =
-                            localAssets.filter { assetsToken -> assetsToken is AssetsTokenVo && assetsToken.getAccountId() == assets.getAccountId() }
-                                .toMap { assetsToken ->
-                                    (assetsToken as AssetsTokenVo).module.toUpperCase(Locale.getDefault())
-                                }
-                        it.balances?.forEach { balance ->
-                            val assetsVo = filter[balance.currency.toUpperCase(Locale.getDefault())]
-                            if (assetsVo == null) {
-                                localAssets.add(HiddenTokenVo(
-                                    assets.getId(),
-                                    assets.getAccountId(),
-                                    assets.getCoinNumber(),
-                                    org.palliums.violascore.transaction.AccountAddress.DEFAULT.toHex(),
-                                    balance.currency,
-                                    balance.currency,
-                                    amount = balance.amount
-                                ).also { tokenVo ->
-                                    tokenVo.setAssetsName(balance.currency)
-                                    tokenVo.amountWithUnit.amount =
-                                        BigDecimal(balance.amount).divide(
-                                            BigDecimal("1000000"),
-                                            6,
-                                            RoundingMode.DOWN
-                                        ).stripTrailingZeros().toPlainString()
-                                    tokenVo.amountWithUnit.unit = balance.currency
+                            val localAssetMap = localAssets.filter { asset ->
+                                asset is AssetsTokenVo && asset.getAccountId() == it.getAccountId()
+                            }.toMap { asset ->
+                                (asset as AssetsTokenVo).module.toUpperCase(Locale.getDefault())
+                            }
+                            accountState.balances?.forEach { accountBalance ->
+                                val assetsVo =
+                                    localAssetMap[accountBalance.currency.toUpperCase(Locale.getDefault())]
+                                if (assetsVo == null) {
+                                    localAssets.add(HiddenTokenVo(
+                                        it.getId(),
+                                        it.getAccountId(),
+                                        it.getCoinNumber(),
+                                        org.palliums.violascore.transaction.AccountAddress.DEFAULT.toHex(),
+                                        accountBalance.currency,
+                                        accountBalance.currency,
+                                        amount = accountBalance.amount
+                                    ).also { tokenVo ->
+                                        tokenVo.setAssetsName(accountBalance.currency)
 
-                                    val rateAmount = assetsFiatBalanceSharedPreferences.getString(
-                                        SaveAssetsFiatBalanceCommand.tokenKey(
-                                            tokenVo
-                                        ), "0.00"
-                                    ) ?: "0.00"
-                                    tokenVo.fiatAmountWithUnit.rate = rateAmount
-                                    tokenVo.fiatAmountWithUnit.amount =
-                                        BigDecimal(tokenVo.amountWithUnit.amount).multiply(
-                                            BigDecimal(rateAmount)
-                                        ).setScale(2, RoundingMode.DOWN).stripTrailingZeros()
-                                            .toPlainString()
-                                })
-                            } else {
-                                assetsVo.apply {
-                                    this as AssetsTokenVo
-                                    setAmount(balance.amount)
-                                    val convertAmountToDisplayUnit = convertAmountToDisplayUnit(
-                                        balance.amount,
-                                        CoinTypes.parseCoinType(assets.getCoinNumber())
-                                    )
-                                    amountWithUnit.amount = convertAmountToDisplayUnit.first
-                                    amountWithUnit.unit = getAssetsName()
+                                        val displayUnit = convertAmountToDisplayUnit(
+                                            accountBalance.amount,
+                                            CoinTypes.parseCoinType(it.getCoinNumber())
+                                        )
+                                        tokenVo.amountWithUnit.amount = displayUnit.first
+                                        tokenVo.amountWithUnit.unit = accountBalance.currency
+
+                                        val rateAmount =
+                                            assetsFiatBalanceSharedPreferences.getString(
+                                                SaveAssetsFiatBalanceCommand.tokenKey(tokenVo),
+                                                "0.00"
+                                            ) ?: "0.00"
+                                        tokenVo.fiatAmountWithUnit.rate = rateAmount
+                                        tokenVo.fiatAmountWithUnit.amount =
+                                            BigDecimal(tokenVo.amountWithUnit.amount)
+                                                .multiply(BigDecimal(rateAmount))
+                                                .setScale(2, RoundingMode.DOWN)
+                                                .stripTrailingZeros().toPlainString()
+                                    })
+                                } else {
+                                    assetsVo.apply {
+                                        this as AssetsTokenVo
+                                        setAmount(accountBalance.amount)
+                                        val displayUnit = convertAmountToDisplayUnit(
+                                            accountBalance.amount,
+                                            CoinTypes.parseCoinType(it.getCoinNumber())
+                                        )
+                                        amountWithUnit.amount = displayUnit.first
+                                        amountWithUnit.unit = getAssetsName()
+                                    }
                                 }
                             }
                         }
-                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
