@@ -242,21 +242,28 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
             bestTradeExactOut(mReserveList, inIndex, outIndex, inputAmount)
         }
 
-        val tradeResult = trades?.first()?.let {
-            if (isInputFrom) {
-                // 由输入价格直接计算输出手续费
-                val amount = getOutputAmountsWithFee(inputAmount, it.path).last()
-                val fee = it.amount - amount
-                TradeResult(it.path, amount, fee)
-            } else {
-                // 由输出价格计算手续费
-                val fee = inputAmount - getOutputAmountsWithFee(it.amount, it.path).last()
-                TradeResult(it.path, it.amount, fee)
+        val tradeResult = if (!trades.isNullOrEmpty()) {
+            trades.first().let {
+                if (isInputFrom) {
+                    // 由输入价格直接计算输出手续费
+                    val amount = getOutputAmountsWithFee(inputAmount, it.path).last()
+                    val fee = it.amount - amount
+                    TradeResult(it.path, amount, fee)
+                } else {
+                    // 由输出价格计算手续费
+                    val fee = inputAmount - getOutputAmountsWithFee(it.amount, it.path).last()
+                    TradeResult(it.path, it.amount, fee)
+                }
             }
+        } else {
+            null
         }
 
         if (BuildConfig.DEBUG) {
-            Log.e("ReserveManager","from: ${fromToken.coinNumber}  to: ${fromToken.coinNumber} input:$inputAmount")
+            Log.e(
+                "ReserveManager",
+                "from: ${fromToken.coinNumber}  to: ${fromToken.coinNumber} input:$inputAmount"
+            )
             Log.d("ReserveManager", "route planning start")
             trades?.forEach {
                 Log.d("ReserveManager", it.toString())

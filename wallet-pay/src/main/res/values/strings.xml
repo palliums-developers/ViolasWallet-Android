@@ -244,10 +244,11 @@
     <string name="market_swap_tips_to_token_empty">Please select token</string>
     <string name="market_swap_tips_amount_empty">Please enter an amount</string>
     <string name="market_swap_tips_insufficient_balance">Insufficient available balance</string>
+    <string name="market_swap_tips_swap_no_path_format">The Pool cannot provide %1$s to %2$s exchange service temporarily</string>
     <string name="market_swap_tips_swap_estimating">Estimating swap amount</string>
-    <string name="market_swap_tips_unsupported_pair">Does not support this transaction pair</string>
     <string name="market_swap_tips_swap_success">Successful broadcast of swap transaction</string>
     <string name="market_swap_tips_swap_failure">Swap failed, please try again later</string>
+    <string name="market_swap_tips_unsupported_pair">Does not support this transaction pair</string>
     <!--市场资金池-->
     <string name="market_pool_title_select_pool_token">Select Pair</string>
     <string name="market_pool_action_add_liquidity">Add Liquidity</string>

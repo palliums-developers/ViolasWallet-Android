@@ -69,6 +69,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
     }
     private var isInputFrom = true
     private val mSwapPath = mutableListOf<Int>()
+    private var noSwapPath: Boolean? = null
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_swap
@@ -79,11 +80,15 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
         clearInputBoxFocusAndHideSoftInput()
     }
 
-    private fun resetState() = launch {
+    private fun resetState(clearInputBox: Boolean) = launch {
+        if (clearInputBox) {
+            isInputFrom = true
+            handleInputTextWatcher("", etFromInputBox, fromInputTextWatcher)
+            handleInputTextWatcher("", etToInputBox, toInputTextWatcher)
+        }
+
+        noSwapPath = null
         mSwapPath.clear()
-        isInputFrom = true
-        handleInputTextWatcher("", etFromInputBox, fromInputTextWatcher)
-        handleInputTextWatcher("", etToInputBox, toInputTextWatcher)
         swapViewModel.getGasFeeLiveData().value = null
         swapViewModel.getExchangeRateLiveData().value = null
         swapViewModel.getHandlingFeeRateLiveDataLiveData().value = null
@@ -168,35 +173,58 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
             }
 
             // 输入币种没有选择
-            if (swapViewModel.getCurrFromTokenLiveData().value == null) {
+            val fromToken = swapViewModel.getCurrFromTokenLiveData().value
+            if (fromToken == null) {
                 showToast(getString(R.string.market_swap_tips_from_token_empty))
                 return@setOnClickListener
             }
+
             // 输出币种没有选择
-            if (swapViewModel.getCurrToTokenLiveData().value == null) {
+            val toToken = swapViewModel.getCurrToTokenLiveData().value
+            if (toToken == null) {
                 showToast(getString(R.string.market_swap_tips_to_token_empty))
                 return@setOnClickListener
             }
-            // 填写输入金额
-            if (etFromInputBox.text?.isEmpty() == true) {
+
+            // 填写输入金额/输出金额
+            if (etFromInputBox.text?.isBlank() == true && etToInputBox.text?.isBlank() == true) {
                 showToast(getString(R.string.market_swap_tips_amount_empty))
                 return@setOnClickListener
             }
-            // 填写输出金额
-            if (etToInputBox.text?.isEmpty() == true) {
-                showToast(getString(R.string.market_swap_tips_amount_empty))
+
+            // 正在估算输出金额
+            if (noSwapPath == null) {
+                showToast(getString(R.string.market_swap_tips_swap_estimating))
                 return@setOnClickListener
             }
+
+            // 没有兑换路径
+            if (noSwapPath == true) {
+                showToast(
+                    getString(
+                        R.string.market_swap_tips_swap_no_path_format,
+                        fromToken.displayName,
+                        toToken.displayName
+                    )
+                )
+                return@setOnClickListener
+            }
+
+            // 正在估算输出金额
+            if (mSwapPath.size <= 1
+                || etFromInputBox.text?.isBlank() == true
+                || etToInputBox.text?.isBlank() == true
+            ) {
+                showToast(getString(R.string.market_swap_tips_swap_estimating))
+                return@setOnClickListener
+            }
+
+            // 余额不足
             if (mCurrFromAssetsAmount < BigDecimal(
                     etFromInputBox.text?.trim()?.toString() ?: "0"
                 )
             ) {
                 showToast(R.string.market_swap_tips_insufficient_balance)
-                return@setOnClickListener
-            }
-            if (mSwapPath.size <= 1) {
-                // 请稍后正在估算输出金额
-                showToast(getString(R.string.market_swap_tips_swap_estimating))
                 return@setOnClickListener
             }
 
@@ -309,11 +337,11 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                     isInputFrom
                 )
                 CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
-                resetState()
+                resetState(true)
                 showToast(getString(R.string.market_swap_tips_swap_success))
             } catch (e: UnsupportedTradingPairsException) {
                 showToast(getString(R.string.market_swap_tips_unsupported_pair))
-            }  catch (e: AccountPayeeNotFindException) {
+            } catch (e: AccountPayeeNotFindException) {
                 showToast(getString(R.string.chain_tips_payee_account_not_active))
             } catch (e: AccountPayeeTokenNotActiveException) {
                 showPublishTokenDialog(pwd, e)
@@ -424,9 +452,11 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                 val tradeExact =
                     mReserveManager.tradeExact(fromToken, toToken, inputAmount, isInputFrom)
                 if (tradeExact == null) {
-                    mSwapPath.clear()
                     withContext(Dispatchers.Main) {
-                        swapViewModel.getExchangeRateLiveData().value = BigDecimal.valueOf(0)
+                        noSwapPath = true
+                        mSwapPath.clear()
+                        swapViewModel.getExchangeRateLiveData().value =
+                            BigDecimal.valueOf(0)
                         swapViewModel.getHandlingFeeRateLiveDataLiveData().value =
                             BigDecimal.valueOf(0)
                         handleInputTextWatcher(
@@ -459,7 +489,6 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                             outputAmount *= 100
                         }
                     }
-
 
                     // 根据币种信息转换计算出来的金额单位
                     val outputAmountByCoin = convertAmountToDisplayUnit(
@@ -509,11 +538,12 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                         }
                     }
 
-                    mSwapPath.clear()
-                    mSwapPath.addAll(tradeExact.path)
                     withContext(Dispatchers.Main) {
-                        btnSwap.setText(R.string.market_swap_action_swap)
-
+                        noSwapPath = false
+                        mSwapPath.clear()
+                        mSwapPath.addAll(tradeExact.path)
+                        swapViewModel.getExchangeRateLiveData().value = exchangeRate
+                        swapViewModel.getHandlingFeeRateLiveDataLiveData().value = handlingFeeRate
                         handleInputTextWatcher(
                             outputAmountByCoin, outputEdit, if (isInputFrom) {
                                 toInputTextWatcher
@@ -521,8 +551,6 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                                 fromInputTextWatcher
                             }
                         )
-                        swapViewModel.getExchangeRateLiveData().value = exchangeRate
-                        swapViewModel.getHandlingFeeRateLiveDataLiveData().value = handlingFeeRate
                     }
                 }
             } catch (e: java.lang.Exception) {
@@ -539,6 +567,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
             )
             .setCallback { action, iToken ->
                 launch {
+                    resetState(false)
                     swapViewModel.selectToken(ACTION_SWAP_SELECT_FROM == action, iToken)
                     estimateOutputTokenNumber()
                 }

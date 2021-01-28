@@ -244,6 +244,7 @@
     <string name="market_swap_tips_to_token_empty">请选择通证</string>
     <string name="market_swap_tips_amount_empty">请输入兑换数量</string>
     <string name="market_swap_tips_insufficient_balance">可用余额不足</string>
+    <string name="market_swap_tips_swap_no_path_format">资金池暂时不能提供%1$s兑换%2$s服务</string>
     <string name="market_swap_tips_swap_estimating">正在估算兑换金额…</string>
     <string name="market_swap_tips_swap_success">兑换交易广播成功</string>
     <string name="market_swap_tips_swap_failure">兑换失败，请稍后重试</string>
