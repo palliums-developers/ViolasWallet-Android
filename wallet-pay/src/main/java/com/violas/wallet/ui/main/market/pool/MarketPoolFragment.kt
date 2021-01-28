@@ -170,34 +170,37 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         poolViewModel.getCurrCoinALiveData().observe(viewLifecycleOwner, currCoinAObserver)
         poolViewModel.getCurrCoinBLiveData().observe(viewLifecycleOwner, currCoinBObserver)
         poolViewModel.getCurrLiquidityLiveData().observe(viewLifecycleOwner, currLiquidityObserver)
-        poolViewModel.getExchangeRateLiveData()
-            .observe(viewLifecycleOwner, Observer {
-                if (it == null) {
-                    handleValueNull(tvExchangeRate, R.string.market_swap_label_swap_rate_format)
-                } else {
-                    tvExchangeRate.text = getString(
-                        R.string.market_swap_label_swap_rate_format,
-                        "1:${it.toPlainString()}"
+        poolViewModel.getExchangeRateLiveData().observe(viewLifecycleOwner) {
+            if (it == null) {
+                handleValueNull(tvExchangeRate, R.string.market_swap_label_swap_rate_format)
+            } else {
+                tvExchangeRate.text = getString(
+                    R.string.market_swap_label_swap_rate_format,
+                    "1:${it.toPlainString()}"
+                )
+            }
+        }
+        poolViewModel.getPoolTokenAndPoolShareLiveData().observe(viewLifecycleOwner) {
+            if (it == null) {
+                handleValueNull(
+                    tvPoolTokenAndPoolShare,
+                    R.string.market_pool_label_total_pool_tokens_format
+                )
+            } else {
+                tvPoolTokenAndPoolShare.text = getString(
+                    R.string.market_pool_label_total_pool_tokens_format,
+                    it.first
+                )
+            }
+        }
+        poolViewModel.getLiquidityReserveLiveData().observe(viewLifecycleOwner) {
+            if (poolViewModel.isTransferInMode()) {
+                if (poolViewModel.noLiquidityReserve == true)
+                    poolViewModel.calculateExchangeRateOnNoLiquidityReserve(
+                        etInputBoxA.text.toString().trim(),
+                        etInputBoxB.text.toString().trim()
                     )
-                }
-            })
-        poolViewModel.getPoolTokenAndPoolShareLiveData()
-            .observe(viewLifecycleOwner, Observer {
-                if (it == null) {
-                    handleValueNull(
-                        tvPoolTokenAndPoolShare,
-                        R.string.market_pool_label_total_pool_tokens_format
-                    )
-                } else {
-                    tvPoolTokenAndPoolShare.text = getString(
-                        R.string.market_pool_label_total_pool_tokens_format,
-                        it.first
-                    )
-                }
-            })
-        poolViewModel.getLiquidityReserveLiveData()
-            .observe(viewLifecycleOwner, Observer {
-                if (poolViewModel.isTransferInMode()) {
+                else
                     poolViewModel.estimateTransferIntoAmount(
                         isInputA,
                         if (isInputA)
@@ -205,24 +208,24 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                         else
                             etInputBoxB.text.toString().trim()
                     )
-                } else {
-                    poolViewModel.estimateTransferOutAmount(
-                        etInputBoxA.text.toString().trim()
-                    )
-                }
-            })
-        poolViewModel.getInputATextLiveData().observe(viewLifecycleOwner, Observer {
+            } else {
+                poolViewModel.estimateTransferOutAmount(
+                    etInputBoxA.text.toString().trim()
+                )
+            }
+        }
+        poolViewModel.getInputATextLiveData().observe(viewLifecycleOwner) {
             if (etInputBoxA.text.toString() != it) {
                 setupInputText(it, etInputBoxA, inputTextWatcherA)
             }
-        })
-        poolViewModel.getInputBTextLiveData().observe(viewLifecycleOwner, Observer {
+        }
+        poolViewModel.getInputBTextLiveData().observe(viewLifecycleOwner) {
             if (etInputBoxB.text.toString() != it) {
                 setupInputText(it, etInputBoxB, inputTextWatcherB)
             }
-        })
+        }
 
-        poolViewModel.loadState.observe(viewLifecycleOwner, Observer {
+        poolViewModel.loadState.observe(viewLifecycleOwner) {
             when (it.peekData().status) {
                 LoadState.Status.RUNNING -> {
                     showProgress(
@@ -255,7 +258,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                     dismissProgress()
                 }
             }
-        })
+        }
 
         BalanceSubscribeHub.observe(this, coinABalanceSubscriber)
         BalanceSubscribeHub.observe(this, coinBBalanceSubscriber)
@@ -520,7 +523,13 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             }
 
             if (poolViewModel.isTransferInMode()) {
-                poolViewModel.estimateTransferIntoAmount(isInputA, amountStr)
+                if (poolViewModel.noLiquidityReserve == true)
+                    poolViewModel.calculateExchangeRateOnNoLiquidityReserve(
+                        amountStr,
+                        etInputBoxB.text.toString().trim()
+                    )
+                else
+                    poolViewModel.estimateTransferIntoAmount(isInputA, amountStr)
             } else {
                 poolViewModel.estimateTransferOutAmount(amountStr)
             }
@@ -539,7 +548,13 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             }
 
             if (poolViewModel.isTransferInMode()) {
-                poolViewModel.estimateTransferIntoAmount(isInputA, amountStr)
+                if (poolViewModel.noLiquidityReserve == true)
+                    poolViewModel.calculateExchangeRateOnNoLiquidityReserve(
+                        etInputBoxA.text.toString().trim(),
+                        amountStr,
+                    )
+                else
+                    poolViewModel.estimateTransferIntoAmount(isInputA, amountStr)
             }
         }
     }
@@ -599,9 +614,16 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         // 未输入判断
         val inputAAmountStr = etInputBoxA.text.toString().trim()
         val inputBAmountStr = etInputBoxB.text.toString().trim()
-        if (inputAAmountStr.isEmpty() && inputBAmountStr.isEmpty()) {
-            showToast(R.string.market_pool_tips_input_amount_empty)
-            return true
+        if (poolViewModel.noLiquidityReserve == true) {
+            if (inputAAmountStr.isEmpty() || inputBAmountStr.isEmpty()) {
+                showToast(R.string.market_pool_tips_input_amount_empty)
+                return true
+            }
+        } else {
+            if (inputAAmountStr.isEmpty() && inputBAmountStr.isEmpty()) {
+                showToast(R.string.market_pool_tips_input_amount_empty)
+                return true
+            }
         }
 
         // 输入为0判断, 当作未输入判断
@@ -637,6 +659,10 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             val prefix = coinB.displayName
             showToast(getString(R.string.common_tips_insufficient_available_balance_format, prefix))
             return true
+        }
+
+        if (poolViewModel.noLiquidityReserve == true) {
+            return false
         }
 
         // 估算未完成判断

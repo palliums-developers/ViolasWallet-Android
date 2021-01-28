@@ -212,7 +212,7 @@ fun convertAmountToExchangeRate(
         amountBBigDecimal
             .divide(
                 amountABigDecimal,
-                getCoinDecimal(coinTypesB),
+                20,
                 RoundingMode.DOWN
             )
             .stripTrailingZeros()

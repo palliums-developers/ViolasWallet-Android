@@ -61,7 +61,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     }
 
     // 当前的操作模式，分转入和转出
-    private val currOpModeLiveData = MutableLiveData<MarketPoolOpMode>(MarketPoolOpMode.TransferIn)
+    private val currOpModeLiveData = MutableLiveData(MarketPoolOpMode.TransferIn)
 
     // 转入模式下选择的Coin
     private val currCoinALiveData = MediatorLiveData<StableTokenVo?>()
@@ -74,6 +74,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     // 流动资产储备信息
     private val liquidityReserveLiveData = MutableLiveData<PoolLiquidityReserveInfoDTO?>()
     private var syncLiquidityReserveFlag = AtomicBoolean(false)
+    var noLiquidityReserve: Boolean? = null
 
     // 兑换率
     private val exchangeRateLiveData = MediatorLiveData<BigDecimal?>()
@@ -96,6 +97,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             currCoinALiveData.value = null
             currCoinBLiveData.value = null
             currLiquidityLiveData.value = null
+            noLiquidityReserve = null
             liquidityReserveLiveData.value = null
             inputATextLiveData.value = ""
             inputBTextLiveData.value = ""
@@ -251,9 +253,17 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     ) {
         logInfo(TAG) {
             "calculateExchangeRate. coin a module => $coinAModule" +
+                    ", no liquidity reserve => $noLiquidityReserve" +
                     ", liquidity reserve => $liquidityReserve"
         }
-        if (coinAModule.isNullOrBlank() || liquidityReserve == null) {
+        if (coinAModule.isNullOrBlank()) {
+            exchangeRateLiveData.value = null
+            return
+        }
+        if (noLiquidityReserve == true) {
+            return
+        }
+        if (liquidityReserve == null) {
             exchangeRateLiveData.value = null
             return
         }
@@ -264,6 +274,21 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 if (coinAModule == it.coinA.module) it.coinB.amount else it.coinA.amount
             )
         }
+    }
+
+    fun calculateExchangeRateOnNoLiquidityReserve(
+        inputAAmountStr: String?,
+        inputBAmountStr: String?
+    ) {
+        if (inputAAmountStr.isNullOrBlank() || inputBAmountStr.isNullOrBlank()) {
+            exchangeRateLiveData.value = null
+            return
+        }
+
+        exchangeRateLiveData.value = convertAmountToExchangeRate(
+            inputAAmountStr,
+            inputBAmountStr
+        )
     }
 
     fun getExchangeRateLiveData(): LiveData<BigDecimal?> {
@@ -406,6 +431,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         if (coinAModuleSpecified != null && coinBModuleSpecified != null) {
             coinAModule = coinAModuleSpecified
             coinBModule = coinBModuleSpecified
+            noLiquidityReserve = null
             liquidityReserveLiveData.value = null
         } else {
             if (isTransferInMode()) {
@@ -495,6 +521,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 logInfo(TAG) { "syncLiquidityReserve. coin pair unchanged => $coinPairUnchanged" }
 
                 if (syncWorkUnstopped && coinPairUnchanged) {
+                    noLiquidityReserve = liquidityReserve == null
                     liquidityReserveLiveData.value = liquidityReserve
                 }
 
@@ -571,6 +598,10 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 withContext(Dispatchers.Main) {
                     inputATextLiveData.value = ""
                     inputBTextLiveData.value = ""
+                    if (noLiquidityReserve == true) {
+                        noLiquidityReserve = null
+                        liquidityReserveLiveData.value = null
+                    }
                 }
             }
 
@@ -596,6 +627,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                     inputATextLiveData.value = ""
                     inputBTextLiveData.value = ""
                     currLiquidityLiveData.value = null
+                    noLiquidityReserve = null
                     liquidityReserveLiveData.value = null
                 }
             }
