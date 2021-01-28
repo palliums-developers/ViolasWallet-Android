@@ -64,7 +64,10 @@ class BankViewModel : BaseViewModel() {
                 borrowableLiveData.value =
                     "≈ ${
                         convertAmountToUSD(
-                            ((accountInfo?.borrowableLimit ?: 0.toDouble()) - (accountInfo?.borrowed ?: 0.toDouble())) * 100
+                            if (accountInfo != null && accountInfo.borrowableLimit > accountInfo.borrowed)
+                                (accountInfo.borrowableLimit - accountInfo.borrowed) * 100
+                            else
+                                0.toDouble()
                         )
                     }/${
                         convertAmountToUSD((accountInfo?.borrowableLimit ?: 0.toDouble()) * 100)
