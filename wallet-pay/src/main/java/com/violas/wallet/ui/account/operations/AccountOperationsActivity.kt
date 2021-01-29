@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.isFastMultiClick
 import com.palliums.utils.start
-import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.groupList.GroupListLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -127,10 +127,10 @@ class AccountOperationsActivity : BaseAppActivity() {
     private fun initView() {
         if (operationMode == AccountOperationMode.MANAGEMENT) {
             EventBus.getDefault().register(this)
-            setTitle(R.string.account_management_title)
-            setTitleRightImageResource(R.drawable.icon_add_address)
+            setTitle(R.string.common_title_wallet_management)
+            setTitleRightImageResource(R.mipmap.ic_add)
         } else {
-            setTitle(R.string.account_selection_title)
+            setTitle(R.string.wallet_account_title_select_wallet)
         }
 
         vAccountList.showSlideBar(false)
@@ -160,10 +160,9 @@ class AccountOperationsActivity : BaseAppActivity() {
             }
         }
         vAccountList.addItemDecoration(
-            RecycleViewItemDividers(
+            RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(this, 12),
                 bottom = DensityUtility.dp2px(this, 80),
-                showFirstTop = true,
                 onlyShowLastBottom = true
             )
         )
@@ -218,7 +217,7 @@ class AccountOperationsActivity : BaseAppActivity() {
             rootView.setOnClickListener(this)
         }
 
-        override fun refreshView(itemData: GroupListLayout.ItemData?) {
+        override fun refreshView(itemData: GroupListLayout.ItemData?, lastGroupItem: Boolean?) {
             accountVo = itemData as? AccountVo
 
             accountVo?.let {

@@ -8,7 +8,11 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import kotlinx.android.synthetic.main.activity_scan_result.*
 
+/**
+ * 扫码结果展示页面
+ */
 class ScanResultActivity : BaseAppActivity() {
+
     companion object {
         private const val EXT_MSG = "a"
         fun start(context: Context, msg: String) {
@@ -24,7 +28,7 @@ class ScanResultActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.hint_scan_result)
+        title = getString(R.string.qr_code_result_title)
         tvResult.text = intent.getStringExtra(EXT_MSG)
     }
 }

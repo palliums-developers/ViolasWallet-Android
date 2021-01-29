@@ -23,9 +23,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:text="@string/hint_create_any_wallet"
+        android:text="@string/init_wallet_title_create_wallet_format"
         android:textColor="#3C3848"
-        android:textSize="21sp"
+        android:textSize="@dimen/fs_21"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,9 +37,9 @@
         android:layout_height="51dp"
         android:layout_marginTop="32dp"
         android:background="@drawable/selector_edit_bg_line"
-        android:hint="@string/hint_input_nickname"
+        android:hint="@string/init_wallet_hint_wallet_name"
         android:maxLength="20"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvCreateHint" />
@@ -50,9 +50,9 @@
         android:layout_width="match_parent"
         android:layout_height="51dp"
         android:background="@drawable/selector_edit_bg_line"
-        android:hint="@string/hint_wallet_password"
+        android:hint="@string/init_wallet_hint_wallet_pwd"
         android:inputType="textPassword"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editName" />
@@ -63,9 +63,9 @@
         android:layout_width="match_parent"
         android:layout_height="51dp"
         android:background="@drawable/selector_edit_bg_line"
-        android:hint="@string/hint_input_confirm_password"
+        android:hint="@string/init_wallet_hint_confirm_wallet_pwd"
         android:inputType="textPassword"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editPassword" />
@@ -75,8 +75,9 @@
         style="@style/BaseButtonPrimary"
         android:layout_marginTop="@dimen/dp_48"
         android:layout_marginBottom="@dimen/dp_56"
-        android:text="@string/action_create"
+        android:text="@string/init_wallet_action_create"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editConfirmPassword" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

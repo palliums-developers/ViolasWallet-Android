@@ -8,15 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewHolder
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.listing.ListingViewModel
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getResourceId
 import com.palliums.utils.openBrowser
 import com.palliums.violas.bean.TokenMark
-import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.quincysx.crypto.CoinTypes
 import com.smallraw.support.switchcompat.SwitchButton
 import com.violas.wallet.R
@@ -28,7 +30,7 @@ import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.web.WebCommonActivity
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.loadRoundedImage
+import com.violas.wallet.utils.loadCircleImage
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
@@ -37,6 +39,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * 添加币种页面
+ */
 class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
 
     companion object {
@@ -68,38 +73,31 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
         WalletAppViewModel.getViewModelInstance(this)
     }
 
-    private val viewModel by lazy {
-        ViewModelProvider(
+    override fun lazyInitListingViewModel(): ListingViewModel<AssertOriginateToken> {
+        return ViewModelProvider(
             this,
             object : ViewModelProvider.Factory {
-                override fun <T : androidx.lifecycle.ViewModel?> create(modelClass: Class<T>): T {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return modelClass
                         .getConstructor(TokenManager::class.java)
                         .newInstance(mTokenManager)
                 }
             }
-        ).get(ViewModel::class.java)
+        ).get(ManagerAssertViewModel::class.java)
     }
 
-    private val viewAdapter by lazy {
-        ViewAdapter { checkbox, checked, assertToken ->
+    override fun lazyInitListingViewAdapter(): ListingViewAdapter<AssertOriginateToken> {
+        return ViewAdapter { checkbox, checked, assertToken ->
             mChange = true
             if (checked) {
                 openToken(checkbox, checked, assertToken)
             } else {
+                assertToken.enable = false
                 launch(Dispatchers.IO) {
                     mTokenManager.insert(checked, assertToken)
                 }
             }
         }
-    }
-
-    override fun getViewModel(): ListingViewModel<AssertOriginateToken> {
-        return viewModel
-    }
-
-    override fun getViewAdapter(): ListingViewAdapter<AssertOriginateToken> {
-        return viewAdapter
     }
 
     override fun enableRefresh(): Boolean {
@@ -108,24 +106,23 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.title_assert_manager)
-        setTitleRightText(R.string.action_get_experience_the_coin)
+        title = getString(R.string.add_currency_title)
+        setTitleRightText(R.string.add_currency_menu)
 
         getRecyclerView().addItemDecoration(
-            RecycleViewItemDividers(
+            RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(this, 5),
                 bottom = DensityUtility.dp2px(this, 5),
                 left = DensityUtility.dp2px(this, 16),
-                right = DensityUtility.dp2px(this, 16),
-                showFirstTop = true
+                right = DensityUtility.dp2px(this, 16)
             )
         )
 
-        mListingHandler.init()
+        getListingHandler().init()
         getRefreshLayout()?.setOnRefreshListener {
-            viewModel.execute()
+            getListingViewModel().execute()
         }
-        viewModel.execute()
+        getListingViewModel().execute()
     }
 
     private suspend fun isPublish(
@@ -148,18 +145,22 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
             try {
                 if (isPublish(assertOriginateToken.account_id, assertOriginateToken.tokenMark)) {
                     mTokenManager.insert(checked, assertOriginateToken)
+                    assertOriginateToken.enable = true
                     dismissProgress()
-//                    mChange = true
                 } else {
                     val account = mAccountManager.getAccountById(assertOriginateToken.account_id)
                     dismissProgress()
                     withContext(Dispatchers.Main) {
-                        PublishTokenDialog().setConfirmListener {
-                            showPasswordDialog(account, assertOriginateToken, checkbox, checked)
-                            it.dismiss()
-                        }.setCancelListener {
-                            checkbox.setCheckedNoEvent(false)
-                        }.show(supportFragmentManager)
+                        PublishTokenDialog()
+                            .setCurrencyName(assertOriginateToken.name)
+                            .setConfirmListener {
+                                showPasswordDialog(account, assertOriginateToken, checkbox, checked)
+                                it.dismiss()
+                            }
+                            .setCancelListener {
+                                checkbox.setCheckedNoEvent(false)
+                            }
+                            .show(supportFragmentManager)
                     }
                 }
             } catch (e: Exception) {
@@ -170,6 +171,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                     e.message?.let {
                         showToast(it)
                     }
+                    showToast(e.getShowErrorMessage(false))
                 }
             }
         }
@@ -198,15 +200,15 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                     )
                     if (hasSuccess) {
                         mTokenManager.insert(checked, assertOriginateToken)
+                        assertOriginateToken.enable = true
                     } else {
                         withContext(Dispatchers.Main) {
                             checkbox.setCheckedNoEvent(false)
                             showToast(
                                 getString(
-                                    R.string.hint_not_none_coin_or_net_error,
+                                    R.string.add_currency_first_tips_add_failure,
                                     CoinTypes.parseCoinType(account.coinNumber).coinName()
-                                ),
-                                Toast.LENGTH_LONG
+                                )
                             )
                         }
                     }
@@ -214,11 +216,12 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                     withContext(Dispatchers.Main) {
                         checkbox.setCheckedNoEvent(false)
                         showToast(
-                            getString(
-                                R.string.hint_not_none_coin_or_net_error,
-                                CoinTypes.parseCoinType(account.coinNumber).coinName()
-                            ),
-                            Toast.LENGTH_LONG
+                            e.getShowErrorMessage(
+                                failedDesc = getString(
+                                    R.string.add_currency_first_tips_add_failure,
+                                    CoinTypes.parseCoinType(account.coinNumber).coinName()
+                                )
+                            )
                         )
                     }
                 }
@@ -241,7 +244,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
             WebCommonActivity.start(
                 this,
                 url,
-                getString(R.string.action_get_experience_the_coin)
+                getString(R.string.add_currency_menu)
             )
         }
     }
@@ -253,19 +256,6 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
             setResult(Activity.RESULT_CANCELED)
         }
         super.onBackPressedSupport()
-    }
-
-    class ViewModel(
-        private val tokenManager: TokenManager
-    ) : ListingViewModel<AssertOriginateToken>() {
-
-        override suspend fun loadData(vararg params: Any): List<AssertOriginateToken> {
-            return tokenManager.loadSupportToken()
-        }
-
-        override fun checkNetworkBeforeExecute(): Boolean {
-            return false
-        }
     }
 
     class ViewAdapter(
@@ -308,10 +298,9 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                     itemView.checkBox.visibility = View.GONE
                 }
 
-                itemView.ivCoinLogo.loadRoundedImage(
+                itemView.ivCoinLogo.loadCircleImage(
                     itemData.logo,
-                    getResourceId(R.attr.iconCoinDefLogo, itemView.context),
-                    14
+                    getResourceId(R.attr.iconCoinDefLogo, itemView.context)
                 )
             }
         }
@@ -330,5 +319,18 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                 )
             }
         }
+    }
+}
+
+class ManagerAssertViewModel(
+    private val tokenManager: TokenManager
+) : ListingViewModel<AssertOriginateToken>() {
+
+    override suspend fun loadData(vararg params: Any): List<AssertOriginateToken> {
+        return tokenManager.loadSupportToken()
+    }
+
+    override fun checkNetworkBeforeExecute(): Boolean {
+        return false
     }
 }

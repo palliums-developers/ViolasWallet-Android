@@ -11,14 +11,14 @@
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_39"
-        android:layout_marginTop="@dimen/dp_90"
         android:background="?attr/transDetailsTransInfoBg"
         android:paddingHorizontal="@dimen/dp_24"
         android:paddingTop="@dimen/dp_40"
         android:paddingBottom="@dimen/dp_34"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_marginTop="@dimen/dp_78">
 
         <ImageView
             android:id="@+id/ivState"
@@ -34,12 +34,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_14"
-            android:textSize="@dimen/sp_16"
-            android:textStyle="bold"
+            android:fontFamily="@string/font_family_title"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivState"
-            tools:text="@string/desc_transaction_state_transaction_pending"
+            tools:text="@string/txn_details_state_processing"
             tools:textColor="?attr/textColorProcessing" />
 
         <TextView
@@ -48,13 +48,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_19"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvDesc"
             tools:text="2018-11-06  16:30:44" />
 
-        <TextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvAmount"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
@@ -62,7 +62,8 @@
             android:layout_marginTop="@dimen/dp_69"
             android:paddingVertical="@dimen/dp_5"
             android:textColor="?android:textColorPrimary"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/fs_12"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTime"
@@ -73,20 +74,20 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
-            android:text="@string/label_transaction_details_amount"
+            android:text="@string/txn_details_label_1"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintEnd_toStartOf="@id/tvAmount"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvAmount" />
 
-        <TextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvGas"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_5"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvAmount"
             app:layout_constraintTop_toBottomOf="@id/tvAmount"
@@ -97,9 +98,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
-            android:text="@string/label_transaction_details_gas"
+            android:text="@string/txn_details_label_2"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintEnd_toStartOf="@id/tvGas"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvGas" />
@@ -120,7 +121,7 @@
                 android:drawablePadding="@dimen/dp_5"
                 android:paddingVertical="@dimen/dp_5"
                 android:textColor="?android:textColorTertiary"
-                android:textSize="@dimen/sp_12"
+                android:textSize="@dimen/fs_12"
                 tools:text="dioewdji3ie9wOid30wdue" />
 
         </LinearLayout>
@@ -130,9 +131,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
-            android:text="@string/label_transaction_details_receipt_address"
+            android:text="@string/txn_details_label_3"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintEnd_toStartOf="@id/llReceiptAddress"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/llReceiptAddress" />
@@ -153,7 +154,7 @@
                 android:drawablePadding="@dimen/dp_5"
                 android:paddingVertical="@dimen/dp_5"
                 android:textColor="?android:textColorTertiary"
-                android:textSize="@dimen/sp_12"
+                android:textSize="@dimen/fs_12"
                 tools:text="dioewdji3ie9wOid30wdueji3ie9wOid9wOid" />
 
         </LinearLayout>
@@ -163,9 +164,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
-            android:text="@string/label_transaction_details_payment_address"
+            android:text="@string/txn_details_label_4"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintEnd_toStartOf="@id/llPaymentAddress"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/llPaymentAddress" />
@@ -186,7 +187,7 @@
                 android:drawablePadding="@dimen/dp_5"
                 android:paddingVertical="@dimen/dp_5"
                 android:textColor="?android:textColorTertiary"
-                android:textSize="@dimen/sp_12"
+                android:textSize="@dimen/fs_12"
                 tools:text="122322" />
 
         </LinearLayout>
@@ -196,9 +197,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
-            android:text="@string/label_transaction_details_transaction_number"
+            android:text="@string/txn_details_label_5"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintEnd_toStartOf="@id/llTransactionNumber"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/llTransactionNumber" />
@@ -224,9 +225,9 @@
         android:background="?attr/colorSurface"
         android:foreground="?attr/selectableItemBackground"
         android:gravity="center"
-        android:text="@string/action_cancel_nbsp"
+        android:text="@string/common_action_cancel_space"
         android:textColor="?android:textColorTertiary"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

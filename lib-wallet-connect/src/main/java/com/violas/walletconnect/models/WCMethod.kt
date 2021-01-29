@@ -18,6 +18,9 @@ enum class WCMethod {
     @SerializedName("violas_signTransaction")
     VIOLAS_SIGN_TRANSACTION,
 
+    @SerializedName("violas_signRawTransaction")
+    VIOLAS_SIGN_RAW_TRANSACTION,
+
     @SerializedName("_get_accounts")
     GET_ACCOUNTS,
 

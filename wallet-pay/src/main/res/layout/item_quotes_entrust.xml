@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:textColor="@color/def_text_color"
-                android:textSize="16sp"
+                android:textSize="@dimen/fs_16"
                 android:textStyle="bold"
                 tools:text="BBBUSD/" />
 
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#ADADAD"
-                android:textSize="12sp"
+                android:textSize="@dimen/fs_12"
                 android:textStyle="bold"
                 tools:text="AAAUSD" />
         </LinearLayout>
@@ -48,7 +48,7 @@
             android:layout_weight="12"
             android:gravity="center|end"
             android:textColor="#60606D"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             tools:text="200" />
 
         <TextView
@@ -58,7 +58,7 @@
             android:layout_weight="12"
             android:gravity="center|end"
             android:textColor="#60606D"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             tools:text="7.1" />
     </LinearLayout>
 
@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#BABABA"
-            android:textSize="12sp"
+            android:textSize="@dimen/fs_12"
             tools:text="01/18" />
 
         <TextView
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:textColor="#BABABA"
-            android:textSize="12sp"
+            android:textSize="@dimen/fs_12"
             tools:text="12:06:23" />
     </LinearLayout>
 </LinearLayout>

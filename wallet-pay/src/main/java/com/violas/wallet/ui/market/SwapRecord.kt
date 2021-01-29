@@ -6,25 +6,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.extensions.expandTouchArea
-import com.palliums.extensions.lazyLogError
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
-import com.palliums.utils.*
+import com.palliums.utils.formatDate
+import com.palliums.utils.getColorByAttrId
+import com.palliums.utils.getString
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.http.exchange.SwapRecordDTO
+import com.violas.wallet.repository.http.exchange.ViolasSwapRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_swap_record.view.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,14 +35,14 @@ import java.util.*
  * <p>
  * desc: 交易市场兑换记录页面
  */
-class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
+class SwapRecordActivity : BasePagingActivity<ViolasSwapRecordDTO>() {
 
-    private val viewModel by lazy {
-        ViewModelProvider(this).get(SwapRecordViewModel::class.java)
+    override fun lazyInitPagingViewModel(): PagingViewModel<ViolasSwapRecordDTO> {
+        return ViewModelProvider(this).get(SwapRecordViewModel::class.java)
     }
-    private val viewAdapter by lazy {
-        SwapRecordViewAdapter(
-            retryCallback = { viewModel.retry() },
+
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<ViolasSwapRecordDTO> {
+        return ViewAdapter(
             clickItemCallback = {
                 SwapDetailsActivity.start(this, it)
             },
@@ -51,19 +52,15 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
         )
     }
 
-    override fun getViewModel(): PagingViewModel<SwapRecordDTO> {
-        return viewModel
-    }
-
-    override fun getViewAdapter(): PagingViewAdapter<SwapRecordDTO> {
-        return viewAdapter
+    fun getViewModel(): SwapRecordViewModel {
+        return getPagingViewModel() as SwapRecordViewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.title_market_swap_records)
-        mPagingHandler.init()
+        setTitle(R.string.swap_records_title)
+        getPagingHandler().init()
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
@@ -72,13 +69,13 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
                 }
 
                 launch {
-                    val initResult = viewModel.initAddress()
+                    val initResult = getViewModel().initAddress()
                     if (!initResult) {
                         initNotLoginView()
                         return@launch
                     }
 
-                    mPagingHandler.start(fixedPageSize = true)
+                    getPagingHandler().start()
                 }
             })
     }
@@ -88,38 +85,130 @@ class SwapRecordActivity : BasePagingActivity<SwapRecordDTO>() {
         getRefreshLayout()?.setEnableLoadMore(false)
         getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_EMPTY)
     }
+
+    class ViewAdapter(
+        private val clickItemCallback: ((ViolasSwapRecordDTO) -> Unit)? = null,
+        private val clickRetryCallback: ((ViolasSwapRecordDTO, Int) -> Unit)? = null
+    ) : PagingViewAdapter<ViolasSwapRecordDTO>() {
+
+        private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
+
+        override fun onCreateViewHolderSupport(
+            parent: ViewGroup,
+            viewType: Int
+        ): BaseViewHolder<out Any> {
+            return ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_market_swap_record,
+                    parent,
+                    false
+                ),
+                simpleDateFormat,
+                clickItemCallback,
+                clickRetryCallback
+            )
+        }
+    }
+
+    class ViewHolder(
+        view: View,
+        private val simpleDateFormat: SimpleDateFormat,
+        private val clickItemCallback: ((ViolasSwapRecordDTO) -> Unit)? = null,
+        private val clickRetryCallback: ((ViolasSwapRecordDTO, Int) -> Unit)? = null
+    ) : BaseViewHolder<ViolasSwapRecordDTO>(view) {
+
+        init {
+            itemView.setOnClickListener(this)
+            itemView.tvRetry.setOnClickListener(this)
+        }
+
+        override fun onViewBind(itemPosition: Int, itemData: ViolasSwapRecordDTO?) {
+            itemData?.let {
+                itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
+
+                itemView.tvInputCoin.text =
+                    if (it.inputDisplayName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
+                        getString(R.string.common_desc_value_null)
+                    } else {
+                        "${convertAmountToDisplayAmountStr(it.inputCoinAmount)} ${it.inputDisplayName}"
+                    }
+
+                itemView.tvOutputCoin.text =
+                    if (it.outputDisplayName.isNullOrBlank() || it.outputCoinAmount.isNullOrBlank()) {
+                        getString(R.string.common_desc_value_null)
+                    } else {
+                        "${convertAmountToDisplayAmountStr(it.outputCoinAmount)} ${it.outputDisplayName}"
+                    }
+
+                when {
+                    it.status.isNullOrBlank() -> {
+                        // TODO 取消先隐藏
+                        itemView.tvRetry.visibility = View.GONE
+                        itemView.tvRetry.expandTouchArea()
+                        itemView.tvState.setText(R.string.swap_txn_state_processing)
+                        itemView.tvState.setTextColor(
+                            getColorByAttrId(R.attr.textColorProcessing, itemView.context)
+                        )
+                    }
+
+
+                    it.status.equals("Executed", true) -> {
+                        itemView.tvRetry.visibility = View.GONE
+                        itemView.tvState.setText(R.string.swap_txn_state_succeeded)
+                        itemView.tvState.setTextColor(
+                            getColorByAttrId(R.attr.textColorSuccess, itemView.context)
+                        )
+                    }
+
+                    it.status.equals("Cancel", true)
+                            || it.status.equals("Canceled", true)
+                            || it.status.equals("Cancelled", true) -> {
+                        itemView.tvRetry.visibility = View.GONE
+                        itemView.tvState.setText(R.string.common_state_cancelled)
+                        itemView.tvState.setTextColor(
+                            getColorByAttrId(android.R.attr.textColorTertiary, itemView.context)
+                        )
+                    }
+
+                    else -> {
+                        itemView.tvRetry.visibility = View.GONE
+                        itemView.tvState.setText(R.string.swap_txn_state_failed)
+                        itemView.tvState.setTextColor(
+                            getColorByAttrId(R.attr.textColorFailure, itemView.context)
+                        )
+                    }
+                }
+            }
+        }
+
+        override fun onViewClick(view: View, itemPosition: Int, itemData: ViolasSwapRecordDTO?) {
+            itemData?.let {
+                when (view) {
+                    itemView -> clickItemCallback?.invoke(it)
+                    itemView.tvRetry -> clickRetryCallback?.invoke(it, itemPosition)
+                    else -> {
+                        // ignore
+                    }
+                }
+            }
+        }
+    }
 }
 
-class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
+class SwapRecordViewModel : PagingViewModel<ViolasSwapRecordDTO>() {
 
     private val exchangeService by lazy {
         DataRepository.getExchangeService()
     }
 
-    private lateinit var violasAddress: String
-    private lateinit var libraAddress: String
-    private lateinit var bitcoinAddress: String
-
-    private var vlsHasMoreData = true
-    private var vlsCrossChainHasMoreData = true
-    private var lbrCrossChainHasMoreData = true
-    private var btcCrossChainHasMoreData = true
+    private lateinit var violasWalletAddress: String
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
             AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
                 ?: return@withContext false
-        val libraAccount =
-            AccountManager().getIdentityByCoinType(CoinTypes.Libra.coinType())
-                ?: return@withContext false
-        val bitcoinAccount =
-            AccountManager().getIdentityByCoinType(
-                if (Vm.TestNet) CoinTypes.BitcoinTest.coinType() else CoinTypes.Bitcoin.coinType()
-            ) ?: return@withContext false
 
-        violasAddress = violasAccount.address
-        libraAddress = libraAccount.address
-        bitcoinAddress = bitcoinAccount.address
+        violasWalletAddress = violasAccount.address
         return@withContext true
     }
 
@@ -127,381 +216,13 @@ class SwapRecordViewModel : PagingViewModel<SwapRecordDTO>() {
         pageSize: Int,
         pageNumber: Int,
         pageKey: Any?,
-        onSuccess: (List<SwapRecordDTO>, Any?) -> Unit
+        onSuccess: (List<ViolasSwapRecordDTO>, Any?) -> Unit
     ) {
-        if (pageNumber == 1) {
-            // 刷新动作，重制标记
-            vlsHasMoreData = true
-            vlsCrossChainHasMoreData = true
-            lbrCrossChainHasMoreData = true
-            btcCrossChainHasMoreData = true
-        }
-        lazyLogError("SwapRecord") {
-            "loadData. vlsHasMoreData($vlsHasMoreData), vlsCrossChainHasMoreData($vlsCrossChainHasMoreData), " +
-                    "lbrCrossChainHasMoreData($lbrCrossChainHasMoreData), btcCrossChainHasMoreData($btcCrossChainHasMoreData)"
-        }
-
-        val offset = (pageNumber - 1) * pageSize
-        val swapRecords = coroutineScope {
-
-            val vlsSwapRecordsDeferred =
-                if (vlsHasMoreData)
-                    exceptionAsync {
-                        exchangeService.getSwapRecords(
-                            violasAddress, pageSize, offset
-                        )
-                    }
-                else
-                    null
-
-            val vlsCrossChainSwapRecordsDeferred =
-                if (vlsCrossChainHasMoreData)
-                    exceptionAsync {
-                        exchangeService.getCrossChainSwapRecords(
-                            violasAddress, "violas", pageSize, offset
-                        )
-                    }
-                else
-                    null
-
-            val lbrCrossChainSwapRecordsDeferred =
-                if (lbrCrossChainHasMoreData)
-                    exceptionAsync {
-                        exchangeService.getCrossChainSwapRecords(
-                            libraAddress, "libra", pageSize, offset
-                        )
-                    }
-                else
-                    null
-
-            val btcCrossChainSwapRecordsDeferred =
-                if (btcCrossChainHasMoreData)
-                    exceptionAsync {
-                        exchangeService.getCrossChainSwapRecords(
-                            bitcoinAddress, "btc", pageSize, offset
-                        )
-                    }
-                else
-                    null
-
-            val vlsSwapRecords =
-                vlsSwapRecordsDeferred?.await()
-            val vlsCrossChainSwapRecords =
-                vlsCrossChainSwapRecordsDeferred?.await()
-            val lbrCrossChainSwapRecords =
-                lbrCrossChainSwapRecordsDeferred?.await()
-            val btcCrossChainSwapRecords =
-                btcCrossChainSwapRecordsDeferred?.await()
-
-            val records = mutableListOf<SwapRecordDTO>()
-            vlsSwapRecords?.forEach {
-                records.add(it.apply {
-                    inputCoinType = CoinTypes.Violas.coinType()
-                    outputCoinType = CoinTypes.Violas.coinType()
-                    customStatus = if (status == 4001)
-                        SwapRecordDTO.Status.SUCCEEDED
-                    else
-                        SwapRecordDTO.Status.FAILED
-                })
-            }
-            vlsHasMoreData = if (vlsSwapRecords == null)
-                false
-            else
-                vlsSwapRecords.size >= pageSize
-
-            vlsCrossChainSwapRecords?.forEach {
-                records.add(
-                    SwapRecordDTO(
-                        inputCoinName = it.inputCoinDisplayName ?: it.inputCoinName,
-                        inputCoinAmount = it.inputCoinAmount,
-                        outputCoinName = it.outputCoinDisplayName ?: it.outputCoinName,
-                        outputCoinAmount = it.outputCoinAmount,
-                        gasCoinName = null,
-                        gasCoinAmount = null,
-                        time = it.time,
-                        confirmedTime = it.confirmedTime,
-                        version = it.version,
-                        status = it.status,
-                        inputCoinType = getCoinType(it.inputChainName),
-                        outputCoinType = getCoinType(it.outputChainName),
-                        customStatus = when (it.status) {
-                            4001 -> SwapRecordDTO.Status.SUCCEEDED
-                            4002 -> SwapRecordDTO.Status.PROCESSING
-                            4004 -> SwapRecordDTO.Status.CANCELLED
-                            else -> SwapRecordDTO.Status.FAILED
-                        }
-                    )
-                )
-            }
-            vlsCrossChainHasMoreData = if (vlsCrossChainSwapRecords == null)
-                false
-            else
-                vlsCrossChainSwapRecords.size >= pageSize
-
-            lbrCrossChainSwapRecords?.forEach {
-                records.add(
-                    SwapRecordDTO(
-                        inputCoinName = it.inputCoinDisplayName ?: it.inputCoinName,
-                        inputCoinAmount = it.inputCoinAmount,
-                        outputCoinName = it.outputCoinDisplayName ?: it.outputCoinName,
-                        outputCoinAmount = it.outputCoinAmount,
-                        gasCoinAmount = null,
-                        gasCoinName = null,
-                        time = it.time,
-                        confirmedTime = it.confirmedTime,
-                        version = it.version,
-                        status = it.status,
-                        inputCoinType = getCoinType(it.inputChainName),
-                        outputCoinType = getCoinType(it.outputChainName),
-                        customStatus = when (it.status) {
-                            4001 -> SwapRecordDTO.Status.SUCCEEDED
-                            4002 -> SwapRecordDTO.Status.PROCESSING
-                            4004 -> SwapRecordDTO.Status.CANCELLED
-                            else -> SwapRecordDTO.Status.FAILED
-                        }
-                    )
-                )
-            }
-            lbrCrossChainHasMoreData = if (lbrCrossChainSwapRecords == null)
-                false
-            else
-                lbrCrossChainSwapRecords.size >= pageSize
-
-            btcCrossChainSwapRecords?.forEach {
-                records.add(
-                    SwapRecordDTO(
-                        inputCoinName = it.inputCoinDisplayName ?: it.inputCoinName,
-                        inputCoinAmount = it.inputCoinAmount,
-                        outputCoinName = it.outputCoinDisplayName ?: it.outputCoinName,
-                        outputCoinAmount = it.outputCoinAmount,
-                        gasCoinAmount = null,
-                        gasCoinName = null,
-                        time = it.time,
-                        confirmedTime = it.confirmedTime,
-                        version = it.version,
-                        status = it.status,
-                        inputCoinType = getCoinType(it.inputChainName),
-                        outputCoinType = getCoinType(it.outputChainName),
-                        customStatus = when (it.status) {
-                            4001 -> SwapRecordDTO.Status.SUCCEEDED
-                            4002 -> SwapRecordDTO.Status.PROCESSING
-                            4004 -> SwapRecordDTO.Status.CANCELLED
-                            else -> SwapRecordDTO.Status.FAILED
-                        }
-                    )
-                )
-            }
-            btcCrossChainHasMoreData = if (lbrCrossChainSwapRecords == null)
-                false
-            else
-                lbrCrossChainSwapRecords.size >= pageSize
-
-            records.sortByDescending { it.time }
-
-            records
-        }
-
-        onSuccess.invoke(swapRecords, null)
-        //onSuccess.invoke(mockData(), null)
-    }
-
-    private fun getCoinType(chainName: String?): Int {
-        return when {
-            chainName?.equals("libra", true) == true ->
-                CoinTypes.Libra.coinType()
-            chainName?.equals("btc", true) == true ->
-                (if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin).coinType()
-            else ->
-                CoinTypes.Violas.coinType()
-        }
-    }
-
-    private suspend fun mockData(): List<SwapRecordDTO> {
-        delay(2000)
-        return mutableListOf(
-            SwapRecordDTO(
-                inputCoinName = "VLSUSD",
-                inputCoinAmount = "10000000",
-                outputCoinName = "VLSSGD",
-                outputCoinAmount = "13909000",
-                gasCoinName = "",
-                gasCoinAmount = "",
-                time = System.currentTimeMillis(),
-                confirmedTime = System.currentTimeMillis() + 1000,
-                version = 1,
-                status = 4001,
-                customStatus = SwapRecordDTO.Status.SUCCEEDED
-            ),
-            SwapRecordDTO(
-                inputCoinName = "VLSUSD",
-                inputCoinAmount = "100000",
-                outputCoinName = "VLSEUR",
-                outputCoinAmount = "87770",
-                gasCoinName = "",
-                gasCoinAmount = "",
-                time = System.currentTimeMillis(),
-                confirmedTime = System.currentTimeMillis() + 1000,
-                version = 2,
-                status = 4002,
-                customStatus = SwapRecordDTO.Status.FAILED
-            ),
-            SwapRecordDTO(
-                inputCoinName = "VLSUSD",
-                inputCoinAmount = "10000000",
-                outputCoinName = "VLSGBP",
-                outputCoinAmount = "211111",
-                gasCoinName = "",
-                gasCoinAmount = "",
-                version = 1,
-                time = System.currentTimeMillis(),
-                confirmedTime = System.currentTimeMillis() + 1000,
-                status = 4003,
-                customStatus = SwapRecordDTO.Status.PROCESSING
-            ),
-            SwapRecordDTO(
-                inputCoinName = "VLSUSD",
-                inputCoinAmount = "100000",
-                outputCoinName = "BTC",
-                outputCoinAmount = "1000",
-                gasCoinName = "",
-                gasCoinAmount = "",
-                time = System.currentTimeMillis(),
-                confirmedTime = System.currentTimeMillis() + 1000,
-                version = 2,
-                status = 4004,
-                customStatus = SwapRecordDTO.Status.CANCELLED
-            )
+        val list = exchangeService.getViolasSwapRecords(
+            violasWalletAddress,
+            pageSize,
+            (pageNumber - 1) * pageSize
         )
-    }
-}
-
-class SwapRecordViewAdapter(
-    retryCallback: () -> Unit,
-    private val clickItemCallback: ((SwapRecordDTO) -> Unit)? = null,
-    private val clickRetryCallback: ((SwapRecordDTO, Int) -> Unit)? = null
-) : PagingViewAdapter<SwapRecordDTO>(retryCallback, SwapRecordDiffCallback()) {
-
-    private val simpleDateFormat = SimpleDateFormat("MM.dd HH:mm:ss", Locale.ENGLISH)
-
-    override fun onCreateViewHolderSupport(
-        parent: ViewGroup,
-        viewType: Int
-    ): BaseViewHolder<out Any> {
-        return SwapRecordViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_market_swap_record,
-                parent,
-                false
-            ),
-            simpleDateFormat,
-            clickItemCallback,
-            clickRetryCallback
-        )
-    }
-}
-
-class SwapRecordViewHolder(
-    view: View,
-    private val simpleDateFormat: SimpleDateFormat,
-    private val clickItemCallback: ((SwapRecordDTO) -> Unit)? = null,
-    private val clickRetryCallback: ((SwapRecordDTO, Int) -> Unit)? = null
-) : BaseViewHolder<SwapRecordDTO>(view) {
-
-    init {
-        itemView.setOnClickListener(this)
-        itemView.tvRetry.setOnClickListener(this)
-    }
-
-    override fun onViewBind(itemPosition: Int, itemData: SwapRecordDTO?) {
-        itemData?.let {
-            itemView.tvTime.text = if (it.inputCoinType == it.outputCoinType)
-                formatDate(correctDateLength(it.confirmedTime) - 1000, simpleDateFormat)
-            else
-                formatDate(it.time, simpleDateFormat)
-
-            itemView.tvInputCoin.text =
-                if (it.inputCoinName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
-                    getString(R.string.value_null)
-                } else {
-                    "${convertAmountToDisplayAmountStr(
-                        it.inputCoinAmount,
-                        CoinTypes.parseCoinType(it.inputCoinType)
-                    )} ${it.inputCoinName}"
-                }
-
-            itemView.tvOutputCoin.text =
-                if (it.outputCoinName.isNullOrBlank() || it.outputCoinAmount.isNullOrBlank()) {
-                    getString(R.string.value_null)
-                } else {
-                    "${convertAmountToDisplayAmountStr(
-                        it.outputCoinAmount,
-                        CoinTypes.parseCoinType(it.outputCoinType)
-                    )} ${it.outputCoinName}"
-                }
-
-            when (it.customStatus) {
-                SwapRecordDTO.Status.SUCCEEDED -> {
-                    itemView.tvRetry.visibility = View.GONE
-                    itemView.tvState.setText(R.string.market_swap_state_succeeded)
-                    itemView.tvState.setTextColor(
-                        getColorByAttrId(R.attr.textColorSuccess, itemView.context)
-                    )
-                }
-
-                SwapRecordDTO.Status.PROCESSING -> {
-                    // TODO 取消先隐藏
-                    itemView.tvRetry.visibility = View.GONE
-                    itemView.tvRetry.expandTouchArea()
-                    itemView.tvState.setText(R.string.market_swap_state_processing)
-                    itemView.tvState.setTextColor(
-                        getColorByAttrId(R.attr.textColorProcessing, itemView.context)
-                    )
-                }
-
-                SwapRecordDTO.Status.CANCELLED -> {
-                    itemView.tvRetry.visibility = View.GONE
-                    itemView.tvState.setText(R.string.market_swap_state_cancelled)
-                    itemView.tvState.setTextColor(
-                        getColorByAttrId(android.R.attr.textColorTertiary, itemView.context)
-                    )
-                }
-
-                else -> {
-                    itemView.tvRetry.visibility = View.GONE
-                    itemView.tvState.setText(R.string.market_swap_state_failed)
-                    itemView.tvState.setTextColor(
-                        getColorByAttrId(R.attr.textColorFailure, itemView.context)
-                    )
-                }
-            }
-        }
-    }
-
-    override fun onViewClick(view: View, itemPosition: Int, itemData: SwapRecordDTO?) {
-        itemData?.let {
-            when (view) {
-                itemView -> clickItemCallback?.invoke(it)
-                itemView.tvRetry -> clickRetryCallback?.invoke(it, itemPosition)
-                else -> {
-                    // ignore
-                }
-            }
-        }
-    }
-}
-
-class SwapRecordDiffCallback : DiffUtil.ItemCallback<SwapRecordDTO>() {
-    override fun areItemsTheSame(
-        oldItem: SwapRecordDTO,
-        newItem: SwapRecordDTO
-    ): Boolean {
-        return oldItem.hashCode() == newItem.hashCode()
-    }
-
-    override fun areContentsTheSame(
-        oldItem: SwapRecordDTO,
-        newItem: SwapRecordDTO
-    ): Boolean {
-        return oldItem == newItem
+        onSuccess.invoke(list, null)
     }
 }

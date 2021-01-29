@@ -12,7 +12,7 @@ import com.palliums.base.BaseFragment
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColor
 import com.palliums.utils.isFastMultiClick
-import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.groupList.GroupListLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -112,10 +112,9 @@ class AccountSelectionFragment : BaseFragment() {
             }
         }
         vAccountList.addItemDecoration(
-            RecycleViewItemDividers(
+            RecyclerViewItemDividers(
                 top = DensityUtility.dp2px(context, 10),
                 bottom = DensityUtility.dp2px(context, 60),
-                showFirstTop = true,
                 onlyShowLastBottom = true
             )
         )
@@ -141,11 +140,11 @@ class AccountSelectionFragment : BaseFragment() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
+            setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16F)
             setTextColor(getColor(R.color.account_group_title, context))
         }
 
-        override fun refreshView(itemData: GroupListLayout.ItemData?) {
+        override fun refreshView(itemData: GroupListLayout.ItemData?, lastGroupItem: Boolean?) {
             if (itemData == null || itemData.getGroupName().isNullOrEmpty()) {
                 tvTitle.visibility = View.GONE
             } else {
@@ -197,7 +196,7 @@ class AccountSelectionFragment : BaseFragment() {
             rootView.setOnClickListener(this)
         }
 
-        override fun refreshView(itemData: GroupListLayout.ItemData?) {
+        override fun refreshView(itemData: GroupListLayout.ItemData?, lastGroupItem: Boolean?) {
             accountVo = itemData as? AccountVo
 
             accountVo?.let {

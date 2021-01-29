@@ -7,15 +7,14 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.palliums.utils.CustomIOScope
 import com.palliums.utils.exceptionAsync
-import com.palliums.violas.http.MapRelationDTO
-import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
+import com.violas.wallet.repository.http.exchange.MapRelationDTO
+import com.violas.wallet.repository.http.exchange.PoolLiquidityReserveInfoDTO
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
-import com.violas.wallet.utils.str2CoinType
+import com.violas.wallet.utils.str2CoinNumber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.math.BigInteger
@@ -41,8 +40,8 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     private val mMappingRealMap = hashMapOf<String, MapRelationDTO>()
     private var isRun = false
 
-    private val mViolasService by lazy {
-        DataRepository.getViolasService()
+    private val mExchangeService by lazy {
+        DataRepository.getExchangeService()
     }
 
     private val mHandler = Handler(Looper.getMainLooper(), this)
@@ -137,17 +136,17 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     }
 
     private fun mappingKey(mappingReal: MapRelationDTO): String {
-        return when (str2CoinType(mappingReal.chain)) {
+        return when (str2CoinNumber(mappingReal.chain)) {
             CoinTypes.Bitcoin.coinType(),
             CoinTypes.BitcoinTest.coinType() -> {
-                "${str2CoinType(mappingReal.chain)}"
+                "${str2CoinNumber(mappingReal.chain)}"
             }
             CoinTypes.Violas.coinType(),
             CoinTypes.Libra.coinType() -> {
-                "${str2CoinType(mappingReal.chain)}${mappingReal.mapName}"
+                "${str2CoinNumber(mappingReal.chain)}${mappingReal.mapName}"
             }
             else -> {
-                "${str2CoinType(mappingReal.chain)}${mappingReal.mapName}"
+                "${str2CoinNumber(mappingReal.chain)}${mappingReal.mapName}"
             }
         }
     }
@@ -155,17 +154,18 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     private fun refreshReserve() {
         launch {
             val marketAllReservePairDeferred =
-                exceptionAsync { mViolasService.getMarketAllReservePair() }
+                exceptionAsync { mExchangeService.getMarketAllReservePair() }
 
-            if (mMappingRealMap.isEmpty()) {
+            // 交易市场不支持跨链兑换
+            /*if (mMappingRealMap.isEmpty()) {
                 val marketMappingRealCoinDeferred =
-                    exceptionAsync { mViolasService.getMarketPairRelation() }
+                    exceptionAsync { mExchangeService.getMarketPairRelation() }
                 val marketMappingRealCoin = marketMappingRealCoinDeferred.await()
                 marketMappingRealCoin?.forEach { mappingReal ->
                     mMappingRealMap[mappingKey(mappingReal)] =
                         mappingReal
                 }
-            }
+            }*/
 
             val marketAllReservePair = marketAllReservePairDeferred.await()
             if (marketAllReservePair != null) {
@@ -187,9 +187,9 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     }
 
     private fun getOutputAmountWithFee(amountIn: Long, reserveIn: Long, reserveOut: Long): Long {
-        val amountInWithFee = BigInteger.valueOf(amountIn).multiply(BigInteger.valueOf(997))
+        val amountInWithFee = BigInteger.valueOf(amountIn).multiply(BigInteger.valueOf(9997))
         val numerator = amountInWithFee.multiply(BigInteger.valueOf(reserveOut))
-        val denominator = BigInteger.valueOf(reserveIn).multiply(BigInteger.valueOf(1000))
+        val denominator = BigInteger.valueOf(reserveIn).multiply(BigInteger.valueOf(10000))
             .add(amountInWithFee)
         val amountOut = numerator.divide(denominator)
         return amountOut.toLong()
@@ -242,20 +242,28 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
             bestTradeExactOut(mReserveList, inIndex, outIndex, inputAmount)
         }
 
-        val tradeResult = trades?.first()?.let {
-            if (isInputFrom) {
-                // 由输入价格直接计算输出手续费
-                val amount = getOutputAmountsWithFee(inputAmount, it.path).last()
-                val fee = it.amount - amount
-                TradeResult(it.path, amount, fee)
-            } else {
-                // 由输出价格计算手续费
-                val fee = inputAmount - getOutputAmountsWithFee(it.amount, it.path).last()
-                TradeResult(it.path, it.amount, fee)
+        val tradeResult = if (!trades.isNullOrEmpty()) {
+            trades.first().let {
+                if (isInputFrom) {
+                    // 由输入价格直接计算输出手续费
+                    val amount = getOutputAmountsWithFee(inputAmount, it.path).last()
+                    val fee = it.amount - amount
+                    TradeResult(it.path, amount, fee)
+                } else {
+                    // 由输出价格计算手续费
+                    val fee = inputAmount - getOutputAmountsWithFee(it.amount, it.path).last()
+                    TradeResult(it.path, it.amount, fee)
+                }
             }
+        } else {
+            null
         }
 
         if (BuildConfig.DEBUG) {
+            Log.e(
+                "ReserveManager",
+                "from: ${fromToken.coinNumber}  to: ${fromToken.coinNumber} input:$inputAmount"
+            )
             Log.d("ReserveManager", "route planning start")
             trades?.forEach {
                 Log.d("ReserveManager", it.toString())

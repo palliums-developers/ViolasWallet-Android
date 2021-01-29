@@ -88,13 +88,13 @@ fun openEmailClient(
     }
 }
 
-fun openBrowser(activity: Activity, url: String): Boolean {
+fun openBrowser(context: Context, url: String): Boolean {
     return try {
         val uri = Uri.parse(url)
         val intent = Intent(Intent.ACTION_VIEW, uri)
 
         val resolveInfos =
-            activity.packageManager.queryIntentActivities(intent, 0)
+            context.packageManager.queryIntentActivities(intent, 0)
         /*val browserIntentMap = mutableMapOf<String, Intent>()
         var packageName: String
         resolveInfos.forEach {
@@ -153,7 +153,7 @@ fun openBrowser(activity: Activity, url: String): Boolean {
             )
         }*/
 
-        activity.startActivity(intent)
+        context.startActivity(intent)
 
         true
     } catch (ignore: Exception) {

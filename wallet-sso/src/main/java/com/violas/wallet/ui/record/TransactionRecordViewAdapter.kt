@@ -3,12 +3,11 @@ package com.violas.wallet.ui.record
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
+import com.palliums.paging.PagingViewAdapter
 import com.palliums.utils.getColor
 import com.palliums.utils.getString
 import com.violas.wallet.R
-import com.palliums.paging.PagingViewAdapter
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import kotlinx.android.synthetic.main.item_transaction_record.view.*
 import java.text.SimpleDateFormat
@@ -21,10 +20,8 @@ import java.util.*
  * desc: 交易记录的ViewAdapter
  */
 class TransactionRecordViewAdapter(
-    retryCallback: () -> Unit,
     private val onClickQuery: (TransactionRecordVO) -> Unit
-) :
-    PagingViewAdapter<TransactionRecordVO>(retryCallback, TransactionRecordDiffCallback()) {
+) : PagingViewAdapter<TransactionRecordVO>() {
 
     private val mSimpleDateFormat = SimpleDateFormat("yy.MM.dd HH:mm", Locale.CHINA)
 
@@ -113,21 +110,5 @@ class TransactionRecordViewHolder(
                 }
             }
         }
-    }
-}
-
-class TransactionRecordDiffCallback : DiffUtil.ItemCallback<TransactionRecordVO>() {
-    override fun areItemsTheSame(
-        oldItem: TransactionRecordVO,
-        newItem: TransactionRecordVO
-    ): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(
-        oldItem: TransactionRecordVO,
-        newItem: TransactionRecordVO
-    ): Boolean {
-        return oldItem == newItem
     }
 }

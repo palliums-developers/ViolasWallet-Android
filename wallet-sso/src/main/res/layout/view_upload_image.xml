@@ -37,7 +37,7 @@
         android:layout_marginStart="@dimen/dp_4"
         android:text="@string/action_upload"
         android:textColor="@color/color_0087E3_80"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

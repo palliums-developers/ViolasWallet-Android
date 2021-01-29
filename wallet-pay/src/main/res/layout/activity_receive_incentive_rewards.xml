@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.incentive.receiveRewards.ReceiveIncentiveRewardsActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clDescGroup"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp_17"
+        android:layout_marginTop="@dimen/dp_8"
+        android:background="@drawable/bg_square_solid_corners_16_secondary"
+        android:paddingHorizontal="@dimen/dp_15"
+        android:paddingVertical="@dimen/dp_14"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:text="@string/incentive_receive_desc"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="@dimen/fs_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <EditText
+        android:id="@+id/etPhoneNumber"
+        style="@style/EditText"
+        android:layout_height="@dimen/dp_53"
+        android:layout_marginStart="@dimen/dp_34"
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginEnd="@dimen/dp_30"
+        android:gravity="center_vertical"
+        android:hint="@string/incentive_receive_hint_phone_number"
+        android:imeOptions="actionNext"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/clDescGroup"
+        tools:paddingStart="@dimen/dp_70"
+        tools:text="123456789123456789123456789123456789123456789123456789" />
+
+    <TextView
+        android:id="@+id/tvAreaCode"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_0"
+        android:gravity="center"
+        android:paddingEnd="@dimen/dp_10"
+        android:textColor="@color/def_text_body"
+        android:textSize="@dimen/fs_16"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/etPhoneNumber"
+        app:layout_constraintStart_toStartOf="@id/etPhoneNumber"
+        app:layout_constraintTop_toTopOf="@id/etPhoneNumber"
+        tools:text="+1086" />
+
+    <View
+        android:layout_width="@dimen/dp_1"
+        android:layout_height="@dimen/dp_16"
+        android:background="?attr/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@id/etPhoneNumber"
+        app:layout_constraintStart_toEndOf="@id/tvAreaCode"
+        app:layout_constraintTop_toTopOf="@id/etPhoneNumber" />
+
+
+    <!--<ImageView
+        android:id="@+id/ivSelectAreaCode"
+        android:layout_width="@dimen/dp_22"
+        android:layout_height="@dimen/dp_0"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:paddingTop="@dimen/dp_3"
+        android:paddingEnd="@dimen/dp_10"
+        android:rotation="0"
+        android:src="@drawable/icon_down_arrow_white"
+        android:tint="@color/color_3C3848_80"
+        android:tintMode="multiply"
+        app:layout_constraintBottom_toBottomOf="@id/etPhoneNumber"
+        app:layout_constraintStart_toEndOf="@id/tvAreaCode"
+        app:layout_constraintTop_toTopOf="@id/etPhoneNumber" />-->
+
+    <EditText
+        android:id="@+id/etVerificationCode"
+        style="@style/EditText.Code"
+        android:layout_height="@dimen/dp_53"
+        android:layout_marginStart="@dimen/dp_34"
+        android:layout_marginEnd="@dimen/dp_30"
+        android:ellipsize="end"
+        android:hint="@string/incentive_receive_hint_verification_code"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etPhoneNumber"
+        tools:paddingEnd="@dimen/dp_200"
+        tools:text="234562234562234562234562234562234562234562" />
+
+    <TextView
+        android:id="@+id/tvGetVerificationCode"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_0"
+        android:gravity="end|center_vertical"
+        android:paddingStart="@dimen/dp_10"
+        android:text="@string/incentive_receive_action_get_verification_code"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="@dimen/fs_12"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/etVerificationCode"
+        app:layout_constraintEnd_toEndOf="@id/etVerificationCode"
+        app:layout_constraintTop_toTopOf="@id/etVerificationCode" />
+
+    <View
+        android:layout_width="@dimen/dp_1"
+        android:layout_height="@dimen/dp_24"
+        android:background="?attr/colorDivider"
+        app:layout_constraintBottom_toBottomOf="@id/etVerificationCode"
+        app:layout_constraintEnd_toStartOf="@id/tvGetVerificationCode"
+        app:layout_constraintTop_toTopOf="@id/etVerificationCode" />
+
+    <EditText
+        android:id="@+id/etInviterAddress"
+        style="@style/EditText.Code"
+        android:layout_height="@dimen/dp_53"
+        android:layout_marginStart="@dimen/dp_34"
+        android:layout_marginEnd="@dimen/dp_30"
+        android:ellipsize="end"
+        android:hint="@string/incentive_receive_hint_inviter_address"
+        android:imeOptions="actionDone"
+        android:singleLine="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etVerificationCode"
+        tools:text="234562234562234562234562234562234562234562faf" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnReceive"
+        style="@style/BaseButtonPrimary"
+        android:layout_marginTop="@dimen/dp_57"
+        android:text="@string/incentive_receive_action_receive_now"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etInviterAddress" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

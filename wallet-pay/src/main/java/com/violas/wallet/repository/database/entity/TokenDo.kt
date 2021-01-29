@@ -20,11 +20,11 @@ data class TokenDo(
     @ColumnInfo(name = "assets_name")
     var assetsName: String = "",
     @ColumnInfo(name = "address")
-    var address: String = "00000000000000000000000000000000",
+    var address: String = "",
     @ColumnInfo(name = "module")
-    var module: String = "LBR",
+    var module: String = "",
     @ColumnInfo(name = "name")
-    var name: String = "LBR",
+    var name: String = "",
     @ColumnInfo(name = "enable")
     var enable: Boolean = false,
     @ColumnInfo(name = "amount")

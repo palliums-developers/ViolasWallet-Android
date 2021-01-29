@@ -32,7 +32,7 @@
             android:layout_marginEnd="24dp"
             android:layout_marginStart="24dp"
             android:textColor="?android:attr/textColorSecondary"
-            android:textSize="16sp"
+            android:textSize="16dp"
             android:singleLine="true"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"/>
@@ -45,7 +45,7 @@
             android:layout_marginEnd="24dp"
             android:layout_marginStart="24dp"
             android:textColor="?android:attr/textColorSecondary"
-            android:textSize="16sp"
+            android:textSize="16dp"
             android:maxLines="4"/>
 
         <ImageView
@@ -64,7 +64,7 @@
             android:layout_marginStart="24dp"
             android:paddingTop="16dp"
             android:paddingBottom="24dp"
-            android:textSize="14sp"
+            android:textSize="14dp"
             android:gravity="center_horizontal"
             android:accessibilityLiveRegion="polite"
             android:text="@string/fingerprint_dialog_touch_sensor"

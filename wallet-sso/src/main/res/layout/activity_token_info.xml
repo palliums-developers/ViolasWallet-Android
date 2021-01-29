@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:text="0.00000000"
             android:textColor="#3C3848"
-            android:textSize="27sp"
+            android:textSize="@dimen/fs_27"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -42,7 +42,7 @@
             android:layout_marginStart="6dp"
             android:layout_marginBottom="4dp"
             android:textColor="@color/color_3C3848"
-            android:textSize="@dimen/sp_15"
+            android:textSize="@dimen/fs_15"
             app:layout_constraintBottom_toBottomOf="@id/tvAmount"
             app:layout_constraintStart_toEndOf="@id/tvAmount"
             tools:text="BTC" />
@@ -55,7 +55,7 @@
             android:layout_marginTop="@dimen/dp_10"
             android:lineHeight="20dp"
             android:textColor="#3D3949"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toStartOf="@id/ivCopy"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvAmount"
@@ -114,7 +114,7 @@
                 android:paddingTop="6dp"
                 android:text="@string/transfer"
                 android:textColor="#22126C"
-                android:textSize="16sp" />
+                android:textSize="@dimen/fs_16" />
         </LinearLayout>
 
         <View
@@ -143,7 +143,7 @@
                 android:paddingTop="6dp"
                 android:text="@string/collection"
                 android:textColor="#22126C"
-                android:textSize="16sp" />
+                android:textSize="@dimen/fs_16" />
         </LinearLayout>
     </LinearLayout>
 
@@ -155,7 +155,7 @@
         android:layout_marginTop="14dp"
         android:text="@string/hint_transaction_record"
         android:textColor="#22126C"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/llHeaderBottom" />
 

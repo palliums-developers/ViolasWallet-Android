@@ -10,121 +10,121 @@ import com.palliums.BuildConfig
  * desc:
  */
 
-inline fun Any.lazyLogVerbose(
+inline fun Any.logVerbose(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
     Log.v(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
     )
 }
 
-inline fun Any.lazyLogVerbose(
+inline fun Any.logVerbose(
     tr: Throwable,
     tag: String? = null,
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
     Log.v(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
         tr
     )
 }
 
-inline fun Any.lazyLogDebug(
+inline fun Any.logDebug(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
     Log.d(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
     )
 }
 
-inline fun Any.lazyLogDebug(
+inline fun Any.logDebug(
     tr: Throwable,
     tag: String? = null,
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
     Log.d(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
         tr
     )
 }
 
-inline fun Any.lazyLogInfo(
+inline fun Any.logInfo(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
     Log.i(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
     )
 }
 
-inline fun Any.lazyLogInfo(
+inline fun Any.logInfo(
     tr: Throwable,
     tag: String? = null,
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
     Log.i(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
         tr
     )
 }
 
-inline fun Any.lazyLogWarn(
+inline fun Any.logWarn(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
     Log.w(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
     )
 }
 
-inline fun Any.lazyLogWarn(
+inline fun Any.logWarn(
     tr: Throwable,
     tag: String? = null,
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
     Log.w(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
         tr
     )
 }
 
-inline fun Any.lazyLogError(
+inline fun Any.logError(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
     Log.e(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
     )
 }
 
-inline fun Any.lazyLogError(
+inline fun Any.logError(
     tr: Throwable,
     tag: String? = null,
     lazyMsg: () -> String
 ) {
     if (!BuildConfig.DEBUG) return
     Log.e(
-        tag ?: this.javaClass.canonicalName,
+        tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
         tr
     )

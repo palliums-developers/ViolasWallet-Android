@@ -28,6 +28,7 @@ public class DensityUtility {
 
     /**
      * screenWidth
+     *
      * @param context
      * @return
      */
@@ -38,6 +39,7 @@ public class DensityUtility {
 
     /**
      * screenHeight
+     *
      * @param context
      * @return
      */
@@ -58,8 +60,8 @@ public class DensityUtility {
                 dpVal, context.getResources().getDisplayMetrics());
     }
 
-    public static int dp2px(Context context, float dpVal) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+    public static float dp2px(Context context, float dpVal) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 dpVal, context.getResources().getDisplayMetrics());
     }
 

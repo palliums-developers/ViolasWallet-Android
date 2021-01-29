@@ -69,15 +69,17 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
                 WindowManager.LayoutParams.MATCH_PARENT
             )
 
-            it.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-
-            it.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-
             it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            it.setSystemBar(
+                layoutToStatusBar = true,
+                layoutToNavigationBar = true,
+                lightModeStatusBar = false,
+                lightModeNavigationBar = false,
+                hideStatusBar = false,
+                hideNavigationBar = true,
+                immersiveStickyMode = true
+            )
         }
 
         dialog?.setCancelable(true)
@@ -132,7 +134,7 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
             mutableListOf(
                 Pair(
                     getResourceId(R.attr.transDetailsSaveIcon, requireContext()),
-                    R.string.desc_save_into_album
+                    R.string.save_picture_title
                 )
             )
         ) {
@@ -148,7 +150,7 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
                 tvDesc.setTextColor(
                     getColorByAttrId(R.attr.textColorProcessing, requireContext())
                 )
-                tvDesc.setText(R.string.desc_transaction_state_transaction_pending)
+                tvDesc.setText(R.string.txn_details_state_processing)
             }
 
             TransactionState.FAILURE -> {
@@ -161,19 +163,19 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
                 tvDesc.setText(
                     when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
-                            R.string.desc_transaction_state_transfer_failure
+                            R.string.txn_details_state_transfer_failure
                         }
 
                         TransactionType.COLLECTION -> {
-                            R.string.desc_transaction_state_collection_failure
+                            R.string.txn_details_state_collection_failure
                         }
 
                         TransactionType.ADD_CURRENCY -> {
-                            R.string.desc_transaction_state_add_currency_failure
+                            R.string.txn_details_state_add_currency_failure
                         }
 
                         else -> {
-                            R.string.desc_transaction_state_transaction_failure
+                            R.string.txn_details_state_transaction_failure
                         }
                     }
                 )
@@ -189,19 +191,19 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
                 tvDesc.setText(
                     when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
-                            R.string.desc_transaction_state_transfer_success
+                            R.string.txn_details_state_transfer_success
                         }
 
                         TransactionType.COLLECTION -> {
-                            R.string.desc_transaction_state_collection_success
+                            R.string.txn_details_state_collection_success
                         }
 
                         TransactionType.ADD_CURRENCY -> {
-                            R.string.desc_transaction_state_add_currency_success
+                            R.string.txn_details_state_add_currency_success
                         }
 
                         else -> {
-                            R.string.desc_transaction_state_transaction_success
+                            R.string.txn_details_state_transaction_success
                         }
                     }
                 )

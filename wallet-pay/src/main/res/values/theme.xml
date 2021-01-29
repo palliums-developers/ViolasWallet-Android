@@ -1,37 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.APP.DayNight.Home">
-        <item name="android:windowAnimationStyle">@style/MainWindowAnimation</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
+    <style name="Theme.APP.DayNight.Home.BankPopup">
+        <item name="actionOverflowMenuStyle">@style/ActionOverflowMenuStyle.HomeBank</item>
     </style>
 
-    <style name="Theme.APP.DayNight.WalletConnect" parent="Theme.APP.DayNight.Secondary">
+    <style name="Theme.APP.DayNight.Home">
+        <item name="android:windowAnimationStyle">@style/MainWindowAnimation</item>
+    </style>
+
+    <style name="Theme.APP.DayNight.Secondary.WalletConnect">
         <item name="android:windowAnimationStyle">@style/ScanLoginWindowAnimation</item>
     </style>
 
-    <style name="Theme.APP.DayNight.Launcher" parent="Theme.APP.DayNight.Tertiary">
+    <style name="Theme.APP.DayNight.Tertiary.Launcher">
         <item name="android:windowAnimationStyle">@style/LauncherWindowAnimation</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">false</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:backgroundDimEnabled">false</item>
-        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowFullscreen">false</item>
     </style>
 
     <style name="Theme.APP.DayNight.Tertiary">
         <item name="android:windowBackground">@drawable/shape_win_bg_gradient</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
     </style>
 
     <style name="Theme.APP.DayNight.Secondary">
-        <item name="android:colorBackground">@color/color_F7F7F9</item>
+        <item name="android:windowBackground">?attr/colorSurfaceSecondary</item>
     </style>
 
     <style name="Theme.APP.DayNight" parent="Theme.APP" />
 
     <style name="Theme.APP" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--System attrs-->
         <item name="colorPrimary">@color/color_7038FD</item>
         <item name="colorPrimaryVariant">@color/color_2A00C9</item>
         <item name="colorPrimaryDark">@color/color_2A00C9</item>
@@ -60,13 +63,16 @@
         <item name="android:textColorHint">@color/color_BABABA</item>
         <item name="android:textColorHighlight">@color/color_504ACB</item>
         <item name="android:textColorLink">@color/color_504ACB</item>
+        <item name="android:textSize">@dimen/fs_14</item>
+        <item name="android:textAllCaps">false</item>
 
         <item name="android:windowBackground">?android:colorBackground</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@color/translucent</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:navigationBarColor">@color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
 
         <item name="android:screenOrientation">portrait</item>
@@ -74,6 +80,8 @@
 
         <item name="android:windowAnimationStyle">@style/AppWindowAnimation</item>
         <item name="actionOverflowButtonStyle">@style/ActionOverflowButtonStyle</item>
+        <item name="actionOverflowMenuStyle">@style/ActionOverflowMenuStyle</item>
+        <item name="toolbarNavigationButtonStyle">@style/ToolbarNavigationButtonStyle</item>
         <item name="buttonStyle">@style/ButtonStyle</item>
 
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
@@ -81,40 +89,56 @@
         <item name="actionBarSize">@dimen/dp_48</item>
         <item name="android:actionBarSize">@dimen/dp_48</item>
 
+        <!--Library attrs-->
+        <!--StatusLayout 资源属性-->
+        <item name="slTipsTextColor">@color/color_BABABA</item>
+        <item name="slTipsTextSize">@dimen/fs_14</item>
+        <item name="slReloadTextColor">@color/color_BABABA</item>
+        <item name="slReloadTextSize">@dimen/fs_14</item>
+        <item name="slEmptyIcon">?attr/bgLoadEmptyData</item>
+        <item name="slFailureIcon">?attr/bgLoadFailure</item>
+        <item name="slNoNetworkIcon">?attr/bgLoadFailure</item>
+
+        <!--SmartRefreshLayout 资源属性-->
+        <item name="srlTextSizeTitle">@dimen/fs_14</item>
+        <item name="srlTextSizeTime">@dimen/fs_12</item>
+
         <!--App custom attrs-->
         <!--App通用资源属性-->
         <item name="statusBarSize">@dimen/dp_24</item>
+        <item name="strokeThickness">@dimen/dp_0.8</item>
+        <item name="dividerThickness">@dimen/dp_0.5</item>
 
         <item name="colorSurfaceSecondary">@color/color_F7F7F9</item>
-        <item name="colorItemPressedPrimary">@color/color_C2C2C2</item>
-        <item name="colorItemPressedSecondary">@color/color_BABABA</item>
+        <item name="colorItemPressed">@color/color_DDDDDD</item>
         <item name="colorWebProgressBg">@color/black_06</item>
         <item name="colorDivider">@color/color_DEDEDE</item>
         <item name="colorTint">@color/color_DEDEDE</item>
         <item name="colorSwitchBgNormal">@color/color_BDBDBD</item>
         <item name="colorSwitchBgChecked">@color/color_4730A7</item>
+        <item name="colorListGroup">@color/color_F4F4F4</item>
+        <item name="boxStrokeColorSecondary">@color/color_333333</item>
 
         <item name="textColorWarn">@color/color_FB8F0B</item>
         <item name="textColorProcessing">@color/color_FB8F0B</item>
         <item name="textColorSuccess">@color/color_13B788</item>
         <item name="textColorFailure">@color/color_E54040</item>
 
-        <item name="iconBackPrimary">@drawable/ic_back_dark</item>
+        <item name="iconBackPrimary">@drawable/ic_back_gray</item>
         <item name="iconBackSecondary">@drawable/ic_back_light</item>
-        <item name="iconBackTertiary">@drawable/ic_back_gray</item>
         <item name="iconClosePrimary">@mipmap/ic_close_primary</item>
         <item name="iconCloseSecondary">@mipmap/ic_close_secondary</item>
         <item name="iconShare">@mipmap/ic_share</item>
-        <item name="iconAdd">@drawable/icon_add_address</item>
+        <item name="iconAdd">@mipmap/ic_add</item>
         <item name="iconLogo">@drawable/ic_logo_corner</item>
         <item name="iconAppName">@drawable/ic_violas</item>
         <item name="iconForward">@drawable/ic_right_arrow_gray</item>
         <item name="iconArrow">@drawable/icon_down_arrow_white</item>
         <item name="iconCopy">@drawable/ic_token_info_copy</item>
         <item name="iconSearch">@mipmap/ic_search</item>
-        <item name="iconShowPrimary">@drawable/ic_total_balance_show</item>
+        <item name="iconShowPrimary">@mipmap/ic_total_balance_show</item>
         <item name="iconShowSecondary">@drawable/ic_password_text_show</item>
-        <item name="iconHidePrimary">@drawable/ic_total_balance_hidden</item>
+        <item name="iconHidePrimary">@mipmap/ic_total_balance_hidden</item>
         <item name="iconHideSecondary">@drawable/ic_password_text_hidden</item>
         <item name="iconScanPrimary">@drawable/icon_scan_purple</item>
         <item name="iconScanSecondary">@drawable/icon_scan_white</item>
@@ -126,22 +150,37 @@
         <item name="iconRecordStateFailed">@drawable/ic_record_state_failed</item>
         <item name="iconRecordStateCancelled">@drawable/ic_record_state_cancelled</item>
         <item name="iconCoinDefLogo">@drawable/ic_coin_default_logo</item>
+        <item name="iconDownArrow">@mipmap/ic_down_arrow</item>
+        <item name="iconEndArrow">@mipmap/ic_end_arrow</item>
+        <item name="iconMore">@mipmap/ic_more</item>
+        <item name="iconRecordPrimary">@mipmap/ic_record_primary</item>
+        <item name="iconRecordSecondary">@mipmap/ic_record_secondary</item>
+        <item name="iconTriangleArrow">@mipmap/ic_triangle_arrow</item>
+        <item name="iconAmount">@mipmap/ic_amount</item>
+        <item name="iconInfo">@mipmap/ic_info</item>
+        <item name="iconMsgNotificationLight">@mipmap/ic_msg_notification_white</item>
+        <item name="iconClear">@mipmap/ic_clear</item>
+
+        <item name="bgLoadFailure">@mipmap/bg_load_failure</item>
+        <item name="bgLoadEmptyData">@mipmap/bg_load_empty_data</item>
+        <item name="bgSearchEmptyData">@mipmap/bg_search_empty_data</item>
+        <item name="bgPageTopViewLight">@mipmap/bg_page_top_view_light</item>
 
         <!--首页资源属性-->
         <item name="homeBottomTabSelectedTextColor">@color/color_4730A7</item>
         <item name="homeBottomTabNormalTextColor">@color/color_3D3949</item>
-        <item name="homeBottomWalletTabSelectedIcon">@drawable/table_wallet_selected</item>
-        <item name="homeBottomWalletTabNormalIcon">@drawable/table_wallet_normal</item>
-        <item name="homeBottomMarketTabSelectedIcon">@drawable/table_market_selected</item>
-        <item name="homeBottomMarketTabNormalIcon">@drawable/table_market_normal</item>
-        <item name="homeBottomMeTabSelectedIcon">@drawable/table_me_selected</item>
-        <item name="homeBottomMeTabNormalIcon">@drawable/table_me_normal</item>
+        <item name="homeBottomWalletTabSelectedIcon">@drawable/ic_home_table_wallet_selected</item>
+        <item name="homeBottomWalletTabNormalIcon">@drawable/ic_home_table_wallet_normal</item>
+        <item name="homeBottomMarketTabSelectedIcon">@drawable/ic_home_table_market_selected</item>
+        <item name="homeBottomMarketTabNormalIcon">@drawable/ic_home_table_market_normal</item>
+        <item name="homeBottomMeTabSelectedIcon">@drawable/ic_home_table_me_selected</item>
+        <item name="homeBottomMeTabNormalIcon">@drawable/ic_home_table_me_normal</item>
+        <item name="homeBottomBankTabSelectedIcon">@drawable/ic_home_table_bank_selected</item>
+        <item name="homeBottomBankTabNormalIcon">@drawable/ic_home_table_bank_normal</item>
         <item name="homeBottomNavigationBg">@color/white</item>
         <item name="homeFragmentTopBg">@drawable/bg_wallet_main</item>
 
         <!--钱包首页资源属性-->
-        <item name="walletHomeTotalAssetsTextColor">@color/color_9A91BE</item>
-        <item name="walletHomeAssetsTextColor">@color/color_7D71AA</item>
         <item name="walletHomeAddAssetsIcon">@drawable/icon_add_assert</item>
         <item name="walletHomeInitWalletTextColor">@color/color_261372</item>
         <item name="walletHomeCreateWalletIcon">@drawable/ic_create_account</item>
@@ -149,21 +188,38 @@
         <item name="walletHomeWalletConnectTextColor">@color/color_FB8F0B</item>
         <item name="walletHomeWalletConnectBgColor">@color/color_463288</item>
         <item name="walletHomeWalletConnectIcon">@drawable/ic_wallet_connect_indicator</item>
-        <item name="walletHomeBackupTopBg">@drawable/bg_backup_title</item>
-        <item name="walletHomeBackupTopIcon">@drawable/icon_security_backup</item>
+        <item name="walletHomeTransferIcon">@mipmap/ic_wallet_home_transfer</item>
+        <item name="walletHomeCollectionIcon">@mipmap/ic_wallet_home_collection</item>
+        <item name="walletHomeMappingIcon">@mipmap/ic_wallet_home_mapping</item>
+        <item name="walletHomeMiningRewardBg">@mipmap/bg_mining_reward</item>
+        <item name="walletBackupNowHintBg">@drawable/bg_view_backup_now_wallet</item>
+        <item name="walletBackupNowBtnBg">@drawable/bg_btn_backup_now_wallet</item>
+        <item name="walletBackupNowTitleTextColor">@color/color_FB8F0B</item>
+        <item name="walletHomePhoneReceiveBg">@mipmap/bg_phone_receive</item>
 
         <!--我的首页资源属性-->
         <item name="meHomeDefAvatarIcon">@drawable/ic_avatar_logo</item>
         <item name="meHomeWalletMenuIcon">@mipmap/ic_me_wallet_management</item>
         <item name="meHomeAddressMenuIcon">@mipmap/ic_me_address_book</item>
         <item name="meHomeSettingsMenuIcon">@mipmap/ic_me_settings</item>
+        <item name="meHomeMiningRewardMenuIcon">@mipmap/ic_me_mining_reward</item>
+        <item name="meHomeInvitationRewardMenuIcon">@mipmap/ic_me_invitation_reward</item>
+        <item name="meHomeTopBg">@drawable/bg_me_home_top</item>
+
+        <!--首页-数字银行资源属性-->
+        <item name="homeBankTopBgIcon">@mipmap/bg_home_bank_top</item>
+        <item name="homeBankTotalBorrowableIcon">@mipmap/ic_home_bank_total_borrowable</item>
+        <item name="homeBankTotalEarningsIcon">@mipmap/ic_home_bank_total_earnings</item>
+        <item name="homeBankYesterdayEarningsIcon">@mipmap/ic_home_bank_yesterday_earnings</item>
+        <item name="homeBankYesterdayEarningsBgColor">@color/color_FB8F0B_10</item>
+        <item name="homeBankYesterdayEarningsTextColor">@color/color_FB8F0B</item>
+        <item name="homeBankMiningBg">@mipmap/bg_home_bank_mining</item>
 
         <!--币种详情页资源属性-->
         <item name="tokenDetailsTokenInfoBg">@drawable/bg_token_info_head</item>
         <item name="tokenDetailsTabNormalTextColor">@color/color_C2C2C2</item>
 
         <!--交易详情页资源属性-->
-        <item name="transDetailsTopBg">@mipmap/bg_transaction_details_header</item>
         <item name="transDetailsBottomBg">@mipmap/bg_transaction_details_footer</item>
         <item name="transDetailsTransInfoBg">@mipmap/bg_transaction_details_content</item>
         <item name="transDetailsSaveIcon">@drawable/ic_share_type_download</item>
@@ -173,14 +229,12 @@
         <item name="languageNormalIcon">@drawable/icon_check_normal</item>
 
         <!--地址相关页面资源属性-->
-        <item name="addressLabelBg">@color/black_06</item>
-        <item name="addressLabelTextColor">@color/color_C2C2C2</item>
         <item name="addressTypeSelectedBg">@color/color_4730A7</item>
 
         <!--转账收款页面资源属性-->
         <item name="transferInfoBg">@drawable/bg_transfer_white</item>
         <item name="transferSeekBarThumb">@drawable/icon_transfer_thumb</item>
-        <item name="transferSeekBarBgColor">@color/color_BABABA</item>
+        <item name="transferSeekBarBgColor">@color/color_F7F7F9</item>
         <item name="collectionInfoBg">@drawable/bg_collection_address</item>
 
         <!--WalletConnect相关页面资源属性-->
@@ -196,7 +250,6 @@
         <item name="mnemonicBackupBoxSelectedColor">@color/color_504ACB</item>
 
         <!--添加币种页面资源属性-->
-        <item name="addCurrencyTextColor">@color/color_0E0051</item>
         <item name="addCurrencyWarningIcon">@drawable/ic_warning_red</item>
 
         <!--市场相关页面资源属性-->
@@ -204,10 +257,9 @@
         <item name="marketMenuRecordIcon">@mipmap/ic_market_record</item>
         <item name="marketCoinConversionIcon">@mipmap/ic_coin_conversion</item>
         <item name="marketSwapRecordIcon">@mipmap/ic_swap_record</item>
-        <item name="marketSwapDetailsIcon">@mipmap/ic_market_swap_details</item>
         <item name="marketSelectPopupBgColor">@color/color_F1EEFB</item>
         <item name="marketBtnSecondaryBgColor">@color/color_F1EEFB</item>
-        <item name="marketPoolIncomeIcon">@mipmap/ic_market_pool_income</item>
+        <item name="marketPoolEarningsIcon">@mipmap/ic_market_pool_earnings</item>
         <item name="marketPoolAndIcon">@mipmap/ic_market_pool_and</item>
         <item name="marketPoolOutIcon">@mipmap/ic_market_pool_out</item>
         <item name="marketTokenSelectedIcon">@mipmap/ic_market_token_selected</item>
@@ -215,10 +267,45 @@
         <item name="marketDetailsCompletedStateTextColor">@color/color_82808A</item>
         <item name="marketDetailsCompletedLineBgColor">@color/color_999999</item>
         <item name="marketDetailsUncompletedLineBgColor">@color/color_C2C2C2</item>
+        <item name="homeMarketMiningArrowIcon">@mipmap/ic_home_market_mining_arrow</item>
+        <item name="homeMarketMiningBg">@mipmap/bg_home_market_mining</item>
+
+        <!--映射相关页面资源属性-->
+        <item name="mappingDividerIcon">@mipmap/ic_mapping_divider</item>
+
+        <!--数字银行相关页面资源属性-->
+        <item name="bankDepositOrderIcon">@mipmap/ic_bank_deposit_order</item>
+        <item name="bankBorrowingOrderIcon">@mipmap/ic_bank_borrow_order</item>
+        <item name="bankProductRateTextColor">@color/color_13B788</item>
+        <item name="bankDepositEarningTextColor">@color/color_13B788</item>
+        <item name="bankDepositEarningBgColor">@color/color_13B788_06</item>
+        <item name="bankRecordCoinFilterTopBg">@mipmap/bg_bank_record_coin_filter_top</item>
+        <item name="bankRecordStateFilterTopBg">@mipmap/bg_bank_record_state_filter_top</item>
+
+        <!--消息中心页面资源属性-->
+        <item name="msgItemUnread">@color/color_FAF7FF</item>
+    </style>
+
+    <style name="ToolbarNavigationButtonStyle" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:minWidth">?attr/actionBarSize</item>
     </style>
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">
         <item name="android:tint">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="ActionOverflowMenuStyle" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
+        <!-- 是否覆盖锚点，为true则盖住Toolbar -->
+        <item name="overlapAnchor">false</item>
+        <!-- 弹出层水平方向上的偏移，即距离屏幕左边的距离，负值会导致右边出现空隙 -->
+        <item name="android:dropDownHorizontalOffset">0dp</item>
+        <!-- 弹出层垂直方向上的偏移，即在竖直方向上距离Toolbar的距离，值为负则会盖住Toolbar -->
+        <item name="android:dropDownVerticalOffset">0dp</item>
+    </style>
+
+    <style name="ActionOverflowMenuStyle.HomeBank">
+        <item name="android:dropDownHorizontalOffset">-10dp</item>
+        <item name="android:dropDownVerticalOffset">-10dp</item>
     </style>
 
     <style name="ButtonStyle" parent="Widget.AppCompat.Button.Borderless">

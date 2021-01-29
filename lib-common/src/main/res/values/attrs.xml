@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
+    <declare-styleable name="EnhancedTextView">
+        <attr name="etvFakeBold" format="boolean" />
+        <attr name="etvUseRoboto" format="boolean" />
+        <attr name="etvForceFocused" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="EnhancedEditView">
+        <attr name="eevFakeBold" format="boolean" />
+        <attr name="eevUseRoboto" format="boolean" />
+    </declare-styleable>
+
     <!--状态布局-->
     <declare-styleable name="StatusLayout">
         <attr name="slEmptyTip" format="string" />

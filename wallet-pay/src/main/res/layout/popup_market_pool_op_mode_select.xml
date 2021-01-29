@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recyclerView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_market_select_popup"
+    android:overScrollMode="never"
+    android:paddingVertical="@dimen/dp_5"
+    android:paddingStart="@dimen/dp_7"
+    android:paddingEnd="@dimen/dp_6"
+    android:scrollbars="vertical"
+    tools:itemCount="2"
+    tools:listitem="@layout/item_market_pool_op_mode_select" />

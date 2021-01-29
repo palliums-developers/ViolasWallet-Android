@@ -10,7 +10,7 @@ import com.palliums.extensions.isNoNetwork
 import com.palliums.net.LoadState
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.getColor
-import com.palliums.widget.dividers.RecycleViewItemDividers
+import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.event.RefreshGovernorApplicationProgressEvent
@@ -37,6 +37,7 @@ class ApplyMessageFragment : BaseFragment() {
      * 更新数据标志，刷新中会置为false，刷新完成后再置为true
      */
     private var mUpdateSSOMsgDataFlag: Boolean = true
+
     /**
      * [mUpdateSSOMsgDataFlag]为false期间缓存的刷新数据
      */
@@ -46,7 +47,7 @@ class ApplyMessageFragment : BaseFragment() {
         ViewModelProvider(this).get(ApplyMessageViewModel::class.java)
     }
     private val mSSOMsgViewAdapter by lazy {
-        SSOApplicationMsgViewAdapter(retryCallback = { mViewModel.retry() }) { msg ->
+        SSOApplicationMsgViewAdapter { msg ->
             activity?.let {
                 mViewModel.observeChangedSSOApplicationMsg(msg)
                 GovernorApprovalActivity.start(it, msg)
@@ -164,8 +165,8 @@ class ApplyMessageFragment : BaseFragment() {
             // 初始化SSO发币申请消息视图的控件设置
             drlSSOMsgRefreshLayout.setEnableRefresh(false)
             drlSSOMsgRefreshLayout.setEnableLoadMore(false)
-            drlSSOMsgRefreshLayout.setEnableOverScrollBounce(true)
             drlSSOMsgRefreshLayout.setEnableOverScrollDrag(true)
+            drlSSOMsgRefreshLayout.setEnableOverScrollBounce(false)
             drlSSOMsgRefreshLayout.setOnRefreshListener {
                 // 刷新时原有数据会被清空，造成短暂的页面闪屏或页面空白
                 // 刷新时先做个标记不更新数据，刷新完成后再做处理
@@ -175,10 +176,9 @@ class ApplyMessageFragment : BaseFragment() {
 
             rvSSOMsgList.adapter = mSSOMsgViewAdapter
             rvSSOMsgList.addItemDecoration(
-                RecycleViewItemDividers(
+                RecyclerViewItemDividers(
                     top = DensityUtility.dp2px(requireContext(), 10),
                     bottom = 0,
-                    showFirstTop = true,
                     onlyShowLastBottom = true
                 )
             )

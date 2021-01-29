@@ -9,19 +9,16 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
-import com.palliums.extensions.getShowErrorMessage
-import com.palliums.extensions.isActiveCancellation
-import com.palliums.extensions.isNoNetwork
-import com.palliums.extensions.lazyLogError
+import com.palliums.extensions.*
 import com.palliums.net.LoadState
-import com.palliums.violas.http.PoolLiquidityDTO
-import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
+import com.violas.wallet.repository.http.exchange.PoolLiquidityReserveInfoDTO
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToExchangeRate
 import com.violas.wallet.utils.convertDisplayAmountToAmount
@@ -64,7 +61,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     }
 
     // 当前的操作模式，分转入和转出
-    private val currOpModeLiveData = MutableLiveData<MarketPoolOpMode>(MarketPoolOpMode.TransferIn)
+    private val currOpModeLiveData = MutableLiveData(MarketPoolOpMode.TransferIn)
 
     // 转入模式下选择的Coin
     private val currCoinALiveData = MediatorLiveData<StableTokenVo?>()
@@ -77,6 +74,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     // 流动资产储备信息
     private val liquidityReserveLiveData = MutableLiveData<PoolLiquidityReserveInfoDTO?>()
     private var syncLiquidityReserveFlag = AtomicBoolean(false)
+    var noLiquidityReserve: Boolean? = null
 
     // 兑换率
     private val exchangeRateLiveData = MediatorLiveData<BigDecimal?>()
@@ -99,6 +97,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             currCoinALiveData.value = null
             currCoinBLiveData.value = null
             currLiquidityLiveData.value = null
+            noLiquidityReserve = null
             liquidityReserveLiveData.value = null
             inputATextLiveData.value = ""
             inputBTextLiveData.value = ""
@@ -252,11 +251,19 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         coinAModule: String?,
         liquidityReserve: PoolLiquidityReserveInfoDTO? = liquidityReserveLiveData.value
     ) {
-        lazyLogError(TAG) {
+        logInfo(TAG) {
             "calculateExchangeRate. coin a module => $coinAModule" +
+                    ", no liquidity reserve => $noLiquidityReserve" +
                     ", liquidity reserve => $liquidityReserve"
         }
-        if (coinAModule.isNullOrBlank() || liquidityReserve == null) {
+        if (coinAModule.isNullOrBlank()) {
+            exchangeRateLiveData.value = null
+            return
+        }
+        if (noLiquidityReserve == true) {
+            return
+        }
+        if (liquidityReserve == null) {
             exchangeRateLiveData.value = null
             return
         }
@@ -267,6 +274,21 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 if (coinAModule == it.coinA.module) it.coinB.amount else it.coinA.amount
             )
         }
+    }
+
+    fun calculateExchangeRateOnNoLiquidityReserve(
+        inputAAmountStr: String?,
+        inputBAmountStr: String?
+    ) {
+        if (inputAAmountStr.isNullOrBlank() || inputBAmountStr.isNullOrBlank()) {
+            exchangeRateLiveData.value = null
+            return
+        }
+
+        exchangeRateLiveData.value = convertAmountToExchangeRate(
+            inputAAmountStr,
+            inputBAmountStr
+        )
     }
 
     fun getExchangeRateLiveData(): LiveData<BigDecimal?> {
@@ -332,7 +354,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                     ).toPlainString()
                 }
             }
-            lazyLogError(TAG) {
+            logInfo(TAG) {
                 "estimateTransferIntoAmount. is input a => $isInputA" +
                         ", input amount => $inputAmountStr, output amount => $result"
             }
@@ -370,7 +392,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                             "\n${amounts.second.toPlainString()} ${liquidity.coinB.displayName}"
                 }
             }
-            lazyLogError(TAG) {
+            logInfo(TAG) {
                 "estimateTransferOutAmount. input amount => $inputAmountStr" +
                         ", output amount => $result"
             }
@@ -409,6 +431,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         if (coinAModuleSpecified != null && coinBModuleSpecified != null) {
             coinAModule = coinAModuleSpecified
             coinBModule = coinBModuleSpecified
+            noLiquidityReserve = null
             liquidityReserveLiveData.value = null
         } else {
             if (isTransferInMode()) {
@@ -420,7 +443,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             }
         }
 
-        lazyLogError(TAG) {
+        logInfo(TAG) {
             "startSyncLiquidityReserveWork. coin a module => $coinAModule" +
                     ", coin b module => $coinBModule"
         }
@@ -437,7 +460,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     fun stopSyncLiquidityReserveWork() {
         if (!syncLiquidityReserveFlag.get()) return
 
-        lazyLogError(TAG) { "stopSyncLiquidityReserveWork" }
+        logInfo(TAG) { "stopSyncLiquidityReserveWork" }
         syncLiquidityReserveFlag.set(false)
         handler.removeMessages(ACTION_SYNC_LIQUIDITY_RESERVE)
         syncLiquidityReserveJob?.let {
@@ -450,7 +473,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
     }
 
     override fun handleMessage(msg: Message): Boolean {
-        lazyLogError(TAG) { "handleMessage. msg => $msg, msg.data => ${msg.data}" }
+        logInfo(TAG) { "handleMessage. msg => $msg, msg.data => ${msg.data}" }
         when (msg.what) {
             ACTION_SYNC_LIQUIDITY_RESERVE -> {
                 if (!syncLiquidityReserveFlag.get()) return true
@@ -486,18 +509,19 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
 
             try {
                 val liquidityReserve =
-                    exchangeManager.mViolasService.getPoolLiquidityReserve(
+                    exchangeManager.mExchangeService.getPoolLiquidityReserve(
                         coinAModule, coinBModule
                     )
-                lazyLogError(TAG) { "syncLiquidityReserve. liquidity reserve => $liquidityReserve" }
+                logInfo(TAG) { "syncLiquidityReserve. liquidity reserve => $liquidityReserve" }
 
                 val syncWorkUnstopped = syncLiquidityReserveFlag.get()
-                lazyLogError(TAG) { "syncLiquidityReserve. sync work unstopped => $syncWorkUnstopped" }
+                logInfo(TAG) { "syncLiquidityReserve. sync work unstopped => $syncWorkUnstopped" }
 
                 val coinPairUnchanged = coinPairUnchanged(coinAModule, coinBModule)
-                lazyLogError(TAG) { "syncLiquidityReserve. coin pair unchanged => $coinPairUnchanged" }
+                logInfo(TAG) { "syncLiquidityReserve. coin pair unchanged => $coinPairUnchanged" }
 
                 if (syncWorkUnstopped && coinPairUnchanged) {
+                    noLiquidityReserve = liquidityReserve == null
                     liquidityReserveLiveData.value = liquidityReserve
                 }
 
@@ -507,7 +531,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                     })
                 }
             } catch (e: Exception) {
-                lazyLogError(e, TAG) { "syncLiquidityReserve. sync failed" }
+                logError(e, TAG) { "syncLiquidityReserve. sync failure" }
 
                 if (showLoadingAndTips) {
                     if (e.isActiveCancellation()) {
@@ -556,7 +580,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         when (action) {
             ACTION_GET_USER_LIQUIDITY_LIST -> {
                 val userPoolInfo =
-                    exchangeManager.mViolasService.getUserPoolInfo(violasAccountDO!!.address)
+                    exchangeManager.mExchangeService.getUserPoolInfo(violasAccountDO!!.address)
                 withContext(Dispatchers.Main) {
                     liquidityListLiveData.value = userPoolInfo?.liquidityList
                 }
@@ -574,6 +598,10 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 withContext(Dispatchers.Main) {
                     inputATextLiveData.value = ""
                     inputBTextLiveData.value = ""
+                    if (noLiquidityReserve == true) {
+                        noLiquidityReserve = null
+                        liquidityReserveLiveData.value = null
+                    }
                 }
             }
 
@@ -599,6 +627,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                     inputATextLiveData.value = ""
                     inputBTextLiveData.value = ""
                     currLiquidityLiveData.value = null
+                    noLiquidityReserve = null
                     liquidityReserveLiveData.value = null
                 }
             }

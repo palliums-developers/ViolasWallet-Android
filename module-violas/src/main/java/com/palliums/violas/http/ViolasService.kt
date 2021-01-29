@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.palliums.violas.error.ViolasException
 import org.palliums.violascore.BuildConfig
+import org.palliums.violascore.common.CURRENCY_DEFAULT_CODE
 import org.palliums.violascore.crypto.*
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
@@ -39,10 +40,11 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         payload: TransactionPayload,
         account: Account,
         sequenceNumber: Long = -1L,
-        gasCurrencyCode: String = lbrStructTagType(),
+        gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
-        delayed: Long = 600
+        delayed: Long = 600,
+        chainId: Int
     ): TransactionResult {
         val (signedTxn, sender, newSequenceNumber) =
             generateTransaction(
@@ -52,7 +54,8 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
                 gasCurrencyCode,
                 maxGasAmount,
                 gasUnitPrice,
-                delayed
+                delayed,
+                chainId = chainId
             )
         sendTransaction(signedTxn)
         return TransactionResult(sender, newSequenceNumber)
@@ -87,10 +90,11 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         payload: TransactionPayload,
         account: Account,
         sequenceNumber: Long = -1L,
-        gasCurrencyCode: String = lbrStructTagType(),
+        gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
-        delayed: Long = 600
+        delayed: Long = 600,
+        chainId: Int
     ): GenerateTransactionResult {
         var sequenceNumber = sequenceNumber
         val keyPair = account.keyPair
@@ -113,7 +117,8 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             gasCurrencyCode,
             maxGasAmount,
             gasUnitPrice,
-            delayed
+            delayed,
+            chainId = chainId
         )
         return GenerateTransactionResult(
             generateTransaction(
@@ -128,10 +133,11 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         payload: TransactionPayload,
         senderAddress: String,
         sequenceNumber: Long = -1L,
-        gasCurrencyCode: String = lbrStructTagType(),
+        gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
         maxGasAmount: Long = 1_000_000,
         gasUnitPrice: Long = 0,
-        delayed: Long = 600
+        delayed: Long = 600,
+        chainId: Int
     ): RawTransaction {
         var sequenceNumber = sequenceNumber
 
@@ -153,7 +159,8 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             gasCurrencyCode,
             maxGasAmount,
             gasUnitPrice,
-            delayed
+            delayed,
+            chainId = chainId
         )
     }
 
@@ -195,14 +202,20 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         account: Account,
         address: String,
         amount: Long,
-        typeTag: TypeTag = lbrStructTag(),
-        gasCurrencyCode: String = lbrStructTagType()
+        typeTag: TypeTag = newDefaultStructTypeTag(),
+        gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
+        chainId: Int
     ) {
         val transactionPayload =
             TransactionPayload.optionTransactionPayload(
                 context, address, amount, typeTag = typeTag
             )
-        sendTransaction(transactionPayload, account, gasCurrencyCode = gasCurrencyCode)
+        sendTransaction(
+            transactionPayload,
+            account,
+            gasCurrencyCode = gasCurrencyCode,
+            chainId = chainId
+        )
     }
 
     suspend fun getBalance(address: String): BigDecimal {
@@ -241,58 +254,4 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     suspend fun getViolasChainFiatBalance(address: String) =
         mViolasRepository.getViolasChainFiatBalance(address).data
 
-    suspend fun getMarketSupportCurrencies() =
-        mViolasRepository.getMarketSupportCurrencies().data
-
-
-    suspend fun exchangeSwapTrial(
-        amount: Long,
-        currencyIn: String,
-        currencyOut: String
-    ) = mViolasRepository.exchangeSwapTrial(amount, currencyIn, currencyOut).data
-
-    suspend fun getUserPoolInfo(
-        address: String
-    ) =
-        mViolasRepository.getUserPoolInfo(address).data
-
-    suspend fun removePoolLiquidityEstimate(
-        address: String,
-        tokenAName: String,
-        tokenBName: String,
-        liquidityAmount: String
-    ) =
-        mViolasRepository.removePoolLiquidityEstimate(
-            address,
-            tokenAName,
-            tokenBName,
-            liquidityAmount
-        ).data!!
-
-    suspend fun addPoolLiquidityEstimate(
-        tokenAName: String,
-        tokenBName: String,
-        tokenAAmount: String
-    ) =
-        mViolasRepository.addPoolLiquidityEstimate(
-            tokenAName,
-            tokenBName,
-            tokenAAmount
-        ).data!!
-
-
-    suspend fun getMarketAllReservePair() =
-        mViolasRepository.getMarketAllReservePair().data
-
-    suspend fun getPoolLiquidityReserve(
-        coinAModule: String,
-        coinBModule: String
-    ) =
-        mViolasRepository.getPoolLiquidityReserve(coinAModule, coinBModule).data
-
-    suspend fun getMarketMappingPairInfo() =
-        mViolasRepository.getMarketMappingPairInfo().data
-
-    suspend fun getMarketPairRelation() =
-        mViolasRepository.getMarketPairRelation().data
 }

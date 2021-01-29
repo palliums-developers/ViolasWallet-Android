@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.libra.libexplore
 
 import com.palliums.exceptions.RequestException
-import com.palliums.net.checkResponse
+import com.palliums.net.await
 
 /**
  * Created by elephant on 2019-11-08 18:04.
@@ -18,7 +18,8 @@ class LibraLibexplorerRepository(private val api: LibraLibexplorerApi) {
         pageNumber: Int
     ) =
         // {"status":"0","message":"No transactions found","result":[]}
-        checkResponse("0") {
-            api.getTransactionRecords(address, pageSize, pageNumber)
-        }
+        api.getTransactionRecords(
+            address, pageSize, pageNumber
+        ).await("0")
+
 }

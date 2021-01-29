@@ -3,10 +3,10 @@ package com.violas.wallet.ui.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.WorkerThread
+import com.palliums.extensions.clearLongPressToast
 import com.palliums.utils.DensityUtility
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -28,7 +28,6 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import kotlin.math.log
 
 class MainActivity : BaseAppActivity() {
 
@@ -99,7 +98,8 @@ class MainActivity : BaseAppActivity() {
                 viewPagerAdapter?.notifyDataSetChanged()
                 resetToDefaultIcon()
 
-                bottom_navigation.menu.findItem(R.id.tab_wallet).setIcon(R.drawable.table_wallet_selected);
+                bottom_navigation.menu.findItem(R.id.tab_wallet)
+                    .setIcon(R.drawable.table_wallet_selected);
             }
         }
     }
@@ -133,18 +133,25 @@ class MainActivity : BaseAppActivity() {
         view_pager.adapter = viewPagerAdapter
         view_pager.offscreenPageLimit = 3
         bottom_navigation.setupWithViewPager(view_pager)
+        bottom_navigation.clearLongPressToast(
+            mutableListOf(
+                R.id.tab_wallet,
+                R.id.tab_market,
+                R.id.tab_me
+            )
+        )
     }
 
     private fun initViewListener() {
-        bottom_navigation.setIconsMarginTop(DensityUtility.dp2px(this, 5f))
+        bottom_navigation.setIconsMarginTop(DensityUtility.dp2px(this, 5))
         bottom_navigation.enableAnimation(false)
         bottom_navigation.enableShiftingMode(false)
         bottom_navigation.enableItemShiftingMode(false)
         bottom_navigation.setTextSize(
             DensityUtility.px2sp(
                 this,
-                (DensityUtility.dp2px(this, 10f).toFloat())
-            ).toFloat()
+                DensityUtility.dp2px(this, 10f)
+            )
         )
         bottom_navigation.setIconSize(26F, 26F)
         bottom_navigation.itemIconTintList = null

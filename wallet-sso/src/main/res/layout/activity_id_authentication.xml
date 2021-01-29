@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.palliums.widget.MarqueTextView
+        <com.palliums.widget.FocusedTextView
             android:id="@+id/tvCountryArea"
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_55"
@@ -27,7 +27,7 @@
             android:singleLine="true"
             android:textColor="@color/def_text_title"
             android:textColorHint="@color/def_text_hint"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:text="@string/label_country_area"
             android:textColor="@color/def_text_title"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="@id/tvCountryArea"
             app:layout_constraintStart_toStartOf="@id/tvCountryArea"
             app:layout_constraintTop_toTopOf="@id/tvCountryArea" />
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:text="@string/label_name"
             android:textColor="@color/def_text_title"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="@id/etIDName"
             app:layout_constraintStart_toStartOf="@id/etIDName"
             app:layout_constraintTop_toTopOf="@id/etIDName" />
@@ -103,7 +103,7 @@
             android:layout_height="wrap_content"
             android:text="@string/label_id_number_other"
             android:textColor="@color/def_text_title"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="@id/etIdNumber"
             app:layout_constraintStart_toStartOf="@id/etIdNumber"
             app:layout_constraintTop_toTopOf="@id/etIdNumber" />
@@ -116,7 +116,7 @@
             android:gravity="center"
             android:text="@string/desc_photograph_id_card_other"
             android:textColor="@color/def_text_title"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintEnd_toEndOf="@id/etIdNumber"
             app:layout_constraintStart_toStartOf="@id/etIdNumber"
             app:layout_constraintTop_toBottomOf="@id/etIdNumber" />

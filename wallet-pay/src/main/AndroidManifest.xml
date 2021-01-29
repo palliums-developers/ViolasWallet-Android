@@ -23,7 +23,7 @@
         <activity
             android:name=".ui.launch.LaunchActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.APP.DayNight.Launcher">
+            android:theme="@style/Theme.APP.DayNight.Tertiary.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -36,7 +36,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.APP.DayNight.Home"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".ui.identity.createIdentity.CreateIdentityActivity"
             android:screenOrientation="portrait" />
@@ -85,7 +85,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.addressBook.AddressBookActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
         <activity
             android:name=".ui.account.wallet.CreateWalletActivity"
             android:screenOrientation="portrait" />
@@ -133,41 +134,29 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.APP.DayNight.Secondary" />
         <activity
-            android:name=".ui.dexOrder.DexOrdersActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.dexOrder.details.DexOrderDetailsActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.dexOrder.details.DexOrderDetails2Activity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.outsideExchange.OutsideExchangeActivity"
-            android:screenOrientation="portrait" />
+            android:name=".ui.mapping.MappingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
         <activity
             android:name=".ui.scan.ScanResultActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.outsideExchange.orders.MappingExchangeOrdersActivity"
+            android:name=".ui.mapping.MappingRecordActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.webManagement.LoginWebActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.APP.DayNight.WalletConnect" />
         <activity
             android:name=".ui.walletconnect.WalletConnectManagerActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.APP.DayNight.WalletConnect" />
+            android:theme="@style/Theme.APP.DayNight.Secondary.WalletConnect" />
         <activity
             android:name=".ui.walletconnect.WalletConnectActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.APP.DayNight.WalletConnect" />
+            android:theme="@style/Theme.APP.DayNight.Secondary.WalletConnect" />
         <activity
             android:name=".ui.walletconnect.WalletConnectAuthorizationActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.APP.DayNight.WalletConnect" />
+            android:theme="@style/Theme.APP.DayNight.Secondary.WalletConnect" />
         <activity
             android:name=".ui.market.MyPoolActivity"
             android:screenOrientation="portrait" />
@@ -183,6 +172,81 @@
         <activity
             android:name=".ui.market.PoolDetailsActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.collection.MultiCollectionActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
+        <activity
+            android:name=".ui.bank.deposit.DepositActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
+        <activity
+            android:name=".ui.bank.borrow.BorrowActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
+        <activity
+            android:name=".ui.bank.repayBorrow.RepayBorrowActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
+        <activity
+            android:name=".ui.transfer.MultiTransferActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.bank.order.deposit.BankDepositOrderActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
+        <activity
+            android:name=".ui.bank.order.borrowing.BankBorrowingOrderActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
+        <activity
+            android:name=".ui.bank.record.deposit.BankDepositRecordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.bank.record.borrowing.BankBorrowingRecordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.bank.details.borrowing.BankBorrowingDetailsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
+        <activity
+            android:name=".ui.message.MessageCenterActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.selectCountryArea.SelectCountryAreaActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.incentive.receiveRewards.ReceiveIncentiveRewardsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.incentive.earningsDetails.IncentiveEarningsDetailsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.APP.DayNight.Secondary" />
+        <activity
+            android:name=".ui.incentive.IncentiveWebActivity"
+            android:screenOrientation="portrait" />
+
+        <!--TODO 暂时屏蔽消息推送通知-->
+        <!--<service
+            android:name=".service.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        &lt;!&ndash; Set custom default icon. This is used when no icon is set for incoming notification messages.
+             See README(https://goo.gl/l4GJaQ) for more. &ndash;&gt;
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_notification" />
+        &lt;!&ndash; Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. &ndash;&gt;
+        &lt;!&ndash;<meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />&ndash;&gt;
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/notification_channel_id_default" />-->
 
         <!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data

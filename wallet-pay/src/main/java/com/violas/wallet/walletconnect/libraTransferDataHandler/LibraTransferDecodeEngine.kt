@@ -1,7 +1,7 @@
 package com.violas.wallet.walletconnect.libraTransferDataHandler
 
 import com.google.gson.*
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
+import com.violas.wallet.walletconnect.TransactionDataType
 import org.palliums.libracore.serialization.toHex
 import org.palliums.libracore.transaction.RawTransaction
 import java.lang.reflect.Type

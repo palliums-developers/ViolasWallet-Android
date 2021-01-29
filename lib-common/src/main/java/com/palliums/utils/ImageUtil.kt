@@ -1,7 +1,16 @@
 package com.palliums.utils
 
+import android.content.ContentProvider
+import android.content.ContentValues
+import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.provider.MediaStore
+import android.util.Base64
+import com.palliums.content.ContextProvider
+import com.palliums.extensions.logError
 import java.io.File
+import java.io.OutputStream
 import java.util.*
 
 /**
@@ -60,5 +69,66 @@ fun File.getImageName(): String? {
         "$name.${typeArr[1]}"
     } catch (e: Exception) {
         null
+    }
+}
+
+fun String.toBitmap(): Bitmap? {
+    return try {
+        val bitmapArray = Base64.decode(this, Base64.DEFAULT)
+        BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.size)
+    } catch (e: Exception) {
+        logError(e) { "String to Bitmap failed" }
+        null
+    }
+}
+
+fun Bitmap.saveIntoSystemAlbum(
+    dirName: String,
+    context: Context = ContextProvider.getContext()
+): Boolean {
+    var outputStream: OutputStream? = null
+    try {
+        val picDir = context.getExternalFilesDir(dirName) ?: return false
+        if (!picDir.exists()) {
+            picDir.mkdirs()
+        }
+
+        val curTime = System.currentTimeMillis()
+        val picName = "$curTime.png"
+        val picPath = File(picDir, picName).absolutePath
+        val contentValues = ContentValues()
+        contentValues.put(MediaStore.Images.ImageColumns.DATA, picPath)
+        contentValues.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, picName)
+        contentValues.put(MediaStore.Images.ImageColumns.MIME_TYPE, "image/png")
+        contentValues.put(MediaStore.Images.ImageColumns.DATE_ADDED, curTime / 1000)
+        contentValues.put(MediaStore.Images.ImageColumns.DATE_MODIFIED, curTime / 1000)
+        contentValues.put(MediaStore.Images.ImageColumns.SIZE, this.byteCount)
+
+        val contentResolver = context.contentResolver
+        val uri = contentResolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        ) ?: return false
+
+        outputStream = contentResolver.openOutputStream(uri)
+        this.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        return true
+    } catch (e: Exception) {
+        logError(e) { "Failed to save Bitmap to system album" }
+        return false
+    } finally {
+        try {
+            outputStream?.let {
+                it.flush()
+                it.close()
+            }
+        } catch (ignore: Exception) {
+        }
+        try {
+            if (!this.isRecycled) {
+                this.recycle()
+            }
+        } catch (e: Exception) {
+        }
     }
 }

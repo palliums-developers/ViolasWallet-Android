@@ -37,12 +37,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="14dp"
             android:text='@{item.res}'
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="16sp"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
-            tools:text="送送送" />
+            tools:text="English" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

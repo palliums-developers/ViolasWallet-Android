@@ -33,7 +33,7 @@
         android:layout_marginTop="15dp"
         android:text="@string/app_slogan"
         android:textColor="@color/white"
-        android:textSize="@dimen/sp_18"
+        android:textSize="@dimen/fs_18"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivLogo" />

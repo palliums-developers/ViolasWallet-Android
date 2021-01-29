@@ -7,15 +7,17 @@ import android.os.Looper
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonArray
 import com.microsoft.appcenter.crashes.Crashes
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.IWalletConnectMessage
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.WalletConnectMessageHandler
+import com.violas.wallet.walletconnect.messageHandler.MessageHandlerChain
+import com.violas.walletconnect.OnMessageHandler
 import com.violas.walletconnect.WCClient
 import com.violas.walletconnect.WCSessionStoreItem
 import com.violas.walletconnect.WCSessionStoreType
 import com.violas.walletconnect.jsonrpc.JsonRpcError
 import com.violas.walletconnect.jsonrpc.JsonRpcErrorResponse
 import com.violas.walletconnect.jsonrpc.JsonRpcResponse
+import com.violas.walletconnect.models.WCMethod
 import com.violas.walletconnect.models.WCPeerMeta
 import com.violas.walletconnect.models.session.WCSession
 import kotlinx.coroutines.CoroutineScope
@@ -42,7 +44,7 @@ interface WalletConnectSessionListener {
 }
 
 class WalletConnect private constructor(val context: Context) : CoroutineScope by MainScope(),
-    IWalletConnectMessage {
+    IWalletConnectMessage, OnMessageHandler {
 
     companion object {
         @Volatile
@@ -64,20 +66,16 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     private val mHandler = Handler(Looper.getMainLooper())
 
     private val mGsonBuilder = GsonBuilder()
-
     private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .pingInterval(90, TimeUnit.SECONDS)
             .build()
     }
-
-    private val mWCClient: WCClient = WCClient(httpClient, mGsonBuilder)
+    private val mWCClient: WCClient = WCClient(httpClient, mGsonBuilder, this)
     private val mWCSessionStoreType =
         WCSessionStoreType(WCSessionStoreType.getSharedPreferences(context), mGsonBuilder)
 
-    private val mWalletConnectMessageHandler by lazy {
-        WalletConnectMessageHandler(context, this)
-    }
+    private val mMessageHandlerChain = MessageHandlerChain(context,this)
 
     init {
         listenerClientEvent()
@@ -114,7 +112,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         launch(Dispatchers.IO) {
             mWCSessionStoreType
                 .session?.let {
-                    Log.e("WalletConnect", "Restore Connect")
+                    Log.d("WalletConnect", "Restore connect")
                     mWCClient.connect(it.session, it.remotePeerMeta, it.peerId, it.remotePeerId)
                 }
         }
@@ -123,7 +121,7 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     fun connect(
         msg: String
     ): Boolean {
-        Log.e("WalletConnect", "Connect")
+        Log.d("WalletConnect", "Connect")
         val from = WCSession.from(msg) ?: return false
         val wcPeerMeta = WCPeerMeta(
             "violasPay", "https://www.violas.io"
@@ -152,24 +150,6 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
         }
         mWCClient.onDisconnect = { _, _ ->
             disconnectAndReset()
-        }
-        mWCClient.onViolasSendRawTransaction = { id, violasSendRawTransaction ->
-            mWalletConnectMessageHandler.convertAndCheckTransaction(id, violasSendRawTransaction)
-        }
-        mWCClient.onViolasSendTransaction = { id, violasSendTransaction ->
-            mWalletConnectMessageHandler.convertAndCheckTransaction(id, violasSendTransaction)
-        }
-        mWCClient.onViolasSignTransaction = { id, violasSignRawTransaction ->
-            mWalletConnectMessageHandler.convertAndCheckTransaction(id, violasSignRawTransaction)
-        }
-        mWCClient.onGetAccounts = { id ->
-            mWalletConnectMessageHandler.handlerGetAccounts(id)
-        }
-        mWCClient.onLibraSendTransaction = { id, libraSendTransaction ->
-            mWalletConnectMessageHandler.convertAndCheckTransaction(id, libraSendTransaction)
-        }
-        mWCClient.onBitcoinSendTransaction = { id, bitcoinSendTransaction ->
-            mWalletConnectMessageHandler.convertAndCheckTransaction(id, bitcoinSendTransaction)
         }
     }
 
@@ -233,16 +213,21 @@ class WalletConnect private constructor(val context: Context) : CoroutineScope b
     }
 
     fun disconnect(): Boolean {
-        return if (mWCSessionStoreType.session != null) {
-            val killSession = mWCClient.killSession()
-            disconnectAndReset()
-            killSession
-        } else {
-            try {
-                mWCClient.disconnect()
-            } catch (e: Exception) {
+        try {
+            if (mWCSessionStoreType.session != null) {
+                mWCClient.killSession()
             }
-            true
+            disconnectAndReset()
+        } catch (e: IllegalStateException) {
+            disconnectAndReset()
         }
+        return true
+    }
+
+    override fun onHandler(id: Long, method: WCMethod?, param: JsonArray): Boolean {
+        if (method == null) {
+            return false
+        }
+        return mMessageHandlerChain.tryDecodeMessage(id, method, param)
     }
 }

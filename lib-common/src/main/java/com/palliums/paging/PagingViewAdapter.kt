@@ -11,6 +11,7 @@ import com.palliums.R
 import com.palliums.base.BaseViewHolder
 import com.palliums.net.LoadState
 import com.palliums.utils.RecyclerViewDataObserverProxy
+import com.palliums.widget.recyclerview.DefaultDiffCallback
 import kotlinx.android.synthetic.main.item_load_more.view.*
 
 /**
@@ -21,20 +22,24 @@ import kotlinx.android.synthetic.main.item_load_more.view.*
  */
 abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHolder> {
 
-    private val retryCallback: () -> Unit
+    private var retryCallback: (() -> Unit)? = null
     private var loadMoreState: LoadState = LoadState.IDLE
 
     constructor(
-        retryCallback: () -> Unit,
-        diffCallback: DiffUtil.ItemCallback<VO>
+        diffCallback: DiffUtil.ItemCallback<VO> = DefaultDiffCallback(),
+        retryCallback: (() -> Unit)? = null
     ) : super(diffCallback) {
         this.retryCallback = retryCallback
     }
 
     constructor(
-        retryCallback: () -> Unit,
-        differConfig: AsyncDifferConfig<VO>
+        differConfig: AsyncDifferConfig<VO>,
+        retryCallback: (() -> Unit)? = null
     ) : super(differConfig) {
+        this.retryCallback = retryCallback
+    }
+
+    fun setRetryCallback(retryCallback: () -> Unit) {
         this.retryCallback = retryCallback
     }
 
@@ -152,11 +157,11 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
 
     class LoadMoreViewHolder(
         view: View,
-        private val retryCallback: () -> Unit
+        private val retryCallback: (() -> Unit)?
     ) : BaseViewHolder<LoadState>(view) {
 
         companion object {
-            fun create(parent: ViewGroup, retryCallback: () -> Unit): LoadMoreViewHolder {
+            fun create(parent: ViewGroup, retryCallback: (() -> Unit)? = null): LoadMoreViewHolder {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_load_more, parent, false)
                 return LoadMoreViewHolder(view, retryCallback)
@@ -164,6 +169,8 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
         }
 
         init {
+            itemView.isClickable = true
+            itemView.isFocusable = true
             itemView.setOnClickListener(this)
         }
 
@@ -189,7 +196,7 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
                             if (it.isNoNetwork()) {
                                 R.string.common_refresh_footer_no_network
                             } else {
-                                R.string.common_refresh_header_failure
+                                R.string.common_refresh_footer_failure
                             }
                         }
 
@@ -203,7 +210,7 @@ abstract class PagingViewAdapter<VO> : PagedListAdapter<VO, RecyclerView.ViewHol
         override fun onViewClick(view: View, itemPosition: Int, itemData: LoadState?) {
             itemData?.let {
                 if (it.status == LoadState.Status.FAILURE) {
-                    retryCallback()
+                    retryCallback?.invoke()
                 }
             }
         }

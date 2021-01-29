@@ -8,4 +8,4 @@
     android:paddingRight="12dp"
     android:textAppearance="?android:attr/textAppearanceMedium"
     android:textColor="#999999"
-    android:textSize="14sp" />
+    android:textSize="@dimen/fs_14" />

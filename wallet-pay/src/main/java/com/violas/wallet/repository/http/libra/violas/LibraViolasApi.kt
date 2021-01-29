@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
+import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -25,40 +26,53 @@ interface LibraViolasApi {
      * @param transactionType   交易类型，null：全部；0：转出；1：转入
      */
     @GET("/1.0/libra/transaction")
-    suspend fun getTransactionRecords(
+    fun getTransactionRecords(
         @Query("addr") address: String,
         @Query("currency") tokenId: String?,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int,
         @Query("flows") transactionType: Int?
-    ): ListResponse<TransactionRecordDTO>
+    ): Observable<ListResponse<TransactionRecordDTO>>
 
     /**
      * 获取 Violas 钱包支持的代币列表
      */
     @GET("/1.0/libra/currency")
-    suspend fun getCurrency(): Response<CurrencysDTO>
+    fun getCurrency(): Observable<Response<CurrencysDTO>>
 
     @GET("/1.0/libra/mint")
-    suspend fun activateAccount(
+    fun activateAccount(
         @Query("address") address: String,
         @Query("auth_key_perfix") authKeyPrefix: String
-    ): Response<Any>
+    ): Observable<Response<Any>>
+
 }
 
 data class TransactionRecordDTO(
-    val sender: String,
-    val receiver: String?,
-    val amount: String,
-    val currency: String,
-    val gas: String,
+    @SerializedName(value = "sender")
+    val sender: String = "",
+    @SerializedName(value = "receiver")
+    val receiver: String? = null,
+    @SerializedName(value = "amount")
+    val amount: String = "",
+    @SerializedName(value = "currency")
+    val currency: String = "",
+    @SerializedName(value = "gas")
+    val gas: String = "",
     @SerializedName(value = "gas_currency")
-    val gasCurrency: String,
-    val expiration_time: Long,
-    val sequence_number: Long,
-    val version: Long,
-    val type: Int,
-    val status: String
+    val gasCurrency: String = "",
+    @SerializedName(value = "expiration_time")
+    val expirationTime: Long = 0,
+    @SerializedName(value = "confirmed_time")
+    val confirmedTime: Long = 0,
+    @SerializedName(value = "sequence_number")
+    val sequence_number: Long = 0,
+    @SerializedName(value = "version")
+    val version: Long = 0,
+    @SerializedName(value = "type")
+    val type: String = "",
+    @SerializedName(value = "status")
+    val status: String = ""
 )
 
 @Keep

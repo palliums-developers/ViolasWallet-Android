@@ -28,8 +28,8 @@
             android:layout_marginHorizontal="@dimen/dp_28"
             android:layout_marginTop="@dimen/dp_26"
             android:gravity="center_horizontal"
-            android:text="@string/desc_fingerprint_authenticate_title_start"
-            android:textSize="@dimen/sp_18"
+            android:text="@string/auth_touch_id_desc_auth_start"
+            android:textSize="@dimen/fs_18"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,11 +42,11 @@
             android:layout_marginHorizontal="@dimen/dp_28"
             android:layout_marginTop="@dimen/dp_8"
             android:gravity="center_horizontal"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvFingerprintTitle"
-            tools:text="@string/desc_fingerprint_authenticate_error_retry" />
+            tools:text="@string/auth_touch_id_desc_try_again" />
 
         <View
             android:id="@+id/vHorizontalLine1"
@@ -72,11 +72,12 @@
                 android:layout_width="@dimen/dp_0"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:fontFamily="@string/font_family_title"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="center"
-                android:text="@string/action_cancel_nbsp"
+                android:text="@string/common_action_cancel_space"
                 android:textColor="?android:attr/textColorTertiary"
-                android:textStyle="bold" />
+                android:textSize="@dimen/fs_16" />
 
             <View
                 android:id="@+id/vVerticalLine1"
@@ -90,11 +91,12 @@
                 android:layout_width="@dimen/dp_0"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:fontFamily="@string/font_family_title"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:gravity="center"
-                android:text="@string/action_use_password"
+                android:text="@string/auth_touch_id_action_use_password"
                 android:textColor="?attr/colorPrimary"
-                android:textStyle="bold"
+                android:textSize="@dimen/fs_16"
                 android:visibility="visible" />
 
         </LinearLayout>
@@ -115,11 +117,12 @@
             android:id="@+id/tvNeutralBtn"
             android:layout_width="@dimen/dp_0"
             android:layout_height="@dimen/dp_0"
+            android:fontFamily="@string/font_family_title"
             android:foreground="?android:attr/selectableItemBackground"
             android:gravity="center"
-            android:text="@string/action_retry_fingerprint"
+            android:text="@string/auth_touch_id_action_retry"
             android:textColor="?attr/colorPrimary"
-            android:textStyle="bold"
+            android:textSize="@dimen/fs_16"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/vHorizontalLine1"
             app:layout_constraintEnd_toEndOf="parent"

@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="11dp"
             android:textColor="@color/def_text_color"
-            android:textSize="16sp"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Libra-wallet1" />
@@ -36,7 +36,7 @@
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="10dp"
             android:textColor="@color/def_text_color_50"
-            android:textSize="12sp"
+            android:textSize="@dimen/fs_12"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:text="@string/hint_output_back"
             android:textColor="@color/def_text_color"
-            android:textSize="16sp"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

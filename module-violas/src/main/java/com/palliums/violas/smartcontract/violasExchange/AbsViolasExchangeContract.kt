@@ -10,20 +10,18 @@ abstract class AbsViolasExchangeContract {
     companion object {
 
         private const val mAddLiquidityContract =
-            "a11ceb0b010006010002030207040902050b0d071817082f10000000010001020101000205060c030303030002090009010845786368616e67650d6164645f6c69717569646974797257c2417e4d1038e1817c8f283ace2e0201010001070b000a010a020a030a04380002"
-        private const val mInitializeContract =
-            "a11ceb0b010005010002030205050704070b14081f100000000100010001060c000845786368616e67650a696e697469616c697a657257c2417e4d1038e1817c8f283ace2e000001030b00110002"
+            "a11ceb0b0100000006010002030207040902050b0d071817082f10000000010001020101000205060c030303030002090009010845786368616e67650d6164645f6c6971756964697479000000000000000000000000000000010201010001070b000a010a020a030a04380002"
         private const val mRemoveLiquidityContract =
-            "a11ceb0b010006010002030207040902050b0c07171a083110000000010001020101000204060c0303030002090009010845786368616e67651072656d6f76655f6c69717569646974797257c2417e4d1038e1817c8f283ace2e0201010001060b000a010a020a03380002"
-        private const val mTokenSwapContract =
-            "a11ceb0b010006010002030207040902050b10071b0e082910000000010001020101000206060c0503030a020a020002090009010845786368616e676504737761707257c2417e4d1038e1817c8f283ace2e0201010001080b000a010a020a030b040b05380002"
-        private const val mAddCurrencyContract =
-            "a11ceb0b010006010006030617041d0605230b072e46087420000001010102000300010101020400020001050203010101030001010100040204030401060c00010501010109000845786368616e67650c4c696272614163636f756e74065369676e65720c6164645f63757272656e63790a616464726573735f6f6610616363657074735f63757272656e63797257c2417e4d1038e1817c8f283ace2e00000000000000000000000000000001010100010e0a0038000a0011013801200308050b0b003802050d0b000102"
+            "a11ceb0b0100000006010002030207040902050b0c07171a083110000000010001020101000204060c0303030002090009010845786368616e67651072656d6f76655f6c6971756964697479000000000000000000000000000000010201010001060b000a010a020a03380002"
+        private const val mSwapContract =
+            "a11ceb0b0100000006010002030207040902050b10071b0e082910000000010001020101000206060c0503030a020a020002090009010845786368616e67650473776170000000000000000000000000000000010201010001080b000a010a020a030b040b05380002"
+        private const val mWithdrawMineRewardContract =
+            "a11ceb0b0100000005010002030205050704070b1e0829100000000100010001060c000845786368616e67651477697468647261775f6d696e655f72657761726400000000000000000000000000000001000001030b00110002"
     }
 
     abstract fun getContractAddress(): String
 
-    private fun getContractDefaultAddress() = "7257c2417e4d1038e1817c8f283ace2e".hexToBytes()
+    private fun getContractDefaultAddress() = "00000000000000000000000000000001".hexToBytes()
 
     private fun replaceContractAddress(contract: String): ByteArray {
         return Move.violasReplaceAddress(
@@ -50,7 +48,7 @@ abstract class AbsViolasExchangeContract {
         tokenAMinAmount: Long,
         tokenBMinAmount: Long
     ): TransactionPayload {
-        val moveEncode = replaceContractAddress(mAddLiquidityContract)
+        val moveEncode = getAddLiquidityContract()
 
         return TransactionPayload(
             TransactionPayload.Script(
@@ -81,7 +79,7 @@ abstract class AbsViolasExchangeContract {
         tokenAMinAmount: Long,
         tokenBMinAmount: Long
     ): TransactionPayload {
-        val moveEncode = replaceContractAddress(mRemoveLiquidityContract)
+        val moveEncode = getRemoveLiquidityContract()
 
         return TransactionPayload(
             TransactionPayload.Script(
@@ -115,7 +113,7 @@ abstract class AbsViolasExchangeContract {
         path: ByteArray,
         data: ByteArray
     ): TransactionPayload {
-        val moveEncode = replaceContractAddress(mTokenSwapContract)
+        val moveEncode = getTokenSwapContract()
 
         return TransactionPayload(
             TransactionPayload.Script(
@@ -132,28 +130,16 @@ abstract class AbsViolasExchangeContract {
         )
     }
 
-    fun optionInitializeTransactionPayload(): TransactionPayload {
-        val moveEncode = replaceContractAddress(mInitializeContract)
+    /**
+     * 提取挖矿奖励
+     */
+    fun optionWithdrawRewardTransactionPayload(): TransactionPayload {
+        val moveEncode = getWithdrawRewardContract()
 
         return TransactionPayload(
             TransactionPayload.Script(
                 moveEncode,
                 arrayListOf(),
-                arrayListOf(
-                )
-            )
-        )
-    }
-
-    fun optionAddCurrencyTransactionPayload(
-        token: TypeTag
-    ): TransactionPayload {
-        val moveEncode = replaceContractAddress(mAddCurrencyContract)
-
-        return TransactionPayload(
-            TransactionPayload.Script(
-                moveEncode,
-                arrayListOf(token),
                 arrayListOf()
             )
         )
@@ -161,5 +147,6 @@ abstract class AbsViolasExchangeContract {
 
     fun getAddLiquidityContract() = replaceContractAddress(mAddLiquidityContract)
     fun getRemoveLiquidityContract() = replaceContractAddress(mRemoveLiquidityContract)
-    fun getTokenSwapContract() = replaceContractAddress(mTokenSwapContract)
+    fun getTokenSwapContract() = replaceContractAddress(mSwapContract)
+    fun getWithdrawRewardContract() = replaceContractAddress(mWithdrawMineRewardContract)
 }

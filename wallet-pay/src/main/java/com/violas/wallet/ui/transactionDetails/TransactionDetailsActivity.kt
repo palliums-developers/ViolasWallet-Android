@@ -1,26 +1,31 @@
 package com.violas.wallet.ui.transactionDetails
 
 import android.Manifest
-import android.content.ContentValues
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.palliums.base.ViewController
 import com.palliums.extensions.close
+import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.utils.*
 import com.palliums.widget.loading.LoadingDialog
 import com.violas.wallet.R
+import com.violas.wallet.biz.AddressBookManager
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.SYSTEM_ALBUM_DIR_NAME
+import com.violas.wallet.ui.addressBook.add.AddAddressBookActivity
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
@@ -34,8 +39,6 @@ import me.yokeyword.fragmentation.SupportActivity
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.PermissionRequest
-import java.io.File
-import java.io.OutputStream
 
 /**
  * Created by elephant on 2020/6/8 15:05.
@@ -47,8 +50,8 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     EasyPermissions.PermissionCallbacks, CoroutineScope by CustomMainScope() {
 
     companion object {
-        private const val PIC_DIR_NAME = "ViolasPay Photos"
         private const val REQUEST_CODE_SAVE_PICTURE = 100
+        private const val REQUEST_CODE_ADD_ADDRESS = 101
 
         fun start(context: Context, record: TransactionRecordVO) {
             Intent(context, TransactionDetailsActivity::class.java)
@@ -62,7 +65,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     private var mLoadingDialog: LoadingDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        StatusBarUtil.layoutExtendsToStatusBar(window)
+        window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_transaction_details)
@@ -87,8 +90,12 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.app_bar_share -> {
+                var marginTop = clTransactionInfo.y
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+                    marginTop -= StatusBarUtil.getStatusBarHeight() + DensityUtility.dp2px(this, 12)
+
                 ShareTransactionDetailsDialog.start(
-                    supportFragmentManager, mTransactionRecord, clTransactionInfo.y
+                    supportFragmentManager, mTransactionRecord, marginTop
                 ) {
                     when (it) {
                         0 -> checkStoragePermission()
@@ -139,6 +146,38 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 ClipboardUtils.copy(this, mTransactionRecord.transactionId)
             }
         }
+
+        tvAddAddress.expandTouchArea()
+        tvAddAddress.setOnClickListener {
+            AddAddressBookActivity.start(
+                this,
+                REQUEST_CODE_ADD_ADDRESS,
+                mTransactionRecord.coinType.coinType(),
+                mTransactionRecord.toAddress
+            )
+        }
+    }
+
+    private fun initAddAddressView() {
+        if (mTransactionRecord.transactionType != TransactionType.TRANSFER
+            || mTransactionRecord.toAddress.isNullOrBlank()
+        ) {
+            return
+        }
+
+        launch {
+            val isAdded = withContext(Dispatchers.IO) {
+                AddressBookManager().isAddressAdded(
+                    mTransactionRecord.coinType.coinType(),
+                    mTransactionRecord.toAddress!!
+                )
+            }
+
+            if (!isAdded) {
+                tvAddressNotAdd.visibility = View.VISIBLE
+                tvAddAddress.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun initView(transactionRecord: TransactionRecordVO) {
@@ -151,6 +190,8 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             topMargin = StatusBarUtil.getStatusBarHeight()
         }
 
+        initAddAddressView()
+
         when (transactionRecord.transactionState) {
             TransactionState.PENDING -> {
                 ivState.setImageResource(
@@ -159,7 +200,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 tvDesc.setTextColor(
                     getColorByAttrId(R.attr.textColorProcessing, this)
                 )
-                tvDesc.setText(R.string.desc_transaction_state_transaction_pending)
+                tvDesc.setText(R.string.txn_details_state_processing)
             }
 
             TransactionState.FAILURE -> {
@@ -172,19 +213,19 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 tvDesc.setText(
                     when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
-                            R.string.desc_transaction_state_transfer_failure
+                            R.string.txn_details_state_transfer_failure
                         }
 
                         TransactionType.COLLECTION -> {
-                            R.string.desc_transaction_state_collection_failure
+                            R.string.txn_details_state_collection_failure
                         }
 
                         TransactionType.ADD_CURRENCY -> {
-                            R.string.desc_transaction_state_add_currency_failure
+                            R.string.txn_details_state_add_currency_failure
                         }
 
                         else -> {
-                            R.string.desc_transaction_state_transaction_failure
+                            R.string.txn_details_state_transaction_failure
                         }
                     }
                 )
@@ -200,19 +241,19 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
                 tvDesc.setText(
                     when (transactionRecord.transactionType) {
                         TransactionType.TRANSFER -> {
-                            R.string.desc_transaction_state_transfer_success
+                            R.string.txn_details_state_transfer_success
                         }
 
                         TransactionType.COLLECTION -> {
-                            R.string.desc_transaction_state_collection_success
+                            R.string.txn_details_state_collection_success
                         }
 
                         TransactionType.ADD_CURRENCY -> {
-                            R.string.desc_transaction_state_add_currency_success
+                            R.string.txn_details_state_add_currency_success
                         }
 
                         else -> {
-                            R.string.desc_transaction_state_transaction_success
+                            R.string.txn_details_state_transaction_success
                         }
                     }
                 )
@@ -261,35 +302,35 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
         if (EasyPermissions.hasPermissions(this, *perms)) {
-            saveIntoAlbum()
+            savePicture()
         } else {
             EasyPermissions.requestPermissions(
                 PermissionRequest.Builder(this, REQUEST_CODE_SAVE_PICTURE, *perms)
-                    .setRationale(R.string.save_picture_hint_need_permissions)
-                    .setNegativeButtonText(R.string.action_cancel)
-                    .setPositiveButtonText(R.string.action_ok)
+                    .setRationale(R.string.save_picture_need_permissions_desc)
+                    .setNegativeButtonText(R.string.common_action_cancel)
+                    .setPositiveButtonText(R.string.common_action_ok)
                     .setTheme(R.style.AppAlertDialog)
                     .build()
             )
         }
     }
 
-    private fun saveIntoAlbum() {
+    private fun savePicture() {
         launch {
             showProgress()
 
             val result = withContext(Dispatchers.IO) {
                 val bitmap = viewConversionBitmap()
-                return@withContext saveBitmap(bitmap)
+                return@withContext bitmap.saveIntoSystemAlbum(SYSTEM_ALBUM_DIR_NAME)
             }
 
             delay(300)
 
             dismissProgress()
             if (result) {
-                showToast(R.string.tips_save_into_album_success)
+                showToast(R.string.save_picture_tips_success)
             } else {
-                showToast(R.string.tips_save_into_album_failure)
+                showToast(R.string.save_picture_tips_failure)
             }
         }
     }
@@ -305,53 +346,6 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         clTransactionInfo.draw(canvas)
 
         return bitmap
-    }
-
-    private fun saveBitmap(bitmap: Bitmap): Boolean {
-        var outputStream: OutputStream? = null
-        try {
-            val picDir = this.getExternalFilesDir(PIC_DIR_NAME) ?: return false
-            if (!picDir.exists()) {
-                picDir.mkdirs()
-            }
-
-            val curTime = System.currentTimeMillis()
-            val picName = "$curTime.png"
-            val picPath = File(picDir, picName).absolutePath
-            val contentValues = ContentValues()
-            contentValues.put(MediaStore.Images.ImageColumns.DATA, picPath)
-            contentValues.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, picName)
-            contentValues.put(MediaStore.Images.ImageColumns.MIME_TYPE, "image/png")
-            contentValues.put(MediaStore.Images.ImageColumns.DATE_ADDED, curTime / 1000)
-            contentValues.put(MediaStore.Images.ImageColumns.DATE_MODIFIED, curTime / 1000)
-            contentValues.put(MediaStore.Images.ImageColumns.SIZE, bitmap.byteCount)
-
-            val contentResolver = this.contentResolver
-            val uri = contentResolver.insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
-            ) ?: return false
-
-            outputStream = contentResolver.openOutputStream(uri)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            return true
-        } catch (e: Exception) {
-            return false
-        } finally {
-            try {
-                outputStream?.let {
-                    it.flush()
-                    it.close()
-                }
-            } catch (ignore: Exception) {
-            }
-            try {
-                if (!bitmap.isRecycled) {
-                    bitmap.recycle()
-                }
-            } catch (e: Exception) {
-            }
-        }
     }
 
     override fun attachBaseContext(newBase: Context) {
@@ -402,10 +396,10 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             AppSettingsDialog.Builder(this)
-                .setTitle(getString(R.string.save_picture_title_get_permissions))
-                .setRationale(getString(R.string.save_picture_hint_set_permissions))
-                .setNegativeButton(R.string.action_cancel)
-                .setPositiveButton(R.string.action_ok)
+                .setTitle(getString(R.string.save_picture_set_permissions_title))
+                .setRationale(getString(R.string.save_picture_set_permissions_desc))
+                .setNegativeButton(R.string.common_action_cancel)
+                .setPositiveButton(R.string.common_action_ok)
                 .setThemeResId(R.style.AppAlertDialog)
                 .build()
                 .show()
@@ -415,8 +409,16 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
         when (requestCode) {
             REQUEST_CODE_SAVE_PICTURE -> {
-                saveIntoAlbum()
+                savePicture()
             }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_ADD_ADDRESS && resultCode == Activity.RESULT_OK) {
+            tvAddressNotAdd.visibility = View.GONE
+            tvAddAddress.visibility = View.GONE
         }
     }
 }

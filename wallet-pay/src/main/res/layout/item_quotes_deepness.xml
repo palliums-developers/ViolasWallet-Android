@@ -25,7 +25,7 @@
             android:layout_marginStart="8dp"
             android:gravity="center|end"
             android:textColor="#60606D"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             tools:text="200" />
     </LinearLayout>
 
@@ -37,6 +37,6 @@
         android:layout_weight="5"
         android:gravity="center"
         android:textColor="#60606D"
-        android:textSize="14sp"
+        android:textSize="@dimen/fs_14"
         tools:text="7.1" />
 </LinearLayout>

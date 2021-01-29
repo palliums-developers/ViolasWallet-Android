@@ -1,8 +1,8 @@
 package com.palliums.utils
 
 import android.annotation.TargetApi
-import android.app.Activity
 import android.content.Context
+import android.graphics.Point
 import android.os.Build
 import android.text.TextUtils
 import android.view.View
@@ -12,6 +12,7 @@ import com.palliums.content.ContextProvider
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+
 
 /**
  * Created by elephant on 2019-11-14 09:50.
@@ -26,6 +27,56 @@ class StatusBarUtil {
         private var mIsMeiZu = false
         private var mIsGet = false
 
+        @JvmStatic
+        fun getAppUsableScreenSize(context: Context = ContextProvider.getContext()): Point {
+            val windowManager =
+                context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            val display = windowManager.defaultDisplay
+            val size = Point()
+            display.getSize(size)
+            return size
+        }
+
+        @JvmStatic
+        fun getRealScreenSize(context: Context = ContextProvider.getContext()): Point {
+            val windowManager =
+                context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            val display = windowManager.defaultDisplay
+            val size = Point()
+            display.getRealSize(size)
+            return size
+        }
+
+        @JvmStatic
+        fun getNavigationBarHeightByDisplay(context: Context = ContextProvider.getContext()): Int {
+            val appUsableSize = getAppUsableScreenSize(context)
+            val realScreenSize = getRealScreenSize(context)
+
+            // navigation bar on the right
+            if (appUsableSize.x < realScreenSize.x) {
+                return realScreenSize.x - appUsableSize.x
+            }
+
+            // navigation bar at the bottom
+            if (appUsableSize.y < realScreenSize.y) {
+                return realScreenSize.y - appUsableSize.y
+            }
+
+            // navigation bar is not present
+            return 0
+        }
+
+        @JvmStatic
+        fun getNavigationBarHeightByResources(context: Context = ContextProvider.getContext()): Int {
+            val resId = context.resources.getIdentifier(
+                "navigation_bar_height", "dimen", "android"
+            )
+            return if (resId != 0)
+                context.resources.getDimensionPixelSize(resId)
+            else
+                0
+        }
+
         /**
          * 获取状态栏高度
          */
@@ -35,8 +86,8 @@ class StatusBarUtil {
             val resId = context.resources.getIdentifier(
                 "status_bar_height", "dimen", "android"
             )
-            if (resId > 0) {
-                result = context.resources.getDimensionPixelOffset(resId)
+            if (resId != 0) {
+                result = context.resources.getDimensionPixelSize(resId)
             }
             return result
         }
@@ -169,6 +220,11 @@ class StatusBarUtil {
             }
 
             return mIsMeiZu
+        }
+
+        private fun isSamsung(): Boolean {
+            return Build.BRAND.equals("samsung", true)
+                    || Build.MANUFACTURER.equals("samsung", true)
         }
 
         private fun getSystemProperty(propName: String): String? {

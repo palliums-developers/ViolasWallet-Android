@@ -39,44 +39,16 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
 
         val list = response.data!!.mapIndexed { index, bean ->
             // 解析交易类型
-            val transactionType = when (bean.type) {
-                9 -> TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN
-
-                1, 2 -> {
-                    if (bean.sender == address) {
-                        TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
-                    } else {
-                        TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
-                    }
+            val transactionType =
+                if (bean.type.equals("ADD_CURRENCY_TO_ACCOUNT", true)) {
+                    TransactionRecordVO.TRANSACTION_TYPE_OPEN_TOKEN
+                } else if (bean.sender != address && bean.receiver == address) {
+                    TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT
+                } else if (bean.sender == address && !bean.receiver.isNullOrBlank()) {
+                    TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
+                } else {
+                    TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
                 }
-
-                7, 12, 13 -> {
-                    if (bean.sender == address) {
-                        TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
-                    } else {
-                        TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT
-                    }
-                }
-
-                else -> {
-                    if ((!bean.currency.isNullOrEmpty()
-                                && !bean.currency.equals(CoinTypes.Violas.coinName(), true))
-                        || !tokenName.isNullOrEmpty()
-                    ) {
-                        if (bean.sender == address) {
-                            TransactionRecordVO.TRANSACTION_TYPE_TOKEN_TRANSFER
-                        } else {
-                            TransactionRecordVO.TRANSACTION_TYPE_TOKEN_RECEIPT
-                        }
-                    } else {
-                        if (bean.sender == address) {
-                            TransactionRecordVO.TRANSACTION_TYPE_TRANSFER
-                        } else {
-                            TransactionRecordVO.TRANSACTION_TYPE_RECEIPT
-                        }
-                    }
-                }
-            }
 
             // 解析展示地址，收款付款均为对方地址
             val showAddress = when (bean.sender) {
@@ -95,7 +67,7 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
                 id = (pageNumber - 1) * pageSize + index,
                 coinTypes = CoinTypes.Violas,
                 transactionType = transactionType,
-                time = bean.expiration_time * 1000,
+                time = bean.confirmedTime,
                 amount = bean.amount,
                 gas = bean.gas,
                 address = showAddress,

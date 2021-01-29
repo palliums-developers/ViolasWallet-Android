@@ -11,11 +11,11 @@
         android:paddingHorizontal="@dimen/dp_35"
         android:paddingVertical="@dimen/dp_22">
 
-        <TextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvTokenA"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,12 +32,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTokenA" />
 
-        <TextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvTokenB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_11"
-            android:textSize="@dimen/sp_16"
+            android:textSize="@dimen/fs_16"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -54,14 +54,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTokenB" />
 
-        <TextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvLiquidity"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_94"
             android:layout_marginTop="@dimen/dp_31"
             android:paddingVertical="@dimen/dp_5"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/vHorizontalDivider"
@@ -72,19 +73,20 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
-            android:text="@string/label_transaction_details_liquidity_token"
+            android:text="@string/pool_details_label_pool_token"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toStartOf="@id/tvLiquidity"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvLiquidity" />
 
-        <TextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvExchangeRate"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_5"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvLiquidity"
             app:layout_constraintTop_toBottomOf="@id/tvLiquidity"
@@ -95,19 +97,20 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
-            android:text="@string/label_transaction_details_exchange_rate"
+            android:text="@string/market_common_label_swap_rate_colon"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toStartOf="@id/tvExchangeRate"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvExchangeRate" />
 
-        <TextView
+        <com.palliums.widget.NumberTextView
             android:id="@+id/tvGasFee"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/dp_5"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvLiquidity"
             app:layout_constraintTop_toBottomOf="@id/tvExchangeRate"
@@ -118,9 +121,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
-            android:text="@string/label_transaction_details_gas"
+            android:text="@string/txn_details_label_2"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toStartOf="@id/tvGasFee"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvGasFee" />
@@ -129,8 +132,9 @@
             android:id="@+id/tvOrderTime"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
+            android:fontFamily="@string/font_family_title"
             android:paddingVertical="@dimen/dp_5"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvLiquidity"
             app:layout_constraintTop_toBottomOf="@id/tvGasFee"
@@ -141,9 +145,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
-            android:text="@string/label_transaction_details_order_time"
+            android:text="@string/market_common_label_order_time_colon"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toStartOf="@id/tvOrderTime"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvOrderTime" />
@@ -152,21 +156,22 @@
             android:id="@+id/tvDealTime"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
+            android:fontFamily="@string/font_family_title"
             android:paddingVertical="@dimen/dp_5"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvLiquidity"
             app:layout_constraintTop_toBottomOf="@id/tvOrderTime"
-            tools:text="@string/value_null" />
+            tools:text="@string/common_desc_value_null" />
 
         <TextView
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_10"
             android:paddingTop="@dimen/dp_5"
-            android:text="@string/label_transaction_details_deal_time"
+            android:text="@string/market_common_label_deal_time_colon"
             android:textColor="?android:textColorTertiary"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintEnd_toStartOf="@id/tvDealTime"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvDealTime" />
@@ -185,9 +190,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_5"
-            android:text="@string/market_transaction_state_submitted"
+            android:text="@string/common_state_submitted"
             android:textColor="?attr/marketDetailsCompletedStateTextColor"
-            android:textSize="@dimen/sp_14"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintBottom_toBottomOf="@id/ivStartIcon"
             app:layout_constraintStart_toEndOf="@id/ivStartIcon"
             app:layout_constraintTop_toTopOf="@id/ivStartIcon" />
@@ -216,8 +221,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_5"
-            android:text="@string/market_pool_state_processing"
-            android:textSize="@dimen/sp_14"
+            android:text="@string/pool_txn_state_processing"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintBottom_toBottomOf="@id/ivProcessingIcon"
             app:layout_constraintStart_toEndOf="@id/ivProcessingIcon"
             app:layout_constraintTop_toTopOf="@id/ivProcessingIcon"
@@ -251,13 +256,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_5"
-            android:textSize="@dimen/sp_14"
-            android:textStyle="bold"
+            android:fontFamily="@string/font_family_title"
+            android:textSize="@dimen/fs_14"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/ivResultIcon"
             app:layout_constraintStart_toEndOf="@id/ivResultIcon"
             app:layout_constraintTop_toTopOf="@id/ivResultIcon"
-            tools:text="@string/market_pool_add_state_failed"
+            tools:text="@string/pool_txn_state_add_liquidity_failed"
             tools:textColor="?attr/textColorFailure"
             tools:visibility="visible" />
 

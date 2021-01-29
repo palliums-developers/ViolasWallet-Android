@@ -1,5 +1,6 @@
 package com.palliums.extensions
 
+import androidx.annotation.StringRes
 import com.palliums.BuildConfig
 import com.palliums.R
 import com.palliums.exceptions.BaseException
@@ -27,12 +28,23 @@ fun Throwable.isActiveCancellation(): Boolean {
             || this.javaClass.name == "kotlinx.coroutines.JobCancellationException"
 }
 
-fun Throwable.getShowErrorMessage(loadAction: Boolean): String {
+fun Throwable.getShowErrorMessage(@StringRes resId: Int): String {
+    return getShowErrorMessage(loadAction = null, failedDesc = getString(resId))
+}
+
+fun Throwable.getShowErrorMessage(loadAction: Boolean? = null, failedDesc: String? = null): String {
     if (this is BaseException) {
-        return getErrorMessage(loadAction)
+        return getErrorMessage(loadAction, failedDesc)
     }
 
-    if (loadAction) {
+    if (!failedDesc.isNullOrBlank()) {
+        return if (BuildConfig.DEBUG)
+            "$failedDesc\n${toString()}"
+        else
+            failedDesc
+    }
+
+    if (loadAction == true) {
         return if (BuildConfig.DEBUG)
             "${getString(R.string.common_load_fail)}\n${toString()}"
         else

@@ -18,12 +18,12 @@
         android:drawablePadding="@dimen/dp_6"
         android:ellipsize="end"
         android:gravity="start|center_vertical"
-        android:hint="@string/hint_market_select_token_search_box"
+        android:hint="@string/select_currency_hint_search"
         android:paddingHorizontal="@dimen/dp_7"
         android:paddingVertical="@dimen/dp_8"
         android:singleLine="true"
         android:textColorHint="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_14" />
+        android:textSize="@dimen/fs_14" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -43,8 +43,7 @@
             android:id="@+id/statusLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:slShowReloadOnFailed="true"
-            tools:lsStatus="loading" />
+            app:slShowReloadOnFailed="true" />
 
     </FrameLayout>
 

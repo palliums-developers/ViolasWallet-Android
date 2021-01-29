@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tvAddressLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_22"
+        android:layout_marginTop="@dimen/dp_18"
+        android:text="@string/incentive_earnings_details_label_invited_account"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_10"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvAmountLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_124"
+        android:text="@string/incentive_earnings_details_label_mining_earnings"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_10"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvAddressLabel"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTimeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_82"
+        android:text="@string/incentive_earnings_details_label_invitation_time"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_10"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvAddressLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvStateLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_22"
+        android:text="@string/common_label_state"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_10"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvAddressLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.palliums.widget.refresh.DefaultRefreshLayout
+        android:id="@+id/vRefreshLayout"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0"
+        android:layout_marginTop="@dimen/dp_10"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvAddressLabel">
+
+        <com.palliums.widget.refresh.RefreshClassicsHeader
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/vRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_bank_coin_repayment_record" />
+
+            <com.palliums.widget.status.DefaultStatusLayout
+                android:id="@+id/vStatusLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+
+    </com.palliums.widget.refresh.DefaultRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/sel_bg_account_management_violas"
-    tools:layout_marginEnd="@dimen/page_spacing_end"
-    tools:layout_marginStart="@dimen/page_spacing_start">
+    tools:layout_marginEnd="@dimen/spacing_page_end"
+    tools:layout_marginStart="@dimen/spacing_page_start">
 
     <TextView
         android:id="@+id/tvAccountName"
@@ -18,7 +18,7 @@
         android:ellipsize="middle"
         android:singleLine="true"
         android:textColor="@color/white"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/fs_20"
         app:layout_constraintEnd_toStartOf="@id/ivAccountOpt"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -35,7 +35,7 @@
         android:ellipsize="middle"
         android:singleLine="true"
         android:textColor="@color/white_80"
-        android:textSize="@dimen/sp_15"
+        android:textSize="@dimen/fs_15"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

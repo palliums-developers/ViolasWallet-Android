@@ -168,7 +168,7 @@ public class TransactionManager {
                 Log.e("====", "到没到目标金额 " + charge + "   总计余额：" + mUTXOListManager.getUseAmount().doubleValue());
 
                 if (!charge) {
-                    emitter.onError(new Exception(ContextProvider.INSTANCE.getContext().getResources().getString(R.string.hint_insufficient_or_trading_fees_are_confirmed)));
+                    emitter.onError(new Exception(ContextProvider.INSTANCE.getContext().getResources().getString(R.string.transfer_tips_insufficient_balance_or_assets_unconfirmed)));
                     emitter.onComplete();
                 } else {
                     emitter.onNext(TransactionManager.generateTransaction(privateKey, publicKey, mUTXOListManager, toAddressList, omniScript));

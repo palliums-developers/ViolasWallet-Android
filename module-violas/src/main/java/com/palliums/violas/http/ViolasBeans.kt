@@ -3,7 +3,6 @@ package com.palliums.violas.http
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
-import java.math.BigDecimal
 
 /**
  * Created by elephant on 2019-11-11 15:41.
@@ -59,18 +58,30 @@ data class CurrencyDTO(
 )
 
 data class TransactionRecordDTO(
-    val sender: String,
-    val receiver: String?,
-    val amount: String,
-    val currency: String,
-    val gas: String,
+    @SerializedName(value = "sender")
+    val sender: String = "",
+    @SerializedName(value = "receiver")
+    val receiver: String? = null,
+    @SerializedName(value = "amount")
+    val amount: String = "",
+    @SerializedName(value = "currency")
+    val currency: String = "",
+    @SerializedName(value = "gas")
+    val gas: String = "",
     @SerializedName(value = "gas_currency")
-    val gasCurrency: String,
-    val expiration_time: Long,
-    val sequence_number: Long,
-    val version: Long,
-    val type: Int,
-    val status: Int
+    val gasCurrency: String = "",
+    @SerializedName(value = "expiration_time")
+    val expirationTime: Long = 0,
+    @SerializedName(value = "confirmed_time")
+    val confirmedTime: Long = 0,
+    @SerializedName(value = "sequence_number")
+    val sequence_number: Long = 0,
+    @SerializedName(value = "version")
+    val version: Long = 0,
+    @SerializedName(value = "type")
+    val type: String = "",
+    @SerializedName(value = "status")
+    val status: String = ""
 )
 
 data class BalanceDTO(
@@ -130,154 +141,4 @@ data class AccountBalance(
 data class FiatBalanceDTO(
     val name: String,
     val rate: Double
-)
-
-@Keep
-data class SwapTrialSTO(
-    @SerializedName("amount")
-    val amount: Long,
-    @SerializedName("fee")
-    val fee: Long,
-    @SerializedName("path")
-    val path: List<Int>,
-    @SerializedName("rate")
-    val rate: Double
-)
-
-@Keep
-data class MarketCurrenciesDTO(
-    @SerializedName(value = "btc")
-    val bitcoinCurrencies: List<MarketCurrencyDTO>,
-    @SerializedName(value = "libra")
-    val libraCurrencies: List<MarketCurrencyDTO>,
-    @SerializedName(value = "violas")
-    val violasCurrencies: List<MarketCurrencyDTO>
-)
-
-@Keep
-data class MarketCurrencyDTO(
-    val name: String,
-    val module: String,
-    val address: String,
-    @SerializedName(value = "show_name")
-    val displayName: String,
-    @SerializedName(value = "icon")
-    val logo: String,
-    @SerializedName(value = "index")
-    val marketIndex: Int
-)
-
-@Keep
-data class UserPoolInfoDTO(
-    @SerializedName(value = "total_token")
-    val liquidityTotalAmount: String,
-    @SerializedName(value = "balance")
-    val liquidityList: List<PoolLiquidityDTO>?
-)
-
-@Keep
-data class PoolLiquidityDTO(
-    @SerializedName(value = "coin_a")
-    val coinA: CoinDTO,
-    @SerializedName(value = "coin_b")
-    val coinB: CoinDTO,
-    @SerializedName(value = "token")
-    val amount: BigDecimal
-) {
-    @Keep
-    data class CoinDTO(
-        val name: String,
-        val module: String,
-        @SerializedName(value = "module_address")
-        val address: String,
-        @SerializedName(value = "index")
-        val marketIndex: Int,
-        @SerializedName(value = "show_name")
-        val displayName: String,
-        @SerializedName(value = "value")
-        val amount: BigDecimal
-    )
-}
-
-@Keep
-data class AddPoolLiquidityEstimateResultDTO(
-    @SerializedName(value = "amount")
-    val tokenBAmount: BigDecimal,
-    @SerializedName(value = "rate")
-    val exchangeRate: BigDecimal
-)
-
-@Keep
-data class RemovePoolLiquidityEstimateResultDTO(
-    @SerializedName(value = "coin_a_name")
-    val tokenAName: String,
-    @SerializedName(value = "coin_a_value")
-    val tokenAAmount: BigDecimal,
-    @SerializedName(value = "coin_b_name")
-    val tokenBName: String,
-    @SerializedName(value = "coin_b_value")
-    val tokenBAmount: BigDecimal
-)
-
-@Keep
-data class PoolLiquidityReserveInfoDTO(
-    @SerializedName(value = "liquidity_total_supply")
-    val liquidityTotalAmount: BigDecimal,
-    @SerializedName(value = "coina")
-    val coinA: CoinDTO,
-    @SerializedName(value = "coinb")
-    val coinB: CoinDTO
-) {
-    @Keep
-    data class CoinDTO(
-        @SerializedName(value = "name")
-        val module: String,
-        @SerializedName(value = "index")
-        val marketIndex: Int,
-        @SerializedName(value = "value")
-        val amount: BigDecimal
-    )
-}
-
-@Keep
-data class MapRelationDTO(
-    @SerializedName("chain")
-    val chain: String,
-    @SerializedName("index")
-    val index: Int,
-    @SerializedName("map_name")
-    val mapName: String,
-    @SerializedName("module")
-    val module: String,
-    @SerializedName("module_address")
-    val moduleAddress: String,
-    @SerializedName("name")
-    val name: String
-)
-
-data class MappingPairInfoDTO(
-    @SerializedName("input_coin_type")
-    val inputCoinType: String,
-    @SerializedName("lable")
-    val lable: String,
-    @SerializedName("receiver_address")
-    val receiverAddress: String,
-    @SerializedName("to_coin")
-    val toCoin: ToCoinDTO
-)
-
-data class ToCoinDTO(
-    @SerializedName("assets")
-    val assets: AssetsDTO?,
-    @SerializedName("coin_type")
-    val coinType: String
-)
-
-data class AssetsDTO(
-    @SerializedName("address")
-    val address: String,
-    @SerializedName("module")
-    val module: String,
-    @SerializedName("name")
-    val name: String
 )

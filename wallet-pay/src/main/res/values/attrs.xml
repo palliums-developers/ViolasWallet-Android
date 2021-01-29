@@ -7,16 +7,19 @@
     </declare-styleable>
 
     <!--App通用资源属性-->
-    <attr name="statusBarSize" format="dimension"/>
+    <attr name="statusBarSize" format="dimension" />
+    <attr name="strokeThickness" format="dimension" />
+    <attr name="dividerThickness" format="dimension" />
 
     <attr name="colorSurfaceSecondary" format="color" />
-    <attr name="colorItemPressedPrimary" format="color" />
-    <attr name="colorItemPressedSecondary" format="color" />
+    <attr name="colorItemPressed" format="color" />
     <attr name="colorWebProgressBg" format="color" />
     <attr name="colorDivider" format="color" />
     <attr name="colorTint" format="color" />
     <attr name="colorSwitchBgNormal" format="color" />
     <attr name="colorSwitchBgChecked" format="color" />
+    <attr name="colorListGroup" format="color" />
+    <attr name="boxStrokeColorSecondary" format="color" />
 
     <attr name="textColorWarn" format="color" />
     <attr name="textColorProcessing" format="color" />
@@ -25,7 +28,6 @@
 
     <attr name="iconBackPrimary" format="reference" />
     <attr name="iconBackSecondary" format="reference" />
-    <attr name="iconBackTertiary" format="reference" />
     <attr name="iconClosePrimary" format="reference" />
     <attr name="iconCloseSecondary" format="reference" />
     <attr name="iconShare" format="reference" />
@@ -50,6 +52,21 @@
     <attr name="iconRecordStateFailed" format="reference" />
     <attr name="iconRecordStateCancelled" format="reference" />
     <attr name="iconCoinDefLogo" format="reference" />
+    <attr name="iconDownArrow" format="reference" />
+    <attr name="iconEndArrow" format="reference" />
+    <attr name="iconMore" format="reference" />
+    <attr name="iconRecordPrimary" format="reference" />
+    <attr name="iconRecordSecondary" format="reference" />
+    <attr name="iconTriangleArrow" format="reference" />
+    <attr name="iconAmount" format="reference" />
+    <attr name="iconInfo" format="reference" />
+    <attr name="iconMsgNotificationLight" format="reference" />
+    <attr name="iconClear" format="reference" />
+
+    <attr name="bgLoadFailure" format="reference" />
+    <attr name="bgLoadEmptyData" format="reference" />
+    <attr name="bgSearchEmptyData" format="reference" />
+    <attr name="bgPageTopViewLight" format="reference" />
 
     <!--首页资源属性-->
     <attr name="homeBottomTabSelectedTextColor" format="color" />
@@ -60,12 +77,12 @@
     <attr name="homeBottomMarketTabNormalIcon" format="reference" />
     <attr name="homeBottomMeTabSelectedIcon" format="reference" />
     <attr name="homeBottomMeTabNormalIcon" format="reference" />
+    <attr name="homeBottomBankTabSelectedIcon" format="reference" />
+    <attr name="homeBottomBankTabNormalIcon" format="reference" />
     <attr name="homeBottomNavigationBg" format="color|reference" />
     <attr name="homeFragmentTopBg" format="color|reference" />
 
     <!--钱包首页资源属性-->
-    <attr name="walletHomeTotalAssetsTextColor" format="color" />
-    <attr name="walletHomeAssetsTextColor" format="color" />
     <attr name="walletHomeAddAssetsIcon" format="reference" />
     <attr name="walletHomeInitWalletTextColor" format="color" />
     <attr name="walletHomeCreateWalletIcon" format="reference" />
@@ -73,21 +90,38 @@
     <attr name="walletHomeWalletConnectTextColor" format="color" />
     <attr name="walletHomeWalletConnectIcon" format="reference" />
     <attr name="walletHomeWalletConnectBgColor" format="color" />
-    <attr name="walletHomeBackupTopBg" format="color|reference" />
-    <attr name="walletHomeBackupTopIcon" format="reference" />
+    <attr name="walletHomeTransferIcon" format="reference" />
+    <attr name="walletHomeCollectionIcon" format="reference" />
+    <attr name="walletHomeMappingIcon" format="reference" />
+    <attr name="walletHomeMiningRewardBg" format="reference" />
+    <attr name="walletBackupNowHintBg" format="reference" />
+    <attr name="walletBackupNowBtnBg" format="reference" />
+    <attr name="walletBackupNowTitleTextColor" format="color" />
+    <attr name="walletHomePhoneReceiveBg" format="reference" />
 
     <!--我的首页资源属性-->
     <attr name="meHomeDefAvatarIcon" format="reference" />
     <attr name="meHomeWalletMenuIcon" format="reference" />
     <attr name="meHomeAddressMenuIcon" format="reference" />
     <attr name="meHomeSettingsMenuIcon" format="reference" />
+    <attr name="meHomeMiningRewardMenuIcon" format="reference" />
+    <attr name="meHomeInvitationRewardMenuIcon" format="reference" />
+    <attr name="meHomeTopBg" format="reference" />
+
+    <!--首页-数字银行资源属性-->
+    <attr name="homeBankTopBgIcon" format="reference"/>
+    <attr name="homeBankTotalBorrowableIcon" format="reference"/>
+    <attr name="homeBankTotalEarningsIcon" format="reference"/>
+    <attr name="homeBankYesterdayEarningsIcon" format="reference"/>
+    <attr name="homeBankYesterdayEarningsBgColor" format="color"/>
+    <attr name="homeBankYesterdayEarningsTextColor" format="color"/>
+    <attr name="homeBankMiningBg" format="reference"/>
 
     <!--币种详情页面资源属性-->
     <attr name="tokenDetailsTokenInfoBg" format="reference" />
     <attr name="tokenDetailsTabNormalTextColor" format="color" />
 
     <!--交易详情页面资源属性-->
-    <attr name="transDetailsTopBg" format="color|reference" />
     <attr name="transDetailsBottomBg" format="color|reference" />
     <attr name="transDetailsTransInfoBg" format="color|reference" />
     <attr name="transDetailsSaveIcon" format="reference" />
@@ -97,8 +131,6 @@
     <attr name="languageNormalIcon" format="reference" />
 
     <!--地址相关页面资源属性-->
-    <attr name="addressLabelBg" format="color|reference" />
-    <attr name="addressLabelTextColor" format="color" />
     <attr name="addressTypeSelectedBg" format="color" />
 
     <!--转账收款页面资源属性-->
@@ -120,7 +152,6 @@
     <attr name="mnemonicBackupBoxSelectedColor" format="color" />
 
     <!--添加币种页面资源属性-->
-    <attr name="addCurrencyTextColor" format="color" />
     <attr name="addCurrencyWarningIcon" format="reference" />
 
     <!--市场相关页面资源属性-->
@@ -128,10 +159,9 @@
     <attr name="marketMenuRecordIcon" format="reference" />
     <attr name="marketCoinConversionIcon" format="reference" />
     <attr name="marketSwapRecordIcon" format="reference" />
-    <attr name="marketSwapDetailsIcon" format="reference" />
     <attr name="marketSelectPopupBgColor" format="color" />
     <attr name="marketBtnSecondaryBgColor" format="color" />
-    <attr name="marketPoolIncomeIcon" format="reference" />
+    <attr name="marketPoolEarningsIcon" format="reference" />
     <attr name="marketPoolAndIcon" format="reference" />
     <attr name="marketPoolOutIcon" format="reference" />
     <attr name="marketTokenSelectedIcon" format="reference" />
@@ -139,5 +169,22 @@
     <attr name="marketDetailsCompletedStateTextColor" format="color" />
     <attr name="marketDetailsCompletedLineBgColor" format="color" />
     <attr name="marketDetailsUncompletedLineBgColor" format="color" />
+    <attr name="homeMarketMiningArrowIcon" format="reference" />
+    <attr name="homeMarketMiningBg" format="reference" />
+
+    <!--映射相关页面资源属性-->
+    <attr name="mappingDividerIcon" format="reference" />
+
+    <!--数字银行相关页面资源属性-->
+    <attr name="bankDepositOrderIcon" format="reference" />
+    <attr name="bankBorrowingOrderIcon" format="reference" />
+    <attr name="bankProductRateTextColor" format="color" />
+    <attr name="bankDepositEarningTextColor" format="color" />
+    <attr name="bankDepositEarningBgColor" format="color" />
+    <attr name="bankRecordCoinFilterTopBg" format="reference" />
+    <attr name="bankRecordStateFilterTopBg" format="reference" />
+
+    <!--消息中心页面资源属性-->
+    <attr name="msgItemUnread" format="color" />
 
 </resources>

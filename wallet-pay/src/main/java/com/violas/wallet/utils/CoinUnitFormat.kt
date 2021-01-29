@@ -115,7 +115,6 @@ fun convertDisplayAmountToAmount(
 ): BigDecimal {
     return amountBigDecimal
         .multiply(BigDecimal(getCoinUnit(coinTypes)))
-        .stripTrailingZeros()
 }
 
 fun convertAmountToDisplayAmount(
@@ -134,14 +133,16 @@ fun convertAmountToDisplayAmount(
 
 fun convertAmountToDisplayAmount(
     amountBigDecimal: BigDecimal,
-    coinTypes: CoinTypes = CoinTypes.Violas
+    coinTypes: CoinTypes = CoinTypes.Violas,
+    decimalScale: Int? = null,
+    roundingMode: RoundingMode = RoundingMode.HALF_UP
 ): BigDecimal {
     return if (amountBigDecimal > BigDecimal.ZERO)
         amountBigDecimal
             .divide(
                 BigDecimal(getCoinUnit(coinTypes)),
-                getCoinDecimal(coinTypes),
-                RoundingMode.HALF_UP
+                decimalScale ?: getCoinDecimal(coinTypes),
+                roundingMode
             )
             .stripTrailingZeros()
     else
@@ -207,16 +208,50 @@ fun convertAmountToExchangeRate(
     amountBBigDecimal: BigDecimal,
     coinTypesB: CoinTypes = CoinTypes.Violas
 ): BigDecimal? {
-    return if (amountABigDecimal > BigDecimal.ZERO && amountBBigDecimal > BigDecimal.ZERO)
-        amountBBigDecimal
-            .divide(
+    if (amountABigDecimal > BigDecimal.ZERO && amountBBigDecimal > BigDecimal.ZERO) {
+        val rateBigDecimal = amountBBigDecimal.divide(
+            amountABigDecimal,
+            20,
+            RoundingMode.HALF_UP
+        ).stripTrailingZeros()
+
+        try {
+            val array = rateBigDecimal.toPlainString().split(".")
+            if (array.size < 2 || array[1].length <= getCoinDecimal(coinTypesB))
+                return rateBigDecimal
+
+            var scaleStart = 0
+            val charsStart = array[1].toCharArray()
+            for (char in charsStart) {
+                scaleStart++
+                if (char != '0')
+                    break
+            }
+
+            var scaleEnd = getCoinDecimal(coinTypesB)
+            val charsEnd = array[1].substring(scaleEnd).toCharArray()
+            for (char in charsEnd) {
+                scaleEnd++
+                if (char != '0')
+                    break
+            }
+
+            val scale = if (scaleStart < scaleEnd)
+                getCoinDecimal(coinTypesB)
+            else
+                scaleEnd + 1
+
+            return amountBBigDecimal.divide(
                 amountABigDecimal,
-                getCoinDecimal(coinTypesB),
-                RoundingMode.DOWN
-            )
-            .stripTrailingZeros()
-    else
-        null
+                scale,
+                RoundingMode.HALF_UP
+            ).stripTrailingZeros()
+        } catch (e: Exception) {
+            return rateBigDecimal
+        }
+    } else {
+        return null
+    }
 }
 
 fun getAmountPrefix(amountBigDecimal: BigDecimal, input: Boolean): String {
@@ -224,5 +259,29 @@ fun getAmountPrefix(amountBigDecimal: BigDecimal, input: Boolean): String {
         amountBigDecimal <= BigDecimal.ZERO -> ""
         input -> "+ "
         else -> "- "
+    }
+}
+
+fun convertAmountToUSD(amount: Double, stripTrailingZeros: Boolean = true): String {
+    return BigDecimal(amount)
+        .divide(BigDecimal(100), 2, RoundingMode.DOWN).apply {
+            if (stripTrailingZeros) {
+                stripTrailingZeros()
+            }
+        }
+        .toPlainString()
+}
+
+fun convertRateToPercentage(rate: Double, minimumDecimalScale: Int = 2): String {
+    val rateStr = BigDecimal(rate * 100).toPlainString()
+    val array = rateStr.split(".")
+    return if (array.size >= 2 && array[1].length > minimumDecimalScale) {
+        "$rateStr%"
+    } else {
+        "${
+            BigDecimal(rate * 100)
+                .setScale(minimumDecimalScale, RoundingMode.DOWN)
+                .toPlainString()
+        }%"
     }
 }

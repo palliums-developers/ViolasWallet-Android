@@ -7,23 +7,23 @@
     android:paddingHorizontal="@dimen/dp_15"
     android:paddingTop="@dimen/dp_14">
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvLiquidityAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="?attr/textColorSuccess"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/market_liquidity_token_amount_format" />
+        tools:text="@string/market_common_label_pool_token_amount_format" />
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvTokenA"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_14"
         android:textColor="?colorOnSecondary"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvLiquidityAmount"
         tools:text="999 VLSUSD" />
@@ -38,20 +38,20 @@
         app:layout_constraintStart_toEndOf="@id/tvTokenA"
         app:layout_constraintTop_toTopOf="@id/tvTokenA" />
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvTokenB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_6"
         android:textColor="?colorOnSecondary"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintBaseline_toBaselineOf="@id/tvTokenA"
         app:layout_constraintStart_toEndOf="@id/iivAndIcon"
         tools:text="999 VLSEUR" />
 
     <View
         android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_0.5"
+        android:layout_height="?attr/dividerThickness"
         android:layout_marginTop="@dimen/dp_14"
         android:background="?attr/colorDivider"
         app:layout_constraintEnd_toEndOf="parent"

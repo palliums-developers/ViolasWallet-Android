@@ -197,15 +197,15 @@ class TransferManager {
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        try {
-            mTokenManager.mViolasService.sendViolasToken(
-                context,
-                Account(
-                    KeyPair.fromSecretKey(decryptPrivateKey)
-                ),
-                address,
-                (amount * 1000000L).toLong()
-            )
+        try {// TODO: 10/13/20
+//            mTokenManager.mViolasService.sendViolasToken(
+//                context,
+//                Account(
+//                    KeyPair.fromSecretKey(decryptPrivateKey)
+//                ),
+//                address,
+//                (amount * 1000000L).toLong(),
+//            )
             success.invoke("")
         } catch (e: Exception) {
             error.invoke(convertViolasTransferException(e))

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
-import com.palliums.utils.getDrawableCompat
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
@@ -19,14 +18,6 @@ import com.violas.wallet.ui.transactionDetails.TransactionDetailsActivity
  * desc: 交易记录视图
  */
 class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
-
-    private var mWalletAddress: String? = null
-    private var mCoinNumber: Int = CoinTypes.Violas.coinType()
-
-    @TransactionType
-    private var mTransactionType: Int = TransactionType.ALL
-    private var mTokenId: String? = null
-    private var mTokenDisplayName: String? = null
 
     companion object {
         fun newInstance(
@@ -51,8 +42,15 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         }
     }
 
-    private val mViewModel by lazy {
-        TransactionRecordViewModel(
+    private var mWalletAddress: String? = null
+    private var mCoinNumber: Int = CoinTypes.Violas.coinType()
+    @TransactionType
+    private var mTransactionType: Int = TransactionType.ALL
+    private var mTokenId: String? = null
+    private var mTokenDisplayName: String? = null
+
+    override fun lazyInitPagingViewModel(): PagingViewModel<TransactionRecordVO> {
+        return TransactionRecordViewModel(
             mWalletAddress!!,
             mTokenId,
             mTokenDisplayName,
@@ -61,22 +59,10 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
         )
     }
 
-    private val mViewAdapter by lazy {
-        TransactionRecordViewAdapter(
-            retryCallback = {
-                mViewModel.retry()
-            },
-            onItemClick = {
-                TransactionDetailsActivity.start(requireContext(), it)
-            })
-    }
-
-    override fun getViewModel(): PagingViewModel<TransactionRecordVO> {
-        return mViewModel
-    }
-
-    override fun getViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
-        return mViewAdapter
+    override fun lazyInitPagingViewAdapter(): PagingViewAdapter<TransactionRecordVO> {
+        return TransactionRecordViewAdapter {
+            TransactionDetailsActivity.start(requireContext(), it)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,16 +76,12 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
 
-        mPagingHandler.init()
+        getPagingHandler().init()
         getStatusLayout()?.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
-            getString(R.string.tips_no_transaction_record)
+            getString(R.string.txn_records_desc_records_empty)
         )
-        getDrawableCompat(R.mipmap.ic_no_transaction_record, requireContext())?.let {
-            getStatusLayout()?.setImageWithStatus(IStatusLayout.Status.STATUS_EMPTY, it)
-        }
-
-        mPagingHandler.start()
+        getPagingHandler().start()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

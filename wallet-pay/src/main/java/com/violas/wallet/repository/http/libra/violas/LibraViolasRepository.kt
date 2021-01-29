@@ -1,8 +1,7 @@
 package com.violas.wallet.repository.http.libra.violas
 
 import com.palliums.exceptions.RequestException
-import com.palliums.net.checkResponse
-import com.palliums.violas.http.Response
+import com.palliums.net.await
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -23,21 +22,20 @@ class LibraViolasRepository(private val api: LibraViolasApi) {
         offset: Int,
         transactionType: Int?
     ) =
-        checkResponse {
-            api.getTransactionRecords(address, tokenId, pageSize, offset, transactionType)
-        }
+        api.getTransactionRecords(
+            address, tokenId, pageSize, offset, transactionType
+        ).await()
 
     @Throws(RequestException::class)
     suspend fun activateAccount(
         address: String, authKeyPrefix: String
-    ): Response<Any> {
-        return checkResponse {
-            api.activateAccount(address, authKeyPrefix)
-        }
-    }
+    ) =
+        api.activateAccount(
+            address, authKeyPrefix
+        ).await()
 
     @Throws(RequestException::class)
-    suspend fun getCurrencies() = checkResponse {
-        api.getCurrency()
-    }
+    suspend fun getCurrencies() =
+        api.getCurrency().await()
+
 }

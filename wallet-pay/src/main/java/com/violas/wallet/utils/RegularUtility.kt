@@ -4,6 +4,7 @@ import com.quincysx.crypto.utils.SHA256
 import com.smallraw.core.crypto.Base58Utility
 import com.smallraw.core.crypto.Bech32Utility
 import org.palliums.libracore.serialization.hexToBytes
+import org.palliums.libracore.wallet.AccountIdentifier
 import java.util.*
 
 fun validationChinaPhone(phoneNumber: String): Boolean {
@@ -38,27 +39,47 @@ fun validationBTCAddress(address: String): Boolean {
 }
 
 fun validationLibraAddress(address: String): Boolean {
-    try {
-        address.hexToBytes()
-    } catch (e: Exception) {
-        return false
-    }
-    if (address.length == 32 || address.length == 64) {
-        return true
-    }
-    return false
+    return validationLibraNormalAddress(address)
 }
 
 fun validationViolasAddress(address: String): Boolean {
+    return validationViolasNormalAddress(address)
+}
+
+private fun validationLibraNormalAddress(address: String): Boolean {
     try {
         address.hexToBytes()
     } catch (e: Exception) {
         return false
     }
-    if (address.length == 32 || address.length == 64) {
-        return true
+    return address.length == 32
+}
+
+private fun validationLibraBech32Address(address: String): Boolean {
+    return try {
+        AccountIdentifier.decode(address)
+        true
+    } catch (e: Exception) {
+        false
     }
-    return false
+}
+
+private fun validationViolasNormalAddress(address: String): Boolean {
+    try {
+        address.hexToBytes()
+    } catch (e: Exception) {
+        return false
+    }
+    return address.length == 32
+}
+
+private fun validationViolasBech32Address(address: String): Boolean {
+    return try {
+        org.palliums.violascore.wallet.AccountIdentifier.decode(address)
+        true
+    } catch (e: Exception) {
+        false
+    }
 }
 
 private fun validationBTCBech32Address(address: String): Boolean {

@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/page_spacing_start"
-    android:layout_marginEnd="@dimen/page_spacing_end"
+    android:layout_marginStart="@dimen/spacing_page_start"
+    android:layout_marginEnd="@dimen/spacing_page_end"
     android:background="@drawable/selector_item_bg_primary_light">
 
     <ImageView
@@ -26,7 +26,7 @@
         android:layout_marginTop="@dimen/dp_12"
         android:layout_marginEnd="@dimen/dp_10"
         android:textColor="@color/def_text_title"
-        android:textSize="@dimen/sp_16"
+        android:textSize="@dimen/fs_16"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ivLogo"
@@ -42,7 +42,7 @@
         android:layout_marginEnd="@dimen/dp_10"
         android:layout_marginBottom="@dimen/dp_11"
         android:textColor="@color/def_text_title"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ivLogo"

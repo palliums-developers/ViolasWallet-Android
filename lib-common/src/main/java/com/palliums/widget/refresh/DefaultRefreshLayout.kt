@@ -2,7 +2,7 @@ package com.palliums.widget.refresh
 
 import android.content.Context
 import android.util.AttributeSet
-import com.palliums.extensions.lazyLogError
+import com.palliums.extensions.logDebug
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.constant.RefreshState
 
@@ -29,7 +29,7 @@ class DefaultRefreshLayout : SmartRefreshLayout, IRefreshLayout {
      * mKernel.setState(RefreshState.Refreshing)操作
      */
     override fun overSpinner() {
-        lazyLogError(TAG) { "overSpinner, state(${mState.name}), vice state(${mViceState.name})" }
+        logDebug(TAG) { "overSpinner, state(${mState.name}), vice state(${mViceState.name})" }
 
         if (mState == RefreshState.TwoLevel) {
             val thisView = this

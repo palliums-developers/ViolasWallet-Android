@@ -13,10 +13,14 @@ import kotlinx.android.synthetic.main.dialog_password_input.view.btnCancel
 import kotlinx.android.synthetic.main.dialog_password_input.view.btnConfirm
 import kotlinx.android.synthetic.main.dialog_publish_token.view.*
 
+/**
+ * 添加币种到账户弹窗
+ */
 class PublishTokenDialog : DialogFragment() {
     private lateinit var mRootView: View
 
-    private var content: String? = null
+    private var addCurrencyPage: Boolean = true
+    private var currencyName: String? = null
     private var confirmCallback: ((DialogFragment) -> Unit)? = null
     private var cancelCallback: (() -> Unit)? = null
 
@@ -24,7 +28,7 @@ class PublishTokenDialog : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         dialog?.window?.apply {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             setGravity(Gravity.TOP or Gravity.CENTER)
@@ -47,9 +51,14 @@ class PublishTokenDialog : DialogFragment() {
             dismiss()
             cancelCallback?.invoke()
         }
-        content?.let {
-            mRootView.tvContent.text = content
-        }
+        mRootView.tvContent.text =
+            getString(R.string.add_currency_first_desc_format, currencyName ?: "")
+        mRootView.tvTitle.setText(
+            if (addCurrencyPage)
+                R.string.add_currency_first_title_1
+            else
+                R.string.add_currency_first_title_2
+        )
         return mRootView
     }
 
@@ -57,8 +66,13 @@ class PublishTokenDialog : DialogFragment() {
         show(manager, "managerAssert")
     }
 
-    fun setContent(content: String?): PublishTokenDialog {
-        this.content = content
+    fun setAddCurrencyPage(addCurrencyPage: Boolean): PublishTokenDialog {
+        this.addCurrencyPage = addCurrencyPage
+        return this
+    }
+
+    fun setCurrencyName(currencyName: String?): PublishTokenDialog {
+        this.currencyName = currencyName
         return this
     }
 

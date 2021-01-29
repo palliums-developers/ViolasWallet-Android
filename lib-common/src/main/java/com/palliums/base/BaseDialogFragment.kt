@@ -111,11 +111,11 @@ abstract class BaseDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     fun showProgress(msg: String? = null) {
-        (activity as? BaseActivity)?.showProgress(msg)
+        (activity as? ViewController)?.showProgress(msg)
     }
 
     fun dismissProgress() {
-        (activity as? BaseActivity)?.dismissProgress()
+        (activity as? ViewController)?.dismissProgress()
     }
 
     fun showToast(@StringRes msgId: Int) {
@@ -123,6 +123,6 @@ abstract class BaseDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     fun showToast(msg: String) {
-        (activity as? BaseActivity)?.showToast(msg)
+        (activity as? ViewController)?.showToast(msg)
     }
 }

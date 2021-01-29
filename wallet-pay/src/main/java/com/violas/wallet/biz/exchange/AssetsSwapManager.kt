@@ -9,9 +9,8 @@ import com.violas.wallet.biz.exchange.processor.LibraToMappingAssetsProcessor
 import com.violas.wallet.biz.exchange.processor.ViolasToAssetsMappingProcessor
 import com.violas.wallet.biz.exchange.processor.ViolasTokenToViolasTokenProcessor
 import com.violas.wallet.common.Vm
-import com.violas.wallet.ui.main.market.MarketViewModel
 import com.violas.wallet.ui.main.market.bean.*
-import com.violas.wallet.utils.str2CoinType
+import com.violas.wallet.utils.str2CoinNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.palliums.violascore.http.ViolasException
@@ -204,7 +203,7 @@ class AssetsSwapManager(
         val resultMap = java.util.HashMap<Int, List<IAssetsMark>>()
         supportMappingSwapPairManager.getMappingSwapPair().forEach { mappingPair ->
             val tokens: MutableList<IAssetsMark>? =
-                str2CoinType(mappingPair.inputCoinType)?.let { coinType ->
+                str2CoinNumber(mappingPair.inputCoinType)?.let { coinType ->
                     if (resultMap.containsKey(coinType)) {
                         resultMap[coinType] as MutableList<IAssetsMark>
                     } else {
@@ -214,7 +213,7 @@ class AssetsSwapManager(
                     }
                 }
 
-            val assetsMark = str2CoinType(mappingPair.toCoin.coinType)?.let { coinType ->
+            val assetsMark = str2CoinNumber(mappingPair.toCoin.coinType)?.let { coinType ->
                 when (coinType) {
                     CoinTypes.BitcoinTest.coinType(),
                     CoinTypes.Bitcoin.coinType() -> {

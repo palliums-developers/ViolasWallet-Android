@@ -1,7 +1,7 @@
 package com.violas.wallet.walletconnect.violasTransferDataHandler
 
 import com.google.gson.*
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
+import com.violas.wallet.walletconnect.TransactionDataType
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.RawTransaction
 import java.lang.reflect.Type
@@ -16,7 +16,13 @@ class ViolasTransferDecodeEngine(
             TransferViolasAddCurrencyToAccountDecode(mRawTransaction),
             TransferExchangeSwapDecode(mRawTransaction),
             TransferExchangeAddLiquidityDecode(mRawTransaction),
-            TransferExchangeRemoveLiquidityDecode(mRawTransaction)
+            TransferExchangeRemoveLiquidityDecode(mRawTransaction),
+            TransferBankDepositDecode(mRawTransaction),
+            TransferBankRedeemDecode(mRawTransaction),
+            TransferBankRepayBorrowDecode(mRawTransaction),
+            TransferBankBorrowDecode(mRawTransaction),
+            TransferExchangeWithdrawRewardDecode(mRawTransaction),
+            TransferBankWithdrawRewardDecode(mRawTransaction)
         )
 
     fun decode(): Pair<TransactionDataType, String> {

@@ -84,18 +84,18 @@ class SlideBar : View {
         mPaint.isAntiAlias = true
         mPaint.style = Paint.Style.FILL
         mPaint.strokeWidth = 1f
-        mPaint.textSize = DensityUtility.sp2px(context, 12f)
+        mPaint.textSize = DensityUtility.dp2px(context, 12f)
 
         val fontMetricsInt = mPaint.fontMetricsInt
         mKeyRect.left = 0
-        mKeyRect.right = (mPaint.measureText("A") * 2.5f).toInt()
+        mKeyRect.right = (mPaint.measureText("A") * 1.5f).toInt()
         mKeyRect.top = 0
         mKeyRect.bottom =
             fontMetricsInt.bottom - fontMetricsInt.top + DensityUtility.dp2px(context, 2)
 
         mKeyView.setTextColor(Color.WHITE)
         mKeyView.gravity = Gravity.CENTER
-        mKeyView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        mKeyView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16f)
         mKeyView.setBackgroundResource(R.drawable.bg_slide_bar_index)
         mKeyView.gravity = Gravity.CENTER
         //mKeyView.setPadding(0, 0, DensityUtility.dp2px(context, 5), 0)

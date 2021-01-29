@@ -12,10 +12,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_15"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/market_swap_state_succeeded"
+        tools:text="@string/swap_txn_state_succeeded"
         tools:textColor="?attr/textColorSuccess" />
 
     <TextView
@@ -23,12 +23,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_7"
-        android:background="@drawable/sel_bg_market_btn_primary"
+        android:background="@drawable/sel_bg_btn2_primary"
         android:paddingHorizontal="@dimen/dp_8"
         android:paddingVertical="@dimen/dp_1"
-        android:text="@string/action_retry"
-        android:textColor="@color/sel_text_color_market_btn"
-        android:textSize="@dimen/sp_12"
+        android:text="@string/common_action_retry"
+        android:textColor="@color/sel_text_color_btn2"
+        android:textSize="@dimen/fs_12"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/tvState"
         app:layout_constraintStart_toEndOf="@id/tvState"
@@ -41,18 +41,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_15"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="01.18 15:42" />
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvInputCoin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
         android:textColor="?colorOnSurface"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvState"
         tools:text="999ETH" />
@@ -67,20 +67,20 @@
         app:layout_constraintStart_toEndOf="@id/tvInputCoin"
         app:layout_constraintTop_toTopOf="@id/tvInputCoin" />
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvOutputCoin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_37"
         android:textColor="?colorOnSurface"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintBaseline_toBaselineOf="@id/tvInputCoin"
         app:layout_constraintStart_toEndOf="@id/vSwapIcon"
         tools:text="99900VLS" />
 
     <View
         android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_0.5"
+        android:layout_height="?attr/dividerThickness"
         android:layout_marginTop="@dimen/dp_11"
         android:background="?attr/colorDivider"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -1,6 +1,7 @@
 package com.violas.wallet.biz
 
 import androidx.annotation.WorkerThread
+import com.palliums.content.ContextProvider
 import com.palliums.violas.bean.TokenMark
 import com.palliums.violas.http.ViolasMultiTokenRepository
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
@@ -47,7 +48,8 @@ class TokenManager {
                         name = it.showName,
                         fullName = it.showName,
                         isToken = true,
-                        logo = it.showLogo
+                        logo = it.showLogo,
+                        coinType = CoinTypes.Violas.coinType()
                     )
                 )
             }
@@ -70,7 +72,8 @@ class TokenManager {
                         name = it.showName,
                         fullName = it.showName,
                         isToken = true,
-                        logo = it.showLogo
+                        logo = it.showLogo,
+                        coinType = CoinTypes.Libra.coinType()
                     )
                 )
             }
@@ -218,10 +221,9 @@ class TokenManager {
                 val violasChainRpcService = DataRepository.getViolasChainRpcService()
                 val addCurrency = violasChainRpcService
                     .addCurrency(
+                        ContextProvider.getContext(),
                         Account(KeyPair.fromSecretKey(privateKey)),
-                        tokenMark.address,
-                        tokenMark.module,
-                        tokenMark.name
+                        tokenMark.address, tokenMark.module, tokenMark.name, Vm.ViolasChainId
                     )
                 for (item in 1 until 4) {
                     delay(item * 1000L)
@@ -229,15 +231,16 @@ class TokenManager {
                         addCurrency.sender,
                         addCurrency.sequenceNumber
                     )
-                    if (transaction.data?.vmStatus == 4001) {
+                    if (transaction?.isSuccessExecuted() == true) {
                         return true
                     }
                 }
             }
             CoinTypes.Libra.coinType() -> {
-                val libraService = DataRepository.getLibraService()
+                val libraService = DataRepository.getLibraRpcService()
                 val addCurrency = libraService
                     .addCurrency(
+                        ContextProvider.getContext(),
                         org.palliums.libracore.wallet.Account(
                             org.palliums.libracore.crypto.KeyPair.fromSecretKey(
                                 privateKey
@@ -250,7 +253,7 @@ class TokenManager {
                         addCurrency.sender,
                         addCurrency.sequenceNumber
                     )
-                    if (transaction.data?.vmStatus?.isSuccessExecuted() == true) {
+                    if (transaction?.isSuccessExecuted() == true) {
                         return true
                     }
                 }
@@ -287,7 +290,7 @@ class TokenManager {
                         }
                 }
                 CoinTypes.Libra.coinType() -> {
-                    DataRepository.getLibraService()
+                    DataRepository.getLibraRpcService()
                         .getAccountState(it.address)?.balances?.forEach { accountBalance ->
                             if (tokenMark.module == accountBalance.currency) {
                                 isPublish = true
@@ -297,19 +300,6 @@ class TokenManager {
             }
             isPublish
         } ?: false
-    }
-
-    suspend fun sendViolasToken(
-        tokenIdx: Long,
-        account: Account,
-        address: String,
-        amount: Long,
-        date: ByteArray = byteArrayOf()
-    ) {
-        val publishTokenPayload = mViolasMultiTokenService.transferTokenPayload(
-            tokenIdx, address, amount, date
-        )
-        mViolasService.sendTransaction(publishTokenPayload, account)
     }
 
     fun transferTokenPayload(

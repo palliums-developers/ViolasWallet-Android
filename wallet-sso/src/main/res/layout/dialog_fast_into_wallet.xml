@@ -23,7 +23,7 @@
         android:layout_marginTop="@dimen/dp_48"
         android:text="@string/title_welcome_1"
         android:textColor="@color/white"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintStart_toStartOf="@id/ivBg"
         app:layout_constraintTop_toTopOf="@id/ivBg" />
 
@@ -33,7 +33,7 @@
         android:layout_marginTop="@dimen/dp_3"
         android:text="@string/wallet_name"
         android:textColor="@color/white"
-        android:textSize="28.5sp"
+        android:textSize="@dimen/fs_28"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/tvTitle1"
         app:layout_constraintTop_toBottomOf="@id/tvTitle1" />
@@ -46,7 +46,7 @@
         android:background="@drawable/selector_btn_bg_welcome"
         android:text="@string/action_immediately_into"
         android:textColor="@color/white"
-        android:textSize="@dimen/sp_18"
+        android:textSize="@dimen/fs_18"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

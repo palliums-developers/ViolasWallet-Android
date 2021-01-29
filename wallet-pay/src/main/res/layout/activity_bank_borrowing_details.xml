@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.bank.details.borrowing.BankBorrowingDetailsActivity">
+
+    <TextView
+        android:id="@+id/tvAmountToBeRepaidLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_34"
+        android:layout_marginTop="@dimen/dp_29"
+        android:includeFontPadding="false"
+        android:text="@string/bank_borrowing_orders_label_borrowed_amount"
+        android:textSize="@dimen/fs_10"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.palliums.widget.NumberTextView
+        android:id="@+id/tvAmountToBeRepaid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_33"
+        android:layout_marginTop="@dimen/dp_14"
+        android:includeFontPadding="false"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="@dimen/fs_24"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvAmountToBeRepaidLabel"
+        tools:text="1020.88" />
+
+    <TextView
+        android:id="@+id/tvCoinUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginTop="@dimen/dp_23"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/fs_14"
+        app:layout_constraintStart_toEndOf="@id/tvAmountToBeRepaid"
+        app:layout_constraintTop_toBottomOf="@id/tvAmountToBeRepaidLabel"
+        tools:text="VLSUSD" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_46"
+        android:layout_marginHorizontal="@dimen/dp_24"
+        android:layout_marginTop="@dimen/dp_27"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvAmountToBeRepaid"
+        app:tabBackground="@null"
+        app:tabIndicatorHeight="@dimen/dp_0"
+        app:tabMaxWidth="@dimen/dp_200"
+        app:tabMinWidth="@dimen/dp_30"
+        app:tabMode="scrollable"
+        app:tabPaddingEnd="@dimen/dp_10"
+        app:tabPaddingStart="@dimen/dp_10"
+        app:tabRippleColor="@null"
+        app:tabSelectedTextColor="?android:attr/textColor"
+        app:tabTextColor="?android:attr/textColorTertiary" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="@dimen/dp_0"
+        android:background="@drawable/bg_style_1_solid_top_corners_16_normal"
+        app:layout_constraintBottom_toTopOf="@id/flBottomView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout" />
+
+    <FrameLayout
+        android:id="@+id/flBottomView"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:elevation="@dimen/dp_10"
+        android:paddingVertical="@dimen/dp_16"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewPager">
+
+        <Button
+            android:id="@+id/btnGoRepayment"
+            style="@style/BaseButtonPrimary"
+            android:layout_gravity="center"
+            android:text="@string/bank_borrowing_details_action" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

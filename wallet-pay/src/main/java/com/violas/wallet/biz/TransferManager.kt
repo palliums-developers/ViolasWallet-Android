@@ -15,19 +15,39 @@ import com.violas.wallet.utils.validationBTCAddress
 import com.violas.wallet.utils.validationLibraAddress
 import com.violas.wallet.utils.validationViolasAddress
 import com.violas.walletconnect.extensions.hexStringToByteArray
+import org.palliums.libracore.crypto.Ed25519KeyPair
 import org.palliums.libracore.http.LibraException
 import org.palliums.libracore.transaction.AccountAddress
+import org.palliums.libracore.transaction.TransactionMetadata
+import org.palliums.libracore.transaction.TransactionPayload
+import org.palliums.libracore.transaction.optionTransactionPayload
 import org.palliums.libracore.transaction.storage.StructTag
 import org.palliums.libracore.transaction.storage.TypeTag
+import org.palliums.libracore.wallet.Account
+import org.palliums.libracore.wallet.SubAddress
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
 
-class ToTheirException : RuntimeException(getString(R.string.hint_to_their_error))
-class WrongPasswordException : RuntimeException(getString(R.string.hint_password_error))
-class AddressFaultException : RuntimeException(getString(R.string.hint_address_error))
-class TransferUnknownException : RuntimeException(getString(R.string.hint_transfer_failed))
+class ForcedStopException : RuntimeException("")
+class ToTheirException : RuntimeException(getString(R.string.transfer_tips_address_is_myself))
+class WrongPasswordException : RuntimeException(getString(R.string.auth_pwd_hint_pwd_error))
+class AddressFaultException : RuntimeException(getString(R.string.transfer_tips_address_error))
+class TransferUnknownException : RuntimeException(getString(R.string.transfer_tips_transfer_failure))
 class LackOfBalanceException :
-    RuntimeException(getString(R.string.hint_insufficient_or_trading_fees_are_confirmed))
+    RuntimeException(getString(R.string.transfer_tips_insufficient_balance_or_assets_unconfirmed))
+
+class AccountNoActivationException :
+    RuntimeException(getString(R.string.transfer_tips_account_no_activation))
+
+class ReceiveAccountNoActivationException :
+    RuntimeException(getString(R.string.transfer_tips_receive_account_no_activation))
+
+class AccountNoControlException :
+    RuntimeException(getString(R.string.transfer_tips_account_no_control))
+
+class NodeNotResponseException :
+    RuntimeException(getString(R.string.transfer_tips_node_not_response))
+
 
 class TransferManager {
     private fun convertViolasTransferException(e: Exception): Exception {
@@ -36,8 +56,17 @@ class TransferManager {
             is ViolasException.LackOfBalanceException -> {
                 LackOfBalanceException()
             }
+            is ViolasException.AccountNoActivation -> {
+                AccountNoActivationException()
+            }
+            is ViolasException.AccountNoControl -> {
+                AccountNoControlException()
+            }
+            is ViolasException.ReceiveAccountNoActivation -> {
+                ReceiveAccountNoActivationException()
+            }
             is ViolasException.NodeResponseException -> {
-                LackOfBalanceException()
+                NodeNotResponseException()
             }
             else -> TransferUnknownException()
         }
@@ -49,8 +78,17 @@ class TransferManager {
             is LibraException.LackOfBalanceException -> {
                 LackOfBalanceException()
             }
+            is LibraException.AccountNoActivation -> {
+                AccountNoActivationException()
+            }
+            is LibraException.AccountNoControl -> {
+                AccountNoControlException()
+            }
+            is LibraException.ReceiveAccountNoActivation -> {
+                ReceiveAccountNoActivationException()
+            }
             is LibraException.NodeResponseException -> {
-                LackOfBalanceException()
+                NodeNotResponseException()
             }
             else -> TransferUnknownException()
         }
@@ -63,7 +101,7 @@ class TransferManager {
         account: AccountDO
     ) {
         if (address.isEmpty()) {
-            throw RuntimeException(getString(R.string.hint_please_input_address))
+            throw RuntimeException(getString(R.string.transfer_tips_address_empty))
         }
 
         if (!checkAddress(address, account.coinNumber)) {
@@ -77,17 +115,18 @@ class TransferManager {
         val amount = try {
             amountStr.trim().toDouble()
         } catch (e: Exception) {
-            throw RuntimeException(getString(R.string.hint_please_input_amount))
+            throw RuntimeException(getString(R.string.transfer_tips_transfer_amount_empty))
         }
         if (amount <= 0) {
-            throw RuntimeException(getString(R.string.hint_please_input_amount))
+            throw RuntimeException(getString(R.string.transfer_tips_transfer_amount_empty))
         }
     }
 
     @Throws(AddressFaultException::class, WrongPasswordException::class)
     suspend fun transfer(
         context: Context,
-        address: String,
+        receiverAddress: String,
+        receiverSubAddress: String?,
         amountStr: String,
         privateKey: ByteArray,
         accountDO: AccountDO,
@@ -103,7 +142,8 @@ class TransferManager {
             CoinTypes.Libra.coinType() -> {
                 transferLibra(
                     context,
-                    address,
+                    receiverAddress,
+                    receiverSubAddress,
                     amount,
                     privateKey,
                     accountDO,
@@ -113,10 +153,9 @@ class TransferManager {
                 )
             }
             CoinTypes.Violas.coinType() -> {
-//                if (token) {
                 transferViolas(
                     context,
-                    address,
+                    receiverAddress,
                     amount,
                     privateKey,
                     accountDO,
@@ -124,17 +163,6 @@ class TransferManager {
                     success,
                     error
                 )
-//                } else {
-//                    transferViolas(
-//                        context,
-//                        address,
-//                        amount,
-//                        privateKey,
-//                        accountDO,
-//                        success,
-//                        error
-//                    )
-//                }
             }
         }
     }
@@ -181,37 +209,10 @@ class TransferManager {
             })
     }
 
-    private suspend fun transferViolasToken(
-        context: Context,
-        address: String,
-        amount: Double,
-        decryptPrivateKey: ByteArray,
-        account: AccountDO,
-        tokenId: Long,
-        success: (String) -> Unit,
-        error: (Throwable) -> Unit
-    ) {
-        val token = DataRepository.getTokenStorage().findById(tokenId)
-        token?.let {
-            try {
-//                mTokenManager.sendViolasToken(
-//                    token.tokenIdx,
-//                    Account(
-//                        KeyPair.fromSecretKey(decryptPrivateKey)
-//                    ),
-//                    address,
-//                    (amount * 1000000L).toLong()
-//                )
-                success.invoke("")
-            } catch (e: Exception) {
-                error.invoke(convertViolasTransferException(e))
-            }
-        }
-    }
-
     private suspend fun transferLibra(
         context: Context,
         address: String,
+        subAddress: String?,
         amount: Double,
         decryptPrivateKey: ByteArray,
         account: AccountDO,
@@ -225,22 +226,33 @@ class TransferManager {
                 error.invoke(LibraException.CurrencyNotExistException())
                 return
             }
-            DataRepository.getLibraService().sendLibraToken(
-                context,
-                org.palliums.libracore.wallet.Account(
-                    org.palliums.libracore.crypto.Ed25519KeyPair(decryptPrivateKey)
-                ),
-                address,
-                (amount * 1000000L).toLong(),
-                TypeTag.newStructTag(
-                    StructTag(
-                        AccountAddress(token.address.hexStringToByteArray()),
-                        token.module,
-                        token.name,
-                        arrayListOf()
+
+            val transactionMetadata = if (subAddress.isNullOrBlank()) {
+                null
+            } else {
+                TransactionMetadata.createGeneralMetadataToSubAddress(SubAddress(subAddress))
+            }
+            val metadata = transactionMetadata?.metadata ?: byteArrayOf()
+            val metadataSignature = transactionMetadata?.signatureMessage ?: byteArrayOf()
+
+            DataRepository.getLibraRpcService().sendTransaction(
+                payload = TransactionPayload.optionTransactionPayload(
+                    context,
+                    address,
+                    (amount * 1000000L).toLong(),
+                    metadata,
+                    metadataSignature,
+                    TypeTag.newStructTag(
+                        StructTag(
+                            AccountAddress(token.address.hexStringToByteArray()),
+                            token.module,
+                            token.name,
+                            arrayListOf()
+                        )
                     )
                 ),
-                token.module,
+                account = Account(Ed25519KeyPair(decryptPrivateKey)),
+                gasCurrencyCode = token.module,
                 chainId = Vm.LibraChainId
             )
             success.invoke("")
@@ -280,7 +292,7 @@ class TransferManager {
                         arrayListOf()
                     )
                 ),
-                token.module
+                token.module, chainId = Vm.ViolasChainId
             )
             success.invoke("")
         } catch (e: Exception) {

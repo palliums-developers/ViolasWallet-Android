@@ -1,7 +1,8 @@
 package com.palliums.net
 
 import com.palliums.exceptions.RequestException
-import com.palliums.extensions.lazyLogError
+import com.palliums.extensions.logError
+import com.palliums.extensions.logInfo
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -53,13 +54,13 @@ suspend inline fun <T, R> T.checkResponse(
 suspend inline fun <T> Observable<T>.await(
     vararg specialStatusCodes: Any,
     dataNullableOnSuccess: Boolean = true,
-    noinline customError: ((response: T) -> Throwable)? = null
+    noinline customError: ((response: T) -> Unit)? = null
 ): T {
     return suspendCancellableCoroutine { continuation ->
 
         val disposable = subscribeOn(Schedulers.io())
             .subscribe({ response ->
-                lazyLogError("ObservableConverter") {
+                logInfo("ObservableConverter") {
                     "onResponse. is cancelled => ${continuation.isCancelled}"
                 }
                 if (continuation.isCancelled) return@subscribe
@@ -76,7 +77,11 @@ suspend inline fun <T> Observable<T>.await(
                     }
 
                     if (response.getErrorCode() != response.getSuccessCode()) {
-                        throw customError?.invoke(response) ?: RequestException(response)
+                        if (customError != null) {
+                            customError.invoke(response)
+                        } else {
+                            throw RequestException(response)
+                        }
                     } else if (!dataNullableOnSuccess && response.getResponseData() == null) {
                         throw RequestException.responseDataException("Data is null")
                     }
@@ -84,7 +89,7 @@ suspend inline fun <T> Observable<T>.await(
                     return@runCatching response
                 })
             }, {
-                lazyLogError("ObservableConverter") {
+                logError("ObservableConverter") {
                     "onFailure. is cancelled => ${continuation.isCancelled}, $it"
                 }
                 if (continuation.isCancelled) return@subscribe
@@ -93,7 +98,7 @@ suspend inline fun <T> Observable<T>.await(
             })
 
         continuation.invokeOnCancellation {
-            lazyLogError("ObservableConverter") {
+            logInfo("ObservableConverter") {
                 "invokeOnCancellation. cancel the request"
             }
             try {

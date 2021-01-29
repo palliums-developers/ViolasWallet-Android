@@ -165,7 +165,7 @@ class RequestException : RuntimeException, BaseException {
     override val message: String?
         get() = errorMsg
 
-    override fun getErrorMessage(loadAction: Boolean): String {
+    override fun getErrorMessage(loadAction: Boolean?, failedDesc: String?): String {
         if (errorCode != ERROR_CODE_DATA_EXCEPTION
             && errorCode != ERROR_CODE_UNKNOWN_ERROR
             && !errorMsg.isNullOrEmpty()
@@ -173,17 +173,26 @@ class RequestException : RuntimeException, BaseException {
             return errorMsg
         }
 
-        if (loadAction) {
+        if (!failedDesc.isNullOrBlank()) {
             return if (BuildConfig.DEBUG)
-                "${getString(R.string.common_load_fail)}($errorCode)\n${errorMsg
-                    ?: "Unknown reason"}"
+                "$failedDesc($errorCode)\n${errorMsg ?: "Unknown reason"}"
+            else
+                "$failedDesc($errorCode)"
+        }
+
+        if (loadAction == null) {
+            return if (BuildConfig.DEBUG)
+                "${getString(R.string.common_load_fail)}($errorCode)\n${
+                    errorMsg ?: "Unknown reason"
+                }"
             else
                 "${getString(R.string.common_load_fail)}($errorCode)"
         }
 
         return if (BuildConfig.DEBUG)
-            "${getString(R.string.common_operation_fail)}($errorCode)\n${errorMsg
-                ?: "Unknown reason"}"
+            "${getString(R.string.common_operation_fail)}($errorCode)\n${
+                errorMsg ?: "Unknown reason"
+            }"
         else
             "${getString(R.string.common_operation_fail)}($errorCode)"
     }

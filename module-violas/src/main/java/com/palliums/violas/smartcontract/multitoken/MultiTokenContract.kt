@@ -4,7 +4,7 @@ import org.palliums.violascore.move.Move
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.transaction.TransactionArgument
 import org.palliums.violascore.transaction.TransactionPayload
-import org.palliums.violascore.transaction.lbrStructTag
+import org.palliums.violascore.transaction.newDefaultStructTypeTag
 
 abstract class MultiTokenContract {
     companion object {
@@ -135,7 +135,7 @@ abstract class MultiTokenContract {
         return TransactionPayload(
             TransactionPayload.Script(
                 moveEncode,
-                arrayListOf(lbrStructTag()),
+                arrayListOf(newDefaultStructTypeTag()),
                 arrayListOf(addressArgument, tokenDataArgument)
             )
         )

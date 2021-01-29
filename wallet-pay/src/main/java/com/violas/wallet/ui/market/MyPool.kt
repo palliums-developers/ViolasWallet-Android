@@ -12,7 +12,6 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.listing.ListingViewAdapter
 import com.palliums.listing.ListingViewModel
 import com.palliums.utils.getString
-import com.palliums.violas.http.PoolLiquidityDTO
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.quincysx.crypto.CoinTypes
@@ -23,6 +22,7 @@ import com.violas.wallet.event.MarketPageType
 import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
 import com.violas.wallet.ui.main.market.pool.MarketPoolOpMode
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.viewModel.WalletAppViewModel
@@ -40,13 +40,6 @@ import org.greenrobot.eventbus.EventBus
  * desc: 我的资金池页面
  */
 class MyPoolActivity : BaseListingActivity<PoolLiquidityDTO>() {
-
-    private val viewModel by lazy {
-        ViewModelProvider(this).get(MyPoolViewModel::class.java)
-    }
-    private val viewAdapter by lazy {
-        MyPoolViewAdapter()
-    }
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_my_pool
@@ -68,18 +61,22 @@ class MyPoolActivity : BaseListingActivity<PoolLiquidityDTO>() {
         return statusLayout
     }
 
-    override fun getViewModel(): ListingViewModel<PoolLiquidityDTO> {
-        return viewModel
+    override fun lazyInitListingViewModel(): ListingViewModel<PoolLiquidityDTO> {
+        return ViewModelProvider(this).get(MyPoolViewModel::class.java)
     }
 
-    override fun getViewAdapter(): ListingViewAdapter<PoolLiquidityDTO> {
-        return viewAdapter
+    override fun lazyInitListingViewAdapter(): ListingViewAdapter<PoolLiquidityDTO> {
+        return ViewAdapter()
+    }
+
+    fun getViewModel(): MyPoolViewModel {
+        return getListingViewModel() as MyPoolViewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.title_market_my_pool)
+        setTitle(R.string.my_pool_title)
 
         btnTransferIn.setOnClickListener {
             EventBus.getDefault().post(SwitchMarketPageEvent(MarketPageType.Pool))
@@ -95,7 +92,7 @@ class MyPoolActivity : BaseListingActivity<PoolLiquidityDTO>() {
             close()
         }
 
-        mListingHandler.init()
+        getListingHandler().init()
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
@@ -105,7 +102,7 @@ class MyPoolActivity : BaseListingActivity<PoolLiquidityDTO>() {
                 }
 
                 launch {
-                    val initResult = viewModel.initAddress()
+                    val initResult = getViewModel().initAddress()
                     if (!initResult) {
                         initNotLoginView()
                         return@launch
@@ -124,14 +121,48 @@ class MyPoolActivity : BaseListingActivity<PoolLiquidityDTO>() {
 
     private fun initView() {
         refreshLayout.setOnRefreshListener {
-            viewModel.execute()
+            getViewModel().execute()
         }
 
-        viewModel.liquidityTotalAmount.observe(this, Observer {
+        getViewModel().liquidityTotalAmount.observe(this, Observer {
             tvLiquidityTotalAmount.text = convertAmountToDisplayAmountStr(it)
         })
 
-        viewModel.execute()
+        getViewModel().execute()
+    }
+
+    class ViewAdapter : ListingViewAdapter<PoolLiquidityDTO>() {
+
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int
+        ): BaseViewHolder<PoolLiquidityDTO> {
+            return ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_my_pool_liquidity_token,
+                    parent,
+                    false
+                )
+            )
+        }
+    }
+
+    class ViewHolder(
+        view: View
+    ) : BaseViewHolder<PoolLiquidityDTO>(view) {
+
+        override fun onViewBind(itemPosition: Int, itemData: PoolLiquidityDTO?) {
+            itemData?.let {
+                itemView.tvLiquidityAmount.text = getString(
+                    R.string.market_common_label_pool_token_amount_format,
+                    convertAmountToDisplayAmountStr(it.amount)
+                )
+                itemView.tvTokenA.text =
+                    "${convertAmountToDisplayAmountStr(it.coinA.amount)} ${it.coinA.displayName}"
+                itemView.tvTokenB.text =
+                    "${convertAmountToDisplayAmountStr(it.coinB.amount)} ${it.coinB.displayName}"
+            }
+        }
     }
 }
 
@@ -141,7 +172,9 @@ class MyPoolViewModel : ListingViewModel<PoolLiquidityDTO>() {
 
     private lateinit var address: String
 
-    private val violasService by lazy { DataRepository.getViolasService() }
+    private val exchangeService by lazy {
+        DataRepository.getExchangeService()
+    }
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
@@ -153,45 +186,10 @@ class MyPoolViewModel : ListingViewModel<PoolLiquidityDTO>() {
     }
 
     override suspend fun loadData(vararg params: Any): List<PoolLiquidityDTO> {
-        val userPoolInfo = violasService.getUserPoolInfo(address)
+        val userPoolInfo = exchangeService.getUserPoolInfo(address)
 
         liquidityTotalAmount.postValue(userPoolInfo?.liquidityTotalAmount ?: "0")
 
         return userPoolInfo?.liquidityList ?: emptyList()
-    }
-
-}
-
-class MyPoolViewAdapter : ListingViewAdapter<PoolLiquidityDTO>() {
-
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): BaseViewHolder<PoolLiquidityDTO> {
-        return MyPoolViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_my_pool_liquidity_token,
-                parent,
-                false
-            )
-        )
-    }
-}
-
-class MyPoolViewHolder(
-    view: View
-) : BaseViewHolder<PoolLiquidityDTO>(view) {
-
-    override fun onViewBind(itemPosition: Int, itemData: PoolLiquidityDTO?) {
-        itemData?.let {
-            itemView.tvLiquidityAmount.text = getString(
-                R.string.market_liquidity_token_amount_format,
-                convertAmountToDisplayAmountStr(it.amount)
-            )
-            itemView.tvTokenA.text =
-                "${convertAmountToDisplayAmountStr(it.coinA.amount)} ${it.coinA.displayName}"
-            itemView.tvTokenB.text =
-                "${convertAmountToDisplayAmountStr(it.coinB.amount)} ${it.coinB.displayName}"
-        }
     }
 }

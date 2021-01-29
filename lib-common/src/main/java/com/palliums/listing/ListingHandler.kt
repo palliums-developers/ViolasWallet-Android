@@ -1,7 +1,6 @@
 package com.palliums.listing
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import com.palliums.base.ViewController
 import com.palliums.net.LoadState
 import com.palliums.widget.status.IStatusLayout
@@ -19,12 +18,11 @@ class ListingHandler<VO>(
 ) {
 
     fun init() {
+        mListingController.getListingViewModel().listData.observe(mLifecycleOwner) {
+            mListingController.getListingViewAdapter().setDataList(it)
+        }
 
-        mListingController.getViewModel().listData.observe(mLifecycleOwner, Observer {
-            mListingController.getViewAdapter().setDataList(it)
-        })
-
-        mListingController.getViewModel().loadState.observe(mLifecycleOwner, Observer {
+        mListingController.getListingViewModel().loadState.observe(mLifecycleOwner) {
             when (it.peekData().status) {
                 LoadState.Status.RUNNING -> {
                     if (mListingController.loadingUseDialog()) {
@@ -39,9 +37,10 @@ class ListingHandler<VO>(
                     if (mListingController.loadingUseDialog()) {
                         mViewController.dismissProgress()
                     } else {
-                        mListingController.getRefreshLayout()?.finishRefresh(true)
-                        if (mListingController.enableRefresh())
-                            mListingController.getRefreshLayout()?.setEnableRefresh(true)
+                        mListingController.getRefreshLayout()?.run {
+                            finishRefresh(true)
+                            setEnableRefresh(mListingController.enableRefresh())
+                        }
                     }
 
                     mListingController.getStatusLayout()?.showStatus(
@@ -53,9 +52,10 @@ class ListingHandler<VO>(
                     if (mListingController.loadingUseDialog()) {
                         mViewController.dismissProgress()
                     } else {
-                        mListingController.getRefreshLayout()?.finishRefresh(true)
-                        if (mListingController.enableRefresh())
-                            mListingController.getRefreshLayout()?.setEnableRefresh(true)
+                        mListingController.getRefreshLayout()?.run {
+                            finishRefresh(true)
+                            setEnableRefresh(mListingController.enableRefresh())
+                        }
                     }
 
                     mListingController.getStatusLayout()?.showStatus(
@@ -67,12 +67,14 @@ class ListingHandler<VO>(
                     if (mListingController.loadingUseDialog()) {
                         mViewController.dismissProgress()
                     } else {
-                        mListingController.getRefreshLayout()?.finishRefresh(false)
-                        mListingController.getRefreshLayout()?.setEnableRefresh(true)
+                        mListingController.getRefreshLayout()?.run {
+                            finishRefresh(false)
+                            setEnableRefresh(true)
+                        }
                     }
 
                     when {
-                        mListingController.getViewAdapter().itemCount > 0 -> {
+                        mListingController.getListingViewAdapter().itemCount > 0 -> {
                             mListingController.getStatusLayout()?.showStatus(
                                 IStatusLayout.Status.STATUS_NONE
                             )
@@ -80,33 +82,35 @@ class ListingHandler<VO>(
 
                         it.peekData().isNoNetwork() -> {
                             mListingController.getStatusLayout()?.showStatus(
-                                IStatusLayout.Status.STATUS_NO_NETWORK, it.peekData().getErrorMsg()
+                                IStatusLayout.Status.STATUS_NO_NETWORK,
+                                it.peekData().getErrorMsg()
                             )
                         }
 
                         else -> {
                             mListingController.getStatusLayout()?.showStatus(
-                                IStatusLayout.Status.STATUS_FAILURE, it.peekData().getErrorMsg()
+                                IStatusLayout.Status.STATUS_FAILURE,
+                                it.peekData().getErrorMsg()
                             )
                         }
                     }
                 }
             }
-        })
+        }
 
-        mListingController.getViewModel().tipsMessage.observe(mLifecycleOwner, Observer {
+        mListingController.getListingViewModel().tipsMessage.observe(mLifecycleOwner) {
             it.getDataIfNotHandled()?.let { msg ->
                 if (msg.isNotEmpty()) {
                     mViewController.showToast(msg)
                 }
             }
-        })
+        }
 
         mListingController.getRefreshLayout()?.let {
             it.setEnableRefresh(false)
             it.setEnableLoadMore(false)
-            //it.setEnableOverScrollBounce(true)
             it.setEnableOverScrollDrag(true)
+            it.setEnableOverScrollBounce(false)
         }
 
         if (mListingController.loadingUseDialog()) {
@@ -115,6 +119,6 @@ class ListingHandler<VO>(
             mListingController.getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_LOADING)
         }
 
-        mListingController.getRecyclerView().adapter = mListingController.getViewAdapter()
+        mListingController.getRecyclerView().adapter = mListingController.getListingViewAdapter()
     }
 }

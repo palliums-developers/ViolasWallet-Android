@@ -40,7 +40,7 @@ class PoolDetailsActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.pool_details)
+        setTitle(R.string.pool_details_title)
         if (initData(savedInstanceState)) {
             initView(mPoolRecord)
         } else {
@@ -72,19 +72,19 @@ class PoolDetailsActivity : BaseAppActivity() {
     private fun initView(record: PoolRecordDTO) {
         tvTokenA.text =
             if (record.coinAName.isNullOrBlank() || record.coinAAmount.isNullOrBlank())
-                getString(R.string.value_null)
+                getString(R.string.common_desc_value_null)
             else
                 "${convertAmountToDisplayAmountStr(record.coinAAmount)} ${record.coinAName}"
 
         tvTokenB.text =
             if (record.coinBName.isNullOrBlank() || record.coinBAmount.isNullOrBlank())
-                getString(R.string.value_null)
+                getString(R.string.common_desc_value_null)
             else
                 "${convertAmountToDisplayAmountStr(record.coinBAmount)} ${record.coinBName}"
 
         tvLiquidity.text =
             if (record.liquidityAmount.isNullOrBlank()) {
-                getString(R.string.value_null)
+                getString(R.string.common_desc_value_null)
             } else {
                 val amount = BigDecimal(record.liquidityAmount)
                 "${getAmountPrefix(
@@ -95,15 +95,15 @@ class PoolDetailsActivity : BaseAppActivity() {
 
         tvExchangeRate.text =
             if (record.coinAAmount.isNullOrBlank() || record.coinBAmount.isNullOrBlank())
-                getString(R.string.value_null)
+                getString(R.string.common_desc_value_null)
             else
                 convertAmountToExchangeRate(record.coinAAmount, record.coinBAmount).let {
-                    if (it == null) getString(R.string.value_null) else "1:${it.toPlainString()}"
+                    if (it == null) getString(R.string.common_desc_value_null) else "1:${it.toPlainString()}"
                 }
 
         tvGasFee.text =
             if (record.gasCoinAmount.isNullOrBlank() || record.gasCoinName.isNullOrBlank())
-                getString(R.string.value_null)
+                getString(R.string.common_desc_value_null)
             else
                 "${convertAmountToDisplayAmountStr(record.gasCoinAmount)} ${record.gasCoinName}"
 
@@ -127,12 +127,12 @@ class PoolDetailsActivity : BaseAppActivity() {
         tvResultDesc.visibility = View.VISIBLE
 
         // 转入转出成功
-        if (record.status == 4001) {
+        if (record.isSuccess()) {
             tvResultDesc.setText(
                 if (record.isAddLiquidity())
-                    R.string.market_pool_add_state_succeeded
+                    R.string.pool_txn_state_add_liquidity_succeeded
                 else
-                    R.string.market_pool_remove_state_succeeded
+                    R.string.pool_txn_state_remove_liquidity_succeeded
             )
             tvResultDesc.setTextColor(
                 getColorByAttrId(R.attr.textColorSuccess, this)
@@ -146,9 +146,9 @@ class PoolDetailsActivity : BaseAppActivity() {
         // 转入转出失败
         tvResultDesc.setText(
             if (record.isAddLiquidity())
-                R.string.market_pool_add_state_failed
+                R.string.pool_txn_state_add_liquidity_failed
             else
-                R.string.market_pool_remove_state_failed
+                R.string.pool_txn_state_remove_liquidity_failed
         )
         tvResultDesc.setTextColor(
             getColorByAttrId(R.attr.textColorFailure, this)

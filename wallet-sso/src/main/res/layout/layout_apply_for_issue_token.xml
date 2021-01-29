@@ -19,7 +19,7 @@
             android:gravity="start|center"
             android:text="@string/label_governor_issuing"
             android:textColor="@color/color_3C3848_80"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -33,7 +33,7 @@
             android:gravity="end|center"
             android:text="@string/hint_select_governor"
             android:textColor="@color/color_3C3848"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintBottom_toBottomOf="@+id/tvGovernorTitle"
             app:layout_constraintEnd_toStartOf="@+id/ivGovernorCoinArrow"
             app:layout_constraintStart_toEndOf="@+id/tvGovernorTitle"
@@ -69,7 +69,7 @@
             android:gravity="start|center"
             android:text="@string/label_types_issuing"
             android:textColor="@color/color_3C3848_80"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -83,7 +83,7 @@
             android:gravity="end|center"
             android:text="@string/hint_select_types_issuing"
             android:textColor="@color/color_3C3848"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
             app:layout_constraintEnd_toStartOf="@+id/ivCoinArrow"
             app:layout_constraintStart_toEndOf="@+id/tvTitle"
@@ -138,7 +138,7 @@
             android:gravity="start|center"
             android:text="@string/label_stable_currency_name"
             android:textColor="@color/color_3C3848_80"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -155,7 +155,7 @@
             android:maxLength="3"
             android:textColor="#3C3848"
             android:textColorHint="#C4C3C8"
-            android:textSize="14sp"
+            android:textSize="@dimen/fs_14"
             app:layout_constraintBottom_toBottomOf="@+id/tvCoinNameTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvCoinNameTitle"
@@ -191,7 +191,7 @@
             android:layout_marginHorizontal="@dimen/dp_6"
             android:text="@string/hine_upload_file1"
             android:textColor="@color/color_3C3848_80"
-            android:textSize="12sp" />
+            android:textSize="@dimen/fs_12" />
 
         <com.violas.wallet.widget.UploadImageView
             android:id="@+id/upLoadViewReserves"
@@ -213,7 +213,7 @@
             android:layout_marginHorizontal="@dimen/dp_6"
             android:text="@string/hint_upload_file2"
             android:textColor="@color/color_3C3848_80"
-            android:textSize="12sp" />
+            android:textSize="@dimen/fs_12" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -231,7 +231,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/hint_upload_file_hint"
                 android:textColor="#FF5555"
-                android:textSize="@dimen/sp_11" />
+                android:textSize="@dimen/fs_11" />
 
         </LinearLayout>
 

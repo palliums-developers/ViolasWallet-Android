@@ -24,9 +24,9 @@
                 android:layout_height="wrap_content"
                 android:drawableStart="@mipmap/ic_create"
                 android:drawablePadding="@dimen/dp_9"
-                android:text="@string/action_create"
+                android:text="@string/init_wallet_action_create"
                 android:textColor="@color/def_text_title"
-                android:textSize="@dimen/sp_20"
+                android:textSize="@dimen/fs_20"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -57,9 +57,9 @@
                 android:layout_height="wrap_content"
                 android:drawableStart="@mipmap/ic_import"
                 android:drawablePadding="@dimen/dp_9"
-                android:text="@string/action_import"
+                android:text="@string/init_wallet_action_import"
                 android:textColor="@color/def_text_title"
-                android:textSize="@dimen/sp_20"
+                android:textSize="@dimen/fs_20"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -81,9 +81,9 @@
             android:layout_height="@dimen/dp_75"
             android:background="@drawable/bg_menu_item"
             android:gravity="center"
-            android:text="@string/action_cancel"
+            android:text="@string/common_action_cancel"
             android:textColor="@color/def_text_btn"
-            android:textSize="@dimen/sp_20"
+            android:textSize="@dimen/fs_20"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -42,13 +42,13 @@ class ShowMnemonicActivity : BaseBackupMnemonicActivity() {
     }
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_SECONDARY
+        return PAGE_STYLE_LIGHT_MODE_PRIMARY_TOP_BAR
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.show_mnemonic_title)
+        setTitle(R.string.mnemonic_backup_show_title)
         if (intent.getBooleanExtra(INTENT_KET_JUST_SHOW, false)) {
             vNextStep.visibility = View.GONE
         } else {

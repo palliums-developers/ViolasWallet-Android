@@ -11,4 +11,7 @@ interface AddressBookDao : BaseDao<AddressBookDo> {
 
     @Query("SELECT * FROM address_book WHERE coin_number = :coinType")
     fun findByCoinType(coinType: Int): List<AddressBookDo>
+
+    @Query("SELECT * FROM address_book WHERE coin_number = :coinNumber AND address = :address LIMIT 1")
+    fun query(coinNumber: Int, address: String): AddressBookDo?
 }

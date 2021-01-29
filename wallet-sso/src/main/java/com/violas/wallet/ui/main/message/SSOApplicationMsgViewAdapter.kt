@@ -3,7 +3,6 @@ package com.violas.wallet.ui.main.message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.utils.formatDate
@@ -22,9 +21,8 @@ import java.util.*
  * desc:
  */
 class SSOApplicationMsgViewAdapter(
-    retryCallback: () -> Unit,
     private val mItemCallback: (SSOApplicationMsgVO) -> Unit
-) : PagingViewAdapter<SSOApplicationMsgVO>(retryCallback, DiffCallback()) {
+) : PagingViewAdapter<SSOApplicationMsgVO>() {
 
     private val mDateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ENGLISH)
 
@@ -127,21 +125,5 @@ private class ViewHolder(
 
     override fun onViewClick(view: View, itemPosition: Int, itemData: SSOApplicationMsgVO?) {
         itemData?.let { mItemCallback.invoke(it) }
-    }
-}
-
-private class DiffCallback : DiffUtil.ItemCallback<SSOApplicationMsgVO>() {
-    override fun areItemsTheSame(
-        oldItem: SSOApplicationMsgVO,
-        newItem: SSOApplicationMsgVO
-    ): Boolean {
-        return oldItem.applicationId == newItem.applicationId
-    }
-
-    override fun areContentsTheSame(
-        oldItem: SSOApplicationMsgVO,
-        newItem: SSOApplicationMsgVO
-    ): Boolean {
-        return oldItem == newItem
     }
 }

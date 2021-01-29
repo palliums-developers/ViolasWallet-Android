@@ -3,9 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvHandlingFeeRate"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
@@ -13,13 +15,13 @@
         android:layout_marginTop="@dimen/dp_10"
         android:gravity="end"
         android:textColor="?android:textColorSecondary"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/handling_fee_rate_format" />
+        tools:text="@string/market_swap_label_charge_rate_format" />
 
-    <EditText
+    <com.palliums.widget.NumberEditText
         android:id="@+id/etFromInputBox"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
@@ -31,7 +33,7 @@
         android:paddingTop="@dimen/dp_48"
         android:paddingEnd="@dimen/dp_85"
         android:paddingBottom="@dimen/dp_12"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/fs_20"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,12 +45,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_11"
         android:layout_marginTop="@dimen/dp_16"
-        android:text="@string/input"
-        android:textSize="@dimen/sp_12"
+        android:text="@string/market_swap_label_from"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="@id/etFromInputBox"
         app:layout_constraintTop_toTopOf="@id/etFromInputBox" />
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvFromBalance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -56,8 +58,8 @@
         android:layout_marginEnd="@dimen/dp_11"
         android:drawableStart="?attr/marketTokenAmountIcon"
         android:drawablePadding="@dimen/dp_2"
-        android:text="@string/market_token_balance_format"
-        android:textSize="@dimen/sp_12"
+        android:text="@string/market_common_label_token_balance_format"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintEnd_toEndOf="@id/etFromInputBox"
         app:layout_constraintTop_toTopOf="@id/etFromInputBox" />
 
@@ -67,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_11"
         android:layout_marginBottom="@dimen/dp_11"
-        android:background="@drawable/sel_bg_market_btn_primary"
+        android:background="@drawable/sel_bg_btn2_primary"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
         app:layout_constraintBottom_toBottomOf="@id/etFromInputBox"
@@ -77,9 +79,9 @@
             android:id="@+id/tvFromSelectText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/select_token"
-            android:textColor="@color/sel_text_color_market_btn"
-            android:textSize="@dimen/sp_12" />
+            android:text="@string/market_common_action_select_token"
+            android:textColor="@color/sel_text_color_btn2"
+            android:textSize="@dimen/fs_12" />
 
         <ImageView
             android:layout_width="@dimen/dp_10"
@@ -100,7 +102,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etFromInputBox" />
 
-    <EditText
+    <com.palliums.widget.NumberEditText
         android:id="@+id/etToInputBox"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
@@ -112,7 +114,7 @@
         android:paddingTop="@dimen/dp_48"
         android:paddingEnd="@dimen/dp_85"
         android:paddingBottom="@dimen/dp_12"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/fs_20"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -124,12 +126,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_11"
         android:layout_marginTop="@dimen/dp_16"
-        android:text="@string/output"
-        android:textSize="@dimen/sp_12"
+        android:text="@string/market_swap_label_to"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="@id/etToInputBox"
         app:layout_constraintTop_toTopOf="@id/etToInputBox" />
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvToBalance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -137,8 +139,8 @@
         android:layout_marginEnd="@dimen/dp_11"
         android:drawableStart="?attr/marketTokenAmountIcon"
         android:drawablePadding="@dimen/dp_2"
-        android:text="@string/market_token_balance_format"
-        android:textSize="@dimen/sp_12"
+        android:text="@string/market_common_label_token_balance_format"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintEnd_toEndOf="@id/etToInputBox"
         app:layout_constraintTop_toTopOf="@id/etToInputBox" />
 
@@ -148,7 +150,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dp_11"
         android:layout_marginBottom="@dimen/dp_11"
-        android:background="@drawable/sel_bg_market_btn_primary"
+        android:background="@drawable/sel_bg_btn2_primary"
         android:paddingHorizontal="@dimen/dp_10"
         android:paddingVertical="@dimen/dp_5"
         app:layout_constraintBottom_toBottomOf="@id/etToInputBox"
@@ -158,9 +160,9 @@
             android:id="@+id/tvToSelectText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/select_token"
-            android:textColor="@color/sel_text_color_market_btn"
-            android:textSize="@dimen/sp_12" />
+            android:text="@string/market_common_action_select_token"
+            android:textColor="@color/sel_text_color_btn2"
+            android:textSize="@dimen/fs_12" />
 
         <ImageView
             android:layout_width="@dimen/dp_10"
@@ -171,37 +173,37 @@
 
     </LinearLayout>
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvExchangeRate"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_41"
         android:layout_marginTop="@dimen/dp_10"
         android:textColor="?android:textColorSecondary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etToInputBox"
-        tools:text="@string/exchange_rate_format" />
+        tools:text="@string/market_swap_label_swap_rate_format" />
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvGasFee"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_41"
         android:layout_marginTop="@dimen/dp_6"
         android:textColor="?android:textColorSecondary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvExchangeRate"
-        tools:text="@string/gas_fee_format" />
+        tools:text="@string/market_swap_label_gas_fee_format" />
 
     <Button
         android:id="@+id/btnSwap"
         style="@style/BaseButtonPrimary"
         android:layout_marginTop="@dimen/dp_24"
-        android:text="@string/action_swap_nbsp"
+        android:text="@string/market_swap_action_swap"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvGasFee" />
@@ -212,8 +214,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_14"
         android:layout_marginTop="@dimen/dp_47"
-        android:text="@string/title_market_swap_records"
-        android:textSize="@dimen/sp_14"
+        android:text="@string/swap_records_title"
+        android:textSize="@dimen/fs_14"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnSwap" />

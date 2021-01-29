@@ -10,6 +10,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.annotation.Px
 import com.palliums.R
 import com.palliums.utils.*
 import com.scwang.smartrefresh.layout.internal.ProgressDrawable
@@ -70,7 +71,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         var failureTips = getString(R.string.common_status_failure, context = context)
         var noNetWorkTips = getString(R.string.common_status_no_network, context = context)
 
-        var tipsTextSize = DensityUtility.sp2px(context, 14f).toInt()
+        var tipsTextSize = DensityUtility.dp2px(context, 14)
         var tipsTextColor = getColor(R.color.black_30, context = context)
 
         var reloadTextSize = tipsTextSize
@@ -212,6 +213,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
 
                 val tips: CharSequence? = mTipsArr[IStatusLayout.Status.STATUS_FAILURE]
                 val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_FAILURE]
+                    ?: mImageArr[IStatusLayout.Status.STATUS_NO_NETWORK]
                     ?: mImageArr[IStatusLayout.Status.STATUS_EMPTY]
                 setStatusData(tips, image)
 
@@ -226,6 +228,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
 
                 val tips: CharSequence? = mTipsArr[IStatusLayout.Status.STATUS_NO_NETWORK]
                 val image: Drawable? = mImageArr[IStatusLayout.Status.STATUS_NO_NETWORK]
+                    ?: mImageArr[IStatusLayout.Status.STATUS_FAILURE]
                     ?: mImageArr[IStatusLayout.Status.STATUS_EMPTY]
                 setStatusData(tips, image)
 
@@ -238,7 +241,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         mLastStatus = status
     }
 
-    override fun setTipsTextSize(size: Int): IStatusLayout {
+    override fun setTipsTextSize(@Px size: Int): IStatusLayout {
         vStatusTips.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.toFloat())
         vStatusTipsNoImage.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.toFloat())
         return this
@@ -260,7 +263,7 @@ class DefaultStatusLayout : FrameLayout, IStatusLayout, View.OnClickListener {
         return this
     }
 
-    override fun setReloadTextSize(size: Int): IStatusLayout {
+    override fun setReloadTextSize(@Px size: Int): IStatusLayout {
         vStatusReload.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.toFloat())
         return this
     }

@@ -22,7 +22,7 @@
         android:paddingEnd="15dp"
         android:paddingBottom="22dp"
         android:textColor="#3B3847"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +37,7 @@
         android:maxLength="20"
         android:background="@drawable/selector_edit_bg_line"
         android:hint="@string/hint_input_nickname"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editMnemonicWord" />
@@ -52,7 +52,7 @@
         android:background="@drawable/selector_edit_bg_line"
         android:hint="@string/hint_wallet_password"
         android:inputType="textPassword"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editName" />
@@ -67,7 +67,7 @@
         android:background="@drawable/selector_edit_bg_line"
         android:hint="@string/hint_input_confirm_password"
         android:inputType="textPassword"
-        android:textSize="16sp"
+        android:textSize="@dimen/fs_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editPassword" />

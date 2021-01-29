@@ -2,7 +2,7 @@ package com.violas.wallet.repository.http.issuer
 
 import com.palliums.content.ContextProvider
 import com.palliums.exceptions.RequestException
-import com.palliums.net.checkResponse
+import com.palliums.net.await
 import com.palliums.utils.getImageName
 import com.palliums.violas.http.Response
 import com.violas.wallet.biz.SSOApplicationState
@@ -40,9 +40,7 @@ class SSORepository(private val ssoApi: IssuerApi) {
     "id_photo_back_url":"$idPhotoBackUrl"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
-        return checkResponse {
-            ssoApi.bindIdNumber(toRequestBody)
-        }
+        return ssoApi.bindIdNumber(toRequestBody).await()
     }
 
     /**
@@ -50,9 +48,7 @@ class SSORepository(private val ssoApi: IssuerApi) {
      */
     suspend fun loadUserInfo(walletAddress: String): Response<UserInfoDTO> {
         // {"code":2004,"message":"SSO info does not exist."}
-        return checkResponse(2004) {
-            ssoApi.loadUserInfo(walletAddress)
-        }
+        return ssoApi.loadUserInfo(walletAddress).await(2004)
     }
 
     /**
@@ -63,9 +59,8 @@ class SSORepository(private val ssoApi: IssuerApi) {
     ): ApplyForSSOSummaryDTO? {
         // {"code":2005,"message":"Token info does not exist."}
         val summary =
-            checkResponse(2005) {
-                ssoApi.queryApplyForSSOSummary(walletAddress)
-            }.data
+            ssoApi.queryApplyForSSOSummary(walletAddress)
+                .await(2005).data
 
         summary?.let {
             if (it.applicationStatus < SSOApplicationState.CHAIRMAN_UNAPPROVED
@@ -91,9 +86,8 @@ class SSORepository(private val ssoApi: IssuerApi) {
         walletAddress: String
     ): ApplyForSSODetailsDTO? {
         val details =
-            checkResponse(2005) {
-                ssoApi.getApplyForSSODetails(walletAddress)
-            }.data
+            ssoApi.getApplyForSSODetails(walletAddress)
+                .await(2005).data
 
         details?.let {
             if (it.applicationStatus < SSOApplicationState.CHAIRMAN_UNAPPROVED
@@ -153,9 +147,7 @@ class SSORepository(private val ssoApi: IssuerApi) {
     "governor_address":"$governorAddress"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
-        return checkResponse(2003) {
-            ssoApi.applyForIssueToken(toRequestBody)
-        }
+        return ssoApi.applyForIssueToken(toRequestBody).await(2003)
     }
 
     /**
@@ -170,9 +162,7 @@ class SSORepository(private val ssoApi: IssuerApi) {
     "id":"$ssoApplicationId"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
-        return checkResponse {
-            ssoApi.changeApplyForSSOToPublished(toRequestBody)
-        }
+        return ssoApi.changeApplyForSSOToPublished(toRequestBody).await()
     }
 
     /**
@@ -193,9 +183,7 @@ class SSORepository(private val ssoApi: IssuerApi) {
         val createFormData =
             MultipartBody.Part.createFormData("photo", imageName, asRequestBody)
 
-        checkResponse(dataNullableOnSuccess = false) {
-            ssoApi.uploadImage(createFormData)
-        }
+        ssoApi.uploadImage(createFormData).await(dataNullableOnSuccess = false)
     }
 
     /**
@@ -212,9 +200,7 @@ class SSORepository(private val ssoApi: IssuerApi) {
     "phone_local_number":"${if (areaCode.startsWith("+")) areaCode else "+$areaCode"}"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
-        return checkResponse {
-            ssoApi.sendVerifyCode(toRequestBody)
-        }
+        return ssoApi.sendVerifyCode(toRequestBody).await()
     }
 
     /**
@@ -226,9 +212,7 @@ class SSORepository(private val ssoApi: IssuerApi) {
     "receiver":"$emailAddress"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
-        return checkResponse {
-            ssoApi.sendVerifyCode(toRequestBody)
-        }
+        return ssoApi.sendVerifyCode(toRequestBody).await()
     }
 
     /**
@@ -247,9 +231,7 @@ class SSORepository(private val ssoApi: IssuerApi) {
     "code":"$verificationCode"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
-        return checkResponse {
-            ssoApi.bind(toRequestBody)
-        }
+        return ssoApi.bind(toRequestBody).await()
     }
 
     /**
@@ -266,9 +248,7 @@ class SSORepository(private val ssoApi: IssuerApi) {
     "code":"$verificationCode"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
 
-        return checkResponse {
-            ssoApi.bind(toRequestBody)
-        }
+        return ssoApi.bind(toRequestBody).await()
     }
 
     /**
@@ -277,8 +257,6 @@ class SSORepository(private val ssoApi: IssuerApi) {
     suspend fun getGovernorList(
         offset: Int = 0, limit: Int = 100
     ) = withContext(Dispatchers.IO) {
-        checkResponse {
-            ssoApi.getGovernorList(offset, limit)
-        }
+        ssoApi.getGovernorList(offset, limit).await()
     }
 }

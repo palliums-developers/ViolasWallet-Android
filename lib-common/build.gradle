@@ -49,6 +49,7 @@ dependencies {
     androidTestImplementation libraries.androidTest_junit
     androidTestImplementation libraries.androidTest_espresso
 
+    api libraries.kotlin_stdlib
     api libraries.kotlin_stdlib_jdk8
     api libraries.kotlinx_coroutines_core
     api libraries.kotlinx_coroutines_android

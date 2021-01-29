@@ -24,12 +24,12 @@ class ChangeLanguageActivity : BaseAppActivity() {
     override fun getLayoutResId() = R.layout.activity_change_language
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_SECONDARY
+        return PAGE_STYLE_LIGHT_MODE_PRIMARY_TOP_BAR
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle(R.string.setting_multi_language)
+        setTitle(R.string.common_title_multi_language)
 
         val adapter = ChangeLanguageAdapter(viewModel)
         recyclerView.adapter = adapter

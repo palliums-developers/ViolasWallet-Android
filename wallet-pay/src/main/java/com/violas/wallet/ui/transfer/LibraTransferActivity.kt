@@ -3,33 +3,34 @@ package com.violas.wallet.ui.transfer
 import android.accounts.AccountsException
 import android.os.Bundle
 import android.text.AmountInputFilter
-import android.util.Log
 import androidx.lifecycle.Observer
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.getShowErrorMessage
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
-import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
-import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.database.entity.AccountType
-import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
-import com.violas.wallet.utils.convertViolasTokenUnit
+import com.violas.wallet.utils.convertDisplayUnitToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
-import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.android.synthetic.main.activity_transfer.*
-import kotlinx.coroutines.*
-import org.greenrobot.eventbus.EventBus
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 
+/**
+ * Diem/Violas转账页面
+ */
 class LibraTransferActivity : TransferActivity() {
+
     override fun getLayoutResId() = R.layout.activity_transfer
 
     private var mBalance: BigDecimal? = null
@@ -39,12 +40,17 @@ class LibraTransferActivity : TransferActivity() {
         WalletAppViewModel.getViewModelInstance(this@LibraTransferActivity)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        toAddress = editAddressInput.text.toString().trim()
+        transferAmount = convertDisplayUnitToAmount(
+            editAmountInput.text.toString().trim(),
+            CoinTypes.parseCoinType(coinNumber)
+        )
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.title_transfer)
-        assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
-        coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
-        isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
 
         CommandActuator.post(RefreshAssetsAllListCommand())
         mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
@@ -61,36 +67,36 @@ class LibraTransferActivity : TransferActivity() {
                 }
             }
             if (!exists) {
-                showToast(getString(R.string.hint_unsupported_tokens))
+                showToast(getString(R.string.transfer_tips_unopened_or_unsupported_token))
                 finish()
+                return@Observer
             }
+
             launch(Dispatchers.IO) {
                 try {
                     account = mAccountManager.getAccountById(mAssetsVo.getAccountId())
                     if (account?.accountType == AccountType.NoDollars && mAssetsVo is AssetsCoinVo) {
-                        showToast(getString(R.string.hint_unsupported_coin))
+                        showToast(getString(R.string.transfer_tips_unsupported_currency))
                         finish()
                         return@launch
                     }
                     refreshCurrentAmount()
-                    val amount = intent.getLongExtra(
-                        EXT_AMOUNT,
-                        0
-                    )
 
-                    val parseCoinType = CoinTypes.parseCoinType(account!!.coinNumber)
+                    val coinType = CoinTypes.parseCoinType(account!!.coinNumber)
                     withContext(Dispatchers.Main) {
-                        if (amount > 0) {
+                        if (transferAmount > 0) {
                             val convertAmountToDisplayUnit =
-                                convertAmountToDisplayUnit(amount, parseCoinType)
+                                convertAmountToDisplayUnit(transferAmount, coinType)
                             editAmountInput.setText(convertAmountToDisplayUnit.first)
                         }
                         if (isToken) {
-                            title = "${mAssetsVo.getAssetsName()} ${getString(R.string.transfer)}"
+                            title =
+                                getString(R.string.transfer_title_format, mAssetsVo.getAssetsName())
                             tvHintCoinName.text = mAssetsVo.getAssetsName()
                         } else {
-                            title = "${parseCoinType.coinName()} ${getString(R.string.transfer)}"
-                            tvHintCoinName.text = parseCoinType.coinName()
+                            title =
+                                getString(R.string.transfer_title_format, coinType.coinName())
+                            tvHintCoinName.text = coinType.coinName()
                         }
                     }
                 } catch (e: AccountsException) {
@@ -121,14 +127,14 @@ class LibraTransferActivity : TransferActivity() {
     }
 
     private fun initViewData() {
-        editAddressInput.setText(intent.getStringExtra(EXT_ADDRESS))
+        editAddressInput.setText(toAddress)
     }
 
     private suspend fun refreshCurrentAmount() {
         withContext(Dispatchers.Main) {
             mAssetsVo.amountWithUnit
             tvCoinAmount.text = String.format(
-                getString(R.string.hint_transfer_amount),
+                getString(R.string.transfer_label_balance_format),
                 mAssetsVo.amountWithUnit.amount,
                 mAssetsVo.amountWithUnit.unit
             )
@@ -182,6 +188,7 @@ class LibraTransferActivity : TransferActivity() {
                 mTransferManager.transfer(
                     this@LibraTransferActivity,
                     address.trim(),
+                    toSubAddress,
                     amount.trim(),
                     it,
                     account!!,
@@ -189,17 +196,16 @@ class LibraTransferActivity : TransferActivity() {
                     isToken,
                     mAssetsVo.getId(),
                     {
-                        showToast(getString(R.string.hint_transfer_broadcast_success))
-                        EventBus.getDefault().post(RefreshBalanceEvent())
-                        CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
-                        dismissProgress()
                         print(it)
+                        dismissProgress()
+                        showToast(getString(R.string.transfer_tips_transfer_success))
+                        CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                         finish()
                     },
                     {
-                        it.message?.let { it1 -> showToast(it1) }
-                        dismissProgress()
                         it.printStackTrace()
+                        dismissProgress()
+                        showToast(it.message ?: getString(R.string.transfer_tips_transfer_failure))
                     })
             }
         }

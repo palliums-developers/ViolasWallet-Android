@@ -3,11 +3,11 @@ package com.violas.wallet.ui.transfer
 import android.accounts.AccountsException
 import android.os.Bundle
 import android.text.AmountInputFilter
-import android.util.Log
 import android.widget.SeekBar
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import com.palliums.extensions.expandTouchArea
+import com.palliums.extensions.getShowErrorMessage
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
@@ -17,20 +17,18 @@ import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.utils.convertDisplayUnitToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
-import kotlinx.android.synthetic.main.activity_transfer_btc.btnConfirm
-import kotlinx.android.synthetic.main.activity_transfer_btc.editAddressInput
-import kotlinx.android.synthetic.main.activity_transfer_btc.editAmountInput
-import kotlinx.android.synthetic.main.activity_transfer_btc.ivScan
-import kotlinx.android.synthetic.main.activity_transfer_btc.sbQuota
-import kotlinx.android.synthetic.main.activity_transfer_btc.ivAddressBook
-import kotlinx.android.synthetic.main.activity_transfer_btc.tvCoinAmount
-import kotlinx.android.synthetic.main.activity_transfer_btc.tvFee
-import kotlinx.android.synthetic.main.activity_transfer_btc.tvHintCoinName
-import kotlinx.coroutines.*
+import kotlinx.android.synthetic.main.activity_transfer_btc.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
+/**
+ * BTC转账页面
+ */
 class BTCTransferActivity : TransferActivity() {
 
     //BTC
@@ -43,12 +41,18 @@ class BTCTransferActivity : TransferActivity() {
         WalletAppViewModel.getViewModelInstance(this@BTCTransferActivity)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        toAddress = editAddressInput.text.toString().trim()
+        transferAmount = convertDisplayUnitToAmount(
+            editAmountInput.text.toString().trim(),
+            CoinTypes.parseCoinType(coinNumber)
+        )
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.title_transfer)
-        assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
-        coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
-        isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
+
         mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
             var exists = false
             for (item in it) {
@@ -62,34 +66,34 @@ class BTCTransferActivity : TransferActivity() {
                     break
                 }
             }
-            Log.e("=======", exists.toString())
             if (!exists) {
-                showToast(getString(R.string.hint_unsupported_tokens))
+                showToast(getString(R.string.transfer_tips_unopened_or_unsupported_token))
                 finish()
+                return@Observer
             }
+
             launch(Dispatchers.IO) {
                 try {
                     account = mAccountManager.getAccountById(mAssetsVo.getAccountId())
-                    refreshCurrentAmount()
-                    val amount = intent.getLongExtra(
-                        EXT_AMOUNT,
-                        0
-                    )
-                    val parseCoinType = CoinTypes.parseCoinType(account!!.coinNumber)
+
+                    val coinType = CoinTypes.parseCoinType(account!!.coinNumber)
                     withContext(Dispatchers.Main) {
-                        if (amount > 0) {
+                        if (transferAmount > 0) {
                             val convertAmountToDisplayUnit =
-                                convertAmountToDisplayUnit(amount, parseCoinType)
+                                convertAmountToDisplayUnit(transferAmount, coinType)
                             editAmountInput.setText(convertAmountToDisplayUnit.first)
                         }
                         if (isToken) {
-                            title = "${mAssetsVo.getAssetsName()} ${getString(R.string.transfer)}"
+                            title =
+                                getString(R.string.transfer_title_format, mAssetsVo.getAssetsName())
                             tvHintCoinName.text = mAssetsVo.getAssetsName()
                         } else {
-                            title = "${parseCoinType.coinName()} ${getString(R.string.transfer)}"
-                            tvHintCoinName.text = parseCoinType.coinName()
+                            title =
+                                getString(R.string.transfer_title_format, coinType.coinName())
+                            tvHintCoinName.text = coinType.coinName()
                         }
                     }
+
                     account?.let {
                         mTransactionManager = TransactionManager(arrayListOf(it.address))
                         mTransactionManager.setFeeCallback {
@@ -163,18 +167,6 @@ class BTCTransferActivity : TransferActivity() {
         }
     }
 
-    private suspend fun refreshCurrentAmount() {
-        CommandActuator.post(RefreshAssetsAllListCommand())
-        withContext(Dispatchers.Main) {
-            mAssetsVo.amountWithUnit
-            tvCoinAmount.text = String.format(
-                getString(R.string.hint_transfer_amount),
-                mAssetsVo.amountWithUnit.amount,
-                mAssetsVo.amountWithUnit.unit
-            )
-        }
-    }
-
     private fun send() {
         val amount = editAmountInput.text.toString()
         val address = editAddressInput.text.toString()
@@ -204,23 +196,23 @@ class BTCTransferActivity : TransferActivity() {
                     account!!,
                     sbQuota.progress,
                     success = {
-                        showToast(getString(R.string.hint_transfer_broadcast_success))
-                        dismissProgress()
-                        CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                         print(it)
+                        dismissProgress()
+                        showToast(getString(R.string.transfer_tips_transfer_success))
+                        CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
                         finish()
                     },
                     error = {
-                        it.message?.let { it1 -> showToast(it1) }
-                        dismissProgress()
                         it.printStackTrace()
+                        dismissProgress()
+                        showToast(it.message ?: getString(R.string.transfer_tips_transfer_failure))
                     })
             }
         }
     }
 
     private fun initViewData() {
-        editAddressInput.setText(intent.getStringExtra(EXT_ADDRESS))
+        editAddressInput.setText(toAddress)
     }
 
     override fun onSelectAddress(address: String) {

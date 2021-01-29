@@ -1,76 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurfaceSecondary">
+    android:background="?attr/colorSurfaceSecondary"
+    android:paddingTop="?attr/statusBarSize">
 
-    <ImageView
-        android:id="@+id/ivHeader"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_196"
-        android:background="?attr/homeFragmentTopBg"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.palliums.widget.NiceImageView
-        android:id="@+id/ivAvatar"
-        android:layout_width="@dimen/dp_75"
-        android:layout_height="@dimen/dp_75"
-        android:layout_marginTop="@dimen/dp_65"
-        android:src="?attr/meHomeDefAvatarIcon"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <!--app:is_circle="true"
-    app:border_color="@color/white"
-    app:border_width="@dimen/dp_2"-->
-
-    <TextView
-        android:id="@+id/tvNickname"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_8"
-        android:text="@string/app_name"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="@dimen/sp_15"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
+        android:paddingHorizontal="@dimen/dp_15">
 
-    <com.palliums.widget.MenuItemView
-        android:id="@+id/mivWalletManagement"
-        style="@style/MenuItemView"
-        android:layout_marginTop="@dimen/dp_10"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivHeader"
-        app:mivShowBottomLine="false"
-        app:mivStartIcon="?attr/meHomeWalletMenuIcon"
-        app:mivStartTitleText="@string/me_wallet_management" />
+        <ImageView
+            android:id="@+id/ivHeader"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_123"
+            android:layout_marginTop="@dimen/dp_24"
+            android:background="?attr/meHomeTopBg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.palliums.widget.MenuItemView
-        android:id="@+id/mivAddressBook"
-        style="@style/MenuItemView"
-        android:layout_marginTop="@dimen/item_spacing"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mivWalletManagement"
-        app:mivShowBottomLine="false"
-        app:mivStartIcon="?attr/meHomeAddressMenuIcon"
-        app:mivStartTitleText="@string/me_address_book" />
+        <com.palliums.widget.NiceImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="@dimen/dp_45"
+            android:layout_height="@dimen/dp_45"
+            android:layout_marginTop="@dimen/dp_30"
+            android:src="?attr/meHomeDefAvatarIcon"
+            app:layout_constraintEnd_toEndOf="@id/ivHeader"
+            app:layout_constraintStart_toStartOf="@id/ivHeader"
+            app:layout_constraintTop_toTopOf="@id/ivHeader" />
+        <!--app:is_circle="true"
+        app:border_color="@color/white"
+        app:border_width="@dimen/dp_2"-->
 
-    <com.palliums.widget.MenuItemView
-        android:id="@+id/mivSettings"
-        style="@style/MenuItemView"
-        android:layout_marginTop="@dimen/item_spacing"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mivAddressBook"
-        app:mivShowBottomLine="false"
-        app:mivStartIcon="?attr/meHomeSettingsMenuIcon"
-        app:mivStartTitleText="@string/me_settings" />
+        <TextView
+            android:id="@+id/tvNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:includeFontPadding="false"
+            android:text="@string/app_name"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="@dimen/fs_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.palliums.widget.MenuItemView
+            android:id="@+id/mivWalletManagement"
+            style="@style/MenuItemView"
+            android:layout_marginTop="@dimen/dp_20"
+            android:background="@drawable/sel_bg_style_1_solid_corners_16"
+            android:paddingHorizontal="@dimen/dp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivHeader"
+            app:mivShowBottomLine="false"
+            app:mivStartIcon="?attr/meHomeWalletMenuIcon"
+            app:mivStartTitleText="@string/common_title_wallet_management" />
+
+        <com.palliums.widget.MenuItemView
+            android:id="@+id/mivAddressBook"
+            style="@style/MenuItemView"
+            android:layout_marginTop="@dimen/spacing_item"
+            android:background="@drawable/sel_bg_style_1_solid_corners_16"
+            android:paddingHorizontal="@dimen/dp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mivWalletManagement"
+            app:mivShowBottomLine="false"
+            app:mivStartIcon="?attr/meHomeAddressMenuIcon"
+            app:mivStartTitleText="@string/common_title_address_book" />
+
+        <com.palliums.widget.MenuItemView
+            android:id="@+id/mivMiningReward"
+            style="@style/MenuItemView"
+            android:layout_marginTop="@dimen/spacing_item"
+            android:background="@drawable/sel_bg_style_1_solid_corners_16"
+            android:paddingHorizontal="@dimen/dp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mivAddressBook"
+            app:mivShowBottomLine="false"
+            app:mivStartIcon="?attr/meHomeMiningRewardMenuIcon"
+            app:mivStartTitleText="@string/incentive_home_me_action_1" />
+
+        <com.palliums.widget.MenuItemView
+            android:id="@+id/mivInvitationReward"
+            style="@style/MenuItemView"
+            android:layout_marginTop="@dimen/spacing_item"
+            android:background="@drawable/sel_bg_style_1_solid_corners_16"
+            android:paddingHorizontal="@dimen/dp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mivMiningReward"
+            app:mivShowBottomLine="false"
+            app:mivStartIcon="?attr/meHomeInvitationRewardMenuIcon"
+            app:mivStartTitleText="@string/incentive_home_me_action_2" />
+
+        <com.palliums.widget.MenuItemView
+            android:id="@+id/mivSettings"
+            style="@style/MenuItemView"
+            android:layout_marginTop="@dimen/spacing_item"
+            android:background="@drawable/sel_bg_style_1_solid_corners_16"
+            android:paddingHorizontal="@dimen/dp_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mivInvitationReward"
+            app:mivShowBottomLine="false"
+            app:mivStartIcon="?attr/meHomeSettingsMenuIcon"
+            app:mivStartTitleText="@string/common_title_settings" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

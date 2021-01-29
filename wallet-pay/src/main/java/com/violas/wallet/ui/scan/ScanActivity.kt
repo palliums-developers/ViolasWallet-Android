@@ -2,6 +2,7 @@ package com.violas.wallet.ui.scan
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -17,20 +18,41 @@ import cn.bertsir.zbar.utils.QRUtils
 import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.biz.*
+import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.ui.transfer.TransferActivity
+import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
 import kotlinx.android.synthetic.main.activity_scan.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.PermissionRequest
 
+/**
+ * 二维码扫描页面
+ */
 class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
+
     companion object {
-        public const val RESULT_QR_CODE_DATA = "a1"
+        const val RESULT_QR_CODE_DATA = "a1"
+
         fun start(context: Activity, requestCde: Int) {
-            Intent(context, ScanActivity::class.java).start(context, requestCde)
+            Intent(context, ScanActivity::class.java)
+                .apply { putExtra(KEY_ONE, true) }
+                .start(context, requestCde)
         }
 
         fun start(context: Fragment, requestCde: Int) {
-            Intent(context.activity, ScanActivity::class.java).start(context, requestCde)
+            Intent(context.activity, ScanActivity::class.java)
+                .apply { putExtra(KEY_ONE, true) }
+                .start(context, requestCde)
+        }
+
+        fun start(context: Context) {
+            Intent(context, ScanActivity::class.java)
+                .apply { putExtra(KEY_ONE, false) }
+                .start(context)
         }
     }
 
@@ -38,6 +60,7 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
 
     private var soundPool: SoundPool? = null
     private val REQUEST_PERMISSION_CAMERA = 2
+    private val returnResult by lazy { intent?.getBooleanExtra(KEY_ONE, true) ?: true }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +78,7 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
 
         startCamera()
 
-        title = getString(R.string.title_scan)
+        title = getString(R.string.qr_code_scan_title)
 
         initView()
 
@@ -77,9 +100,9 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
         } else {
             EasyPermissions.requestPermissions(
                 PermissionRequest.Builder(this, REQUEST_PERMISSION_CAMERA, *perms)
-                    .setRationale(R.string.hint_scan_need_camera_permissions)
-                    .setNegativeButtonText(R.string.action_cancel)
-                    .setPositiveButtonText(R.string.action_ok)
+                    .setRationale(R.string.qr_code_scan_need_permissions_desc)
+                    .setNegativeButtonText(R.string.common_action_cancel)
+                    .setPositiveButtonText(R.string.common_action_ok)
                     .setTheme(R.style.AppAlertDialog)
                     .build()
             )
@@ -88,17 +111,49 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
 
     private val resultCallback = ScanCallback { result ->
         soundPool?.play(1, 1f, 1f, 0, 0, 1f)
+        cameraPreview?.setFlash(false)
         onScanSuccess(result)
     }
 
     private fun onScanSuccess(result: String) {
-        cameraPreview.setFlash(false)
+        launch {
+            val qrCode = decodeQRCode(result)
 
-        setResult(Activity.RESULT_OK,
-            Intent().apply {
-                putExtra(RESULT_QR_CODE_DATA, result)
-            })
-        finish()
+            if (returnResult) {
+                setResult(
+                    Activity.RESULT_OK,
+                    Intent().apply { putExtra(RESULT_QR_CODE_DATA, qrCode) }
+                )
+                close()
+                return@launch
+            }
+
+            when (qrCode) {
+                is TransferQRCode -> {
+                    TransferActivity.start(
+                        this@ScanActivity,
+                        qrCode.coinType,
+                        qrCode.address,
+                        qrCode.subAddress,
+                        qrCode.amount,
+                        qrCode.tokenName
+                    )
+                }
+
+                is WalletConnectQRCode -> {
+                    WalletConnectAuthorizationActivity.start(this@ScanActivity, qrCode.content)
+                }
+
+                is CommonQRCode -> {
+                    ScanResultActivity.start(this@ScanActivity, qrCode.content)
+                }
+            }
+            overridePendingTransition(R.anim.activity_bottom_in, R.anim.activity_none)
+
+            delay(300)
+            close()
+            overridePendingTransition(R.anim.activity_none, R.anim.activity_none)
+        }
     }
 
     private fun initView() {
@@ -158,10 +213,10 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             AppSettingsDialog.Builder(this)
-                .setTitle(getString(R.string.hint_get_the_camera_permissions))
-                .setRationale(getString(R.string.hint_set_permissions_to_open))
-                .setNegativeButton(R.string.action_cancel)
-                .setPositiveButton(R.string.action_ok)
+                .setTitle(getString(R.string.qr_code_scan_set_permissions_title))
+                .setRationale(getString(R.string.qr_code_scan_set_permissions_desc))
+                .setNegativeButton(R.string.common_action_cancel)
+                .setPositiveButton(R.string.common_action_ok)
                 .setThemeResId(R.style.AppAlertDialog)
                 .build().show();
         }

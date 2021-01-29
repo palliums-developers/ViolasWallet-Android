@@ -144,11 +144,11 @@ class SelectCountryAreaActivity : BaseAppActivity() {
             setTextColor(
                 getColor(if (isFloat) R.color.colorAccent else R.color.def_text_desc, context)
             )
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
             setBackgroundColor(getColor(R.color.color_F4F4F4, context))
         }
 
-        override fun refreshView(itemData: GroupListLayout.ItemData?) {
+        override fun refreshView(itemData: GroupListLayout.ItemData?, lastGroupItem: Boolean?) {
             if (itemData == null || itemData.getGroupName().isNullOrEmpty()) {
                 tvTitle.visibility = View.GONE
             } else {
@@ -184,7 +184,7 @@ class SelectCountryAreaActivity : BaseAppActivity() {
             }
         }
 
-        override fun refreshView(itemData: GroupListLayout.ItemData?) {
+        override fun refreshView(itemData: GroupListLayout.ItemData?, lastGroupItem: Boolean?) {
             countryAreaVO = itemData as? CountryAreaVO
 
             countryAreaVO?.let {

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/dp_34">
+
+    <TextView
+        android:id="@+id/tvLiquidatedLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_17"
+        android:includeFontPadding="false"
+        android:text="@string/bank_borrowing_details_label_liquidation_amount"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_10"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.palliums.widget.NumberTextView
+        android:id="@+id/tvLiquidated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_16"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/fs_12"
+        app:layout_constraintStart_toStartOf="@id/tvLiquidatedLabel"
+        app:layout_constraintTop_toBottomOf="@id/tvLiquidatedLabel"
+        tools:text="20020000.00VLS" />
+
+    <TextView
+        android:id="@+id/tvDeductedLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_122"
+        android:includeFontPadding="false"
+        android:text="@string/bank_borrowing_details_label_deduction_amount"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_10"
+        app:layout_constraintBottom_toBottomOf="@id/tvLiquidatedLabel"
+        app:layout_constraintStart_toStartOf="@id/tvLiquidatedLabel" />
+
+    <com.palliums.widget.NumberTextView
+        android:id="@+id/tvDeducted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_16"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/fs_12"
+        app:layout_constraintBottom_toBottomOf="@id/tvLiquidated"
+        app:layout_constraintStart_toStartOf="@id/tvDeductedLabel"
+        tools:text="20020000.00LBR" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/fs_10"
+        app:layout_constraintBottom_toBottomOf="@id/tvLiquidatedLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="18:22:11  05/24" />
+
+    <TextView
+        android:id="@+id/tvState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_16"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/fs_12"
+        app:layout_constraintBottom_toBottomOf="@id/tvLiquidated"
+        app:layout_constraintEnd_toEndOf="@id/tvTime"
+        tools:text="@string/bank_borrowing_state_liquidated" />
+
+    <View
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="?attr/dividerThickness"
+        android:layout_marginTop="@dimen/dp_15"
+        android:background="?attr/colorDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLiquidated" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

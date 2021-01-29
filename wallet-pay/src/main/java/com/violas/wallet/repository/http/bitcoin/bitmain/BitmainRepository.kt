@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.bitcoin.bitmain
 
 import com.palliums.exceptions.RequestException
-import com.palliums.net.checkResponse
+import com.palliums.net.await
 
 /**
  * Created by elephant on 2019-11-07 18:57.
@@ -18,7 +18,6 @@ class BitmainRepository(private val api: BitmainApi) {
         pageNumber: Int
     ) =
         // {"data":null,"err_no":1,"err_msg":"Resource Not Found"}
-        checkResponse(1) {
-            api.getTransactionRecords(address, pageSize, pageNumber)
-        }
+        api.getTransactionRecords(address, pageSize, pageNumber).await(1)
+
 }

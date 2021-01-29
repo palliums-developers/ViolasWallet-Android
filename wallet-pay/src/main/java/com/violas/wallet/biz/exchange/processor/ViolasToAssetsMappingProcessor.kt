@@ -5,6 +5,7 @@ import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.exchange.*
 import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -34,7 +35,7 @@ class ViolasToAssetsMappingProcessor(
     }
 
     private val mLibraRpcService by lazy {
-        DataRepository.getLibraService()
+        DataRepository.getLibraRpcService()
     }
 
     override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
@@ -131,7 +132,8 @@ class ViolasToAssetsMappingProcessor(
         return mViolasRpcService.sendTransaction(
             optionTokenSwapTransactionPayload,
             account,
-            gasCurrencyCode = typeTagFrom.value.module
+            gasCurrencyCode = typeTagFrom.value.module,
+            chainId = Vm.ViolasChainId
         ).sequenceNumber.toString()
     }
 
@@ -195,7 +197,8 @@ class ViolasToAssetsMappingProcessor(
         return mViolasRpcService.sendTransaction(
             optionTokenSwapTransactionPayload,
             account,
-            gasCurrencyCode = typeTagFrom.value.module
+            gasCurrencyCode = typeTagFrom.value.module,
+            chainId = Vm.ViolasChainId
         ).sequenceNumber.toString()
     }
 }

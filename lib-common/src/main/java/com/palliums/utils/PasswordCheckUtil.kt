@@ -24,10 +24,11 @@ class PasswordSpecialFailsException :
 
 object PasswordCheckUtil {
     /**
-     * @param text 需要检测的文本
+     * @param password 需要检测的文本
      * @param specialFails 是否允许特殊字符
      */
     @Throws(
+        PasswordEmptyException::class,
         PasswordLengthShortException::class,
         PasswordLengthLongException::class,
         PasswordSpecialFailsException::class,

@@ -22,10 +22,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_8"
         android:layout_marginTop="@dimen/dp_10"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toEndOf="@id/ivIcon"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/market_swap_state_succeeded"
+        tools:text="@string/swap_txn_state_succeeded"
         tools:textColor="?attr/textColorSuccess" />
 
     <TextView
@@ -34,18 +34,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="01.18 15:42" />
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvAToken"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
         android:textColor="?colorOnSurface"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintStart_toStartOf="@id/tvState"
         app:layout_constraintTop_toBottomOf="@id/tvState"
         tools:text="999ETH" />
@@ -60,31 +60,31 @@
         app:layout_constraintStart_toEndOf="@id/tvAToken"
         app:layout_constraintTop_toTopOf="@id/tvAToken" />
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvBToken"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_8"
         android:textColor="?colorOnSurface"
-        android:textSize="@dimen/sp_14"
+        android:textSize="@dimen/fs_14"
         app:layout_constraintBaseline_toBaselineOf="@id/tvAToken"
         app:layout_constraintStart_toEndOf="@id/iivAndIcon"
         tools:text="99900VLS" />
 
-    <TextView
+    <com.palliums.widget.NumberTextView
         android:id="@+id/tvLiquidity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
-        android:text="@string/market_liquidity_token_amount_format"
+        android:text="@string/market_common_label_pool_token_amount_format"
         android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/sp_10"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintStart_toStartOf="@id/tvState"
         app:layout_constraintTop_toBottomOf="@id/tvAToken" />
 
     <View
         android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_0.5"
+        android:layout_height="?attr/dividerThickness"
         android:layout_marginTop="@dimen/dp_9"
         android:background="?attr/colorDivider"
         app:layout_constraintBottom_toBottomOf="parent"

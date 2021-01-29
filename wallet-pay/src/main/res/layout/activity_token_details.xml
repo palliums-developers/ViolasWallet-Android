@@ -27,13 +27,12 @@
                 android:layout_marginTop="?attr/actionBarSize"
                 android:layout_marginBottom="@dimen/dp_22"
                 android:background="?attr/tokenDetailsTokenInfoBg"
-                android:paddingEnd="@dimen/dp_14">
+                android:paddingHorizontal="@dimen/dp_14">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/ivTokenLogo"
                     android:layout_width="@dimen/dp_14"
                     android:layout_height="@dimen/dp_14"
-                    android:layout_marginStart="@dimen/dp_14"
                     android:layout_marginTop="@dimen/dp_18"
                     android:src="?attr/iconCoinDefLogo"
                     app:layout_constraintStart_toStartOf="parent"
@@ -46,32 +45,29 @@
                     android:layout_marginStart="@dimen/dp_5"
                     android:layout_marginTop="@dimen/dp_17"
                     android:textColor="?android:attr/textColorTertiary"
-                    android:textSize="@dimen/sp_12"
+                    android:textSize="@dimen/fs_12"
                     app:layout_constraintStart_toEndOf="@id/ivTokenLogo"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="vtoken" />
 
-                <TextView
+                <com.palliums.widget.NumberTextView
                     android:id="@+id/tvTokenAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_13"
                     android:layout_marginTop="@dimen/dp_12"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:textSize="@dimen/sp_18"
+                    android:textSize="@dimen/fs_18"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ivTokenLogo"
                     tools:text="102333.99" />
 
-                <TextView
+                <com.palliums.widget.NumberTextView
                     android:id="@+id/tvFiatAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_14"
                     android:layout_marginTop="@dimen/dp_3"
                     android:textColor="?android:attr/textColorTertiary"
-                    android:textSize="@dimen/sp_14"
+                    android:textSize="@dimen/fs_14"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvTokenAmount"
                     tools:text="≈$0.00" />
@@ -80,15 +76,13 @@
                     android:id="@+id/tvTokenAddress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_14"
                     android:layout_marginTop="@dimen/dp_7"
                     android:layout_marginBottom="@dimen/dp_9"
                     android:drawableEnd="?attr/iconCopy"
                     android:drawablePadding="@dimen/dp_4"
                     android:paddingVertical="@dimen/dp_10"
-                    android:paddingEnd="@dimen/dp_10"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="@dimen/sp_14"
+                    android:textSize="@dimen/fs_14"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvFiatAmount"
@@ -107,17 +101,16 @@
                 app:navigationIcon="?attr/iconBackPrimary"
                 app:popupTheme="@style/AppTheme.PopupOverlay">
 
-                <TextView
+                <com.palliums.widget.FocusedTextView
                     android:id="@+id/tvTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:ellipsize="end"
+                    android:fontFamily="@string/font_family_title"
                     android:gravity="center"
                     android:singleLine="true"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:textSize="@dimen/sp_16"
-                    android:textStyle="bold"
+                    android:textSize="@dimen/fs_16"
                     tools:text="vtoken" />
 
             </androidx.appcompat.widget.Toolbar>
@@ -168,8 +161,8 @@
             android:layout_weight="1"
             android:background="@drawable/shape_bg_token_info_transfer"
             android:foreground="?attr/selectableItemBackground"
-            android:text="@string/action_transfer_nbsp"
-            android:textSize="@dimen/sp_14" />
+            android:text="@string/currency_details_action_1"
+            android:textSize="@dimen/fs_14" />
 
         <View
             android:layout_width="@dimen/dp_13"
@@ -183,8 +176,8 @@
             android:layout_weight="1"
             android:background="@drawable/shape_bg_token_info_collection"
             android:foreground="?attr/selectableItemBackground"
-            android:text="@string/action_collection_nbsp"
-            android:textSize="@dimen/sp_14" />
+            android:text="@string/currency_details_action_2"
+            android:textSize="@dimen/fs_14" />
 
         <View
             android:layout_width="@dimen/dp_13"
@@ -206,9 +199,9 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/shape_bg_token_info_exchange"
                 android:foreground="?attr/selectableItemBackground"
-                android:text="@string/action_exchange_nbsp"
+                android:text="@string/currency_details_action_3"
                 android:textColor="?attr/colorPrimary"
-                android:textSize="@dimen/sp_14" />
+                android:textSize="@dimen/fs_14" />
 
         </FrameLayout>
 

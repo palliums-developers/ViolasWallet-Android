@@ -22,9 +22,9 @@
             android:id="@+id/tvHintWallet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hint_change_wallet_name"
+            android:text="@string/wallet_info_label_modify_wallet_name"
             android:textColor="@color/def_text_title"
-            android:textSize="16sp"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -49,8 +49,9 @@
         android:id="@+id/btnConfirm"
         style="@style/BaseButtonPrimary"
         android:layout_marginTop="@dimen/dp_60"
-        android:text="@string/action_confirm"
+        android:text="@string/common_action_confirm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutChangeName" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

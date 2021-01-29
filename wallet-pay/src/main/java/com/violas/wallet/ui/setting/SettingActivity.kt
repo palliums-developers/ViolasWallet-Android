@@ -24,13 +24,13 @@ class SettingActivity : BaseAppActivity() {
     }
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_SECONDARY
+        return PAGE_STYLE_LIGHT_MODE_PRIMARY_TOP_BAR
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.setting_title)
+        setTitle(R.string.common_title_settings)
         tvAppNameVersion.text = "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}"
 
         mivMultiLanguage.setOnClickListener(this)
@@ -49,16 +49,16 @@ class SettingActivity : BaseAppActivity() {
             R.id.mivServiceAgreement -> {
                 WebCommonActivity.start(
                     this,
-                    getString(R.string.service_agreement_url),
-                    getString(R.string.service_agreement_title)
+                    getString(R.string.url_app_service_agreement),
+                    getString(R.string.common_title_service_agreement)
                 )
             }
 
             R.id.mivPrivacyPolicy -> {
                 WebCommonActivity.start(
                     this,
-                    getString(R.string.url_privacy_policy),
-                    getString(R.string.title_privacy_policy)
+                    getString(R.string.url_app_privacy_policy),
+                    getString(R.string.common_title_privacy_policy)
                 )
             }
 

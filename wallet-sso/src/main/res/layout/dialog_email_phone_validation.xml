@@ -14,7 +14,7 @@
         android:layout_marginTop="22dp"
         android:text="@string/hint_security_verification"
         android:textColor="#3C3848"
-        android:textSize="18sp"
+        android:textSize="@dimen/fs_18"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,9 +24,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:text="@string/cancel"
+        android:text="@string/action_cancel"
         android:textColor="#7C7C7C"
-        android:textSize="17sp"
+        android:textSize="@dimen/fs_17"
         app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvTitle" />
@@ -38,7 +38,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:textColor="@color/def_text_label"
-        android:textSize="15sp"
+        android:textSize="@dimen/fs_15"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle"
         tools:text="138****1234" />
@@ -75,7 +75,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:textColor="@color/def_text_label"
-        android:textSize="15sp"
+        android:textSize="@dimen/fs_15"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPhoneVerificationCode"
         tools:text="138****1234@qq.com" />
@@ -123,7 +123,7 @@
         android:layout_marginBottom="12dp"
         android:text="@string/hint_email_junk_mailbox"
         android:textColor="#F74E4E"
-        android:textSize="10sp"
+        android:textSize="@dimen/fs_10"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -2,9 +2,9 @@ package com.violas.wallet.walletconnect.violasTransferDataHandler
 
 import com.palliums.content.ContextProvider
 import com.quincysx.crypto.utils.Base64
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.ProcessedRuntimeException
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransactionDataType
-import com.violas.wallet.walletconnect.walletConnectMessageHandler.TransferDataType
+import com.violas.wallet.walletconnect.messageHandler.ProcessedRuntimeException
+import com.violas.wallet.walletconnect.TransactionDataType
+import com.violas.wallet.walletconnect.TransferDataType
 import org.palliums.libracore.move.Move
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionPayload
@@ -44,9 +44,9 @@ class TransferP2PWithDataDecode(private val transaction: RawTransaction) : Trans
         } catch (e: ProcessedRuntimeException) {
             throw ProcessedRuntimeException(
                 "peer_to_peer_with_metadata contract parameter list(payee: Address,\n" +
-                        "    amount: U64,\n" +
-                        "    metadata: vector,\n" +
-                        "    metadata_signature: vector)"
+                        "    amount: Number,\n" +
+                        "    metadata: Bytes,\n" +
+                        "    metadata_signature: Bytes)"
             )
         }
     }

@@ -1,16 +1,17 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
-
 apply plugin: 'kotlin-kapt'
+// TODO 暂时屏蔽消息推送通知
+//apply plugin: 'com.google.gms.google-services'
 
 apply from: '../and_res_guard.gradle'
 
 android {
     compileSdkVersion versions.compileSdk
     buildToolsVersion = versions.buildTools
+
+    ndkVersion "21.1.6352462"
 
     defaultConfig {
         applicationId names.payApplicationId
@@ -150,18 +151,17 @@ dependencies {
     implementation project(':lib-core')
     implementation project(':lib-zbar-scan')
     implementation project(':lib-switch-button')
-    implementation project(':lib-libra-core')
+    implementation ('org.palliums.lib:libra-core:1.1.1')
     implementation project(':module-violas')
 //    implementation project(':lib-violas-core')
     implementation project(':lib-btc-core')
     implementation project(':lib-wallet-connect')
     implementation project(':lib-biometric')
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     testImplementation libraries.test_junit
     androidTestImplementation libraries.androidTest_junit
     androidTestImplementation libraries.androidTest_espresso
+    debugImplementation libraries.leakcanary_android
 
     kapt libraries.androidx_room_compiler
     implementation libraries.androidx_room_ktx
@@ -180,4 +180,11 @@ dependencies {
     implementation libraries.glide
     implementation libraries.glide_okhttp3_integration
     kapt libraries.glide_compiler
+
+    //implementation libraries.firebase_core
+    //implementation platform('com.google.firebase:firebase-bom:25.12.0')
+    implementation libraries.firebase_messaging
+
+    implementation libraries.jpinyin
+    implementation libraries.jsbridge
 }

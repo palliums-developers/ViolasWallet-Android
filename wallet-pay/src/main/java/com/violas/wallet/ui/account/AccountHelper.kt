@@ -30,7 +30,7 @@ fun loadAccounts(
     val currentAccount = accountManager.currentAccount()
     if (accountType == AccountType.ALL) {
 
-        val identityAccountLabel = getString(R.string.account_label_identity)
+        val identityAccountLabel = getString(R.string.wallet_account_label_identity)
         val identityAccounts = accountDao.loadAllByWalletType()
             .map {
                 AccountVo(it).apply {
@@ -40,7 +40,7 @@ fun loadAccounts(
             }
         data[identityAccountLabel] = identityAccounts
 
-        val otherAccountLabel = getString(R.string.account_label_other)
+        val otherAccountLabel = getString(R.string.wallet_account_label_other)
         val otherAccounts = accountDao.loadAllByWalletType()
             .map {
                 AccountVo(it).apply {
@@ -53,7 +53,7 @@ fun loadAccounts(
     } else {
         val coinTypes = transformAccountType(accountType)
         if (differentiateIdentityIfNotAllAccountType) {
-            val identityAccountLabel = getString(R.string.account_label_identity)
+            val identityAccountLabel = getString(R.string.wallet_account_label_identity)
             val identityAccounts =
                 accountDao.findAllByCoinType(coinTypes.coinType())
                     ?.map {
@@ -66,7 +66,7 @@ fun loadAccounts(
                 data[identityAccountLabel] = identityAccounts
             }
 
-            val otherAccountLabel = getString(R.string.account_label_other)
+            val otherAccountLabel = getString(R.string.wallet_account_label_other)
             val otherAccounts =
                 accountDao.findAllByCoinType(coinTypes.coinType())
                     ?.map {
@@ -100,8 +100,8 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
     val data = mutableMapOf<String, List<AccountVo>>()
 
     if (accountType == AccountType.ALL) {
-        val identityAccountLabel = getString(R.string.account_label_identity)
-        val otherAccountLabel = getString(R.string.account_label_other)
+        val identityAccountLabel = getString(R.string.wallet_account_label_identity)
+        val otherAccountLabel = getString(R.string.wallet_account_label_other)
 
         val identityAccounts = arrayListOf(
             AccountVo(

@@ -40,6 +40,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
      * 设置是否显示悬浮分组,默认不显示,该方法需要在设置数据之前调用
      */
     var showFloatGroup: Boolean = false
+
     /**
      * 配置工厂,添加数据之前必须调用该方法,来确定需要什么样的TitleView与ContentItemView
      */
@@ -309,7 +310,8 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         fun refresh(itemData: ItemData?, position: Int) {
             this.itemData = itemData
 
-            if (position == 0 || groupData.getItemData(position)?.getGroupName()
+            if (position == 0
+                || groupData.getItemData(position)?.getGroupName()
                 != groupData.getItemData(position - 1)?.getGroupName()
             ) {
                 itemTitle.refreshView(this.itemData)
@@ -317,7 +319,15 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                 itemTitle.refreshView(null)
             }
 
-            itemContent.refreshView(this.itemData)
+
+            if (position == groupData.getCount() - 1
+                || groupData.getItemData(position)?.getGroupName()
+                != groupData.getItemData(position + 1)?.getGroupName()
+            ) {
+                itemContent.refreshView(this.itemData, true)
+            } else {
+                itemContent.refreshView(this.itemData, false)
+            }
         }
     }
 
@@ -418,7 +428,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                     }
                 }
 
-                override fun refreshView(itemData: ItemData?) {
+                override fun refreshView(itemData: ItemData?, lastGroupItem: Boolean?) {
                     if (itemData == null || itemData.getGroupName().isNullOrEmpty()) {
                         tvTitle.visibility = View.GONE
                     } else {
@@ -444,7 +454,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                     )
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
+                setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16F)
                 setTextColor(Color.parseColor("#3C3848"))
                 //setTypeface(Typeface.DEFAULT, Typeface.BOLD)
                 //setBackgroundColor(Color.WHITE)
@@ -503,7 +513,7 @@ class GroupListLayout(context: Context, attrs: AttributeSet?, defStyle: Int) :
         /**
          * RecyclerView.Adapter#onBindViewHolder 刷新view
          */
-        fun refreshView(itemData: ItemData?)
+        fun refreshView(itemData: ItemData?, lastGroupItem: Boolean? = null)
 
         /**
          * 获取要填充的布局，父布局为LinearLayout，自行设置布局参数

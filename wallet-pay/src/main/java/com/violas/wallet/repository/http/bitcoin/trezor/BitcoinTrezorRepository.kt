@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.bitcoin.trezor
 
 import com.palliums.exceptions.RequestException
-import com.palliums.net.checkResponse
+import com.palliums.net.await
 
 /**
  * Created by elephant on 2020/6/5 18:11.
@@ -17,7 +17,6 @@ class BitcoinTrezorRepository(private val api: BitcoinTrezorApi) {
         pageSize: Int,
         pageNumber: Int
     ) =
-        checkResponse {
-            api.getTransactionRecords(address, pageSize, pageNumber)
-        }
+        api.getTransactionRecords(address, pageSize, pageNumber).await()
+
 }

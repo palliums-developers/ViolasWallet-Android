@@ -6,35 +6,45 @@
     android:layout_height="60dp"
     android:background="@drawable/shape_bg_item_manager_assert">
 
-    <ImageView
-        android:id="@+id/ivCoinLogo"
-        android:layout_width="@dimen/dp_39"
-        android:layout_height="@dimen/dp_39"
-        android:layout_marginStart="@dimen/dp_14"
+    <View
+        android:id="@+id/vLogoGroup"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        android:layout_marginStart="@dimen/dp_13"
+        android:background="@drawable/bg_round_hollow_secondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@color/gray" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivCoinLogo"
+        android:layout_width="@dimen/dp_26"
+        android:layout_height="@dimen/dp_26"
+        app:layout_constraintBottom_toBottomOf="@id/vLogoGroup"
+        app:layout_constraintEnd_toEndOf="@id/vLogoGroup"
+        app:layout_constraintStart_toStartOf="@id/vLogoGroup"
+        app:layout_constraintTop_toTopOf="@id/vLogoGroup"
+        tools:background="@drawable/ic_label_btc" />
 
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:textColor="?attr/addCurrencyTextColor"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@id/ivCoinLogo"
-        app:layout_constraintTop_toTopOf="@id/ivCoinLogo"
+        android:layout_marginStart="@dimen/dp_11"
+        android:fontFamily="@string/font_family_title"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/fs_16"
+        app:layout_constraintStart_toEndOf="@id/vLogoGroup"
+        app:layout_constraintTop_toTopOf="@id/vLogoGroup"
         tools:text="123" />
 
     <TextView
         android:id="@+id/fullName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="?attr/addCurrencyTextColor"
-        android:textSize="@dimen/sp_14"
-        app:layout_constraintBottom_toBottomOf="@id/ivCoinLogo"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/fs_14"
+        app:layout_constraintBottom_toBottomOf="@id/vLogoGroup"
         app:layout_constraintStart_toStartOf="@id/name"
         tools:text="asdfsdfsdf" />
 
@@ -43,7 +53,7 @@
         style="@style/BaseSwitchButton"
         android:layout_width="56dp"
         android:layout_height="32dp"
-        android:layout_marginEnd="9dp"
+        android:layout_marginEnd="@dimen/dp_7"
         android:padding="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

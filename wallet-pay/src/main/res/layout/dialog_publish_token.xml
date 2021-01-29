@@ -21,14 +21,15 @@
             android:src="?attr/addCurrencyWarningIcon" />
 
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:gravity="center"
-            android:text="@string/title_prompt"
             android:textColor="#E54040"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textSize="@dimen/fs_16"
+            android:textStyle="bold"
+            tools:text="@string/add_currency_first_title_1" />
     </LinearLayout>
 
     <TextView
@@ -36,8 +37,9 @@
         android:layout_width="237dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="21dp"
-        android:text="@string/hint_publish_token_content"
-        android:textSize="16sp" />
+        android:lineSpacingMultiplier="1.25"
+        android:textSize="@dimen/fs_16"
+        tools:text="@string/add_currency_first_desc_format" />
 
     <View
         android:layout_width="wrap_content"
@@ -55,10 +57,9 @@
             android:layout_height="47dp"
             android:layout_weight="1"
             android:background="@null"
-            android:text="@string/action_cancel"
+            android:text="@string/add_currency_first_action_2"
             android:textColor="?android:attr/textColorTertiary"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,10 +76,9 @@
             android:layout_height="47dp"
             android:layout_weight="1"
             android:background="@null"
-            android:text="@string/action_confirm"
+            android:text="@string/add_currency_first_action_1"
             android:textColor="?attr/colorPrimary"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textSize="@dimen/fs_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

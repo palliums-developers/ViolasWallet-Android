@@ -19,6 +19,9 @@ object Vm {
     @kotlin.jvm.JvmField
     var LibraChainId: Int = 2
 
+    @kotlin.jvm.JvmField
+    var ViolasChainId: Int = 4
+
     //    ext.isTextNet = "testnet"
     //    ext.isTextNet = "devnet"
     //    ext.isTextNet = "main"

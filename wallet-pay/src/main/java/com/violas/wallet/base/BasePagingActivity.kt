@@ -3,6 +3,8 @@ package com.violas.wallet.base
 import androidx.recyclerview.widget.RecyclerView
 import com.palliums.paging.PagingController
 import com.palliums.paging.PagingHandler
+import com.palliums.paging.PagingViewAdapter
+import com.palliums.paging.PagingViewModel
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
@@ -16,8 +18,16 @@ import kotlinx.android.synthetic.main.activity_base_list.*
  */
 abstract class BasePagingActivity<VO> : BaseAppActivity(), PagingController<VO> {
 
-    protected val mPagingHandler by lazy {
+    private val mPagingHandler by lazy {
         PagingHandler(this, this, this)
+    }
+
+    private val mPagingViewModel by lazy {
+        lazyInitPagingViewModel()
+    }
+
+    private val mPagingViewAdapter by lazy {
+        lazyInitPagingViewAdapter()
     }
 
     /**
@@ -47,4 +57,20 @@ abstract class BasePagingActivity<VO> : BaseAppActivity(), PagingController<VO> 
     override fun getStatusLayout(): IStatusLayout? {
         return vStatusLayout
     }
+
+    override fun getPagingViewModel(): PagingViewModel<VO> {
+        return mPagingViewModel
+    }
+
+    override fun getPagingViewAdapter(): PagingViewAdapter<VO> {
+        return mPagingViewAdapter
+    }
+
+    fun getPagingHandler(): PagingHandler<VO> {
+        return mPagingHandler
+    }
+
+    abstract fun lazyInitPagingViewModel(): PagingViewModel<VO>
+
+    abstract fun lazyInitPagingViewAdapter(): PagingViewAdapter<VO>
 }

@@ -38,6 +38,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
         const val ACTION_SWAP_SELECT_TO = 0x02
         const val ACTION_POOL_SELECT_A = 0x03
         const val ACTION_POOL_SELECT_B = 0x04
+        const val ACTION_MAPPING_SELECT = 0x05
 
         fun newInstance(action: Int): SelectTokenDialog {
             return SelectTokenDialog().apply {
@@ -53,6 +54,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     private var displayCoins: List<ITokenVo>? = null
     private var currCoin: ITokenVo? = null
     private var job: Job? = null
+    private var lastSearchEmptyData = false
 
     private val coinAdapter by lazy { CoinAdapter() }
 
@@ -135,20 +137,21 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
         recyclerView.adapter = coinAdapter
         recyclerView.visibility = View.GONE
 
-        statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         statusLayout.setReloadCallback {
-            statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
             getMarketSupportCoins()
         }
 
         currCoin = coinsBridge?.getCurrCoin(action)
-        coinsBridge?.getTipsMessageLiveData()?.observe(viewLifecycleOwner, Observer {
-            it.getDataIfNotHandled()?.let { msg ->
-                if (msg.isNotEmpty()) {
-                    showToast(msg)
+        coinsBridge?.getTipsMessageLiveData()?.run {
+            setValueSupport("")
+            observe(viewLifecycleOwner, Observer {
+                it.getDataIfNotHandled()?.let { msg ->
+                    if (msg.isNotEmpty()) {
+                        showToast(msg)
+                    }
                 }
-            }
-        })
+            })
+        }
         coinsBridge?.getMarketSupportCoinsLiveData()?.observe(viewLifecycleOwner, Observer {
             cancelJob()
 
@@ -158,10 +161,12 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                 filterData(it)
             }
         })
+
         getMarketSupportCoins()
     }
 
     private fun getMarketSupportCoins() {
+        statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         coinsBridge?.getMarketSupportCoins {
             handleLoadFailure()
         }
@@ -190,6 +195,11 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                             // 兑换选择输出币种，展示交易市场支持的所有币种
                             val from = coinsBridge?.getCurrCoin(ACTION_SWAP_SELECT_FROM)
                             from?.coinNumber == it.coinNumber
+                        }
+
+                        ACTION_MAPPING_SELECT -> {
+                            // 映射选择币种，展示映射支持的所有币种
+                            true
                         }
 
                         else -> {
@@ -239,6 +249,8 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     private fun handleLoadFailure() {
+        if (recyclerView == null) return
+
         coinAdapter.submitList(null)
         recyclerView.visibility = View.GONE
         statusLayout.showStatus(
@@ -250,12 +262,28 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     private fun handleEmptyData(searchText: String?) {
-        coinAdapter.submitList(null)
-        recyclerView.visibility = View.GONE
+        if (recyclerView.visibility != View.GONE) {
+            coinAdapter.submitList(null)
+            recyclerView.visibility = View.GONE
+        }
+
+        if (lastSearchEmptyData && searchText.isNullOrEmpty()) {
+            statusLayout.setImageWithStatus(
+                IStatusLayout.Status.STATUS_EMPTY,
+                getResourceId(R.attr.bgLoadEmptyData, requireContext())
+            )
+        } else if (!lastSearchEmptyData && !searchText.isNullOrEmpty()) {
+            statusLayout.setImageWithStatus(
+                IStatusLayout.Status.STATUS_EMPTY,
+                getResourceId(R.attr.bgSearchEmptyData, requireContext())
+            )
+        }
+        lastSearchEmptyData = !searchText.isNullOrEmpty()
+
         statusLayout.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             if (searchText.isNullOrEmpty())
-                getString(R.string.tips_select_token_list_is_empty)
+                getString(R.string.select_currency_desc_tokens_empty)
             else
                 getSearchEmptyTips(searchText)
         )
@@ -263,7 +291,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
     }
 
     private fun getSearchEmptyTips(searchText: String) = run {
-        val text = getString(R.string.tips_select_token_search_is_empty, searchText)
+        val text = getString(R.string.select_currency_desc_search_empty_format, searchText)
         val spannableStringBuilder = SpannableStringBuilder(text)
         text.indexOf(searchText).let {
             spannableStringBuilder.setSpan(
@@ -302,7 +330,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
             )
             holder.itemView.tvTokenName.text = item.displayName
             holder.itemView.tvTokenBalance.text = getString(
-                R.string.market_select_token_balance_format,
+                R.string.common_label_balance_format,
                 item.displayAmount.toPlainString(),
                 item.displayName
             )

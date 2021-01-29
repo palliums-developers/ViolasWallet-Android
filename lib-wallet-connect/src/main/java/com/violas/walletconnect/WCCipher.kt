@@ -10,8 +10,8 @@ import javax.crypto.Mac
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-private val CIPHER_ALGORITHM = "AES/CBC/PKCS7Padding"
-private val MAC_ALGORITHM = "HmacSHA256"
+private const val CIPHER_ALGORITHM = "AES/CBC/PKCS7Padding"
+private const val MAC_ALGORITHM = "HmacSHA256"
 
 object WCCipher {
     fun encrypt(data: ByteArray, key: ByteArray): WCEncryptionPayload {

@@ -13,6 +13,7 @@ import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.View
 import com.palliums.utils.getColorByAttrId
+import com.palliums.utils.setSystemBar
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -32,7 +33,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
     companion object {
         private const val CONNECT_MSG = "connect_msg"
 
-        fun startActivity(context: Context, msg: String) {
+        fun start(context: Context, msg: String) {
             context.startActivity(
                 Intent(
                     context,
@@ -62,7 +63,13 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
 
     override fun getTitleStyle() = PAGE_STYLE_NOT_TITLE
 
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.activity_none, R.anim.activity_bottom_out)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.setSystemBar(lightModeStatusBar = true, lightModeNavigationBar = true)
         super.onCreate(savedInstanceState)
 
         launch {
@@ -78,21 +85,20 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
         }
         mWalletConnect.mWalletConnectSessionListener = object : WalletConnectSessionListener {
             override fun onRequest(id: Long, peer: WCPeerMeta) {
-                launch(Dispatchers.IO) {
-                    val findByCoinTypeByIdentity =
-                        mAccountStorage.loadAllByCoinType(CoinTypes.Violas.coinType())
-                    val accounts =
-                        findByCoinTypeByIdentity.map {
-                            it.address
-                        }
-                    val chainId = Vm.LibraChainId.toString()
-                    if (mWalletConnect.approveSession(accounts, chainId)) {
-                        mRequestHandle = true
-                        finish()
-                    } else {
-                        showToast(String.format(getString(R.string.common_http_request_fail), ""))
+                val findByCoinTypeByIdentity =
+                    mAccountStorage.loadAllByCoinType(CoinTypes.Violas.coinType())
+                val accounts =
+                    findByCoinTypeByIdentity.map {
+                        it.address
                     }
+                val chainId = Vm.ViolasChainId.toString()
+                if (mWalletConnect.approveSession(accounts, chainId)) {
+                    mRequestHandle = true
                     dismissProgress()
+                    close()
+                } else {
+                    dismissProgress()
+                    showToast(String.format(getString(R.string.common_http_request_fail), ""))
                 }
             }
         }
@@ -110,7 +116,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
             }, 10 * 1000)
         }
         tvCancelLogin.setOnClickListener {
-            finish()
+            close()
         }
     }
 
@@ -135,13 +141,13 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
     }
 
     private suspend fun buildUseBehaviorSpan() = withContext(Dispatchers.IO) {
-        val useBehavior = getString(R.string.wallet_connect_use_behavior)
-        val privacyPolicy = getString(R.string.privacy_policy)
-        val userAgreement = getString(R.string.service_agreement)
+        val useBehavior = getString(R.string.wallet_connect_login_declare)
+        val privacyPolicy = getString(R.string.common_content_privacy_policy)
+        val userAgreement = getString(R.string.common_content_user_agreement)
         val spannableStringBuilder = SpannableStringBuilder(useBehavior)
         val userAgreementClickSpanPrivacy = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                openWebPage(getString(R.string.service_agreement_url))
+                openWebPage(getString(R.string.url_app_service_agreement))
             }
 
             override fun updateDrawState(ds: TextPaint) {
@@ -154,7 +160,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
         }
         val privacyPolicyClickSpanPrivacy = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                openWebPage(getString(R.string.url_privacy_policy))
+                openWebPage(getString(R.string.url_app_privacy_policy))
             }
 
             override fun updateDrawState(ds: TextPaint) {

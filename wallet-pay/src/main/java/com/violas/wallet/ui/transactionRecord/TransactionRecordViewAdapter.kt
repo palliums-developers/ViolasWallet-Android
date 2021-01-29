@@ -3,14 +3,13 @@ package com.violas.wallet.ui.transactionRecord
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import com.palliums.base.BaseViewHolder
-import com.palliums.utils.getColor
-import com.palliums.utils.getString
-import com.violas.wallet.R
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.utils.formatDate
+import com.palliums.utils.getColor
 import com.palliums.utils.getResourceId
+import com.palliums.utils.getString
+import com.violas.wallet.R
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.getAmountPrefix
 import kotlinx.android.synthetic.main.item_transaction_record.view.*
@@ -25,10 +24,8 @@ import java.util.*
  * desc: 交易记录的ViewAdapter
  */
 class TransactionRecordViewAdapter(
-    retryCallback: () -> Unit,
     private val onItemClick: (TransactionRecordVO) -> Unit
-) :
-    PagingViewAdapter<TransactionRecordVO>(retryCallback, TransactionRecordDiffCallback()) {
+) : PagingViewAdapter<TransactionRecordVO>() {
 
     private val mSimpleDateFormat = SimpleDateFormat("MM/dd HH:mm:ss", Locale.ENGLISH)
 
@@ -83,9 +80,9 @@ class TransactionRecordViewHolder(
             } else {
                 it.toAddress ?: it.fromAddress
             }
-            itemView.tvAddress.text = if (showAddress.length > 20)
-                "${showAddress.substring(0, 10)}...${showAddress.substring(
-                    showAddress.length - 10,
+            itemView.tvAddress.text = if (showAddress.length > 12)
+                "${showAddress.substring(0, 6)}...${showAddress.substring(
+                    showAddress.length - 6,
                     showAddress.length
                 )}"
             else
@@ -114,7 +111,7 @@ class TransactionRecordViewHolder(
 
                             else -> {
                                 itemView.tvDesc.visibility = View.VISIBLE
-                                itemView.tvDesc.text = getString(R.string.state_trading)
+                                itemView.tvDesc.text = getString(R.string.txn_details_state_processing)
                                 itemView.tvDesc.setTextColor(
                                     getColor(
                                         getResourceId(
@@ -143,21 +140,5 @@ class TransactionRecordViewHolder(
                 }
             }
         }
-    }
-}
-
-class TransactionRecordDiffCallback : DiffUtil.ItemCallback<TransactionRecordVO>() {
-    override fun areItemsTheSame(
-        oldItem: TransactionRecordVO,
-        newItem: TransactionRecordVO
-    ): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(
-        oldItem: TransactionRecordVO,
-        newItem: TransactionRecordVO
-    ): Boolean {
-        return oldItem == newItem
     }
 }

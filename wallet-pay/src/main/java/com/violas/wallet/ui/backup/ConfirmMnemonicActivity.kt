@@ -29,13 +29,13 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
     }
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_SECONDARY
+        return PAGE_STYLE_LIGHT_MODE_PRIMARY_TOP_BAR
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTitle(R.string.confirm_mnemonic_title)
+        setTitle(R.string.mnemonic_backup_confirm_title)
         vComplete.setOnClickListener(this)
 
         init()
@@ -117,13 +117,13 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
         val wordsConfirmed = adapterConfirmed.getDataList()
         val wordsSource = mnemonicWords!!
         if (wordsConfirmed.size != wordsSource.size) {
-            showToast(R.string.confirm_mnemonic_tips_02)
+            showToast(R.string.mnemonic_backup_confirm_tips_1)
             return false
         }
 
         wordsConfirmed.forEachIndexed { index, vo ->
             if (vo.word != wordsSource[index]) {
-                showToast(R.string.confirm_mnemonic_tips_01)
+                showToast(R.string.mnemonic_backup_confirm_tips_2)
                 vTips.visibility = View.VISIBLE
                 return false
             }

@@ -5,9 +5,7 @@
     android:id="@+id/widget_menu_item_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:layout_height="@dimen/dp_60"
-    tools:paddingEnd="@dimen/dp_16"
-    tools:paddingStart="@dimen/dp_14">
+    tools:layout_height="@dimen/dp_60">
 
     <!--头部图标-->
     <ImageView
@@ -31,7 +29,7 @@
         android:ellipsize="middle"
         android:singleLine="true"
         android:textColor="@color/black"
-        android:textSize="@dimen/sp_16"
+        android:textSize="@dimen/fs_16"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/widget_menu_item_start_desc"
         app:layout_constraintEnd_toStartOf="@id/widget_menu_item_end_arrow"
@@ -49,7 +47,7 @@
         android:ellipsize="middle"
         android:singleLine="true"
         android:textColor="@color/black_50"
-        android:textSize="@dimen/sp_12"
+        android:textSize="@dimen/fs_12"
         android:visibility="gone"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -80,7 +78,7 @@
         android:layout_marginEnd="@dimen/dp_7"
         android:gravity="end"
         android:textColor="@color/blue_50"
-        android:textSize="@dimen/sp_16"
+        android:textSize="@dimen/fs_16"
         android:visibility="gone"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"

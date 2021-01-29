@@ -54,5 +54,5 @@ dependencies {
     implementation libraries.okhttp3
     implementation libraries.gson
     implementation libraries.okhttp3_logging_interceptor
-    implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
+    api 'com.github.salomonbrys.kotson:kotson:2.5.0'
 }

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/sel_bg_style_1_solid_corners_8"
+    android:paddingHorizontal="@dimen/dp_12"
+    android:paddingVertical="@dimen/dp_22">
+
+    <ImageView
+        android:id="@+id/ivCoinLogo"
+        android:layout_width="@dimen/dp_36"
+        android:layout_height="@dimen/dp_36"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="?attr/iconCoinDefLogo" />
+
+    <TextView
+        android:id="@+id/tvCoinName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_8"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/fs_16"
+        app:layout_constraintBottom_toBottomOf="@id/ivCoinLogo"
+        app:layout_constraintStart_toEndOf="@id/ivCoinLogo"
+        app:layout_constraintTop_toTopOf="@id/ivCoinLogo"
+        tools:text="VLSUSD" />
+
+    <ImageView
+        android:id="@+id/ivArrow"
+        android:layout_width="@dimen/dp_7"
+        android:layout_height="@dimen/dp_10"
+        android:scaleType="centerCrop"
+        android:src="?attr/iconForward"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvAmountToBeRepaidLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_1"
+        android:layout_marginEnd="@dimen/dp_11"
+        android:includeFontPadding="false"
+        android:text="@string/bank_borrowing_orders_label_borrowed_amount"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_10"
+        app:layout_constraintEnd_toStartOf="@id/ivArrow"
+        app:layout_constraintTop_toTopOf="@id/ivCoinLogo" />
+
+    <com.palliums.widget.NumberTextView
+        android:id="@+id/tvAmountToBeRepaid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:gravity="end"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/fs_20"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ivCoinLogo"
+        app:layout_constraintEnd_toStartOf="@id/ivArrow"
+        tools:text="1000" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

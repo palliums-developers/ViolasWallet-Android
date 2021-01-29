@@ -1,21 +1,19 @@
 package com.violas.wallet.biz
 
-import com.palliums.extensions.lazyLogError
-import com.palliums.violas.http.PoolLiquidityDTO
-import com.palliums.violas.http.PoolLiquidityReserveInfoDTO
+import com.palliums.extensions.logInfo
+import com.palliums.violas.error.ViolasException
 import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.repository.http.dex.DexOrderDTO
-import com.violas.wallet.repository.http.dex.DexRepository
+import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
+import com.violas.wallet.repository.http.exchange.PoolLiquidityReserveInfoDTO
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.walletconnect.extensions.hexStringToByteArray
-import org.json.JSONObject
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.AccountAddress
 import org.palliums.violascore.transaction.storage.StructTag
@@ -31,35 +29,31 @@ class ExchangeManager {
         private const val MINIMUM_PRICE_FLUCTUATION = 5 / 1000F
     }
 
-    val mViolasService by lazy {
-        DataRepository.getViolasService()
-    }
-    private val mViolasRpcService by lazy {
-        DataRepository.getViolasChainRpcService()
+    val mExchangeService by lazy {
+        DataRepository.getExchangeService()
     }
 
     val mAccountManager by lazy {
         AccountManager()
     }
-    private val mTokenManager by lazy {
-        TokenManager()
+
+    private val mViolasRPCService by lazy {
+        DataRepository.getViolasChainRpcService()
     }
 
     private val mViolasExchangeContract by lazy {
         ViolasExchangeContract(Vm.TestNet)
     }
 
-    private val receiveAddress = "c71caa520e123d122c310177c08fa0d2"
-
     /**
      * 获取交易市场支持的币种列表
      */
     suspend fun getMarketSupportTokens(): List<ITokenVo> {
         // 交易市场支持的币种
-        val marketCurrencies = mViolasService.getMarketSupportCurrencies()
+        val marketCurrencies = mExchangeService.getMarketSupportCurrencies()
 
         val marketTokens = mutableListOf<ITokenVo>()
-        if (marketCurrencies?.bitcoinCurrencies?.isNotEmpty() == true) {
+        if (marketCurrencies.bitcoinCurrencies?.isNotEmpty() == true) {
             marketTokens.add(
                 PlatformTokenVo(
                     coinNumber = if (Vm.TestNet)
@@ -71,7 +65,7 @@ class ExchangeManager {
                 )
             )
         }
-        marketCurrencies?.libraCurrencies?.forEach {
+        marketCurrencies.libraCurrencies?.forEach {
             marketTokens.add(
                 StableTokenVo(
                     name = it.name,
@@ -84,7 +78,7 @@ class ExchangeManager {
                 )
             )
         }
-        marketCurrencies?.violasCurrencies?.forEach {
+        marketCurrencies.violasCurrencies?.forEach {
             marketTokens.add(
                 StableTokenVo(
                     name = it.name,
@@ -129,18 +123,18 @@ class ExchangeManager {
         val amountBMin =
             amountBDesired - (amountBDesired * MINIMUM_PRICE_FLUCTUATION).toLong()
 
-        lazyLogError {
+        logInfo {
             "addLiquidity. coin   a info   : module=${coinA.module}" +
                     ", index=${coinA.marketIndex}"
         }
-        lazyLogError {
+        logInfo {
             "addLiquidity. coin   b info   : module=${coinB.module}" +
                     ", index=${coinB.marketIndex}"
         }
-        lazyLogError { "addLiquidity. amount a desired: $amountADesired" }
-        lazyLogError { "addLiquidity. amount b desired: $amountBDesired" }
-        lazyLogError { "addLiquidity. amount a min    : $amountAMin" }
-        lazyLogError { "addLiquidity. amount b min    : $amountBMin" }
+        logInfo { "addLiquidity. amount a desired: $amountADesired" }
+        logInfo { "addLiquidity. amount b desired: $amountBDesired" }
+        logInfo { "addLiquidity. amount a min    : $amountAMin" }
+        logInfo { "addLiquidity. amount b min    : $amountBMin" }
 
         val swapPosition = coinA.marketIndex > coinB.marketIndex
         val addLiquidityTransactionPayload =
@@ -153,10 +147,11 @@ class ExchangeManager {
                 if (swapPosition) amountAMin else amountBMin
             )
 
-        mViolasService.sendTransaction(
+        mViolasRPCService.sendTransaction(
             addLiquidityTransactionPayload,
             Account(KeyPair.fromSecretKey(privateKey)),
-            gasCurrencyCode = coinA.module
+            gasCurrencyCode = coinA.module,
+            chainId = Vm.ViolasChainId
         )
     }
 
@@ -190,19 +185,19 @@ class ExchangeManager {
         val amountBMin =
             amountBDesired - (amountBDesired * MINIMUM_PRICE_FLUCTUATION).toLong()
 
-        lazyLogError {
+        logInfo {
             "removeLiquidity. coin   a info   : module=${coinA.module}" +
                     ", index=${coinA.marketIndex}"
         }
-        lazyLogError {
+        logInfo {
             "removeLiquidity. coin   b info   : module=${coinB.module}" +
                     ", index=${coinB.marketIndex}"
         }
-        lazyLogError { "removeLiquidity. amount a desired: $amountADesired" }
-        lazyLogError { "removeLiquidity. amount b desired: $amountBDesired" }
-        lazyLogError { "removeLiquidity. amount a min    : $amountAMin" }
-        lazyLogError { "removeLiquidity. amount b min    : $amountBMin" }
-        lazyLogError { "removeLiquidity. liquidity amount: $liquidityAmount" }
+        logInfo { "removeLiquidity. amount a desired: $amountADesired" }
+        logInfo { "removeLiquidity. amount b desired: $amountBDesired" }
+        logInfo { "removeLiquidity. amount a min    : $amountAMin" }
+        logInfo { "removeLiquidity. amount b min    : $amountBMin" }
+        logInfo { "removeLiquidity. liquidity amount: $liquidityAmount" }
 
         val swapPosition = coinA.marketIndex > coinB.marketIndex
         val removeLiquidityTransactionPayload =
@@ -214,10 +209,28 @@ class ExchangeManager {
                 if (swapPosition) amountAMin else amountBMin
             )
 
-        mViolasService.sendTransaction(
+        mViolasRPCService.sendTransaction(
             removeLiquidityTransactionPayload,
             Account(KeyPair.fromSecretKey(privateKey)),
-            gasCurrencyCode = coinA.module
+            gasCurrencyCode = coinA.module,
+            chainId = Vm.ViolasChainId
+        )
+    }
+
+    /**
+     * 提取挖矿奖励
+     */
+    @Throws(ViolasException::class)
+    suspend fun withdrawReward(
+        privateKey: ByteArray
+    ) {
+        val withdrawRewardTransactionPayload =
+            mViolasExchangeContract.optionWithdrawRewardTransactionPayload()
+
+        mViolasRPCService.sendTransaction(
+            payload = withdrawRewardTransactionPayload,
+            account = Account(KeyPair.fromSecretKey(privateKey)),
+            chainId = Vm.ViolasChainId
         )
     }
 
@@ -265,57 +278,5 @@ class ExchangeManager {
             .divide(liquidityReserve.liquidityTotalAmount, 6, RoundingMode.DOWN)
             .stripTrailingZeros()
         return Pair(coinAAmount, coinBAmount)
-    }
-
-    @Throws(Exception::class)
-    suspend fun revokeOrder(
-        privateKey: ByteArray,
-        dexOrder: DexOrderDTO,
-        dexService: DexRepository
-    ): Boolean {
-        return try {
-            // 1.获取撤销兑换token数据的签名字符
-            val account = Account(KeyPair.fromSecretKey(privateKey))
-
-            val optionUndoExchangePayloadWithData =
-                optionUndoExchangePayloadWithData(dexOrder.version.toLong())
-
-            val optionUndoExchangePayload = mTokenManager.transferTokenPayload(
-                dexOrder.tokenGiveAddress.toLong(),
-                receiveAddress,
-                0,
-                optionUndoExchangePayloadWithData
-            )
-
-            val (signedTxn, _, _) = mViolasService.generateTransaction(
-                optionUndoExchangePayload,
-                account
-            )
-
-            // 2.通知交易中心撤销订单，交易中心此时只会标记需要撤销订单的状态为CANCELLING并停止兑换，失败会抛异常
-            // 不管通知交易中心撤销订单有没有成功，都要将撤销兑换token数据上链
-            try {
-                dexService.revokeOrder(dexOrder.version, signedTxn)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            // 3.撤销兑换token数据上链，只有上链后，交易中心扫区块扫到解析撤销订单才会更改订单状态为CANCELED
-            mViolasService.sendTransaction(signedTxn)
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-
-    private fun optionUndoExchangePayloadWithData(
-        version: Long
-    ): ByteArray {
-        val subExchangeDate = JSONObject()
-        subExchangeDate.put("type", "wd_ex")
-        subExchangeDate.put("ver", version)
-        return subExchangeDate.toString().toByteArray()
     }
 }

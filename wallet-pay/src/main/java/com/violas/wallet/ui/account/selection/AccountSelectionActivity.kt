@@ -34,7 +34,7 @@ class AccountSelectionActivity : BaseAppActivity() {
     }
 
     override fun getTitleStyle(): Int {
-        return PAGE_STYLE_SECONDARY
+        return PAGE_STYLE_LIGHT_MODE_PRIMARY_TOP_BAR
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +46,7 @@ class AccountSelectionActivity : BaseAppActivity() {
             .debug(BuildConfig.DEBUG)
             .install()
 
-        setTitle(R.string.account_selection_title)
+        setTitle(R.string.wallet_account_title_select_wallet)
 
         var lastAccountType = AccountType.ALL
         savedInstanceState?.let {

@@ -47,6 +47,7 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
     private var displayTokens: List<ITokenVo>? = null
     private var currCoin: ITokenVo? = null
     private var job: Job? = null
+    private var lastSearchEmptyData = false
 
     private val tokenAdapter by lazy {
         TokenAdapter()
@@ -131,17 +132,17 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
         recyclerView.visibility = View.GONE
 
         currCoin = swapTokensDataResourcesBridge?.getCurrCoin(action)
-
-        statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
-        statusLayout.setReloadCallback {
-            statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
-            launch(Dispatchers.IO) {
-                loadSwapTokens()
-            }
+        if (action == ACTION_SWAP_SELECT_FROM) {
+            swapTokensDataResourcesBridge?.getMarketSupportFromTokensLiveData()?.observe(
+                viewLifecycleOwner,
+                Observer { handleSwapTokens(it) }
+            )
         }
-        launch(Dispatchers.IO) {
+
+        statusLayout.setReloadCallback {
             loadSwapTokens()
         }
+        loadSwapTokens()
     }
 
     private fun handleSwapTokens(tokens: List<ITokenVo>?) {
@@ -164,17 +165,15 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
         }
     }
 
-    private suspend fun loadSwapTokens() {
+    private fun loadSwapTokens() {
+        statusLayout.showStatus(IStatusLayout.Status.STATUS_LOADING)
         if (action == ACTION_SWAP_SELECT_FROM) {
-            withContext(Dispatchers.Main) {
-                swapTokensDataResourcesBridge?.getMarketSupportFromTokens()
-                    ?.observe(this@SwapSelectTokenDialog, Observer {
-                        handleSwapTokens(it)
-                    })
+            swapTokensDataResourcesBridge?.loadMarketSupportFromTokens {
+                handleLoadFailure()
             }
         } else {
-            swapTokensDataResourcesBridge?.getMarketSupportToTokens().let {
-                handleSwapTokens(it)
+            launch(Dispatchers.IO) {
+                handleSwapTokens(swapTokensDataResourcesBridge?.getMarketSupportToTokens())
             }
         }
     }
@@ -223,6 +222,8 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
     }
 
     private fun handleLoadFailure() {
+        if (recyclerView == null) return
+
         tokenAdapter.submitList(null)
         recyclerView.visibility = View.GONE
         statusLayout.showStatus(
@@ -234,12 +235,28 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
     }
 
     private fun handleEmptyData(searchText: String?) {
-        tokenAdapter.submitList(null)
-        recyclerView.visibility = View.GONE
+        if (recyclerView.visibility != View.GONE) {
+            tokenAdapter.submitList(null)
+            recyclerView.visibility = View.GONE
+        }
+
+        if (lastSearchEmptyData && searchText.isNullOrEmpty()) {
+            statusLayout.setImageWithStatus(
+                IStatusLayout.Status.STATUS_EMPTY,
+                getResourceId(R.attr.bgLoadEmptyData, requireContext())
+            )
+        } else if (!lastSearchEmptyData && !searchText.isNullOrEmpty()) {
+            statusLayout.setImageWithStatus(
+                IStatusLayout.Status.STATUS_EMPTY,
+                getResourceId(R.attr.bgSearchEmptyData, requireContext())
+            )
+        }
+        lastSearchEmptyData = !searchText.isNullOrEmpty()
+
         statusLayout.setTipsWithStatus(
             IStatusLayout.Status.STATUS_EMPTY,
             if (searchText.isNullOrEmpty())
-                getString(R.string.tips_select_token_list_is_empty)
+                getString(R.string.select_currency_desc_tokens_empty)
             else
                 getSearchEmptyTips(searchText)
         )
@@ -247,7 +264,7 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
     }
 
     private fun getSearchEmptyTips(searchText: String) = run {
-        val text = getString(R.string.tips_select_token_search_is_empty, searchText)
+        val text = getString(R.string.select_currency_desc_search_empty_format, searchText)
         val spannableStringBuilder = SpannableStringBuilder(text)
         text.indexOf(searchText).let {
             spannableStringBuilder.setSpan(
@@ -293,7 +310,7 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
             )
             holder.itemView.tvTokenName.text = item.displayName
             holder.itemView.tvTokenBalance.text = getString(
-                R.string.market_select_token_balance_format,
+                R.string.common_label_balance_format,
                 item.displayAmount.toPlainString(),
                 item.displayName
             )
@@ -308,7 +325,10 @@ class SwapSelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScop
 }
 
 interface SwapTokensDataResourcesBridge {
-    suspend fun getMarketSupportFromTokens(): LiveData<List<ITokenVo>?>
+
+    fun getMarketSupportFromTokensLiveData(): LiveData<List<ITokenVo>?>
+
+    fun loadMarketSupportFromTokens(failureCallback: (error: Throwable) -> Unit)
 
     suspend fun getMarketSupportToTokens(): List<ITokenVo>?
 

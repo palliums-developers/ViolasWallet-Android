@@ -1,5 +1,6 @@
 package com.violas.wallet.ui.main.wallet
 
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -8,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.biometric.BiometricManager
-import androidx.lifecycle.Observer
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -17,8 +18,11 @@ import com.palliums.base.BaseFragment
 import com.palliums.biometric.BiometricCompat
 import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
+import com.palliums.utils.DensityUtility
 import com.palliums.utils.StatusBarUtil
 import com.palliums.utils.getResourceId
+import com.scwang.smartrefresh.layout.api.RefreshFooter
+import com.scwang.smartrefresh.layout.listener.SimpleMultiPurposeListener
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.command.CommandActuator
@@ -29,18 +33,20 @@ import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
 import com.violas.wallet.ui.backup.BackupPromptActivity
 import com.violas.wallet.ui.biometric.OpenBiometricsPromptDialog
+import com.violas.wallet.ui.collection.MultiCollectionActivity
 import com.violas.wallet.ui.identity.createIdentity.CreateIdentityActivity
 import com.violas.wallet.ui.identity.importIdentity.ImportIdentityActivity
+import com.violas.wallet.ui.incentive.IncentiveWebActivity
+import com.violas.wallet.ui.incentive.receiveRewards.ReceiveIncentiveRewardsActivity
 import com.violas.wallet.ui.managerAssert.ManagerAssertActivity
+import com.violas.wallet.ui.mapping.MappingActivity
+import com.violas.wallet.ui.message.MessageCenterActivity
 import com.violas.wallet.ui.scan.ScanActivity
-import com.violas.wallet.ui.scan.ScanResultActivity
 import com.violas.wallet.ui.tokenDetails.TokenDetailsActivity
-import com.violas.wallet.ui.transfer.TransferActivity
-import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
+import com.violas.wallet.ui.transfer.MultiTransferActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
-import com.violas.wallet.ui.webManagement.LoginWebActivity
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.utils.loadRoundedImage
+import com.violas.wallet.utils.loadCircleImage
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
@@ -49,6 +55,7 @@ import com.violas.wallet.viewModel.bean.HiddenTokenVo
 import com.violas.wallet.walletconnect.WalletConnectStatus
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
+import kotlinx.android.synthetic.main.fragment_wallet_content.*
 import kotlinx.android.synthetic.main.item_wallet_assert.view.*
 import kotlinx.android.synthetic.main.view_backup_now_wallet.*
 import kotlinx.coroutines.cancel
@@ -63,8 +70,6 @@ import org.greenrobot.eventbus.ThreadMode
 class WalletFragment : BaseFragment() {
     companion object {
         private const val REQUEST_ADD_ASSERT = 0
-        private const val REQUEST_SCAN_QR_CODE = 1
-        private const val REQUEST_TOKEN_INFO = 2
     }
 
     private val mWalletAppViewModel by lazy {
@@ -90,57 +95,79 @@ class WalletFragment : BaseFragment() {
         }
     }
 
+    private val receiveIncentiveRewardsViewAnimators by lazy {
+        ReceiveIncentiveRewardsViewAnimators(clReceiveIncentiveRewardsGroup)
+    }
+
     override fun getLayoutResId(): Int {
         return R.layout.fragment_wallet
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mWalletViewModel.loadReceiveIncentiveRewardsState()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         EventBus.getDefault().register(this)
+        refreshLayout.autoRefresh(0, 100, 1f, true)
+        actionBar.post { adapterViewHeight() }
+        rvAssert.adapter = mAssertAdapter
+        rvAssert.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            private var hasScrolled = false
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                //logError("Test") { "onScrolled. dx($dx), dy($dy)" }
+                if (dy != 0) {
+                    hasScrolled = true
+                    receiveIncentiveRewardsViewAnimators.startAnimators()
+                }
+            }
 
-        recyclerAssert.adapter = mAssertAdapter
-
-        mWalletAppViewModel?.mDataRefreshingLiveData?.observe(viewLifecycleOwner, Observer {
-            if (!it) {
-                swipeRefreshLayout.finishRefresh()
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                //logError("Test") { "onScrollStateChanged. newState($newState)" }
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && hasScrolled) {
+                    hasScrolled = false
+                    receiveIncentiveRewardsViewAnimators.delayReverseAnimators()
+                }
             }
         })
-        Log.d("==assets==","WalletFragment Subscribe to AssetsList")
-        mWalletAppViewModel?.mAssetsListLiveData?.observe(viewLifecycleOwner, Observer {
-            Log.d("==assets==","WalletFragment AssetsList Observer Update")
-            val filter =
-                it.filter { asset ->
-                    when (asset) {
-                        is HiddenTokenVo -> {
-                            false
-                        }
-                        !is AssetsCoinVo -> {
-                            true
-                        }
-                        else -> {
-                            asset.accountType != AccountType.NoDollars
-                        }
-                    }
+
+        mWalletAppViewModel?.mDataRefreshingLiveData?.observe(viewLifecycleOwner) {
+            if (!it) {
+                refreshLayout.finishRefresh()
+            }
+        }
+        mWalletAppViewModel?.mAssetsListLiveData?.observe(viewLifecycleOwner) {
+            val filter = it.filter { asset ->
+                when (asset) {
+                    is HiddenTokenVo -> false
+                    !is AssetsCoinVo -> true
+                    else -> asset.accountType != AccountType.NoDollars
                 }
+            }
             mAssertAdapter.submitList(filter)
             mWalletViewModel.calculateFiat(filter)
-        })
-        mWalletAppViewModel?.mExistsAccountLiveData?.observe(viewLifecycleOwner, Observer {
+        }
+        mWalletAppViewModel?.mExistsAccountLiveData?.observe(viewLifecycleOwner) {
             if (it) {
-                viewAssetsGroup.visibility = View.VISIBLE
-                viewAddAccount.visibility = View.GONE
+                groupHaveAccount.visibility = View.VISIBLE
+                groupNoAccount.visibility = View.GONE
             } else {
-                viewAssetsGroup.visibility = View.GONE
-                viewAddAccount.visibility = View.VISIBLE
+                groupHaveAccount.visibility = View.GONE
+                groupNoAccount.visibility = View.VISIBLE
+                mWalletViewModel.resetReceiveIncentiveRewardsState()
             }
             handleBackupMnemonicWarn(it)
             handleDialogShow(it)
-        })
-        mWalletViewModel.mTotalFiatBalanceStrLiveData.observe(viewLifecycleOwner, Observer {
+        }
+        mWalletViewModel.mTotalFiatBalanceStrLiveData.observe(viewLifecycleOwner) {
             tvAmount.text = it
-        })
-        mWalletViewModel.mHiddenTotalFiatBalanceLiveData.observe(viewLifecycleOwner, Observer {
+        }
+        mWalletViewModel.mHiddenTotalFiatBalanceLiveData.observe(viewLifecycleOwner) {
             mAssertAdapter.assetsHidden(it)
             if (it) {
                 ivTotalHidden.setImageResource(
@@ -157,40 +184,90 @@ class WalletFragment : BaseFragment() {
                     )
                 )
             }
-        })
-
-        ivTotalHidden.setOnClickListener {
-            mWalletViewModel.taggerTotalDisplay()
         }
-        ivTotalHidden.expandTouchArea(28)
-
-        mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(
-            viewLifecycleOwner,
-            Observer { status ->
-                when (status) {
-                    WalletConnectStatus.None -> {
-                        viewWalletConnect.visibility = View.GONE
-                    }
-                    WalletConnectStatus.Login -> {
-                        tvWalletConnectStatus.text = getString(R.string.wallet_connect_have_landed)
-                        viewWalletConnect.visibility = View.VISIBLE
-                    }
+        mWalletViewModel.receiveIncentiveRewardsStateLiveData.observe(viewLifecycleOwner) {
+            if (it == 0) {
+                clReceiveIncentiveRewardsGroup.visibility = View.VISIBLE
+            } else if (it == 1 || it == -1) {
+                clReceiveIncentiveRewardsGroup.visibility = View.GONE
+            }
+        }
+        mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(viewLifecycleOwner) {
+            when (it) {
+                WalletConnectStatus.Login -> {
+                    llWalletConnectGroup.visibility = View.VISIBLE
                 }
-            })
-        viewWalletConnect.setOnClickListener {
-            activity?.let { it1 -> WalletConnectManagerActivity.startActivity(it1) }
+                else -> {
+                    llWalletConnectGroup.visibility = View.INVISIBLE
+                }
+            }
         }
 
+        ivTotalHidden.expandTouchArea(28)
+        ivTotalHidden.setOnClickListener(this)
         ivAddAssert.setOnClickListener(this)
         ivScan.setOnClickListener(this)
-        viewCreateAccount.setOnClickListener(this)
-        viewImportAccount.setOnClickListener(this)
+        // TODO 暂时屏蔽消息推送通知
+        ivMsgNotification.visibility = View.GONE
+        ivMsgNotification.setOnClickListener(this)
+        llWalletConnectGroup.setOnClickListener(this)
+        llCreateAccountGroup.setOnClickListener(this)
+        llImportAccountGroup.setOnClickListener(this)
+        llTransferGroup.setOnClickListener(this)
+        llCollectionGroup.setOnClickListener(this)
+        llMappingGroup.setOnClickListener(this)
+        clMiningGroup.setOnClickListener(this)
+        clReceiveIncentiveRewardsGroup.setOnClickListener(this)
 
-        swipeRefreshLayout.setEnableOverScrollDrag(true)
-        swipeRefreshLayout.setOnRefreshListener {
+        refreshLayout.setEnableOverScrollDrag(true)
+        refreshLayout.setEnableOverScrollBounce(false)
+        refreshLayout.setOnMultiPurposeListener(object : SimpleMultiPurposeListener() {
+            private var hasDragged = false
+            override fun onFooterMoving(
+                footer: RefreshFooter?,
+                isDragging: Boolean,
+                percent: Float,
+                offset: Int,
+                footerHeight: Int,
+                maxDragHeight: Int
+            ) {
+                //logError("Test") { "onFooterMoving. isDragging($isDragging), percent($percent), offset($offset)" }
+                if (hasDragged) {
+                    if (offset != 0) {
+                        receiveIncentiveRewardsViewAnimators.startAnimators()
+                    } else {
+                        hasDragged = false
+                        receiveIncentiveRewardsViewAnimators.delayReverseAnimators()
+                    }
+                } else {
+                    if (isDragging) {
+                        hasDragged = true
+                    }
+                }
+            }
+        })
+        refreshLayout.setOnRefreshListener {
             CommandActuator.post(RefreshAssetsAllListCommand())
+            mWalletViewModel.loadReceiveIncentiveRewardsState()
         }
-        swipeRefreshLayout.autoRefresh()
+    }
+
+    private fun adapterViewHeight() {
+        val statusBarHeight = StatusBarUtil.getStatusBarHeight()
+        val topViewHeight = clTopGroup.measuredHeight
+        val bottomViewTopMargin =
+            topViewHeight + statusBarHeight - DensityUtility.dp2px(requireContext(), 40)
+
+        clTopGroup.setPadding(
+            clTopGroup.paddingLeft,
+            statusBarHeight,
+            clTopGroup.paddingRight,
+            clTopGroup.paddingBottom
+        )
+        clBottomGroup.layoutParams =
+            (clBottomGroup.layoutParams as ConstraintLayout.LayoutParams).apply {
+                topMargin = bottomViewTopMargin
+            }
     }
 
     private fun handleBackupMnemonicWarn(existsAccount: Boolean) {
@@ -200,9 +277,8 @@ class WalletFragment : BaseFragment() {
         }
 
         if (!mAccountManager.isIdentityMnemonicBackup()) {
-            layoutBackupNow.visibility = View.VISIBLE
             btnConfirm.setOnClickListener(this)
-
+            layoutBackupNow.visibility = View.VISIBLE
         }
     }
 
@@ -234,49 +310,106 @@ class WalletFragment : BaseFragment() {
 
     override fun onViewClick(view: View) {
         when (view.id) {
+            R.id.ivTotalHidden -> {
+                mWalletViewModel.taggerTotalDisplay()
+            }
+
             R.id.ivAddAssert -> {
                 ManagerAssertActivity.start(
                     this@WalletFragment,
                     REQUEST_ADD_ASSERT
                 )
             }
+
             R.id.ivScan -> {
                 activity?.let { it1 ->
                     if (mWalletAppViewModel?.isExistsAccount() == true) {
-                        ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
+                        ScanActivity.start(it1)
                     } else {
-                        showToast(R.string.tips_create_or_import_wallet)
+                        showToast(R.string.common_tips_account_empty)
                     }
                 }
             }
 
-            R.id.viewCreateAccount -> {
+            R.id.ivMsgNotification -> {
+                MessageCenterActivity.start(requireContext())
+            }
+
+            R.id.llWalletConnectGroup -> {
+                activity?.let { it1 -> WalletConnectManagerActivity.startActivity(it1) }
+            }
+
+            R.id.llTransferGroup -> {
+                activity?.let {
+                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                        context?.let { it1 -> MultiTransferActivity.start(it1) }
+                    } else {
+                        showToast(R.string.common_tips_account_empty)
+                    }
+                }
+            }
+
+            R.id.llCollectionGroup -> {
+                activity?.let {
+                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                        context?.let { it1 -> MultiCollectionActivity.start(it1) }
+                    } else {
+                        showToast(R.string.common_tips_account_empty)
+                    }
+                }
+            }
+
+            R.id.llMappingGroup -> {
+                activity?.let {
+                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                        MappingActivity.start(it)
+                    } else {
+                        showToast(R.string.common_tips_account_empty)
+                    }
+                }
+            }
+
+            R.id.llCreateAccountGroup -> {
                 activity?.let { CreateIdentityActivity.start(it) }
             }
 
-            R.id.viewImportAccount -> {
+            R.id.llImportAccountGroup -> {
                 activity?.let { ImportIdentityActivity.start(it) }
             }
 
             R.id.btnConfirm -> {
+                backupWallet()
+            }
+
+            R.id.clMiningGroup -> {
                 launch {
-                    try {
-                        val accountDO = mAccountManager.getDefaultAccount()
-                        authenticateAccount(
-                            accountDO,
-                            mAccountManager,
-                            dismissLoadingWhenDecryptEnd = true,
-                            mnemonicCallback = {
-                                BackupPromptActivity.start(
-                                    requireContext(),
-                                    it,
-                                    BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
-                                )
-                            }
-                        )
-                    } catch (e: Exception) {
-                    }
+                    IncentiveWebActivity.startIncentiveHomePage(requireContext())
                 }
+            }
+
+            R.id.clReceiveIncentiveRewardsGroup -> {
+                ReceiveIncentiveRewardsActivity.start(requireContext())
+            }
+        }
+    }
+
+    private fun backupWallet() {
+        launch {
+            try {
+                val accountDO = mAccountManager.getDefaultAccount()
+                authenticateAccount(
+                    accountDO,
+                    mAccountManager,
+                    dismissLoadingWhenDecryptEnd = true,
+                    mnemonicCallback = {
+                        BackupPromptActivity.start(
+                            requireContext(),
+                            it,
+                            BackupMnemonicFrom.BACKUP_IDENTITY_WALLET
+                        )
+                    }
+                )
+            } catch (e: Exception) {
             }
         }
     }
@@ -294,49 +427,6 @@ class WalletFragment : BaseFragment() {
                     mWalletAppViewModel?.refreshAssetsList(true)
                 }
             }
-
-            REQUEST_SCAN_QR_CODE -> {
-                data?.getStringExtra(ScanActivity.RESULT_QR_CODE_DATA)?.let { msg ->
-                    decodeScanQRCode(msg) { scanType, scanBean ->
-                        when (scanType) {
-                            ScanCodeType.Address -> {
-                                scanBean as ScanTranBean
-                                activity?.let {
-                                    TransferActivity.start(
-                                        it,
-                                        scanBean.coinType,
-                                        scanBean.address,
-                                        scanBean.amount,
-                                        scanBean.tokenName
-                                    )
-                                }
-                            }
-
-                            ScanCodeType.Text -> {
-                                activity?.let {
-                                    ScanResultActivity.start(it, scanBean.msg)
-                                }
-                            }
-
-                            ScanCodeType.WalletConnectSocket -> {
-                                context?.let {
-                                    WalletConnectAuthorizationActivity.startActivity(it, msg)
-//                                    WalletConnect.getInstance(it.applicationContext).connect(
-//                                        msg
-//                                    )
-                                }
-                            }
-
-                            ScanCodeType.Login -> {
-                                scanBean as ScanLoginBean
-                                activity?.let {
-                                    LoginWebActivity.start(it, scanBean)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -344,11 +434,6 @@ class WalletFragment : BaseFragment() {
         EventBus.getDefault().unregister(this)
         cancel()
         super.onDestroy()
-    }
-
-    override fun onResume() {
-        StatusBarUtil.setLightStatusBarMode(requireActivity().window, false)
-        super.onResume()
     }
 }
 
@@ -405,10 +490,9 @@ class AssertAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemData = getItem(position)
 
-        holder.itemView.ivLogo.loadRoundedImage(
+        holder.itemView.ivLogo.loadCircleImage(
             itemData.getLogoUrl(),
-            getResourceId(R.attr.iconCoinDefLogo, holder.itemView.context),
-            14
+            getResourceId(R.attr.iconCoinDefLogo, holder.itemView.context)
         )
 
         holder.itemView.tvName.text = itemData.getAssetsName()
@@ -430,4 +514,61 @@ class AssertAdapter(
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item)
+}
+
+class ReceiveIncentiveRewardsViewAnimators(private val targetView: View) {
+
+    private val alphaAnimator by lazy {
+        ObjectAnimator.ofFloat(
+            targetView,
+            "alpha",
+            1f,
+            0.5f
+        ).apply { duration = 300 }
+    }
+
+    private val translationAnimator by lazy {
+        ObjectAnimator.ofFloat(
+            targetView,
+            "translationX",
+            0f,
+            DensityUtility.dp2px(targetView.context, 22f) + targetView.measuredWidth / 2
+        ).apply { duration = 300 }
+    }
+
+    private val reverseAnimatorsRunnable by lazy {
+        Runnable {
+            if (!isViewFloating()) {
+                alphaAnimator.reverse()
+                translationAnimator.reverse()
+            }
+        }
+    }
+
+    private fun isEventOngoing(): Boolean {
+        return targetView.visibility == View.VISIBLE
+    }
+
+    private fun isViewFloating(): Boolean {
+        return targetView.translationX == 0f
+    }
+
+    fun startAnimators() {
+        if (!isEventOngoing()) return
+
+        targetView.removeCallbacks(reverseAnimatorsRunnable)
+        if (isViewFloating()) {
+            translationAnimator.start()
+            alphaAnimator.start()
+        }
+    }
+
+    fun delayReverseAnimators() {
+        if (!isEventOngoing()) return
+
+        targetView.postDelayed(
+            reverseAnimatorsRunnable,
+            2000
+        )
+    }
 }

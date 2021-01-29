@@ -9,5 +9,5 @@ package com.violas.wallet.event
 class SwitchHomePageEvent(val homePageType: HomePageType)
 
 enum class HomePageType {
-    Wallet, Market, Me
+    Wallet, Market, Bank, Me
 }

@@ -1,5 +1,6 @@
 package com.violas.wallet.viewModel.bean
 
+import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.repository.database.entity.AccountType
 
 // todo 暂时使用 Serializable
@@ -19,6 +20,18 @@ abstract class AssetsVo {
     abstract fun setAmount(amount: Long)
     abstract fun getLogoUrl(): String
     abstract fun getCoinNumber(): Int
+
+    fun isBitcoin(): Boolean {
+        return getCoinNumber() == CoinTypes.Bitcoin.coinType() || getCoinNumber() == CoinTypes.BitcoinTest.coinType()
+    }
+
+    fun isLibra(): Boolean {
+        return getCoinNumber() == CoinTypes.Libra.coinType()
+    }
+
+    fun isViolas(): Boolean {
+        return getCoinNumber() == CoinTypes.Violas.coinType()
+    }
 }
 
 data class FiatAmountWithUnit(
@@ -79,9 +92,9 @@ data class AssetsTokenVo(
     private val id: Long,
     private val accountId: Long,
     private val coinNumber: Int,
-    val address: String = "00000000000000000000000000000000",
-    val module: String = "LBR",
-    val name: String = "T",
+    val address: String,
+    val module: String,
+    val name: String,
     val enable: Boolean = false,
     private var amount: Long = 0,
     private var logo: String = ""
@@ -101,9 +114,9 @@ data class HiddenTokenVo(
     private val id: Long,
     private val accountId: Long,
     private val coinNumber: Int,
-    val address: String = "00000000000000000000000000000000",
-    val module: String = "LBR",
-    val name: String = "T",
+    val address: String,
+    val module: String,
+    val name: String,
     val enable: Boolean = false,
     private var amount: Long = 0
 ) : AssetsVo() {
