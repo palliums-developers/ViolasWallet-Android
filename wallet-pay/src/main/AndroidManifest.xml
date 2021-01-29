@@ -226,27 +226,26 @@
             android:name=".ui.incentive.IncentiveWebActivity"
             android:screenOrientation="portrait" />
 
-        <!--TODO 暂时屏蔽消息推送通知-->
-        <!--<service
+        <service
             android:name=".service.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        &lt;!&ndash; Set custom default icon. This is used when no icon is set for incoming notification messages.
-             See README(https://goo.gl/l4GJaQ) for more. &ndash;&gt;
+        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
+             See README(https://goo.gl/l4GJaQ) for more. -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_notification" />
-        &lt;!&ndash; Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more. &ndash;&gt;
-        &lt;!&ndash;<meta-data
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <!--<meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorAccent" />&ndash;&gt;
+            android:resource="@color/colorAccent" />-->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/notification_channel_id_default" />-->
+            android:value="@string/notification_channel_id_default" />
 
         <!-- 设计图尺寸，用于今日头条适配方案 -->
         <meta-data

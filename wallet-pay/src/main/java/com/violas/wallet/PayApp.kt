@@ -37,9 +37,8 @@ class PayApp : App() {
 
         initAccountAndAssets()
 
-        // TODO 暂时屏蔽消息推送通知
-        //initMessagePush()
-        //initMessageNotification()
+        initMessagePush()
+        initMessageNotification()
 
         initWalletConnect()
     }

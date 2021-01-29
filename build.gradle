@@ -24,8 +24,7 @@ buildscript {
         // in the individual module build.gradle files
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
         classpath 'com.tencent.mm:AndResGuard-gradle-plugin:1.2.18'
-        // TODO 暂时屏蔽消息推送通知
-        //classpath 'com.google.gms:google-services:4.3.4'
+        classpath 'com.google.gms:google-services:4.3.4'
     }
 }
 

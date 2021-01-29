@@ -207,8 +207,6 @@ class WalletFragment : BaseFragment() {
         ivTotalHidden.setOnClickListener(this)
         ivAddAssert.setOnClickListener(this)
         ivScan.setOnClickListener(this)
-        // TODO 暂时屏蔽消息推送通知
-        ivMsgNotification.visibility = View.GONE
         ivMsgNotification.setOnClickListener(this)
         llWalletConnectGroup.setOnClickListener(this)
         llCreateAccountGroup.setOnClickListener(this)
