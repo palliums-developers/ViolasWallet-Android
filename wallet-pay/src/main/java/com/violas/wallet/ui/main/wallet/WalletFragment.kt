@@ -47,6 +47,7 @@ import com.violas.wallet.ui.transfer.MultiTransferActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectManagerActivity
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.loadCircleImage
+import com.violas.wallet.viewModel.MessageViewModel
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
@@ -200,6 +201,14 @@ class WalletFragment : BaseFragment() {
                 else -> {
                     llWalletConnectGroup.visibility = View.INVISIBLE
                 }
+            }
+        }
+        MessageViewModel.getInstance().unreadMsgNumLiveData.observe(viewLifecycleOwner) {
+            if (it <= 0) {
+                tvMsgNumber.visibility = View.GONE
+            } else {
+                tvMsgNumber.visibility = View.VISIBLE
+                tvMsgNumber.text = if (it > 99) "99+" else it.toString()
             }
         }
 

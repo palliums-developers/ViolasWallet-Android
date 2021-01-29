@@ -31,7 +31,20 @@ data class TransactionMessageDTO(
     val txnType: String = "",
     @SerializedName("status")
     val txnStatus: String = ""
-)
+) {
+    fun read(): Boolean {
+        return readStatus == 1
+    }
+
+    fun markAsRead(): Boolean {
+        return if (readStatus == 1) {
+            false
+        } else {
+            readStatus = 1
+            true
+        }
+    }
+}
 
 @Keep
 data class SystemMessageDTO(
@@ -49,7 +62,20 @@ data class SystemMessageDTO(
     val time: Long = 0,
     @SerializedName("readed")
     var readStatus: Int = 0
-)
+) {
+    fun read(): Boolean {
+        return readStatus == 1
+    }
+
+    fun markAsRead(): Boolean {
+        return if (readStatus == 1) {
+            false
+        } else {
+            readStatus = 1
+            true
+        }
+    }
+}
 
 @Keep
 data class TransactionMsgDetailsDTO(

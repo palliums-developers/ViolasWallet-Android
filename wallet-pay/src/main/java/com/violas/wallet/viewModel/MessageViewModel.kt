@@ -10,8 +10,11 @@ import com.palliums.extensions.logDebug
 import com.palliums.extensions.logError
 import com.palliums.utils.CustomMainScope
 import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.event.ClearUnreadMessagesEvent
 import com.violas.wallet.repository.DataRepository
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 /**
  * Created by elephant on 1/25/21 3:48 PM.
@@ -30,17 +33,28 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         }
     }
 
-    val msgTotalNumLiveData = MutableLiveData<Long>()
-    val systemMsgNumLiveData = MutableLiveData<Long>()
-    val transactionMsgNumLiveData = MutableLiveData<Long>()
+    val unreadMsgNumLiveData = MutableLiveData<Long>()
+    val unreadSysMsgNumLiveData = MutableLiveData<Long>()
+    val unreadTxnMsgNumLiveData = MutableLiveData<Long>()
+
+    private val accountStorage by lazy { DataRepository.getAccountStorage() }
+    private val messageService by lazy { DataRepository.getMessageService() }
+
+    private var syncUnreadMsgNumJob: Job? = null
 
     init {
+        EventBus.getDefault().register(this)
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData.observeForever {
-            getTokenAndRegisterDevice()
+            getPushTokenAndRegisterPushDevice()
         }
     }
 
-    private fun getTokenAndRegisterDevice() {
+    override fun onCleared() {
+        super.onCleared()
+        EventBus.getDefault().unregister(this)
+    }
+
+    private fun getPushTokenAndRegisterPushDevice() {
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
             if (it.isSuccessful) {
                 val token = it.result?.token
@@ -48,7 +62,7 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
                     "getToken. isSuccessful = true, token = $token"
                 }
                 if (!token.isNullOrBlank()) {
-                    registerDevice(token)
+                    registerPushDevice(token, true)
                 }
             } else {
                 logError(TAG) {
@@ -58,41 +72,63 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         }
     }
 
-    fun registerDevice(token: String) {
+    fun registerPushDevice(token: String, first: Boolean = false) {
         launch(Dispatchers.IO) {
+            if (first)
+                delay(3000)
+
             val result = try {
-                val violasAccount = DataRepository.getAccountStorage()
-                    .findByCoinType(CoinTypes.Violas.coinType())
-                val messageService = DataRepository.getMessageService()
-                messageService.registerDevice(violasAccount!!.address, token)
+                val violasAccount = accountStorage.findByCoinType(CoinTypes.Violas.coinType())
+                messageService.registerPushDevice(violasAccount?.address ?: "", token)
                 true
             } catch (e: Exception) {
-                logError(TAG) { "register device failed, ${e.message}" }
+                logError(TAG) { "register push device failed, ${e.message}" }
                 false
             }
 
             if (!result) {
                 delay(1000 * 60 * 10)
-                registerDevice(token)
+                registerPushDevice(token)
             }
         }
     }
 
-    fun loadMsgNum() {
-        launch {
+    fun syncUnreadMsgNum() {
+        if (syncUnreadMsgNumJob != null) return
+
+        syncUnreadMsgNumJob = launch {
             withContext(Dispatchers.IO) {
                 try {
-                    val violasAccount = DataRepository.getAccountStorage()
-                        .findByCoinType(CoinTypes.Violas.coinType())
-                    val messageService = DataRepository.getMessageService()
+                    val violasAccount = accountStorage.findByCoinType(CoinTypes.Violas.coinType())
+                    // TODO 从后台获取未读消息数
+                    messageService
                 } catch (e: Exception) {
                     logError(TAG) { "load message number failed, ${e.message}" }
                 }
             }
 
-            msgTotalNumLiveData.value = 3
-            systemMsgNumLiveData.value = 2
-            transactionMsgNumLiveData.value = 1
+            unreadMsgNumLiveData.value = 9
+            unreadSysMsgNumLiveData.value = 1
+            unreadTxnMsgNumLiveData.value = 8
+
+            syncUnreadMsgNumJob = null
+        }
+    }
+
+    @Subscribe
+    fun onClearUnreadMessagesEvent(event: ClearUnreadMessagesEvent) {
+        launch {
+            try {
+                if (syncUnreadMsgNumJob != null) {
+                    syncUnreadMsgNumJob!!.cancel()
+                    syncUnreadMsgNumJob = null
+                }
+            } catch (e: Exception) {
+            }
+
+            unreadMsgNumLiveData.value = 0
+            unreadSysMsgNumLiveData.value = 0
+            unreadTxnMsgNumLiveData.value = 0
         }
     }
 }

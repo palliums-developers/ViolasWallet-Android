@@ -38,7 +38,7 @@ class PayApp : App() {
         initAccountAndAssets()
 
         initMessagePush()
-        initMessageNotification()
+        initNotification()
 
         initWalletConnect()
     }
@@ -61,7 +61,7 @@ class PayApp : App() {
         XPopup.setShadowBgColor(Color.parseColor("#98000000"))
     }
 
-    private fun initMessageNotification() {
+    private fun initNotification() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
         val notificationManager = getNotificationManager()

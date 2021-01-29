@@ -8,14 +8,21 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.palliums.content.App
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.event.ClearUnreadMessagesEvent
+import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.MainActivity
+import com.violas.wallet.viewModel.MessageViewModel
 import kotlinx.android.synthetic.main.activity_message_center.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by elephant on 2020/10/10 17:33.
@@ -38,6 +45,8 @@ class MessageCenterActivity : BaseAppActivity() {
         }
     }
 
+    private val messageService by lazy { DataRepository.getMessageService() }
+
     override fun getLayoutResId(): Int {
         return R.layout.activity_message_center
     }
@@ -53,7 +62,19 @@ class MessageCenterActivity : BaseAppActivity() {
 
     override fun onTitleRightViewClick() {
         super.onTitleRightViewClick()
-        // TODO 清除未读消息
+        launch(Dispatchers.IO) {
+            showProgress()
+            try {
+                // 1.标记未读消息为已读
+                // TODO 调用后台接口，清除未读消息
+                messageService
+                // 2.通知未读消息为已读
+                EventBus.getDefault().post(ClearUnreadMessagesEvent())
+            } catch (e: Exception) {
+                showToast(e.getShowErrorMessage(false))
+            }
+            dismissProgress()
+        }
     }
 
     override fun onBackPressedSupport() {
@@ -96,14 +117,10 @@ class MessageCenterActivity : BaseAppActivity() {
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
                 updateTab(tab, false)
-                // TODO test code, don't forget to delete
-                showBadge(tab, false)
             }
 
             override fun onTabSelected(tab: TabLayout.Tab) {
                 updateTab(tab, true)
-                // TODO test code, don't forget to delete
-                showBadge(tab, true)
             }
         })
         tabLayout.setupWithViewPager(viewPager)
@@ -115,6 +132,17 @@ class MessageCenterActivity : BaseAppActivity() {
                     updateTab(tab, i == viewPager.currentItem)?.let {
                         it.text = tab.text
                     }
+                }
+            }
+
+            MessageViewModel.getInstance().unreadTxnMsgNumLiveData.observe(this) {
+                tabLayout.getTabAt(0)?.run {
+                    showBadge(this, it > 0)
+                }
+            }
+            MessageViewModel.getInstance().unreadSysMsgNumLiveData.observe(this) {
+                tabLayout.getTabAt(1)?.run {
+                    showBadge(this, it > 0)
                 }
             }
         }

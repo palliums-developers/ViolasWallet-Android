@@ -18,6 +18,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.BaseBrowserUrl
+import com.violas.wallet.event.ClearUnreadMessagesEvent
 import com.violas.wallet.repository.http.message.TransactionMessageDTO
 import com.violas.wallet.ui.transactionDetails.TransactionDetailsActivity
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
@@ -27,6 +28,8 @@ import kotlinx.android.synthetic.main.item_transaction_message.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -75,6 +78,7 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
             val initResult = initAddress()
             getPagingHandler().init()
             if (initResult) {
+                EventBus.getDefault().register(this@TransactionMessageFragment)
                 getPagingHandler().start()
             } else {
                 getStatusLayout()?.showStatus(IStatusLayout.Status.STATUS_EMPTY)
@@ -82,7 +86,29 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
         }
     }
 
-    suspend fun initAddress() = withContext(Dispatchers.IO) {
+    override fun onDestroyView() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroyView()
+    }
+
+    @Subscribe
+    fun onClearUnreadMessagesEvent(event: ClearUnreadMessagesEvent) {
+        launch(Dispatchers.IO) {
+            var needNotify = false
+            getPagingViewAdapter().currentList?.forEach {
+                if (it.markAsRead()) {
+                    needNotify = true
+                }
+            }
+            withContext(Dispatchers.Main) {
+                if (needNotify) {
+                    getPagingViewAdapter().notifyDataSetChanged()
+                }
+            }
+        }
+    }
+
+    private suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
             AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
                 ?: return@withContext false
@@ -91,7 +117,7 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
         return@withContext true
     }
 
-    fun getViewModel(): TransactionMessageViewModel {
+    private fun getViewModel(): TransactionMessageViewModel {
         return getPagingViewModel() as TransactionMessageViewModel
     }
 
@@ -138,9 +164,10 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
 
                 dismissProgress()
                 withContext(Dispatchers.Main) {
-                    message.readStatus = 1
-                    getPagingViewAdapter().notifyItemChanged(index)
                     TransactionDetailsActivity.start(requireContext(), transactionRecordVO)
+                    if (message.markAsRead()) {
+                        getPagingViewAdapter().notifyItemChanged(index)
+                    }
                 }
             } catch (e: Exception) {
                 dismissProgress()
@@ -192,7 +219,7 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
                     itemView.context
                 )
                 itemView.setBackgroundResource(
-                    if (it.readStatus == 1)
+                    if (it.read())
                         R.drawable.bg_menu_item
                     else
                         R.drawable.sel_bg_msg_unread

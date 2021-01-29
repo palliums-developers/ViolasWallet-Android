@@ -79,7 +79,7 @@
             android:background="@drawable/bg_msg"
             android:gravity="center"
             android:minWidth="@dimen/dp_11"
-            android:paddingHorizontal="@dimen/dp_2"
+            android:paddingHorizontal="@dimen/dp_2.5"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/dp_8"
             android:visibility="gone"

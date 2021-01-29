@@ -9,15 +9,19 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.formatDate
-import com.palliums.utils.openBrowser
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
+import com.violas.wallet.event.ClearUnreadMessagesEvent
 import com.violas.wallet.repository.http.message.SystemMessageDTO
 import com.violas.wallet.ui.web.WebCommonActivity
 import kotlinx.android.synthetic.main.item_system_message.view.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -43,8 +47,9 @@ class SystemMessageFragment : BasePagingFragment<SystemMessageDTO>() {
                 //}
                 launch {
                     delay(1000)
-                    msg.readStatus = 1
-                    getPagingViewAdapter().notifyItemChanged(index)
+                    if (msg.markAsRead()) {
+                        getPagingViewAdapter().notifyItemChanged(index)
+                    }
                 }
             }
         }
@@ -61,9 +66,31 @@ class SystemMessageFragment : BasePagingFragment<SystemMessageDTO>() {
 
     override fun onLazyInitViewByResume(savedInstanceState: Bundle?) {
         super.onLazyInitViewByResume(savedInstanceState)
-
+        EventBus.getDefault().register(this)
         getPagingHandler().init()
         getPagingHandler().start()
+    }
+
+    override fun onDestroyView() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroyView()
+    }
+
+    @Subscribe
+    fun onClearUnreadMessagesEvent(event: ClearUnreadMessagesEvent) {
+        launch(Dispatchers.IO) {
+            var needNotify = false
+            getPagingViewAdapter().currentList?.forEach {
+                if (it.markAsRead()) {
+                    needNotify = true
+                }
+            }
+            withContext(Dispatchers.Main) {
+                if (needNotify) {
+                    getPagingViewAdapter().notifyDataSetChanged()
+                }
+            }
+        }
     }
 
     class ViewAdapter(
@@ -102,7 +129,7 @@ class SystemMessageFragment : BasePagingFragment<SystemMessageDTO>() {
                 itemView.tvDesc.text = it.body
                 itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
                 itemView.setBackgroundResource(
-                    if (it.readStatus == 1)
+                    if (it.read())
                         R.drawable.bg_menu_item
                     else
                         R.drawable.sel_bg_msg_unread

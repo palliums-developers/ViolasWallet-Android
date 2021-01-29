@@ -31,7 +31,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // Instance ID token to your app server.
         // sendRegistrationToServer(token);
         if (token.isNotBlank()) {
-            MessageViewModel.getInstance().registerDevice(token)
+            MessageViewModel.getInstance().registerPushDevice(token)
         }
     }
 
@@ -42,6 +42,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         logDebug { "onMessageReceived. From: ${remoteMessage.from}" }
 
+        // 1.同步未读消息数
+        MessageViewModel.getInstance().syncUnreadMsgNum()
+
+        // 2.构建通知栏
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
             logDebug { "onMessageReceived. Message data payload: ${remoteMessage.data}" }
@@ -123,6 +127,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      * FCM 将不会调用 onDeletedMessages()。
      */
     override fun onDeletedMessages() {
+        logDebug { "onDeletedMessages." }
 
+        // 同步未读消息数
+        MessageViewModel.getInstance().syncUnreadMsgNum()
     }
 }

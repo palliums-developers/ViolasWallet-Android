@@ -13,7 +13,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
  */
 class MessageRepository(private val api: MessageApi) {
 
-    suspend fun registerDevice(
+    suspend fun registerPushDevice(
         address: String,
         token: String
     ) =
@@ -23,7 +23,7 @@ class MessageRepository(private val api: MessageApi) {
     "device_type":"android",
     "language":"${MultiLanguageUtility.getInstance().localTag.toLowerCase()}"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            .let { api.registerDevice(it).await() }
+            .let { api.registerPushDevice(it).await() }
 
     suspend fun getTransactionMessages(
         address: String,

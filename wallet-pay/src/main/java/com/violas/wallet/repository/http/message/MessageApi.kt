@@ -18,10 +18,10 @@ import retrofit2.http.Query
 interface MessageApi {
 
     /**
-     * 注册设备信息
+     * 注册推送设备信息
      */
     @POST("/1.0/violas/device/info")
-    fun registerDevice(
+    fun registerPushDevice(
         @Body body: RequestBody
     ): Observable<Response<Any>>
 
