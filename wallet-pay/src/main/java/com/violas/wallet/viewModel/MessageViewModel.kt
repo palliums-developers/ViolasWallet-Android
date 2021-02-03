@@ -11,6 +11,8 @@ import com.palliums.extensions.logError
 import com.palliums.utils.CustomMainScope
 import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.event.ClearUnreadMessagesEvent
+import com.violas.wallet.event.ReadOneSystemMsgEvent
+import com.violas.wallet.event.ReadOneTransactionMsgEvent
 import com.violas.wallet.repository.DataRepository
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
@@ -39,6 +41,7 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
 
     private val accountStorage by lazy { DataRepository.getAccountStorage() }
     private val messageService by lazy { DataRepository.getMessageService() }
+    private val lock by lazy { Any() }
 
     private var syncUnreadMsgNumJob: Job? = null
 
@@ -97,6 +100,8 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         if (syncUnreadMsgNumJob != null) return
 
         syncUnreadMsgNumJob = launch {
+            delay(500)
+
             withContext(Dispatchers.IO) {
                 try {
                     val violasAccount = accountStorage.findByCoinType(CoinTypes.Violas.coinType())
@@ -107,9 +112,11 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
                 }
             }
 
-            unreadMsgNumLiveData.value = 9
-            unreadSysMsgNumLiveData.value = 1
-            unreadTxnMsgNumLiveData.value = 8
+            synchronized(lock) {
+                unreadMsgNumLiveData.value = 9
+                unreadSysMsgNumLiveData.value = 1
+                unreadTxnMsgNumLiveData.value = 8
+            }
 
             syncUnreadMsgNumJob = null
         }
@@ -126,9 +133,47 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
             } catch (e: Exception) {
             }
 
-            unreadMsgNumLiveData.value = 0
-            unreadSysMsgNumLiveData.value = 0
-            unreadTxnMsgNumLiveData.value = 0
+            synchronized(lock) {
+                unreadMsgNumLiveData.value = 0
+                unreadSysMsgNumLiveData.value = 0
+                unreadTxnMsgNumLiveData.value = 0
+            }
+        }
+    }
+
+    @Subscribe
+    fun onReadOneSystemMsgEvent(event: ReadOneSystemMsgEvent) {
+        launch {
+            synchronized(lock) {
+                val unreadMsgNum = unreadMsgNumLiveData.value
+                val unreadSysMsgNum = unreadSysMsgNumLiveData.value
+                unreadMsgNumLiveData.value = if (unreadMsgNum ?: 0 <= 0)
+                    0
+                else
+                    unreadMsgNum!! - 1
+                unreadSysMsgNumLiveData.value = if (unreadSysMsgNum ?: 0 <= 0)
+                    0
+                else
+                    unreadSysMsgNum!! - 1
+            }
+        }
+    }
+
+    @Subscribe
+    fun onReadOneTransactionMsgEvent(event: ReadOneTransactionMsgEvent) {
+        launch {
+            synchronized(lock) {
+                val unreadMsgNum = unreadMsgNumLiveData.value
+                val unreadTxnMsgNum = unreadTxnMsgNumLiveData.value
+                unreadMsgNumLiveData.value = if (unreadMsgNum ?: 0 <= 0)
+                    0
+                else
+                    unreadMsgNum!! - 1
+                unreadTxnMsgNumLiveData.value = if (unreadTxnMsgNum ?: 0 <= 0)
+                    0
+                else
+                    unreadTxnMsgNum!! - 1
+            }
         }
     }
 }

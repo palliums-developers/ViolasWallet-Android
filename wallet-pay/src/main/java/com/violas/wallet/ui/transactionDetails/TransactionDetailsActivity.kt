@@ -292,7 +292,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
     }
 
     private fun noneContent(textView: TextView) {
-        textView.text = "— —"
+        textView.setText(R.string.common_desc_value_null)
         textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
     }
 

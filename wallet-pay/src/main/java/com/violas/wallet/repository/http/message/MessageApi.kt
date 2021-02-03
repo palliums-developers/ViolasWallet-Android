@@ -40,6 +40,7 @@ interface MessageApi {
      */
     @GET("/1.0/violas/notifications")
     fun getSystemMessages(
+        @Query("address") appToken: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
     ): Observable<ListResponse<SystemMessageDTO>>
@@ -52,4 +53,13 @@ interface MessageApi {
         @Query("address") address: String,
         @Query("version") txnId: String
     ): Observable<Response<TransactionMsgDetailsDTO>>
+
+    /**
+     * 获取系统消息详情
+     */
+    @GET("/1.0/violas/notification/content")
+    fun getSystemMsgDetails(
+        @Query("id") msgId: String
+    ): Observable<Response<SystemMsgDetailsDTO>>
+
 }

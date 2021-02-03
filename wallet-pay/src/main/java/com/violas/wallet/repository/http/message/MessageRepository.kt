@@ -33,14 +33,20 @@ class MessageRepository(private val api: MessageApi) {
         api.getTransactionMessages(address, pageSize, offset).await().data ?: emptyList()
 
     suspend fun getSystemMessages(
+        appToken: String,
         pageSize: Int,
         offset: Int
     ) =
-        api.getSystemMessages(pageSize, offset).await().data ?: emptyList()
+        api.getSystemMessages(appToken, pageSize, offset).await().data ?: emptyList()
 
     suspend fun getTransactionMsgDetails(
         address: String,
         txnId: String
     ) =
         api.getTransactionMsgDetails(address, txnId).await(dataNullableOnSuccess = false).data!!
+
+    suspend fun getTransactionMsgDetails(
+        msgId: String
+    ) =
+        api.getSystemMsgDetails(msgId).await(dataNullableOnSuccess = false).data!!
 }

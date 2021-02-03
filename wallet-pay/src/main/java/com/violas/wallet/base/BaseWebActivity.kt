@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
+import android.widget.ProgressBar
 import androidx.annotation.RequiresApi
 import com.violas.wallet.R
 import kotlinx.android.synthetic.main.activity_base_web.*
@@ -30,10 +31,10 @@ abstract class BaseWebActivity : BaseAppActivity() {
         val title = getFixedTitle()
         title?.let { setTitle(it) }
 
-        vFailed.visibility = View.GONE
-        vFailed.setOnClickListener(this)
+        getFailedView()?.visibility = View.GONE
+        getFailedView()?.setOnClickListener(this)
 
-        initWebView()
+        getWebView()?.let { initWebView(it) }
         startLoad()
     }
 
@@ -48,25 +49,27 @@ abstract class BaseWebActivity : BaseAppActivity() {
     }
 
     override fun onResume() {
-        vWeb.onResume()
+        getWebView()?.onResume()
         super.onResume()
     }
 
     override fun onPause() {
-        vWeb.onPause()
+        getWebView()?.onPause()
         super.onPause()
     }
 
     override fun onDestroy() {
         stopLoad()
         try {
-            vWeb.loadDataWithBaseURL(
-                null, "", "text/html", "utf-8", null
-            )
-            vWeb.clearHistory()
+            getWebView()?.let {
+                it.loadDataWithBaseURL(
+                    null, "", "text/html", "utf-8", null
+                )
+                it.clearHistory()
 
-            (vWeb.parent as ViewGroup).removeView(vWeb)
-            vWeb.destroy()
+                (it.parent as ViewGroup).removeView(it)
+                it.destroy()
+            }
         } catch (e: Exception) {
             // ignore
         }
@@ -75,8 +78,8 @@ abstract class BaseWebActivity : BaseAppActivity() {
     }
 
     override fun onBackPressedSupport() {
-        if (vWeb.canGoBack()) {
-            vWeb.goBack()
+        if (getWebView()?.canGoBack() == true) {
+            getWebView()?.goBack()
         } else {
             super.onBackPressedSupport()
         }
@@ -85,7 +88,7 @@ abstract class BaseWebActivity : BaseAppActivity() {
     override fun onViewClick(view: View) {
         when (view.id) {
             R.id.vFailed -> {
-                vWeb.reload()
+                getWebView()?.reload()
             }
         }
     }
@@ -100,23 +103,44 @@ abstract class BaseWebActivity : BaseAppActivity() {
      */
     protected abstract fun getFixedTitle(): String?
 
-    private fun startLoad() {
-        vProgress.progress = 0
-        vWeb.visibility = View.VISIBLE
-        vWeb.loadUrl(getUrl())
+    open fun getWebView(): WebView? {
+        return vWeb
+    }
+
+    open fun getProgressView(): ProgressBar? {
+        return vProgress
+    }
+
+    open fun getFailedView(): View? {
+        return vFailed
+    }
+
+    open fun startLoad() {
+        getProgressView()?.progress = 0
+        getWebView()?.visibility = View.VISIBLE
+        getWebView()?.loadUrl(getUrl())
+    }
+
+    open fun onPageStarted() {
+        getFailedView()?.visibility = View.GONE
+        getProgressView()?.visibility = View.VISIBLE
+    }
+
+    open fun onLoadError() {
+        getFailedView()?.visibility = View.VISIBLE
+        getWebView()?.visibility = View.GONE
     }
 
     private fun stopLoad() {
-
         try {
-            vWeb.stopLoading()
+            getWebView()?.stopLoading()
         } catch (e: Exception) {
             // ignore
         }
     }
 
-    private fun initWebView() {
-        val settings = vWeb.settings
+    private fun initWebView(webView: WebView) {
+        val settings = webView.settings
 
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true
@@ -143,12 +167,12 @@ abstract class BaseWebActivity : BaseAppActivity() {
             settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
         }
 
-        vWeb.overScrollMode = View.OVER_SCROLL_NEVER
-        vWeb.webChromeClient = object : WebChromeClient() {
+        webView.overScrollMode = View.OVER_SCROLL_NEVER
+        webView.webChromeClient = object : WebChromeClient() {
 
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
-                vProgress?.let {
+                getProgressView()?.let {
                     it.progress = when {
                         newProgress > 100 -> 100
                         newProgress < 0 -> 0
@@ -157,7 +181,7 @@ abstract class BaseWebActivity : BaseAppActivity() {
                 }
             }
         }
-        vWeb.webViewClient = object : WebViewClient() {
+        webView.webViewClient = object : WebViewClient() {
 
             /*override fun shouldOverrideUrlLoading(
                 view: WebView?,
@@ -169,13 +193,12 @@ abstract class BaseWebActivity : BaseAppActivity() {
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
-                vFailed?.visibility = View.GONE
-                vProgress?.visibility = View.VISIBLE
+                onPageStarted()
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                vProgress?.visibility = View.GONE
+                getProgressView()?.visibility = View.GONE
 
                 if (getFixedTitle() == null) {
                     val title = view?.title
@@ -200,7 +223,7 @@ abstract class BaseWebActivity : BaseAppActivity() {
             ) {
                 super.onReceivedError(view, errorCode, description, failingUrl)
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    handleError()
+                    onLoadError()
                 }
             }
 
@@ -212,13 +235,8 @@ abstract class BaseWebActivity : BaseAppActivity() {
             ) {
                 super.onReceivedError(view, request, error)
                 if (request?.isForMainFrame == true) {
-                    handleError()
+                    onLoadError()
                 }
-            }
-
-            private fun handleError() {
-                vFailed?.visibility = View.VISIBLE
-                vWeb?.visibility = View.GONE
             }
         }
     }

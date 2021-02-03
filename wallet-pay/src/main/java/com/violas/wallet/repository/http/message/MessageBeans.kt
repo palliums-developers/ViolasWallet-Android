@@ -1,7 +1,9 @@
 package com.violas.wallet.repository.http.message
 
+import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by elephant on 12/28/20 2:56 PM.
@@ -104,3 +106,16 @@ data class TransactionMsgDetailsDTO(
     @SerializedName(value = "status")
     val status: String = ""
 )
+
+@Keep
+@Parcelize
+data class SystemMsgDetailsDTO(
+    @SerializedName(value = "title")
+    val title: String = "",
+    @SerializedName(value = "author")
+    val author: String = "",
+    @SerializedName(value = "content")
+    val content: String = "",
+    @SerializedName(value = "date")
+    val time: Long = 0
+) : Parcelable

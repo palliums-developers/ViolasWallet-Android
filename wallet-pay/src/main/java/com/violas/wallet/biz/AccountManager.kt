@@ -202,12 +202,14 @@ class AccountManager {
         return mConfigSharedPreferences.getBoolean(KEY_PROMPT_OPEN_BIOMETRICS, false)
     }
 
-    fun setAppToken(appToken: String) {
-        mConfigSharedPreferences.edit().putString(KEY_APP_TOKEN, appToken).apply()
-    }
+    @Synchronized
+    fun getAppToken(): String {
+        val appToken = mConfigSharedPreferences.getString(KEY_APP_TOKEN, null)
+        if (!appToken.isNullOrBlank()) return appToken
 
-    fun getAppToken(): String? {
-        return mConfigSharedPreferences.getString(KEY_APP_TOKEN, null)
+        val fakeAppToken = UUID.randomUUID().toString()
+        mConfigSharedPreferences.edit().putString(KEY_APP_TOKEN, fakeAppToken).apply()
+        return fakeAppToken
     }
 
     /**

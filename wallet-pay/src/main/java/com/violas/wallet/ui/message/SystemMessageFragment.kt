@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.base.BaseViewHolder
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.formatDate
@@ -13,11 +14,11 @@ import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.event.ClearUnreadMessagesEvent
+import com.violas.wallet.event.ReadOneSystemMsgEvent
 import com.violas.wallet.repository.http.message.SystemMessageDTO
-import com.violas.wallet.ui.web.WebCommonActivity
+import com.violas.wallet.ui.message.details.SystemMsgDetailsActivity
 import kotlinx.android.synthetic.main.item_system_message.view.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
@@ -39,19 +40,7 @@ class SystemMessageFragment : BasePagingFragment<SystemMessageDTO>() {
 
     override fun lazyInitPagingViewAdapter(): PagingViewAdapter<SystemMessageDTO> {
         return ViewAdapter { msg, index ->
-            if (msg.url.isBlank()) {
-                showToast(R.string.msg_center_tips_system_msg_url_empty)
-            } else {
-                //if (!openBrowser(requireContext(), msg.url)) {
-                WebCommonActivity.start(requireContext(), msg.url)
-                //}
-                launch {
-                    delay(1000)
-                    if (msg.markAsRead()) {
-                        getPagingViewAdapter().notifyItemChanged(index)
-                    }
-                }
-            }
+            onItemClick(msg, index)
         }
     }
 
@@ -89,6 +78,31 @@ class SystemMessageFragment : BasePagingFragment<SystemMessageDTO>() {
                 if (needNotify) {
                     getPagingViewAdapter().notifyDataSetChanged()
                 }
+            }
+        }
+    }
+
+    private fun getViewModel(): SystemMessageViewModel {
+        return getPagingViewModel() as SystemMessageViewModel
+    }
+
+    private fun onItemClick(message: SystemMessageDTO, index: Int) {
+        launch(Dispatchers.IO) {
+            showProgress()
+            try {
+                val msgDetails = getViewModel().getSystemMsgDetails(message)
+
+                dismissProgress()
+                withContext(Dispatchers.Main) {
+                    SystemMsgDetailsActivity.start(requireContext(), msgDetails)
+                    if (message.markAsRead()) {
+                        getPagingViewAdapter().notifyItemChanged(index)
+                        EventBus.getDefault().post(ReadOneSystemMsgEvent())
+                    }
+                }
+            } catch (e: Exception) {
+                dismissProgress()
+                showToast(e.getShowErrorMessage(true))
             }
         }
     }

@@ -618,6 +618,8 @@
     <string name="msg_center_tips_messages_empty">No notification alerts</string>
     <string name="msg_center_tips_system_msg_url_empty">Message link not found</string>
     <string name="msg_center_tips_get_msg_details_failed">Failed to get message content</string>
+    <string name="system_msg_details_title">Details</string>
+    <string name="system_msg_details_desc_author_default">Violas Team</string>
 
     <!--通知渠道-->
     <string name="notification_channel_name_default">Other Notification</string>

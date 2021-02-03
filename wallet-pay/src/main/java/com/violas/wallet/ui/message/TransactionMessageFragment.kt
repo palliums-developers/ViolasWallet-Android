@@ -19,6 +19,7 @@ import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.event.ClearUnreadMessagesEvent
+import com.violas.wallet.event.ReadOneTransactionMsgEvent
 import com.violas.wallet.repository.http.message.TransactionMessageDTO
 import com.violas.wallet.ui.transactionDetails.TransactionDetailsActivity
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
@@ -167,6 +168,7 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
                     TransactionDetailsActivity.start(requireContext(), transactionRecordVO)
                     if (message.markAsRead()) {
                         getPagingViewAdapter().notifyItemChanged(index)
+                        EventBus.getDefault().post(ReadOneTransactionMsgEvent())
                     }
                 }
             } catch (e: Exception) {
