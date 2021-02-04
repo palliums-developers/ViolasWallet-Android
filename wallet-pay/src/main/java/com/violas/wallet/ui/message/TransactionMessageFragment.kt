@@ -61,7 +61,7 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
         }
     }
 
-    private lateinit var address: String
+    private var address: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
