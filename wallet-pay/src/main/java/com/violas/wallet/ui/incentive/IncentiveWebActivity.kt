@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import androidx.annotation.Keep
 import com.github.lzyzsd.jsbridge.CallBackFunction
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
@@ -382,12 +383,14 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
         callbackFunction.onCallBack(Response.success(request.id).toJson())
     }
 
+    @Keep
     class Response<T>(
         val id: String,
         val result: T? = null,
         val error: Error? = null
     ) {
 
+        @Keep
         class Error(
             val code: Int = 1,
             val message: String = ""
@@ -404,6 +407,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
         }
     }
 
+    @Keep
     data class Request(
         val method: String,
         val params: Array<String>,
