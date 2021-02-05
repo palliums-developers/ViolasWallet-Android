@@ -13,6 +13,14 @@ import kotlinx.android.parcel.Parcelize
  */
 
 @Keep
+data class UnreadMsgNumberDTO(
+    @SerializedName(value = "message")
+    val txn: Long = 0,
+    @SerializedName(value = "notice")
+    val sys: Long = 0
+)
+
+@Keep
 data class TransactionMessageDTO(
     @SerializedName("id")
     val id: String = "",

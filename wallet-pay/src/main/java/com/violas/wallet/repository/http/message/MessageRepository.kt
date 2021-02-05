@@ -13,17 +13,30 @@ import okhttp3.RequestBody.Companion.toRequestBody
  */
 class MessageRepository(private val api: MessageApi) {
 
-    suspend fun registerPushDevice(
+    suspend fun registerDevice(
         address: String,
         token: String
     ) =
         """{
     "address":"$address",
     "token":"$token",
-    "device_type":"android",
+    "platform":"android",
     "language":"${MultiLanguageUtility.getInstance().localTag.toLowerCase()}"
 }""".toRequestBody("application/json".toMediaTypeOrNull())
-            .let { api.registerPushDevice(it).await() }
+            .let { api.registerDevice(it).await() }
+
+    suspend fun getUnreadMsgNumber(
+        token: String
+    ) =
+        api.getUnreadMsgNumber(token).await().data ?: UnreadMsgNumberDTO(0, 0)
+
+    suspend fun clearUnreadMessages(
+        token: String
+    ) =
+        """{
+    "token":"$token"
+}""".toRequestBody("application/json".toMediaTypeOrNull())
+            .let { api.clearUnreadMessages(it).await() }
 
     suspend fun getTransactionMessages(
         address: String,
@@ -33,20 +46,20 @@ class MessageRepository(private val api: MessageApi) {
         api.getTransactionMessages(address, pageSize, offset).await().data ?: emptyList()
 
     suspend fun getSystemMessages(
-        appToken: String,
+        token: String,
         pageSize: Int,
         offset: Int
     ) =
-        api.getSystemMessages(appToken, pageSize, offset).await().data ?: emptyList()
-
-    suspend fun getTransactionMsgDetails(
-        address: String,
-        txnId: String
-    ) =
-        api.getTransactionMsgDetails(address, txnId).await(dataNullableOnSuccess = false).data!!
+        api.getSystemMessages(token, pageSize, offset).await().data ?: emptyList()
 
     suspend fun getTransactionMsgDetails(
         msgId: String
     ) =
-        api.getSystemMsgDetails(msgId).await(dataNullableOnSuccess = false).data!!
+        api.getTransactionMsgDetails(msgId).await(dataNullableOnSuccess = false).data!!
+
+    suspend fun getSystemMsgDetails(
+        msgId: String,
+        token: String
+    ) =
+        api.getSystemMsgDetails(msgId, token).await(dataNullableOnSuccess = false).data!!
 }

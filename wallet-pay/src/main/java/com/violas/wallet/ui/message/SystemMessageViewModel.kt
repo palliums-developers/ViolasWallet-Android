@@ -4,7 +4,6 @@ import com.palliums.paging.PagingViewModel
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.message.SystemMessageDTO
 import com.violas.wallet.viewModel.MessageViewModel
-import com.violas.wallet.viewModel.WalletAppViewModel
 
 /**
  * Created by elephant on 12/28/20 3:33 PM.
@@ -17,9 +16,6 @@ class SystemMessageViewModel : PagingViewModel<SystemMessageDTO>() {
     private val messageService by lazy {
         DataRepository.getMessageService()
     }
-    private val accountManager by lazy {
-        WalletAppViewModel.getViewModelInstance().mAccountManager
-    }
 
     override suspend fun loadData(
         pageSize: Int,
@@ -31,8 +27,14 @@ class SystemMessageViewModel : PagingViewModel<SystemMessageDTO>() {
             MessageViewModel.getInstance().syncUnreadMsgNum()
         }
 
+        val token = MessageViewModel.getInstance().getFirebaseToken()
+        if(token.isNullOrBlank()){
+            onSuccess.invoke(emptyList(), null)
+            return
+        }
+
         val messages = messageService.getSystemMessages(
-            accountManager.getAppToken(),
+            token,
             pageSize,
             (pageNumber - 1) * pageSize
         )
@@ -40,7 +42,8 @@ class SystemMessageViewModel : PagingViewModel<SystemMessageDTO>() {
     }
 
     suspend fun getSystemMsgDetails(
-        message: SystemMessageDTO
+        message: SystemMessageDTO,
+        token: String
     ) =
-        messageService.getTransactionMsgDetails(message.id)
+        messageService.getSystemMsgDetails(message.id, token)
 }

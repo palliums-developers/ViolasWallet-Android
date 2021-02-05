@@ -4,10 +4,7 @@ import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
 import io.reactivex.Observable
 import okhttp3.RequestBody
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 /**
  * Created by elephant on 1/25/21 11:41 AM.
@@ -18,17 +15,33 @@ import retrofit2.http.Query
 interface MessageApi {
 
     /**
-     * 注册推送设备信息
+     * 注册设备信息
      */
     @POST("/1.0/violas/device/info")
-    fun registerPushDevice(
+    fun registerDevice(
         @Body body: RequestBody
     ): Observable<Response<Any>>
 
     /**
+     * 获取未读消息数
+     */
+    @GET("/1.0/violas/messages/unread/count")
+    fun getUnreadMsgNumber(
+        @Query("token") token: String
+    ):Observable<Response<UnreadMsgNumberDTO>>
+
+    /**
+     * 清除所有未读消息
+     */
+    @PUT("/1.0/violas/messages/readall")
+    fun clearUnreadMessages(
+        @Body body: RequestBody
+    ):Observable<Response<Any>>
+
+    /**
      * 获取交易消息
      */
-    @GET("/1.0/violas/messages")
+    @GET("/1.0/violas/message/transfers")
     fun getTransactionMessages(
         @Query("address") address: String,
         @Query("limit") pageSize: Int,
@@ -38,9 +51,9 @@ interface MessageApi {
     /**
      * 获取系统通知消息
      */
-    @GET("/1.0/violas/notifications")
+    @GET("/1.0/violas/message/notices")
     fun getSystemMessages(
-        @Query("address") appToken: String,
+        @Query("token") token: String,
         @Query("limit") pageSize: Int,
         @Query("offset") offset: Int
     ): Observable<ListResponse<SystemMessageDTO>>
@@ -48,18 +61,18 @@ interface MessageApi {
     /**
      * 获取交易消息详情
      */
-    @GET("/1.0/violas/message/content")
+    @GET("/1.0/violas/message/transfer")
     fun getTransactionMsgDetails(
-        @Query("address") address: String,
-        @Query("version") txnId: String
+        @Query("msg_id") msgId: String
     ): Observable<Response<TransactionMsgDetailsDTO>>
 
     /**
      * 获取系统消息详情
      */
-    @GET("/1.0/violas/notification/content")
+    @GET("/1.0/violas/message/notice")
     fun getSystemMsgDetails(
-        @Query("id") msgId: String
+        @Query("msg_id") msgId: String,
+        @Query("token") token: String
     ): Observable<Response<SystemMsgDetailsDTO>>
 
 }

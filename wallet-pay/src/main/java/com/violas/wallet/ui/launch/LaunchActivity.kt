@@ -9,7 +9,6 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_FIREBASE_CLOUD_MESSAGING_MSG_ID
 import com.violas.wallet.ui.main.MainActivity
 import com.violas.wallet.ui.message.MessageCenterActivity
-import com.violas.wallet.viewModel.MessageViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -54,9 +53,6 @@ class LaunchActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
 
         launch(Dispatchers.Main) {
-            // 首次启动，同步未读消息数
-            MessageViewModel.getInstance().syncUnreadMsgNum()
-
             delay(1000)
             if (fromNotification) {
                 // 点击消息通知栏进入App时，直接进入消息中心页面，返回时进入主页

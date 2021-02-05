@@ -3,7 +3,7 @@ package com.violas.wallet.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import com.palliums.content.App
 import com.palliums.content.ContextProvider
 import com.palliums.extensions.logDebug
@@ -43,12 +43,13 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
     private val messageService by lazy { DataRepository.getMessageService() }
     private val lock by lazy { Any() }
 
+    private var firebaseToken: String? = null
     private var syncUnreadMsgNumJob: Job? = null
 
     init {
         EventBus.getDefault().register(this)
         WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData.observeForever {
-            getPushTokenAndRegisterPushDevice()
+            getTokenAndRegisterDevice()
         }
     }
 
@@ -57,15 +58,15 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         EventBus.getDefault().unregister(this)
     }
 
-    private fun getPushTokenAndRegisterPushDevice() {
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
+    private fun getTokenAndRegisterDevice() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
             if (it.isSuccessful) {
-                val token = it.result?.token
-                logDebug(TAG) {
+                val token = it.result
+                it.logDebug(TAG) {
                     "getToken. isSuccessful = true, token = $token"
                 }
                 if (!token.isNullOrBlank()) {
-                    registerPushDevice(token, true)
+                    registerDevice(token, true)
                 }
             } else {
                 logError(TAG) {
@@ -75,23 +76,35 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         }
     }
 
-    fun registerPushDevice(token: String, first: Boolean = false) {
+    fun getFirebaseToken(): String? {
+        synchronized(lock) {
+            return firebaseToken
+        }
+    }
+
+    fun registerDevice(token: String, first: Boolean = false) {
+        synchronized(lock) {
+            firebaseToken = token
+        }
+
         launch(Dispatchers.IO) {
             if (first)
-                delay(3000)
+                delay(1500)
 
             val result = try {
                 val violasAccount = accountStorage.findByCoinType(CoinTypes.Violas.coinType())
-                messageService.registerPushDevice(violasAccount?.address ?: "", token)
+                messageService.registerDevice(violasAccount?.address ?: "", token)
                 true
             } catch (e: Exception) {
-                logError(TAG) { "register push device failed, ${e.message}" }
+                logError(TAG) { "register device failed, ${e.message}" }
                 false
             }
 
-            if (!result) {
+            if (result) {
+                syncUnreadMsgNum()
+            } else {
                 delay(1000 * 60 * 10)
-                registerPushDevice(token)
+                registerDevice(token)
             }
         }
     }
@@ -102,20 +115,22 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         syncUnreadMsgNumJob = launch {
             delay(500)
 
-            withContext(Dispatchers.IO) {
+            val unreadMsgNumber = withContext(Dispatchers.IO) {
                 try {
-                    val violasAccount = accountStorage.findByCoinType(CoinTypes.Violas.coinType())
-                    // TODO 从后台获取未读消息数
-                    messageService
+                    val token = getFirebaseToken()
+                    messageService.getUnreadMsgNumber(token!!)
                 } catch (e: Exception) {
                     logError(TAG) { "load message number failed, ${e.message}" }
+                    null
                 }
             }
 
             synchronized(lock) {
-                unreadMsgNumLiveData.value = 9
-                unreadSysMsgNumLiveData.value = 1
-                unreadTxnMsgNumLiveData.value = 8
+                unreadMsgNumber?.let {
+                    unreadMsgNumLiveData.value = it.txn + it.sys
+                    unreadSysMsgNumLiveData.value = it.sys
+                    unreadTxnMsgNumLiveData.value = it.txn
+                }
             }
 
             syncUnreadMsgNumJob = null
