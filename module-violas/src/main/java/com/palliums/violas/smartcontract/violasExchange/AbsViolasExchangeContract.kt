@@ -1,5 +1,6 @@
 package com.palliums.violas.smartcontract.violasExchange
 
+import com.palliums.content.ContextProvider
 import org.palliums.violascore.move.Move
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.transaction.TransactionArgument
@@ -7,28 +8,53 @@ import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.transaction.storage.TypeTag
 
 abstract class AbsViolasExchangeContract {
-    companion object {
-
-        private const val mAddLiquidityContract =
-            "a11ceb0b0100000006010002030207040902050b0d071817082f10000000010001020101000205060c030303030002090009010845786368616e67650d6164645f6c6971756964697479000000000000000000000000000000010201010001070b000a010a020a030a04380002"
-        private const val mRemoveLiquidityContract =
-            "a11ceb0b0100000006010002030207040902050b0c07171a083110000000010001020101000204060c0303030002090009010845786368616e67651072656d6f76655f6c6971756964697479000000000000000000000000000000010201010001060b000a010a020a03380002"
-        private const val mSwapContract =
-            "a11ceb0b0100000006010002030207040902050b10071b0e082910000000010001020101000206060c0503030a020a020002090009010845786368616e67650473776170000000000000000000000000000000010201010001080b000a010a020a030b040b05380002"
-        private const val mWithdrawMineRewardContract =
-            "a11ceb0b0100000005010002030205050704070b1e0829100000000100010001060c000845786368616e67651477697468647261775f6d696e655f72657761726400000000000000000000000000000001000001030b00110002"
-    }
 
     abstract fun getContractAddress(): String
 
     private fun getContractDefaultAddress() = "00000000000000000000000000000001".hexToBytes()
 
-    private fun replaceContractAddress(contract: String): ByteArray {
+    private fun replaceContractAddress(contract: ByteArray): ByteArray {
         return Move.violasReplaceAddress(
-            contract.hexToBytes(),
+            contract,
             getContractAddress().hexToBytes(),
             getContractDefaultAddress()
         )
+    }
+
+    fun getAddLiquidityContract(): ByteArray {
+        val contract = Move.decode(
+            ContextProvider.getContext().assets.open(
+                "move/dex_add_liquidity.mv"
+            )
+        )
+        return replaceContractAddress(contract)
+    }
+
+    fun getRemoveLiquidityContract(): ByteArray {
+        val contract = Move.decode(
+            ContextProvider.getContext().assets.open(
+                "move/dex_remove_liquidity.mv"
+            )
+        )
+        return replaceContractAddress(contract)
+    }
+
+    fun getTokenSwapContract(): ByteArray {
+        val contract = Move.decode(
+            ContextProvider.getContext().assets.open(
+                "move/dex_swap.mv"
+            )
+        )
+        return replaceContractAddress(contract)
+    }
+
+    fun getWithdrawMineRewardContract(): ByteArray {
+        val contract = Move.decode(
+            ContextProvider.getContext().assets.open(
+                "move/dex_withdraw_mine_reward.mv"
+            )
+        )
+        return replaceContractAddress(contract)
     }
 
     /**
@@ -134,7 +160,7 @@ abstract class AbsViolasExchangeContract {
      * 提取挖矿奖励
      */
     fun optionWithdrawRewardTransactionPayload(): TransactionPayload {
-        val moveEncode = getWithdrawRewardContract()
+        val moveEncode = getWithdrawMineRewardContract()
 
         return TransactionPayload(
             TransactionPayload.Script(
@@ -144,9 +170,4 @@ abstract class AbsViolasExchangeContract {
             )
         )
     }
-
-    fun getAddLiquidityContract() = replaceContractAddress(mAddLiquidityContract)
-    fun getRemoveLiquidityContract() = replaceContractAddress(mRemoveLiquidityContract)
-    fun getTokenSwapContract() = replaceContractAddress(mSwapContract)
-    fun getWithdrawRewardContract() = replaceContractAddress(mWithdrawMineRewardContract)
 }

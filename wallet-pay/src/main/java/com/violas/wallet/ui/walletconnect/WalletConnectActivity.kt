@@ -261,7 +261,7 @@ class WalletConnectActivity : BaseAppActivity() {
                             // </editor-fold>
                         }
                         else -> {
-                            showToast("账户异常")
+                            showToast(R.string.common_tips_account_error)
                         }
                     }
                 } else {

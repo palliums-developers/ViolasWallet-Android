@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "675290848213",
+    "project_id": "violas-push-server",
+    "storage_bucket": "violas-push-server.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675290848213:android:af1b445b9f2d8bdb8fbb5c",
+        "android_client_info": {
+          "package_name": "com.violas.wallet.pay.beta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "675290848213-1e7lgtf3upsavof5fr352rbbb7q1n674.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr-wXa3fCgQDTcsm5jWVqyVjvRuZZXOe0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "675290848213-1e7lgtf3upsavof5fr352rbbb7q1n674.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "675290848213-m1uag4thq6ks4ikli7jhludkfbiegsjr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.palliums.violas"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -19,7 +19,7 @@ class TransferExchangeWithdrawRewardDecode(private val transaction: RawTransacti
         val payload = transaction.payload?.payload
 
         return payload is TransactionPayload.Script && payload.code.contentEquals(
-            mViolasExchangeContract.getWithdrawRewardContract()
+            mViolasExchangeContract.getWithdrawMineRewardContract()
         )
     }
 
