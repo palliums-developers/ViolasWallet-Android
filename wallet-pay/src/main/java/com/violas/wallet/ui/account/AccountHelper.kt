@@ -1,10 +1,12 @@
 package com.violas.wallet.ui.account
 
 import com.palliums.utils.getString
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.dao.AccountDao
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -55,7 +57,7 @@ fun loadAccounts(
         if (differentiateIdentityIfNotAllAccountType) {
             val identityAccountLabel = getString(R.string.wallet_account_label_identity)
             val identityAccounts =
-                accountDao.findAllByCoinType(coinTypes.coinType())
+                accountDao.findAllByCoinType(coinTypes.coinNumber())
                     ?.map {
                         AccountVo(it).apply {
                             selected = it.id == currentAccount.id
@@ -68,7 +70,7 @@ fun loadAccounts(
 
             val otherAccountLabel = getString(R.string.wallet_account_label_other)
             val otherAccounts =
-                accountDao.findAllByCoinType(coinTypes.coinType())
+                accountDao.findAllByCoinType(coinTypes.coinNumber())
                     ?.map {
                         AccountVo(it).apply {
                             selected = it.id == currentAccount.id
@@ -79,7 +81,7 @@ fun loadAccounts(
                 data[otherAccountLabel] = otherAccounts
             }
         } else {
-            val accounts = accountDao.loadAllByCoinType(coinTypes.coinType())
+            val accounts = accountDao.loadAllByCoinType(coinTypes.coinNumber())
                 .map {
                     AccountVo(it).apply {
                         selected = it.id == currentAccount.id
@@ -107,26 +109,23 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
             AccountVo(
                 AccountDO(
                     id = 0,
-//                    walletNickname = "${CoinTypes.Violas.coinName()}-Wallet",
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                    coinNumber = CoinTypes.Violas.coinType()
+                    coinNumber = getViolasCoinType().coinNumber()
                 ),
                 selected = true
             ).apply { setGroupName(identityAccountLabel) },
             AccountVo(
                 AccountDO(
                     id = 1,
-//                    walletNickname = "${CoinTypes.Libra.coinName()}-Wallet",
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                    coinNumber = CoinTypes.Libra.coinType()
+                    coinNumber = getDiemCoinType().coinNumber()
                 )
             ).apply { setGroupName(identityAccountLabel) },
             AccountVo(
                 AccountDO(
                     id = 2,
-//                    walletNickname = "${CoinTypes.Bitcoin.coinName()}-Wallet",
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                    coinNumber = CoinTypes.Bitcoin.coinType()
+                    coinNumber = getBitcoinCoinType().coinNumber()
                 )
             ).apply { setGroupName(identityAccountLabel) }
         )
@@ -135,25 +134,22 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
             AccountVo(
                 AccountDO(
                     id = 3,
-//                    walletNickname = "${CoinTypes.Violas.coinName()}-Wallet 2",
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                    coinNumber = CoinTypes.Violas.coinType()
+                    coinNumber = getViolasCoinType().coinNumber()
                 )
             ).apply { setGroupName(otherAccountLabel) },
             AccountVo(
                 AccountDO(
                     id = 4,
-//                    walletNickname = "${CoinTypes.Libra.coinName()}-Wallet 2",
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                    coinNumber = CoinTypes.Libra.coinType()
+                    coinNumber = getDiemCoinType().coinNumber()
                 )
             ).apply { setGroupName(otherAccountLabel) },
             AccountVo(
                 AccountDO(
                     id = 5,
-//                    walletNickname = "${CoinTypes.Bitcoin.coinName()}-Wallet 2",
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                    coinNumber = CoinTypes.Bitcoin.coinType()
+                    coinNumber = getBitcoinCoinType().coinNumber()
                 )
             ).apply { setGroupName(otherAccountLabel) }
         )
@@ -168,16 +164,16 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
                     id = 0,
 //                    walletNickname = "$${coinTypes.coinName()}-Wallet",
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                    coinNumber = coinTypes.coinType()
+                    coinNumber = coinTypes.coinNumber()
                 ),
-                selected = coinTypes.coinType() == CoinTypes.Violas.coinType()
+                selected = coinTypes.coinNumber() == getViolasCoinType().coinNumber()
             ).apply { setGroupName(coinTypes.coinName()) },
             AccountVo(
                 AccountDO(
                     id = 1,
 //                    walletNickname = "${coinTypes.coinName()}-Wallet 2",
                     address = "mkYUsJ8N1AidN…QUaoyL2Mu8L",
-                    coinNumber = coinTypes.coinType()
+                    coinNumber = coinTypes.coinNumber()
                 )
             ).apply { setGroupName(coinTypes.coinName()) }
         )
@@ -189,13 +185,13 @@ fun fakeAccounts(@AccountType accountType: Int): MutableMap<String, List<Account
 
 
 @AccountType
-fun transformCoinTypes(coinTypes: CoinTypes): Int {
-    return when (coinTypes) {
-        CoinTypes.Violas -> {
+fun transformCoinTypes(coinType: CoinType): Int {
+    return when (coinType) {
+        getViolasCoinType() -> {
             AccountType.VIOLAS
         }
 
-        CoinTypes.Libra -> {
+        getDiemCoinType() -> {
             AccountType.LIBRA
         }
 
@@ -205,18 +201,18 @@ fun transformCoinTypes(coinTypes: CoinTypes): Int {
     }
 }
 
-fun transformAccountType(@AccountType accountType: Int): CoinTypes {
+fun transformAccountType(@AccountType accountType: Int): CoinType {
     return when (accountType) {
         AccountType.VIOLAS -> {
-            CoinTypes.Violas
+            getViolasCoinType()
         }
 
         AccountType.LIBRA -> {
-            CoinTypes.Libra
+            getDiemCoinType()
         }
 
         else -> {
-            if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
+            getBitcoinCoinType()
         }
     }
 }

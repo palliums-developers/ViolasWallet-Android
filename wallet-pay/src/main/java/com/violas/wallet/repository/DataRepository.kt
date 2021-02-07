@@ -5,11 +5,11 @@ import com.palliums.violas.http.ViolasApi
 import com.palliums.violas.http.ViolasRepository
 import com.palliums.violas.http.ViolasService
 import com.palliums.violas.smartcontract.multitoken.MultiContractRpcApi
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.BuildConfig
-import com.violas.wallet.common.BaseBizUrl.getLibraBaseUrl
-import com.violas.wallet.common.BaseBizUrl.getViolasBaseUrl
-import com.violas.wallet.common.BaseBizUrl.getViolasChainUrl
+import com.violas.wallet.common.ApiBaseUrl
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.database.AppDatabase
 import com.violas.wallet.repository.http.bank.BankApi
 import com.violas.wallet.repository.http.bank.BankRepository
@@ -68,7 +68,7 @@ object DataRepository {
     private val retrofit by lazy {
         Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl(getViolasBaseUrl())
+            .baseUrl(ApiBaseUrl.VIOLAS_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
@@ -83,7 +83,7 @@ object DataRepository {
     fun getBitcoinService() = BitcoinChainApi.get()
 
     fun getLibraRpcService() =
-        LibraRpcService(LibraRpcRepository(okHttpClient, getLibraBaseUrl()))
+        LibraRpcService(LibraRpcRepository(okHttpClient, ApiBaseUrl.LIBRA_CHAIN_BASE_URL))
 
     fun getLibraBizService() =
         LibraViolasService(LibraViolasRepository(retrofit.create(LibraViolasApi::class.java)))
@@ -95,15 +95,15 @@ object DataRepository {
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
     fun getViolasChainRpcService() =
-        ViolasRpcService(ViolasRpcRepository(okHttpClient, getViolasChainUrl()))
+        ViolasRpcService(ViolasRpcRepository(okHttpClient, ApiBaseUrl.VIOLAS_CHAIN_BASE_URL))
 
-    fun getTransactionRecordService(coinTypes: CoinTypes) =
-        when (coinTypes) {
-            CoinTypes.Violas -> {
+    fun getTransactionRecordService(coinType: CoinType) =
+        when (coinType) {
+            getViolasCoinType() -> {
                 getViolasBizService()
             }
 
-            CoinTypes.Libra -> {
+            getDiemCoinType() -> {
                 LibraViolasService(
                     LibraViolasRepository(retrofit.create(LibraViolasApi::class.java))
                 )

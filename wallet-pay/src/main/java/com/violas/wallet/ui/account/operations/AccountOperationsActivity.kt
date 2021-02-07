@@ -13,13 +13,10 @@ import com.palliums.utils.isFastMultiClick
 import com.palliums.utils.start
 import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.groupList.GroupListLayout
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_ID
-import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_TYPE
-import com.violas.wallet.common.EXTRA_KEY_OPERATION_MODE
+import com.violas.wallet.common.*
 import com.violas.wallet.event.ChangeAccountNameEvent
 import com.violas.wallet.event.WalletChangeEvent
 import com.violas.wallet.repository.DataRepository
@@ -225,10 +222,9 @@ class AccountOperationsActivity : BaseAppActivity() {
                 rootView.tvAccountAddress.text = it.accountDO.address
                 rootView.setBackgroundResource(
                     when (it.accountDO.coinNumber) {
-                        CoinTypes.Libra.coinType() ->
+                        getDiemCoinType().coinNumber() ->
                             R.drawable.sel_bg_account_management_libra
-                        CoinTypes.Bitcoin.coinType(),
-                        CoinTypes.BitcoinTest.coinType() ->
+                        getBitcoinCoinType().coinNumber() ->
                             R.drawable.sel_bg_account_management_bitcoin
                         else ->
                             R.drawable.sel_bg_account_management_violas

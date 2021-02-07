@@ -9,12 +9,13 @@ import com.palliums.extensions.isNoNetwork
 import com.palliums.net.LoadState
 import com.palliums.utils.toMap
 import com.palliums.violas.bean.TokenMark
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
 import com.violas.wallet.biz.mapping.MappingManager
 import com.violas.wallet.common.SimpleSecurity
+import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
@@ -106,15 +107,15 @@ class MappingViewModel : BaseViewModel() {
         return accountManager.getIdentityByCoinType(
             str2CoinType(
                 if (fromCoin) coinPairs.fromCoin.chainName else coinPairs.toCoin.chainName
-            ).coinType()
+            ).coinNumber()
         )
     }
 
     fun coinPair2Coin(coinPair: MappingCoinPairDTO): ITokenVo {
         val coinType = str2CoinType(coinPair.fromCoin.chainName)
-        return if (coinType == CoinTypes.Bitcoin || coinType == CoinTypes.BitcoinTest) {
+        return if (coinType == getBitcoinCoinType()) {
             PlatformTokenVo(
-                coinType.coinType(),
+                coinType.coinNumber(),
                 coinPair.fromCoin.assets.displayName,
                 coinPair.fromCoin.assets.logo
             )
@@ -124,7 +125,7 @@ class MappingViewModel : BaseViewModel() {
                 coinPair.fromCoin.assets.module,
                 coinPair.fromCoin.assets.address,
                 -1,
-                coinType.coinType(),
+                coinType.coinNumber(),
                 coinPair.fromCoin.assets.displayName,
                 coinPair.fromCoin.assets.logo
             )
@@ -133,7 +134,7 @@ class MappingViewModel : BaseViewModel() {
 
     fun coin2CoinPair(coin: ITokenVo): MappingCoinPairDTO? {
         mappingCoinPairsLiveData.value?.forEach {
-            if (coin.coinNumber == str2CoinType(it.fromCoin.chainName).coinType()) {
+            if (coin.coinNumber == str2CoinType(it.fromCoin.chainName).coinNumber()) {
                 if (coin is PlatformTokenVo
                     || (coin is StableTokenVo && coin.name == it.fromCoin.assets.name)
                 ) {
@@ -199,7 +200,7 @@ class MappingViewModel : BaseViewModel() {
         coins.forEach {
             it.displayAmount = convertAmountToDisplayAmount(
                 assetsMap[getMarketCoinKey(it)]?.getAmount() ?: 0,
-                CoinTypes.parseCoinType(it.coinNumber)
+                CoinType.parseCoinNumber(it.coinNumber)
             )
         }
     }
@@ -265,7 +266,7 @@ class MappingViewModel : BaseViewModel() {
 
         val tokenMark = TokenMark(assets.module, assets.address, assets.name)
         val hasSucceed = tokenManager.publishToken(
-            CoinTypes.parseCoinType(accountDO.coinNumber),
+            CoinType.parseCoinNumber(accountDO.coinNumber),
             privateKey,
             tokenMark
         )

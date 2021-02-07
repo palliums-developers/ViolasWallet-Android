@@ -2,14 +2,14 @@ package com.violas.wallet.biz.mapping.processor
 
 import com.palliums.content.ContextProvider
 import com.palliums.net.await
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.processor.ViolasOutputScript
 import com.violas.wallet.biz.mapping.PayeeAccountCoinNotActiveException
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
@@ -30,9 +30,8 @@ class BitcoinToMappingCoinProcessor(
 ) : MappingProcessor {
 
     override fun hasMappable(coinPair: MappingCoinPairDTO): Boolean {
-        return str2CoinType(coinPair.fromCoin.chainName) ==
-                (if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin)
-                && str2CoinType(coinPair.toCoin.chainName) == CoinTypes.Violas
+        return str2CoinType(coinPair.fromCoin.chainName) == getBitcoinCoinType()
+                && str2CoinType(coinPair.toCoin.chainName) == getViolasCoinType()
     }
 
     override suspend fun mapping(

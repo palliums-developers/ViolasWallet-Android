@@ -1,8 +1,8 @@
 package com.violas.wallet.repository.http.bitcoin.bitmain
 
-import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.common.BaseBrowserUrl
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getBitcoinConfirmations
+import com.violas.wallet.common.getBitcoinTxnDetailsUrl
 import com.violas.wallet.repository.http.TransactionRecordService
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
@@ -39,7 +39,7 @@ class BitmainService(
         val list = response.data!!.list!!.mapIndexed { index, dto ->
 
             // 解析交易状态
-            val transactionState = if (dto.confirmations >= 6)
+            val transactionState = if (dto.confirmations >= getBitcoinConfirmations())
                 TransactionState.SUCCESS
             else
                 TransactionState.PENDING
@@ -108,7 +108,7 @@ class BitmainService(
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
-                coinType = if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin,
+                coinType = getBitcoinCoinType(),
                 transactionType = transactionType,
                 transactionState = transactionState,
                 time = dto.block_time,
@@ -121,7 +121,7 @@ class BitmainService(
                 gasTokenId = tokenId,
                 gasTokenDisplayName = tokenDisplayName,
                 transactionId = dto.hash,
-                url = BaseBrowserUrl.getBitcoinBrowserUrl(dto.hash)
+                url = getBitcoinTxnDetailsUrl(dto.hash)
             )
         }
         onSuccess.invoke(list, null)

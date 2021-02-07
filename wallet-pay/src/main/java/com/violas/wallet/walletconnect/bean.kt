@@ -2,7 +2,7 @@ package com.violas.wallet.walletconnect
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 
 /**
  * 传递给转账确认页面的数据类型
@@ -138,7 +138,7 @@ data class TransactionSwapVo(
     val isSend: Boolean = true,
     val isSigned: Boolean = true,
     val accountId: Long = -1,
-    val coinType: CoinTypes,
+    val coinType: CoinType,
     val viewType: Int,
     val viewData: String
 ) : Parcelable {
@@ -148,7 +148,7 @@ data class TransactionSwapVo(
         parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte(),
         parcel.readLong(),
-        CoinTypes.parseCoinType(parcel.readInt()),
+        CoinType.parseCoinNumber(parcel.readInt()),
         parcel.readInt(),
         parcel.readString() ?: ""
     ) {
@@ -160,7 +160,7 @@ data class TransactionSwapVo(
         parcel.writeByte(if (isSend) 1 else 0)
         parcel.writeByte(if (isSigned) 1 else 0)
         parcel.writeLong(accountId)
-        parcel.writeInt(coinType.coinType())
+        parcel.writeInt(coinType.coinNumber())
         parcel.writeInt(viewType)
         parcel.writeString(viewData)
     }

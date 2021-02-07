@@ -1,11 +1,11 @@
 package com.violas.wallet.common
 
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.BuildConfig
 
 object Vm {
     @kotlin.jvm.JvmField
-    var DefBitcoinType: CoinTypes
+    var defBitcoinType: CoinType
     @kotlin.jvm.JvmField
     var TestNet: Boolean = false
     @kotlin.jvm.JvmField
@@ -19,12 +19,12 @@ object Vm {
     init {
         if (BuildConfig.TESTNET.equals("main")) {
             TestNet = false
-            DefBitcoinType = CoinTypes.Bitcoin
+            defBitcoinType = CoinType.Bitcoin
             //            Confirmations = 6;
             Confirmations = 1
         } else {
             TestNet = true
-            DefBitcoinType = CoinTypes.BitcoinTest
+            defBitcoinType = CoinType.BitcoinTest
             Confirmations = 1
         }
     }

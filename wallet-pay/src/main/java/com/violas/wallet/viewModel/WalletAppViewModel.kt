@@ -9,12 +9,13 @@ import com.palliums.content.App
 import com.palliums.content.ContextProvider
 import com.palliums.utils.CustomMainScope
 import com.palliums.utils.coroutineExceptionHandler
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.biz.command.SaveAssetsAllBalanceCommand
 import com.violas.wallet.biz.command.SaveAssetsFiatBalanceCommand
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
 import com.violas.wallet.viewModel.bean.AssetsVo
@@ -89,7 +90,7 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
             var activateResult = false
 
             localAssets.filter {
-                it is AssetsCoinVo && (it.getCoinNumber() == CoinTypes.Violas.coinType() || it.getCoinNumber() == CoinTypes.Libra.coinType())
+                it is AssetsCoinVo && (it.getCoinNumber() == getViolasCoinType().coinNumber() || it.getCoinNumber() == getDiemCoinType().coinNumber())
             }.forEach {
                 it as AssetsLibraCoinVo
                 try {

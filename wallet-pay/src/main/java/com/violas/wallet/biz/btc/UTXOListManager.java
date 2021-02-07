@@ -2,7 +2,7 @@ package com.violas.wallet.biz.btc;
 
 import android.util.Log;
 
-import com.violas.wallet.common.Vm;
+import com.violas.wallet.common.VmHelperKt;
 import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi;
 
@@ -253,7 +253,7 @@ public class UTXOListManager {
                 List<UTXO> utxoList = getUTXOByAddress(address);
 
                 for (UTXO utxo : utxoList) {
-                    if (utxo.getConfirmations() >= Vm.Confirmations) {
+                    if (utxo.getConfirmations() >= VmHelperKt.getBitcoinConfirmations()) {
                         mAllAmount = mAllAmount.add(new BigDecimal(utxo.getAmount() + ""));
                         mUTXOList.put(generateKey(utxo), utxo);
                     }

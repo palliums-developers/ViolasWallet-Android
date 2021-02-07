@@ -10,10 +10,10 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.palliums.utils.*
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.getViolasCoinType
 import kotlinx.android.synthetic.main.activity_incentive_earnings_details.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,7 +60,7 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
     private suspend fun initData(): Boolean {
         val accountDO = withContext(Dispatchers.IO) {
             try {
-                AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+                AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
             } catch (e: Exception) {
                 null
             }

@@ -13,7 +13,7 @@ import com.palliums.base.BaseFragment
 import com.palliums.extensions.getShowErrorMessage
 import com.palliums.extensions.isActiveCancellation
 import com.palliums.utils.isFastMultiClick
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.takusemba.spotlight.Spotlight
 import com.takusemba.spotlight.Target
 import com.takusemba.spotlight.shape.RoundedRectangle
@@ -383,7 +383,7 @@ class WalletFragment : BaseFragment() {
                 }
             }
 
-            if (currentAccount.coinNumber == CoinTypes.Violas.coinType()) {
+            if (currentAccount.coinNumber == CoinType.Violas.coinNumber()) {
                 refreshViolasAssert(currentAccount, enableTokens)
             } else {
                 val result = try {
@@ -462,10 +462,10 @@ class WalletFragment : BaseFragment() {
     private fun updateWalletInfo(currentAccount: AccountDO) {
         tvAddress.text = currentAccount.address
 
-        val coinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
+        val coinType = CoinType.parseCoinNumber(currentAccount.coinNumber)
         tvUnit.text = coinType.coinUnit()
 
-        val parseCoinType = CoinTypes.parseCoinType(currentAccount.coinNumber)
+        val parseCoinType = CoinType.parseCoinNumber(currentAccount.coinNumber)
         val convertAmountToDisplayUnit =
             convertAmountToDisplayUnit(currentAccount.amount, parseCoinType)
         tvAmount.text = convertAmountToDisplayUnit.first
@@ -540,7 +540,7 @@ class AssertAdapter(
         val itemData = data[position]
         holder.itemView.name.text = itemData.name
 
-        val parseCoinType = CoinTypes.parseCoinType(itemData.coinType)
+        val parseCoinType = CoinType.parseCoinNumber(itemData.coinType)
         val convertAmountToDisplayUnit =
             convertAmountToDisplayUnit(itemData.amount, parseCoinType)
         holder.itemView.amount.text = convertAmountToDisplayUnit.first

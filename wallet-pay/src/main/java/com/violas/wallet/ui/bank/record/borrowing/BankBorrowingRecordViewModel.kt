@@ -3,9 +3,9 @@ package com.violas.wallet.ui.bank.record.borrowing
 import androidx.lifecycle.MutableLiveData
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getString
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bank.BorrowingRecordDTO
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +37,7 @@ class BankBorrowingRecordViewModel : PagingViewModel<BorrowingRecordDTO>() {
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
-            AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
                 ?: return@withContext false
 
         address = violasAccount.address

@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.bitcoinChainApi.request;
 
-import com.violas.wallet.common.Vm;
+import com.violas.wallet.common.VmHelperKt;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
@@ -60,7 +60,7 @@ public class FeeBlockcypherRequest extends BaseRequest<FeeBlockcypherRequest.Api
 
     public Observable<FeeEstimateRequest.FeesBean> estimateFee() {
         String network;
-        if (Vm.TestNet) {
+        if (VmHelperKt.isBitcoinTestNet()) {
             network = "test3";
         } else {
             network = "main";

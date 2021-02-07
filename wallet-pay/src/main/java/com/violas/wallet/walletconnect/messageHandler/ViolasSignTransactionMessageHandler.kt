@@ -5,7 +5,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
-import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.walletconnect.TransactionSwapVo
 import com.violas.wallet.walletconnect.violasTransferDataHandler.ViolasTransferDecodeEngine
@@ -39,7 +39,7 @@ class ViolasSignTransactionMessageHandler : IMessageHandler<JsonArray> {
             ?: throw InvalidJsonRpcParamsException(requestID)
 
         val account = mAccountStorage.findByCoinTypeAndCoinAddress(
-            CoinTypes.Violas.coinType(),
+            getViolasCoinType().coinNumber(),
             tx.from
         ) ?: throw InvalidParameterErrorMessage(requestID, "Account does not exist.")
 
@@ -166,7 +166,7 @@ class ViolasSignTransactionMessageHandler : IMessageHandler<JsonArray> {
             false,
             false,
             account.id,
-            CoinTypes.Violas,
+            getViolasCoinType(),
             decode.first.value,
             decode.second
         )

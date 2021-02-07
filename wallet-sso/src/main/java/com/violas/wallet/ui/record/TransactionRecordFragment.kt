@@ -6,7 +6,7 @@ import com.palliums.paging.PagingViewModel
 import com.palliums.utils.getDrawableCompat
 import com.palliums.utils.openBrowser
 import com.palliums.widget.status.IStatusLayout
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.common.KEY_FOUR
@@ -24,20 +24,20 @@ import com.violas.wallet.ui.web.WebCommonActivity
 class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
 
     private lateinit var mAccountAddress: String
-    private lateinit var mCoinTypes: CoinTypes
+    private lateinit var mCoinType: CoinType
     private var mTokenIdx: Long? = null
     private var mTokenName: String? = null
 
     companion object {
         fun newInstance(
             accountAddress: String,
-            coinTypes: CoinTypes,
+            coinType: CoinType,
             tokenIdx: Long? = null,
             tokenName: String? = null
         ): TransactionRecordFragment {
             val args = Bundle().apply {
                 putString(KEY_ONE, accountAddress)
-                putSerializable(KEY_TWO, coinTypes)
+                putSerializable(KEY_TWO, coinType)
                 tokenIdx?.let { putLong(KEY_THREE, it) }
                 tokenName?.let { putString(KEY_FOUR, it) }
             }
@@ -49,7 +49,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     }
 
     private val mViewModel by lazy {
-        TransactionRecordViewModel(mAccountAddress, mTokenIdx, mTokenName, mCoinTypes)
+        TransactionRecordViewModel(mAccountAddress, mTokenIdx, mTokenName, mCoinType)
     }
 
     private val mViewAdapter by lazy {
@@ -98,7 +98,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
             }
 
             mAccountAddress = arguments!!.getString(KEY_ONE, null) ?: return false
-            mCoinTypes = arguments!!.getSerializable(KEY_TWO) as CoinTypes
+            mCoinType = arguments!!.getSerializable(KEY_TWO) as CoinType
             if (arguments!!.containsKey(KEY_THREE)) {
                 mTokenIdx = arguments!!.getLong(KEY_THREE)
             }

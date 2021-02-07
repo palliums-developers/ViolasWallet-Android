@@ -4,8 +4,8 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.exceptionAsync
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bank.AccountInfoDTO
 import com.violas.wallet.repository.http.bank.BorrowingProductSummaryDTO
@@ -94,7 +94,7 @@ class BankViewModel : BaseViewModel() {
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         synchronized(lock) {
             val violasAccount =
-                AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+                AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
             val lastAddress = address
             address = violasAccount?.address
 

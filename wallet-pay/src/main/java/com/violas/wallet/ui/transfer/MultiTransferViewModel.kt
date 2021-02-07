@@ -3,18 +3,16 @@ package com.violas.wallet.ui.transfer
 import androidx.lifecycle.*
 import com.palliums.content.ContextProvider
 import com.palliums.utils.getString
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.viewModel.bean.AssetsVo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.lang.Exception
 import java.math.BigDecimal
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -31,11 +29,7 @@ class MultiTransferViewModel : ViewModel() {
 
     private val mTransactionManager by lazy {
         val identityByCoinType = AccountManager().getIdentityByCoinType(
-            if (Vm.TestNet) {
-                CoinTypes.BitcoinTest.coinType()
-            } else {
-                CoinTypes.Bitcoin.coinType()
-            }
+            getBitcoinCoinType().coinNumber()
         )
         val addressList = if (identityByCoinType == null) {
             arrayListOf()

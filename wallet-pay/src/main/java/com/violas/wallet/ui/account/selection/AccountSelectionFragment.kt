@@ -14,11 +14,12 @@ import com.palliums.utils.getColor
 import com.palliums.utils.isFastMultiClick
 import com.palliums.widget.dividers.RecyclerViewItemDividers
 import com.palliums.widget.groupList.GroupListLayout
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.EXTRA_KEY_ACCOUNT_TYPE
 import com.violas.wallet.common.EXTRA_KEY_OPERATION_MODE
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.account.AccountOperationMode
@@ -205,10 +206,9 @@ class AccountSelectionFragment : BaseFragment() {
                 ivSelected.visibility = if (it.selected) View.VISIBLE else View.GONE
                 rootView.setBackgroundResource(
                     when (it.accountDO.coinNumber) {
-                        CoinTypes.Libra.coinType() ->
+                        getDiemCoinType().coinNumber() ->
                             R.drawable.sel_bg_account_selection_libra
-                        CoinTypes.Bitcoin.coinType(),
-                        CoinTypes.BitcoinTest.coinType() ->
+                        getBitcoinCoinType().coinNumber() ->
                             R.drawable.sel_bg_account_selection_bitcoin
                         else ->
                             R.drawable.sel_bg_account_selection_violas

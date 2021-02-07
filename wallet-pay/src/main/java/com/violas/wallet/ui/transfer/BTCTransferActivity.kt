@@ -7,8 +7,7 @@ import android.widget.SeekBar
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import com.palliums.extensions.expandTouchArea
-import com.palliums.extensions.getShowErrorMessage
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.command.CommandActuator
@@ -45,7 +44,7 @@ class BTCTransferActivity : TransferActivity() {
         toAddress = editAddressInput.text.toString().trim()
         transferAmount = convertDisplayUnitToAmount(
             editAmountInput.text.toString().trim(),
-            CoinTypes.parseCoinType(coinNumber)
+            CoinType.parseCoinNumber(coinNumber)
         )
         super.onSaveInstanceState(outState)
     }
@@ -76,7 +75,7 @@ class BTCTransferActivity : TransferActivity() {
                 try {
                     account = mAccountManager.getAccountById(mAssetsVo.getAccountId())
 
-                    val coinType = CoinTypes.parseCoinType(account!!.coinNumber)
+                    val coinType = CoinType.parseCoinNumber(account!!.coinNumber)
                     withContext(Dispatchers.Main) {
                         if (transferAmount > 0) {
                             val convertAmountToDisplayUnit =

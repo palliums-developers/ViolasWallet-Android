@@ -14,16 +14,13 @@ import com.palliums.extensions.logInfo
 import com.palliums.utils.saveIntoSystemAlbum
 import com.palliums.utils.start
 import com.palliums.utils.toBitmap
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseBridgeWebActivity
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
-import com.violas.wallet.common.EXTRA_KEY_TITLE
-import com.violas.wallet.common.EXTRA_KEY_URL
-import com.violas.wallet.common.SYSTEM_ALBUM_DIR_NAME
+import com.violas.wallet.common.*
 import com.violas.wallet.event.*
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.ui.incentive.earningsDetails.IncentiveEarningsDetailsActivity
@@ -79,7 +76,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
         private suspend fun getViolasAddress(): String? = withContext(Dispatchers.IO) {
             val accountManager = WalletAppViewModel.getViewModelInstance().mAccountManager
             return@withContext try {
-                accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())?.address
+                accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address
             } catch (e: Exception) {
                 null
             }
@@ -89,9 +86,11 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
          * 打开激励挖矿首页
          */
         suspend fun startIncentiveHomePage(context: Context) {
-            val url = "https://wallet.violas.io/homepage/home/miningAwards?language=${
+            val url2 = "https://wallet.violas.io/homepage/home/miningAwards?language=${
                 getLanguageCode()
             }&address=${getViolasAddress() ?: ""}"
+
+            val url = getViolasIncentiveHomeUrl(getLanguageCode(), getViolasAddress())
             start(context, url)
         }
 
@@ -99,9 +98,11 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
          * 打开邀请好友首页
          */
         suspend fun startInviteHomePage(context: Context) {
-            val url = "https://wallet.violas.io/homepage/home/inviteRewards?language=${
+            val url2 = "https://wallet.violas.io/homepage/home/inviteRewards?language=${
                 getLanguageCode()
             }&address=${getViolasAddress() ?: ""}"
+
+            val url = getViolasIncentiveInviteUrl(getLanguageCode(), getViolasAddress())
             start(context, url)
         }
 
@@ -109,9 +110,11 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
          * 打开激励挖矿规则页面
          */
         suspend fun startIncentiveRules(context: Context) {
-            val url = "https://wallet.violas.io/homepage/home/ruleDescription?language=${
+            val url2 = "https://wallet.violas.io/homepage/home/ruleDescription?language=${
                 getLanguageCode()
             }&address=${getViolasAddress() ?: ""}"
+
+            val url = getViolasIncentiveRulesUrl(getLanguageCode(), getViolasAddress())
             start(context, url)
         }
     }
@@ -220,7 +223,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
     ) {
         val accountManager = WalletAppViewModel.getViewModelInstance().mAccountManager
         val violasAccount = withContext(Dispatchers.IO) {
-            accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
+            accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
         }
         if (violasAccount == null) {
             callbackFunction.onCallBack(
@@ -322,7 +325,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
     ) {
         val accountManager = WalletAppViewModel.getViewModelInstance().mAccountManager
         val violasAccount = withContext(Dispatchers.IO) {
-            accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
+            accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
         }
         if (violasAccount == null) {
             callbackFunction.onCallBack(

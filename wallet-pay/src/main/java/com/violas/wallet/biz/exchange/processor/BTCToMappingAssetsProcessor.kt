@@ -1,7 +1,7 @@
 package com.violas.wallet.biz.exchange.processor
 
 import com.palliums.content.ContextProvider
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.quincysx.crypto.bitcoin.BitcoinOutputStream
 import com.quincysx.crypto.bitcoin.script.Script
 import com.violas.wallet.biz.AccountManager
@@ -13,7 +13,8 @@ import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.MappingInfo
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.ui.main.market.bean.*
@@ -21,7 +22,6 @@ import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.palliums.violascore.serialization.hexToBytes
-import java.lang.RuntimeException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.coroutines.resume
@@ -41,11 +41,7 @@ class BTCToMappingAssetsProcessor(
 
     override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         return tokenFrom is PlatformTokenVo
-                && tokenFrom.coinNumber == if (Vm.TestNet) {
-            CoinTypes.BitcoinTest
-        } else {
-            CoinTypes.Bitcoin
-        }.coinType()
+                && tokenFrom.coinNumber == getBitcoinCoinType().coinNumber()
                 && supportMappingPair.containsKey(IAssetsMark.convert(tokenTo).mark())
     }
 
@@ -82,7 +78,7 @@ class BTCToMappingAssetsProcessor(
         }
         if (!isPublishToken) {
             throw AccountPayeeTokenNotActiveException(
-                CoinTypes.Libra,
+                CoinType.parseCoinNumber(tokenTo.coinNumber),
                 payeeAddress,
                 tokenTo
             )
@@ -142,11 +138,7 @@ class BTCToMappingAssetsProcessor(
         toIAssetsMark: IAssetsMark
     ): Boolean {
         return fromIAssetsMark is CoinAssetsMark
-                && fromIAssetsMark.coinNumber() == if (Vm.TestNet) {
-            CoinTypes.BitcoinTest
-        } else {
-            CoinTypes.Bitcoin
-        }.coinType()
+                && fromIAssetsMark.coinNumber() == getBitcoinCoinType().coinNumber()
                 && supportMappingPair.containsKey(toIAssetsMark.mark())
     }
 

@@ -5,10 +5,9 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.toMap
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.ui.main.market.bean.ITokenVo
-import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
@@ -16,10 +15,7 @@ import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
 import com.violas.wallet.viewModel.bean.HiddenTokenVo
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.math.BigDecimal
 
 /**
  * Created by elephant on 2020/7/8 13:00.
@@ -70,7 +66,7 @@ class MarketViewModel : BaseViewModel() {
         marketCoins.forEach {
             it.displayAmount = convertAmountToDisplayAmount(
                 assetsMap[getMarketCoinKey(it)]?.getAmount() ?: 0,
-                CoinTypes.parseCoinType(it.coinNumber)
+                CoinType.parseCoinNumber(it.coinNumber)
             )
         }
     }
@@ -100,98 +96,5 @@ class MarketViewModel : BaseViewModel() {
                 "${coin.coinNumber}${coin.displayName}"
             }
         }
-    }
-
-    private suspend fun mockLoadMarketCoins() {
-        // test code
-        delay(2000)
-        val vls = PlatformTokenVo(
-            coinNumber = CoinTypes.Violas.coinType(),
-            displayName = "VLS",
-            logo = "",
-            displayAmount = BigDecimal(100_000000),
-            anchorValue = 1.00
-        )
-
-        val vlsusd = StableTokenVo(
-            name = "VLSUSD",
-            module = "VLSUSD",
-            address = "00000000000000000000000000000000",
-            marketIndex = 0,
-            coinNumber = CoinTypes.Violas.coinType(),
-            displayName = "VLSUSD",
-            logo = "",
-            displayAmount = BigDecimal(200_000000),
-            anchorValue = 1.00
-        )
-
-        val vlsgbp = StableTokenVo(
-            name = "VLSGBP",
-            module = "VLSGBP",
-            address = "00000000000000000000000000000000",
-            marketIndex = 0,
-            coinNumber = CoinTypes.Violas.coinType(),
-            displayName = "VLSGBP",
-            logo = "",
-            displayAmount = BigDecimal(300_000000),
-            anchorValue = 1.2526
-        )
-
-        val vlseur = StableTokenVo(
-            name = "VLSEUR",
-            module = "VLSEUR",
-            address = "00000000000000000000000000000000",
-            marketIndex = 0,
-            coinNumber = CoinTypes.Violas.coinType(),
-            displayName = "VLSEUR",
-            logo = "",
-            displayAmount = BigDecimal(400_000000),
-            anchorValue = 1.1272
-        )
-
-        val vlssgd = StableTokenVo(
-            name = "VLSSGD",
-            module = "VLSSGD",
-            address = "00000000000000000000000000000000",
-            marketIndex = 0,
-            coinNumber = CoinTypes.Violas.coinType(),
-            displayName = "VLSSGD",
-            logo = "",
-            displayAmount = BigDecimal(500_000000),
-            anchorValue = 0.7167
-        )
-
-        val vlsjpy = StableTokenVo(
-            name = "VLSJPY",
-            module = "VLSJPY",
-            address = "00000000000000000000000000000000",
-            marketIndex = 0,
-            coinNumber = CoinTypes.Violas.coinType(),
-            displayName = "VLSJPY",
-            logo = "",
-            displayAmount = BigDecimal(500_000000),
-            anchorValue = 0.0093
-        )
-
-        val lbr = PlatformTokenVo(
-            coinNumber = CoinTypes.Libra.coinType(),
-            displayName = "LBR",
-            logo = "",
-            displayAmount = BigDecimal(100_000000),
-            anchorValue = 1.00
-        )
-
-        val btc = PlatformTokenVo(
-            coinNumber = CoinTypes.BitcoinTest.coinType(),
-            displayName = "BTC",
-            logo = "",
-            displayAmount = BigDecimal(100_000000),
-            anchorValue = 9000.00
-        )
-
-        val list = mutableListOf(
-            vls, vlsusd, vlsgbp, vlseur, vlssgd, vlsjpy, lbr, btc
-        )
-        marketCoinsLiveData.postValue(list)
     }
 }

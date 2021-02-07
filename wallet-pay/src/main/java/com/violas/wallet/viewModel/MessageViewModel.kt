@@ -9,7 +9,7 @@ import com.palliums.content.ContextProvider
 import com.palliums.extensions.logDebug
 import com.palliums.extensions.logError
 import com.palliums.utils.CustomMainScope
-import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.ClearUnreadMessagesEvent
 import com.violas.wallet.event.ReadOneSystemMsgEvent
 import com.violas.wallet.event.ReadOneTransactionMsgEvent
@@ -92,7 +92,7 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
                 delay(1500)
 
             val result = try {
-                val violasAccount = accountStorage.findByCoinType(CoinTypes.Violas.coinType())
+                val violasAccount = accountStorage.findByCoinType(getViolasCoinType().coinNumber())
                 messageService.registerDevice(violasAccount?.address ?: "", token)
                 true
             } catch (e: Exception) {

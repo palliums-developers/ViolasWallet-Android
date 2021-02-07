@@ -4,10 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.palliums.utils.*
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.event.WalletChangeEvent
 import com.violas.wallet.ui.backup.BackupMnemonicFrom
@@ -23,10 +26,10 @@ class CreateWalletActivity : BaseAppActivity() {
         private const val REQUEST_BACK_MNEMONIC = 1
         private const val EXT_COIN_TYPE = "a1"
 
-        fun start(context: Activity, coinType: CoinTypes, requestCode: Int = -1) {
+        fun start(context: Activity, coinType: CoinType, requestCode: Int = -1) {
             Intent(context, CreateWalletActivity::class.java)
                 .apply {
-                    putExtra(EXT_COIN_TYPE, coinType.coinType())
+                    putExtra(EXT_COIN_TYPE, coinType.coinNumber())
                 }
                 .start(context, requestCode)
         }
@@ -36,7 +39,7 @@ class CreateWalletActivity : BaseAppActivity() {
         AccountManager()
     }
     private lateinit var mGenerateWalletMnemonic: ArrayList<String>
-    private lateinit var mCurrentCoinType: CoinTypes
+    private lateinit var mCurrentCoinType: CoinType
     override fun getLayoutResId() = R.layout.activity_create_wallet
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,20 +47,20 @@ class CreateWalletActivity : BaseAppActivity() {
         title = ""
 
         mCurrentCoinType =
-            CoinTypes.parseCoinType(intent.getIntExtra(EXT_COIN_TYPE, CoinTypes.Violas.coinType()))
+            CoinType.parseCoinNumber(intent.getIntExtra(EXT_COIN_TYPE, getViolasCoinType().coinNumber()))
 
         tvCreateHint.text =
             String.format(getString(R.string.init_wallet_title_create_wallet_format), mCurrentCoinType.coinName())
 
         ivLogo.setImageResource(
             when (mCurrentCoinType) {
-                CoinTypes.BitcoinTest, CoinTypes.Bitcoin -> {
+                getBitcoinCoinType() -> {
                     R.drawable.ic_bitcoin_big
                 }
-                CoinTypes.Libra -> {
+                getDiemCoinType() -> {
                     R.drawable.ic_libra_big
                 }
-                CoinTypes.Violas -> {
+                getViolasCoinType() -> {
                     R.drawable.ic_violas_big
                 }
                 else -> {

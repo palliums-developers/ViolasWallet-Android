@@ -4,10 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.palliums.utils.*
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.SwitchAccountEvent
 import com.violas.wallet.event.WalletChangeEvent
 import kotlinx.android.synthetic.main.activity_import_wallet.*
@@ -20,16 +23,16 @@ class ImportWalletActivity : BaseAppActivity() {
     companion object {
         private const val EXT_COIN_TYPE = "a1"
 
-        fun start(context: Activity, coinType: CoinTypes, requestCode: Int = -1) {
+        fun start(context: Activity, coinType: CoinType, requestCode: Int = -1) {
             Intent(context, ImportWalletActivity::class.java)
                 .apply {
-                    putExtra(EXT_COIN_TYPE, coinType.coinType())
+                    putExtra(EXT_COIN_TYPE, coinType.coinNumber())
                 }
                 .start(context, requestCode)
         }
     }
 
-    private lateinit var mCurrentCoinType: CoinTypes
+    private lateinit var mCurrentCoinType: CoinType
     private val mAccountManager by lazy {
         AccountManager()
     }
@@ -40,10 +43,10 @@ class ImportWalletActivity : BaseAppActivity() {
         title = ""
 
         mCurrentCoinType =
-            CoinTypes.parseCoinType(
+            CoinType.parseCoinNumber(
                 intent.getIntExtra(
                     EXT_COIN_TYPE,
-                    CoinTypes.Violas.coinType()
+                    getViolasCoinType().coinNumber()
                 )
             )
 
@@ -52,13 +55,13 @@ class ImportWalletActivity : BaseAppActivity() {
 
         ivLogo.setImageResource(
             when (mCurrentCoinType) {
-                CoinTypes.BitcoinTest, CoinTypes.Bitcoin -> {
+                getBitcoinCoinType() -> {
                     R.drawable.ic_bitcoin_big
                 }
-                CoinTypes.Libra -> {
+                getDiemCoinType() -> {
                     R.drawable.ic_libra_big
                 }
-                CoinTypes.Violas -> {
+                getViolasCoinType() -> {
                     R.drawable.ic_violas_big
                 }
                 else -> {

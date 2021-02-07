@@ -14,10 +14,10 @@ import com.palliums.utils.formatDate
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getString
 import com.palliums.widget.status.IStatusLayout
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.exchange.ViolasSwapRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
@@ -205,7 +205,7 @@ class SwapRecordViewModel : PagingViewModel<ViolasSwapRecordDTO>() {
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
-            AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
                 ?: return@withContext false
 
         violasWalletAddress = violasAccount.address

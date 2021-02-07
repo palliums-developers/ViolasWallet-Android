@@ -4,7 +4,7 @@ import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.violas.wallet.biz.mapping.processor.BitcoinToMappingCoinProcessor
 import com.violas.wallet.biz.mapping.processor.LibraToMappingCoinProcessor
 import com.violas.wallet.biz.mapping.processor.ViolasToOriginalCoinProcessor
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.isViolasTestNet
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
@@ -17,7 +17,7 @@ import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
  */
 class MappingManager {
 
-    private val contract = ViolasMultiTokenContract(Vm.TestNet)
+    private val contract = ViolasMultiTokenContract(isViolasTestNet())
     private val engine = MappingEngine()
     private val violasRpcService = DataRepository.getViolasChainRpcService()
     private val libraRpcService = DataRepository.getLibraRpcService()

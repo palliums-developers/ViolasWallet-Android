@@ -4,16 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.*
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.database.entity.AddressBookDo
 import com.violas.wallet.ui.scan.ScanActivity
-import com.violas.wallet.utils.validationBTCAddress
-import com.violas.wallet.utils.validationLibraAddress
-import com.violas.wallet.utils.validationViolasAddress
+import com.violas.wallet.utils.*
 import kotlinx.android.synthetic.main.activity_add_address_book.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,7 +33,7 @@ class AddAddressBookActivity : BaseAppActivity() {
         fun start(
             context: Activity,
             requestCode: Int,
-            coinType: Int = CoinTypes.Bitcoin.coinType(),
+            coinType: Int = getBitcoinCoinType().coinNumber(),
             address: String? = null
         ) {
             Intent(context, AddAddressBookActivity::class.java).apply {
@@ -87,14 +87,13 @@ class AddAddressBookActivity : BaseAppActivity() {
             }
 
             val checkAddress = when (mCoinTypes) {
-                CoinTypes.BitcoinTest.coinType(),
-                CoinTypes.Bitcoin.coinType() -> {
+                getBitcoinCoinType().coinNumber() -> {
                     validationBTCAddress(address)
                 }
-                CoinTypes.Violas.coinType() -> {
+                getViolasCoinType().coinNumber() -> {
                     validationViolasAddress(address)
                 }
-                CoinTypes.Libra.coinType() -> {
+                getDiemCoinType().coinNumber() -> {
                     validationLibraAddress(address)
                 }
                 else -> {
@@ -125,17 +124,13 @@ class AddAddressBookActivity : BaseAppActivity() {
         coinTypeGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.coinTypeLibra -> {
-                    mCoinTypes = CoinTypes.Libra.coinType()
+                    mCoinTypes = getDiemCoinType().coinNumber()
                 }
                 R.id.coinTypeViolas -> {
-                    mCoinTypes = CoinTypes.Violas.coinType()
+                    mCoinTypes = getViolasCoinType().coinNumber()
                 }
                 R.id.coinTypeBitcoin -> {
-                    mCoinTypes = if (Vm.TestNet) {
-                        CoinTypes.BitcoinTest.coinType()
-                    } else {
-                        CoinTypes.Bitcoin.coinType()
-                    }
+                    mCoinTypes = getBitcoinCoinType().coinNumber()
                 }
             }
         }
@@ -144,14 +139,13 @@ class AddAddressBookActivity : BaseAppActivity() {
     private fun refreshCoinType() {
         coinTypeGroup
         when (mCoinTypes) {
-            CoinTypes.Violas.coinType() -> {
+            getViolasCoinType().coinNumber() -> {
                 coinTypeViolas.isChecked = true
             }
-            CoinTypes.Libra.coinType() -> {
+            getDiemCoinType().coinNumber() -> {
                 coinTypeLibra.isChecked = true
             }
-            CoinTypes.BitcoinTest.coinType(),
-            CoinTypes.Bitcoin.coinType() -> {
+            getBitcoinCoinType().coinNumber() -> {
                 coinTypeBitcoin.isChecked = true
             }
         }
@@ -161,22 +155,24 @@ class AddAddressBookActivity : BaseAppActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_SCAN_QR_CODE -> {
-                data?.getParcelableExtra<QRCode>(ScanActivity.RESULT_QR_CODE_DATA)?.let { qrCode ->
-                    when (qrCode) {
-                        is TransferQRCode -> {
-                            try {
-                                editAddress.setText(qrCode.address)
-                                mCoinTypes = CoinTypes.parseCoinType(qrCode.coinType).coinType()
-                                refreshCoinType()
-                            } catch (e: Exception) {
+                data?.getParcelableExtra<QRCode>(ScanActivity.RESULT_QR_CODE_DATA)
+                    ?.let { qrCode ->
+                        when (qrCode) {
+                            is TransferQRCode -> {
+                                try {
+                                    editAddress.setText(qrCode.address)
+                                    mCoinTypes =
+                                        CoinType.parseCoinNumber(qrCode.coinType).coinNumber()
+                                    refreshCoinType()
+                                } catch (e: Exception) {
+                                }
+                            }
+
+                            is CommonQRCode -> {
+                                editAddress.setText(qrCode.content)
                             }
                         }
-
-                        is CommonQRCode -> {
-                            editAddress.setText(qrCode.content)
-                        }
                     }
-                }
             }
         }
     }

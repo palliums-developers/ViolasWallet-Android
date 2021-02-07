@@ -3,8 +3,9 @@ package com.violas.wallet.repository.http.violas
 import com.palliums.violas.http.Response
 import com.palliums.violas.http.ViolasRepository
 import com.palliums.violas.http.WalletAccountDTO
-import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.common.BaseBrowserUrl
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
+import com.violas.wallet.common.getViolasTxnDetailsUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.TransactionRecordService
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
@@ -25,7 +26,7 @@ class ViolasBizService(
 
     private val violasTokens by lazy {
         WalletAppViewModel.getViewModelInstance().mAssetsListLiveData.value
-            ?.filter { it is AssetsTokenVo && it.getCoinNumber() == CoinTypes.Violas.coinType() }
+            ?.filter { it is AssetsTokenVo && it.getCoinNumber() == getViolasCoinType().coinNumber() }
             ?.associate { (it as AssetsTokenVo).module to it.getAssetsName() }
             ?: emptyMap()
     }
@@ -38,8 +39,8 @@ class ViolasBizService(
         val walletAccounts = accounts.map {
             WalletAccountDTO(
                 coinType = when (it.coinNumber) {
-                    CoinTypes.Violas.coinType() -> "violas"
-                    CoinTypes.Libra.coinType() -> "libra"
+                    getViolasCoinType().coinNumber() -> "violas"
+                    getDiemCoinType().coinNumber() -> "libra"
                     else -> "bitcoin"
                 },
                 walletName = "",
@@ -103,7 +104,7 @@ class ViolasBizService(
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
-                coinType = CoinTypes.Violas,
+                coinType = getViolasCoinType(),
                 transactionType = realTransactionType,
                 transactionState = transactionState,
                 time = dto.confirmedTime,
@@ -116,7 +117,7 @@ class ViolasBizService(
                 gasTokenId = dto.gasCurrency,
                 gasTokenDisplayName = violasTokens[dto.gasCurrency] ?: tokenDisplayName,
                 transactionId = dto.version.toString(),
-                url = BaseBrowserUrl.getViolasBrowserUrl(dto.version.toString())
+                url = getViolasTxnDetailsUrl(dto.version.toString())
             )
         }
         onSuccess.invoke(list, null)

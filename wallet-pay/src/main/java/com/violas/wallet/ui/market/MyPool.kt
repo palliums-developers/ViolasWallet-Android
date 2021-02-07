@@ -14,10 +14,10 @@ import com.palliums.listing.ListingViewModel
 import com.palliums.utils.getString
 import com.palliums.widget.refresh.IRefreshLayout
 import com.palliums.widget.status.IStatusLayout
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseListingActivity
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.MarketPageType
 import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
@@ -178,7 +178,7 @@ class MyPoolViewModel : ListingViewModel<PoolLiquidityDTO>() {
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
-            AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
                 ?: return@withContext false
 
         address = violasAccount.address

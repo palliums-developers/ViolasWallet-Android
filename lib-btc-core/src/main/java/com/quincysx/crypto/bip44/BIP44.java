@@ -2,7 +2,7 @@ package com.quincysx.crypto.bip44;
 
 import android.util.Log;
 
-import com.quincysx.crypto.CoinTypes;
+import com.quincysx.crypto.CoinType;
 import com.quincysx.crypto.exception.CoinNotFindException;
 import com.quincysx.crypto.exception.NonSupportException;
 
@@ -59,7 +59,7 @@ public final class BIP44 {
         Log.e("++++def", "ddddd  " + Integer.parseInt(accountStr));
         Account account = BIP44.m()
                 .purpose44()
-                .coinType(CoinTypes.parseCoinType(Integer.parseInt(coinTypeStr)))
+                .coinType(CoinType.parseCoinNumber(Integer.parseInt(coinTypeStr)))
                 .account(Integer.parseInt(accountStr));
 
         Change change;

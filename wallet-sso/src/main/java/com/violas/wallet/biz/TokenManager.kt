@@ -3,7 +3,7 @@ package com.violas.wallet.biz
 import androidx.collection.ArrayMap
 import com.palliums.violas.http.ViolasMultiTokenRepository
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.bean.AssertToken
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
@@ -79,7 +79,7 @@ class TokenManager {
         }
 
         val mutableList = mutableListOf<AssertToken>().also {
-            val coinTypes = CoinTypes.parseCoinType(account.coinNumber)
+            val coinTypes = CoinType.parseCoinNumber(account.coinNumber)
             it.add(
                 0, AssertToken(
                     id = 0,
@@ -87,7 +87,7 @@ class TokenManager {
                     enable = true,
                     isToken = false,
                     name = coinTypes.coinName(),
-                    fullName = coinTypes.fullName(),
+                    fullName = coinTypes.chainName(),
                     amount = 0
                 )
             )
@@ -138,7 +138,7 @@ class TokenManager {
                 coinType = account.coinNumber,
                 enable = true,
                 isToken = false,
-                name = CoinTypes.parseCoinType(account.coinNumber).coinName(),
+                name = CoinType.parseCoinNumber(account.coinNumber).coinName(),
                 fullName = "",
                 amount = account.amount
             )

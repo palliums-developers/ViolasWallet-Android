@@ -6,12 +6,13 @@ import android.os.Bundle
 import android.os.Parcelable
 import com.palliums.extensions.getShowErrorMessage
 import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.BankRepaymentEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -65,7 +66,7 @@ class RepayBorrowActivity : BankBusinessActivity() {
     }
 
     private val mAccountDO by lazy {
-        AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+        AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
     }
 
     private var mBorrowingDetails: BorrowDetailsDTO? = null
@@ -127,7 +128,7 @@ class RepayBorrowActivity : BankBusinessActivity() {
 
             mCurrentAssertsAmountSubscriber.changeSubscriber(
                 LibraTokenAssetsMark(
-                    CoinTypes.Violas,
+                    getViolasCoinType(),
                     tokenModule,
                     tokenAddress,
                     tokenName
@@ -190,7 +191,7 @@ class RepayBorrowActivity : BankBusinessActivity() {
 
             // 输入0
             val amount =
-                convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
+                convertDisplayUnitToAmount(amountStr, CoinType.parseCoinNumber(account.coinNumber))
             if (amount <= 0) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
                     getString(R.string.bank_repayment_tips_repayment_amount_empty)

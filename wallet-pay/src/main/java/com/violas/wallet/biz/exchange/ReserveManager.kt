@@ -7,8 +7,10 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.palliums.utils.CustomIOScope
 import com.palliums.utils.exceptionAsync
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.BuildConfig
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.exchange.MapRelationDTO
 import com.violas.wallet.repository.http.exchange.PoolLiquidityReserveInfoDTO
@@ -119,12 +121,11 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
 
     private fun mappingKey(iTokenVo: ITokenVo): String {
         return when (iTokenVo.coinNumber) {
-            CoinTypes.Bitcoin.coinType(),
-            CoinTypes.BitcoinTest.coinType() -> {
+            getBitcoinCoinType().coinNumber() -> {
                 "${iTokenVo.coinNumber}"
             }
-            CoinTypes.Violas.coinType(),
-            CoinTypes.Libra.coinType() -> {
+            getViolasCoinType().coinNumber(),
+            getDiemCoinType().coinNumber() -> {
                 iTokenVo as StableTokenVo
                 "${iTokenVo.coinNumber}${iTokenVo.module}"
             }
@@ -137,12 +138,11 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
 
     private fun mappingKey(mappingReal: MapRelationDTO): String {
         return when (str2CoinNumber(mappingReal.chain)) {
-            CoinTypes.Bitcoin.coinType(),
-            CoinTypes.BitcoinTest.coinType() -> {
+            getBitcoinCoinType().coinNumber() -> {
                 "${str2CoinNumber(mappingReal.chain)}"
             }
-            CoinTypes.Violas.coinType(),
-            CoinTypes.Libra.coinType() -> {
+            getViolasCoinType().coinNumber(),
+            getDiemCoinType().coinNumber() -> {
                 "${str2CoinNumber(mappingReal.chain)}${mappingReal.mapName}"
             }
             else -> {
@@ -211,7 +211,7 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
 
     private fun getMarkIndex(iTokenVo: ITokenVo): Int? {
         return if (iTokenVo is StableTokenVo) {
-            if (iTokenVo.coinNumber == CoinTypes.Libra.coinType()) {
+            if (iTokenVo.coinNumber == getDiemCoinType().coinNumber()) {
                 mMappingRealMap[mappingKey(iTokenVo)]?.index
             } else {
                 iTokenVo.marketIndex

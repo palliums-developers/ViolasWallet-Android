@@ -1,11 +1,9 @@
 package com.violas.wallet.biz.exchange.processor
 
 import com.palliums.content.ContextProvider
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.exchange.*
-import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -40,7 +38,7 @@ class ViolasToAssetsMappingProcessor(
 
     override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         return tokenFrom is StableTokenVo
-                && tokenFrom.coinNumber == CoinTypes.Violas.coinType()
+                && tokenFrom.coinNumber == getViolasCoinType().coinNumber()
                 && supportMappingPair.containsKey(IAssetsMark.convert(tokenTo).mark())
     }
 
@@ -61,7 +59,7 @@ class ViolasToAssetsMappingProcessor(
             ?: throw AccountNotFindAddressException()
 
         // 检查 Libra 的稳定币有没有 Publish
-        if (tokenTo.coinNumber == CoinTypes.Libra.coinType()) {
+        if (tokenTo.coinNumber == getDiemCoinType().coinNumber()) {
             tokenTo as StableTokenVo
 
             // 检查收款地址激活状态
@@ -78,7 +76,7 @@ class ViolasToAssetsMappingProcessor(
             }
             if (!isPublishToken) {
                 throw AccountPayeeTokenNotActiveException(
-                    CoinTypes.Libra,
+                    getDiemCoinType(),
                     payeeAddress,
                     tokenTo
                 )
@@ -110,7 +108,7 @@ class ViolasToAssetsMappingProcessor(
             "type",
             supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.label
         )
-        if (tokenTo.coinNumber == CoinTypes.BitcoinTest.coinType() || tokenTo.coinNumber == CoinTypes.Bitcoin.coinType()) {
+        if (tokenTo.coinNumber == getBitcoinCoinType().coinNumber()) {
             subExchangeDate.put("to_address", payeeAddress)
         } else {
             val authKeyPrefix = "00000000000000000000000000000000"
@@ -133,7 +131,7 @@ class ViolasToAssetsMappingProcessor(
             optionTokenSwapTransactionPayload,
             account,
             gasCurrencyCode = typeTagFrom.value.module,
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         ).sequenceNumber.toString()
     }
 
@@ -142,7 +140,7 @@ class ViolasToAssetsMappingProcessor(
         toIAssetsMark: IAssetsMark
     ): Boolean {
         return fromIAssetsMark is LibraTokenAssetsMark
-                && fromIAssetsMark.coinNumber() == CoinTypes.Violas.coinType()
+                && fromIAssetsMark.coinNumber() == getViolasCoinType().coinNumber()
                 && supportMappingPair.containsKey(toIAssetsMark.mark())
     }
 
@@ -198,7 +196,7 @@ class ViolasToAssetsMappingProcessor(
             optionTokenSwapTransactionPayload,
             account,
             gasCurrencyCode = typeTagFrom.value.module,
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         ).sequenceNumber.toString()
     }
 }

@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.interceptor;
 
-import com.violas.wallet.common.Vm;
+import com.violas.wallet.common.VmConfigs;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ public class BTrusteeInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        String host = Vm.mUTXOServiceAddress;
+        String host = VmConfigs.BITCOIN_UTXO_URL;
         if (host != null) {
             HttpUrl newUrl = request.url().newBuilder()
                     .host(host)

@@ -14,10 +14,10 @@ import android.util.Log
 import android.view.View
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.setSystemBar
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getViolasChainId
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.walletconnect.WalletConnect
 import com.violas.wallet.walletconnect.WalletConnectSessionListener
@@ -86,12 +86,12 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
         mWalletConnect.mWalletConnectSessionListener = object : WalletConnectSessionListener {
             override fun onRequest(id: Long, peer: WCPeerMeta) {
                 val findByCoinTypeByIdentity =
-                    mAccountStorage.loadAllByCoinType(CoinTypes.Violas.coinType())
+                    mAccountStorage.loadAllByCoinType(getViolasCoinType().coinNumber())
                 val accounts =
                     findByCoinTypeByIdentity.map {
                         it.address
                     }
-                val chainId = Vm.ViolasChainId.toString()
+                val chainId = getViolasChainId().toString()
                 if (mWalletConnect.approveSession(accounts, chainId)) {
                     mRequestHandle = true
                     dismissProgress()

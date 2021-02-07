@@ -7,11 +7,11 @@ import com.quincysx.crypto.bip32.Index;
  * @date 2018/3/5 下午4:27
  */
 public class Account {
-    private final CoinType coinType;
+    private final CoinTypeWrapper coinType;
     private final int account;
     private final String string;
 
-    Account(final CoinType coinType, final int account) {
+    Account(final CoinTypeWrapper coinType, final int account) {
         if (Index.isHardened(account))
             throw new IllegalArgumentException();
         this.coinType = coinType;
@@ -23,7 +23,7 @@ public class Account {
         return account;
     }
 
-    public CoinType getParent() {
+    public CoinTypeWrapper getParent() {
         return coinType;
     }
 

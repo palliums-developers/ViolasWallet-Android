@@ -4,10 +4,9 @@ import android.content.Context
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.utils.getString
 import com.palliums.violas.error.ViolasException
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.utils.validationBTCAddress
@@ -95,7 +94,7 @@ class TransferManager {
         }
 
         when (account.coinNumber) {
-            CoinTypes.Libra.coinType() -> {
+            CoinType.Diem.coinNumber() -> {
                 transferLibra(
                     context,
                     address,
@@ -106,7 +105,7 @@ class TransferManager {
                     error
                 )
             }
-            CoinTypes.Violas.coinType() -> {
+            CoinType.Violas.coinNumber() -> {
                 if (token) {
                     transferViolasToken(
                         context,
@@ -214,18 +213,18 @@ class TransferManager {
 
     private fun checkAddress(address: String, coinNumber: Int): Boolean {
         when (coinNumber) {
-            CoinTypes.Libra.coinType() -> {
+            CoinType.Diem.coinNumber() -> {
                 if (!validationLibraAddress(address)) {
                     return false
                 }
             }
-            CoinTypes.Violas.coinType() -> {
+            CoinType.Violas.coinNumber() -> {
                 if (!validationViolasAddress(address)) {
                     return false
                 }
             }
-            CoinTypes.Bitcoin.coinType(),
-            CoinTypes.BitcoinTest.coinType() -> {
+            CoinType.Bitcoin.coinNumber(),
+            CoinType.BitcoinTest.coinNumber() -> {
                 if (!validationBTCAddress(address)) {
                     return false
                 }

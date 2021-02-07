@@ -4,10 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.*
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
@@ -52,8 +53,7 @@ abstract class TransferActivity : BaseAppActivity() {
         ) {
             var isToken = tokenName == null
             when (coinType) {
-                CoinTypes.BitcoinTest.coinType(),
-                CoinTypes.Bitcoin.coinType() -> {
+                getBitcoinCoinType().coinNumber() -> {
                     Intent(context, BTCTransferActivity::class.java)
                 }
                 else -> {
@@ -73,7 +73,7 @@ abstract class TransferActivity : BaseAppActivity() {
 
     var isToken = false
     var assetsName: String? = ""
-    var coinNumber: Int = CoinTypes.Violas.coinType()
+    var coinNumber: Int = getViolasCoinType().coinNumber()
     var transferAmount = 0L
     var toAddress: String? = ""
     var toSubAddress: String? = ""
@@ -97,14 +97,14 @@ abstract class TransferActivity : BaseAppActivity() {
         if (savedInstanceState != null) {
             isToken = savedInstanceState.getBoolean(EXT_IS_TOKEN, false)
             assetsName = savedInstanceState.getString(EXT_ASSETS_NAME)
-            coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+            coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, getViolasCoinType().coinNumber())
             transferAmount = savedInstanceState.getLong(EXT_AMOUNT, 0)
             toAddress = savedInstanceState.getString(EXT_ADDRESS)
             toSubAddress = savedInstanceState.getString(EXT_SUB_ADDRESS)
         } else if (intent != null) {
             isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
             assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
-            coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+            coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, getViolasCoinType().coinNumber())
             transferAmount = intent.getLongExtra(EXT_AMOUNT, 0)
             toAddress = intent.getStringExtra(EXT_ADDRESS)
             toSubAddress = intent.getStringExtra(EXT_SUB_ADDRESS)

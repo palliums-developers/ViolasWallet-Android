@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AddressBookManager
@@ -29,7 +29,7 @@ class AddAddressBookActivity : BaseAppActivity() {
         fun start(
             context: Activity,
             requestCode: Int,
-            coinType: Int = CoinTypes.Bitcoin.coinType()
+            coinType: Int = CoinType.Bitcoin.coinNumber()
         ) {
             Intent(context, AddAddressBookActivity::class.java).apply {
                 putExtra(EXT_COIN_TYPE, coinType)
@@ -42,12 +42,12 @@ class AddAddressBookActivity : BaseAppActivity() {
     private val mCoinList by lazy {
         linkedMapOf(
             Pair(Int.MIN_VALUE, getString(R.string.action_please_choose)),
-            Pair(CoinTypes.Violas.coinType(), CoinTypes.Violas.fullName()),
-            Pair(CoinTypes.Libra.coinType(), CoinTypes.Libra.fullName()),
+            Pair(CoinType.Violas.coinNumber(), CoinType.Violas.chainName()),
+            Pair(CoinType.Diem.coinNumber(), CoinType.Diem.chainName()),
             if (Vm.TestNet) {
-                Pair(CoinTypes.BitcoinTest.coinType(), CoinTypes.BitcoinTest.fullName())
+                Pair(CoinType.BitcoinTest.coinNumber(), CoinType.BitcoinTest.chainName())
             } else {
-                Pair(CoinTypes.Bitcoin.coinType(), CoinTypes.Bitcoin.fullName())
+                Pair(CoinType.Bitcoin.coinNumber(), CoinType.Bitcoin.chainName())
             }
         )
     }
@@ -82,12 +82,12 @@ class AddAddressBookActivity : BaseAppActivity() {
                 return@setOnClickListener
             }
             val checkAddress = when (mCoinTypes) {
-                CoinTypes.BitcoinTest.coinType(),
-                CoinTypes.Bitcoin.coinType() -> {
+                CoinType.BitcoinTest.coinNumber(),
+                CoinType.Bitcoin.coinNumber() -> {
                     validationBTCAddress(address)
                 }
-                CoinTypes.Violas.coinType(),
-                CoinTypes.Libra.coinType() -> {
+                CoinType.Violas.coinNumber(),
+                CoinType.Diem.coinNumber() -> {
                     validationLibraAddress(address)
                 }
                 else -> {
@@ -117,16 +117,16 @@ class AddAddressBookActivity : BaseAppActivity() {
         coinTypeGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.coinTypeLibra -> {
-                    mCoinTypes = CoinTypes.Libra.coinType()
+                    mCoinTypes = CoinType.Diem.coinNumber()
                 }
                 R.id.coinTypeViolas -> {
-                    mCoinTypes = CoinTypes.Violas.coinType()
+                    mCoinTypes = CoinType.Violas.coinNumber()
                 }
                 R.id.coinTypeBitcoin -> {
                     mCoinTypes = if (Vm.TestNet) {
-                        CoinTypes.BitcoinTest.coinType()
+                        CoinType.BitcoinTest.coinNumber()
                     } else {
-                        CoinTypes.Bitcoin.coinType()
+                        CoinType.Bitcoin.coinNumber()
                     }
                 }
             }
@@ -135,14 +135,14 @@ class AddAddressBookActivity : BaseAppActivity() {
 
     private fun refreshCoinType() {
         when (mCoinTypes) {
-            CoinTypes.Violas.coinType() -> {
+            CoinType.Violas.coinNumber() -> {
                 coinTypeViolas.isChecked = true
             }
-            CoinTypes.Libra.coinType() -> {
+            CoinType.Diem.coinNumber() -> {
                 coinTypeLibra.isChecked = true
             }
-            CoinTypes.BitcoinTest.coinType(),
-            CoinTypes.Bitcoin.coinType() -> {
+            CoinType.BitcoinTest.coinNumber(),
+            CoinType.Bitcoin.coinNumber() -> {
                 coinTypeBitcoin.isChecked = true
             }
         }
@@ -161,7 +161,7 @@ class AddAddressBookActivity : BaseAppActivity() {
                                     try {
                                         editAddress.setText(scanBean.address)
                                         mCoinTypes =
-                                            CoinTypes.parseCoinType(scanBean.coinType).coinType()
+                                            CoinType.parseCoinNumber(scanBean.coinType).coinNumber()
                                         refreshCoinType()
                                     } catch (e: Exception) {
                                     }

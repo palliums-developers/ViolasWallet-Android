@@ -13,11 +13,11 @@ import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getResourceId
 import com.palliums.utils.start
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.BankRepaymentEvent
 import com.violas.wallet.event.UpdateBankBorrowedAmountEvent
 import com.violas.wallet.repository.http.bank.BorrowingInfoDTO
@@ -106,7 +106,7 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         }
 
         val accountDO = withContext(Dispatchers.IO) {
-            AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
         }
 
         return if (accountDO != null) {

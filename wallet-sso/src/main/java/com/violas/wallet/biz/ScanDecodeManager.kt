@@ -2,7 +2,7 @@ package com.violas.wallet.biz
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.common.SCAN_ACTION_LOGIN_DESKTOP
 import com.violas.wallet.common.Vm
 import kotlinx.coroutines.Dispatchers
@@ -46,18 +46,18 @@ fun decodeScanQRCode(
         val splitMsg = splitMsg(msg)
         var scanType = ScanCodeType.Address
         val coinType = when (splitMsg.coinType?.toLowerCase(Locale.CHINA)) {
-            CoinTypes.Bitcoin.fullName().toLowerCase(Locale.CHINA) -> {
+            CoinType.Bitcoin.chainName().toLowerCase(Locale.CHINA) -> {
                 if (Vm.TestNet) {
-                    CoinTypes.BitcoinTest.coinType()
+                    CoinType.BitcoinTest.coinNumber()
                 } else {
-                    CoinTypes.Bitcoin.coinType()
+                    CoinType.Bitcoin.coinNumber()
                 }
             }
-            CoinTypes.Libra.fullName().toLowerCase(Locale.CHINA) -> {
-                CoinTypes.Libra.coinType()
+            CoinType.Diem.chainName().toLowerCase(Locale.CHINA) -> {
+                CoinType.Diem.coinNumber()
             }
-            CoinTypes.Violas.fullName().toLowerCase(Locale.CHINA) -> {
-                CoinTypes.Violas.coinType()
+            CoinType.Violas.chainName().toLowerCase(Locale.CHINA) -> {
+                CoinType.Violas.coinNumber()
             }
             else -> {
                 scanType = ScanCodeType.Text

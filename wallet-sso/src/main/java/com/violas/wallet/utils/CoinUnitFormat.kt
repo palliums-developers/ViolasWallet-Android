@@ -1,17 +1,17 @@
 package com.violas.wallet.utils
 
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import java.math.BigDecimal
 import java.math.RoundingMode
 
 fun getCoinDecimal(coinNumber: Int): Long {
     return when (coinNumber) {
-        CoinTypes.Libra.coinType(),
-        CoinTypes.Violas.coinType() -> {
+        CoinType.Diem.coinNumber(),
+        CoinType.Violas.coinNumber() -> {
             1000000
         }
-        CoinTypes.Bitcoin.coinType(),
-        CoinTypes.BitcoinTest.coinType() -> {
+        CoinType.Bitcoin.coinNumber(),
+        CoinType.BitcoinTest.coinNumber() -> {
             100000000
         }
         else -> {
@@ -37,33 +37,33 @@ fun convertViolasTokenUnit(amount: String): String {
     }
 }
 
-fun convertDisplayUnitToAmount(amount: String, coinTypes: CoinTypes): Long {
-    return convertDisplayUnitToAmount(amount.toDouble(), coinTypes)
+fun convertDisplayUnitToAmount(amount: String, coinType: CoinType): Long {
+    return convertDisplayUnitToAmount(amount.toDouble(), coinType)
 }
 
-fun convertDisplayUnitToAmount(amount: Double, coinTypes: CoinTypes): Long {
+fun convertDisplayUnitToAmount(amount: Double, coinType: CoinType): Long {
     val amountBigDecimal = BigDecimal(amount.toString())
-    val unitBigDecimal = getCoinDecimal(coinTypes.coinType())
+    val unitBigDecimal = getCoinDecimal(coinType.coinNumber())
     return amountBigDecimal
         .multiply(BigDecimal(unitBigDecimal))
         .toLong()
 }
 
-fun convertAmountToDisplayUnit(amount: Long, coinTypes: CoinTypes): Pair<String, String> {
-    return convertAmountToDisplayUnit(amount.toString(), coinTypes)
+fun convertAmountToDisplayUnit(amount: Long, coinType: CoinType): Pair<String, String> {
+    return convertAmountToDisplayUnit(amount.toString(), coinType)
 }
 
-fun convertAmountToDisplayUnit(amount: String, coinTypes: CoinTypes): Pair<String, String> {
+fun convertAmountToDisplayUnit(amount: String, coinType: CoinType): Pair<String, String> {
     val amountBigDecimal = BigDecimal(amount)
     val scale: Int
-    val unitBigDecimal = when (coinTypes) {
-        CoinTypes.Violas,
-        CoinTypes.Libra -> {
+    val unitBigDecimal = when (coinType) {
+        CoinType.Violas,
+        CoinType.Diem -> {
             scale = 6
             BigDecimal("1000000")
         }
-        CoinTypes.Bitcoin,
-        CoinTypes.BitcoinTest -> {
+        CoinType.Bitcoin,
+        CoinType.BitcoinTest -> {
             scale = 8
             BigDecimal("100000000")
         }
@@ -80,5 +80,5 @@ fun convertAmountToDisplayUnit(amount: String, coinTypes: CoinTypes): Pair<Strin
     } else {
         "0"
     }
-    return Pair(amountStr, coinTypes.coinUnit())
+    return Pair(amountStr, coinType.coinUnit())
 }

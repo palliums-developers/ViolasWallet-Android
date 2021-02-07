@@ -3,8 +3,8 @@ package com.violas.wallet.ui.incentive.receiveRewards
 import androidx.lifecycle.MutableLiveData
 import com.palliums.base.BaseViewModel
 import com.palliums.utils.getString
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.selectCountryArea.CountryAreaVO
@@ -42,7 +42,7 @@ class ReceiveIncentiveRewardsViewModel : BaseViewModel() {
 
         try {
             violasAccount =
-                DataRepository.getAccountStorage().findByCoinType(CoinTypes.Violas.coinType())
+                DataRepository.getAccountStorage().findByCoinType(getViolasCoinType().coinNumber())
         } catch (ignore: Exception) {
 
         }

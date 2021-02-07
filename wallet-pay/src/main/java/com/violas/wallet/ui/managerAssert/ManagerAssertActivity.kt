@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -19,14 +18,14 @@ import com.palliums.utils.getResourceId
 import com.palliums.utils.openBrowser
 import com.palliums.violas.bean.TokenMark
 import com.palliums.widget.dividers.RecyclerViewItemDividers
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.smallraw.support.switchcompat.SwitchButton
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseListingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
-import com.violas.wallet.common.BaseBrowserUrl
+import com.violas.wallet.common.getViolasFaucetUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.web.WebCommonActivity
 import com.violas.wallet.utils.authenticateAccount
@@ -207,7 +206,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                             showToast(
                                 getString(
                                     R.string.add_currency_first_tips_add_failure,
-                                    CoinTypes.parseCoinType(account.coinNumber).coinName()
+                                    CoinType.parseCoinNumber(account.coinNumber).coinName()
                                 )
                             )
                         }
@@ -219,7 +218,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                             e.getShowErrorMessage(
                                 failedDesc = getString(
                                     R.string.add_currency_first_tips_add_failure,
-                                    CoinTypes.parseCoinType(account.coinNumber).coinName()
+                                    CoinType.parseCoinNumber(account.coinNumber).coinName()
                                 )
                             )
                         )
@@ -239,7 +238,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
             }
         }
 
-        val url = BaseBrowserUrl.getViolasTestCoinUrl(address)
+        val url = getViolasFaucetUrl(address)
         if (!openBrowser(this, url)) {
             WebCommonActivity.start(
                 this,

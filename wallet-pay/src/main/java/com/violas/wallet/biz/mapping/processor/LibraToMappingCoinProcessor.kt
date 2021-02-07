@@ -1,11 +1,12 @@
 package com.violas.wallet.biz.mapping.processor
 
 import com.palliums.content.ContextProvider
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.mapping.PayeeAccountCoinNotActiveException
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getDiemChainId
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
@@ -34,8 +35,8 @@ class LibraToMappingCoinProcessor(
     private val libraService by lazy { DataRepository.getLibraRpcService() }
 
     override fun hasMappable(coinPair: MappingCoinPairDTO): Boolean {
-        return str2CoinType(coinPair.fromCoin.chainName) == CoinTypes.Libra
-                && str2CoinType(coinPair.toCoin.chainName) == CoinTypes.Violas
+        return str2CoinType(coinPair.fromCoin.chainName) == getDiemCoinType()
+                && str2CoinType(coinPair.toCoin.chainName) == getViolasCoinType()
     }
 
     override suspend fun mapping(
@@ -102,7 +103,7 @@ class LibraToMappingCoinProcessor(
             optionMappingTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
             gasCurrencyCode = typeTagFrom.value.module,
-            chainId = Vm.LibraChainId
+            chainId = getDiemChainId()
         ).sequenceNumber.toString()
     }
 }

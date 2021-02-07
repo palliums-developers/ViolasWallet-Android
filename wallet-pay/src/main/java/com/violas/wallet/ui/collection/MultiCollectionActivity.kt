@@ -11,12 +11,12 @@ import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.*
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
@@ -51,11 +51,7 @@ class MultiCollectionActivity : BaseAppActivity(),
             } else {
                 assetsVo?.getAssetsName()
             }
-            val coinNumber = assetsVo?.getCoinNumber() ?: (if (Vm.TestNet) {
-                CoinTypes.BitcoinTest.coinType()
-            } else {
-                CoinTypes.Bitcoin.coinType()
-            })
+            val coinNumber = assetsVo?.getCoinNumber() ?: getBitcoinCoinType().coinNumber()
             Intent(context, MultiCollectionActivity::class.java).apply {
                 putExtra(EXT_ASSETS_NAME, assetsName)
                 putExtra(EXT_COIN_NUMBER, coinNumber)
@@ -65,7 +61,7 @@ class MultiCollectionActivity : BaseAppActivity(),
 
     private var initTag = false
     private var assetsName: String? = ""
-    private var coinNumber: Int = CoinTypes.Violas.coinType()
+    private var coinNumber: Int = getViolasCoinType().coinNumber()
 
     private val mWalletAppViewModel by lazy {
         WalletAppViewModel.getViewModelInstance(this@MultiCollectionActivity)
@@ -138,36 +134,26 @@ class MultiCollectionActivity : BaseAppActivity(),
                 }
 
                 val collectionAddress = when (currentAccount.coinNumber) {
-                    CoinTypes.Bitcoin.coinType(), CoinTypes.BitcoinTest.coinType() -> {
+                    getBitcoinCoinType().coinNumber() -> {
                         "${
-                            CoinTypes.parseCoinType(currentAccount.coinNumber).fullName()
+                            CoinType.parseCoinNumber(currentAccount.coinNumber).chainName()
                                 .toLowerCase(Locale.CHINA)
                         }:${currentAccount.address}"
                     }
-                    CoinTypes.Libra.coinType() -> {
+                    getDiemCoinType().coinNumber() -> {
                         val tokenDo = mTokenManager.findTokenById(assets.getId())
-                        val network = if (Vm.TestNet) {
-                            AccountIdentifier.NetworkPrefix.TestnetPrefix
-                        } else {
-                            AccountIdentifier.NetworkPrefix.MainnetPrefix
-                        }
                         IntentIdentifier(
                             AccountIdentifier(
-                                network,
+                                geDiemNetworkPrefix(),
                                 AccountAddress(currentAccount.address.hexToBytes())
                             ), currency = tokenDo?.name
                         ).encode()
                     }
-                    CoinTypes.Violas.coinType() -> {
+                    getViolasCoinType().coinNumber() -> {
                         val tokenDo = mTokenManager.findTokenById(assets.getId())
-                        val network = if (Vm.TestNet) {
-                            org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.TestnetPrefix
-                        } else {
-                            org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.MainnetPrefix
-                        }
                         org.palliums.violascore.wallet.IntentIdentifier(
                             org.palliums.violascore.wallet.AccountIdentifier(
-                                network,
+                                getViolasNetworkPrefix(),
                                 org.palliums.violascore.transaction.AccountAddress(currentAccount.address.hexToBytes())
                             ), currency = tokenDo?.name
                         ).encode()
@@ -191,10 +177,10 @@ class MultiCollectionActivity : BaseAppActivity(),
     private fun initData(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             assetsName = savedInstanceState.getString(EXT_ASSETS_NAME)
-            coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+            coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, getViolasCoinType().coinNumber())
         } else if (intent != null) {
             assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
-            coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+            coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, getViolasCoinType().coinNumber())
         }
     }
 
@@ -225,9 +211,7 @@ class MultiCollectionActivity : BaseAppActivity(),
 
     private fun changeCurrAssets(coinType: Int, tokenModule: String?) {
         mWalletAppViewModel.mAssetsListLiveData.value?.forEach { assets ->
-            if (coinType == CoinTypes.BitcoinTest.coinType()
-                || coinType == CoinTypes.Bitcoin.coinType()
-            ) {
+            if (coinType == getBitcoinCoinType().coinNumber()) {
                 if (coinType == assets.getCoinNumber()) {
                     changeCurrAssets(assets)
                     return@forEach

@@ -18,9 +18,9 @@ import com.palliums.extensions.close
 import com.palliums.extensions.showToast
 import com.palliums.utils.*
 import com.palliums.widget.status.IStatusLayout
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.common.KEY_ONE
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.loadCircleImage
@@ -205,7 +205,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
                         else -> {
                             // 资金池转入选择币种，只展示交易市场支持的violas稳定币种
                             if (it is StableTokenVo) {
-                                it.coinNumber == CoinTypes.Violas.coinType()
+                                it.coinNumber == getViolasCoinType().coinNumber()
                             } else {
                                 false
                             }

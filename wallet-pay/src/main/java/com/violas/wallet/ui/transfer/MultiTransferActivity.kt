@@ -9,17 +9,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.extensions.expandTouchArea
-import com.palliums.extensions.getShowErrorMessage
 import com.palliums.extensions.logError
 import com.palliums.extensions.show
 import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
@@ -68,11 +69,7 @@ class MultiTransferActivity : BaseAppActivity(),
             } else {
                 assetsVo?.getAssetsName()
             }
-            val coinNumber = assetsVo?.getCoinNumber() ?: (if (Vm.TestNet) {
-                CoinTypes.BitcoinTest.coinType()
-            } else {
-                CoinTypes.Bitcoin.coinType()
-            })
+            val coinNumber = assetsVo?.getCoinNumber() ?: getBitcoinCoinType().coinNumber()
             Intent(context, MultiTransferActivity::class.java).apply {
                 putExtra(EXT_ADDRESS, toAddress)
                 putExtra(EXT_AMOUNT, amount)
@@ -85,7 +82,7 @@ class MultiTransferActivity : BaseAppActivity(),
 
     private var initTag = false
     private var assetsName: String? = ""
-    private var coinNumber: Int = CoinTypes.Violas.coinType()
+    private var coinNumber: Int = getViolasCoinType().coinNumber()
     private var transferAmount = 0L
     private var toAddress: String? = ""
     private var toSubAddress: String? = ""
@@ -124,7 +121,7 @@ class MultiTransferActivity : BaseAppActivity(),
             EXT_AMOUNT,
             convertDisplayUnitToAmount(
                 editAmountInput.text.toString().trim(),
-                CoinTypes.parseCoinType(coinNumber)
+                CoinType.parseCoinNumber(coinNumber)
             )
         )
         outState.putString(EXT_ADDRESS, editAddressInput.text.toString().trim())
@@ -219,13 +216,13 @@ class MultiTransferActivity : BaseAppActivity(),
     private fun initData(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             assetsName = savedInstanceState.getString(EXT_ASSETS_NAME)
-            coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+            coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, getViolasCoinType().coinNumber())
             transferAmount = savedInstanceState.getLong(EXT_AMOUNT, 0)
             toAddress = savedInstanceState.getString(EXT_ADDRESS)
             toSubAddress = savedInstanceState.getString(EXT_SUB_ADDRESS)
         } else if (intent != null) {
             assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
-            coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, CoinTypes.Violas.coinType())
+            coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, getDiemCoinType().coinNumber())
             transferAmount = intent.getLongExtra(EXT_AMOUNT, 0)
             toAddress = intent.getStringExtra(EXT_ADDRESS)
             toSubAddress = intent.getStringExtra(EXT_SUB_ADDRESS)
@@ -235,7 +232,7 @@ class MultiTransferActivity : BaseAppActivity(),
     private fun initView() {
         if (transferAmount > 0) {
             val displayAmount =
-                convertAmountToDisplayUnit(transferAmount, CoinTypes.parseCoinType(coinNumber))
+                convertAmountToDisplayUnit(transferAmount, CoinType.parseCoinNumber(coinNumber))
             editAmountInput.setText(displayAmount.first)
         }
         editAddressInput.setText(toAddress)
@@ -350,9 +347,7 @@ class MultiTransferActivity : BaseAppActivity(),
         val assetsList = mWalletAppViewModel.mAssetsListLiveData.value
         logError { "assetsList size = ${assetsList?.size ?: 0}" }
         assetsList?.forEach { assets ->
-            if (coinType == CoinTypes.BitcoinTest.coinType()
-                || coinType == CoinTypes.Bitcoin.coinType()
-            ) {
+            if (coinType == getBitcoinCoinType().coinNumber()) {
                 if (coinType == assets.getCoinNumber()) {
                     changeCurrAssets(assets)
                     return@forEach

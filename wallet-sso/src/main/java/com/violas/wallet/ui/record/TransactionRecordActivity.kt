@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
@@ -44,7 +44,7 @@ class TransactionRecordActivity : BaseAppActivity() {
     private var mTokenIdx: Long? = null
     private var mTokenName: String? = null
     private lateinit var mAddress: String
-    private lateinit var mCoinTypes: CoinTypes
+    private lateinit var mCoinType: CoinType
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +61,7 @@ class TransactionRecordActivity : BaseAppActivity() {
                         R.id.flFragmentContainer,
                         TransactionRecordFragment.newInstance(
                             mAddress,
-                            mCoinTypes,
+                            mCoinType,
                             mTokenIdx,
                             mTokenName
                         )
@@ -110,7 +110,7 @@ class TransactionRecordActivity : BaseAppActivity() {
 
         return try {
             val accountDO = AccountManager().getAccountById(mAccountId)
-            mCoinTypes = CoinTypes.parseCoinType(accountDO.coinNumber)
+            mCoinType = CoinType.parseCoinNumber(accountDO.coinNumber)
             mAddress = accountDO.address
 
             // code for test, test address

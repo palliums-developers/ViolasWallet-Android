@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.palliums.content.App
 import com.palliums.utils.setSystemBar
-import com.quincysx.crypto.CoinTypes
 import com.quincysx.crypto.bitcoin.script.Script
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
@@ -19,6 +18,9 @@ import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
@@ -160,7 +162,7 @@ class WalletConnectActivity : BaseAppActivity() {
                 if (!transactionSwapVo.isSigned) {
                     val account = mAccountStorage.findById(transactionSwapVo.accountId)
                     when (account?.coinNumber) {
-                        CoinTypes.Libra.coinType() -> {
+                        getDiemCoinType().coinNumber() -> {
                             // <editor-fold defaultstate="collapsed" desc="处理 Libra 交易">
                             val rawTransactionHex = transactionSwapVo.hexTx
                             val hashByteArray =
@@ -182,7 +184,7 @@ class WalletConnectActivity : BaseAppActivity() {
                             ).toByteArray().toHex()
                             // </editor-fold>
                         }
-                        CoinTypes.Violas.coinType() -> {
+                        getViolasCoinType().coinNumber() -> {
                             // <editor-fold defaultstate="collapsed" desc="处理 Violas 交易">
                             val rawTransactionHex = transactionSwapVo.hexTx
                             val hashByteArray =
@@ -201,8 +203,7 @@ class WalletConnectActivity : BaseAppActivity() {
                             ).toByteArray().toHex()
                             // </editor-fold>
                         }
-                        CoinTypes.Bitcoin.coinType(),
-                        CoinTypes.BitcoinTest.coinType() -> {
+                        getBitcoinCoinType().coinNumber() -> {
                             // <editor-fold defaultstate="collapsed" desc="处理 Bitcoin 交易">
 
                             val privateKey = showPasswordSignTx(account) ?: return@launch
@@ -268,10 +269,10 @@ class WalletConnectActivity : BaseAppActivity() {
                 }
                 if (signedTx != null && transactionSwapVo.isSend) {
                     when (transactionSwapVo.coinType) {
-                        CoinTypes.Violas -> {
+                        getViolasCoinType() -> {
                             DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
                         }
-                        CoinTypes.Libra -> {
+                        getDiemCoinType() -> {
                             DataRepository.getLibraRpcService().submitTransaction(signedTx)
                         }
                     }

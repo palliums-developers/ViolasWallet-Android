@@ -12,9 +12,9 @@ import com.palliums.extensions.expandTouchArea
 import com.palliums.extensions.show
 import com.palliums.utils.getResourceId
 import com.palliums.widget.status.IStatusLayout
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.utils.loadRoundedImage
@@ -258,7 +258,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
         module: String,
         address: String,
         name: String,
-        coinType: Int = CoinTypes.Violas.coinType()
+        coinType: Int = getViolasCoinType().coinNumber()
     ) {
         var isFind = false
         mWalletAppViewModel.mAssetsListLiveData.value?.forEach {

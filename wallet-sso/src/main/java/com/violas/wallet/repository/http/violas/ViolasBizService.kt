@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.violas
 
 import com.palliums.violas.http.ViolasRepository
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
@@ -65,7 +65,7 @@ class ViolasBizService(private val mViolasRepository: ViolasRepository) : Transa
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
-                coinTypes = CoinTypes.Violas,
+                coinType = CoinType.Violas,
                 transactionType = transactionType,
                 time = bean.confirmedTime,
                 amount = bean.amount,

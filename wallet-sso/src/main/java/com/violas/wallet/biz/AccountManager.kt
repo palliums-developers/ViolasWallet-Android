@@ -3,7 +3,7 @@ package com.violas.wallet.biz
 import android.content.Context
 import com.palliums.content.ContextProvider.getContext
 import com.palliums.exceptions.RequestException
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.quincysx.crypto.bip32.ExtendedKey
 import com.quincysx.crypto.bip44.BIP44
 import com.quincysx.crypto.bip44.CoinPairDerive
@@ -90,14 +90,14 @@ class AccountManager {
      * 是否存在账户
      */
     fun existsWalletAccount(): Boolean {
-        if (mAccountStorage.loadByCoinType(CoinTypes.Violas.coinType()) == null) {
+        if (mAccountStorage.loadByCoinType(CoinType.Violas.coinNumber()) == null) {
             return false
         }
         return true
     }
 
     private fun getDefWallet(): Long {
-        return mAccountStorage.loadByCoinType(CoinTypes.Violas.coinType())?.id ?: 1L
+        return mAccountStorage.loadByCoinType(CoinType.Violas.coinNumber())?.id ?: 1L
     }
 
     fun removeWallet(accountId: AccountDO) {
@@ -109,7 +109,7 @@ class AccountManager {
     }
 
     fun getIdentityByWalletType(walletType: Int): AccountDO? {
-        return mAccountStorage.findByCoinTypeAndWalletType(CoinTypes.Violas.coinType(), walletType)
+        return mAccountStorage.findByCoinTypeAndWalletType(CoinType.Violas.coinNumber(), walletType)
     }
 
     /**
@@ -205,15 +205,15 @@ class AccountManager {
      */
     @Throws(MnemonicException::class)
     fun importWallet(
-        coinTypes: CoinTypes,
+        coinType: CoinType,
         context: Context,
         wordList: List<String>,
         walletName: String,
         password: ByteArray
     ): Long {
         checkMnemonicCount(wordList)
-        return when (coinTypes) {
-            CoinTypes.Libra -> {
+        return when (coinType) {
+            CoinType.Diem -> {
                 AccountManager().importLibraWallet(
                     context,
                     wordList,
@@ -221,7 +221,7 @@ class AccountManager {
                     password
                 )
             }
-            CoinTypes.Violas -> {
+            CoinType.Violas -> {
                 AccountManager().importViolasWallet(
                     context,
                     wordList,
@@ -229,8 +229,7 @@ class AccountManager {
                     password
                 )
             }
-            CoinTypes.Bitcoin,
-            CoinTypes.BitcoinTest -> {
+            else -> {
                 AccountManager().importBtcWallet(
                     context,
                     wordList,
@@ -259,7 +258,7 @@ class AccountManager {
                 publicKey = deriveLibra.getPublicKey(),
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.Violas.coinType(),
+                coinNumber = CoinType.Violas.coinNumber(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "$walletName",
                 walletType = 1
@@ -285,7 +284,7 @@ class AccountManager {
                 publicKey = deriveLibra.getPublicKey(),
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.Libra.coinType(),
+                coinNumber = CoinType.Diem.coinNumber(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "$walletName",
                 walletType = 1
@@ -315,9 +314,9 @@ class AccountManager {
                 publicKey = deriveBitcoin.publicKey,
                 address = deriveBitcoin.address,
                 coinNumber = if (Vm.TestNet) {
-                    CoinTypes.BitcoinTest.coinType()
+                    CoinType.BitcoinTest.coinNumber()
                 } else {
-                    CoinTypes.Bitcoin.coinType()
+                    CoinType.Bitcoin.coinNumber()
                 },
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = "$walletName",
@@ -367,7 +366,7 @@ class AccountManager {
                 publicKey = deriveLibra.getPublicKey(),
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.Violas.coinType(),
+                coinNumber = CoinType.Violas.coinNumber(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 walletNickname = walletName,
                 walletType = walletType.type
@@ -397,9 +396,9 @@ class AccountManager {
     private fun deriveBitcoin(seed: ByteArray): BitCoinECKeyPair {
         val extendedKey = ExtendedKey.create(seed)
         val bip44Path = if (Vm.TestNet) {
-            BIP44.m().purpose44().coinType(CoinTypes.BitcoinTest).account(0).external().address(0)
+            BIP44.m().purpose44().coinType(CoinType.BitcoinTest).account(0).external().address(0)
         } else {
-            BIP44.m().purpose44().coinType(CoinTypes.Bitcoin).account(0).external().address(0)
+            BIP44.m().purpose44().coinType(CoinType.Bitcoin).account(0).external().address(0)
         }
         val derive = CoinPairDerive(extendedKey).derive(bip44Path)
         return derive as BitCoinECKeyPair
@@ -421,16 +420,16 @@ class AccountManager {
 
     suspend fun getBalanceWithUnit(account: AccountDO): Pair<String, String> {
         val balance = getBalance(account)
-        val coinType = CoinTypes.parseCoinType(account.coinNumber)
+        val coinType = CoinType.parseCoinNumber(account.coinNumber)
         return convertAmountToDisplayUnit(balance, coinType)
     }
 
     suspend fun getBalance(account: AccountDO): Long {
         return when (account.coinNumber) {
-            CoinTypes.Violas.coinType() -> {
+            CoinType.Violas.coinNumber() -> {
                 DataRepository.getViolasService().getBalanceInMicroLibra(account.address)
             }
-            CoinTypes.Libra.coinType() -> {
+            CoinType.Diem.coinNumber() -> {
                 DataRepository.getLibraService().getBalanceInMicroLibra(account.address)
             }
             else -> {
@@ -457,7 +456,7 @@ class AccountManager {
 
     suspend fun activateAccount(account: AccountDO) {
         when (account.coinNumber) {
-            CoinTypes.Violas.coinType() -> {
+            CoinType.Violas.coinNumber() -> {
                 //todo 等后台接口做完修改
                 val accountState =
                     DataRepository.getViolasService().getAccountState(account.address)
@@ -467,7 +466,7 @@ class AccountManager {
                 }
             }
 
-            CoinTypes.Libra.coinType() -> {
+            CoinType.Diem.coinNumber() -> {
                 val accountState =
                     DataRepository.getLibraService().getAccountState(account.address)
                 if (!isActivate(accountState?.authenticationKey)) {

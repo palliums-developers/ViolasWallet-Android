@@ -1,17 +1,19 @@
 package com.violas.wallet.utils
 
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-fun getCoinUnit(coinType: CoinTypes): Long {
+fun getCoinUnit(coinType: CoinType): Long {
     return when (coinType) {
-        CoinTypes.Libra,
-        CoinTypes.Violas -> {
+        getDiemCoinType(),
+        getViolasCoinType() -> {
             1000000
         }
-        CoinTypes.Bitcoin,
-        CoinTypes.BitcoinTest -> {
+        getBitcoinCoinType() -> {
             100000000
         }
         else -> {
@@ -20,14 +22,13 @@ fun getCoinUnit(coinType: CoinTypes): Long {
     }
 }
 
-fun getCoinDecimal(coinType: CoinTypes): Int {
+fun getCoinDecimal(coinType: CoinType): Int {
     return when (coinType) {
-        CoinTypes.Libra,
-        CoinTypes.Violas -> {
+        getDiemCoinType(),
+        getViolasCoinType() -> {
             6
         }
-        CoinTypes.Bitcoin,
-        CoinTypes.BitcoinTest -> {
+        getBitcoinCoinType() -> {
             8
         }
         else -> {
@@ -56,33 +57,32 @@ fun convertViolasTokenPrice(price: String): String {
     return BigDecimal(price).stripTrailingZeros().toPlainString()
 }
 
-fun convertDisplayUnitToAmount(amount: String, coinTypes: CoinTypes): Long {
-    return convertDisplayUnitToAmount(amount.toDoubleOrNull() ?: 0.0, coinTypes)
+fun convertDisplayUnitToAmount(amount: String, coinType: CoinType): Long {
+    return convertDisplayUnitToAmount(amount.toDoubleOrNull() ?: 0.0, coinType)
 }
 
-fun convertDisplayUnitToAmount(amount: Double, coinTypes: CoinTypes): Long {
+fun convertDisplayUnitToAmount(amount: Double, coinType: CoinType): Long {
     val amountBigDecimal = BigDecimal(amount.toString())
-    val unitBigDecimal = getCoinUnit(coinTypes)
+    val unitBigDecimal = getCoinUnit(coinType)
     return amountBigDecimal
         .multiply(BigDecimal(unitBigDecimal))
         .toLong()
 }
 
-fun convertAmountToDisplayUnit(amount: Long, coinTypes: CoinTypes): Pair<String, String> {
-    return convertAmountToDisplayUnit(amount.toString(), coinTypes)
+fun convertAmountToDisplayUnit(amount: Long, coinType: CoinType): Pair<String, String> {
+    return convertAmountToDisplayUnit(amount.toString(), coinType)
 }
 
-fun convertAmountToDisplayUnit(amount: String, coinTypes: CoinTypes): Pair<String, String> {
+fun convertAmountToDisplayUnit(amount: String, coinType: CoinType): Pair<String, String> {
     val amountBigDecimal = BigDecimal(amount)
     val scale: Int
-    val unitBigDecimal = when (coinTypes) {
-        CoinTypes.Violas,
-        CoinTypes.Libra -> {
+    val unitBigDecimal = when (coinType) {
+        getViolasCoinType(),
+        getDiemCoinType() -> {
             scale = 6
             BigDecimal("1000000")
         }
-        CoinTypes.Bitcoin,
-        CoinTypes.BitcoinTest -> {
+        getBitcoinCoinType() -> {
             scale = 8
             BigDecimal("100000000")
         }
@@ -99,49 +99,49 @@ fun convertAmountToDisplayUnit(amount: String, coinTypes: CoinTypes): Pair<Strin
     } else {
         "0"
     }
-    return Pair(amountStr, coinTypes.coinUnit())
+    return Pair(amountStr, coinType.coinUnit())
 }
 
 fun convertDisplayAmountToAmount(
     amountStr: String,
-    coinTypes: CoinTypes = CoinTypes.Violas
+    coinType: CoinType = getViolasCoinType()
 ): BigDecimal {
-    return convertDisplayAmountToAmount(BigDecimal(amountStr), coinTypes)
+    return convertDisplayAmountToAmount(BigDecimal(amountStr), coinType)
 }
 
 fun convertDisplayAmountToAmount(
     amountBigDecimal: BigDecimal,
-    coinTypes: CoinTypes = CoinTypes.Violas
+    coinType: CoinType = getViolasCoinType()
 ): BigDecimal {
     return amountBigDecimal
-        .multiply(BigDecimal(getCoinUnit(coinTypes)))
+        .multiply(BigDecimal(getCoinUnit(coinType)))
 }
 
 fun convertAmountToDisplayAmount(
     amount: Long,
-    coinTypes: CoinTypes = CoinTypes.Violas
+    coinType: CoinType = getViolasCoinType()
 ): BigDecimal {
-    return convertAmountToDisplayAmount(BigDecimal(amount), coinTypes)
+    return convertAmountToDisplayAmount(BigDecimal(amount), coinType)
 }
 
 fun convertAmountToDisplayAmount(
     amountStr: String,
-    coinTypes: CoinTypes = CoinTypes.Violas
+    coinType: CoinType = getViolasCoinType()
 ): BigDecimal {
-    return convertAmountToDisplayAmount(BigDecimal(amountStr), coinTypes)
+    return convertAmountToDisplayAmount(BigDecimal(amountStr), coinType)
 }
 
 fun convertAmountToDisplayAmount(
     amountBigDecimal: BigDecimal,
-    coinTypes: CoinTypes = CoinTypes.Violas,
+    coinType: CoinType = getViolasCoinType(),
     decimalScale: Int? = null,
     roundingMode: RoundingMode = RoundingMode.HALF_UP
 ): BigDecimal {
     return if (amountBigDecimal > BigDecimal.ZERO)
         amountBigDecimal
             .divide(
-                BigDecimal(getCoinUnit(coinTypes)),
-                decimalScale ?: getCoinDecimal(coinTypes),
+                BigDecimal(getCoinUnit(coinType)),
+                decimalScale ?: getCoinDecimal(coinType),
                 roundingMode
             )
             .stripTrailingZeros()
@@ -151,62 +151,62 @@ fun convertAmountToDisplayAmount(
 
 fun convertAmountToDisplayAmountStr(
     amount: Long,
-    coinTypes: CoinTypes = CoinTypes.Violas
+    coinType: CoinType = getViolasCoinType()
 ): String {
     return convertAmountToDisplayAmount(
         BigDecimal(amount),
-        coinTypes
+        coinType
     ).toPlainString()
 }
 
 fun convertAmountToDisplayAmountStr(
     amountStr: String,
-    coinTypes: CoinTypes = CoinTypes.Violas
+    coinType: CoinType = getViolasCoinType()
 ): String {
     return convertAmountToDisplayAmount(
         BigDecimal(amountStr),
-        coinTypes
+        coinType
     ).toPlainString()
 }
 
 fun convertAmountToDisplayAmountStr(
     amountBigDecimal: BigDecimal,
-    coinTypes: CoinTypes = CoinTypes.Violas
+    coinType: CoinType = getViolasCoinType()
 ): String {
     return convertAmountToDisplayAmount(
         amountBigDecimal,
-        coinTypes
+        coinType
     ).toPlainString()
 }
 
 fun convertAmountToExchangeRate(
     amountA: Long,
     amountB: Long,
-    coinTypesB: CoinTypes = CoinTypes.Violas
+    coinTypeB: CoinType = getViolasCoinType()
 ): BigDecimal? {
     return convertAmountToExchangeRate(
         BigDecimal(amountA),
         BigDecimal(amountB),
-        coinTypesB
+        coinTypeB
     )
 }
 
 fun convertAmountToExchangeRate(
     amountAStr: String,
     amountBStr: String,
-    coinTypesB: CoinTypes = CoinTypes.Violas
+    coinTypeB: CoinType = getViolasCoinType()
 ): BigDecimal? {
     return convertAmountToExchangeRate(
         BigDecimal(amountAStr),
         BigDecimal(amountBStr),
-        coinTypesB
+        coinTypeB
     )
 }
 
 fun convertAmountToExchangeRate(
     amountABigDecimal: BigDecimal,
     amountBBigDecimal: BigDecimal,
-    coinTypesB: CoinTypes = CoinTypes.Violas
+    coinTypeB: CoinType = getViolasCoinType()
 ): BigDecimal? {
     if (amountABigDecimal > BigDecimal.ZERO && amountBBigDecimal > BigDecimal.ZERO) {
         val rateBigDecimal = amountBBigDecimal.divide(
@@ -217,7 +217,7 @@ fun convertAmountToExchangeRate(
 
         try {
             val array = rateBigDecimal.toPlainString().split(".")
-            if (array.size < 2 || array[1].length <= getCoinDecimal(coinTypesB))
+            if (array.size < 2 || array[1].length <= getCoinDecimal(coinTypeB))
                 return rateBigDecimal
 
             var scaleStart = 0
@@ -228,7 +228,7 @@ fun convertAmountToExchangeRate(
                     break
             }
 
-            var scaleEnd = getCoinDecimal(coinTypesB)
+            var scaleEnd = getCoinDecimal(coinTypeB)
             val charsEnd = array[1].substring(scaleEnd).toCharArray()
             for (char in charsEnd) {
                 scaleEnd++
@@ -237,7 +237,7 @@ fun convertAmountToExchangeRate(
             }
 
             val scale = if (scaleStart < scaleEnd)
-                getCoinDecimal(coinTypesB)
+                getCoinDecimal(coinTypeB)
             else
                 scaleEnd + 1
 

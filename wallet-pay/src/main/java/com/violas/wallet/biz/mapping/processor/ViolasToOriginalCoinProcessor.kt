@@ -1,11 +1,9 @@
 package com.violas.wallet.biz.mapping.processor
 
 import com.palliums.content.ContextProvider
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.mapping.PayeeAccountCoinNotActiveException
-import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
@@ -35,9 +33,8 @@ class ViolasToOriginalCoinProcessor(
 
     override fun hasMappable(coinPair: MappingCoinPairDTO): Boolean {
         val toCoinType = str2CoinType(coinPair.toCoin.chainName)
-        return str2CoinType(coinPair.fromCoin.chainName) == CoinTypes.Violas
-                && (toCoinType == (if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin)
-                || toCoinType == CoinTypes.Libra)
+        return str2CoinType(coinPair.fromCoin.chainName) == getViolasCoinType()
+                && (toCoinType == getBitcoinCoinType() || toCoinType == getDiemCoinType())
     }
 
     override suspend fun mapping(
@@ -48,7 +45,7 @@ class ViolasToOriginalCoinProcessor(
         amount: Long,
         coinPair: MappingCoinPairDTO
     ): String {
-        if (checkPayeeAccount && str2CoinType(coinPair.toCoin.chainName) == CoinTypes.Libra) {
+        if (checkPayeeAccount && str2CoinType(coinPair.toCoin.chainName) == getDiemCoinType()) {
             // 检查收款账户激活状态
             val payeeAccountState =
                 libraRpcService.getAccountState(payeeAccountDO.address)
@@ -86,9 +83,7 @@ class ViolasToOriginalCoinProcessor(
         subMappingDate.put("type", coinPair.mappingType)
         subMappingDate.put(
             "to_address",
-            if (str2CoinType(coinPair.toCoin.chainName)
-                == if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
-            )
+            if (str2CoinType(coinPair.toCoin.chainName) == getBitcoinCoinType())
                 payeeAccountDO.address
             else
                 "00000000000000000000000000000000${payeeAccountDO.address}"
@@ -109,7 +104,7 @@ class ViolasToOriginalCoinProcessor(
             optionMappingTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
             gasCurrencyCode = typeTagFrom.value.module,
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         ).sequenceNumber.toString()
     }
 }

@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.libra.violas
 
-import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.common.BaseBrowserUrl
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getDiemTxnDetailsUrl
 import com.violas.wallet.repository.http.TransactionRecordService
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
@@ -21,7 +21,7 @@ class LibraViolasService(
 
     private val libraTokens by lazy {
         WalletAppViewModel.getViewModelInstance().mAssetsListLiveData.value
-            ?.filter { it is AssetsTokenVo && it.getCoinNumber() == CoinTypes.Libra.coinType() }
+            ?.filter { it is AssetsTokenVo && it.getCoinNumber() == getDiemCoinType().coinNumber() }
             ?.associate { (it as AssetsTokenVo).module to it.getAssetsName() }
             ?: emptyMap()
     }
@@ -79,7 +79,7 @@ class LibraViolasService(
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
-                coinType = CoinTypes.Libra,
+                coinType = getDiemCoinType(),
                 transactionType = realTransactionType,
                 transactionState = transactionState,
                 fromAddress = dto.sender,
@@ -92,7 +92,7 @@ class LibraViolasService(
                 gasTokenId = dto.gasCurrency,
                 gasTokenDisplayName = libraTokens[dto.gasCurrency] ?: tokenDisplayName,
                 transactionId = dto.version.toString(),
-                url = BaseBrowserUrl.getLibraBrowserUrl(dto.version.toString())
+                url = getDiemTxnDetailsUrl(dto.version.toString())
             )
         }
         onSuccess.invoke(list, null)

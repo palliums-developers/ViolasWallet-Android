@@ -14,10 +14,11 @@ import com.palliums.listing.ListingViewModel
 import com.palliums.utils.DensityUtility
 import com.palliums.utils.start
 import com.palliums.widget.dividers.RecyclerViewItemDividers
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseListingActivity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.ui.account.AccountType
 import kotlinx.android.synthetic.main.item_add_wallet.view.*
 
@@ -132,20 +133,20 @@ class AddWalletViewModel : ListingViewModel<AddWalletVo>() {
             AddWalletVo(
                 AccountType.VIOLAS,
                 R.drawable.ic_violas_big,
-                CoinTypes.Violas.coinName(),
-                CoinTypes.Violas.fullName()
+                getViolasCoinType().coinName(),
+                getViolasCoinType().chainName()
             ),
             AddWalletVo(
                 AccountType.BTC,
                 R.drawable.ic_bitcoin_big,
-                if (Vm.TestNet) CoinTypes.BitcoinTest.coinName() else CoinTypes.Bitcoin.coinName(),
-                if (Vm.TestNet) CoinTypes.BitcoinTest.fullName() else CoinTypes.Bitcoin.fullName()
+                getBitcoinCoinType().coinName(),
+                getBitcoinCoinType().chainName()
             ),
             AddWalletVo(
                 AccountType.LIBRA,
                 R.drawable.ic_libra_big,
-                CoinTypes.Libra.coinName(),
-                CoinTypes.Libra.fullName()
+                getDiemCoinType().coinName(),
+                getDiemCoinType().chainName()
             )
         )
     }

@@ -4,10 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.palliums.utils.getString
 import com.palliums.violas.error.ViolasException
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.btc.TransactionManager
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
@@ -139,7 +138,7 @@ class TransferManager {
         val amount = amountStr.trim().toDouble()
 
         when (accountDO.coinNumber) {
-            CoinTypes.Libra.coinType() -> {
+            getDiemCoinType().coinNumber() -> {
                 transferLibra(
                     context,
                     receiverAddress,
@@ -152,7 +151,8 @@ class TransferManager {
                     error
                 )
             }
-            CoinTypes.Violas.coinType() -> {
+
+            getViolasCoinType().coinNumber() -> {
                 transferViolas(
                     context,
                     receiverAddress,
@@ -253,7 +253,7 @@ class TransferManager {
                 ),
                 account = Account(Ed25519KeyPair(decryptPrivateKey)),
                 gasCurrencyCode = token.module,
-                chainId = Vm.LibraChainId
+                chainId = getDiemChainId()
             )
             success.invoke("")
         } catch (e: Exception) {
@@ -292,7 +292,8 @@ class TransferManager {
                         arrayListOf()
                     )
                 ),
-                token.module, chainId = Vm.ViolasChainId
+                token.module,
+                chainId = getViolasChainId()
             )
             success.invoke("")
         } catch (e: Exception) {
@@ -303,22 +304,25 @@ class TransferManager {
     companion object {
         fun checkAddress(address: String, coinNumber: Int): Boolean {
             when (coinNumber) {
-                CoinTypes.Libra.coinType() -> {
+
+                getDiemCoinType().coinNumber() -> {
                     if (!validationLibraAddress(address)) {
                         return false
                     }
                 }
-                CoinTypes.Violas.coinType() -> {
+
+                getViolasCoinType().coinNumber() -> {
                     if (!validationViolasAddress(address)) {
                         return false
                     }
                 }
-                CoinTypes.Bitcoin.coinType(),
-                CoinTypes.BitcoinTest.coinType() -> {
+
+                getBitcoinCoinType().coinNumber() -> {
                     if (!validationBTCAddress(address)) {
                         return false
                     }
                 }
+
                 else -> {
                     return false
                 }

@@ -1,14 +1,12 @@
 package com.violas.wallet.biz.exchange.processor
 
 import com.palliums.content.ContextProvider
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.exchange.AccountNotFindAddressException
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.MappingInfo
-import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -23,7 +21,6 @@ import org.palliums.libracore.transaction.optionTransactionPayload
 import org.palliums.libracore.transaction.storage.StructTag
 import org.palliums.libracore.transaction.storage.TypeTagStructTag
 import org.palliums.libracore.wallet.Account
-import java.lang.RuntimeException
 
 class LibraToMappingAssetsProcessor(
     private val supportMappingPair: HashMap<String, MappingInfo>
@@ -43,7 +40,7 @@ class LibraToMappingAssetsProcessor(
 
     override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         return tokenFrom is StableTokenVo
-                && tokenFrom.coinNumber == CoinTypes.Libra.coinType()
+                && tokenFrom.coinNumber == getDiemCoinType().coinNumber()
                 && supportMappingPair.containsKey(IAssetsMark.convert(tokenTo).mark())
     }
 
@@ -64,7 +61,7 @@ class LibraToMappingAssetsProcessor(
             ?: throw AccountNotFindAddressException()
 
         // 检查 Libra 的稳定币有没有 Publish
-        if (tokenTo.coinNumber == CoinTypes.Violas.coinType()) {
+        if (tokenTo.coinNumber == getViolasCoinType().coinNumber()) {
             tokenTo as StableTokenVo
             // 开始检查 Violas 账户的基本信息
             // 检查收款地址激活状态
@@ -81,7 +78,7 @@ class LibraToMappingAssetsProcessor(
             }
             if (!isPublishToken) {
                 throw AccountPayeeTokenNotActiveException(
-                    CoinTypes.Libra,
+                    getViolasCoinType(),
                     payeeAddress,
                     tokenTo
                 )
@@ -113,7 +110,7 @@ class LibraToMappingAssetsProcessor(
             "type",
             supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.label
         )
-        if (tokenTo.coinNumber == CoinTypes.BitcoinTest.coinType() || tokenTo.coinNumber == CoinTypes.Bitcoin.coinType()) {
+        if (tokenTo.coinNumber == getBitcoinCoinType().coinNumber()) {
             subExchangeDate.put("to_address", payeeAddress)
         } else {
             val authKeyPrefix = "00000000000000000000000000000000"
@@ -136,7 +133,7 @@ class LibraToMappingAssetsProcessor(
             optionTokenSwapTransactionPayload,
             account,
             gasCurrencyCode = typeTagFrom.value.module,
-            chainId = Vm.LibraChainId
+            chainId = getDiemChainId()
         ).sequenceNumber.toString()
     }
 
@@ -145,7 +142,7 @@ class LibraToMappingAssetsProcessor(
         toIAssetsMark: IAssetsMark
     ): Boolean {
         return fromIAssetsMark is LibraTokenAssetsMark
-                && fromIAssetsMark.coinNumber() == CoinTypes.Libra.coinType()
+                && fromIAssetsMark.coinNumber() == getDiemCoinType().coinNumber()
                 && supportMappingPair.containsKey(toIAssetsMark.mark())
     }
 
@@ -203,7 +200,7 @@ class LibraToMappingAssetsProcessor(
             optionTokenSwapTransactionPayload,
             account,
             gasCurrencyCode = typeTagFrom.value.module,
-            chainId = Vm.LibraChainId
+            chainId = getDiemChainId()
         ).sequenceNumber.toString()
     }
 }

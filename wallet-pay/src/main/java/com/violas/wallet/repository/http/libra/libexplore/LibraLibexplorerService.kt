@@ -1,7 +1,7 @@
 package com.violas.wallet.repository.http.libra.libexplore
 
-import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.common.BaseBrowserUrl
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getDiemTxnDetailsUrl
 import com.violas.wallet.repository.http.TransactionRecordService
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
@@ -63,7 +63,7 @@ class LibraLibexplorerService(
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
-                coinType = CoinTypes.Libra,
+                coinType = getDiemCoinType(),
                 transactionType = realTransactionType,
                 transactionState = transactionState,
                 time = dto.expirationTime,
@@ -76,7 +76,7 @@ class LibraLibexplorerService(
                 gasTokenId = tokenId,
                 gasTokenDisplayName = tokenDisplayName,
                 transactionId = dto.version,
-                url = BaseBrowserUrl.getLibraBrowserUrl(dto.version)
+                url = getDiemTxnDetailsUrl(dto.version)
             )
         }
         onSuccess.invoke(list, null)

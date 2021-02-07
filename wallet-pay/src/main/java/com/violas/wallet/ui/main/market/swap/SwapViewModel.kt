@@ -6,7 +6,7 @@ import androidx.lifecycle.*
 import com.palliums.base.BaseViewModel
 import com.palliums.content.ContextProvider
 import com.palliums.violas.bean.TokenMark
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
@@ -202,12 +202,12 @@ class SwapViewModel() : BaseViewModel() {
             val inputAmount =
                 convertDisplayUnitToAmount(
                     inputAmountStr,
-                    CoinTypes.parseCoinType(inputToken.coinNumber)
+                    CoinType.parseCoinNumber(inputToken.coinNumber)
                 )
             val outputAmount =
                 convertDisplayUnitToAmount(
                     outputAmountStr,
-                    CoinTypes.parseCoinType(outputToken.coinNumber)
+                    CoinType.parseCoinNumber(outputToken.coinNumber)
                 )
 
             val outputMiniAmount = if (isInputFrom) {
@@ -239,11 +239,11 @@ class SwapViewModel() : BaseViewModel() {
     @Throws(RuntimeException::class)
     suspend fun publishToken(
         pwd: ByteArray,
-        coinTypes: CoinTypes,
+        coinType: CoinType,
         assetsMark: ITokenVo
     ): Boolean {
         val identityByCoinType =
-            AccountManager().getIdentityByCoinType(coinTypes.coinType()) ?: throw RuntimeException()
+            AccountManager().getIdentityByCoinType(coinType.coinNumber()) ?: throw RuntimeException()
 
         assetsMark as StableTokenVo
         val tokenManager = TokenManager()
@@ -256,7 +256,7 @@ class SwapViewModel() : BaseViewModel() {
 
         val tokenMark = TokenMark(assetsMark.module, assetsMark.address, assetsMark.name)
         val hasSucceed = tokenManager.publishToken(
-            coinTypes,
+            coinType,
             privateKey,
             tokenMark
         )

@@ -1,6 +1,6 @@
 package com.violas.wallet.ui.main.market.bean
 
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.viewModel.bean.AssetsCoinVo
 import com.violas.wallet.viewModel.bean.AssetsTokenVo
 import com.violas.wallet.viewModel.bean.AssetsVo
@@ -11,10 +11,10 @@ interface IAssetsMark {
     companion object {
         fun convert(iTokenVo: ITokenVo): IAssetsMark {
             return if (iTokenVo is PlatformTokenVo) {
-                CoinAssetsMark(CoinTypes.parseCoinType(iTokenVo.coinNumber))
+                CoinAssetsMark(CoinType.parseCoinNumber(iTokenVo.coinNumber))
             } else if (iTokenVo is StableTokenVo) {
                 LibraTokenAssetsMark(
-                    CoinTypes.parseCoinType(iTokenVo.coinNumber),
+                    CoinType.parseCoinNumber(iTokenVo.coinNumber),
                     iTokenVo.module,
                     iTokenVo.address,
                     iTokenVo.name
@@ -26,17 +26,17 @@ interface IAssetsMark {
 
         fun convert(iTokenVo: AssetsVo): IAssetsMark {
             return if (iTokenVo is AssetsCoinVo) {
-                CoinAssetsMark(CoinTypes.parseCoinType(iTokenVo.getCoinNumber()))
+                CoinAssetsMark(CoinType.parseCoinNumber(iTokenVo.getCoinNumber()))
             } else if (iTokenVo is AssetsTokenVo ) {
                 LibraTokenAssetsMark(
-                    CoinTypes.parseCoinType(iTokenVo.getCoinNumber()),
+                    CoinType.parseCoinNumber(iTokenVo.getCoinNumber()),
                     iTokenVo.module,
                     iTokenVo.address,
                     iTokenVo.name
                 )
             }else if(iTokenVo is HiddenTokenVo){
                 LibraTokenAssetsMark(
-                    CoinTypes.parseCoinType(iTokenVo.getCoinNumber()),
+                    CoinType.parseCoinNumber(iTokenVo.getCoinNumber()),
                     iTokenVo.module,
                     iTokenVo.address,
                     iTokenVo.name
@@ -52,37 +52,37 @@ interface IAssetsMark {
     fun coinNumber(): Int
 }
 
-class CoinAssetsMark(val coinTypes: CoinTypes) : IAssetsMark {
+class CoinAssetsMark(val coinType: CoinType) : IAssetsMark {
     override fun mark(): String {
-        return "c${coinTypes.coinType()}"
+        return "c${coinType.coinNumber()}"
     }
 
     override fun coinNumber(): Int {
-        return coinTypes.coinType()
+        return coinType.coinNumber()
     }
 
     override fun equals(other: Any?): Boolean {
-        return (other is CoinAssetsMark) && coinTypes == other.coinTypes
+        return (other is CoinAssetsMark) && coinType == other.coinType
     }
 }
 
 class LibraTokenAssetsMark(
-    val coinTypes: CoinTypes,
+    val coinType: CoinType,
     val module: String,
     val address: String,
     val name: String
 ) : IAssetsMark {
     override fun mark(): String {
-        return "lt${coinTypes.coinType()}${module}${address}${name}"
+        return "lt${coinType.coinNumber()}${module}${address}${name}"
     }
 
     override fun coinNumber(): Int {
-        return coinTypes.coinType()
+        return coinType.coinNumber()
     }
 
     override fun equals(other: Any?): Boolean {
         return (other is LibraTokenAssetsMark)
-                && coinTypes == other.coinTypes
+                && coinType == other.coinType
                 && module == other.module
                 && address == other.address
                 && name == other.name

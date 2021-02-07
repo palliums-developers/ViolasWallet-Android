@@ -5,7 +5,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
-import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.walletconnect.libraTransferDataHandler.LibraTransferDecodeEngine
 import com.violas.wallet.walletconnect.TransactionSwapVo
@@ -40,7 +40,7 @@ class LibraSendTransactionMessageHandler : IMessageHandler<JsonArray> {
         val tx = mGson.fromJson<List<WCLibraSendTransaction>>(param).firstOrNull()
             ?: throw InvalidJsonRpcParamsException(requestID)
         val account = mAccountStorage.findByCoinTypeAndCoinAddress(
-            CoinTypes.Libra.coinType(),
+            getDiemCoinType().coinNumber(),
             tx.from
         )
 
@@ -180,7 +180,7 @@ class LibraSendTransactionMessageHandler : IMessageHandler<JsonArray> {
             true,
             false,
             account.id,
-            CoinTypes.Libra,
+            getDiemCoinType(),
             decode.first.value,
             decode.second
         )

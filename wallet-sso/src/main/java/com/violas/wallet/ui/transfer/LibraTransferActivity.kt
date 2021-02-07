@@ -4,7 +4,7 @@ import android.accounts.AccountsException
 import android.app.Activity
 import android.os.Bundle
 import android.text.AmountInputFilter
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.TokenManager
@@ -47,7 +47,7 @@ class LibraTransferActivity : TransferActivity() {
                 account = mAccountManager.getAccountById(accountId)
                 mTokenDo = mTokenManager.findTokenById(tokenId)
                 val amount = intent.getLongExtra(EXT_AMOUNT, 0)
-                val parseCoinType = CoinTypes.parseCoinType(account!!.coinNumber)
+                val parseCoinType = CoinType.parseCoinNumber(account!!.coinNumber)
                 withContext(Dispatchers.Main) {
                     if (amount > 0) {
                         val convertAmountToDisplayUnit =
@@ -132,8 +132,8 @@ class LibraTransferActivity : TransferActivity() {
 
     private fun checkBalance(): Boolean {
         when (account?.coinNumber) {
-            CoinTypes.Libra.coinType(),
-            CoinTypes.Violas.coinType() -> {
+            CoinType.Diem.coinNumber(),
+            CoinType.Violas.coinNumber() -> {
                 if (BigDecimal(editAmountInput.text.toString().trim()) > mBalance ?: BigDecimal("0")) {
                     LackOfBalanceException().message?.let { showToast(it) }
                     return false

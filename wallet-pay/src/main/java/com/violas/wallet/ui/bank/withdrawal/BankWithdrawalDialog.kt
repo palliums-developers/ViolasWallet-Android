@@ -14,7 +14,6 @@ import com.palliums.extensions.getShowErrorMessage
 import com.palliums.extensions.logError
 import com.palliums.utils.CustomMainScope
 import com.palliums.utils.DensityUtility
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.bank.BankManager
@@ -22,6 +21,7 @@ import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_TWO
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.BankWithdrawalEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bank.DepositDetailsDTO
@@ -168,7 +168,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
 
         launch {
             val accountDO = withContext(Dispatchers.IO) {
-                accountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
+                accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
             }
             if (accountDO == null) {
                 showToast(getString(R.string.common_tips_account_error))
@@ -179,7 +179,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
                 sendTransfer(
                     accountDO,
                     LibraTokenAssetsMark(
-                        CoinTypes.Violas,
+                        getViolasCoinType(),
                         depositDetails.tokenModule,
                         depositDetails.tokenAddress,
                         depositDetails.tokenName

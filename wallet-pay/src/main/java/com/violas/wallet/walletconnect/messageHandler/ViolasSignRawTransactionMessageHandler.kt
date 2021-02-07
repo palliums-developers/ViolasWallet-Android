@@ -3,7 +3,7 @@ package com.violas.wallet.walletconnect.messageHandler
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
-import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.walletconnect.violasTransferDataHandler.ViolasTransferDecodeEngine
 import com.violas.wallet.walletconnect.TransactionSwapVo
@@ -32,7 +32,7 @@ class ViolasSignRawTransactionMessageHandler : IMessageHandler<JsonArray> {
             ?: throw InvalidJsonRpcParamsException(requestID)
 
         val account = mAccountStorage.findByCoinTypeAndCoinAddress(
-            CoinTypes.Violas.coinType(),
+            getViolasCoinType().coinNumber(),
             tx.address
         )
 
@@ -58,7 +58,7 @@ class ViolasSignRawTransactionMessageHandler : IMessageHandler<JsonArray> {
             false,
             false,
             account.id,
-            CoinTypes.Libra,
+            getViolasCoinType(),
             decode.first.value,
             decode.second
         )

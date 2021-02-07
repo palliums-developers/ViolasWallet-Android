@@ -1,7 +1,7 @@
 package com.violas.wallet.walletconnect.violasTransferDataHandler
 
 import com.palliums.violas.smartcontract.ViolasExchangeContract
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.isViolasTestNet
 import com.violas.wallet.walletconnect.ExchangeAddLiquidityDataType
 import com.violas.wallet.walletconnect.TransactionDataType
 import com.violas.wallet.walletconnect.messageHandler.ProcessedRuntimeException
@@ -11,7 +11,7 @@ import org.palliums.violascore.transaction.TransactionPayload
 class TransferExchangeAddLiquidityDecode(private val transaction: RawTransaction) :
     TransferDecode {
     private val mViolasExchangeContract by lazy {
-        ViolasExchangeContract(Vm.TestNet)
+        ViolasExchangeContract(isViolasTestNet())
     }
 
     override fun isHandle(): Boolean {

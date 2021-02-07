@@ -152,7 +152,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
             AddAddressBookActivity.start(
                 this,
                 REQUEST_CODE_ADD_ADDRESS,
-                mTransactionRecord.coinType.coinType(),
+                mTransactionRecord.coinType.coinNumber(),
                 mTransactionRecord.toAddress
             )
         }
@@ -168,7 +168,7 @@ class TransactionDetailsActivity : SupportActivity(), ViewController,
         launch {
             val isAdded = withContext(Dispatchers.IO) {
                 AddressBookManager().isAddressAdded(
-                    mTransactionRecord.coinType.coinType(),
+                    mTransactionRecord.coinType.coinNumber(),
                     mTransactionRecord.toAddress!!
                 )
             }

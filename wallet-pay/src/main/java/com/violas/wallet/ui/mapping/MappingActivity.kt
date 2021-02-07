@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.palliums.extensions.getShowErrorMessage
 import com.palliums.net.LoadState
 import com.palliums.utils.*
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.command.CommandActuator
@@ -22,7 +21,8 @@ import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.mapping.PayeeAccountCoinNotActiveException
 import com.violas.wallet.biz.mapping.UnsupportedMappingCoinPairException
-import com.violas.wallet.common.BaseBrowserUrl
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getViolasDappUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
@@ -104,7 +104,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
             authenticateAccount()
         }
 
-        tvDappUrl.text = BaseBrowserUrl.getViolasMappingDappUrl()
+        tvDappUrl.text = getViolasDappUrl()
         tvDappUrl.setOnClickListener {
             ClipboardUtils.copy(this, tvDappUrl.text.toString())
         }
@@ -122,7 +122,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
 
                 val coinType = str2CoinType(it.fromCoin.chainName)
                 val assetsMark =
-                    if (coinType == CoinTypes.Bitcoin || coinType == CoinTypes.BitcoinTest) {
+                    if (coinType == getBitcoinCoinType()) {
                         CoinAssetsMark(coinType)
                     } else {
                         LibraTokenAssetsMark(

@@ -6,9 +6,8 @@ import com.palliums.content.ContextProvider.getContext
 import com.palliums.exceptions.RequestException
 import com.palliums.utils.exceptionAsync
 import com.palliums.utils.toMap
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.quincysx.crypto.bip32.ExtendedKey
-import com.quincysx.crypto.bip39.MnemonicGenerator
 import com.quincysx.crypto.bip39.SeedCalculator
 import com.quincysx.crypto.bip39.wordlists.English
 import com.quincysx.crypto.bip44.BIP44
@@ -17,14 +16,12 @@ import com.quincysx.crypto.bitcoin.BitCoinECKeyPair
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
 import com.violas.wallet.biz.command.SaveAssetsFiatBalanceCommand
-import com.violas.wallet.common.CURRENCY_DEFAULT_ADDRESS
-import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.database.entity.TokenDo
-import com.violas.wallet.utils.convertAmountToDisplayUnit
+import com.violas.wallet.utils.*
 import com.violas.wallet.viewModel.bean.*
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
@@ -238,15 +235,15 @@ class AccountManager {
      */
     @Throws(MnemonicException::class, ArrayIndexOutOfBoundsException::class)
     fun importWallet(
-        coinTypes: CoinTypes,
+        coinType: CoinType,
         context: Context,
         wordList: List<String>,
         walletName: String,
         password: ByteArray
     ): Long {
         checkMnemonicCount(wordList)
-        return when (coinTypes) {
-            CoinTypes.Libra -> {
+        return when (coinType) {
+            getDiemCoinType() -> {
                 AccountManager().importLibraWallet(
                     context,
                     wordList,
@@ -254,7 +251,7 @@ class AccountManager {
                     password
                 )
             }
-            CoinTypes.Violas -> {
+            getViolasCoinType() -> {
                 AccountManager().importViolasWallet(
                     context,
                     wordList,
@@ -262,8 +259,7 @@ class AccountManager {
                     password
                 )
             }
-            CoinTypes.Bitcoin,
-            CoinTypes.BitcoinTest -> {
+            else -> {
                 AccountManager().importBtcWallet(
                     context,
                     wordList,
@@ -295,7 +291,7 @@ class AccountManager {
                 publicKey = deriveLibra.getPublicKey(),
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.Violas.coinType(),
+                coinNumber = getViolasCoinType().coinNumber(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray())
             )
         )
@@ -322,7 +318,7 @@ class AccountManager {
                 publicKey = deriveLibra.getPublicKey(),
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.Libra.coinType(),
+                coinNumber = getDiemCoinType().coinNumber(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray())
             )
         )
@@ -350,11 +346,7 @@ class AccountManager {
                 privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
                 publicKey = deriveBitcoin.publicKey,
                 address = deriveBitcoin.address,
-                coinNumber = if (Vm.TestNet) {
-                    CoinTypes.BitcoinTest.coinType()
-                } else {
-                    CoinTypes.Bitcoin.coinType()
-                },
+                coinNumber = getBitcoinCoinType().coinNumber(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray())
             )
         )
@@ -410,7 +402,7 @@ class AccountManager {
                 publicKey = deriveViolas.getPublicKey(),
                 authKeyPrefix = deriveViolas.getAuthenticationKey().prefix().toHex(),
                 address = deriveViolas.getAddress().toHex(),
-                coinNumber = CoinTypes.Violas.coinType(),
+                coinNumber = getViolasCoinType().coinNumber(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 accountType = AccountType.NoDollars
             ),
@@ -422,7 +414,7 @@ class AccountManager {
                 publicKey = deriveLibra.getPublicKey(),
                 authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
                 address = deriveLibra.getAddress().toHex(),
-                coinNumber = CoinTypes.Libra.coinType(),
+                coinNumber = getDiemCoinType().coinNumber(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 accountType = AccountType.NoDollars
             ),
@@ -430,11 +422,7 @@ class AccountManager {
                 privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
                 publicKey = deriveBitcoin.publicKey,
                 address = deriveBitcoin.address,
-                coinNumber = if (Vm.TestNet) {
-                    CoinTypes.BitcoinTest.coinType()
-                } else {
-                    CoinTypes.Bitcoin.coinType()
-                },
+                coinNumber = getBitcoinCoinType().coinNumber(),
                 mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
                 logo = "file:///android_asset/logo/ic_bitcoin_logo.png"
             )
@@ -483,11 +471,8 @@ class AccountManager {
 
     private fun deriveBitcoin(seed: ByteArray): BitCoinECKeyPair {
         val extendedKey = ExtendedKey.create(seed)
-        val bip44Path = if (Vm.TestNet) {
-            BIP44.m().purpose44().coinType(CoinTypes.BitcoinTest).account(0).external().address(0)
-        } else {
-            BIP44.m().purpose44().coinType(CoinTypes.Bitcoin).account(0).external().address(0)
-        }
+        val bip44Path = BIP44.m().purpose44().coinType(getBitcoinCoinType())
+            .account(0).external().address(0)
         val derive = CoinPairDerive(extendedKey).derive(bip44Path)
         return derive as BitCoinECKeyPair
     }
@@ -500,13 +485,14 @@ class AccountManager {
 
     suspend fun getBalance(account: AccountDO): Long {
         return when (account.coinNumber) {
-            CoinTypes.Violas.coinType() -> {
+            getViolasCoinType().coinNumber() -> {
                 DataRepository.getViolasService().getBalanceInMicroLibra(account.address)
             }
 
-            CoinTypes.Libra.coinType() -> {
+            getDiemCoinType().coinNumber() -> {
                 DataRepository.getLibraRpcService().getBalanceInMicroLibra(account.address)
             }
+
             else -> {
                 suspendCancellableCoroutine { coroutine ->
                     val subscribe = DataRepository.getBitcoinService()
@@ -531,7 +517,7 @@ class AccountManager {
 
     suspend fun activateAccount(assets: AssetsLibraCoinVo): Boolean {
         return when (assets.getCoinNumber()) {
-            CoinTypes.Violas.coinType() -> {
+            getViolasCoinType().coinNumber() -> {
                 if (isActivate(assets.authKey)) {
                     false
                 } else {
@@ -540,7 +526,8 @@ class AccountManager {
                     true
                 }
             }
-            CoinTypes.Libra.coinType() -> {
+
+            getDiemCoinType().coinNumber() -> {
                 if (isActivate(assets.authKey)) {
                     false
                 } else {
@@ -577,7 +564,7 @@ class AccountManager {
         val accountList = mAccountStorage.loadAll()
         accountList.forEach {
             when (it.coinNumber) {
-                CoinTypes.Libra.coinType() -> {
+                getDiemCoinType().coinNumber() -> {
                     localAssets.add(
                         AssetsLibraCoinVo(
                             it.id,
@@ -589,11 +576,12 @@ class AccountManager {
                             it.amount,
                             it.logo
                         ).also { asset ->
-                            asset.setAssetsName(CoinTypes.Libra.coinName())
+                            asset.setAssetsName(getDiemCoinType().coinName())
                         }
                     )
                 }
-                CoinTypes.Violas.coinType() -> {
+
+                getViolasCoinType().coinNumber() -> {
                     localAssets.add(
                         AssetsLibraCoinVo(
                             it.id,
@@ -605,10 +593,11 @@ class AccountManager {
                             it.amount,
                             it.logo
                         ).also { asset ->
-                            asset.setAssetsName(CoinTypes.Violas.coinName())
+                            asset.setAssetsName(getViolasCoinType().coinName())
                         }
                     )
                 }
+
                 else -> {
                     localAssets.add(
                         AssetsCoinVo(
@@ -620,11 +609,11 @@ class AccountManager {
                             it.accountType,
                             it.logo
                         ).also { asset ->
-                            asset.setAssetsName(CoinTypes.Bitcoin.coinName())
+                            asset.setAssetsName(getBitcoinCoinType().coinName())
 
                             val displayUnit = convertAmountToDisplayUnit(
                                 it.amount,
-                                CoinTypes.parseCoinType(asset.getCoinNumber())
+                                CoinType.parseCoinNumber(asset.getCoinNumber())
                             )
                             asset.amountWithUnit.amount = displayUnit.first
                             asset.amountWithUnit.unit = asset.getAssetsName()
@@ -666,7 +655,7 @@ class AccountManager {
 
                         val displayUnit = convertAmountToDisplayUnit(
                             it.amount,
-                            CoinTypes.parseCoinType(account.coinNumber)
+                            CoinType.parseCoinNumber(account.coinNumber)
                         )
                         asset.amountWithUnit.amount = displayUnit.first
                         asset.amountWithUnit.unit = it.assetsName
@@ -702,7 +691,7 @@ class AccountManager {
     }
 
     private fun queryBTCBalance(localAssets: List<AssetsVo>) {
-        localAssets.filter { it is AssetsCoinVo && (it.getCoinNumber() == CoinTypes.BitcoinTest.coinType() || it.getCoinNumber() == CoinTypes.Bitcoin.coinType()) }
+        localAssets.filter { it is AssetsCoinVo && (it.getCoinNumber() == getBitcoinCoinType().coinNumber()) }
             .forEach { asset ->
                 asset as AssetsCoinVo
                 val subscribe = DataRepository.getBitcoinService()
@@ -712,7 +701,7 @@ class AccountManager {
 
                         val displayUnit = convertAmountToDisplayUnit(
                             balance.toLong(),
-                            CoinTypes.parseCoinType(asset.getCoinNumber())
+                            CoinType.parseCoinNumber(asset.getCoinNumber())
                         )
                         asset.amountWithUnit.amount = displayUnit.first
                         asset.amountWithUnit.unit = displayUnit.second
@@ -727,7 +716,7 @@ class AccountManager {
             SaveAssetsFiatBalanceCommand.sharedPreferencesFileName(),
             Context.MODE_PRIVATE
         )
-        localAssets.filter { it is AssetsLibraCoinVo && it.getCoinNumber() == CoinTypes.Libra.coinType() }
+        localAssets.filter { it is AssetsLibraCoinVo && it.getCoinNumber() == getDiemCoinType().coinNumber() }
             .forEach {
                 try {
                     it as AssetsLibraCoinVo
@@ -762,7 +751,7 @@ class AccountManager {
 
                                         val displayUnit = convertAmountToDisplayUnit(
                                             accountBalance.amount,
-                                            CoinTypes.parseCoinType(it.getCoinNumber())
+                                            CoinType.parseCoinNumber(it.getCoinNumber())
                                         )
                                         tokenVo.amountWithUnit.amount = displayUnit.first
                                         tokenVo.amountWithUnit.unit = accountBalance.currency
@@ -785,7 +774,7 @@ class AccountManager {
                                         setAmount(accountBalance.amount)
                                         val displayUnit = convertAmountToDisplayUnit(
                                             accountBalance.amount,
-                                            CoinTypes.parseCoinType(it.getCoinNumber())
+                                            CoinType.parseCoinNumber(it.getCoinNumber())
                                         )
                                         amountWithUnit.amount = displayUnit.first
                                         amountWithUnit.unit = getAssetsName()
@@ -804,7 +793,7 @@ class AccountManager {
             SaveAssetsFiatBalanceCommand.sharedPreferencesFileName(),
             Context.MODE_PRIVATE
         )
-        localAssets.filter { it is AssetsCoinVo && it.getCoinNumber() == CoinTypes.Violas.coinType() }
+        localAssets.filter { it is AssetsCoinVo && it.getCoinNumber() == getViolasCoinType().coinNumber() }
             .forEach {
                 it as AssetsLibraCoinVo
                 try {
@@ -838,7 +827,7 @@ class AccountManager {
 
                                         val displayUnit = convertAmountToDisplayUnit(
                                             accountBalance.amount,
-                                            CoinTypes.parseCoinType(it.getCoinNumber())
+                                            CoinType.parseCoinNumber(it.getCoinNumber())
                                         )
                                         tokenVo.amountWithUnit.amount = displayUnit.first
                                         tokenVo.amountWithUnit.unit = accountBalance.currency
@@ -861,7 +850,7 @@ class AccountManager {
                                         setAmount(accountBalance.amount)
                                         val displayUnit = convertAmountToDisplayUnit(
                                             accountBalance.amount,
-                                            CoinTypes.parseCoinType(it.getCoinNumber())
+                                            CoinType.parseCoinNumber(it.getCoinNumber())
                                         )
                                         amountWithUnit.amount = displayUnit.first
                                         amountWithUnit.unit = getAssetsName()
@@ -877,12 +866,21 @@ class AccountManager {
 
     suspend fun refreshFiatAssetsAmount(localAssets: MutableList<AssetsVo>): MutableList<AssetsVo> {
         val assets = localAssets.toMutableList()
-        val exceptionAsync =
-            GlobalScope.exceptionAsync { queryFiatBalance(assets) { it is AssetsCoinVo && it.getCoinNumber() == CoinTypes.Violas.coinType() } }
-        val exceptionAsync1 =
-            GlobalScope.exceptionAsync { queryFiatBalance(assets) { it is AssetsCoinVo && it.getCoinNumber() == CoinTypes.Libra.coinType() } }
-        val exceptionAsync2 =
-            GlobalScope.exceptionAsync { queryFiatBalance(assets) { it is AssetsCoinVo && (it.getCoinNumber() == CoinTypes.Bitcoin.coinType() || it.getCoinNumber() == CoinTypes.BitcoinTest.coinType()) } }
+        val exceptionAsync = GlobalScope.exceptionAsync {
+            queryFiatBalance(assets) {
+                it is AssetsCoinVo && it.getCoinNumber() == getViolasCoinType().coinNumber()
+            }
+        }
+        val exceptionAsync1 = GlobalScope.exceptionAsync {
+            queryFiatBalance(assets) {
+                it is AssetsCoinVo && it.getCoinNumber() == getDiemCoinType().coinNumber()
+            }
+        }
+        val exceptionAsync2 = GlobalScope.exceptionAsync {
+            queryFiatBalance(assets) {
+                it is AssetsCoinVo && (it.getCoinNumber() == getBitcoinCoinType().coinNumber())
+            }
+        }
 
         exceptionAsync.await()
         exceptionAsync1.await()
@@ -899,15 +897,14 @@ class AccountManager {
                 try {
                     assets as AssetsCoinVo
                     val fiatBalances = when (assets.getCoinNumber()) {
-                        CoinTypes.BitcoinTest.coinType(),
-                        CoinTypes.Bitcoin.coinType() -> {
+                        getBitcoinCoinType().coinNumber() -> {
                             DataRepository.getViolasService().getBTCChainFiatBalance(assets.address)
                         }
-                        CoinTypes.Violas.coinType() -> {
+                        getViolasCoinType().coinNumber() -> {
                             DataRepository.getViolasService()
                                 .getViolasChainFiatBalance(assets.address)
                         }
-                        CoinTypes.Libra.coinType() -> {
+                        getDiemCoinType().coinNumber() -> {
                             DataRepository.getViolasService()
                                 .getLibraChainFiatBalance(assets.address)
                         }
@@ -922,7 +919,7 @@ class AccountManager {
                             val currentAssetsFiatBalance = when (assetsVo) {
                                 is AssetsTokenVo -> fiatBalanceMap?.get(assetsVo.module)
                                 is AssetsCoinVo -> fiatBalanceMap?.get(
-                                    CoinTypes.parseCoinType(assetsVo.getCoinNumber()).coinName()
+                                    CoinType.parseCoinNumber(assetsVo.getCoinNumber()).coinName()
                                 )
                                 else -> null
                             }

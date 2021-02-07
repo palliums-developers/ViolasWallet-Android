@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.libra.violas
 
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
@@ -52,7 +52,7 @@ class LibraViolasService(
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
-                coinTypes = CoinTypes.Libra,
+                coinType = CoinType.Diem,
                 transactionType = transactionType,
                 time = dto.expiration_time * 1000,
                 amount = dto.amount,

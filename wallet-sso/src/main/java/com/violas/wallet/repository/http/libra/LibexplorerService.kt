@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.libra
 
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.repository.http.TransactionService
 import com.violas.wallet.ui.record.TransactionRecordVO
@@ -49,7 +49,7 @@ class LibexplorerService(private val mLibexplorerRepository: LibexplorerReposito
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
-                coinTypes = CoinTypes.Libra,
+                coinType = CoinType.Diem,
                 transactionType = transactionType,
                 time = bean.expirationTime * 1000,
                 amount = bean.value,

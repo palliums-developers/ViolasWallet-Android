@@ -2,13 +2,14 @@ package com.violas.wallet.biz.exchange.processor
 
 import com.palliums.content.ContextProvider
 import com.palliums.violas.smartcontract.ViolasExchangeContract
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.exchange.AccountNotFindAddressException
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getViolasChainId
+import com.violas.wallet.common.getViolasCoinType
+import com.violas.wallet.common.isViolasTestNet
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -20,7 +21,6 @@ import org.palliums.violascore.transaction.AccountAddress
 import org.palliums.violascore.transaction.storage.StructTag
 import org.palliums.violascore.transaction.storage.TypeTagStructTag
 import org.palliums.violascore.wallet.Account
-import java.lang.RuntimeException
 
 class ViolasTokenToViolasTokenProcessor : IProcessor {
 
@@ -33,13 +33,13 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
     }
 
     private val mViolasExchangeContract by lazy {
-        ViolasExchangeContract(Vm.TestNet)
+        ViolasExchangeContract(isViolasTestNet())
     }
 
     override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         val hasToken = tokenFrom is StableTokenVo && tokenTo is StableTokenVo
         val hasViolsToken =
-            tokenFrom.coinNumber == CoinTypes.Violas.coinType() && tokenTo.coinNumber == CoinTypes.Violas.coinType()
+            tokenFrom.coinNumber == getViolasCoinType().coinNumber() && tokenTo.coinNumber == getViolasCoinType().coinNumber()
         return hasToken && hasViolsToken
     }
 
@@ -61,7 +61,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         tokenFrom as StableTokenVo
         tokenTo as StableTokenVo
 
-        val accountDo = mAccountManager.getIdentityByCoinType(CoinTypes.Violas.coinType())
+        val accountDo = mAccountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
             ?: throw AccountNotFindAddressException()
 
         val payeeAddress = payee ?: accountDo.address
@@ -79,7 +79,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         }
         if (!isPublishToken) {
             throw AccountPayeeTokenNotActiveException(
-                CoinTypes.Violas,
+                getViolasCoinType(),
                 payeeAddress,
                 tokenTo
             )
@@ -135,7 +135,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
             optionTokenSwapTransactionPayload,
             account,
             gasCurrencyCode = minTypeTag.value.module,
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         ).sequenceNumber.toString()
     }
 

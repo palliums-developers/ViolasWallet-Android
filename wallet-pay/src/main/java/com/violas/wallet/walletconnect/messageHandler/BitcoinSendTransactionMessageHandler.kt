@@ -5,9 +5,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
-
-import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.walletconnect.TransactionDataType
 import com.violas.wallet.walletconnect.TransactionSwapVo
@@ -40,11 +38,7 @@ class BitcoinSendTransactionMessageHandler :
         val tx = mGson.fromJson<List<WCBitcoinSendTransaction>>(param).firstOrNull()
             ?: throw InvalidJsonRpcParamsException(id)
         val account = mAccountStorage.findByCoinTypeAndCoinAddress(
-            if (Vm.TestNet) {
-                CoinTypes.BitcoinTest.coinType()
-            } else {
-                CoinTypes.Bitcoin.coinType()
-            },
+            getBitcoinCoinType().coinNumber(),
             tx.from
         ) ?: throw InvalidParameterErrorMessage(id, "Account does not exist.")
 
@@ -68,11 +62,7 @@ class BitcoinSendTransactionMessageHandler :
             true,
             false,
             account.id,
-            if (Vm.TestNet) {
-                CoinTypes.Bitcoin
-            } else {
-                CoinTypes.BitcoinTest
-            },
+            getBitcoinCoinType(),
             TransactionDataType.BITCOIN_TRANSFER.value,
             mGson.toJson(transferBitcoinDataType)
         )

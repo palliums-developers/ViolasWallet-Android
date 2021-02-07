@@ -1,6 +1,6 @@
 package com.quincysx.crypto.bip44;
 
-import com.quincysx.crypto.CoinTypes;
+import com.quincysx.crypto.CoinType;
 import com.quincysx.crypto.bip32.Index;
 
 /**
@@ -30,12 +30,12 @@ public final class Purpose {
     }
 
     /**
-     * Create a {@link CoinType} for this purpose.
+     * Create a {@link CoinTypeWrapper} for this purpose.
      *
      * @param coinType The coin type
      * @return A coin type instance for this purpose
      */
-    public CoinType coinType(final CoinTypes coinType) {
-        return new CoinType(this, coinType);
+    public CoinTypeWrapper coinType(final CoinType coinType) {
+        return new CoinTypeWrapper(this, coinType);
     }
 }

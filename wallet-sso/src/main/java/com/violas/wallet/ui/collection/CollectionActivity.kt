@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import cn.bertsir.zbar.utils.QRUtils
 import com.palliums.utils.DensityUtility
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
@@ -85,7 +85,7 @@ class CollectionActivity : BaseAppActivity() {
             }
 
             val collectionAddress =
-                "${CoinTypes.parseCoinType(currentAccount.coinNumber).fullName().toLowerCase(Locale.CHINA)}${prefix}:${currentAccount.address}"
+                "${CoinType.parseCoinNumber(currentAccount.coinNumber).chainName().toLowerCase(Locale.CHINA)}${prefix}:${currentAccount.address}"
             val createQRCodeBitmap = QRUtils.createQRCodeBitmap(
                 collectionAddress,
                 DensityUtility.dp2px(this@CollectionActivity, 164),

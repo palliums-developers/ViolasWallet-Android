@@ -1,12 +1,10 @@
 package com.violas.wallet.ui.transactionRecord
 
 import com.palliums.paging.PagingViewModel
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.DataRepository
-import kotlinx.coroutines.delay
 import org.greenrobot.eventbus.EventBus
-import kotlin.random.Random
 
 /**
  * Created by elephant on 2019-11-07 11:47.
@@ -20,11 +18,11 @@ class TransactionRecordViewModel(
     private val mTokenDisplayName: String?,
     @TransactionType
     private val mTransactionType: Int,
-    coinTypes: CoinTypes
+    coinType: CoinType
 ) : PagingViewModel<TransactionRecordVO>() {
 
     private val mTransactionRecordService by lazy {
-        DataRepository.getTransactionRecordService(coinTypes)
+        DataRepository.getTransactionRecordService(coinType)
     }
 
     override suspend fun loadData(
@@ -48,57 +46,5 @@ class TransactionRecordViewModel(
             pageKey,
             onSuccess
         )
-
-        //onSuccess.invoke(fakeData(mAddress, pageSize, pageNumber), null)
-    }
-
-    /**
-     * code for test
-     */
-    private suspend fun fakeData(
-        address: String,
-        pageSize: Int,
-        pageNumber: Int
-    ): List<TransactionRecordVO> {
-        delay(500)
-
-        val list = mutableListOf<TransactionRecordVO>()
-        repeat(pageSize) {
-            val id = (pageNumber - 1) * pageSize + it + 1
-
-            val vo = TransactionRecordVO(
-                id = id,
-                coinType = when (it % 3) {
-                    0 -> CoinTypes.Bitcoin
-                    1 -> CoinTypes.Libra
-                    else -> CoinTypes.Violas
-                },
-                transactionType = when (it % 3) {
-                    0 -> TransactionType.TRANSFER
-                    1 -> TransactionType.COLLECTION
-                    else -> TransactionType.ADD_CURRENCY
-                },
-                transactionState = when (it % 3) {
-                    0 -> TransactionState.FAILURE
-                    1 -> TransactionState.SUCCESS
-                    else -> TransactionState.PENDING
-                },
-                time = System.currentTimeMillis(),
-                fromAddress = "${address}00$id",
-                toAddress = "${address}00$id",
-                amount = Random.nextLong(100000).toString(),
-                tokenId = mTokenId,
-                tokenDisplayName = mTokenDisplayName,
-                gas = "0",
-                gasTokenId = mTokenId,
-                gasTokenDisplayName = mTokenDisplayName,
-                transactionId = it.toString(),
-                url = "https://www.baidu.com/"
-            )
-
-            list.add(vo)
-        }
-
-        return list
     }
 }

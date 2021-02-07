@@ -4,12 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.common.KEY_TWO
+import com.violas.wallet.common.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,7 +37,7 @@ class TransactionRecordActivity : BaseAppActivity() {
     }
 
     private lateinit var mWalletAddress: String
-    private lateinit var mCoinTypes: CoinTypes
+    private lateinit var mCoinType: CoinType
 
     private var mAccountId = -100L
     private var mTokenId: String? = null
@@ -58,7 +57,7 @@ class TransactionRecordActivity : BaseAppActivity() {
                         R.id.flFragmentContainer,
                         TransactionRecordFragment.newInstance(
                             mWalletAddress,
-                            mCoinTypes.coinType(),
+                            mCoinType.coinNumber(),
                             TransactionType.ALL,
                             mTokenId
                         )
@@ -100,25 +99,8 @@ class TransactionRecordActivity : BaseAppActivity() {
 
         return try {
             val accountDO = AccountManager().getAccountById(mAccountId)
-            mCoinTypes = CoinTypes.parseCoinType(accountDO.coinNumber)
+            mCoinType = CoinType.parseCoinNumber(accountDO.coinNumber)
             mWalletAddress = accountDO.address
-
-            // code for test, test address
-            /*if (BuildConfig.DEBUG) {
-                when (mCoinTypes) {
-                    CoinTypes.Bitcoin -> {
-                        mAddress = "3MzUcaPHN2sTGQMkuW2sSfrWTbLHTeofnz"
-                    }
-                    CoinTypes.BitcoinTest -> {
-                        mAddress = "n1QvA4WTJfosuKoWeHE5Xdggf5j9P5gBtg"
-                    }
-                    CoinTypes.Libra -> {
-                        mAddress =
-                            "000000000000000000000000000000000000000000000000000000000a550c18"
-                    }
-                }
-            }*/
-
             true
         } catch (e: Exception) {
             e.printStackTrace()

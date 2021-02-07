@@ -1,6 +1,6 @@
 package com.violas.wallet.biz.exchange
 
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.exchange.processor.IProcessor
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
@@ -17,7 +17,7 @@ class UnsupportedTradingPairsException : RuntimeException()
 
 // 收款地址 Token 未激活
 class AccountPayeeTokenNotActiveException(
-    val coinTypes: CoinTypes,
+    val coinType: CoinType,
     val address: String,
     val assetsMark: ITokenVo
 ) :

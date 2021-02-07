@@ -1,22 +1,16 @@
 package com.violas.wallet.walletconnect.violasTransferDataHandler
 
-import com.palliums.content.ContextProvider
 import com.palliums.violas.smartcontract.ViolasBankContract
-import com.palliums.violas.smartcontract.ViolasExchangeContract
-import com.quincysx.crypto.utils.Base64
-import com.violas.wallet.common.Vm
-import com.violas.wallet.walletconnect.BankDepositDatatype
+import com.violas.wallet.common.isViolasTestNet
 import com.violas.wallet.walletconnect.BankRedeemDatatype
-import com.violas.wallet.walletconnect.messageHandler.ProcessedRuntimeException
 import com.violas.wallet.walletconnect.TransactionDataType
-import com.violas.wallet.walletconnect.TransferDataType
-import org.palliums.libracore.move.Move
+import com.violas.wallet.walletconnect.messageHandler.ProcessedRuntimeException
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionPayload
 
 class TransferBankRedeemDecode(private val transaction: RawTransaction) : TransferDecode {
     private val mViolasBankContract by lazy {
-        ViolasBankContract(Vm.TestNet)
+        ViolasBankContract(isViolasTestNet())
     }
 
     override fun isHandle(): Boolean {

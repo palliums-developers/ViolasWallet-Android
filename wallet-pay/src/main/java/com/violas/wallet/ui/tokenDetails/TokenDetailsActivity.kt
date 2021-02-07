@@ -18,12 +18,8 @@ import com.palliums.extensions.show
 import com.palliums.utils.*
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.palliums.widget.loading.LoadingDialog
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
-import com.violas.wallet.common.KEY_FOUR
-import com.violas.wallet.common.KEY_ONE
-import com.violas.wallet.common.KEY_THREE
-import com.violas.wallet.common.KEY_TWO
+import com.violas.wallet.common.*
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.MarketPageType
 import com.violas.wallet.event.SwitchHomePageEvent
@@ -242,8 +238,8 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                     tokenDisplayName = tokenDisplayName
                 )
             )
-            if (mCoinNumber == CoinTypes.Libra.coinType()
-                || mCoinNumber == CoinTypes.Violas.coinType()
+            if (mCoinNumber == getDiemCoinType().coinNumber()
+                || mCoinNumber == getViolasCoinType().coinNumber()
             ) {
                 fragments.add(
                     TransactionRecordFragment.newInstance(
@@ -267,8 +263,8 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
         }
 
         val titles = mutableListOf(getString(R.string.currency_details_tab_1))
-        if (mCoinNumber == CoinTypes.Libra.coinType()
-            || mCoinNumber == CoinTypes.Violas.coinType()
+        if (mCoinNumber == getDiemCoinType().coinNumber()
+            || mCoinNumber == getViolasCoinType().coinNumber()
         ) {
             titles.add(getString(R.string.currency_details_tab_2))
             titles.add(getString(R.string.currency_details_tab_3))

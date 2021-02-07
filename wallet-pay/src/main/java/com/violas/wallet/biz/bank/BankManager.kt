@@ -4,7 +4,8 @@ import com.palliums.content.ContextProvider
 import com.palliums.violas.error.ViolasException
 import com.palliums.violas.smartcontract.ViolasBankContract
 import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getViolasChainId
+import com.violas.wallet.common.isViolasTestNet
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
@@ -18,7 +19,7 @@ import org.palliums.violascore.wallet.Account
 class BankManager {
     private val mViolasRPCService by lazy { DataRepository.getViolasChainRpcService() }
     private val mBankService by lazy { DataRepository.getBankService() }
-    private val mViolasBankContract by lazy { ViolasBankContract(Vm.TestNet) }
+    private val mViolasBankContract by lazy { ViolasBankContract(isViolasTestNet()) }
 
     /**
      * 借款
@@ -52,7 +53,7 @@ class BankManager {
             optionBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
             gasCurrencyCode = typeTagFrom.value.module,
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         )
         mBankService.submitBorrowTransaction(
             generateTransaction.sender,
@@ -96,7 +97,7 @@ class BankManager {
             optionRepayBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
             gasCurrencyCode = typeTagFrom.value.module,
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         )
         mBankService.submitRepayBorrowTransaction(
             generateTransaction.sender,
@@ -140,7 +141,7 @@ class BankManager {
             optionLockBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
             gasCurrencyCode = typeTagFrom.value.module,
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         )
         mBankService.submitDepositTransaction(
             generateTransaction.sender,
@@ -184,7 +185,7 @@ class BankManager {
             optionRedeemBorrowTransactionPayload,
             Account(KeyPair.fromSecretKey(payerPrivateKey)),
             gasCurrencyCode = typeTagFrom.value.module,
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         )
         mBankService.submitRedeemTransaction(
             generateTransaction.sender,
@@ -208,7 +209,7 @@ class BankManager {
         mViolasRPCService.sendTransaction(
             payload = withdrawRewardTransactionPayload,
             account = Account(KeyPair.fromSecretKey(privateKey)),
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         )
     }
 }

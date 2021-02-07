@@ -6,12 +6,12 @@ import android.os.Bundle
 import cn.bertsir.zbar.utils.QRUtils
 import com.palliums.extensions.expandTouchArea
 import com.palliums.utils.DensityUtility
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.*
 import com.violas.wallet.utils.ClipboardUtils
 import kotlinx.android.synthetic.main.activity_collection.*
 import kotlinx.coroutines.Dispatchers
@@ -97,36 +97,26 @@ class CollectionActivity : BaseAppActivity() {
             }
 
             val collectionAddress = when (currentAccount.coinNumber) {
-                CoinTypes.Bitcoin.coinType(), CoinTypes.BitcoinTest.coinType() -> {
+                getBitcoinCoinType().coinNumber() -> {
                     "${
-                        CoinTypes.parseCoinType(currentAccount.coinNumber).fullName()
+                        CoinType.parseCoinNumber(currentAccount.coinNumber).chainName()
                             .toLowerCase(Locale.CHINA)
                     }:${currentAccount.address}"
                 }
-                CoinTypes.Libra.coinType() -> {
+                getDiemCoinType().coinNumber() -> {
                     val tokenDo = mTokenManager.findTokenById(mTokenId)
-                    val network = if (Vm.TestNet) {
-                        AccountIdentifier.NetworkPrefix.TestnetPrefix
-                    } else {
-                        AccountIdentifier.NetworkPrefix.MainnetPrefix
-                    }
                     IntentIdentifier(
                         AccountIdentifier(
-                            network,
+                            geDiemNetworkPrefix(),
                             AccountAddress(currentAccount.address.hexToBytes())
                         ), currency = tokenDo?.name
                     ).encode()
                 }
-                CoinTypes.Violas.coinType() -> {
+                getViolasCoinType().coinNumber() -> {
                     val tokenDo = mTokenManager.findTokenById(mTokenId)
-                    val network = if (Vm.TestNet) {
-                        org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.TestnetPrefix
-                    } else {
-                        org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.MainnetPrefix
-                    }
                     org.palliums.violascore.wallet.IntentIdentifier(
                         org.palliums.violascore.wallet.AccountIdentifier(
-                            network,
+                            getViolasNetworkPrefix(),
                             org.palliums.violascore.transaction.AccountAddress(currentAccount.address.hexToBytes())
                         ), currency = tokenDo?.name
                     ).encode()

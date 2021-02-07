@@ -1,7 +1,7 @@
 package com.violas.wallet.biz.command
 
 import com.palliums.content.ContextProvider
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.utils.convertDisplayUnitToAmount
@@ -24,7 +24,7 @@ class SaveAssetsAllBalanceCommand() : ISingleCommand {
             }.forEach { assets ->
                 val convertDisplayUnitToAmount = convertDisplayUnitToAmount(
                     assets.amountWithUnit.amount,
-                    CoinTypes.parseCoinType(assets.getCoinNumber())
+                    CoinType.parseCoinNumber(assets.getCoinNumber())
                 )
                 DataRepository.getAccountStorage().saveCoinBalance(
                     assets.getId(),

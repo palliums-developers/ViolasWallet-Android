@@ -5,7 +5,7 @@ import android.view.View
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.widget.status.IStatusLayout
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.common.*
@@ -43,7 +43,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
     }
 
     private var mWalletAddress: String? = null
-    private var mCoinNumber: Int = CoinTypes.Violas.coinType()
+    private var mCoinNumber: Int = getViolasCoinType().coinNumber()
     @TransactionType
     private var mTransactionType: Int = TransactionType.ALL
     private var mTokenId: String? = null
@@ -55,7 +55,7 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
             mTokenId,
             mTokenDisplayName,
             mTransactionType,
-            CoinTypes.parseCoinType(mCoinNumber)
+            CoinType.parseCoinNumber(mCoinNumber)
         )
     }
 
@@ -102,17 +102,6 @@ class TransactionRecordFragment : BasePagingFragment<TransactionRecordVO>() {
             mTransactionType = bundle.getInt(KEY_THREE, mTransactionType)
             mTokenId = bundle.getString(KEY_FOUR)
             mTokenDisplayName = bundle.getString(KEY_FIVE)
-
-            // code for test
-            /*mWalletAddress =
-                if (mCoinNumber == CoinTypes.Violas.coinType()
-                    || mCoinNumber == CoinTypes.Libra.coinType()
-                ) {
-                    "f4174e9eabcb2e968e22da4c75ac653b"
-                } else {
-                    "2NGZrVvZG92qGYqzTLjCAewvPZ7JE8S8VxE"
-                }*/
-
             return true
         } catch (e: Exception) {
             return false

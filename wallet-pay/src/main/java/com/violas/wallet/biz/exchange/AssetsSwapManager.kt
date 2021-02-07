@@ -3,18 +3,20 @@ package com.violas.wallet.biz.exchange
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.exchange.processor.BTCToMappingAssetsProcessor
 import com.violas.wallet.biz.exchange.processor.LibraToMappingAssetsProcessor
 import com.violas.wallet.biz.exchange.processor.ViolasToAssetsMappingProcessor
 import com.violas.wallet.biz.exchange.processor.ViolasTokenToViolasTokenProcessor
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
+import com.violas.wallet.common.isViolasTestNet
 import com.violas.wallet.ui.main.market.bean.*
-import com.violas.wallet.utils.str2CoinNumber
+import com.violas.wallet.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.palliums.violascore.http.ViolasException
-import kotlin.collections.HashMap
 
 class AssetsSwapManager(
     private val supportMappingSwapPairManager: SupportMappingSwapPairManager
@@ -33,7 +35,7 @@ class AssetsSwapManager(
 
     private val mAssetsSwapEngine = AssetsSwapEngine()
 
-    val contract = ViolasMultiTokenContract(Vm.TestNet)
+    val contract = ViolasMultiTokenContract(isViolasTestNet())
 
     @WorkerThread
     suspend fun calculateTokenMapInfo(
@@ -50,24 +52,18 @@ class AssetsSwapManager(
                 mAssetsSwapEngine.addProcessor(ViolasTokenToViolasTokenProcessor())
                 mAssetsSwapEngine.addProcessor(
                     ViolasToAssetsMappingProcessor(
-                        supportMappingSwapPairManager.getMappingTokensInfo(CoinTypes.Violas)
+                        supportMappingSwapPairManager.getMappingTokensInfo(getViolasCoinType())
                     )
                 )
                 mAssetsSwapEngine.addProcessor(
                     LibraToMappingAssetsProcessor(
-                        supportMappingSwapPairManager.getMappingTokensInfo(CoinTypes.Libra)
+                        supportMappingSwapPairManager.getMappingTokensInfo(getDiemCoinType())
                     )
                 )
                 mAssetsSwapEngine.addProcessor(
                     BTCToMappingAssetsProcessor(
                         contract.getContractAddress(),
-                        supportMappingSwapPairManager.getMappingTokensInfo(
-                            if (Vm.TestNet) {
-                                CoinTypes.BitcoinTest
-                            } else {
-                                CoinTypes.Bitcoin
-                            }
-                        )
+                        supportMappingSwapPairManager.getMappingTokensInfo(getBitcoinCoinType())
                     )
                 )
             } catch (e: Exception) {
@@ -155,7 +151,7 @@ class AssetsSwapManager(
         supportTokens.forEach { assets ->
             val bitmap = MutBitmap()
 
-            if (assets.coinNumber == CoinTypes.Violas.coinType()) {
+            if (assets.coinNumber == getViolasCoinType().coinNumber()) {
                 // 将相同链的币种放入集合
                 supportTokenCoinMap[assets.coinNumber]?.forEach { iTokenVo ->
                     val assetsMark = IAssetsMark.convert(iTokenVo)
@@ -215,14 +211,13 @@ class AssetsSwapManager(
 
             val assetsMark = str2CoinNumber(mappingPair.toCoin.coinType)?.let { coinType ->
                 when (coinType) {
-                    CoinTypes.BitcoinTest.coinType(),
-                    CoinTypes.Bitcoin.coinType() -> {
-                        CoinAssetsMark(CoinTypes.parseCoinType(coinType))
+                    getBitcoinCoinType().coinNumber() -> {
+                        CoinAssetsMark(CoinType.parseCoinNumber(coinType))
                     }
-                    CoinTypes.Libra.coinType(),
-                    CoinTypes.Violas.coinType() -> {
+                    getDiemCoinType().coinNumber(),
+                    getViolasCoinType().coinNumber() -> {
                         LibraTokenAssetsMark(
-                            CoinTypes.parseCoinType(coinType),
+                            CoinType.parseCoinNumber(coinType),
                             mappingPair.toCoin.assets?.module ?: "",
                             mappingPair.toCoin.assets?.address ?: "",
                             mappingPair.toCoin.assets?.name ?: ""

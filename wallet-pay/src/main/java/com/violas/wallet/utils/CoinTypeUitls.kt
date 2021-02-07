@@ -1,48 +1,34 @@
 package com.violas.wallet.utils
 
-import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.common.Vm
+import com.quincysx.crypto.CoinType
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import java.util.*
 
 fun str2CoinNumber(str: String): Int? {
     return when (str.toLowerCase(Locale.ROOT)) {
         "btc" -> {
-            if (Vm.TestNet) {
-                CoinTypes.BitcoinTest.coinType()
-            } else {
-                CoinTypes.Bitcoin.coinType()
-            }
+            getBitcoinCoinType().coinNumber()
         }
         "libra" -> {
-            CoinTypes.Libra.coinType()
+            getDiemCoinType().coinNumber()
         }
         "violas" -> {
-            CoinTypes.Violas.coinType()
+            getViolasCoinType().coinNumber()
         }
         else -> null
     }
 }
 
-fun str2CoinType(chainName: String?): CoinTypes {
+fun str2CoinType(chainName: String?): CoinType {
     return when {
         chainName?.equals("btc", true) == true
                 || chainName?.equals("bitcoin", true) == true ->
-            if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
+            getBitcoinCoinType()
         chainName?.equals("libra", true) == true ->
-            CoinTypes.Libra
+            getDiemCoinType()
         else ->
-            CoinTypes.Violas
+            getViolasCoinType()
     }
-}
-
-fun getViolasCoinType(): CoinTypes {
-    return if (Vm.TestNet) CoinTypes.Violas else CoinTypes.Violas
-}
-
-fun getLibraCoinType(): CoinTypes {
-    return if (Vm.TestNet) CoinTypes.Libra else CoinTypes.Libra
-}
-
-fun getBtcCoinType(): CoinTypes {
-    return if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin
 }

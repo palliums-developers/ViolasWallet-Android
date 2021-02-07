@@ -14,7 +14,7 @@ import com.palliums.listing.ListingViewModel
 import com.palliums.utils.coroutineExceptionHandler
 import com.palliums.utils.start
 import com.palliums.widget.status.IStatusLayout
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseListingActivity
 import com.violas.wallet.biz.AddressBookManager
@@ -192,7 +192,7 @@ class MyAdapter(
             itemData?.let {
                 itemView.tvTitle.text = it.note
                 itemView.tvAddress.text = it.address
-                itemView.tvCoinType.text = CoinTypes.parseCoinType(it.coin_number).fullName()
+                itemView.tvCoinType.text = CoinType.parseCoinNumber(it.coin_number).chainName()
             }
         }
 

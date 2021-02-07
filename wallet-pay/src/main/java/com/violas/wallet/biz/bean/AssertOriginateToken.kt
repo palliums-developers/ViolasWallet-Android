@@ -1,7 +1,7 @@
 package com.violas.wallet.biz.bean
 
 import com.palliums.violas.bean.TokenMark
-import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.common.getViolasCoinType
 
 data class AssertOriginateToken(
     var tokenMark: TokenMark? = null,
@@ -9,7 +9,7 @@ data class AssertOriginateToken(
     var isToken: Boolean = true,
     var id: Long = 0,
     var account_id: Long = 0,
-    var coinType: Int = CoinTypes.Violas.coinType(),
+    var coinType: Int = getViolasCoinType().coinNumber(),
     var name: String = "Libra",
     var enable: Boolean = false,
     var amount: Long = 0,

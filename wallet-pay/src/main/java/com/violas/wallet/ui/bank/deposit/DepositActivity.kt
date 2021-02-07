@@ -6,12 +6,13 @@ import android.os.Bundle
 import com.palliums.extensions.getShowErrorMessage
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.start
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.BankDepositEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -62,7 +63,7 @@ class DepositActivity : BankBusinessActivity() {
     }
 
     private val mAccountDO by lazy {
-        AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+        AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
     }
 
     private var mDepositProductDetails: DepositProductDetailsDTO? = null
@@ -137,7 +138,7 @@ class DepositActivity : BankBusinessActivity() {
 
             mCurrentAssertsAmountSubscriber.changeSubscriber(
                 LibraTokenAssetsMark(
-                    CoinTypes.Violas,
+                    getViolasCoinType(),
                     tokenModule,
                     tokenAddress,
                     tokenName
@@ -217,7 +218,7 @@ class DepositActivity : BankBusinessActivity() {
 
             // 输入0
             val amount =
-                convertDisplayUnitToAmount(amountStr, CoinTypes.parseCoinType(account.coinNumber))
+                convertDisplayUnitToAmount(amountStr, CoinType.parseCoinNumber(account.coinNumber))
             if (amount <= 0) {
                 mBankBusinessViewModel.mBusinessActionHintLiveData.postValue(
                     getString(R.string.bank_deposit_tips_deposit_amount_empty)

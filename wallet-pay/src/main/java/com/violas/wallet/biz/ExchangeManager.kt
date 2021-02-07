@@ -3,8 +3,7 @@ package com.violas.wallet.biz
 import com.palliums.extensions.logInfo
 import com.palliums.violas.error.ViolasException
 import com.palliums.violas.smartcontract.ViolasExchangeContract
-import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
 import com.violas.wallet.repository.http.exchange.PoolLiquidityReserveInfoDTO
@@ -42,7 +41,7 @@ class ExchangeManager {
     }
 
     private val mViolasExchangeContract by lazy {
-        ViolasExchangeContract(Vm.TestNet)
+        ViolasExchangeContract(isViolasTestNet())
     }
 
     /**
@@ -56,10 +55,7 @@ class ExchangeManager {
         if (marketCurrencies.bitcoinCurrencies?.isNotEmpty() == true) {
             marketTokens.add(
                 PlatformTokenVo(
-                    coinNumber = if (Vm.TestNet)
-                        CoinTypes.BitcoinTest.coinType()
-                    else
-                        CoinTypes.Bitcoin.coinType(),
+                    coinNumber = getBitcoinCoinType().coinNumber(),
                     displayName = marketCurrencies.bitcoinCurrencies[0].displayName,
                     logo = marketCurrencies.bitcoinCurrencies[0].logo
                 )
@@ -72,7 +68,7 @@ class ExchangeManager {
                     module = it.module,
                     address = it.address,
                     marketIndex = it.marketIndex,
-                    coinNumber = CoinTypes.Libra.coinType(),
+                    coinNumber = getDiemCoinType().coinNumber(),
                     displayName = it.displayName,
                     logo = it.logo
                 )
@@ -85,7 +81,7 @@ class ExchangeManager {
                     module = it.module,
                     address = it.address,
                     marketIndex = it.marketIndex,
-                    coinNumber = CoinTypes.Violas.coinType(),
+                    coinNumber = getViolasCoinType().coinNumber(),
                     displayName = it.displayName,
                     logo = it.logo
                 )
@@ -151,7 +147,7 @@ class ExchangeManager {
             addLiquidityTransactionPayload,
             Account(KeyPair.fromSecretKey(privateKey)),
             gasCurrencyCode = coinA.module,
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         )
     }
 
@@ -213,7 +209,7 @@ class ExchangeManager {
             removeLiquidityTransactionPayload,
             Account(KeyPair.fromSecretKey(privateKey)),
             gasCurrencyCode = coinA.module,
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         )
     }
 
@@ -230,7 +226,7 @@ class ExchangeManager {
         mViolasRPCService.sendTransaction(
             payload = withdrawRewardTransactionPayload,
             account = Account(KeyPair.fromSecretKey(privateKey)),
-            chainId = Vm.ViolasChainId
+            chainId = getViolasChainId()
         )
     }
 

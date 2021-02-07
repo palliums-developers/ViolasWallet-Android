@@ -1,6 +1,8 @@
 package com.violas.wallet.viewModel.bean
 
-import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.database.entity.AccountType
 
 // todo 暂时使用 Serializable
@@ -22,15 +24,15 @@ abstract class AssetsVo {
     abstract fun getCoinNumber(): Int
 
     fun isBitcoin(): Boolean {
-        return getCoinNumber() == CoinTypes.Bitcoin.coinType() || getCoinNumber() == CoinTypes.BitcoinTest.coinType()
+        return getCoinNumber() == getBitcoinCoinType().coinNumber()
     }
 
     fun isLibra(): Boolean {
-        return getCoinNumber() == CoinTypes.Libra.coinType()
+        return getCoinNumber() == getDiemCoinType().coinNumber()
     }
 
     fun isViolas(): Boolean {
-        return getCoinNumber() == CoinTypes.Violas.coinType()
+        return getCoinNumber() == getViolasCoinType().coinNumber()
     }
 }
 

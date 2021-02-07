@@ -3,7 +3,7 @@ package com.violas.wallet.walletconnect.messageHandler
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
-import com.quincysx.crypto.CoinTypes
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.walletconnect.TransactionDataType
 import com.violas.wallet.walletconnect.TransactionSwapVo
@@ -32,7 +32,7 @@ class ViolasSendRawTransactionMessageHandler : IMessageHandler<JsonArray> {
             true,
             true,
             -1L,
-            CoinTypes.Violas,
+            getViolasCoinType(),
             TransactionDataType.None.value,
             ""
         )

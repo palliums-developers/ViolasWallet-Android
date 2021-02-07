@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.bitcoin
 
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.common.BaseBrowserUrl
 import com.violas.wallet.common.Vm
 import com.violas.wallet.repository.http.TransactionService
@@ -115,7 +115,7 @@ class BitmainService(private val mBitmainRepository: BitmainRepository) :
 
             TransactionRecordVO(
                 id = (pageNumber - 1) * pageSize + index,
-                coinTypes = if (Vm.TestNet) CoinTypes.BitcoinTest else CoinTypes.Bitcoin,
+                coinType = if (Vm.TestNet) CoinType.BitcoinTest else CoinType.Bitcoin,
                 transactionType = transactionType,
                 time = bean.block_time * 1000L,
                 amount = showAmount.toString(),

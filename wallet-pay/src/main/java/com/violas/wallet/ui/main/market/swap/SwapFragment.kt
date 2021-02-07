@@ -15,7 +15,7 @@ import com.palliums.extensions.show
 import com.palliums.net.LoadState
 import com.palliums.utils.TextWatcherSimple
 import com.palliums.utils.stripTrailingZeros
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.command.CommandActuator
@@ -24,6 +24,7 @@ import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.ReserveManager
 import com.violas.wallet.biz.exchange.UnsupportedTradingPairsException
+import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.MarketViewModel
@@ -363,7 +364,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                 launch(Dispatchers.IO) {
                     showProgress()
                     try {
-                        if (swapViewModel.publishToken(pwd, e.coinTypes, e.assetsMark)) {
+                        if (swapViewModel.publishToken(pwd, e.coinType, e.assetsMark)) {
                             swap(pwd)
                         } else {
                             showToast(R.string.txn_details_state_add_currency_failure)
@@ -391,31 +392,27 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                 }
 
                 var inputAmount = if (isInputFrom) {
-                    if (fromToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
-                        fromToken.coinNumber == CoinTypes.Bitcoin.coinType()
-                    ) {
+                    if (fromToken.coinNumber == getBitcoinCoinType().coinNumber()) {
                         convertDisplayUnitToAmount(
                             inputAmountStr,
-                            CoinTypes.parseCoinType(fromToken.coinNumber)
+                            CoinType.parseCoinNumber(fromToken.coinNumber)
                         ) / 100
                     } else {
                         convertDisplayUnitToAmount(
                             inputAmountStr,
-                            CoinTypes.parseCoinType(fromToken.coinNumber)
+                            CoinType.parseCoinNumber(fromToken.coinNumber)
                         )
                     }
                 } else {
-                    if (toToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
-                        toToken.coinNumber == CoinTypes.Bitcoin.coinType()
-                    ) {
+                    if (toToken.coinNumber == getBitcoinCoinType().coinNumber()) {
                         convertDisplayUnitToAmount(
                             outputAmountStr,
-                            CoinTypes.parseCoinType(toToken.coinNumber)
+                            CoinType.parseCoinNumber(toToken.coinNumber)
                         ) / 100
                     } else {
                         convertDisplayUnitToAmount(
                             outputAmountStr,
-                            CoinTypes.parseCoinType(toToken.coinNumber)
+                            CoinType.parseCoinNumber(toToken.coinNumber)
                         )
                     }
                 }
@@ -471,15 +468,11 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                     // 获取计算出来的金额
                     var outputAmount = tradeExact.amount
                     if (isInputFrom) {
-                        if (toToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
-                            toToken.coinNumber == CoinTypes.Bitcoin.coinType()
-                        ) {
+                        if (toToken.coinNumber == getBitcoinCoinType().coinNumber()) {
                             outputAmount *= 100
                         }
                     } else {
-                        if (fromToken.coinNumber == CoinTypes.BitcoinTest.coinType() ||
-                            fromToken.coinNumber == CoinTypes.Bitcoin.coinType()
-                        ) {
+                        if (fromToken.coinNumber == getBitcoinCoinType().coinNumber()) {
                             outputAmount *= 100
                         }
                     }
@@ -487,7 +480,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                     // 根据币种信息转换计算出来的金额单位
                     val outputAmountByCoin = convertAmountToDisplayUnit(
                         outputAmount,
-                        CoinTypes.parseCoinType(outputCoin.coinNumber)
+                        CoinType.parseCoinNumber(outputCoin.coinNumber)
                     ).first
 
                     // 计算手续费率

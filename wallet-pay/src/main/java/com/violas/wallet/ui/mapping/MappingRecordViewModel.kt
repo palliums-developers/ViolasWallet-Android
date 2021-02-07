@@ -2,11 +2,11 @@ package com.violas.wallet.ui.mapping
 
 import com.palliums.paging.PagingViewModel
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.mapping.MappingRecordDTO
-import com.violas.wallet.utils.getBtcCoinType
-import com.violas.wallet.utils.getLibraCoinType
-import com.violas.wallet.utils.getViolasCoinType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -26,13 +26,13 @@ class MappingRecordViewModel : PagingViewModel<MappingRecordDTO>() {
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
-            AccountManager().getIdentityByCoinType(getViolasCoinType().coinType())
+            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
                 ?: return@withContext false
         val libraAccount =
-            AccountManager().getIdentityByCoinType(getLibraCoinType().coinType())
+            AccountManager().getIdentityByCoinType(getDiemCoinType().coinNumber())
                 ?: return@withContext false
         val bitcoinAccount =
-            AccountManager().getIdentityByCoinType(getBtcCoinType().coinType())
+            AccountManager().getIdentityByCoinType(getBitcoinCoinType().coinNumber())
                 ?: return@withContext false
 
         violasWalletAddress = violasAccount.address

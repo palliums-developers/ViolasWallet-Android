@@ -58,7 +58,7 @@ class TransactionRecordViewHolder(
             itemView.vAddress.text = it.address
 
             if (TransactionRecordVO.isOpenToken(it.transactionType)) {
-                val amountInfo = convertAmountToDisplayUnit(it.gas, it.coinTypes)
+                val amountInfo = convertAmountToDisplayUnit(it.gas, it.coinType)
 
                 itemView.vAmountLabel.setText(R.string.transaction_record_consume)
                 itemView.vAmount.text = "${amountInfo.first} ${amountInfo.second}"
@@ -68,7 +68,7 @@ class TransactionRecordViewHolder(
                 itemView.vCoinName.text =
                     it.coinName ?: getString(R.string.transaction_record_stablecoin)
             } else {
-                val amountInfo = convertAmountToDisplayUnit(it.amount, it.coinTypes)
+                val amountInfo = convertAmountToDisplayUnit(it.amount, it.coinType)
 
                 itemView.vAmountLabel.setText(R.string.transaction_record_amount)
                 itemView.vAmount.text = amountInfo.first
@@ -89,13 +89,13 @@ class TransactionRecordViewHolder(
                     TransactionRecordVO.TRANSACTION_TYPE_RECEIPT -> {
                         itemView.vType.setText(R.string.transaction_record_receipt)
                         itemView.vType.setTextColor(getColor(R.color.colorPrimary))
-                        itemView.vCoinName.text = it.coinTypes.coinName()
+                        itemView.vCoinName.text = it.coinType.coinName()
                     }
 
                     else -> {
                         itemView.vType.setText(R.string.transaction_record_transfer)
                         itemView.vType.setTextColor(getColor(R.color.color_E54040))
-                        itemView.vCoinName.text = it.coinTypes.coinName()
+                        itemView.vCoinName.text = it.coinType.coinName()
                     }
                 }
             }

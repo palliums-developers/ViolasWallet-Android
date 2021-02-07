@@ -1,7 +1,7 @@
 package com.violas.wallet.ui.transactionRecord
 
 import android.os.Parcelable
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -13,7 +13,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class TransactionRecordVO(
     val id: Int,
-    val coinType: CoinTypes,
+    val coinType: CoinType,
     @TransactionType
     val transactionType: Int,
     @TransactionState

@@ -5,12 +5,13 @@ import android.os.Bundle
 import android.text.AmountInputFilter
 import androidx.lifecycle.Observer
 import com.palliums.extensions.expandTouchArea
-import com.palliums.extensions.getShowErrorMessage
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
@@ -44,7 +45,7 @@ class LibraTransferActivity : TransferActivity() {
         toAddress = editAddressInput.text.toString().trim()
         transferAmount = convertDisplayUnitToAmount(
             editAmountInput.text.toString().trim(),
-            CoinTypes.parseCoinType(coinNumber)
+            CoinType.parseCoinNumber(coinNumber)
         )
         super.onSaveInstanceState(outState)
     }
@@ -82,7 +83,7 @@ class LibraTransferActivity : TransferActivity() {
                     }
                     refreshCurrentAmount()
 
-                    val coinType = CoinTypes.parseCoinType(account!!.coinNumber)
+                    val coinType = CoinType.parseCoinNumber(account!!.coinNumber)
                     withContext(Dispatchers.Main) {
                         if (transferAmount > 0) {
                             val convertAmountToDisplayUnit =
@@ -145,8 +146,8 @@ class LibraTransferActivity : TransferActivity() {
 
     private fun checkBalance(): Boolean {
         when (account?.coinNumber) {
-            CoinTypes.Libra.coinType(),
-            CoinTypes.Violas.coinType() -> {
+            getDiemCoinType().coinNumber(),
+            getViolasCoinType().coinNumber() -> {
                 if (BigDecimal(
                         editAmountInput.text.toString().trim()
                     ) > mBalance ?: BigDecimal("0")

@@ -13,11 +13,11 @@ import com.palliums.paging.PagingViewModel
 import com.palliums.utils.formatDate
 import com.palliums.utils.getDrawableByAttrId
 import com.palliums.widget.status.IStatusLayout
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingFragment
 import com.violas.wallet.biz.AccountManager
-import com.violas.wallet.common.BaseBrowserUrl
+import com.violas.wallet.common.getViolasCoinType
+import com.violas.wallet.common.getViolasTxnDetailsUrl
 import com.violas.wallet.event.ClearUnreadMessagesEvent
 import com.violas.wallet.event.ReadOneTransactionMsgEvent
 import com.violas.wallet.repository.http.message.TransactionMessageDTO
@@ -111,7 +111,7 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
 
     private suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
-            AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
                 ?: return@withContext false
 
         address = violasAccount.address
@@ -147,7 +147,7 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
                     }
                 val transactionRecordVO = TransactionRecordVO(
                     id = 0,
-                    coinType = CoinTypes.Violas,
+                    coinType = getViolasCoinType(),
                     transactionState = transactionState,
                     transactionType = transactionType,
                     time = msgDetails.expirationTime,
@@ -160,7 +160,7 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
                     gasTokenId = msgDetails.gasCurrency,
                     gasTokenDisplayName = msgDetails.gasCurrency,
                     transactionId = msgDetails.txnId,
-                    url = BaseBrowserUrl.getViolasBrowserUrl(msgDetails.txnId)
+                    url = getViolasTxnDetailsUrl(msgDetails.txnId)
                 )
 
                 dismissProgress()

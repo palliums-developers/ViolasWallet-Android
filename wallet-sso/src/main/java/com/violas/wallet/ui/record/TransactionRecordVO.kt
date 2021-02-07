@@ -1,6 +1,6 @@
 package com.violas.wallet.ui.record
 
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 
 /**
  * Created by elephant on 2019-11-07 11:44.
@@ -10,7 +10,7 @@ import com.quincysx.crypto.CoinTypes
  */
 data class TransactionRecordVO(
     val id: Int,
-    val coinTypes: CoinTypes,
+    val coinType: CoinType,
     val transactionType: Int,
     val time: Long,
     val amount: String,

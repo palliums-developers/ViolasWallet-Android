@@ -1,8 +1,8 @@
 package com.violas.wallet.ui.bank.order.deposit
 
 import com.palliums.paging.PagingViewModel
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bank.DepositDetailsDTO
 import com.violas.wallet.repository.http.bank.DepositInfoDTO
@@ -23,7 +23,7 @@ class BankDepositOrderViewModel : PagingViewModel<DepositInfoDTO>() {
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
-            AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
                 ?: return@withContext false
 
         address = violasAccount.address

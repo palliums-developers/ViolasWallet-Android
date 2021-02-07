@@ -1,7 +1,7 @@
 package com.violas.wallet.walletconnect.violasTransferDataHandler
 
 import com.palliums.violas.smartcontract.ViolasExchangeContract
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.isViolasTestNet
 import com.violas.wallet.walletconnect.TransactionDataType
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionPayload
@@ -12,7 +12,7 @@ import org.palliums.violascore.transaction.TransactionPayload
 class TransferExchangeWithdrawRewardDecode(private val transaction: RawTransaction) :
     TransferDecode {
     private val mViolasExchangeContract by lazy {
-        ViolasExchangeContract(Vm.TestNet)
+        ViolasExchangeContract(isViolasTestNet())
     }
 
     override fun isHandle(): Boolean {

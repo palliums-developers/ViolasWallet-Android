@@ -3,7 +3,7 @@ package com.violas.wallet.biz.btc.sign;
 import com.quincysx.crypto.bitcoin.BTCTransaction;
 import com.quincysx.crypto.bitcoin.BitCoinECKeyPair;
 import com.quincysx.crypto.bitcoin.script.Script;
-import com.violas.wallet.common.Vm;
+import com.violas.wallet.common.VmHelperKt;
 import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO;
 
 public class P2PKHSignDevice implements SignDevice {
@@ -23,7 +23,7 @@ public class P2PKHSignDevice implements SignDevice {
             BitCoinECKeyPair bitCoinECKeyPair = new BitCoinECKeyPair(
                     privateKey,
                     publicKey,
-                    Vm.TestNet
+                    VmHelperKt.isBitcoinTestNet()
             );
             byte[] sign = bitCoinECKeyPair.sign(btcTransaction);
             return new Script(sign, bitCoinECKeyPair.getRawPublicKey());

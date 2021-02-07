@@ -1,7 +1,6 @@
 package com.violas.wallet.biz.exchange.processor
 
 import androidx.annotation.WorkerThread
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.ui.main.market.bean.IAssetsMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 

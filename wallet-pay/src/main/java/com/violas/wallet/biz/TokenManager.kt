@@ -5,9 +5,9 @@ import com.palliums.content.ContextProvider
 import com.palliums.violas.bean.TokenMark
 import com.palliums.violas.http.ViolasMultiTokenRepository
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.bean.AssertOriginateToken
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.repository.database.entity.TokenDo
@@ -28,7 +28,7 @@ class TokenManager {
     private val mViolasMultiTokenService by lazy {
         ViolasMultiTokenRepository(
             DataRepository.getMultiTokenContractService(),
-            ViolasMultiTokenContract(Vm.TestNet)
+            ViolasMultiTokenContract(isViolasTestNet())
         )
     }
 
@@ -49,7 +49,7 @@ class TokenManager {
                         fullName = it.showName,
                         isToken = true,
                         logo = it.showLogo,
-                        coinType = CoinTypes.Violas.coinType()
+                        coinType = getViolasCoinType().coinNumber()
                     )
                 )
             }
@@ -73,7 +73,7 @@ class TokenManager {
                         fullName = it.showName,
                         isToken = true,
                         logo = it.showLogo,
-                        coinType = CoinTypes.Libra.coinType()
+                        coinType = getDiemCoinType().coinNumber()
                     )
                 )
             }
@@ -114,7 +114,7 @@ class TokenManager {
         accounts.forEach { account ->
 
             if (account.accountType == AccountType.Normal) {
-                val coinTypes = CoinTypes.parseCoinType(account.coinNumber)
+                val coinTypes = CoinType.parseCoinNumber(account.coinNumber)
                 resultTokenList.add(
                     0, AssertOriginateToken(
                         id = 0,
@@ -122,8 +122,8 @@ class TokenManager {
                         enable = true,
                         isToken = false,
                         name = coinTypes.coinName(),
-                        fullName = coinTypes.fullName(),
-                        coinType = coinTypes.coinType(),
+                        fullName = coinTypes.chainName(),
+                        coinType = coinTypes.coinNumber(),
                         amount = 0,
                         logo = account.logo
                     )
@@ -132,14 +132,13 @@ class TokenManager {
 
             var loadSupportToken: List<AssertOriginateToken>? = null
             when (account.coinNumber) {
-                CoinTypes.Bitcoin.coinType(),
-                CoinTypes.BitcoinTest.coinType() -> {
+                getBitcoinCoinType().coinNumber() -> {
 
                 }
-                CoinTypes.Violas.coinType() -> {
+                getViolasCoinType().coinNumber() -> {
                     loadSupportToken = loadNetWorkSupportViolasToken()
                 }
-                CoinTypes.Libra.coinType() -> {
+                getDiemCoinType().coinNumber() -> {
                     loadSupportToken = loadNetWorkSupportLibraToken()
                 }
             }
@@ -212,18 +211,23 @@ class TokenManager {
     @Throws(RuntimeException::class)
     @WorkerThread
     suspend fun publishToken(
-        coinTypes: CoinTypes,
+        coinType: CoinType,
         privateKey: ByteArray,
         tokenMark: TokenMark
     ): Boolean {
-        when (coinTypes.coinType()) {
-            CoinTypes.Violas.coinType() -> {
+        when (coinType.coinNumber()) {
+            getViolasCoinType().coinNumber() -> {
                 val violasChainRpcService = DataRepository.getViolasChainRpcService()
                 val addCurrency = violasChainRpcService
                     .addCurrency(
                         ContextProvider.getContext(),
-                        Account(KeyPair.fromSecretKey(privateKey)),
-                        tokenMark.address, tokenMark.module, tokenMark.name, Vm.ViolasChainId
+                        Account(
+                            KeyPair.fromSecretKey(privateKey)
+                        ),
+                        tokenMark.address,
+                        tokenMark.module,
+                        tokenMark.name,
+                        getViolasChainId()
                     )
                 for (item in 1 until 4) {
                     delay(item * 1000L)
@@ -236,16 +240,18 @@ class TokenManager {
                     }
                 }
             }
-            CoinTypes.Libra.coinType() -> {
+            getDiemCoinType().coinNumber() -> {
                 val libraService = DataRepository.getLibraRpcService()
                 val addCurrency = libraService
                     .addCurrency(
                         ContextProvider.getContext(),
                         org.palliums.libracore.wallet.Account(
-                            org.palliums.libracore.crypto.KeyPair.fromSecretKey(
-                                privateKey
-                            )
-                        ), tokenMark.address, tokenMark.module, tokenMark.name, Vm.LibraChainId
+                            org.palliums.libracore.crypto.KeyPair.fromSecretKey(privateKey)
+                        ),
+                        tokenMark.address,
+                        tokenMark.module,
+                        tokenMark.name,
+                        getDiemChainId()
                     )
                 for (item in 1 until 4) {
                     delay(item * 1000L)
@@ -267,7 +273,7 @@ class TokenManager {
     @WorkerThread
     suspend fun publishToken(accountId: Long, account: ByteArray, tokenMark: TokenMark): Boolean {
         mAccountStorage.findById(accountId)?.let {
-            return publishToken(CoinTypes.parseCoinType(it.coinNumber), account, tokenMark)
+            return publishToken(CoinType.parseCoinNumber(it.coinNumber), account, tokenMark)
         }
         return false
     }
@@ -281,7 +287,7 @@ class TokenManager {
         return mAccountStorage.findById(accountId)?.let {
             var isPublish = false
             when (it.coinNumber) {
-                CoinTypes.Violas.coinType() -> {
+                getViolasCoinType().coinNumber() -> {
                     DataRepository.getViolasChainRpcService()
                         .getAccountState(it.address)?.balances?.forEach { accountBalance ->
                             if (tokenMark.module == accountBalance.currency) {
@@ -289,7 +295,7 @@ class TokenManager {
                             }
                         }
                 }
-                CoinTypes.Libra.coinType() -> {
+                getDiemCoinType().coinNumber() -> {
                     DataRepository.getLibraRpcService()
                         .getAccountState(it.address)?.balances?.forEach { accountBalance ->
                             if (tokenMark.module == accountBalance.currency) {

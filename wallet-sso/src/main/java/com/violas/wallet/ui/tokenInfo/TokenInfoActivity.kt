@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
@@ -120,7 +120,7 @@ class TokenInfoActivity : BaseAppActivity() {
             R.id.flFragmentContainer,
             TransactionRecordFragment.newInstance(
                 mAccountDO.address,
-                CoinTypes.Violas,
+                CoinType.Violas,
                 mTokenDo.tokenIdx,
                 mTokenDo.name
             )
@@ -210,7 +210,7 @@ class TokenInfoActivity : BaseAppActivity() {
 
     private fun setAmount(currentAccount: Long) {
         val convertAmountToDisplayUnit =
-            convertAmountToDisplayUnit(currentAccount, CoinTypes.Violas)
+            convertAmountToDisplayUnit(currentAccount, CoinType.Violas)
         tvAmount.text = convertAmountToDisplayUnit.first
     }
 }

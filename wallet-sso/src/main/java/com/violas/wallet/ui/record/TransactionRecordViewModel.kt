@@ -1,7 +1,7 @@
 package com.violas.wallet.ui.record
 
 import com.palliums.paging.PagingViewModel
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.event.RefreshBalanceEvent
 import com.violas.wallet.repository.DataRepository
 import kotlinx.coroutines.delay
@@ -18,11 +18,11 @@ class TransactionRecordViewModel(
     private val mAddress: String,
     private val mTokenIdx: Long?,
     private val mTokenName: String?,
-    coinTypes: CoinTypes
+    coinType: CoinType
 ) : PagingViewModel<TransactionRecordVO>() {
 
     private val mTransactionRepository =
-        DataRepository.getTransactionService(coinTypes)
+        DataRepository.getTransactionService(coinType)
 
     override suspend fun loadData(
         pageSize: Int,
@@ -58,10 +58,10 @@ class TransactionRecordViewModel(
 
             val vo = TransactionRecordVO(
                 id = id,
-                coinTypes = when (it % 3) {
-                    0 -> CoinTypes.Bitcoin
-                    1 -> CoinTypes.Libra
-                    else -> CoinTypes.Violas
+                coinType = when (it % 3) {
+                    0 -> CoinType.Bitcoin
+                    1 -> CoinType.Diem
+                    else -> CoinType.Violas
                 },
                 transactionType = it % 2,
                 time = System.currentTimeMillis(),

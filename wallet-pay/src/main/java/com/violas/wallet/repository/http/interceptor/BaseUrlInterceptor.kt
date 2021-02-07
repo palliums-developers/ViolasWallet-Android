@@ -1,12 +1,6 @@
 package com.violas.wallet.repository.http.interceptor
 
-import com.violas.wallet.common.BaseBizUrl.getBitmainBaseUrl
-import com.violas.wallet.common.BaseBizUrl.getViolasBaseUrl
-import com.violas.wallet.common.BaseBizUrl.getViolasDexBaseUrl
-import com.violas.wallet.common.BaseBizUrl.getLibexplorerBaseUrl
-import com.violas.wallet.common.BaseBizUrl.getLibraBaseUrl
-import com.violas.wallet.common.BaseBizUrl.getTrezorBaseUrl
-import com.violas.wallet.common.BaseBizUrl.getViolasChainUrl
+import com.violas.wallet.common.ApiBaseUrl
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -33,12 +27,12 @@ class BaseUrlInterceptor : Interceptor {
 
     private val baseUrls: Map<String, String> by lazy {
         mutableMapOf<String, String>().apply {
-            this[HEADER_VALUE_VIOLAS_DEX] = getViolasDexBaseUrl()
-            this[HEADER_VALUE_LIBRA_CHAIN] = getLibraBaseUrl()
-            this[HEADER_VALUE_VIOLAS_CHAIN] = getViolasChainUrl()
-            this[HEADER_VALUE_BITMAIN] = getBitmainBaseUrl()
-            this[HEADER_VALUE_LIBEXPLORER] = getLibexplorerBaseUrl()
-            this[HEADER_VALUE_TREZOR] = getTrezorBaseUrl()
+            this[HEADER_VALUE_VIOLAS_DEX] = ApiBaseUrl.VIOLAS_DEX_BASE_URL
+            this[HEADER_VALUE_LIBRA_CHAIN] = ApiBaseUrl.LIBRA_CHAIN_BASE_URL
+            this[HEADER_VALUE_VIOLAS_CHAIN] = ApiBaseUrl.VIOLAS_CHAIN_BASE_URL
+            this[HEADER_VALUE_BITMAIN] = ApiBaseUrl.BITMAIN_BASE_URL
+            this[HEADER_VALUE_LIBEXPLORER] = ApiBaseUrl.LIBEXPLORER_BASE_URL
+            this[HEADER_VALUE_TREZOR] = ApiBaseUrl.TREZOR_BASE_URL
         }
     }
 
@@ -60,7 +54,7 @@ class BaseUrlInterceptor : Interceptor {
             newUrlBuilder.removePathSegment(0)
         }
 
-        val baseUrl = getViolasBaseUrl().toHttpUrl()
+        val baseUrl = ApiBaseUrl.VIOLAS_BASE_URL.toHttpUrl()
         originalRequest.url.pathSegments.forEach { originalPathSegment ->
             baseUrl.pathSegments.forEach { basePathSegment ->
                 if (originalPathSegment == basePathSegment) {

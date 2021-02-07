@@ -5,7 +5,7 @@ import com.palliums.violas.http.ViolasApi
 import com.palliums.violas.http.ViolasRepository
 import com.palliums.violas.http.ViolasService
 import com.palliums.violas.smartcontract.multitoken.MultiContractRpcApi
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.common.BaseBizUrl.getDefaultBaseUrl
 import com.violas.wallet.repository.database.AppDatabase
@@ -87,13 +87,13 @@ object DataRepository {
     fun getLibraViolasService() =
         LibraViolasService(LibraViolasRepository(retrofit.create(LibraViolasApi::class.java)))
 
-    fun getTransactionService(coinTypes: CoinTypes) =
-        when (coinTypes) {
-            CoinTypes.Violas -> {
+    fun getTransactionService(coinType: CoinType) =
+        when (coinType) {
+            CoinType.Violas -> {
                 getViolasBizService()
             }
 
-            CoinTypes.Libra -> {
+            CoinType.Diem -> {
                 getLibraViolasService()
             }
 

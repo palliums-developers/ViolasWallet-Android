@@ -1,10 +1,9 @@
 package com.violas.wallet.biz
 
 import android.os.Parcelable
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
-import com.quincysx.crypto.CoinTypes
-import com.violas.wallet.common.Vm
+import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
@@ -67,18 +66,14 @@ suspend fun decodeQRCode(content: String): QRCode = withContext(Dispatchers.IO) 
     }
 
     val coinType = when (transferQRCodeBean.coinType?.toLowerCase(Locale.CHINA)) {
-        CoinTypes.Bitcoin.fullName().toLowerCase(Locale.CHINA) -> {
-            if (Vm.TestNet) {
-                CoinTypes.BitcoinTest
-            } else {
-                CoinTypes.Bitcoin
-            }
+        getBitcoinCoinType().chainName().toLowerCase(Locale.CHINA) -> {
+            getBitcoinCoinType()
         }
-        CoinTypes.Libra.fullName().toLowerCase(Locale.CHINA) -> {
-            CoinTypes.Libra
+        getDiemCoinType().chainName().toLowerCase(Locale.CHINA) -> {
+            getDiemCoinType()
         }
-        CoinTypes.Violas.fullName().toLowerCase(Locale.CHINA) -> {
-            CoinTypes.Violas
+        getViolasCoinType().chainName().toLowerCase(Locale.CHINA) -> {
+            getViolasCoinType()
         }
         else -> {
             null
@@ -91,7 +86,7 @@ suspend fun decodeQRCode(content: String): QRCode = withContext(Dispatchers.IO) 
         var tokenName: String? = null
         transferQRCodeBean.tokenName?.let {
             val account = DataRepository.getAccountStorage()
-                .findAllByCoinType(coinType.coinType())?.get(0)
+                .findAllByCoinType(coinType.coinNumber())?.get(0)
             account?.let {
                 val token = DataRepository.getTokenStorage()
                     .findByModelName(account.id, transferQRCodeBean.tokenName)
@@ -100,7 +95,7 @@ suspend fun decodeQRCode(content: String): QRCode = withContext(Dispatchers.IO) 
         }
         TransferQRCode(
             content,
-            coinType.coinType(),
+            coinType.coinNumber(),
             transferQRCodeBean.address,
             transferQRCodeBean.subAddress,
             transferQRCodeBean.amount,

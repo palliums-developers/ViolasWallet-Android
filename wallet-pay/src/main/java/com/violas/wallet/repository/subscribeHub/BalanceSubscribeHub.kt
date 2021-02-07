@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.palliums.utils.CustomIOScope
 import com.palliums.utils.toMap
-import com.quincysx.crypto.CoinTypes
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.BuildConfig
 import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
 import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
@@ -39,11 +39,11 @@ object BalanceSubscribeHub : LifecycleOwner, LifecycleObserver, RemoveSubscriber
                 mAssetsMap = it.toMap { assets ->
                     when (assets) {
                         is AssetsCoinVo -> {
-                            CoinAssetsMark(CoinTypes.parseCoinType(assets.getCoinNumber())).mark()
+                            CoinAssetsMark(CoinType.parseCoinNumber(assets.getCoinNumber())).mark()
                         }
                         is HiddenTokenVo -> {
                             LibraTokenAssetsMark(
-                                CoinTypes.parseCoinType(assets.getCoinNumber()),
+                                CoinType.parseCoinNumber(assets.getCoinNumber()),
                                 assets.module,
                                 assets.address,
                                 assets.name
@@ -51,7 +51,7 @@ object BalanceSubscribeHub : LifecycleOwner, LifecycleObserver, RemoveSubscriber
                         }
                         is AssetsTokenVo -> {
                             LibraTokenAssetsMark(
-                                CoinTypes.parseCoinType(assets.getCoinNumber()),
+                                CoinType.parseCoinNumber(assets.getCoinNumber()),
                                 assets.module,
                                 assets.address,
                                 assets.name

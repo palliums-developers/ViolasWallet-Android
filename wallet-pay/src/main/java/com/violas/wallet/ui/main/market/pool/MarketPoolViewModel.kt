@@ -11,11 +11,11 @@ import androidx.lifecycle.viewModelScope
 import com.palliums.base.BaseViewModel
 import com.palliums.extensions.*
 import com.palliums.net.LoadState
-import com.quincysx.crypto.CoinTypes
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_TWO
+import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
 import com.violas.wallet.repository.http.exchange.PoolLiquidityReserveInfoDTO
@@ -307,7 +307,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             }
 
             val violasAccount = withContext(Dispatchers.IO) {
-                AccountManager().getIdentityByCoinType(CoinTypes.Violas.coinType())
+                AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
             } ?: return@launch
 
             violasAccountDO = violasAccount
