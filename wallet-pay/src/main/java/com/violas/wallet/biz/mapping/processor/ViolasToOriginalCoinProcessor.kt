@@ -89,7 +89,7 @@ class ViolasToOriginalCoinProcessor(
                 "00000000000000000000000000000000${payeeAccountDO.address}"
         )
         subMappingDate.put("state", "start")
-        subMappingDate.put("times", 1)
+        subMappingDate.put("times", 0)
 
         val optionMappingTransactionPayload =
             TransactionPayload.optionTransactionPayload(

@@ -167,9 +167,6 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
                     checkbox.setCheckedNoEvent(false)
-                    e.message?.let {
-                        showToast(it)
-                    }
                     showToast(e.getShowErrorMessage(false))
                 }
             }
