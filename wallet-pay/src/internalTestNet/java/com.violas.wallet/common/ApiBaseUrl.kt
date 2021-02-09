@@ -5,14 +5,11 @@ object ApiBaseUrl {
     // Violas base url
     const val VIOLAS_BASE_URL = "https://api4.violas.io"
 
-    // Violas dex base url
-    const val VIOLAS_DEX_BASE_URL = "http://18.220.66.235:38181"
-
     // Violas chain base url
     const val VIOLAS_CHAIN_BASE_URL = "https://ab.testnet.violas.io"
 
-    // Libra chain base url
-    const val LIBRA_CHAIN_BASE_URL = "https://client.testnet.libra.org"
+    // Diem chain base url
+    const val DIEM_CHAIN_BASE_URL = "https://testnet.diem.com"
 
     // Libexplorer base url
     const val LIBEXPLORER_BASE_URL = "https://api-test.libexplorer.com/api"

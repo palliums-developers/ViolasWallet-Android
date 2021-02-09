@@ -16,11 +16,11 @@ fun getDiemTxnDetailsUrl(version: String): String {
 }
 
 fun getViolasTxnDetailsUrl(version: String): String {
-    return "${WebBaseUrl.VIOLAS_EXPLORER_BASE_URL}/app/Violas_version/$version"
+    return "${WebBaseUrl.VIOLAS_EXPLORER_BASE_URL}/version/$version"
 }
 
 fun getViolasFaucetUrl(address: String): String {
-    return "${WebBaseUrl.VIOLAS_EXPLORER_BASE_URL}/faucet/$address"
+    return "${WebBaseUrl.VIOLAS_FAUCET_BASE_URL}/faucet/$address"
 }
 
 fun getViolasDappUrl(): String {

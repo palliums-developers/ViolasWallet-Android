@@ -17,21 +17,19 @@ class BaseUrlInterceptor : Interceptor {
 
     companion object {
         const val HEADER_KEY_URLNAME = "urlname"
-        const val HEADER_VALUE_VIOLAS_DEX = "violas_dex"
-        const val HEADER_VALUE_LIBRA_CHAIN = "libra"
         const val HEADER_VALUE_VIOLAS_CHAIN = "violas"
-        const val HEADER_VALUE_BITMAIN = "bitmain"
+        const val HEADER_VALUE_DIEM_CHAIN = "diem"
         const val HEADER_VALUE_LIBEXPLORER = "libexplorer"
+        const val HEADER_VALUE_BITMAIN = "bitmain"
         const val HEADER_VALUE_TREZOR = "trezor"
     }
 
     private val baseUrls: Map<String, String> by lazy {
         mutableMapOf<String, String>().apply {
-            this[HEADER_VALUE_VIOLAS_DEX] = ApiBaseUrl.VIOLAS_DEX_BASE_URL
-            this[HEADER_VALUE_LIBRA_CHAIN] = ApiBaseUrl.LIBRA_CHAIN_BASE_URL
             this[HEADER_VALUE_VIOLAS_CHAIN] = ApiBaseUrl.VIOLAS_CHAIN_BASE_URL
-            this[HEADER_VALUE_BITMAIN] = ApiBaseUrl.BITMAIN_BASE_URL
+            this[HEADER_VALUE_DIEM_CHAIN] = ApiBaseUrl.DIEM_CHAIN_BASE_URL
             this[HEADER_VALUE_LIBEXPLORER] = ApiBaseUrl.LIBEXPLORER_BASE_URL
+            this[HEADER_VALUE_BITMAIN] = ApiBaseUrl.BITMAIN_BASE_URL
             this[HEADER_VALUE_TREZOR] = ApiBaseUrl.TREZOR_BASE_URL
         }
     }
