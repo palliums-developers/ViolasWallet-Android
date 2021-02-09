@@ -17,7 +17,6 @@ import com.violas.wallet.event.ClearUnreadMessagesEvent
 import com.violas.wallet.event.ReadOneSystemMsgEvent
 import com.violas.wallet.repository.http.message.SystemMessageDTO
 import com.violas.wallet.ui.message.details.SystemMsgDetailsActivity
-import com.violas.wallet.viewModel.MessageViewModel
 import kotlinx.android.synthetic.main.item_system_message.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -91,8 +90,7 @@ class SystemMessageFragment : BasePagingFragment<SystemMessageDTO>() {
         launch(Dispatchers.IO) {
             showProgress()
             try {
-                val token = MessageViewModel.getInstance().getFirebaseToken()
-                val msgDetails = getViewModel().getSystemMsgDetails(message, token!!)
+                val msgDetails = getViewModel().getSystemMsgDetails(message)
 
                 dismissProgress()
                 withContext(Dispatchers.Main) {

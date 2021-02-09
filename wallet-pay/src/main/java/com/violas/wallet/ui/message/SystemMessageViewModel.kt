@@ -27,12 +27,7 @@ class SystemMessageViewModel : PagingViewModel<SystemMessageDTO>() {
             MessageViewModel.getInstance().syncUnreadMsgNum()
         }
 
-        val token = MessageViewModel.getInstance().getFirebaseToken()
-        if(token.isNullOrBlank()){
-            onSuccess.invoke(emptyList(), null)
-            return
-        }
-
+        val token = MessageViewModel.getInstance().fetchToken()
         val messages = messageService.getSystemMessages(
             token,
             pageSize,
@@ -42,8 +37,13 @@ class SystemMessageViewModel : PagingViewModel<SystemMessageDTO>() {
     }
 
     suspend fun getSystemMsgDetails(
-        message: SystemMessageDTO,
-        token: String
-    ) =
-        messageService.getSystemMsgDetails(message.id, token)
+        message: SystemMessageDTO
+    ) = kotlin.run {
+        val token = MessageViewModel.getInstance().fetchToken()
+        messageService.getSystemMsgDetails(
+            token,
+            message.id
+        )
+    }
+
 }

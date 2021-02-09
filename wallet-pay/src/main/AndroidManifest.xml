@@ -225,6 +225,9 @@
         <activity
             android:name=".ui.incentive.IncentiveWebActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.message.details.SystemMsgDetailsActivity"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".service.MyFirebaseMessagingService"

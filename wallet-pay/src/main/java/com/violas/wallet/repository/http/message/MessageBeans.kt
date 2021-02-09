@@ -13,6 +13,26 @@ import kotlinx.android.parcel.Parcelize
  */
 
 @Keep
+data class PushDeviceInfoDTO(
+    @SerializedName("token")
+    val token: String?,
+    @SerializedName("address")
+    val address: String?,
+    @SerializedName("fcm_token")
+    val pushToken: String?,
+    @SerializedName("language")
+    val language: String?,
+    @SerializedName("platform")
+    val platform: String?
+)
+
+@Keep
+data class AppTokenDTO(
+    @SerializedName("token")
+    val token: String = ""
+)
+
+@Keep
 data class UnreadMsgNumberDTO(
     @SerializedName(value = "message")
     val txn: Long = 0,

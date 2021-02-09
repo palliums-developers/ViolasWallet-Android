@@ -53,7 +53,7 @@ class AccountManager {
         private const val KEY_IDENTITY_MNEMONIC_BACKUP = "key_2"
         private const val KEY_PROMPT_OPEN_BIOMETRICS = "key_3"
         private const val KEY_SECURITY_PASSWORD = "key_4"
-        private const val KEY_APP_TOKEN = "key_5"
+        private const val KEY_TOKEN = "key_5"
 
         /**
          * 获取生物识别加解密所用的key
@@ -199,14 +199,12 @@ class AccountManager {
         return mConfigSharedPreferences.getBoolean(KEY_PROMPT_OPEN_BIOMETRICS, false)
     }
 
-    @Synchronized
-    fun getAppToken(): String {
-        val appToken = mConfigSharedPreferences.getString(KEY_APP_TOKEN, null)
-        if (!appToken.isNullOrBlank()) return appToken
+    fun getToken(): String? {
+        return mConfigSharedPreferences.getString(KEY_TOKEN, null)
+    }
 
-        val fakeAppToken = UUID.randomUUID().toString()
-        mConfigSharedPreferences.edit().putString(KEY_APP_TOKEN, fakeAppToken).apply()
-        return fakeAppToken
+    fun setToken(token: String) {
+        mConfigSharedPreferences.edit().putString(KEY_TOKEN, token).apply()
     }
 
     /**

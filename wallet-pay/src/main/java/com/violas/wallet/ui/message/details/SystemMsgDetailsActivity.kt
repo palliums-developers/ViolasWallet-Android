@@ -37,11 +37,12 @@ class SystemMsgDetailsActivity : BaseWebActivity() {
         if (initData(savedInstanceState)) {
             super.onCreate(savedInstanceState)
             tvTitle.text = msgDetails.title
-            tvTime.text = formatDate(msgDetails.time, pattern = "yyyy-MM-dd&#160;&#160;HH:mm")
-            tvAuthor.text = if (msgDetails.author.isNotBlank())
-                msgDetails.author
-            else
-                getString(R.string.system_msg_details_desc_author_default)
+            tvTimeAuthor.text = """${formatDate(msgDetails.time, pattern = "yyyy-MM-dd  HH:mm")}  ${
+                if (msgDetails.author.isNotBlank())
+                    msgDetails.author
+                else
+                    getString(R.string.system_msg_details_desc_author_default)
+            }"""
         } else {
             finish()
         }

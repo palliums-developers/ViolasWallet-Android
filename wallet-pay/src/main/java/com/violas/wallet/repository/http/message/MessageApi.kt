@@ -18,7 +18,15 @@ interface MessageApi {
      * 注册设备信息
      */
     @POST("/1.0/violas/device/info")
-    fun registerDevice(
+    fun registerPushDeviceInfo(
+        @Body body: RequestBody
+    ): Observable<Response<AppTokenDTO>>
+
+    /**
+     * 修改设备信息
+     */
+    @PUT("/1.0/violas/device/info")
+    fun modifyPushDeviceInfo(
         @Body body: RequestBody
     ): Observable<Response<Any>>
 
@@ -28,7 +36,7 @@ interface MessageApi {
     @GET("/1.0/violas/messages/unread/count")
     fun getUnreadMsgNumber(
         @Query("token") token: String
-    ):Observable<Response<UnreadMsgNumberDTO>>
+    ): Observable<Response<UnreadMsgNumberDTO>>
 
     /**
      * 清除所有未读消息
@@ -36,7 +44,7 @@ interface MessageApi {
     @PUT("/1.0/violas/messages/readall")
     fun clearUnreadMessages(
         @Body body: RequestBody
-    ):Observable<Response<Any>>
+    ): Observable<Response<Any>>
 
     /**
      * 获取交易消息
@@ -63,6 +71,7 @@ interface MessageApi {
      */
     @GET("/1.0/violas/message/transfer")
     fun getTransactionMsgDetails(
+        @Query("address") token: String,
         @Query("msg_id") msgId: String
     ): Observable<Response<TransactionMsgDetailsDTO>>
 
@@ -71,8 +80,8 @@ interface MessageApi {
      */
     @GET("/1.0/violas/message/notice")
     fun getSystemMsgDetails(
-        @Query("msg_id") msgId: String,
-        @Query("token") token: String
+        @Query("token") token: String,
+        @Query("msg_id") msgId: String
     ): Observable<Response<SystemMsgDetailsDTO>>
 
 }

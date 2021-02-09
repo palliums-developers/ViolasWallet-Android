@@ -40,5 +40,5 @@ class TransactionMessageViewModel(
     suspend fun getTransactionMsgDetails(
         message: TransactionMessageDTO
     ) =
-        messageService.getTransactionMsgDetails(message.id)
+        messageService.getTransactionMsgDetails(address, message.id)
 }

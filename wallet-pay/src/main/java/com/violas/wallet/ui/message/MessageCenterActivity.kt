@@ -65,13 +65,12 @@ class MessageCenterActivity : BaseAppActivity() {
         launch(Dispatchers.IO) {
             showProgress()
             try {
-                val token = MessageViewModel.getInstance().getFirebaseToken()
-                if (!token.isNullOrBlank()) {
-                    // 1.标记未读消息为已读
-                    messageService.clearUnreadMessages(token)
-                    // 2.通知未读消息为已读
-                    EventBus.getDefault().post(ClearUnreadMessagesEvent())
-                }
+                // 0.获取token
+                val token = MessageViewModel.getInstance().fetchToken()
+                // 1.标记未读消息为已读
+                messageService.clearUnreadMessages(token)
+                // 2.通知未读消息为已读
+                EventBus.getDefault().post(ClearUnreadMessagesEvent())
             } catch (e: Exception) {
                 showToast(e.getShowErrorMessage(false))
             }

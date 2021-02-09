@@ -8,7 +8,9 @@ import android.os.Build;
 import android.util.DisplayMetrics;
 
 import com.violas.wallet.R;
+import com.violas.wallet.event.ChangeLanguageEvent;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
@@ -120,7 +122,7 @@ public class MultiLanguageUtility {
     }
 
     public void notification() {
-        //todo Eventbus 通知
+        EventBus.getDefault().post(new ChangeLanguageEvent());
     }
 
     /**

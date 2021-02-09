@@ -1,5 +1,6 @@
 package com.violas.wallet.repository.http.message
 
+import com.google.gson.Gson
 import com.palliums.net.await
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -13,17 +14,36 @@ import okhttp3.RequestBody.Companion.toRequestBody
  */
 class MessageRepository(private val api: MessageApi) {
 
-    suspend fun registerDevice(
-        address: String,
-        token: String
+    suspend fun registerPushDeviceInfo(
+        address: String?,
+        pushToken: String?
     ) =
-        """{
-    "address":"$address",
-    "token":"$token",
-    "platform":"android",
-    "language":"${MultiLanguageUtility.getInstance().localTag.toLowerCase()}"
-}""".toRequestBody("application/json".toMediaTypeOrNull())
-            .let { api.registerDevice(it).await() }
+        Gson().toJson(
+            PushDeviceInfoDTO(
+                token = null,
+                address = address,
+                pushToken = pushToken,
+                language = MultiLanguageUtility.getInstance().localTag.toLowerCase(),
+                platform = "android"
+            )
+        ).toRequestBody("application/json".toMediaTypeOrNull())
+            .let { api.registerPushDeviceInfo(it).await(dataNullableOnSuccess = false).data!!.token }
+
+    suspend fun modifyPushDeviceInfo(
+        token: String,
+        address: String?,
+        pushToken: String?
+    ) =
+        Gson().toJson(
+            PushDeviceInfoDTO(
+                token = token,
+                address = address,
+                pushToken = pushToken,
+                language = MultiLanguageUtility.getInstance().localTag.toLowerCase(),
+                platform = "android"
+            )
+        ).toRequestBody("application/json".toMediaTypeOrNull())
+            .let { api.modifyPushDeviceInfo(it).await() }
 
     suspend fun getUnreadMsgNumber(
         token: String
@@ -53,13 +73,14 @@ class MessageRepository(private val api: MessageApi) {
         api.getSystemMessages(token, pageSize, offset).await().data ?: emptyList()
 
     suspend fun getTransactionMsgDetails(
+        address: String,
         msgId: String
     ) =
-        api.getTransactionMsgDetails(msgId).await(dataNullableOnSuccess = false).data!!
+        api.getTransactionMsgDetails(address, msgId).await(dataNullableOnSuccess = false).data!!
 
     suspend fun getSystemMsgDetails(
-        msgId: String,
-        token: String
+        token: String,
+        msgId: String
     ) =
-        api.getSystemMsgDetails(msgId, token).await(dataNullableOnSuccess = false).data!!
+        api.getSystemMsgDetails(token, msgId).await(dataNullableOnSuccess = false).data!!
 }

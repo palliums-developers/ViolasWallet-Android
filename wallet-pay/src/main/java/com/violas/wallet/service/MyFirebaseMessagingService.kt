@@ -31,7 +31,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // Instance ID token to your app server.
         // sendRegistrationToServer(token);
         if (token.isNotBlank()) {
-            MessageViewModel.getInstance().registerDevice(token)
+            MessageViewModel.getInstance().setPushToken(token)
+            MessageViewModel.getInstance().syncPushDeviceInfo()
         }
     }
 

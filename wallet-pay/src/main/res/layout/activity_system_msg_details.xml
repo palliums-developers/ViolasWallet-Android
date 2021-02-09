@@ -18,7 +18,7 @@
         tools:text="Title Title  Title Title Title Title Title Title" />
 
     <TextView
-        android:id="@+id/tvTime"
+        android:id="@+id/tvTimeAuthor"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_15"
@@ -27,20 +27,7 @@
         android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        tools:text="2020-07-10  15:42" />
-
-    <TextView
-        android:id="@+id/tvAuthor"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_15"
-        android:layout_marginEnd="@dimen/dp_15"
-        android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/fs_12"
-        app:layout_constraintBaseline_toBaselineOf="@id/tvTime"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tvTime"
-        tools:text="Violas Team" />
+        tools:text="2020-07-10  15:42  ViolasTeam" />
 
     <View
         android:id="@+id/vDivider"
@@ -51,7 +38,7 @@
         android:background="?attr/colorDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTime" />
+        app:layout_constraintTop_toBottomOf="@id/tvTimeAuthor" />
 
     <com.palliums.widget.LollipopFixedWebView
         android:id="@+id/vWeb"
