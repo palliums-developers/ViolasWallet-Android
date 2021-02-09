@@ -40,10 +40,6 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
         return R.layout.activity_incentive_earnings_details
     }
 
-    override fun getTitleStyle(): Int {
-        return PAGE_STYLE_LIGHT_MODE_PRIMARY_NAV_BAR
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -126,14 +122,13 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
             }
         })
         tabLayout.setupWithViewPager(viewPager)
-        tabLayout.post {
-            val count = viewPager.adapter!!.count
-            for (i in 0 until count) {
-                tabLayout.getTabAt(i)?.let { tab ->
-                    tab.setCustomView(R.layout.item_mining_earnings_details_tab_layout)
-                    updateTab(tab, i == viewPager.currentItem)?.let {
-                        it.text = tab.text
-                    }
+
+        val count = viewPager.adapter!!.count
+        for (i in 0 until count) {
+            tabLayout.getTabAt(i)?.let { tab ->
+                tab.setCustomView(R.layout.item_mining_earnings_details_tab_layout)
+                updateTab(tab, i == viewPager.currentItem)?.let {
+                    it.text = tab.text
                 }
             }
         }

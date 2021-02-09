@@ -26,7 +26,7 @@
                 android:layout_marginHorizontal="@dimen/dp_15"
                 android:layout_marginTop="?attr/actionBarSize"
                 android:layout_marginBottom="@dimen/dp_22"
-                android:background="?attr/tokenDetailsTokenInfoBg"
+                android:background="?attr/bgPageTopViewLight"
                 android:paddingHorizontal="@dimen/dp_14">
 
                 <androidx.appcompat.widget.AppCompatImageView

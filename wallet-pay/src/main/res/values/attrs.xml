@@ -118,7 +118,6 @@
     <attr name="homeBankMiningBg" format="reference"/>
 
     <!--币种详情页面资源属性-->
-    <attr name="tokenDetailsTokenInfoBg" format="reference" />
     <attr name="tokenDetailsTabNormalTextColor" format="color" />
 
     <!--交易详情页面资源属性-->

@@ -216,7 +216,6 @@
         <item name="homeBankMiningBg">@mipmap/bg_home_bank_mining</item>
 
         <!--币种详情页资源属性-->
-        <item name="tokenDetailsTokenInfoBg">@drawable/bg_token_info_head</item>
         <item name="tokenDetailsTabNormalTextColor">@color/color_C2C2C2</item>
 
         <!--交易详情页资源属性-->
