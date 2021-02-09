@@ -72,7 +72,7 @@ open class AssetsCoinVo(
 class AssetsLibraCoinVo(
     id: Long,
     publicKey: String = "",
-    var authKey: String = "",
+    var authKey: String? = "",
     var authKeyPrefix: String = "",
     coinNumber: Int = 0,
     address: String = "",

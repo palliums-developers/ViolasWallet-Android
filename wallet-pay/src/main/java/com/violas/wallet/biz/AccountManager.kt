@@ -518,7 +518,7 @@ class AccountManager {
     suspend fun activateAccount(assets: AssetsLibraCoinVo): Boolean {
         return when (assets.getCoinNumber()) {
             getViolasCoinType().coinNumber() -> {
-                if (isActivate(assets.authKey)) {
+                if (assets.authKey == null || isActivate(assets.authKey!!)) {
                     false
                 } else {
                     DataRepository.getViolasService()
@@ -528,7 +528,7 @@ class AccountManager {
             }
 
             getDiemCoinType().coinNumber() -> {
-                if (isActivate(assets.authKey)) {
+                if (assets.authKey == null || isActivate(assets.authKey!!)) {
                     false
                 } else {
                     DataRepository.getLibraBizService()
@@ -543,11 +543,9 @@ class AccountManager {
         }
     }
 
-    private fun isActivate(authKey: String?): Boolean {
-        if (authKey == null || authKey.length < 32 || authKey.substring(
-                0,
-                32
-            ) == "00000000000000000000000000000000"
+    private fun isActivate(authKey: String): Boolean {
+        if (authKey.length < 32
+            || authKey.substring(0, 32) == "00000000000000000000000000000000"
         ) {
             return false
         }
@@ -718,8 +716,8 @@ class AccountManager {
         )
         localAssets.filter { it is AssetsLibraCoinVo && it.getCoinNumber() == getDiemCoinType().coinNumber() }
             .forEach {
+                it as AssetsLibraCoinVo
                 try {
-                    it as AssetsLibraCoinVo
                     DataRepository.getLibraRpcService().getAccountState(it.address)
                         ?.let { accountState ->
                             it.authKey = accountState.authenticationKey
@@ -784,6 +782,12 @@ class AccountManager {
                         }
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    try {
+                        if (it.authKey != null && it.authKey!!.isBlank()) {
+                            it.authKey = null
+                        }
+                    } catch (ignore: Exception) {
+                    }
                 }
             }
     }
@@ -860,6 +864,12 @@ class AccountManager {
                         }
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    try {
+                        if (it.authKey != null && it.authKey!!.isBlank()) {
+                            it.authKey = null
+                        }
+                    } catch (ignore: Exception) {
+                    }
                 }
             }
     }
