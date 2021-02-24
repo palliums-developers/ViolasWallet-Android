@@ -77,7 +77,7 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
             if (it.isSuccessful) {
                 val pushToken = it.result
-                it.logDebug(TAG) { "get push token successful, token = $pushToken" }
+                logDebug(TAG) { "get push token successful, token = $pushToken" }
                 if (!pushToken.isNullOrBlank()) {
                     setPushToken(pushToken)
                 }
@@ -138,36 +138,51 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
             if (first)
                 delay(1500)
 
-            val result = try {
-                val violasAccount =
-                    accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
-                val cachedToken = getToken()
-                if (cachedToken.isNullOrBlank()) {
-                    val token = messageService.registerPushDeviceInfo(
-                        address = violasAccount?.address ?: "",
-                        pushToken = getPushToken()
-                    )
-                    setToken(token)
-                } else {
-                    messageService.modifyPushDeviceInfo(
-                        token = cachedToken,
-                        address = violasAccount?.address ?: "",
-                        pushToken = getPushToken()
-                    )
+            val result = run {
+                try {
+                    val violasAccount =
+                        accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
+                    val cachedToken = getToken()
+                    if (cachedToken.isNullOrBlank()) {
+                        return@run try {
+                            val token = messageService.registerPushDeviceInfo(
+                                address = violasAccount?.address ?: "",
+                                pushToken = getPushToken()
+                            )
+                            setToken(token)
+                            0
+                        } catch (e: Exception) {
+                            logError(TAG) { "register push device info failed, ${e.message}" }
+                            -1
+                        }
+                    }
+
+                    return@run try {
+                        messageService.modifyPushDeviceInfo(
+                            token = cachedToken,
+                            address = violasAccount?.address ?: "",
+                            pushToken = getPushToken()
+                        )
+                        0
+                    } catch (e: Exception) {
+                        logError(TAG) { "modify push device info failed, ${e.message}" }
+                        -2
+                    }
+                } catch (e: Exception) {
+                    logError(TAG) { "sync push device info failed, ${e.message}" }
+                    return@run -3
                 }
-                true
-            } catch (e: Exception) {
-                logError(TAG) { "sync push device info failed, ${e.message}" }
-                false
             }
 
-            syncUnreadMsgNum()
+            if (result != -1) {
+                syncUnreadMsgNum()
+            }
 
             synchronized(lock) {
                 syncPushDeviceInfoJob = null
             }
 
-            if (!result) {
+            if (result < 0) {
                 delay(1000 * 60 * 10)
                 syncPushDeviceInfo()
             }
