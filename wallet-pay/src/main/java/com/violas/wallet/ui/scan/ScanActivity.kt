@@ -117,7 +117,17 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
 
     private fun onScanSuccess(result: String) {
         launch {
-            val qrCode = decodeQRCode(result)
+            val qrCode = try {
+                decodeQRCode(result)
+            } catch (e: Exception) {
+                if (e is DiemChainNetworkDifferentException
+                    || e is ViolasChainNetworkDifferentException
+                ) {
+                    e.message?.let { showToast(it) }
+                }
+                close()
+                return@launch
+            }
 
             if (returnResult) {
                 setResult(

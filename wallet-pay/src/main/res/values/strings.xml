@@ -46,6 +46,7 @@
     <string name="common_tips_insufficient_available_balance_format">Insufficient %1$s balance</string>
     <string name="common_tips_exit_app">Click again to exit</string>
     <string name="common_tips_copy_success">Copy Success</string>
+    <string name="common_tips_chain_network_is_different_format">%1$s chain network is different</string>
 
     <string name="chain_tips_payee_account_not_active">The payee account is not activated</string>
 

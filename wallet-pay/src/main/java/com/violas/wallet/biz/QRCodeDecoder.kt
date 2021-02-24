@@ -1,15 +1,31 @@
 package com.violas.wallet.biz
 
 import android.os.Parcelable
-import com.violas.wallet.common.getBitcoinCoinType
-import com.violas.wallet.common.getDiemCoinType
-import com.violas.wallet.common.getViolasCoinType
+import com.palliums.utils.getString
+import com.violas.wallet.R
+import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.palliums.libracore.wallet.AccountIdentifier
 import org.palliums.violascore.wallet.IntentIdentifier
+import java.lang.RuntimeException
 import java.util.*
+
+class DiemChainNetworkDifferentException : RuntimeException(
+    getString(
+        R.string.common_tips_chain_network_is_different_format,
+        "Diem"
+    )
+)
+
+class ViolasChainNetworkDifferentException : RuntimeException(
+    getString(
+        R.string.common_tips_chain_network_is_different_format,
+        "Violas"
+    )
+)
 
 /**
  * 二维码
@@ -70,9 +86,15 @@ suspend fun decodeQRCode(content: String): QRCode = withContext(Dispatchers.IO) 
             getBitcoinCoinType()
         }
         getDiemCoinType().chainName().toLowerCase(Locale.CHINA) -> {
+            if (transferQRCodeBean.chainId != getDiemChainId()) {
+                throw DiemChainNetworkDifferentException()
+            }
             getDiemCoinType()
         }
         getViolasCoinType().chainName().toLowerCase(Locale.CHINA) -> {
+            if (transferQRCodeBean.chainId != getViolasChainId()) {
+                throw ViolasChainNetworkDifferentException()
+            }
             getViolasCoinType()
         }
         else -> {
@@ -107,6 +129,7 @@ suspend fun decodeQRCode(content: String): QRCode = withContext(Dispatchers.IO) 
 
 private data class TransferQRCodeBean(
     val coinType: String?,
+    val chainId: Int?,
     val address: String,
     val subAddress: String? = null,
     var amount: Long = 0,
@@ -118,6 +141,7 @@ private fun decodeLibraTransferQRCode(content: String): TransferQRCodeBean {
     val intentIdentifier = org.palliums.libracore.wallet.IntentIdentifier.decode(content)
     return TransferQRCodeBean(
         "libra",
+        diemNetworkPrefixToChainId(intentIdentifier.getAccountIdentifier().getPrefix()),
         intentIdentifier.getAccountIdentifier().getAccountAddress().toHex(),
         intentIdentifier.getAccountIdentifier().getSubAddress().toHex(),
         intentIdentifier.getAmount(),
@@ -126,10 +150,22 @@ private fun decodeLibraTransferQRCode(content: String): TransferQRCodeBean {
     )
 }
 
+private fun diemNetworkPrefixToChainId(
+    networkPrefix: AccountIdentifier.NetworkPrefix
+): Int? {
+    return when (networkPrefix) {
+        AccountIdentifier.NetworkPrefix.MainnetPrefix -> 1
+        AccountIdentifier.NetworkPrefix.TestnetPrefix -> 2
+        AccountIdentifier.NetworkPrefix.PreMainnetPrefix -> 5
+        else -> null
+    }
+}
+
 private fun decodeViolasTransferQRCode(content: String): TransferQRCodeBean {
     val intentIdentifier = IntentIdentifier.decode(content)
     return TransferQRCodeBean(
         "violas",
+        violasNetworkPrefixToChainId(intentIdentifier.getAccountIdentifier().getPrefix()),
         intentIdentifier.getAccountIdentifier().getAccountAddress().toHex(),
         intentIdentifier.getAccountIdentifier().getSubAddress().toHex(),
         intentIdentifier.getAmount(),
@@ -138,9 +174,20 @@ private fun decodeViolasTransferQRCode(content: String): TransferQRCodeBean {
     )
 }
 
+private fun violasNetworkPrefixToChainId(
+    networkPrefix: org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix
+): Int? {
+    return when (networkPrefix) {
+        org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.MainnetPrefix -> 1
+        org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.TestnetPrefix -> 2
+        org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.PreMainnetPrefix -> 5
+        else -> null
+    }
+}
+
 private fun decodeTransferQRCode(content: String): TransferQRCodeBean {
     if (!content.contains(":") || content.contains("://")) {
-        return TransferQRCodeBean(null, content)
+        return TransferQRCodeBean(null, null, content)
     }
     var tokenName: String? = null
     val coinTypeSplit = content.split(":")
@@ -170,7 +217,7 @@ private fun decodeTransferQRCode(content: String): TransferQRCodeBean {
                 }
             }
     }
-    return TransferQRCodeBean(coinType, addressSplit[0], null, amount, label)
+    return TransferQRCodeBean(coinType, 2, addressSplit[0], null, amount, label)
 }
 
 private fun decodeWalletConnectQRCode(content: String): Boolean {
