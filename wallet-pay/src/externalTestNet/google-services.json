@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:675290848213:android:af1b445b9f2d8bdb8fbb5c",
+        "mobilesdk_app_id": "1:675290848213:android:60d7015a31c200e18fbb5c",
         "android_client_info": {
           "package_name": "com.violas.wallet.pay.beta"
         }
@@ -31,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "675290848213-m1uag4thq6ks4ikli7jhludkfbiegsjr.apps.googleusercontent.com",
+              "client_id": "675290848213-1rj8535h8j9idjai7kvsarpq3onfun9c.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.palliums.violas"
+                "bundle_id": "com.palliums.violas.pay"
               }
             }
           ]
