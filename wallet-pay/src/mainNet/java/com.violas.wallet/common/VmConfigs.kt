@@ -15,7 +15,7 @@ object VmConfigs {
     @kotlin.jvm.JvmField
     val DIEM_COIN_TYPE: CoinType = CoinType.Diem
 
-    const val DIEM_CHAIN_ID: Int = 2
+    const val DIEM_CHAIN_ID: Int = 1
 
     @kotlin.jvm.JvmField
     val DIEM_NETWORK_PREFIX =
@@ -24,7 +24,7 @@ object VmConfigs {
     @kotlin.jvm.JvmField
     val VIOLAS_COIN_TYPE: CoinType = CoinType.Violas
 
-    const val VIOLAS_CHAIN_ID: Int = 4
+    const val VIOLAS_CHAIN_ID: Int = 1
 
     @kotlin.jvm.JvmField
     val VIOLAS_NETWORK_PREFIX =

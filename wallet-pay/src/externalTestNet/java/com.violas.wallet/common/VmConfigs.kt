@@ -24,9 +24,9 @@ object VmConfigs {
     @kotlin.jvm.JvmField
     val VIOLAS_COIN_TYPE: CoinType = CoinType.ViolasTest
 
-    const val VIOLAS_CHAIN_ID: Int = 4
+    const val VIOLAS_CHAIN_ID: Int = 5
 
     @kotlin.jvm.JvmField
     val VIOLAS_NETWORK_PREFIX =
-        org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.TestnetPrefix
+        org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix.PreMainnetPrefix
 }
